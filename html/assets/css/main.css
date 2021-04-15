@@ -218,19 +218,22 @@ svg {
 
 
 .kanji-entry.left {
-   /*background-color: grey; */
-   width: 120px;
-}
-
+    /*background-color: grey; */
+    width: 120px;
+ }
 
 .kanji-entry.left.detail {
     width: 155px;
     padding-left: 25px
 }
 
+.kanji-entry-flex {
+    width: 130px;
+}
+
 .kanji-entry.right {
     /* background-color: fuchsia; */
-    padding-left: 7%;
+    padding-left: 5%;
     width: 100%;
 }
 
