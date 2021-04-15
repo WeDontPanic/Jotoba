@@ -1,5 +1,5 @@
 @use crate::search::result::Item;
-@use super::{index_html, wordSearch_html};
+@use super::{index_html, word_search_html};
 @(search_text: Option<String>,search_result: Option<Vec<Item>>)
 <!DOCTYPE html>
 <html>
@@ -78,7 +78,7 @@
           <div class="main-container">
 
             @if let Some(results) = search_result {
-              @:wordSearch_html(results)
+              @:word_search_html(results)
             } else {
               @:index_html()
             }

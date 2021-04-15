@@ -19,7 +19,6 @@ pub async fn search(db: &DbPool, query: &str) -> Result<Vec<result::Item>, Error
         .await?;
     exact_words.sort();
     // Search for exact matches
-    println!("exact search took {:?}", start.elapsed());
 
     let mut right_variable = word::WordSearch::new(db, query)
         .with_language(Language::German)
@@ -27,33 +26,8 @@ pub async fn search(db: &DbPool, query: &str) -> Result<Vec<result::Item>, Error
         .search_native()
         .await?;
 
-    println!("right variant search took {:?}", start.elapsed());
-
-    println!(
-        "right: {:#?}",
-        right_variable
-            .iter()
-            .map(|i| &i.reading.get_reading().reading)
-            .collect::<Vec<&String>>()
-    );
-
     right_variable.retain(|i| !exact_words.contains(&i));
-
-    println!(
-        "right(retained): {:#?}",
-        right_variable
-            .iter()
-            .map(|i| &i.reading.get_reading().reading)
-            .collect::<Vec<&String>>()
-    );
     right_variable.sort();
-    println!(
-        "right(sorted): {:#?}",
-        right_variable
-            .iter()
-            .map(|i| &i.reading.get_reading().reading)
-            .collect::<Vec<&String>>()
-    );
     right_variable.truncate(10);
 
     // Search for right variable
