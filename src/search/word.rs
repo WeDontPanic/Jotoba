@@ -49,7 +49,7 @@ impl<'a> WordSearch<'a> {
     /// Searches a native word
     pub async fn search_native(&mut self) -> Result<Vec<Item>, Error> {
         // Load sequence ids to display
-        let seq_ids: Vec<i32> = self.get_sequence_ids().await?;
+        let seq_ids: Vec<i32> = self.get_sequence_ids_by_native().await?;
 
         // Load its readings
         let readings_fut = self.load_readings(&seq_ids);
@@ -80,7 +80,37 @@ impl<'a> WordSearch<'a> {
     }
 
     /// Find the sequence ids of the results to load
-    async fn get_sequence_ids(&mut self) -> Result<Vec<i32>, Error> {
+    async fn get_sequence_ids_by_foreign(&mut self) -> Result<Vec<i32>, Error> {
+        use crate::schema::dict::dsl::*;
+
+        let predicate = {
+            match self.search.mode {
+                SearchMode::Exact => reading.like(self.search.query.to_owned()),
+                SearchMode::Variable => reading.like(format!("%{}%", self.search.query)),
+                SearchMode::LeftVariable => reading.like(format!("%{}", self.search.query)),
+                SearchMode::RightVariable => reading.like(format!("{}%", self.search.query)),
+            }
+        };
+
+        // Wait for tokio-diesel to support boxed queries #20
+        if self.search.limit > 0 {
+            Ok(dict
+                .select(sequence)
+                .filter(predicate)
+                .limit(self.search.limit as i64)
+                .get_results_async(&self.db)
+                .await?)
+        } else {
+            Ok(dict
+                .select(sequence)
+                .filter(predicate)
+                .get_results_async(&self.db)
+                .await?)
+        }
+    }
+
+    /// Find the sequence ids of the results to load
+    async fn get_sequence_ids_by_native(&mut self) -> Result<Vec<i32>, Error> {
         use crate::schema::dict::dsl::*;
 
         let predicate = {
