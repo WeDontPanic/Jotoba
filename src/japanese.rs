@@ -176,8 +176,8 @@ pub fn kanji_readings(kanji: &str, kana: &str) -> Vec<String> {
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct SentencePart {
-    kana: String,
-    kanji: Option<String>,
+    pub kana: String,
+    pub kanji: Option<String>,
 }
 
 #[cfg(test)]

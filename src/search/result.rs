@@ -10,6 +10,7 @@ pub mod word {
     use itertools::Itertools;
 
     use crate::{
+        japanese::{self, SentencePart},
         models::{dict::Dict, sense::Sense as DbSenseEntry},
         parse::jmdict::{
             dialect::Dialect, field::Field, gtype::GType, information::Information,
@@ -108,6 +109,25 @@ pub mod word {
 
         pub fn get_reading(&self) -> &Dict {
             return self.reading.get_reading();
+        }
+
+        pub fn get_furigana(&self) -> Option<Vec<SentencePart>> {
+            if self.reading.kanji.is_some() && self.reading.kana.is_some() {
+                japanese::furigana_pairs(
+                    self.reading
+                        .kanji
+                        .as_ref()
+                        .map(|i| i.reading.as_str())
+                        .unwrap(),
+                    self.reading
+                        .kana
+                        .as_ref()
+                        .map(|i| i.reading.as_str())
+                        .unwrap(),
+                )
+            } else {
+                None
+            }
         }
     }
 
