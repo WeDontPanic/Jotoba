@@ -217,8 +217,7 @@ svg {
 }
 
 
-.kanji-entry.left {
-    /*background-color: grey; */
+.kanji-entry.left.fixed {
     width: 120px;
  }
 
