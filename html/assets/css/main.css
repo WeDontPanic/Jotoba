@@ -79,10 +79,25 @@ h4 {
     text-align: center;
 }
 
+.clickable.fat {
+    font-size: 20px;
+}
+
 .clickable:hover{
    text-decoration: underline;
 }
 
+.no-align {
+    text-align: unset;
+}
+
+.right-padding-10 {
+    padding-right: 10px;
+}
+
+.right-padding-20 {
+    padding-right: 20px;
+}
 
 /* ----------------- Search Row ----------------- */
 
@@ -208,10 +223,20 @@ svg {
 }
 */
 
+.kanji-entry.left.detail {
+    width: 155px;
+    padding-left: 25px
+}
+
 .kanji-entry.right {
     /* background-color: fuchsia; */
-    padding-left: 10%;
+    padding-left: 7%;
     width: 100%;
+}
+
+
+.kanji-entry.right.detail {
+    padding-left: 35px;
 }
 
 /*
@@ -234,15 +259,31 @@ svg {
     /* padding-left: 35px; */
 }
 
+.kanji-preview.large {
+    font-size: 50px;
+}
+
+.kanji-preview.x-large {
+    font-size: 100px;
+}
+
 .kanji-preview.small {
     font-size: x-large;
+}
+
+.kanji-preview-info {
+    padding-left: 5px;
 }
 
 .inline-kana-preview {
     display: block;
     line-height: 1.1;
-    font-size: x-large;
+    font-size: xx-large;
     padding-top: 24px;
+}
+
+.inline-kana-preview.small {
+    font-size: x-large;
 }
 
 .word-frequency {
@@ -275,6 +316,12 @@ svg {
     margin-top: 10px;
 }
 
+.tags.fat {
+    font-size: 20px;
+    font-weight: bold;
+    color: black;
+}
+
 .tags.no-margin {
     margin-top: 0px;
 }
@@ -295,11 +342,23 @@ svg {
     font-size: 19px;
 }
 
+.translation.big {
+    font-size: 25px;
+}
+
 .translation.kanji {
     padding-top: 10px;
     padding-left: 10px;
 }
 
-.kanji-preview.large {
-    font-size: 50px;
+
+.kanji-preview-left {
+    width: 63%;
+    padding-right: 10%;
+}
+
+/* ---------------------- Stroke Order / Kanji Page Unique Stuff --------------------- */
+.stroke-container {
+    max-width: 80vw;
+    overflow-x: auto;
 }
