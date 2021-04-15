@@ -51,16 +51,20 @@ impl<'a> WordSearch<'a> {
         // Load sequence ids to display
         let seq_ids: Vec<i32> = self.get_sequence_ids_by_native().await?;
 
-        // Load its readings
-        let readings_fut = self.load_readings(&seq_ids);
-        let senses_fut = self.load_senses(&seq_ids);
+        self.get_results(&seq_ids).await
+    }
 
+    async fn get_results(&self, seq_ids: &Vec<i32>) -> Result<Vec<Item>, Error> {
         // Request Redings and Senses in parallel
         let (word_items, senses): (Vec<Item>, Vec<sense::Sense>) =
-            futures::try_join!(readings_fut, senses_fut)?;
+            futures::try_join!(self.load_readings(&seq_ids), self.load_senses(&seq_ids))?;
 
+        Ok(Self::merge_words_with_senses(word_items, senses))
+    }
+
+    fn merge_words_with_senses(word_items: Vec<Item>, senses: Vec<sense::Sense>) -> Vec<Item> {
         // Map result into a usable word::Item an return it
-        Ok(word_items
+        word_items
             .into_iter()
             .map(|mut word| {
                 word.senses = senses
@@ -76,7 +80,7 @@ impl<'a> WordSearch<'a> {
 
                 word
             })
-            .collect_vec())
+            .collect_vec()
     }
 
     /// Find the sequence ids of the results to load
