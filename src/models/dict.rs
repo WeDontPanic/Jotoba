@@ -21,7 +21,7 @@ pub struct Dict {
 
 impl Dict {
     pub fn len(&self) -> usize {
-        self.reading.len()
+        self.reading.chars().count()
     }
 }
 
