@@ -4,7 +4,7 @@ A free online, selfhostable, multilang japanese dictionary.
 # Requirements
 - [Jmdict.xml](https://www.edrdg.org/wiki/index.php/JMdict-EDICT_Dictionary_Project)
 - PostgresDB
-- [Diesel](https://github.com/diesel-rs/diesel) with postgres feature
+- [Diesel](https://github.com/diesel-rs/diesel) with postgres feature (`cargo install diesel_cli --no-default-features --features postgres`)
 
 # Installation
 1. Setup a postgres DB
