@@ -105,6 +105,10 @@ pub mod word {
                 .map(|i| i.len())
                 .unwrap_or_default()
         }
+
+        pub fn get_reading(&self) -> &Dict {
+            return self.reading.get_reading();
+        }
     }
 
     impl Reading {

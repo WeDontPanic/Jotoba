@@ -23,19 +23,31 @@
       <!-- !!! Word Template start !!! -->
       @for i in results {
         @if let Item::Word(word) = i {
+
+          @if word.get_reading().len() > 3 {
+            <div class="d-flex flex-row"> 
+               <div class="inline-kana-preview">
+                  せん
+               </div>
+               <div>
+                  <span class="furigana-preview">
+                     せい
+                  </span>
+                  <span class="kanji-preview">
+                  生
+                  </span>
+               </div>
+            </div>
+          }
+
           <div class="d-flex center">
             <!-- Left side: Writing -->
             <div class="kanji-entry left d-flex flex-column">
 
-              @if word.reading.kanji.is_some() && word.reading.kanji.is_some() {
-                <span class="furigana-preview">
-                  @furigana(word.clone().reading.kanji.unwrap().reading.as_str(), word.clone().reading.kana.unwrap().reading.as_str())
-                </span>
+              @if word.get_reading().len() <= 3 {
+
               }
 
-              <span class="kanji-preview">
-                @word.clone().reading.kanji.map(|i|i.reading).unwrap_or(word.clone().reading.kana.unwrap().reading)
-              </span>
               @if word.is_common() {
                 <div class="word-frequency common">
                   common word

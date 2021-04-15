@@ -19,6 +19,12 @@ pub struct Dict {
     pub information: Option<Vec<Information>>,
 }
 
+impl Dict {
+    pub fn len(&self) -> usize {
+        self.reading.len()
+    }
+}
+
 impl PartialEq for Dict {
     fn eq(&self, other: &Dict) -> bool {
         self.sequence == other.sequence && self.id == other.id
