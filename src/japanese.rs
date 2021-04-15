@@ -9,7 +9,7 @@ pub fn char_is_kana(s: char) -> bool {
 pub fn char_is_kanji(s: char) -> bool {
     (s >= '\u{3400}' && s <= '\u{4DBF}')
         || (s >= '\u{4E00}' && s <= '\u{9FFF}')
-        || (s >= '\u{F900}' && s <= '\u{FAFF}')
+        || (s >= '\u{F900}' && s <= '\u{FAFF}' || s == '\u{3005}')
 }
 
 /// Returns true if s is of type ct
@@ -199,6 +199,19 @@ mod test {
         let kanji = "先生い";
         let kana = "せんせいい";
         assert_eq!(kanji_readings(kanji, kana), vec!["せんせい"])
+    }
+
+    #[test]
+    fn test_furigana_pairs0() {
+        let kanji = "時々";
+        let kana = "ときどき";
+
+        let result = vec![SentencePart {
+            kana: kana.to_string(),
+            kanji: Some(kanji.to_string()),
+        }];
+
+        assert_eq!(furigana_pairs(kanji, kana), Some(result));
     }
 
     #[test]

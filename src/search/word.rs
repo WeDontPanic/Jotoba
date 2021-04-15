@@ -10,6 +10,7 @@ use crate::{
 };
 
 use diesel::prelude::*;
+use diesel::types;
 use itertools::Itertools;
 use tokio_diesel::*;
 
@@ -18,7 +19,10 @@ pub struct WordSearch<'a> {
     search: Search<'a>,
     db: &'a DbPool,
     language: Option<Language>,
+    ignore_case: bool,
 }
+
+sql_function!(lower, lower_t, (a: types::VarChar) -> types::VarChar);
 
 impl<'a> WordSearch<'a> {
     pub fn new(db: &'a DbPool, query: &'a str) -> Self {
@@ -26,9 +30,17 @@ impl<'a> WordSearch<'a> {
             search: Search::new(query, SearchMode::Variable),
             db,
             language: None,
+            ignore_case: false,
         }
     }
+
     /// Use a specific language for the search
+    pub fn with_case_insensitivity(&mut self, ignore_case: bool) -> &mut Self {
+        self.ignore_case = ignore_case;
+        self
+    }
+
+    /// Ignore the case of the input
     pub fn with_language(&mut self, language: Language) -> &mut Self {
         self.language = Some(language);
         self
@@ -46,14 +58,21 @@ impl<'a> WordSearch<'a> {
         self
     }
 
-    /// Searches a native word
-    pub async fn search_native(&mut self) -> Result<Vec<Item>, Error> {
+    /// Searches by translations
+    pub async fn search_by_glosses(&mut self) -> Result<Vec<Item>, Error> {
         // Load sequence ids to display
-        let seq_ids: Vec<i32> = self.get_sequence_ids_by_native().await?;
-
+        let seq_ids = self.get_sequence_ids_by_glosses().await?;
         self.get_results(&seq_ids).await
     }
 
+    /// Searches by native
+    pub async fn search_native(&mut self) -> Result<Vec<Item>, Error> {
+        // Load sequence ids to display
+        let seq_ids = self.get_sequence_ids_by_native().await?;
+        self.get_results(&seq_ids).await
+    }
+
+    /// Get searhresults of seq_ids
     async fn get_results(&self, seq_ids: &Vec<i32>) -> Result<Vec<Item>, Error> {
         // Request Redings and Senses in parallel
         let (word_items, senses): (Vec<Item>, Vec<sense::Sense>) =
@@ -62,6 +81,7 @@ impl<'a> WordSearch<'a> {
         Ok(Self::merge_words_with_senses(word_items, senses))
     }
 
+    /// Merge word_items with its senses
     fn merge_words_with_senses(word_items: Vec<Item>, senses: Vec<sense::Sense>) -> Vec<Item> {
         // Map result into a usable word::Item an return it
         word_items
@@ -84,32 +104,84 @@ impl<'a> WordSearch<'a> {
     }
 
     /// Find the sequence ids of the results to load
-    async fn get_sequence_ids_by_foreign(&mut self) -> Result<Vec<i32>, Error> {
-        use crate::schema::dict::dsl::*;
+    async fn get_sequence_ids_by_glosses(&mut self) -> Result<Vec<i32>, Error> {
+        use crate::schema::sense::dsl::*;
 
-        let predicate = {
-            match self.search.mode {
-                SearchMode::Exact => reading.like(self.search.query.to_owned()),
-                SearchMode::Variable => reading.like(format!("%{}%", self.search.query)),
-                SearchMode::LeftVariable => reading.like(format!("%{}", self.search.query)),
-                SearchMode::RightVariable => reading.like(format!("{}%", self.search.query)),
+        let query = {
+            if self.ignore_case {
+                self.search.query.to_lowercase()
+            } else {
+                self.search.query.to_string()
             }
         };
 
+        let language_predicate = language
+            .eq(Language::English)
+            .or(language.eq(Language::German));
+
         // Wait for tokio-diesel to support boxed queries #20
         if self.search.limit > 0 {
-            Ok(dict
-                .select(sequence)
-                .filter(predicate)
-                .limit(self.search.limit as i64)
-                .get_results_async(&self.db)
-                .await?)
+            if self.ignore_case {
+                Ok(sense
+                    .select(sequence)
+                    .filter(
+                        match self.search.mode {
+                            SearchMode::Exact => lower(gloss).like(query),
+                            SearchMode::Variable => lower(gloss).like(format!("%{}%", query)),
+                            SearchMode::LeftVariable => lower(gloss).like(format!("%{}", query)),
+                            SearchMode::RightVariable => lower(gloss).like(format!("{}%", query)),
+                        }
+                        .and(language_predicate),
+                    )
+                    .limit(self.search.limit as i64)
+                    .get_results_async(&self.db)
+                    .await?)
+            } else {
+                Ok(sense
+                    .select(sequence)
+                    .filter(
+                        match self.search.mode {
+                            SearchMode::Exact => gloss.like(query),
+                            SearchMode::Variable => gloss.like(format!("%{}%", query)),
+                            SearchMode::LeftVariable => gloss.like(format!("%{}", query)),
+                            SearchMode::RightVariable => gloss.like(format!("{}%", query)),
+                        }
+                        .and(language_predicate),
+                    )
+                    .limit(self.search.limit as i64)
+                    .get_results_async(&self.db)
+                    .await?)
+            }
         } else {
-            Ok(dict
-                .select(sequence)
-                .filter(predicate)
-                .get_results_async(&self.db)
-                .await?)
+            if self.ignore_case {
+                Ok(sense
+                    .select(sequence)
+                    .filter(
+                        match self.search.mode {
+                            SearchMode::Exact => lower(gloss).like(query),
+                            SearchMode::Variable => lower(gloss).like(format!("%{}%", query)),
+                            SearchMode::LeftVariable => lower(gloss).like(format!("%{}", query)),
+                            SearchMode::RightVariable => lower(gloss).like(format!("{}%", query)),
+                        }
+                        .and(language_predicate),
+                    )
+                    .get_results_async(&self.db)
+                    .await?)
+            } else {
+                Ok(sense
+                    .select(sequence)
+                    .filter(
+                        match self.search.mode {
+                            SearchMode::Exact => gloss.like(query),
+                            SearchMode::Variable => gloss.like(format!("%{}%", query)),
+                            SearchMode::LeftVariable => gloss.like(format!("%{}", query)),
+                            SearchMode::RightVariable => gloss.like(format!("{}%", query)),
+                        }
+                        .and(language_predicate),
+                    )
+                    .get_results_async(&self.db)
+                    .await?)
+            }
         }
     }
 
