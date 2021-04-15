@@ -75,6 +75,7 @@ h4 {
 }
 
 .clickable {
+    padding-right: 25px;
     color: var(--green);
     text-align: center;
 }
@@ -218,7 +219,7 @@ svg {
 
 
 .kanji-entry.left.fixed {
-    width: 120px;
+    width: 155px;
  }
 
 .kanji-entry.left.detail {
@@ -232,7 +233,7 @@ svg {
 
 .kanji-entry.right {
     /* background-color: fuchsia; */
-    padding-left: 5%;
+    /* padding-left: 5%; */
     width: 100%;
 }
 
@@ -253,10 +254,6 @@ svg {
     padding-left: 35px;
 }
 */
-
-.furigana-kanji-container {
-    width: max-content;
-}
 
 .kanji-preview {
     display: block;
