@@ -216,12 +216,12 @@ svg {
     padding-bottom: 10px;
 }
 
-/*
+
 .kanji-entry.left {
-   background-color: grey; 
-    width: 50%;
+   /*background-color: grey; */
+   width: 120px;
 }
-*/
+
 
 .kanji-entry.left.detail {
     width: 155px;

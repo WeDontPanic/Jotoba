@@ -33,12 +33,6 @@ pub async fn search(
         .await
         .unwrap();
 
-    for i in result.clone() {
-        if let crate::search::result::Item::Word(i) = i {
-            println!("{:?}: {}", i.get_reading(), i.get_reading().len());
-        }
-    }
-
     Ok(HttpResponse::Ok().body(render!(
         templates::base,
         Some(search_query.clone()),
