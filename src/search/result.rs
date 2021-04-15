@@ -5,6 +5,8 @@ pub enum Item {
 
 /// Defines a word result item
 pub mod word {
+    use std::cmp::Ordering;
+
     use itertools::Itertools;
 
     use crate::{
@@ -16,7 +18,7 @@ pub mod word {
     };
 
     /// A single word item
-    #[derive(Debug, Clone, PartialEq, Default)]
+    #[derive(Debug, Clone, Default)]
     pub struct Item {
         pub sequence: i32,
         pub priorities: Option<Vec<Priority>>,
@@ -82,6 +84,8 @@ pub mod word {
         }
     }
 
+    // Small handy functions used in the templates
+
     impl Item {
         pub fn alt_readings_beautified(&self) -> String {
             self.reading
@@ -89,6 +93,28 @@ pub mod word {
                 .iter()
                 .map(|i| i.reading.clone())
                 .join(", ")
+        }
+
+        pub fn is_common(&self) -> bool {
+            self.reading.get_reading().priorities.is_some()
+        }
+
+        pub fn priorities_count(&self) -> usize {
+            self.priorities
+                .as_ref()
+                .map(|i| i.len())
+                .unwrap_or_default()
+        }
+    }
+
+    impl Reading {
+        pub fn get_reading(&self) -> &Dict {
+            self.kanji.as_ref().unwrap_or(self.kana.as_ref().unwrap())
+        }
+
+        pub fn get_jplt_lvl(&self) -> Option<u8> {
+            // TODO
+            None
         }
     }
 
@@ -116,6 +142,48 @@ pub mod word {
                     s
                 })
                 .join(", ")
+        }
+    }
+
+    impl PartialEq for Item {
+        fn eq(&self, other: &Self) -> bool {
+            self.sequence == other.sequence
+        }
+    }
+
+    impl std::cmp::Eq for Item {}
+
+    impl std::cmp::PartialOrd for Item {
+        fn partial_cmp(&self, other: &Item) -> Option<Ordering> {
+            // Always put common words at the top
+            if self.is_common() && !other.is_common() {
+                Some(Ordering::Less)
+            } else if self.reading.kana.is_some() && other.reading.kana.is_some() {
+                // If both have kana reading
+                let self_read = self.reading.get_reading();
+                let other_read = other.reading.get_reading();
+
+                if self.priorities_count() > other.priorities_count() {
+                    Some(Ordering::Less)
+                } else if self_read.reading.len() < other_read.reading.len() {
+                    // Order by length
+                    Some(Ordering::Less)
+                } else {
+                    Some(Ordering::Greater)
+                }
+            } else {
+                // If one doesn't have kana reading
+                None
+            }
+        }
+    }
+
+    impl std::cmp::Ord for Item {
+        fn cmp(&self, other: &Self) -> Ordering {
+            self.partial_cmp(other).unwrap_or_else(|| {
+                println!("unwrapped");
+                Ordering::Greater
+            })
         }
     }
 }

@@ -21,17 +21,28 @@ pub struct WordSearch<'a> {
 }
 
 impl<'a> WordSearch<'a> {
-    pub fn new(db: &'a DbPool, query: &'a str, mode: SearchMode) -> Self {
+    pub fn new(db: &'a DbPool, query: &'a str) -> Self {
         Self {
-            search: Search::new(query, mode),
+            search: Search::new(query, SearchMode::Variable),
             db,
             language: None,
         }
     }
-
     /// Use a specific language for the search
     pub fn with_language(&mut self, language: Language) -> &mut Self {
         self.language = Some(language);
+        self
+    }
+
+    /// Use a specific mode for the search
+    pub fn with_mode(&mut self, mode: SearchMode) -> &mut Self {
+        self.search.mode = mode;
+        self
+    }
+
+    /// Use a specific limit for the search
+    pub fn with_limit(&mut self, limit: u16) -> &mut Self {
+        self.search.limit = limit;
         self
     }
 

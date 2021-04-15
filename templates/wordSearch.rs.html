@@ -36,12 +36,16 @@
               <span class="kanji-preview">
                 @word.clone().reading.kanji.map(|i|i.reading).unwrap_or(word.clone().reading.kana.unwrap().reading)
               </span>
-              <div class="word-frequency common">
-                common word
-              </div>
-              <div class="word-frequency">
-                jlpt n1
-              </div>
+              @if word.is_common() {
+                <div class="word-frequency common">
+                  common word
+                </div>
+              }
+              @if let Some(lvl) =  word.reading.get_jplt_lvl() {
+                <div class="word-frequency">
+                  jlpt n@lvl
+                </div>
+              }
               <span class="clickable">Vorlesen</span>
             </div>
 
@@ -78,8 +82,8 @@
                 <div class="tags">Other forms</div>
                 <div class="notes">@word.alt_readings_beautified()</div>
               }
-              <div class="tags">Anmerkungen</div>
-              <div class="notes">鮮か: Irregular okurigana usage. 彩やか: Irregular kanji usage.</div>
+              <!--<div class="tags">Anmerkungen</div>-->
+              <!--<div class="notes">鮮か: Irregular okurigana usage. 彩やか: Irregular kanji usage.</div>-->
               <hr />
             </div>
 

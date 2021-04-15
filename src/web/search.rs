@@ -1,4 +1,4 @@
-use actix_web::{web, HttpRequest, HttpResponse};
+use actix_web::{web, HttpResponse};
 use serde::Deserialize;
 
 use crate::{templates, DbPool};
@@ -9,15 +9,18 @@ pub struct QueryStruct {
     query: Option<String>,
 }
 
-use tokio_diesel::*;
-
 /// Endpoint to perform a search
 pub async fn search(
     pool: web::Data<DbPool>,
-    request: HttpRequest,
     query_data: web::Query<QueryStruct>,
 ) -> Result<HttpResponse, actix_web::Error> {
-    let search_query = match query_data.query.clone() {
+    let search_query = query_data
+        .query
+        .clone()
+        .map(|i| i.trim().to_string())
+        .and_then(|i| if i.is_empty() { None } else { Some(i) });
+
+    let search_query = match search_query {
         Some(s) => s,
         None => {
             return Ok(HttpResponse::MovedPermanently()
