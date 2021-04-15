@@ -60,7 +60,7 @@
                   @if let Some(s_pairs) = word.get_furigana() {
                     @for spair in s_pairs {
                       @if spair.kanji.is_some() {
-                         <div>
+                         <div class="furigana-kanji-container">
                             <span class="furigana-preview">
                                @spair.kana
                             </span>
