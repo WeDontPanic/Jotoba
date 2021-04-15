@@ -254,6 +254,10 @@ svg {
 }
 */
 
+.furigana-kanji-container {
+    width: max-content;
+}
+
 .kanji-preview {
     display: block;
     line-height: 1.1;
