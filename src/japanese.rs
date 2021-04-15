@@ -202,6 +202,19 @@ mod test {
     }
 
     #[test]
+    fn test_furigana_pairs33() {
+        let kanji = "気持ち";
+        let kana = "きもち";
+
+        let result = vec![SentencePart {
+            kana: kana.to_string(),
+            kanji: Some(kanji.to_string()),
+        }];
+
+        assert_eq!(furigana_pairs(kanji, kana), Some(result));
+    }
+
+    #[test]
     fn test_furigana_pairs0() {
         let kanji = "時々";
         let kana = "ときどき";
