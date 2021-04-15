@@ -56,7 +56,7 @@
             <div class="kanji-entry left d-flex flex-column">
 
               @if word.get_reading().len() <= 4 {
-                <div class="d-flex flex-row"> 
+                <div class="d-flex flex-row kanji-entry-flex"> 
                   @if let Some(s_pairs) = word.get_furigana() {
                     @for spair in s_pairs {
                       @if spair.kanji.is_some() {
