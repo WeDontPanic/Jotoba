@@ -24,7 +24,7 @@
       @for i in results {
         @if let Item::Word(word) = i {
 
-          @if word.get_reading().len() > 4 {
+          @if word.get_reading().len() > 3 {
             <div class="d-flex flex-row"> 
               @if let Some(s_pairs) = word.get_furigana() {
                 @for spair in s_pairs {
@@ -55,8 +55,8 @@
             <!-- Left side: Writing -->
             <div class="kanji-entry left d-flex flex-column">
 
-              @if word.get_reading().len() <= 4 {
-                <div class="d-flex flex-row kanji-entry-flex"> 
+              @if word.get_reading().len() <= 3 {
+                <div class="d-flex flex-row"> 
                   @if let Some(s_pairs) = word.get_furigana() {
                     @for spair in s_pairs {
                       @if spair.kanji.is_some() {
