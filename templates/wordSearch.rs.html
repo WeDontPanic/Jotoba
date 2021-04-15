@@ -49,7 +49,7 @@
                 </div>
               }
             </div>
-        }
+          }
 
           <div class="d-flex center">
             <!-- Left side: Writing -->
@@ -57,9 +57,28 @@
 
               @if word.get_reading().len() <= 3 {
                 <div class="d-flex flex-row"> 
-                   <div class="inline-kana-preview">
+                  @if let Some(s_pairs) = word.get_furigana() {
+                    @for spair in s_pairs {
+                      @if spair.kanji.is_some() {
+                         <div>
+                            <span class="furigana-preview">
+                               @spair.kana
+                            </span>
+                            <span class="kanji-preview">
+                               @spair.kanji.unwrap()
+                            </span>
+                         </div>
+                      } else {
+                         <div class="inline-kana-preview">
+                            @spair.kana
+                         </div>
+                      }
+                    }
+                  } else {
+                    <div class="inline-kana-preview">
                       @word.get_reading().reading
-                   </div>
+                    </div>
+                  }
                 </div>
               }
 
