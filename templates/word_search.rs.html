@@ -3,7 +3,7 @@
   <!-- Inner Top Row -->
   <div class="d-flex center no-drag">
     <div class="main-tab-select l">
-      <h2 id="previousTabBtn" class="tab-btn" onclick="$('#secondaryInfo').toggleClass('hidden');">&larr; Sätze</h2>
+      <h2 id="previousTabBtn" class="tab-btn">&larr; Sätze</h2>
     </div>
     <div class="title-div">
       <h1>Words and kanji</h1>
@@ -16,7 +16,7 @@
   <!-- Inner Main Body -->
   <div class="d-flex center">
     <div class="main-info d-flex flex-column">
-      <h3>Words</h3>
+      <h3 class="noselect">Words</h3>
 
       <!-- Word, Sentence, Name Templates here -->
       @for i in results.iter() {
@@ -27,7 +27,7 @@
               @if let Some(s_pairs) = word.get_furigana() {
                 @for spair in s_pairs {
                   @if spair.kanji.is_some() {
-                     <div class="furigana-kanji-container">
+                     <div class="furigana-kanji-container noselect">
                         <span class="furigana-preview">
                            @spair.as_furigana()
                         </span>
@@ -36,13 +36,13 @@
                         </span>
                      </div>
                   } else {
-                     <div class="inline-kana-preview">
+                     <div class="inline-kana-preview noselect">
                         @spair.kana
                      </div>
                   }
                 }
               } else {
-                <div class="inline-kana-preview">
+                <div class="inline-kana-preview noselect">
                   @word.get_reading().reading
                 </div>
               }
@@ -58,7 +58,7 @@
                   @if let Some(s_pairs) = word.get_furigana() {
                     @for spair in s_pairs {
                       @if spair.kanji.is_some() {
-                         <div class="furigana-kanji-container">
+                         <div class="furigana-kanji-container noselect">
                             <span class="furigana-preview">
                                @spair.as_furigana()
                             </span>
@@ -67,13 +67,13 @@
                             </span>
                          </div>
                       } else {
-                         <div class="inline-kana-preview">
+                         <div class="inline-kana-preview noselect">
                             @spair.kana
                          </div>
                       }
                     }
                   } else {
-                    <div class="inline-kana-preview">
+                    <div class="inline-kana-preview noselect">
                       @word.get_reading().reading
                     </div>
                   }
@@ -99,11 +99,11 @@
               @if !sense.glosses.is_empty() {
                 <!-- Entry -->
                 <div class="list-entry">
-                  <div class="tags">
+                  <div class="tags noselect">
                     @sense.get_tags()
                   </div>
                   <div class="definition-wrapper d-flex flex-row">
-                    <div class="entry-count">
+                    <div class="entry-count noselect">
                       @(pos+1).
                     </div>
                     <div class="translation">
@@ -111,39 +111,34 @@
                     </div>
                   </div>
                   @if let Some(ref misc) = sense.get_misc() {
-                    <div class="tags no-margin">
+                    <div class="tags no-margin noselect">
                       @misc
                     </div>
                   }
                 </div>
               }
             }
-
               <!-- Additional Informations-->
               @if !word.reading.alternative.is_empty() {
-                <div class="tags">Other forms</div>
+                <div class="tags noselect">Other forms</div>
                 <div class="notes">@word.alt_readings_beautified()</div>
               }
-              <!--<div class="tags">Anmerkungen</div>-->
-              <!--<div class="notes">鮮か: Irregular okurigana usage. 彩やか: Irregular kanji usage.</div>-->
+
               <hr />
             </div>
-
           </div>
         }
       }
-      <!-- !!! End of Word Template !!! -->
-
+      
     </div>
     <div id="secondaryInfo" class="secondary-info">
-      <!-- Das hier muss per display:none bei anderen tabs deaktiviert werden -->
-      <h3>Kanji</h3>
+      <h3 class="noselect">Kanji</h3>
       <!-- Kanji Templates here -->
       @for i in results {
         @if let Item::Kanji(kanji) = i {
           <div>
             <!-- Tags -->
-            <div class="tags">
+            <div class="tags noselect">
               @kanji.stroke_count strokes.
               @if let Some(jplt_lvl) = kanji.jlpt {
                 JLPT N@jplt_lvl.
@@ -155,7 +150,7 @@
 
             <!-- Kanji and translation -->
             <div class="kanji-entry left d-flex flex-row">
-              <span class="kanji-preview large">
+              <span class="kanji-preview large noselect">
                 @kanji.literal
               </span>
               <div class="translation kanji">
@@ -163,10 +158,10 @@
               </div>
             </div>
 
-            <!-- Kund and On readings -->
+            <!-- Kun and On readings -->
             @if let Some(ref kun) = kanji.kunyomi {
               <div class="tags no-margin">Kun</div>
-              <div class="d-flex flex-row wrap">
+              <div class="d-flex flex-row wrap noselect">
                 @for (pos, reading) in kun.iter().enumerate() {
                   @if pos > 0 {
                     <span class="tags no-margin fat right-padding-10">,</span>
@@ -178,7 +173,7 @@
 
             @if let Some(ref on) = kanji.onyomi {
               <div class="tags no-margin">On</div>
-              <div class="d-flex flex-row wrap">
+              <div class="d-flex flex-row wrap noselect">
                 @for (pos, reading) in on.iter().enumerate() {
                   @if pos > 0 {
                     <span class="tags no-margin fat right-padding-10">,</span>

@@ -284,6 +284,7 @@ svg {
 
 .kanji-preview.large {
     font-size: 50px;
+    padding-top: 10px;
 }
 
 .kanji-preview.x-large {
