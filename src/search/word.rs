@@ -10,7 +10,6 @@ use crate::{
 };
 
 use diesel::prelude::*;
-use diesel::types;
 use itertools::Itertools;
 use tokio_diesel::*;
 
@@ -22,7 +21,9 @@ pub struct WordSearch<'a> {
     ignore_case: bool,
 }
 
-sql_function!(lower, lower_t, (a: types::VarChar) -> types::VarChar);
+sql_function! {
+    fn lower(a: diesel::types::VarChar) -> diesel::types::VarChar;
+}
 
 impl<'a> WordSearch<'a> {
     pub fn new(db: &'a DbPool, query: &'a str) -> Self {

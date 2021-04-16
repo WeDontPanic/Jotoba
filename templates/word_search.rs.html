@@ -1,5 +1,4 @@
 @use crate::search::result::Item;
-@use crate::japanese::*;
 @(results: Vec<Item>)
   <!-- Inner Top Row -->
   <div class="d-flex center no-drag">
@@ -98,29 +97,27 @@
             <div class="kanji-entry right">
             <!-- Right side: Info -->
             @for (pos, sense) in word.senses.iter().enumerate() {
-              @if sense.glosses.is_empty() {
-                @continue;
+              @if !sense.glosses.is_empty() {
+                <!-- Entry -->
+                <div class="list-entry">
+                  <div class="tags">
+                    @sense.get_tags()
+                  </div>
+                  <div class="definition-wrapper d-flex flex-row">
+                    <div class="entry-count">
+                      @(pos+1).
+                    </div>
+                    <div class="translation">
+                      @sense.get_glosses()
+                    </div>
+                  </div>
+                  @if let Some(ref misc) = sense.get_misc() {
+                    <div class="tags no-margin">
+                      @misc
+                    </div>
+                  }
+                </div>
               }
-
-              <!-- Entry -->
-              <div class="list-entry">
-                <div class="tags">
-                  @sense.get_tags()
-                </div>
-                <div class="definition-wrapper d-flex flex-row">
-                  <div class="entry-count">
-                    @(pos+1).
-                  </div>
-                  <div class="translation">
-                    @sense.get_glosses()
-                  </div>
-                </div>
-                @if let Some(ref misc) = sense.get_misc() {
-                  <div class="tags no-margin">
-                    @misc
-                  </div>
-                }
-              </div>
             }
 
               <!-- Additional Informations-->

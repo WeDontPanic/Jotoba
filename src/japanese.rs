@@ -1,79 +1,120 @@
 use itertools::Itertools;
 
-/// Replacen but backwards
-fn replacen_backwards(inp: &str, from: &str, to: &str, count: usize) -> String {
-    reverse_str(&reverse_str(inp).replacen(&reverse_str(from), &reverse_str(to), count))
+pub trait JapaneseExt {
+    /// Returns true if self is of type ct
+    fn is_of_type(&self, ct: CharType) -> bool;
+
+    /// Get the CharType of a character
+    fn get_text_type(&self) -> CharType;
+
+    /// Returns true if self contains at least one kana character
+    fn has_kana(&self) -> bool;
+
+    /// Returns true if self is entirely written in kana
+    fn is_kana(&self) -> bool;
+
+    /// Returns true if inp is entirely written with kanji
+    fn is_kanji(&self) -> bool;
+
+    /// Returns true if inp has at least one kanji
+    fn has_kanji(&self) -> bool;
+
+    /// Returns true if inp is build with kanji and kana only
+    fn is_japanese(&self) -> bool;
+
+    /// Returns true if inp contains japanese characters
+    fn has_japanese(&self) -> bool;
 }
 
-/// Retuns the input string reversed
-fn reverse_str<S: AsRef<str>>(inp: S) -> String {
-    inp.as_ref().chars().into_iter().rev().collect()
-}
+impl JapaneseExt for char {
+    fn is_kana(&self) -> bool {
+        (*self) >= '\u{3040}' && (*self) <= '\u{30FF}'
+            || (*self) >= '\u{FF66}' && (*self) <= '\u{FF9F}'
+    }
 
-/// Returns true if inp contains at least one kana character
-pub fn char_is_kana(s: char) -> bool {
-    s >= '\u{3040}' && s <= '\u{30FF}' || s >= '\u{FF66}' && s <= '\u{FF9F}'
-}
+    fn is_kanji(&self) -> bool {
+        ((*self) >= '\u{3400}' && (*self) <= '\u{4DBF}')
+            || ((*self) >= '\u{4E00}' && (*self) <= '\u{9FFF}')
+            || ((*self) >= '\u{F900}' && (*self) <= '\u{FAFF}' || (*self) == '\u{3005}')
+    }
 
-/// Returns true if inp contains at least one kana character
-pub fn char_is_kanji(s: char) -> bool {
-    (s >= '\u{3400}' && s <= '\u{4DBF}')
-        || (s >= '\u{4E00}' && s <= '\u{9FFF}')
-        || (s >= '\u{F900}' && s <= '\u{FAFF}' || s == '\u{3005}')
-}
+    fn has_kana(&self) -> bool {
+        return self.is_kana();
+    }
 
-/// Returns true if s is of type ct
-pub fn char_is_of_type(s: char, ct: CharType) -> bool {
-    get_char_type(s) == ct
-}
+    fn has_kanji(&self) -> bool {
+        self.is_kanji()
+    }
 
-/// Get the CharType of a character
-pub fn get_char_type(s: char) -> CharType {
-    if char_is_kana(s) {
-        CharType::Kana
-    } else if char_is_kanji(s) {
-        CharType::Kanji
-    } else {
-        CharType::Other
+    fn is_of_type(&self, ct: CharType) -> bool {
+        self.get_text_type() == ct
+    }
+
+    fn get_text_type(&self) -> CharType {
+        if self.is_kana() {
+            CharType::Kana
+        } else if self.is_kanji() {
+            CharType::Kanji
+        } else {
+            CharType::Other
+        }
+    }
+
+    fn is_japanese(&self) -> bool {
+        self.is_kana() || self.is_kanji()
+    }
+
+    fn has_japanese(&self) -> bool {
+        self.is_japanese()
     }
 }
 
-/// Returns true if inp contains at least one kana character
-pub fn has_kana(inp: &str) -> bool {
-    inp.chars().into_iter().any(|s| char_is_kana(s))
-}
+impl JapaneseExt for str {
+    fn is_of_type(&self, ct: CharType) -> bool {
+        self.get_text_type() == ct
+    }
 
-/// Returns true if inp is entirely written in kana
-pub fn is_kana(inp: &str) -> bool {
-    !inp.chars().into_iter().any(|s| !char_is_kana(s))
-}
+    fn get_text_type(&self) -> CharType {
+        if self.is_kanji() {
+            CharType::Kanji
+        } else if self.is_kana() {
+            CharType::Kana
+        } else {
+            CharType::Other
+        }
+    }
 
-/// Returns true if inp is entirely written with kanji
-pub fn is_kanji(inp: &str) -> bool {
-    !inp.chars().into_iter().any(|s| !char_is_kanji(s))
-}
+    fn has_kana(&self) -> bool {
+        self.chars().into_iter().any(|s| s.is_kana())
+    }
 
-/// Returns true if inp has at least one kanji
-pub fn has_kanji(inp: &str) -> bool {
-    inp.chars().into_iter().any(|s| char_is_kanji(s))
-}
+    fn is_kana(&self) -> bool {
+        !self.chars().into_iter().any(|s| !s.is_kana())
+    }
 
-/// Returns true if inp is build with kanji and kana only
-pub fn is_japanese(inp: &str) -> bool {
-    let mut buf = [0; 16];
-    !inp.chars().into_iter().any(|c| {
-        let s = c.encode_utf8(&mut buf);
-        !is_kana(&s) && !is_kanji(&s)
-    })
-}
+    fn is_kanji(&self) -> bool {
+        !self.chars().into_iter().any(|s| !s.is_kanji())
+    }
 
-/// Returns true if inp contains japanese characters
-pub fn has_japanese(inp: &str) -> bool {
-    let mut buf = [0; 16];
-    inp.chars().into_iter().any(|c| {
-        let s = c.encode_utf8(&mut buf);
-        is_kana(&s) || is_kanji(&s)
-    })
+    fn has_kanji(&self) -> bool {
+        self.chars().into_iter().any(|s| s.is_kanji())
+    }
+
+    fn is_japanese(&self) -> bool {
+        let mut buf = [0; 16];
+        !self.chars().into_iter().any(|c| {
+            let s = c.encode_utf8(&mut buf);
+            !s.is_kana() && !s.is_kanji()
+        })
+    }
+
+    fn has_japanese(&self) -> bool {
+        let mut buf = [0; 16];
+        self.chars().into_iter().any(|c| {
+            let s = c.encode_utf8(&mut buf);
+            s.is_kana() || s.is_kanji()
+        })
+    }
 }
 
 pub fn furigana(kanji: &str, kana: &str) -> String {
@@ -94,7 +135,7 @@ pub enum CharType {
 /// Create SentenceParts out of an input sencence which has to be passed
 /// once written in kanji and once in kana characters
 pub fn furigana_pairs(kanji: &str, kana: &str) -> Option<Vec<SentencePart>> {
-    if !is_kana(kana) || !is_japanese(kanji) || kanji.is_empty() || kana.is_empty() {
+    if !kana.is_kana() || !kanji.is_japanese() || kanji.is_empty() || kana.is_empty() {
         return None;
     }
 
@@ -106,7 +147,7 @@ pub fn furigana_pairs(kanji: &str, kana: &str) -> Option<Vec<SentencePart>> {
     let mut word_buf = String::new();
 
     for curr_char in kanji.chars() {
-        let curr_char_type = get_char_type(curr_char);
+        let curr_char_type = curr_char.get_text_type();
 
         if last_char_type.is_some() && last_char_type.unwrap() != curr_char_type {
             // If char type changes
@@ -144,13 +185,23 @@ pub fn furigana_pairs(kanji: &str, kana: &str) -> Option<Vec<SentencePart>> {
     Some(parts)
 }
 
+/// Replacen but backwards
+fn replacen_backwards(inp: &str, from: &str, to: &str, count: usize) -> String {
+    reverse_str(&reverse_str(inp).replacen(&reverse_str(from), &reverse_str(to), count))
+}
+
+/// Retuns the input string reversed
+fn reverse_str<S: AsRef<str>>(inp: S) -> String {
+    inp.as_ref().chars().into_iter().rev().collect()
+}
+
 /// Return all words of chartype ct
 pub fn all_words_with_ct(inp: &str, ct: CharType) -> Vec<String> {
     let mut all: Vec<String> = Vec::new();
     let mut curr = String::new();
     let mut iter = inp.chars().into_iter();
     while let Some(c) = iter.next() {
-        if char_is_of_type(c, ct) {
+        if c.is_of_type(ct) {
             curr.push(c);
             continue;
         } else {
@@ -158,7 +209,7 @@ pub fn all_words_with_ct(inp: &str, ct: CharType) -> Vec<String> {
                 all.push(curr.clone());
             }
             curr.clear();
-            iter.take_while_ref(|i| !char_is_of_type(*i, ct)).count();
+            iter.take_while_ref(|i| !i.is_of_type(ct)).count();
         }
     }
     if !curr.is_empty() {
@@ -174,7 +225,6 @@ pub fn kanji_readings(kanji: &str, kana: &str) -> Vec<String> {
 
     let mut kana_mod = kana.clone().to_string();
     for ka_kana in all_kana {
-        // TODO need to replace backwards!!
         //kana_mod = kana_mod.replacen(&ka_kana, " ", 1);
         kana_mod = replacen_backwards(&kana_mod, &ka_kana, " ", 1);
     }
@@ -192,6 +242,9 @@ pub struct SentencePart {
 }
 
 impl SentencePart {
+    /// Make the kana reading good looking as furigana text
+    /// If the kanji count matches with kana count, a space will
+    /// be added between each char
     pub fn as_furigana(&self) -> String {
         if let Some(ref kanji) = self.kanji {
             let kana_len = self.kana.chars().count();
@@ -497,7 +550,7 @@ mod test {
         ];
 
         for item in items {
-            assert_eq!(has_kana(item.0), item.1);
+            assert_eq!(item.0.has_kana(), item.1);
         }
     }
 
@@ -515,7 +568,7 @@ mod test {
         ];
 
         for item in items {
-            assert_eq!(is_kana(item.0), item.1);
+            assert_eq!(item.0.is_kana(), item.1);
         }
     }
 
@@ -534,7 +587,7 @@ mod test {
         ];
 
         for item in items {
-            assert_eq!(is_kanji(item.0), item.1);
+            assert_eq!(item.0.is_kanji(), item.1);
         }
     }
 
@@ -555,7 +608,7 @@ mod test {
         ];
 
         for item in items {
-            assert_eq!(has_japanese(item.0), item.1);
+            assert_eq!(item.0.has_japanese(), item.1);
         }
     }
 
@@ -575,7 +628,7 @@ mod test {
         ];
 
         for item in items {
-            assert_eq!(is_japanese(item.0), item.1);
+            assert_eq!(item.0.is_japanese(), item.1);
         }
     }
 
@@ -594,7 +647,7 @@ mod test {
         ];
 
         for item in items {
-            assert_eq!(has_kanji(item.0), item.1);
+            assert_eq!(item.0.has_kanji(), item.1);
         }
     }
 }

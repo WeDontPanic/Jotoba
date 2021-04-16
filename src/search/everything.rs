@@ -1,7 +1,7 @@
 use itertools::Itertools;
 use std::time::SystemTime;
 
-use crate::{error::Error, japanese, parse::jmdict::languages::Language, DbPool};
+use crate::{error::Error, japanese::JapaneseExt, parse::jmdict::languages::Language, DbPool};
 
 use super::{result, search::SearchMode, word};
 
@@ -39,7 +39,7 @@ pub async fn search_word_by_native(
     db: &DbPool,
     query: &str,
 ) -> Result<Vec<result::word::Item>, Error> {
-    if !japanese::is_japanese(query) {
+    if !query.is_japanese() {
         return Ok(vec![]);
     }
 
@@ -75,7 +75,7 @@ pub async fn search_word_by_glosses(
     db: &DbPool,
     query: &str,
 ) -> Result<Vec<result::word::Item>, Error> {
-    if japanese::is_japanese(query) {
+    if query.is_japanese() {
         return Ok(vec![]);
     }
 

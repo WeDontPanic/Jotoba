@@ -1,3 +1,5 @@
+#![allow(irrefutable_let_patterns)]
+
 #[macro_use]
 extern crate diesel;
 
@@ -13,12 +15,7 @@ pub mod schema;
 pub mod search;
 mod web;
 
-use actix_files::NamedFile;
-use actix_web::{
-    http::{header::LOCATION, HeaderValue},
-    middleware::{self},
-    web as actixweb, App, HttpResponse, HttpServer,
-};
+use actix_web::{middleware, web as actixweb, App, HttpServer};
 use argparse::{ArgumentParser, Print, Store, StoreTrue};
 use diesel::{r2d2::ConnectionManager, PgConnection};
 use models::{dict, sense};
