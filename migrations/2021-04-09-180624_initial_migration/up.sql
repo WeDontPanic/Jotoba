@@ -5,7 +5,8 @@ CREATE TABLE dict (
   kanji boolean NOT NULL,
   no_kanji boolean NOT NULL,
   priorities TEXT[],
-  information TEXT[]
+  information TEXT[],
+  kanji_info INTEGER[]
 );
 CREATE INDEX index_reading_dict ON dict (reading);
 CREATE INDEX index_seq_dict ON dict (sequence);

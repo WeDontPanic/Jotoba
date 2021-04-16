@@ -20,7 +20,7 @@
 
       <!-- Word, Sentence, Name Templates here -->
       <!-- !!! Word Template start !!! -->
-      @for i in results {
+      @for i in results.iter() {
         @if let Item::Word(word) = i {
 
           @if word.get_reading().len() > 3 {
@@ -141,30 +141,41 @@
       <h3>Kanji</h3>
       <!-- Kanji Templates here -->
       <!-- !!! Start of Kanji Template !!! -->
-      <div>
-        <!-- Tags -->
-        <div class="tags">
-          17 strokes. JLPT N1. Jōyō kanji, taught in junior high.
-        </div>
+      @for i in results {
+        @if let Item::Kanji(kanji) = i {
+          <div>
+            <!-- Tags -->
+            <div class="tags">
+              @kanji.stroke_count strokes.
+              JLPT N1.
+              Jōyō kanji, taught in junior high.
+            </div>
 
-        <!-- Kanji and translation -->
-        <div class="kanji-entry left d-flex flex-row">
-          <span class="kanji-preview large">
-            鮮
-          </span>
-          <div class="translation kanji">
-            fresh, vivid, clear, brilliant, Korea
+            <!-- Kanji and translation -->
+            <div class="kanji-entry left d-flex flex-row">
+              <span class="kanji-preview large">
+                @kanji.literal
+              </span>
+              <div class="translation kanji">
+                @kanji.meaning.join(", ")
+              </div>
+            </div>
+
+            <!-- Kund and On readings -->
+            @if let Some(ref kun) = kanji.kunyomi {
+              <div class="tags no-margin">Kun</div>
+              <div class="notes">@kun.join(", ")</div>
+            }
+
+            @if let Some(ref on) = kanji.onyomi {
+              <div class="tags no-margin">On</div>
+              <div class="notes">@on.join(", ")</div>
+            }
+
+            <hr />
           </div>
-        </div>
-
-        <!-- Kund and On readings -->
-        <div class="tags no-margin">Kun</div>
-        <div class="notes">あざ.やか</div>
-        <div class="tags no-margin">On</div>
-        <div class="notes">セン</div>
-
-        <hr />
-      </div>
+        }
+      }
       <!-- !!! End of Kanji Template !!! -->
     </div>
   </div>

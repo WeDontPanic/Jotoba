@@ -3,7 +3,7 @@ use crate::{error::Error, parse::kanjidict::Character, DbPool};
 use diesel::prelude::*;
 use tokio_diesel::*;
 
-#[derive(Queryable, Clone, Debug, Default)]
+#[derive(Queryable, Clone, Debug, Default, PartialEq)]
 pub struct Kanji {
     pub id: i32,
     pub literal: String,
@@ -95,4 +95,25 @@ pub async fn clear_kanji(db: &DbPool) -> Result<(), Error> {
 pub async fn exists(db: &DbPool) -> Result<bool, Error> {
     use crate::schema::kanji::dsl::*;
     Ok(kanji.select(id).limit(1).execute_async(db).await? == 1)
+}
+
+/// Find a kanji by its literal
+pub async fn find_by_literal(db: &DbPool, l: &str) -> Result<Kanji, Error> {
+    use crate::schema::kanji::dsl::*;
+    kanji
+        .filter(literal.eq(l))
+        .limit(1)
+        .get_result_async(db)
+        .await
+        .map_err(|i| i.into())
+}
+
+/// Find Kanji items by its ids
+pub async fn load_by_ids(db: &DbPool, ids: &Vec<i32>) -> Result<Vec<Kanji>, Error> {
+    use crate::schema::kanji::dsl::*;
+    kanji
+        .filter(id.eq_any(ids))
+        .get_results_async(db)
+        .await
+        .map_err(|i| i.into())
 }

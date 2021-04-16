@@ -42,24 +42,32 @@ pub async fn main() {
         None => return,
     };
 
+    let sense_exists = sense::exists(&database).await.expect("fatal db err");
+    let dict_exists = dict::exists(&database).await.expect("fatal db err");
+    let kanji_exists = kanji::exists(&database).await.expect("fatal db err");
+
     // import data
     if options.import {
-        if !options.jmdict_path.is_empty() {
-            import::jmdict::import(&database, options.jmdict_path).await;
-        }
-
+        let mut imported_kanji = false;
         if !options.kanjidict_path.is_empty() {
             import::kanjidict::import(&database, options.kanjidict_path).await;
+            imported_kanji = true;
+        }
+
+        if !options.jmdict_path.is_empty() {
+            if !kanji_exists && !imported_kanji {
+                println!("Kanji missing. Import the kanjidict first!");
+                return;
+            }
+
+            import::jmdict::import(&database, options.jmdict_path).await;
         }
 
         return;
     }
 
     // Check jmdict entries
-    if !sense::exists(&database).await.expect("fatal db err")
-        || !dict::exists(&database).await.expect("fatal db err")
-        || !kanji::exists(&database).await.expect("fatal db err")
-    {
+    if !sense_exists || !dict_exists || !kanji_exists {
         println!("jmdict or kanjidict entries missing. You need to import both!");
         return;
     }

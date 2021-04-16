@@ -1,6 +1,9 @@
+use crate::models::kanji::Kanji;
+
 #[derive(Debug, Clone, PartialEq)]
 pub enum Item {
     Word(word::Item),
+    Kanji(Kanji),
 }
 
 /// Defines a word result item

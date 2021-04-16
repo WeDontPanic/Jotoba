@@ -17,6 +17,25 @@ pub async fn search(db: &DbPool, query: &str) -> Result<Vec<result::Item>, Error
         search_word_by_glosses(db, query)
     )?;
 
+    if !native_word_res.is_empty() {
+        if let Some(fw) = native_word_res.iter().find(|i| i.reading.kanji.is_some()) {
+            let kanji = fw
+                .reading
+                .kanji
+                .as_ref()
+                .unwrap()
+                .load_kanji_info(db)
+                .await?;
+
+            results.extend(
+                kanji
+                    .into_iter()
+                    .map(|i| result::Item::Kanji(i))
+                    .collect_vec(),
+            );
+        }
+    }
+
     results.extend(
         native_word_res
             .into_iter()

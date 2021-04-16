@@ -11,6 +11,7 @@ use crate::parse::parser::Parse;
 use crate::{models::kanji, DbPool};
 use itertools::Itertools;
 
+/// Imports kanji dict into database
 pub async fn import(db: &DbPool, path: String) {
     println!("Clearing existing kanji");
     kanji::clear_kanji(db).await.unwrap();
@@ -58,6 +59,7 @@ pub async fn import(db: &DbPool, path: String) {
 
     // Insert rest
     kanji::insert(db, rec_kanji).await.unwrap();
+    println!();
 
     t1.join().ok();
 }

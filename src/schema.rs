@@ -7,6 +7,7 @@ table! {
         no_kanji -> Bool,
         priorities -> Nullable<Array<Text>>,
         information -> Nullable<Array<Text>>,
+        kanji_info -> Nullable<Array<Int4>>,
     }
 }
 

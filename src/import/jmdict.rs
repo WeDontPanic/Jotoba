@@ -5,13 +5,13 @@ use std::{
     sync::mpsc::{sync_channel, Receiver, SyncSender},
 };
 
-use crate::parse::jmdict::Parser as jmdictParser;
-use crate::parse::parser::Parse;
 use crate::{
+    japanese,
     models::{
         dict::{self, NewDict},
         sense::{self, NewSense},
     },
+    parse::{jmdict::Parser as jmdictParser, parser::Parse},
     DbPool,
 };
 use itertools::Itertools;
@@ -81,7 +81,9 @@ pub async fn import(db: &DbPool, path: String) {
 
         if dicts.len() + 400 > chunksize {
             for dicts in dicts.clone().into_iter().chunks(chunksize).into_iter() {
-                dict::insert_dicts(db, dicts.collect_vec()).await.unwrap();
+                let mut dicts = dicts.collect_vec();
+                get_dict_kanji(&db, &mut dicts).await;
+                dict::insert_dicts(db, dicts).await.unwrap();
             }
 
             dicts.clear();
@@ -90,7 +92,47 @@ pub async fn import(db: &DbPool, path: String) {
     }
 
     sense::insert_sense(db, senses).await.unwrap();
+
+    get_dict_kanji(&db, &mut dicts).await;
     dict::insert_dicts(db, dicts).await.unwrap();
+    println!();
 
     t1.join().ok();
+}
+
+async fn get_dict_kanji(db: &DbPool, dicts: &mut Vec<NewDict>) {
+    for dict in dicts.iter_mut() {
+        // Skip kana dict-entries
+        if !dict.kanji {
+            continue;
+        }
+
+        let kanji_used = japanese::all_words_with_ct(&dict.reading, japanese::CharType::Kanji);
+        let mut db_kanji: Vec<i32> = Vec::new();
+
+        for kanji in kanji_used
+            .iter()
+            .map(|k| {
+                k.chars()
+                    .collect_vec()
+                    .chunks(1)
+                    .map(|i| i.iter().collect::<String>())
+                    .collect_vec()
+            })
+            .flatten()
+            .collect_vec()
+        {
+            let found_kanji = crate::models::kanji::find_by_literal(&db, &kanji).await;
+            if found_kanji.is_err() {
+                continue;
+            }
+            let found_kanji = found_kanji.unwrap();
+
+            db_kanji.push(found_kanji.id);
+        }
+
+        if !db_kanji.is_empty() {
+            dict.kanji_info = Some(db_kanji);
+        }
+    }
 }

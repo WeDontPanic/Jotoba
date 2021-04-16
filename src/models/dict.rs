@@ -1,4 +1,4 @@
-use super::super::schema::dict;
+use super::{super::schema::dict, kanji::Kanji};
 use crate::{
     error::Error,
     parse::jmdict::Entry,
@@ -17,18 +17,7 @@ pub struct Dict {
     pub no_kanji: bool,
     pub priorities: Option<Vec<Priority>>,
     pub information: Option<Vec<Information>>,
-}
-
-impl Dict {
-    pub fn len(&self) -> usize {
-        self.reading.chars().count()
-    }
-}
-
-impl PartialEq for Dict {
-    fn eq(&self, other: &Dict) -> bool {
-        self.sequence == other.sequence && self.id == other.id
-    }
+    pub kanji_info: Option<Vec<i32>>,
 }
 
 #[derive(Insertable, Clone, Debug, PartialEq)]
@@ -40,6 +29,29 @@ pub struct NewDict {
     pub no_kanji: bool,
     pub priorities: Option<Vec<Priority>>,
     pub information: Option<Vec<Information>>,
+    pub kanji_info: Option<Vec<i32>>,
+}
+
+impl PartialEq for Dict {
+    fn eq(&self, other: &Dict) -> bool {
+        self.sequence == other.sequence && self.id == other.id
+    }
+}
+
+impl Dict {
+    pub fn len(&self) -> usize {
+        self.reading.chars().count()
+    }
+
+    /// Retrieve the kanji items of the dict's kanji info
+    pub async fn load_kanji_info(&self, db: &DbPool) -> Result<Vec<Kanji>, Error> {
+        if self.kanji_info.is_none() || self.kanji_info.as_ref().unwrap().len() == 0 {
+            return Ok(vec![]);
+        }
+        let ids = self.kanji_info.as_ref().unwrap();
+
+        super::kanji::load_by_ids(db, ids).await
+    }
 }
 
 /// Get all Database-dict structures from an entry
@@ -54,6 +66,7 @@ pub fn new_dicts_from_entry(entry: &Entry) -> Vec<NewDict> {
             kanji: item.kanji,
             reading: item.value.clone(),
             priorities: (!item.priorities.is_empty()).then(|| item.priorities.clone()),
+            kanji_info: None,
         })
         .collect()
 }
