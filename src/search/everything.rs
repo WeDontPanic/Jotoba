@@ -31,6 +31,7 @@ pub async fn search(db: &DbPool, query: &str) -> Result<Vec<result::Item>, Error
                 kanji
                     .into_iter()
                     .map(|i| result::Item::Kanji(i))
+                    .rev()
                     .collect_vec(),
             );
         }

@@ -147,8 +147,12 @@
             <!-- Tags -->
             <div class="tags">
               @kanji.stroke_count strokes.
-              JLPT N1.
-              Jōyō kanji, taught in junior high.
+              @if let Some(jplt_lvl) = kanji.jlpt {
+                JLPT N@jplt_lvl.
+              }
+              @if let Some(school_str) = kanji.school_str() {
+                @school_str
+              }
             </div>
 
             <!-- Kanji and translation -->
