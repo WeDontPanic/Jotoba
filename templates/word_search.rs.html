@@ -19,7 +19,6 @@
       <h3>Words</h3>
 
       <!-- Word, Sentence, Name Templates here -->
-      <!-- !!! Word Template start !!! -->
       @for i in results.iter() {
         @if let Item::Word(word) = i {
 
@@ -140,7 +139,6 @@
       <!-- Das hier muss per display:none bei anderen tabs deaktiviert werden -->
       <h3>Kanji</h3>
       <!-- Kanji Templates here -->
-      <!-- !!! Start of Kanji Template !!! -->
       @for i in results {
         @if let Item::Kanji(kanji) = i {
           <div>
@@ -168,45 +166,31 @@
             <!-- Kund and On readings -->
             @if let Some(ref kun) = kanji.kunyomi {
               <div class="tags no-margin">Kun</div>
-
               <div class="d-flex flex-row wrap">
-                <span class="clickable no-align">ダイ</span>
-                <span class="tags no-margin fat right-padding-10">,</span>
-                <span class="clickable no-align">ダイ</span>
-                <span class="tags no-margin fat right-padding-10">,</span>
-                <span class="clickable no-align">ダイ</span>
-                <span class="tags no-margin fat right-padding-10">,</span>
-                <span class="clickable no-align">ダイ</span>
-                <span class="tags no-margin fat right-padding-10">,</span>
-                <span class="clickable no-align">ダイ</span>
+                @for (pos, reading) in kun.iter().enumerate() {
+                  @if pos > 0 {
+                    <span class="tags no-margin fat right-padding-10">,</span>
+                  }
+                  <span class="clickable no-align">@reading</span>
+                }
               </div>
             }
 
             @if let Some(ref on) = kanji.onyomi {
               <div class="tags no-margin">On</div>
               <div class="d-flex flex-row wrap">
-                <span class="clickable no-align">セン</span>
-                <span class="tags no-margin fat right-padding-10">,</span>
-                <span class="clickable no-align">セン</span>
-                <span class="clickable no-align">セン</span>
-                <span class="tags no-margin fat right-padding-10">,</span>
-                <span class="clickable no-align">セン</span>
-                <span class="clickable no-align">セン</span>
-                <span class="tags no-margin fat right-padding-10">,</span>
-                <span class="clickable no-align">セン</span>
-                <span class="clickable no-align">セン</span>
-                <span class="tags no-margin fat right-padding-10">,</span>
-                <span class="clickable no-align">セン</span>
-                <span class="clickable no-align">セン</span>
-                <span class="tags no-margin fat right-padding-10">,</span>
-                <span class="clickable no-align">セン</span>
-             </div>
+                @for (pos, reading) in on.iter().enumerate() {
+                  @if pos > 0 {
+                    <span class="tags no-margin fat right-padding-10">,</span>
+                  }
+                  <span class="clickable no-align">@reading</span>
+                }
+              </div>
             }
 
             <hr />
           </div>
         }
       }
-      <!-- !!! End of Kanji Template !!! -->
     </div>
   </div>
