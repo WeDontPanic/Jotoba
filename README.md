@@ -3,6 +3,8 @@ A free online, selfhostable, multilang japanese dictionary.
 
 # Requirements
 - [Jmdict.xml](https://www.edrdg.org/wiki/index.php/JMdict-EDICT_Dictionary_Project)
+- [Kanjidict2](http://www.edrdg.org/wiki/index.php)
+- Kanji stroke animations
 - PostgresDB
 - [Diesel](https://github.com/diesel-rs/diesel) with postgres feature (`cargo install diesel_cli --no-default-features --features postgres`)
 

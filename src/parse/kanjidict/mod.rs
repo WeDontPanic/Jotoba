@@ -152,19 +152,19 @@ where
 /// An dict entry. Represents one word, phrase or expression
 #[derive(Debug, Default, Clone)]
 pub struct Character {
-    literal: char,
-    on_readings: Vec<String>,
-    kun_readings: Vec<String>,
-    chinese_reading: Option<String>,
-    korean_romanized: Vec<String>,
-    korean_hangul: Vec<String>,
-    meaning: Vec<String>,
-    grade: Option<i32>,
-    stroke_count: i32,
-    variant: Vec<String>,
-    frequency: Option<i32>,
-    jlpt: Option<i32>,
-    natori: Vec<String>,
+    pub literal: char,
+    pub on_readings: Vec<String>,
+    pub kun_readings: Vec<String>,
+    pub chinese_reading: Option<String>,
+    pub korean_romanized: Vec<String>,
+    pub korean_hangul: Vec<String>,
+    pub meaning: Vec<String>,
+    pub grade: Option<i32>,
+    pub stroke_count: i32,
+    pub variant: Vec<String>,
+    pub frequency: Option<i32>,
+    pub jlpt: Option<i32>,
+    pub natori: Vec<String>,
 }
 
 impl Character {
@@ -229,7 +229,7 @@ enum Tag {
 }
 
 #[derive(Debug, Clone, PartialEq)]
-pub enum ReadingType {
+enum ReadingType {
     JapaneseOn,
     JapaneseKun,
     KoreanRomanized,

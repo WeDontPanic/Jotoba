@@ -18,7 +18,7 @@ mod web;
 use actix_web::{middleware, web as actixweb, App, HttpServer};
 use argparse::{ArgumentParser, Print, Store, StoreTrue};
 use diesel::{r2d2::ConnectionManager, PgConnection};
-use models::{dict, sense};
+use models::{dict, kanji, sense};
 use r2d2::{Pool, PooledConnection};
 
 pub type DbConnection = PooledConnection<ConnectionManager<PgConnection>>;
@@ -28,6 +28,7 @@ pub type DbPool = Pool<ConnectionManager<PgConnection>>;
 struct Options {
     import: bool,
     jmdict_path: String,
+    kanjidict_path: String,
     start: bool,
 }
 
@@ -47,14 +48,19 @@ pub async fn main() {
             import::jmdict::import(&database, options.jmdict_path).await;
         }
 
+        if !options.kanjidict_path.is_empty() {
+            import::kanjidict::import(&database, options.kanjidict_path).await;
+        }
+
         return;
     }
 
     // Check jmdict entries
     if !sense::exists(&database).await.expect("fatal db err")
         || !dict::exists(&database).await.expect("fatal db err")
+        || !kanji::exists(&database).await.expect("fatal db err")
     {
-        println!("jmdict entries missing. Try importing them!");
+        println!("jmdict or kanjidict entries missing. You need to import both!");
         return;
     }
 
@@ -110,6 +116,12 @@ fn parse_args() -> Option<Options> {
             "Import some dictionary data",
         );
 
+        ap.refer(&mut options.kanjidict_path).add_option(
+            &["--kanjidict-path"],
+            Store,
+            "The pah to import the kanjidict from. Required for --import",
+        );
+
         ap.refer(&mut options.jmdict_path).add_option(
             &["--jmdict-path"],
             Store,
@@ -119,8 +131,8 @@ fn parse_args() -> Option<Options> {
         ap.parse_args_or_exit();
     }
 
-    if options.import && options.jmdict_path.is_empty() {
-        println!("--jmdict-path path required");
+    if options.import && options.jmdict_path.is_empty() && options.kanjidict_path.is_empty() {
+        println!("--jmdict-path or --kanjidict-path required");
         return None;
     }
 

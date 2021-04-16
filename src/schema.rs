@@ -11,6 +11,25 @@ table! {
 }
 
 table! {
+    kanji (id) {
+        id -> Int4,
+        literal -> Bpchar,
+        meaning -> Array<Text>,
+        grade -> Nullable<Int4>,
+        stroke_count -> Int4,
+        frequency -> Nullable<Int4>,
+        jlpt -> Nullable<Int4>,
+        variant -> Nullable<Array<Text>>,
+        onyomi -> Nullable<Array<Text>>,
+        kunyomi -> Nullable<Array<Text>>,
+        chinese -> Nullable<Text>,
+        korean_r -> Nullable<Array<Text>>,
+        korean_h -> Nullable<Array<Text>>,
+        natori -> Nullable<Array<Text>>,
+    }
+}
+
+table! {
     sense (id) {
         id -> Int4,
         sequence -> Int4,
@@ -30,5 +49,6 @@ table! {
 
 allow_tables_to_appear_in_same_query!(
     dict,
+    kanji,
     sense,
 );

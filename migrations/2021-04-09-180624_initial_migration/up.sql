@@ -28,3 +28,21 @@ CREATE TABLE sense (
 CREATE INDEX index_seq_sense ON sense (sequence);
 CREATE INDEX index_gloss_sense ON sense (gloss);
 CREATE INDEX index_lang_sense ON sense (language);
+
+CREATE TABLE kanji (
+  id SERIAL PRIMARY KEY,
+  literal CHAR(1) NOT NULL,
+  meaning TEXT[] NOT NULL,
+  grade INTEGER,
+  stroke_count INTEGER NOT NULL,
+  frequency INTEGER,
+  jlpt INTEGER,
+  variant TEXT[],
+  onyomi TEXT[],
+  kunyomi TEXT[],
+  chinese TEXT,
+  korean_r TEXT[],
+  korean_h TEXT[],
+  natori TEXT[]
+);
+CREATE INDEX index_literal_kanji ON kanji (literal);
