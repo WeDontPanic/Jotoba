@@ -1,10 +1,9 @@
 use std::io::BufRead;
 use std::str;
-use std::str::FromStr;
 
-use quick_xml::events::Event;
+use quick_xml::events::{attributes::Attributes, Event};
 use quick_xml::Reader;
-use strum_macros::{AsRefStr, Display, EnumString};
+use strum_macros::Display;
 
 use super::parser::Parse;
 use crate::error::Error;
@@ -102,7 +101,7 @@ where
          * variables are resetted. This prevents unecessary reallocation and
          * makes parsing easier.
          */
-        let mut entry = Character::default();
+        let mut character = Character::default();
 
         /*
          * The stack represents the current 'history' of tags which have
@@ -114,16 +113,17 @@ where
             match self.reader.read_event(&mut self.buf)? {
                 // Some tag was opened
                 Event::Start(start) => {
-                    let tag = Tag::from_str(str::from_utf8(start.name())?)?;
+                    let tag =
+                        Tag::from_str(str::from_utf8(start.name())?, Some(start.attributes()))?;
 
                     stack.push(tag);
                 }
 
                 // Some tag was closed
                 Event::End(end) => {
-                    let tag = Tag::from_str(str::from_utf8(end.name())?)?;
+                    let tag = Tag::from_str(str::from_utf8(end.name())?, None)?;
 
-                    if !stack.is_empty() && *stack.last().unwrap() == tag {
+                    if !stack.is_empty() && stack.last().unwrap().equals(&tag) {
                         stack.pop();
                     }
 
@@ -137,35 +137,64 @@ where
                 Event::Text(text) => {
                     if let Some(tag) = stack.last() {
                         let value = text.unescape_and_decode(&self.reader)?;
-
-                        match tag {
-                            _ => (),
-                        }
+                        character.apply_tag(tag, value)?;
                     }
-                }
-
-                // Empty tags <tag/>
-                Event::Empty(val) => {
-                    let tag = Tag::from_str(str::from_utf8(val.name())?);
                 }
 
                 _ => (),
             }
         }
 
-        Ok(entry)
+        Ok(character)
     }
 }
 
 /// An dict entry. Represents one word, phrase or expression
 #[derive(Debug, Default, Clone)]
-pub struct Character {}
+pub struct Character {
+    literal: char,
+    on_readings: Vec<String>,
+    kun_readings: Vec<String>,
+    chinese_reading: Option<String>,
+    korean_romanized: Vec<String>,
+    korean_hangul: Vec<String>,
+    meaning: Vec<String>,
+    grade: Option<i32>,
+    stroke_count: i32,
+    variant: Vec<String>,
+    frequency: Option<i32>,
+    jlpt: Option<i32>,
+    natori: Vec<String>,
+}
 
 impl Character {
     /// Apply a given Tag to the Entry
     fn apply_tag(&mut self, tag: &Tag, value: String) -> Result<(), Error> {
         #[allow(clippy::clippy::single_match)]
         match *tag {
+            Tag::Literal => {
+                // Its always only one char
+                self.literal = value.chars().into_iter().next().unwrap()
+            }
+            Tag::JLPT => self.jlpt = Some(value.parse()?),
+            Tag::Grade => self.grade = Some(value.parse()?),
+            Tag::StrokeCount => self.stroke_count = value.parse()?,
+            Tag::Variant => self.variant.push(value),
+            Tag::Frequency => self.frequency = Some(value.parse()?),
+            Tag::Nanori => self.natori.push(value),
+            Tag::Meaning(is_jp) => {
+                if is_jp {
+                    self.meaning.push(value)
+                }
+            }
+            Tag::Reading(ref r) => match r {
+                ReadingType::JapaneseOn => self.on_readings.push(value),
+                ReadingType::JapaneseKun => self.kun_readings.push(value),
+                ReadingType::KoreanRomanized => self.korean_romanized.push(value),
+                ReadingType::KoreanHangul => self.korean_hangul.push(value),
+                ReadingType::Chinese => self.chinese_reading = Some(value),
+                _ => (),
+            },
             _ => (),
         }
         Ok(())
@@ -173,8 +202,7 @@ impl Character {
 }
 
 /// An XML tag
-#[derive(Debug, Clone, PartialEq, AsRefStr, EnumString, Display)]
-#[strum(serialize_all = "snake_case")]
+#[derive(Debug, Clone, Display, PartialEq)]
 enum Tag {
     Character,
     Literal,
@@ -190,9 +218,107 @@ enum Tag {
     DictNumber,
     DictRef,
     QueryCode,
+    Reading(ReadingType),
     ReadingMeaning,
-    RmGroup,
+    Rmgroup,
     Variant,
-    Meaning,
+    Meaning(bool),
     Nanori,
+    CpValue,
+    QCode,
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub enum ReadingType {
+    JapaneseOn,
+    JapaneseKun,
+    KoreanRomanized,
+    KoreanHangul,
+    Chinese,
+    Other,
+    None,
+}
+
+impl ReadingType {
+    fn from_attributes(attributes: Attributes) -> Result<Self, Error> {
+        let r_type = attributes
+            .into_iter()
+            .filter(|i| i.is_ok())
+            .map(|i| i.unwrap())
+            .filter(|i| str::from_utf8(i.key).unwrap() == "r_type")
+            .map(|i| String::from_utf8(i.value.to_vec()).unwrap())
+            .next()
+            .ok_or(Error::ParseError)?;
+
+        Ok(match r_type.as_str() {
+            "ja_on" => Self::JapaneseOn,
+            "ja_kun" => Self::JapaneseKun,
+            "korean_r" => Self::KoreanRomanized,
+            "korean_h" => Self::KoreanHangul,
+            "pinyin" => Self::Chinese,
+            _ => Self::Other,
+        })
+    }
+}
+
+impl Tag {
+    // Custom equals method to ignore Tag::Reading
+    // values for comparison
+    fn equals(&self, other: &Self) -> bool {
+        match self {
+            Tag::Reading(_) => other.is_reading(),
+            _ => self == other,
+        }
+    }
+
+    fn from_str(s: &str, attributes: Option<Attributes>) -> Result<Tag, Error> {
+        Ok(match s {
+            "character" => Tag::Character,
+            "literal" => Tag::Literal,
+            "codepoint" => Tag::Codepoint,
+            "radical" => Tag::Radical,
+            "rad_value" => Tag::RadValue,
+            "rad_name" => Tag::RadName,
+            "misc" => Tag::Misc,
+            "grade" => Tag::Grade,
+            "stroke_count" => Tag::StrokeCount,
+            "freq" => Tag::Frequency,
+            "jlpt" => Tag::JLPT,
+            "dic_number" => Tag::DictNumber,
+            "dic_ref" => Tag::DictRef,
+            "query_code" => Tag::QueryCode,
+            "reading" => Tag::Reading({
+                if let Some(attr) = attributes {
+                    ReadingType::from_attributes(attr)?
+                } else {
+                    ReadingType::None
+                }
+            }),
+            "reading_meaning" => Tag::ReadingMeaning,
+            "rmgroup" => Tag::Rmgroup,
+            "variant" => Tag::Variant,
+            "meaning" => Tag::Meaning({
+                if let Some(attr) = attributes {
+                    // Return true if no m_lang tag was found
+                    // this indicates the meaning is the japanese meaning
+                    !attr
+                        .into_iter()
+                        .filter_map(|i| i.ok())
+                        .map(|i| str::from_utf8(i.key).unwrap())
+                        .any(|i| i == "m_lang")
+                } else {
+                    true
+                }
+            }),
+            "nanori" => Tag::Nanori,
+            "cp_value" => Tag::CpValue,
+            "q_code" => Tag::QCode,
+            _ => return Err(Error::ParseError),
+        })
+    }
+
+    /// Returns `true` if the tag is [`Reading`].
+    fn is_reading(&self) -> bool {
+        matches!(self, Self::Reading(..))
+    }
 }

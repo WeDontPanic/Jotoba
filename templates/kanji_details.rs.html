@@ -1,3 +1,4 @@
+@()
 <!-- Inner Main Body -->
 <div class="d-flex center">
     <!-- Left side: Kanji -->
@@ -22,12 +23,12 @@
              </div>
              <div class="d-flex flex-row">
                 <div class="tags no-margin fat right-padding-10 noselect">Kun:</div>
-                <!-- !!! @for i in kunReadings oder so hier. immer abwechslung die reading und nen komma !!! --> 
+                <!-- !!! for i in kunReadings oder so hier. immer abwechslung die reading und nen komma !!! --> 
                 <div class="clickable no-align fat">あざ.やか</div>
              </div>
              <div class="d-flex flex-row">
                 <div class="tags no-margin fat right-padding-20 noselect">On:</div>
-                 <!-- !!! @for i in onReadings oder so hier. immer abwechslung die reading und nen komma !!! --> 
+                 <!-- !!! for i in onReadings oder so hier. immer abwechslung die reading und nen komma !!! --> 
                 <div class="clickable no-align fat">ナイ</div>
                 <div class="tags no-margin fat right-padding-10">,</div>
                 <div class="clickable no-align fat">ダイ</div>
@@ -35,7 +36,7 @@
           </div>
           <!-- Inner Right Side -->
           <div class="kanji-preview-right">
-              <!-- !!! @for i in notes oder sowas hier !!! --> 
+              <!-- !!! for i in notes oder sowas hier !!! --> 
              <div class="notes">Jōyō kanji, taught in <b>grade 2</b></div>
              <div class="notes">JLPT level <b>N3</b></div>
              <div class="notes"><b>2500</b> of 2500 most used kanji in newspapers</div>
@@ -44,7 +45,7 @@
        <hr/>
        <!-- Second Part -->
        <div class="stroke-container">
-            <!-- !!! <img src="assets/svg/{kanji}_frames.svg"> !!! --> 
+            @*<!-- !!! <img src="assets/svg/{kanji}_frames.svg"> !!! --> *@
        </div>
        <div class="animation-container d-flex flex-row">
           <div class="d-flex flex-column slider-parent">
@@ -54,7 +55,7 @@
              <span id="currentAnimationSpeed" class="slider-output noselect">Animation speed: 1</span>
           </div>
           <div>
-             <!-- !!! Copy entire SVG Content of {kanji_animated.svg} here !!! -->
+@*             <!-- !!! Copy entire SVG Content of {kanji_animated.svg} here !!! --> *@
           </div>
        </div>
        <hr/>
