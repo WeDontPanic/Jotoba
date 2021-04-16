@@ -219,8 +219,8 @@ svg {
 
 
 .kanji-entry.left.fixed {
-    min-width: 155px;
-    max-width: 155px;
+    min-width: 125px;
+    max-width: 125px;
  }
 
 .kanji-entry.left.detail {
