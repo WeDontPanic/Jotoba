@@ -30,7 +30,7 @@
 
 html, body {
     font-size: 100%;
-    background: #f2f1f0;
+    background: #f2f1f0 !important;
 }
 
 body {
@@ -77,6 +77,7 @@ h4 {
 .clickable {
     color: var(--green);
     text-align: center;
+    cursor: pointer;
 }
 
 .clickable.fat {
@@ -142,10 +143,14 @@ svg {
 
 /* ----------------- Search Row ----------------- */
 
-#page-container {
+.page-container {
     padding-top: 10px;
     padding-left: 10px;
     padding-right: 10px;
+}
+
+.page-container.lower {
+    padding-top: 15px;
 }
 
 .main-container {
@@ -368,11 +373,88 @@ svg {
     overflow-x: auto;
 }
 
+.animation-container {
+    padding-left: 30%;
+    padding-top: 10px;
+}
+
 .kanji-entry > d-flex.flex-row {
     flex-flow: row wrap;
 }
 
 .furigana-kanji-container {
-  text-align: center;
-  word-spacing: 10px;
+    text-align: center;
+    word-spacing: 10px;
+}
+
+.kun-reading {
+    padding-left: 10px;
+}
+
+.draw2 {
+    stroke-dasharray: 100;
+    stroke-dashoffset: 100;
+    animation: dash2 1s linear forwards;
+}
+
+#kanjiSvg:hover {
+    cursor: pointer;
+}
+
+@keyframes dash2 {
+    to { stroke-dashoffset: 0;}
+}
+
+/* --- Slider adjustments --- */
+
+.slider-parent {
+    padding-top: 30px;
+    padding-right: 20px;
+    width: 150px;
+}
+
+.slidercontainer {
+    width: 110%; 
+}
+
+.slider-output {
+    font-size: 13px;
+    padding-top: 10px;
+    color: green;
+}
+  
+/* The slider itself */
+.slider {
+    -webkit-appearance: none;
+    width: 130px;
+    height: 15px;
+    border-radius: 10px;  
+    background: #d3d3d3;
+    outline: none;
+    opacity: 0.7;
+    -webkit-transition: .2s;
+    transition: opacity .2s;
+}
+  
+/* Mouse-over effects */
+.slider:hover {
+    opacity: 1;
+}
+  
+/* The slider handle for webkit and mozilla with its extra shit */
+.slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 25px;
+    height: 25px;
+    border-radius: 50%; 
+     background: #4CAF50;
+    cursor: pointer;
+}
+.slider::-moz-range-thumb {
+    width: 25px;
+     height: 25px;
+    border-radius: 50%;
+    background: #4CAF50;
+    cursor: pointer;
 }
