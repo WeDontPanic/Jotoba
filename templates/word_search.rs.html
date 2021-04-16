@@ -164,12 +164,39 @@
             <!-- Kund and On readings -->
             @if let Some(ref kun) = kanji.kunyomi {
               <div class="tags no-margin">Kun</div>
-              <div class="notes">@kun.join(", ")</div>
+
+              <div class="d-flex flex-row wrap">
+                <span class="clickable no-align">ダイ</span>
+                <span class="tags no-margin fat right-padding-10">,</span>
+                <span class="clickable no-align">ダイ</span>
+                <span class="tags no-margin fat right-padding-10">,</span>
+                <span class="clickable no-align">ダイ</span>
+                <span class="tags no-margin fat right-padding-10">,</span>
+                <span class="clickable no-align">ダイ</span>
+                <span class="tags no-margin fat right-padding-10">,</span>
+                <span class="clickable no-align">ダイ</span>
+              </div>
             }
 
             @if let Some(ref on) = kanji.onyomi {
               <div class="tags no-margin">On</div>
-              <div class="notes">@on.join(", ")</div>
+              <div class="d-flex flex-row wrap">
+                <span class="clickable no-align">セン</span>
+                <span class="tags no-margin fat right-padding-10">,</span>
+                <span class="clickable no-align">セン</span>
+                <span class="clickable no-align">セン</span>
+                <span class="tags no-margin fat right-padding-10">,</span>
+                <span class="clickable no-align">セン</span>
+                <span class="clickable no-align">セン</span>
+                <span class="tags no-margin fat right-padding-10">,</span>
+                <span class="clickable no-align">セン</span>
+                <span class="clickable no-align">セン</span>
+                <span class="tags no-margin fat right-padding-10">,</span>
+                <span class="clickable no-align">セン</span>
+                <span class="clickable no-align">セン</span>
+                <span class="tags no-margin fat right-padding-10">,</span>
+                <span class="clickable no-align">セン</span>
+             </div>
             }
 
             <hr />
