@@ -1,6 +1,6 @@
 use super::{
     result::word::{Item, Reading},
-    search::{Search, SearchMode},
+    Search, SearchMode,
 };
 use crate::{
     error::Error,
@@ -13,6 +13,8 @@ use diesel::prelude::*;
 use itertools::Itertools;
 use tokio_diesel::*;
 
+/// Defines the structure of a
+/// word based search
 #[derive(Clone)]
 pub struct WordSearch<'a> {
     search: Search<'a>,
@@ -73,7 +75,7 @@ impl<'a> WordSearch<'a> {
         self.get_results(&seq_ids).await
     }
 
-    /// Get searhresults of seq_ids
+    /// Get search results of seq_ids
     async fn get_results(&self, seq_ids: &Vec<i32>) -> Result<Vec<Item>, Error> {
         // Request Redings and Senses in parallel
         let (word_items, senses): (Vec<Item>, Vec<sense::Sense>) =
@@ -292,34 +294,3 @@ impl<'a> WordSearch<'a> {
             .collect_vec())
     }
 }
-
-/*
-/// Search for words based on the provided query
-pub async fn search_word(db: &DbPool, query: &str) -> Result<Vec<Item>, Error> {
-    let mut result: Vec<Item> = Vec::new();
-
-    if has_kanji(query) {
-        // Search only for japanese words
-        result.extend(search_readings(db, query).await?);
-    } else {
-        // Search for non-jp words
-        result.extend(search_glosses(query)?);
-
-        // Allow explicit searches with query = "term"
-        if !query.starts_with('"') || !query.ends_with('"') {
-            // search in hiragana
-            result.extend(search_glosses(query.to_hiragana().as_str())?);
-
-            // search in katakana
-            result.extend(search_glosses(query.to_katakana().as_str())?);
-        }
-    }
-
-    Ok(vec![])
-}
-
-/// Searchs for translated 'meanings'
-fn search_glosses(query: &str) -> Result<Vec<Item>, Error> {
-    Ok(vec![])
-}
-*/
