@@ -18,7 +18,7 @@ function restartAnimation(delayMultiplier) {
 }
 
 // Clicking on the kanji svg will restart it's animation
-var element = document.getElementById("kanjiSvg");
+var element = document.getElementById("kanjisvg");
 element.addEventListener("click", function(e) {
     e.preventDefault;
     restartAnimation();

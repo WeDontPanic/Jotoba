@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
    <head>
       <title>Jisho</title>
       <link rel="stylesheet" type="text/css" href="assets/css/lib/bootstrap.min.css">
@@ -71,11 +71,12 @@
       </div>
 
       <!-- Main Body -->
-      <div class="page-container lower"> 
+      <div class="page-container"> 
         <div class="d-flex center">
           <div class="main-container">
 
             <!-- Inner Main Body -->
+            <br>
                 <div class="d-flex center">
 
                    <!-- Left side: Kanji -->
@@ -83,11 +84,11 @@
                       <span class="kanji-preview x-large">
                         内
                       </span>
-                      <span class="kanji-preview-info">
+                      <div class="kanji-preview-info">
                         <div class="notes"><b>4</b> strokes</div>
                         <div class="notes"><b>Radical:</b> open country 冂</div>
                         <div class="notes"><b>Parts:</b> 人 冂</div>
-                      </span>
+                      </div>
                    </div>
                
                    <!-- Right side: Info -->
@@ -101,11 +102,11 @@
                                     inside, within, between, among, house, home
                                 </div>
                                 <div class="d-flex flex-row">
-                                    <div class="tags no-margin fat right-padding-10">Kun:</div>
+                                    <div class="tags no-margin fat right-padding-10 noselect">Kun:</div>
                                     <div class="clickable no-align fat">あざ.やか</div>
                                 </div>
                                 <div class="d-flex flex-row">
-                                    <div class="tags no-margin fat right-padding-20">On:</div>
+                                    <div class="tags no-margin fat right-padding-20 noselect">On:</div>
                                     <div class="clickable no-align fat">ナイ</div>
                                     <div class="tags no-margin fat right-padding-10">,</div>
                                     <div class="clickable no-align fat">ダイ</div>
@@ -124,7 +125,7 @@
 
                         <!-- Second Part -->
                         <div class="stroke-container">
-                            <img src="assets/svg/30178_frames.svg">
+                           <img src="assets/svg/請_frames.svg">
                        </div>
 
                        <div class="animation-container d-flex flex-row">
@@ -132,34 +133,40 @@
                               <div class="slidecontainer">
                                  <input type="range" min="0.05" max="2" value="1" step="0.05" class="slider" id="speedSlider">
                                </div>
-                               <span id="currentAnimationSpeed" class="slider-output">Animation speed: 1</span>
+                               <span id="currentAnimationSpeed" class="slider-output noselect">Animation speed: 1</span>
                            </div>
                            
                            <div> <!-- Kanji Svg goes here -->
-                              <svg id="kanjiSvg" width="109px" height="109px">
-                                 <path style="animation-delay: 0.9s;" class="draw2" stroke-linejoin="round" stroke="darkslategray" fill="none" stroke-width="5" d="M56.81,10.88c1.09,1.09,1.26,2.49,1.26,3.65c0,0.79,0.08,4.15-0.07,8.96">
+                              <svg id="kanjisvg" width="109px" height="109px" viewBox="0 0 109px 109px" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" version="1.1"  baseProfile="full">
+                                 <path style="animation-delay: 0.0s;" class="draw2" stroke-linejoin="round" stroke="black" fill="none" stroke-width="5" d="M25.8,15.25c2.34,1.41,6.04,5.8,6.63,8">
                                  </path>
-                                 <path style="animation-delay: 2.19s;" class="draw2" stroke-linejoin="round" stroke="darkslategray" fill="none" stroke-width="5" d="M27.38,25.98c2.79,1,6.49,0.69,9.37,0.3c15.29-2.07,32.46-3.94,45.25-4.77c3.12-0.2,6.05-0.35,9.13,0.31">
+                                 <path style="animation-delay: 0.8s;" class="draw2" stroke-linejoin="round" stroke="black" fill="none" stroke-width="5" d="M13.62,33.58c1.9,0.62,4.19,0.52,6.14,0.25c8.74-1.2,14.95-2.17,20.8-3.39c1.16-0.24,2.7-0.14,3.29-0.02">
                                  </path>
-                                 <path style="animation-delay: 3.06s;" class="draw2" stroke-linejoin="round" stroke="darkslategray" fill="none" stroke-width="5" d="M29.49,27c1,1,1.51,2.35,1.49,3.5c-0.36,31.75-2.49,49.13-18.18,62.97">
+                                 <path style="animation-delay: 1.6s;" class="draw2" stroke-linejoin="round" stroke="black" fill="none" stroke-width="5" d="M19.68,46.81c1.3,0.37,2.99,0.19,4.31,0c4.25-0.63,8.42-1.47,12.38-2.06c1.07-0.16,2.32-0.44,3.39-0.25">
                                  </path>
-                                 <path style="animation-delay: 3.57s;" class="draw2" stroke-linejoin="round" stroke="darkslategray" fill="none" stroke-width="5" d="M15.12,41c2.78,1.72,7.18,7.07,7.88,9.75">
+                                 <path style="animation-delay: 2.4s;" class="draw2" stroke-linejoin="round" stroke="black" fill="none" stroke-width="5" d="M20.3,59.08c1.04,0.32,2.74,0.21,3.84,0.08c4.24-0.5,8.6-1.42,12.63-1.96c1.03-0.14,2.28-0.41,3.32-0.23">
                                  </path>
-                                 <path style="animation-delay: 4.49s;" class="draw2" stroke-linejoin="round" stroke="darkslategray" fill="none" stroke-width="5" d="M10.67,69.04c1.53,0.67,2.51,0.72,3.85-0.09c5.45-3.28,7.47-4.7,12.47-7.7">
+                                 <path style="animation-delay: 3.2s;" class="draw2" stroke-linejoin="round" stroke="black" fill="none" stroke-width="5" d="M19.26,71.49c0.79,0.78,0.97,1.99,1.17,3c0.64,3.1,1.3,7.76,1.85,12.01c0.21,1.6,0.43,3.13,0.66,4.51">
                                  </path>
-                                 <path style="animation-delay: 5.43s;" class="draw2" stroke-linejoin="round" stroke="darkslategray" fill="none" stroke-width="5" d="M60.63,33.24c0,0.89-0.61,1.83-1.24,2.4c-3.27,2.99-11.02,7.24-19.81,10.79">
+                                 <path style="animation-delay: 4.0s;" class="draw2" stroke-linejoin="round" stroke="black" fill="none" stroke-width="5" d="M21.01,72.58c5.13-0.67,9.82-1.63,14.62-2.45c3.62-0.62,5.63-0.55,4.86,3.64c-0.58,3.15-1.03,6.5-2.26,11.73">
                                  </path>
-                                 <path style="animation-delay: 6.77s;" class="draw2" stroke-linejoin="round" stroke="darkslategray" fill="none" stroke-width="5" d="M36.87,56.24c1.88,0.64,4.09,0.21,5.5-0.09c5.55-1.18,13.14-2.55,19.52-3.48c1.63-0.24,4.14-0.68,5.77-0.13">
+                                 <path style="animation-delay: 4.8s;" class="draw2" stroke-linejoin="round" stroke="black" fill="none" stroke-width="5" d="M24.22,88.6c3.88-0.36,7.48-0.96,12.37-1.53c0.93-0.11,1.9-0.22,2.91-0.32">
                                  </path>
-                                 <path style="animation-delay: 8.08s;" class="draw2" stroke-linejoin="round" stroke="darkslategray" fill="none" stroke-width="5" d="M52.67,43.5c0.98,0.98,1.38,2.13,1.38,3.88c0,3.34,0.07,31.06,0.01,44.02c-0.02,3.11-0.04,5.37-0.06,6.23">
+                                 <path style="animation-delay: 5.6s;" class="draw2" stroke-linejoin="round" stroke="black" fill="none" stroke-width="5" d="M51.66,22.89c1.72,0.36,3.77,0.28,5.48,0.1c6.45-0.67,18.61-2.49,25.51-3.09c1.74-0.15,2.95-0.2,4.68-0.05">
                                  </path>
-                                 <path style="animation-delay: 9.04s;" class="draw2" stroke-linejoin="round" stroke="darkslategray" fill="none" stroke-width="5" d="M53.24,55.93c-0.5,1.29-1.06,2.62-1.66,3.98c-3.59,8.1-8.87,17.12-15.69,23.4">
+                                 <path style="animation-delay: 6.4s;" class="draw2" stroke-linejoin="round" stroke="black" fill="none" stroke-width="5" d="M67.51,12.38c0.87,0.87,1.29,1.99,1.29,3.49c0,3.13-0.04,18.63-0.04,26.13">
                                  </path>
-                                 <path style="animation-delay: 9.57s;" class="draw2" stroke-linejoin="round" stroke="darkslategray" fill="none" stroke-width="5" d="M57.13,62.58c4.08,2.4,7.54,7.21,9.74,10.3">
+                                 <path style="animation-delay: 7.2s;" class="draw2" stroke-linejoin="round" stroke="black" fill="none" stroke-width="5" d="M52.83,32.61c2.05,0.39,3.89,0.27,5.68,0.01c7.62-1.12,15.49-1.87,22.12-2.37c1.84-0.14,3.45-0.13,5.28-0.01">
                                  </path>
-                                 <path style="animation-delay: 10.82s;" class="draw2" stroke-linejoin="round" stroke="darkslategray" fill="none" stroke-width="5" d="M75.77,40.55c0.7,0.66,1.24,1.83,1.24,3.63c0,7.44,0.04,16.94,0.04,24.82c0,2.86-0.05,5.44-0.05,6.5">
+                                 <path style="animation-delay: 8.0s;" class="draw2" stroke-linejoin="round" stroke="black" fill="none" stroke-width="5" d="M45.63,44.49c2.95,0.69,6.3,0.25,9.26-0.1c9.33-1.11,23.75-2.54,32.74-3.05c3.62-0.21,7.25-0.33,9.62,0.31">
                                  </path>
-                                 <path style="animation-delay: 12.1s;" class="draw2" stroke-linejoin="round" stroke="darkslategray" fill="none" stroke-width="5" d="M89.61,33.07c0.72,0.68,1.28,2.18,1.28,3.99c0,10.94,0.06,50.69,0.06,55.66c0,8.77-4.88,1.12-5.98,0.19">
+                                 <path style="animation-delay: 8.8s;" class="draw2" stroke-linejoin="round" stroke="black" fill="none" stroke-width="5" d="M55.06,52.1c0.8,0.8,1.09,2.03,1.09,3.05c0,4.57-0.01,21.51-0.02,35.61c0,2.39,0,4.7,0,6.86">
+                                 </path>
+                                 <path style="animation-delay: 9.6s;" class="draw2" stroke-linejoin="round" stroke="black" fill="none" stroke-width="5" d="M56.67,53.35c6.6-0.85,19.12-2.63,23.32-3.18c2.91-0.38,4.4,0.96,4.4,3.93c0,3.15-0.02,26.77-0.02,37.77c0,9.76-5.47,1.61-6.2,0.93">
+                                 </path>
+                                 <path style="animation-delay: 10.4s;" class="draw2" stroke-linejoin="round" stroke="black" fill="none" stroke-width="5" d="M57.23,64.27c7.27-0.77,18.14-1.65,25.89-2.2">
+                                 </path>
+                                 <path style="animation-delay: 11.2s;" class="draw2" stroke-linejoin="round" stroke="black" fill="none" stroke-width="5" d="M57.28,76.29c7.72-0.66,19.1-1.66,25.98-1.9">
                                  </path>
                               </svg>
                            </div>
@@ -169,39 +176,37 @@
 
                         <!-- Reading Compounds -->
                         <div class="kanji-entry d-flex flex-row">
-                            <!-- On Reading -->
-                            <div class="on-reading">
-                                <h3>
-                                    On reading compounds
-                                </h3>
-                                内 【ナイ】 inside, within
-                                内科 【ナイカ】 internal medicine, i.e. treatment by medical procedures rather than surgical procedures, department of internal medicine (hospital, etc.)
-                                島内 【トウナイ】 on an island, on-island
-                                校内 【コウナイ】 within a school
-                                内裏 【ダイリ】 imperial palace, festival dolls representing the emperor and the empress
-                                内府 【ナイフ】 Minister of the Interior (669-1868 CE), Lord Keeper of the Privy Seal (1885-1945 CE)
-                                境内 【ケイダイ】 grounds (esp. of shrines and temples), compound, churchyard, precincts
-                                海内 【カイダイ】 the whole country
-                            </div>
-                             <!-- Kun Reading -->
-                             <div class="kun-reading">
-                                <h3>
-                                    Kun reading compounds
-                                </h3>
-                                内 【うち】 inside, within, while (e.g. one is young), during, within (e.g. a day), in the course of, among, amongst, (out) of, between, in (secret, chaos, poverty, etc.), amidst, with (e.g. success), within oneself, one's feelings, inner thoughts, we, our company, our organization, one's home, one's family, my spouse, my husband, my wife, signed on behalf of (husband's name) by his wife, I, me, imperial palace grounds, emperor
-                                内々 【うちうち】 private, confidential, informal, secret, (within the) family circle, (on the) inside
-                                幕内 【まくうち】 highest-ranking division
-                                幕の内 【まくのうち】 box lunch (containing rice and 10-15 small portions of fish, meat, and vegetables), highest-ranking division, intermission (between acts), interlude
-                             </div>
+                           <!-- On Reading -->
+                           <div class="on-reading">
+                              <h3 class="noselect">
+                                 On reading compounds
+                              </h3>
+                              <div class="d-flex flex-column">
+                                 <span>内 【ナイ】 inside, within</span>
+                                 <span>内科 【ナイカ】 internal medicine, i.e. treatment by medical procedures rather than surgical procedures, department of internal medicine (hospital, etc.)</span>
+                                 <span>島内 【トウナイ】 on an island, on-island</span>
+                                 <span>内裏 【ダイリ】 imperial palace, festival dolls representing the emperor and the empress</span>
+                                 <span>内府 【ナイフ】 Minister of the Interior (669-1868 CE), Lord Keeper of the Privy Seal (1885-1945 CE)</span>
+                                 <span>海内 【カイダイ】 the whole country</span>
+                              </div>
+                           </div>
+                           <!-- Kun Reading -->
+                           <div class="kun-reading">
+                              <h3 class="noselect">
+                                 Kun reading compounds
+                             </h3>
+                              <div class="d-flex flex-column">
+                                 <span>内 【うち】 inside, within, while (e.g. one is young), during, within (e.g. a day), in the course of, among, amongst, (out) of, between, in (secret, chaos, poverty, etc.), amidst, with (e.g. success), within oneself, one's feelings, inner thoughts, we, our company, our organization, one's home, one's family, my spouse, my husband, my wife, signed on behalf of (husband's name) by his wife, I, me, imperial palace grounds, emperor</span>
+                                 <span>内々 【うちうち】 private, confidential, informal, secret, (within the) family circle, (on the) inside</span>
+                                 <span>幕内 【まくうち】 highest-ranking division</span>
+                                 <span>幕の内 【まくのうち】 box lunch (containing rice and 10-15 small portions of fish, meat, and vegetables), highest-ranking division, intermission (between acts), interlude</span>
+                              </div>
+                           </div>
                         </div>      
 
-                   </div>
-                </div>
-                <!-- !!! End of Word Template !!! -->  
-            
-                
-
-          </div>
+                  </div>
+               </div>
+            </div>
         </div>
       </div>
    </body>
