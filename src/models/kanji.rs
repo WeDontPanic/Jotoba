@@ -67,6 +67,13 @@ fn to_option<T>(vec: Vec<T>) -> Option<Vec<T>> {
     }
 }
 
+impl Kanji {
+    /// Print kanji grade pretty for frontend
+    pub fn school_str(&self) -> Option<String> {
+        self.grade.map(|grade| format!("Taught in {} grade", grade))
+    }
+}
+
 /// Inserts new kanji into db
 pub async fn insert<T>(db: &DbPool, new_kanji: Vec<T>) -> Result<(), Error>
 where
