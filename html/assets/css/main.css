@@ -75,7 +75,6 @@ h4 {
 }
 
 .clickable {
-    padding-right: 25px;
     color: var(--green);
     text-align: center;
 }
@@ -219,8 +218,10 @@ svg {
 
 
 .kanji-entry.left.fixed {
-    min-width: 125px;
-    max-width: 125px;
+    min-width: 155px;
+    max-width: 155px;
+    justify-content: center;
+    align-items: center;
  }
 
 .kanji-entry.left.detail {
@@ -367,7 +368,7 @@ svg {
     overflow-x: auto;
 }
 
-.d-flex.flex-row {
+.kanji-entry > d-flex.flex-row {
     flex-flow: row wrap;
 }
 
