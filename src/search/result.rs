@@ -5,8 +5,6 @@ pub enum Item {
 
 /// Defines a word result item
 pub mod word {
-    use std::cmp::Ordering;
-
     use itertools::Itertools;
 
     use crate::{
@@ -19,7 +17,7 @@ pub mod word {
     };
 
     /// A single word item
-    #[derive(Debug, Clone, Default)]
+    #[derive(Debug, Clone, Default, PartialEq)]
     pub struct Item {
         pub sequence: i32,
         pub priorities: Option<Vec<Priority>>,
@@ -85,9 +83,12 @@ pub mod word {
         }
     }
 
-    // Small handy functions used in the templates
+    //
+    // Small handy functions used in the templates //
+    //
 
     impl Item {
+        /// Get alternative readings in a beautified, print-ready format
         pub fn alt_readings_beautified(&self) -> String {
             self.reading
                 .alternative
@@ -96,10 +97,12 @@ pub mod word {
                 .join(", ")
         }
 
+        /// Returns true if a word is common
         pub fn is_common(&self) -> bool {
             self.reading.get_reading().priorities.is_some()
         }
 
+        /// Return the amount of priorities a word has
         pub fn priorities_count(&self) -> usize {
             self.priorities
                 .as_ref()
@@ -107,10 +110,12 @@ pub mod word {
                 .unwrap_or_default()
         }
 
+        /// Returns the reading of a word
         pub fn get_reading(&self) -> &Dict {
             return self.reading.get_reading();
         }
 
+        /// Returns furigana reading-pairs of an Item
         pub fn get_furigana(&self) -> Option<Vec<SentencePart>> {
             if self.reading.kanji.is_some() && self.reading.kana.is_some() {
                 japanese::furigana_pairs(
@@ -129,13 +134,36 @@ pub mod word {
                 None
             }
         }
+
+        /// Return true if item has a certain reading
+        pub fn has_reading(&self, reading: &str, ignore_case: bool) -> bool {
+            if let Some(kanji) = self.reading.kanji.as_ref().map(|i| &i.reading) {
+                if (ignore_case && kanji.to_lowercase() == reading.to_lowercase())
+                    || (kanji == reading)
+                {
+                    return true;
+                }
+            }
+
+            if let Some(kana) = self.reading.kana.as_ref().map(|i| &i.reading) {
+                if (ignore_case && kana.to_lowercase() == reading.to_lowercase())
+                    || (kana == reading)
+                {
+                    return true;
+                }
+            }
+            false
+        }
     }
 
     impl Reading {
+        /// Returns the word-reading of a Reading object
         pub fn get_reading(&self) -> &Dict {
             self.kanji.as_ref().unwrap_or(self.kana.as_ref().unwrap())
         }
 
+        /// Returns the jplt level of a word. None if
+        /// a word doesn't have a JPLT lvl assigned
         pub fn get_jplt_lvl(&self) -> Option<u8> {
             // TODO
             None
@@ -166,48 +194,6 @@ pub mod word {
                     s
                 })
                 .join(", ")
-        }
-    }
-
-    impl PartialEq for Item {
-        fn eq(&self, other: &Self) -> bool {
-            self.sequence == other.sequence
-        }
-    }
-
-    impl std::cmp::Eq for Item {}
-
-    impl std::cmp::PartialOrd for Item {
-        fn partial_cmp(&self, other: &Item) -> Option<Ordering> {
-            // Always put common words at the top
-            if self.is_common() && !other.is_common() {
-                Some(Ordering::Less)
-            } else if self.reading.kana.is_some() && other.reading.kana.is_some() {
-                // If both have kana reading
-                let self_read = self.reading.get_reading();
-                let other_read = other.reading.get_reading();
-
-                if self.priorities_count() > other.priorities_count() {
-                    Some(Ordering::Less)
-                } else if self_read.reading.len() < other_read.reading.len() {
-                    // Order by length
-                    Some(Ordering::Less)
-                } else {
-                    Some(Ordering::Greater)
-                }
-            } else {
-                // If one doesn't have kana reading
-                None
-            }
-        }
-    }
-
-    impl std::cmp::Ord for Item {
-        fn cmp(&self, other: &Self) -> Ordering {
-            self.partial_cmp(other).unwrap_or_else(|| {
-                println!("unwrapped");
-                Ordering::Greater
-            })
         }
     }
 }
