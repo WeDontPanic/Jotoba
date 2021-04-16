@@ -1,5 +1,15 @@
 use itertools::Itertools;
 
+/// Replacen but backwards
+fn replacen_backwards(inp: &str, from: &str, to: &str, count: usize) -> String {
+    reverse_str(&reverse_str(inp).replacen(&reverse_str(from), &reverse_str(to), count))
+}
+
+/// Retuns the input string reversed
+fn reverse_str<S: AsRef<str>>(inp: S) -> String {
+    inp.as_ref().chars().into_iter().rev().collect()
+}
+
 /// Returns true if inp contains at least one kana character
 pub fn char_is_kana(s: char) -> bool {
     s >= '\u{3040}' && s <= '\u{30FF}' || s >= '\u{FF66}' && s <= '\u{FF9F}'
@@ -165,7 +175,8 @@ pub fn kanji_readings(kanji: &str, kana: &str) -> Vec<String> {
     let mut kana_mod = kana.clone().to_string();
     for ka_kana in all_kana {
         // TODO need to replace backwards!!
-        kana_mod = kana_mod.replacen(&ka_kana, " ", 1);
+        //kana_mod = kana_mod.replacen(&ka_kana, " ", 1);
+        kana_mod = replacen_backwards(&kana_mod, &ka_kana, " ", 1);
     }
 
     kana_mod
@@ -178,6 +189,28 @@ pub fn kanji_readings(kanji: &str, kana: &str) -> Vec<String> {
 pub struct SentencePart {
     pub kana: String,
     pub kanji: Option<String>,
+}
+
+impl SentencePart {
+    pub fn as_furigana(&self) -> String {
+        if let Some(ref kanji) = self.kanji {
+            let kana_len = self.kana.chars().count();
+            let kanji_len = kanji.chars().count();
+            if kana_len == kanji_len {
+                self.kana
+                    .chars()
+                    .collect::<Vec<char>>()
+                    .chunks(1)
+                    .map(|c| c.iter().collect::<String>())
+                    .collect::<Vec<String>>()
+                    .join(" ")
+            } else {
+                self.kana.clone()
+            }
+        } else {
+            self.kana.clone()
+        }
+    }
 }
 
 #[cfg(test)]
@@ -206,10 +239,16 @@ mod test {
         let kanji = "気持ち";
         let kana = "きもち";
 
-        let result = vec![SentencePart {
-            kana: kana.to_string(),
-            kanji: Some(kanji.to_string()),
-        }];
+        let result = vec![
+            SentencePart {
+                kana: "きも".to_string(),
+                kanji: Some("気持".to_string()),
+            },
+            SentencePart {
+                kana: "ち".to_string(),
+                kanji: None,
+            },
+        ];
 
         assert_eq!(furigana_pairs(kanji, kana), Some(result));
     }

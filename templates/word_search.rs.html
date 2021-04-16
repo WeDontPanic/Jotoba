@@ -31,7 +31,7 @@
                   @if spair.kanji.is_some() {
                      <div class="furigana-kanji-container">
                         <span class="furigana-preview">
-                           @spair.kana
+                           @spair.as_furigana()
                         </span>
                         <span class="kanji-preview">
                            @spair.kanji.unwrap()
@@ -62,7 +62,7 @@
                       @if spair.kanji.is_some() {
                          <div class="furigana-kanji-container">
                             <span class="furigana-preview">
-                               @spair.kana
+                               @spair.as_furigana()
                             </span>
                             <span class="kanji-preview">
                                @spair.kanji.unwrap()

@@ -6,6 +6,7 @@ pub enum SearchMode {
     RightVariable,
 }
 
+/// Defines a structure to describe a search
 #[derive(Clone, PartialEq, Debug)]
 pub struct Search<'a> {
     pub query: &'a str,

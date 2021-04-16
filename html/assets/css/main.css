@@ -366,3 +366,12 @@ svg {
     max-width: 80vw;
     overflow-x: auto;
 }
+
+.d-flex.flex-row {
+    flex-flow: row wrap;
+}
+
+.furigana-kanji-container {
+  text-align: center;
+  word-spacing: 10px;
+}
