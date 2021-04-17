@@ -95,35 +95,46 @@
 
             <div class="kanji-entry right">
             <!-- Right side: Info -->
-            @for (pos, sense) in word.senses.iter().enumerate() {
-              @if !sense.glosses.is_empty() {
-                <!-- Entry -->
-                <div class="list-entry">
-                  <div class="tags">
-                    @sense.get_tags()
-                  </div>
-                  <div class="definition-wrapper d-flex flex-row">
-                    <div class="entry-count">
-                      @(pos+1).
-                    </div>
-                    <div class="translation">
-                      @sense.get_glosses()
-                    </div>
-                  </div>
-                  @if let Some(ref misc) = sense.get_misc() {
-                    <div class="tags no-margin">
-                      @misc
-                    </div>
-                  }
-                </div>
+            
+              @if (word.is_common() && word.jlpt...) {
+                <div class="entry-min two">
               }
-            }
-              <!-- Additional Informations-->
-              @if !word.reading.alternative.is_empty() {
-                <div class="tags">Other forms</div>
-                <div class="notes">@word.alt_readings_beautified()</div>
+              @elseif (word.is_common || word.jlpt...) {
+                <div class="entry-min one">
+              }
+              @else {
+                <div>
               }
 
+                @for (pos, sense) in word.senses.iter().enumerate() {
+                  @if !sense.glosses.is_empty() {
+                    <!-- Entry -->
+                    <div class="list-entry">
+                      <div class="tags">
+                        @sense.get_tags()
+                      </div>
+                      <div class="definition-wrapper d-flex flex-row">
+                        <div class="entry-count">
+                          @(pos+1).
+                        </div>
+                        <div class="translation">
+                          @sense.get_glosses()
+                        </div>
+                      </div>
+                      @if let Some(ref misc) = sense.get_misc() {
+                        <div class="tags no-margin">
+                          @misc
+                        </div>
+                      }
+                    </div>
+                  }
+                }
+                <!-- Additional Informations-->
+                @if !word.reading.alternative.is_empty() {
+                  <div class="tags">Other forms</div>
+                  <div class="notes">@word.alt_readings_beautified()</div>
+                }
+              </div>
               <hr />
             </div>
           </div>

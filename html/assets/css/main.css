@@ -229,6 +229,15 @@ svg {
 
 /* -----------------  Templates ----------------- */
 
+.entry-min.one {
+    min-height: 90px
+}
+
+.entry-min.two {
+    min-height: 180px
+}
+
+
 .kanji-entry {
     height: fit-content;
     padding-bottom: 10px;
