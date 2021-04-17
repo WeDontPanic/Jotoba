@@ -22,14 +22,16 @@ $('.furigana-kanji-container > .furigana-preview').on("click", (event) => {
     copyToClipboard($(event.target).html().trim());
 });
 
-// Copies translations to clipboard on click
-$('.furigana-kanji-container > .kanji-preview').on("click", (event) => {
+// Copies translations to clipboard on double click
+$('.furigana-kanji-container > .kanji-preview').on("dblclick", (event) => {
+	event.preventDefault();
     showMessage("success", "translation copied to clipboard.");
     copyTranslation(event.target.parentElement.parentElement);
 });
 
-// Copies translations to clipboard on click
-$('.inline-kana-preview').on("click", (event) => {
+// Copies translations to clipboard on double click
+$('.inline-kana-preview').on("dblclick", (event) => {
+	event.preventDefault();
     showMessage("success", "translation copied to clipboard.");
     copyTranslation(event.target.parentElement);
 });

@@ -27,8 +27,8 @@
               @if let Some(s_pairs) = word.get_furigana() {
                 @for spair in s_pairs {
                   @if spair.kanji.is_some() {
-                     <div class="furigana-kanji-container noselect">
-                        <span class="furigana-preview">
+                     <div class="furigana-kanji-container">
+                        <span class="furigana-preview noselect">
                            @spair.as_furigana()
                         </span>
                         <span class="kanji-preview">
@@ -36,13 +36,13 @@
                         </span>
                      </div>
                   } else {
-                     <div class="inline-kana-preview noselect">
+                     <div class="inline-kana-preview">
                         @spair.kana
                      </div>
                   }
                 }
               } else {
-                <div class="inline-kana-preview noselect">
+                <div class="inline-kana-preview">
                   @word.get_reading().reading
                 </div>
               }
@@ -58,8 +58,8 @@
                   @if let Some(s_pairs) = word.get_furigana() {
                     @for spair in s_pairs {
                       @if spair.kanji.is_some() {
-                         <div class="furigana-kanji-container noselect">
-                            <span class="furigana-preview">
+                         <div class="furigana-kanji-container">
+                            <span class="furigana-preview noselect">
                                @spair.as_furigana()
                             </span>
                             <span class="kanji-preview">
@@ -67,13 +67,13 @@
                             </span>
                          </div>
                       } else {
-                         <div class="inline-kana-preview noselect">
+                         <div class="inline-kana-preview">
                             @spair.kana
                          </div>
                       }
                     }
                   } else {
-                    <div class="inline-kana-preview noselect">
+                    <div class="inline-kana-preview">
                       @word.get_reading().reading
                     </div>
                   }
@@ -99,11 +99,11 @@
               @if !sense.glosses.is_empty() {
                 <!-- Entry -->
                 <div class="list-entry">
-                  <div class="tags noselect">
+                  <div class="tags">
                     @sense.get_tags()
                   </div>
                   <div class="definition-wrapper d-flex flex-row">
-                    <div class="entry-count noselect">
+                    <div class="entry-count">
                       @(pos+1).
                     </div>
                     <div class="translation">
@@ -111,7 +111,7 @@
                     </div>
                   </div>
                   @if let Some(ref misc) = sense.get_misc() {
-                    <div class="tags no-margin noselect">
+                    <div class="tags no-margin">
                       @misc
                     </div>
                   }
@@ -120,7 +120,7 @@
             }
               <!-- Additional Informations-->
               @if !word.reading.alternative.is_empty() {
-                <div class="tags noselect">Other forms</div>
+                <div class="tags">Other forms</div>
                 <div class="notes">@word.alt_readings_beautified()</div>
               }
 
@@ -138,7 +138,7 @@
         @if let Item::Kanji(kanji) = i {
           <div>
             <!-- Tags -->
-            <div class="tags noselect">
+            <div class="tags">
               @kanji.stroke_count strokes.
               @if let Some(jplt_lvl) = kanji.jlpt {
                 JLPT N@jplt_lvl.
