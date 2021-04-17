@@ -176,7 +176,7 @@ pub fn furigana_pairs(kanji: &str, kana: &str) -> Option<Vec<SentencePart>> {
             if last_char_type.unwrap() == CharType::Kana {
                 word_buf.clone()
             } else {
-                kanji_readings.next().unwrap()
+                kanji_readings.next().unwrap_or_default()
             }
         },
         kanji: (last_char_type.unwrap() == CharType::Kanji).then(|| word_buf.clone()),
