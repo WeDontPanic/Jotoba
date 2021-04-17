@@ -13,35 +13,34 @@ pub struct QueryStruct {
 
 #[derive(Deserialize, Debug, Copy, Clone)]
 pub enum QueryType {
-    #[serde(rename = "0")]
-    WordsAndKanji,
     #[serde(rename = "1")]
     Sentences,
     #[serde(rename = "2")]
     Names,
-    #[serde(other)]
-    Other,
+    #[serde(rename = "0", other)]
+    WordsAndKanji,
+}
+
+impl Default for QueryType {
+    fn default() -> Self {
+        Self::WordsAndKanji
+    }
 }
 
 impl QueryStruct {
     /// Adjusts the search query
     /// Trim and map empty search queries to Option::None
-    /// Map QueryType::Other to Option::None
+    /// Ensures search_type is always 'Some()'
     fn adjust(&self) -> Self {
         let search_query = self
             .query
             .clone()
             .map(|i| i.trim().to_string())
-            .and_then(|i| if i.is_empty() { None } else { Some(i) });
-
-        let query_type = self.search_type.and_then(|i| match i {
-            QueryType::Other => None,
-            _ => Some(i),
-        });
+            .and_then(|i| (!i.is_empty()).then(|| i));
 
         QueryStruct {
             query: search_query,
-            search_type: query_type,
+            search_type: Some(self.search_type.unwrap_or_default()),
         }
     }
 }

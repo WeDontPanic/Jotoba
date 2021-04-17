@@ -22,12 +22,18 @@ impl<'a> NativeWordOrder<'a> {
     /// Returns an Ordering variant based on the input items
     fn native_words(&self, this: &Item, other: &Item) -> Ordering {
         let other_has_reading = other.has_reading(self.query, true);
+        if this.sequence == 1000520 {
+            println!("{}", this.sequence);
+        }
 
+        // Show common items at the top
         let this_is_common = this.is_common() && !other.is_common() && !other_has_reading;
+        // Show exact readings at the top
         let this_has_reading = this.has_reading(self.query, true) && !other_has_reading;
+        let is_exact_reading = this.reading.kanji.is_none(); //&& this.reading.get_reading().reading.is_japanese(); // && this.has_reading(self.query, true);
 
         // Show directly matching and common items at the top
-        if this_is_common || this_has_reading {
+        if this_is_common || this_has_reading || is_exact_reading {
             Ordering::Less
         } else if this.reading.kana.is_some() && other.reading.kana.is_some() {
             // If both have a kana reading
