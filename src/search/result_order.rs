@@ -22,18 +22,25 @@ impl<'a> NativeWordOrder<'a> {
     /// Returns an Ordering variant based on the input items
     fn native_words(&self, this: &Item, other: &Item) -> Ordering {
         let other_has_reading = other.has_reading(self.query, true);
-        if this.sequence == 1000520 {
-            println!("{}", this.sequence);
-        }
+        let this_has_reading = this.has_reading(self.query, true);
 
         // Show common items at the top
         let this_is_common = this.is_common() && !other.is_common() && !other_has_reading;
+        let other_is_common = other.is_common() && !this.is_common() && !this_has_reading;
         // Show exact readings at the top
         let this_has_reading = this.has_reading(self.query, true) && !other_has_reading;
-        let is_exact_reading = this.reading.kanji.is_none(); //&& this.reading.get_reading().reading.is_japanese(); // && this.has_reading(self.query, true);
+        let other_has_reading = this.has_reading(self.query, true) && !this_has_reading;
 
-        // Show directly matching and common items at the top
-        if this_is_common || this_has_reading || is_exact_reading {
+        let this_is_exact_reading = self.is_exact_reading(this);
+        let other_is_exact_reading = self.is_exact_reading(other);
+
+        if other_is_common
+            || (other_is_exact_reading && !this_is_exact_reading)
+            || other_has_reading
+        {
+            Ordering::Greater
+        } else if this_is_common || this_has_reading || this_is_exact_reading {
+            // Show directly matching and common items at the top
             Ordering::Less
         } else if this.reading.kana.is_some() && other.reading.kana.is_some() {
             // If both have a kana reading
@@ -52,6 +59,20 @@ impl<'a> NativeWordOrder<'a> {
             // kana reading, both are handled
             // equally... shouldn't happen though
             Ordering::Equal
+        }
+    }
+
+    fn is_exact_reading(&self, this: &Item) -> bool {
+        if self.query.has_kanji() && this.reading.kanji.is_none() {
+            return false;
+        }
+
+        if self.query.has_kanji() {
+            this.reading.kanji.as_ref().unwrap().reading == self.query
+        } else {
+            this.reading.kanji.is_none()
+                && this.reading.get_reading().reading.is_japanese()
+                && this.has_reading(self.query, true)
         }
     }
 }
