@@ -68,6 +68,6 @@ function copyTranslationAndShowMessage(textParent) {
 	if (onlyKanji) {
 		showMessage("success", "kanji copied to clipboard.");
 	} else {
-		showMessage("success", "translation copied to clipboard.");
+		showMessage("success", "meaning copied to clipboard.");
 	}
 }
