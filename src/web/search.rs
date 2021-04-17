@@ -3,10 +3,46 @@ use serde::Deserialize;
 
 use crate::{templates, DbPool};
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Debug)]
 pub struct QueryStruct {
     #[serde(rename = "search")]
     query: Option<String>,
+    #[serde(rename = "type")]
+    search_type: Option<QueryType>,
+}
+
+#[derive(Deserialize, Debug, Copy, Clone)]
+pub enum QueryType {
+    #[serde(rename = "1")]
+    Sentences,
+    #[serde(rename = "2")]
+    Names,
+    #[serde(rename = "0", other)]
+    WordsAndKanji,
+}
+
+impl Default for QueryType {
+    fn default() -> Self {
+        Self::WordsAndKanji
+    }
+}
+
+impl QueryStruct {
+    /// Adjusts the search query
+    /// Trim and map empty search queries to Option::None
+    /// Ensures search_type is always 'Some()'
+    fn adjust(&self) -> Self {
+        let search_query = self
+            .query
+            .clone()
+            .map(|i| i.trim().to_string())
+            .and_then(|i| (!i.is_empty()).then(|| i));
+
+        QueryStruct {
+            query: search_query,
+            search_type: Some(self.search_type.unwrap_or_default()),
+        }
+    }
 }
 
 /// Endpoint to perform a search
@@ -14,13 +50,9 @@ pub async fn search(
     pool: web::Data<DbPool>,
     query_data: web::Query<QueryStruct>,
 ) -> Result<HttpResponse, actix_web::Error> {
-    let search_query = query_data
-        .query
-        .clone()
-        .map(|i| i.trim().to_string())
-        .and_then(|i| if i.is_empty() { None } else { Some(i) });
+    let query_data = query_data.adjust();
 
-    let search_query = match search_query {
+    let search_query = match query_data.query {
         Some(s) => s,
         None => {
             return Ok(HttpResponse::MovedPermanently()
@@ -29,6 +61,7 @@ pub async fn search(
         }
     };
 
+    // Perform a search
     let result = crate::search::everything::search(&pool, &search_query)
         .await
         .unwrap();

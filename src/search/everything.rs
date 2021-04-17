@@ -61,7 +61,7 @@ pub async fn search_word_by_native(
     db: &DbPool,
     query: &str,
 ) -> Result<Vec<result::word::Item>, Error> {
-    if !query.is_japanese() {
+    if !query.is_japanese() || query.is_empty() {
         return Ok(vec![]);
     }
 
@@ -70,24 +70,22 @@ pub async fn search_word_by_native(
     let mut word_search = word::WordSearch::new(db, query);
     word_search.with_language(Language::German);
 
-    // Search for exact matches
-    let exact_words = word_search
-        .with_mode(SearchMode::Exact)
-        .search_native()
-        .await?;
-
-    let right_variable = word_search
-        .with_mode(SearchMode::RightVariable)
-        .search_native()
-        .await?
-        .into_iter()
-        // remove already existing elements
-        .filter(|i| !exact_words.contains(&i))
-        .collect_vec();
+    let results = if query.chars().count() <= 2 && query.is_kana() {
+        // Search for exact matches only if query.len() <= 2
+        word_search
+            .with_mode(SearchMode::Exact)
+            .search_native()
+            .await?
+    } else {
+        word_search
+            .with_mode(SearchMode::RightVariable)
+            .search_native()
+            .await?
+    };
 
     // Search for right variable
-    wordresults.extend(exact_words);
-    wordresults.extend(right_variable);
+    //wordresults.extend(exact_words);
+    wordresults.extend(results);
 
     NativeWordOrder::new(query).sort(&mut wordresults);
 
