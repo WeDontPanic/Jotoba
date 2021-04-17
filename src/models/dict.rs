@@ -50,6 +50,7 @@ impl Dict {
         }
         let ids = self.kanji_info.as_ref().unwrap();
 
+        // TODO order based on occurence
         super::kanji::load_by_ids(db, ids).await
     }
 }

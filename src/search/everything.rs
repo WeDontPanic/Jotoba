@@ -1,55 +1,39 @@
 use itertools::Itertools;
 use std::time::SystemTime;
 
-use crate::{error::Error, japanese::JapaneseExt, parse::jmdict::languages::Language, DbPool};
+use crate::{
+    error::Error, japanese::JapaneseExt, models::kanji, parse::jmdict::languages::Language, DbPool,
+};
 
 use super::{result, result_order::NativeWordOrder, word, SearchMode};
 
+const MAX_KANJI_INFO_ITEMS: usize = 4;
+
 /// Search among all data based on the input query
 pub async fn search(db: &DbPool, query: &str) -> Result<Vec<result::Item>, Error> {
-    let mut results: Vec<result::Item> = Vec::new();
-
     let start = SystemTime::now();
 
-    // Perform searches asynchronously
+    // Perform (word) searches asynchronously
     let (native_word_res, gloss_word_res): (Vec<result::word::Item>, Vec<result::word::Item>) = futures::try_join!(
         search_word_by_native(db, query),
         search_word_by_glosses(db, query)
     )?;
 
-    if !native_word_res.is_empty() {
-        if let Some(fw) = native_word_res.iter().find(|i| i.reading.kanji.is_some()) {
-            let kanji = fw
-                .reading
-                .kanji
-                .as_ref()
-                .unwrap()
-                .load_kanji_info(db)
-                .await?;
+    // Chain native and word results into one vector
+    let word_results = native_word_res
+        .into_iter()
+        .chain(gloss_word_res)
+        .collect_vec();
 
-            results.extend(
-                kanji
-                    .into_iter()
-                    .map(|i| result::Item::Kanji(i))
-                    .rev()
-                    .collect_vec(),
-            );
-        }
-    }
-
-    results.extend(
-        native_word_res
-            .into_iter()
-            .map(|i| result::Item::Word(i))
-            .collect_vec(),
-    );
-
-    results.extend(
-        gloss_word_res
-            .into_iter()
-            .map(|i| result::Item::Word(i))
-            .collect_vec(),
-    );
+    // Chain and map results into one result vector
+    let results = load_word_kanji_info(db, &word_results)
+        .await?
+        .into_iter()
+        .map(|i| i.into())
+        .collect::<Vec<result::Item>>()
+        .into_iter()
+        .chain(word_results.into_iter().map(|i| i.into()).collect_vec())
+        .collect_vec();
 
     println!("full search took {:?}", start.elapsed());
 
@@ -65,12 +49,12 @@ pub async fn search_word_by_native(
         return Ok(vec![]);
     }
 
-    let mut wordresults: Vec<result::word::Item> = Vec::new();
-
+    // Define basic search structure
     let mut word_search = word::WordSearch::new(db, query);
     word_search.with_language(Language::German);
 
-    let results = if query.chars().count() <= 2 && query.is_kana() {
+    // Perform the word search
+    let mut wordresults = if query.chars().count() <= 2 && query.is_kana() {
         // Search for exact matches only if query.len() <= 2
         word_search
             .with_mode(SearchMode::Exact)
@@ -83,10 +67,7 @@ pub async fn search_word_by_native(
             .await?
     };
 
-    // Search for right variable
-    //wordresults.extend(exact_words);
-    wordresults.extend(results);
-
+    // Sort the results based
     NativeWordOrder::new(query).sort(&mut wordresults);
 
     // Limit search to 10 results
@@ -95,6 +76,59 @@ pub async fn search_word_by_native(
     Ok(wordresults)
 }
 
+/// load word assigned kanji
+pub async fn load_word_kanji_info(
+    db: &DbPool,
+    words: &Vec<result::word::Item>,
+) -> Result<Vec<kanji::Kanji>, Error> {
+    use futures::future::join_all;
+
+    let res: Vec<Vec<kanji::Kanji>> = join_all(
+        words
+            .iter()
+            // Filter only words with kanji readings
+            .filter_map(|i| {
+                i.reading
+                    .kanji
+                    .is_some()
+                    .then(|| i.reading.kanji.as_ref().unwrap())
+            })
+            // Don't load too much
+            .take(10)
+            // Load kanji from DB
+            .map(|word| word.load_kanji_info(db)),
+    )
+    .await
+    .into_iter()
+    .collect::<Result<Vec<Vec<kanji::Kanji>>, Error>>()?;
+
+    // if first word with kanji reading has more
+    // than MAX_KANJI_INFO_ITEMS kanji, display all of them only
+    let limit = {
+        if !res.is_empty() && res[0].len() > MAX_KANJI_INFO_ITEMS {
+            res[0].len()
+        } else {
+            MAX_KANJI_INFO_ITEMS
+        }
+    };
+
+    // Remove duplicates
+    let mut items_new = Vec::new();
+    res.into_iter()
+        .flatten()
+        .collect_vec()
+        .into_iter()
+        .for_each(|i| {
+            if !items_new.contains(&i) {
+                items_new.push(i);
+            }
+        });
+
+    // Limit result and map to result::Item
+    Ok(items_new.into_iter().take(limit).collect_vec())
+}
+
+// TODO
 /// Search gloss readings
 pub async fn search_word_by_glosses(
     db: &DbPool,
