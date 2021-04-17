@@ -95,7 +95,7 @@
 
             <div class="kanji-entry right">
             <!-- Right side: Info -->
-            @for (pos, sense) in word.senses.iter().enumerate() {
+            @for (pos, sense) in word.get_senses().iter().enumerate() {
               @if !sense.glosses.is_empty() {
                 <!-- Entry -->
                 <div class="list-entry">

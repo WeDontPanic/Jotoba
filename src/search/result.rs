@@ -169,6 +169,17 @@ pub mod word {
             }
             false
         }
+
+        /// Get senses ordered by language (non-english first)
+        pub fn get_senses(&self) -> Vec<Sense> {
+            let (english, other): (Vec<Sense>, Vec<Sense>) = self
+                .senses
+                .clone()
+                .into_iter()
+                .partition(|i| i.language == Language::English);
+
+            other.into_iter().chain(english).collect_vec()
+        }
     }
 
     impl Reading {
