@@ -130,7 +130,7 @@
                 <div class="notes">@word.alt_readings_beautified()</div>
               }
 
-              <hr />
+              <hr class="res-separator" />
             </div>
           </div>
         }
@@ -157,7 +157,7 @@
             <!-- Kanji and translation -->
             <div class="kanji-entry left d-flex flex-row">
               <span class="kanji-preview large noselect">
-                @kanji.literal
+                <a href="/search?type=1&search=@kanji.literal" style="text-decoration: none;color: black">@kanji.literal</a>
               </span>
               <div class="translation kanji">
                 @kanji.meaning.join(", ")

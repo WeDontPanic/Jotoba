@@ -6,24 +6,26 @@ use crate::{templates, DbPool};
 #[derive(Deserialize, Debug)]
 pub struct QueryStruct {
     #[serde(rename = "search")]
-    query: Option<String>,
+    pub query: Option<String>,
     #[serde(rename = "type")]
-    search_type: Option<QueryType>,
+    pub search_type: Option<QueryType>,
 }
 
-#[derive(Deserialize, Debug, Copy, Clone)]
+#[derive(Deserialize, Debug, Copy, Clone, PartialEq)]
 pub enum QueryType {
     #[serde(rename = "1")]
-    Sentences,
+    Kanji,
     #[serde(rename = "2")]
+    Sentences,
+    #[serde(rename = "3")]
     Names,
     #[serde(rename = "0", other)]
-    WordsAndKanji,
+    Words,
 }
 
 impl Default for QueryType {
     fn default() -> Self {
-        Self::WordsAndKanji
+        Self::Words
     }
 }
 
@@ -52,7 +54,7 @@ pub async fn search(
 ) -> Result<HttpResponse, actix_web::Error> {
     let query_data = query_data.adjust();
 
-    let search_query = match query_data.query {
+    let search_query = match query_data.query.clone() {
         Some(s) => s,
         None => {
             return Ok(HttpResponse::MovedPermanently()
@@ -66,9 +68,5 @@ pub async fn search(
         .await
         .unwrap();
 
-    Ok(HttpResponse::Ok().body(render!(
-        templates::base,
-        Some(search_query.clone()),
-        Some(result)
-    )))
+    Ok(HttpResponse::Ok().body(render!(templates::base, Some(query_data), Some(result))))
 }

@@ -1,6 +1,8 @@
 @use crate::search::result::Item;
+@use crate::web::search::{QueryType, QueryStruct};
+@use crate::web::utils::*;
 @use super::{index_html, word_search_html};
-@(search_text: Option<String>,search_result: Option<Vec<Item>>)
+@(search_query: Option<QueryStruct>, search_result: Option<Vec<Item>>)
 <!DOCTYPE html>
 <html lang="en">
    <head>
@@ -53,14 +55,15 @@
                         <div class="input-field first-wrap">
                            <div class="input-select">
                               <select data-trigger="" name="type">
-                                 <option value="0">Words & Kanji</option>
-                                 <option value="1">Sentences</option>
-                                 <option value="2">Names</option>
+                                 <option value="0" @sel_str(&search_query, QueryType::Words) >Words</option>
+                                 <option value="1" @sel_str(&search_query, QueryType::Kanji) >Kanji</option>
+                                 <option value="2" @sel_str(&search_query, QueryType::Sentences) >Sentences</option>
+                                 <option value="3" @sel_str(&search_query, QueryType::Names) >Names</option>
                               </select>
                            </div>
                         </div>
                         <div class="input-field second-wrap">
-                           <input id="search" name="search" type="text" value="@search_text.unwrap_or_default()" placeholder="German, Japanese, Romaji, words or text" tabindex="1" lang="ja" autocapitalize="off" autocomplete="off" data-autoload="false" data-effective-keyword=""/>
+                           <input id="search" name="search" type="text" value="@search_query.map(|i| i.query.clone().unwrap_or_default()).unwrap_or_default()" placeholder="German, Japanese, Romaji, words or text" tabindex="1" lang="ja" autocapitalize="off" autocomplete="off" data-autoload="false" data-effective-keyword=""/>
                         </div>
                         <div class="input-field third-wrap">
                            <button class="btn-search" type="submit">
