@@ -6,6 +6,18 @@ pub enum Item {
     Kanji(Kanji),
 }
 
+impl From<word::Item> for Item {
+    fn from(k: word::Item) -> Self {
+        Self::Word(k)
+    }
+}
+
+impl From<Kanji> for Item {
+    fn from(k: Kanji) -> Self {
+        Self::Kanji(k)
+    }
+}
+
 /// Defines a word result item
 pub mod word {
     use itertools::Itertools;

@@ -1,3 +1,5 @@
+use std::cmp::Ordering;
+
 use super::{super::schema::dict, kanji::Kanji};
 use crate::{
     error::Error,
@@ -50,8 +52,46 @@ impl Dict {
         }
         let ids = self.kanji_info.as_ref().unwrap();
 
-        super::kanji::load_by_ids(db, ids).await
+        // Load kanji from DB
+        let mut items = super::kanji::load_by_ids(db, ids).await?;
+        // Order items based on their occurence
+        items.sort_by(|a, b| get_item_order(ids, a.id, b.id));
+
+        Ok(items)
     }
+}
+
+/// Get the order of two elements in a vector
+fn get_item_order<T>(vec: &Vec<T>, a: T, b: T) -> Ordering
+where
+    T: PartialEq,
+{
+    let mut a_pos = 0;
+    let mut b_pos = 0;
+    let mut found_a = false;
+    let mut found_b = false;
+
+    for i in vec {
+        if *i == a {
+            found_a = true;
+        }
+        if *i == b {
+            found_b = true;
+        }
+
+        if found_a && found_b {
+            break;
+        }
+
+        if !found_a {
+            a_pos += 1;
+        }
+        if !found_b {
+            b_pos += 1;
+        }
+    }
+
+    a_pos.cmp(&b_pos)
 }
 
 /// Get all Database-dict structures from an entry
