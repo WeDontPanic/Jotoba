@@ -55,43 +55,32 @@ impl Dict {
         // Load kanji from DB
         let mut items = super::kanji::load_by_ids(db, ids).await?;
         // Order items based on their occurence
-        items.sort_by(|a, b| get_item_order(ids, a.id, b.id));
+        items.sort_by(|a, b| get_item_order(ids, a.id, b.id).unwrap_or(Ordering::Equal));
 
         Ok(items)
     }
 }
 
 /// Get the order of two elements in a vector
-fn get_item_order<T>(vec: &Vec<T>, a: T, b: T) -> Ordering
+/// requires that a, b are element of vec
+fn get_item_order<T>(vec: &Vec<T>, a: T, b: T) -> Option<Ordering>
 where
     T: PartialEq,
 {
-    let mut a_pos = 0;
-    let mut b_pos = 0;
-    let mut found_a = false;
-    let mut found_b = false;
+    if a == b {
+        return Some(Ordering::Equal);
+    }
 
     for i in vec {
         if *i == a {
-            found_a = true;
+            return Some(Ordering::Less);
         }
         if *i == b {
-            found_b = true;
-        }
-
-        if found_a && found_b {
-            break;
-        }
-
-        if !found_a {
-            a_pos += 1;
-        }
-        if !found_b {
-            b_pos += 1;
+            return Some(Ordering::Greater);
         }
     }
 
-    a_pos.cmp(&b_pos)
+    None
 }
 
 /// Get all Database-dict structures from an entry
@@ -140,4 +129,34 @@ pub async fn clear_dicts(db: &DbPool) -> Result<(), Error> {
     use crate::schema::dict::dsl::*;
     diesel::delete(dict).execute_async(db).await?;
     Ok(())
+}
+
+#[cfg(test)]
+mod test {
+    use super::*;
+    use std::cmp::Ordering;
+
+    #[test]
+    fn test_get_item_order_less() {
+        let vec = vec!["1", "2", "3", "5"];
+        let a = "1";
+        let b = "2";
+        assert_eq!(get_item_order(&vec, a, b), Some(Ordering::Less));
+    }
+
+    #[test]
+    fn test_get_item_order_equal() {
+        let vec = vec!["1", "2", "3", "5"];
+        let a = "1";
+        let b = "1";
+        assert_eq!(get_item_order(&vec, a, b), Some(Ordering::Equal));
+    }
+
+    #[test]
+    fn test_get_item_order_greater() {
+        let vec = vec!["1", "2", "3", "5"];
+        let a = "5";
+        let b = "2";
+        assert_eq!(get_item_order(&vec, a, b), Some(Ordering::Greater));
+    }
 }
