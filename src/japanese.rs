@@ -35,7 +35,9 @@ impl JapaneseExt for char {
     fn is_kanji(&self) -> bool {
         ((*self) >= '\u{3400}' && (*self) <= '\u{4DBF}')
             || ((*self) >= '\u{4E00}' && (*self) <= '\u{9FFF}')
-            || ((*self) >= '\u{F900}' && (*self) <= '\u{FAFF}' || (*self) == '\u{3005}')
+            || ((*self) >= '\u{F900}' && (*self) <= '\u{FAFF}'
+                || (*self) == '\u{3005}'
+                || (*self) == '\u{29E8A}')
     }
 
     fn has_kana(&self) -> bool {
@@ -181,7 +183,6 @@ pub fn furigana_pairs(kanji: &str, kana: &str) -> Option<Vec<SentencePart>> {
         kanji: (last_char_type.unwrap() == CharType::Kanji).then(|| word_buf.clone()),
     };
     parts.push(part);
-
     Some(parts)
 }
 
@@ -269,6 +270,11 @@ impl SentencePart {
 #[cfg(test)]
 mod test {
     use super::*;
+
+    #[test]
+    fn test_is_kanji2() {
+        assert!("𩺊".is_kanji())
+    }
 
     #[test]
     fn test_kanji_readings() {
