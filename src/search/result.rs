@@ -171,14 +171,72 @@ pub mod word {
         }
 
         /// Get senses ordered by language (non-english first)
-        pub fn get_senses(&self) -> Vec<Sense> {
-            let (english, other): (Vec<Sense>, Vec<Sense>) = self
+        pub fn get_senses(&self) -> Vec<Vec<Sense>> {
+            let (english, mut other): (Vec<Sense>, Vec<Sense>) = self
                 .senses
                 .clone()
                 .into_iter()
                 .partition(|i| i.language == Language::English);
 
-            other.into_iter().chain(english).collect_vec()
+            // Set other's p_o_s items to the ones from english if they are all the same
+            if Self::all_pos_same(&english) && !english.is_empty() && !english[0].glosses.is_empty()
+            {
+                let pos = english[0].glosses[0].part_of_speech.clone();
+                other.iter_mut().for_each(|item| {
+                    for gloss in item.glosses.iter_mut() {
+                        gloss.part_of_speech = pos.clone();
+                    }
+                });
+            }
+
+            // Set other's misc items to the ones from english if they are all the same
+            if Self::all_misc_same(&english) && !english.is_empty() && english[0].misc.is_some() {
+                let misc = english[0].misc;
+                other.iter_mut().for_each(|item| {
+                    item.misc = misc;
+                });
+            }
+
+            vec![other, english]
+        }
+
+        /// Return true if all 'misc' items are of the same value
+        pub fn all_misc_same(senses: &Vec<Sense>) -> bool {
+            if senses.is_empty() || senses[0].misc.is_none() {
+                return false;
+            }
+
+            let mut sense_iter = senses.iter();
+            let first_misc = sense_iter.next().unwrap().misc;
+
+            for i in sense_iter {
+                if i.misc != first_misc {
+                    return false;
+                }
+            }
+
+            true
+        }
+
+        /// Return true if all 'part_of_speech' items are of the same value
+        pub fn all_pos_same(senses: &Vec<Sense>) -> bool {
+            if senses.is_empty()
+                || senses[0].glosses.is_empty()
+                || senses[0].glosses[0].part_of_speech.is_empty()
+            {
+                return false;
+            }
+
+            let mut sense_iter = senses.iter();
+            let first_p_o_s = sense_iter.next().unwrap().glosses[0].part_of_speech.clone();
+
+            for i in sense_iter {
+                if i.glosses[0].part_of_speech != first_p_o_s {
+                    return false;
+                }
+            }
+
+            true
         }
     }
 

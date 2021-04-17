@@ -480,3 +480,9 @@ svg {
     background: #4CAF50;
     cursor: pointer;
 }
+
+.lang-separator {
+  border-color: rgba(0,0,0,0.07);
+  margin-left: 20px;
+  margin-right: 20px;
+}

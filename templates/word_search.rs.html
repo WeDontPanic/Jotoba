@@ -95,27 +95,33 @@
 
             <div class="kanji-entry right">
             <!-- Right side: Info -->
-            @for (pos, sense) in word.get_senses().iter().enumerate() {
-              @if !sense.glosses.is_empty() {
-                <!-- Entry -->
-                <div class="list-entry">
-                  <div class="tags">
-                    @sense.get_tags()
+            @for (spos, senses_compound) in word.get_senses().iter().enumerate() {
+              @for (pos, sense) in senses_compound.iter().enumerate() {
+                @if !sense.glosses.is_empty() {
+                  <!-- Sense entry -->
+                  <div class="list-entry">
+                    <div class="tags">
+                      @sense.get_tags()
+                    </div>
+                    <div class="definition-wrapper d-flex flex-row">
+                      <div class="entry-count">
+                        @(pos+1).
+                      </div>
+                      <div class="translation">
+                        @sense.get_glosses()
+                      </div>
+                    </div>
+                    @if let Some(ref misc) = sense.get_misc() {
+                      <div class="tags no-margin">
+                        @misc
+                      </div>
+                    }
                   </div>
-                  <div class="definition-wrapper d-flex flex-row">
-                    <div class="entry-count">
-                      @(pos+1).
-                    </div>
-                    <div class="translation">
-                      @sense.get_glosses()
-                    </div>
-                  </div>
-                  @if let Some(ref misc) = sense.get_misc() {
-                    <div class="tags no-margin">
-                      @misc
-                    </div>
-                  }
-                </div>
+                }
+              }
+
+              @if spos == 0 && !word.get_senses()[1].is_empty() && !senses_compound.is_empty() {
+                <hr class="lang-separator"/>
               }
             }
               <!-- Additional Informations-->
