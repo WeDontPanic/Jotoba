@@ -1,17 +1,19 @@
 use crate::{
-    error::{self, Error},
+    error::Error,
+    japanese::JapaneseExt,
     models::kanji::{self, Kanji},
     DbPool,
 };
 
+use futures::future::try_join_all;
+
 /// Find a kanji by its literal
-pub async fn by_literal(db: &DbPool, literal: &str) -> Result<Kanji, Error> {
-    kanji::find_by_literal(&db, literal).await.map_err(|i| {
-        // Map Diesel not-found errors to Error::NotFound
-        if let Error::DbError(db) = i {
-            error::map_notfound(db)
-        } else {
-            i
-        }
-    })
+pub async fn by_literals(db: &DbPool, query: &str) -> Result<Vec<Kanji>, Error> {
+    Ok(try_join_all(
+        query
+            .chars()
+            .filter(|i| i.is_kanji())
+            .map(|literal| kanji::find_by_literal(&db, literal.to_string())),
+    )
+    .await?)
 }

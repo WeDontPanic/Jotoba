@@ -122,7 +122,7 @@ async fn get_dict_kanji(db: &DbPool, dicts: &mut Vec<NewDict>) {
             .flatten()
             .collect_vec()
         {
-            let found_kanji = crate::models::kanji::find_by_literal(&db, &kanji).await;
+            let found_kanji = crate::models::kanji::find_by_literal(&db, kanji.clone()).await;
             if found_kanji.is_err() {
                 continue;
             }

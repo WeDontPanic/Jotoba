@@ -1,127 +1,132 @@
 @use crate::models::kanji::Kanji;
-@(k_item: Kanji)
+@(kanji: Vec<Kanji>)
 <!-- Inner Main Body -->
-<div class="d-flex center">
-    <!-- Left side: Kanji -->
-    <div class="kanji-entry left detail d-flex flex-column">
-       <span class="kanji-preview x-large">
-         @k_item.literal
-       </span>
-       <div class="kanji-preview-info">
-         <div class="notes"><b>@k_item.stroke_count</b> strokes </div>
-          <!--TODO-->
-          <!--<div class="notes"><b>Radical:</b> [> !!! Radical(s) hier. (z.b.: open country 冂) !!! <] </div>-->
-          <!--<div class="notes"><b>Parts:</b>  [> !!! Parts hier. (z.b.: 人 冂) !!! <] </div>-->
-       </div>
-    </div>
-    <!-- Right side: Info -->
-    <div class="kanji-entry right detail">
-       <!-- First Part -->
-       <div class="kanji-entry d-flex flex-row">
-          <!-- Inner Left Side -->
-          <div class="kanji-preview-left">
-             <div class="translation big">
-                 <!-- !!! Translation hier !!! (z.b. inside, within, between, among, house, home)--> 
-                 @k_item.meaning.join(", ")
-             </div>
-              @if let Some(ref kun_readings) = k_item.kunyomi {
-               <div class="d-flex flex-row">
-                  <div class="tags no-margin fat right-padding-10 noselect">Kun:</div>
-                  <!-- !!! for i in kunReadings oder so hier. immer abwechslung die reading und nen komma !!! --> 
-                    @for (pos, kun) in kun_readings.iter().enumerate() {
-                      @if pos > 0 {
-                        <div class="tags no-margin fat right-padding-10">,</div>
-                      }
-                      <div class="clickable no-align fat">@kun</div>
-                    }
+@for (kpos, k_item) in kanji.iter().enumerate() {
+  @if kpos > 0 {
+    <br>
+  }
+  <div class="d-flex center">
+      <!-- Left side: Kanji -->
+      <div class="kanji-entry left detail d-flex flex-column">
+         <span class="kanji-preview x-large">
+           @k_item.literal
+         </span>
+         <div class="kanji-preview-info">
+           <div class="notes"><b>@k_item.stroke_count</b> strokes </div>
+            <!--TODO-->
+            <!--<div class="notes"><b>Radical:</b> [> !!! Radical(s) hier. (z.b.: open country 冂) !!! <] </div>-->
+            <!--<div class="notes"><b>Parts:</b>  [> !!! Parts hier. (z.b.: 人 冂) !!! <] </div>-->
+         </div>
+      </div>
+      <!-- Right side: Info -->
+      <div class="kanji-entry right detail">
+         <!-- First Part -->
+         <div class="kanji-entry d-flex flex-row">
+            <!-- Inner Left Side -->
+            <div class="kanji-preview-left">
+               <div class="translation big">
+                   <!-- !!! Translation hier !!! (z.b. inside, within, between, among, house, home)--> 
+                   @k_item.meaning.join(", ")
                </div>
-              }
-              @if let Some(ref on_readings) = k_item.onyomi {
-               <div class="d-flex flex-row">
-                  <div class="tags no-margin fat right-padding-20 noselect">On:</div>
-                   <!-- !!! for i in onReadings oder so hier. immer abwechslung die reading und nen komma !!! --> 
-                    @for (pos, on) in on_readings.iter().enumerate() {
-                      @if pos > 0 {
-                        <div class="tags no-margin fat right-padding-10">,</div>
+                @if let Some(ref kun_readings) = k_item.kunyomi {
+                 <div class="d-flex flex-row">
+                    <div class="tags no-margin fat right-padding-10 noselect">Kun:</div>
+                    <!-- !!! for i in kunReadings oder so hier. immer abwechslung die reading und nen komma !!! --> 
+                      @for (pos, kun) in kun_readings.iter().enumerate() {
+                        @if pos > 0 {
+                          <div class="tags no-margin fat right-padding-10">,</div>
+                        }
+                        <div class="clickable no-align fat">@kun</div>
                       }
-                      <div class="clickable no-align fat">@on</div>
-                    }
-               </div>
-             }
-          </div>
-          <!-- Inner Right Side -->
-          <div class="kanji-preview-right">
-              <!-- !!! for i in notes oder sowas hier !!! --> 
-              @if let Some(ref grade) = k_item.school_str() {
-               <div class="notes">@grade</div>
-              }
-              @if let Some(n_lvl) = k_item.jlpt {
-               <div class="notes">JLPT level <b>N@n_lvl</b></div>
-              }
-              @if let Some(frequency) = k_item.frequency {
-               <div class="notes"><b>@frequency</b> of 2500 most used kanji in newspapers</div>
-              }
-          </div>
-       </div>
-       <!-- Second Part -->
-       @if k_item.has_stroke_frames() {
+                 </div>
+                }
+                @if let Some(ref on_readings) = k_item.onyomi {
+                 <div class="d-flex flex-row">
+                    <div class="tags no-margin fat right-padding-20 noselect">On:</div>
+                     <!-- !!! for i in onReadings oder so hier. immer abwechslung die reading und nen komma !!! --> 
+                      @for (pos, on) in on_readings.iter().enumerate() {
+                        @if pos > 0 {
+                          <div class="tags no-margin fat right-padding-10">,</div>
+                        }
+                        <div class="clickable no-align fat">@on</div>
+                      }
+                 </div>
+               }
+            </div>
+            <!-- Inner Right Side -->
+            <div class="kanji-preview-right">
+                <!-- !!! for i in notes oder sowas hier !!! --> 
+                @if let Some(ref grade) = k_item.school_str() {
+                 <div class="notes">@grade</div>
+                }
+                @if let Some(n_lvl) = k_item.jlpt {
+                 <div class="notes">JLPT level <b>N@n_lvl</b></div>
+                }
+                @if let Some(frequency) = k_item.frequency {
+                 <div class="notes"><b>@frequency</b> of 2500 most used kanji in newspapers</div>
+                }
+            </div>
+         </div>
+         <!-- Second Part -->
+         @if k_item.has_stroke_frames() {
+           <hr/>
+           <div class="stroke-container">
+                <img src="@k_item.get_stroke_frames_url()">
+           </div>
+         }
+         @if k_item.has_animation_file() {
+           <div class="animation-container d-flex flex-row">
+              <div class="d-flex flex-column slider-parent">
+                 <div class="slidecontainer">
+                    <input type="range" min="0.05" max="2" value="1" step="0.05" class="slider" id="speedSlider">
+                 </div>
+                 <span id="currentAnimationSpeed" class="slider-output noselect">Animation speed: 1</span>
+              </div>
+              <div>
+                <svg id="kanjisvg" width="109px" height="109px">
+                @for (del, d) in k_item.get_animation_entries() {
+                  <path style="animation-delay: @del;" class="draw2" stroke-linejoin="round" stroke="black" fill="none" stroke-width="5" d="@d">
+                  </path>  
+                }
+                </svg>
+              </div>
+           </div>
+         }
          <hr/>
-         <div class="stroke-container">
-              <img src="@k_item.get_stroke_frames_url()">
-         </div>
-       }
-       @if k_item.has_animation_file() {
-         <div class="animation-container d-flex flex-row">
-            <div class="d-flex flex-column slider-parent">
-               <div class="slidecontainer">
-                  <input type="range" min="0.05" max="2" value="1" step="0.05" class="slider" id="speedSlider">
+         <!-- Reading Compounds -->
+         <div class="kanji-entry d-flex flex-row">
+            <!-- On Reading -->
+            <div class="on-reading">
+               <h3 class="noselect">
+                  On reading compounds
+               </h3>
+               <div class="d-flex flex-column">
+                    <!-- !!! Alle on reading sachen !!! -->
+                  <!--<span>内 【ナイ】 inside, within</span>-->
+                  <!--<span>内科 【ナイカ】 internal medicine, i.e. treatment by medical procedures rather than surgical procedures, department of internal medicine (hospital, etc.)</span>-->
+                  <!--<span>島内 【トウナイ】 on an island, on-island</span>-->
+                  <!--<span>内裏 【ダイリ】 imperial palace, festival dolls representing the emperor and the empress</span>-->
+                  <!--<span>内府 【ナイフ】 Minister of the Interior (669-1868 CE), Lord Keeper of the Privy Seal (1885-1945 CE)</span>-->
+                  <!--<span>海内 【カイダイ】 the whole country</span>-->
                </div>
-               <span id="currentAnimationSpeed" class="slider-output noselect">Animation speed: 1</span>
             </div>
-            <div>
-              <svg id="kanjisvg" width="109px" height="109px">
-              @for (del, d) in k_item.get_animation_entries() {
-                <path style="animation-delay: @del;" class="draw2" stroke-linejoin="round" stroke="black" fill="none" stroke-width="5" d="@d">
-                </path>  
-              }
-              </svg>
+            <!-- Kun Reading -->
+            <div class="kun-reading">
+               <h3 class="noselect">
+                  Kun reading compounds
+               </h3>
+               <div class="d-flex flex-column">
+                   <!-- !!! Alle kun reading sachen !!! -->
+                  <!--<span>内 【うち】 inside, within, while (e.g. one is young), during, within (e.g. a day), in the course of, among, amongst, (out) of, between, in (secret, chaos, poverty, etc.), amidst, with (e.g. success), within oneself, one's feelings, inner thoughts, we, our company, our organization, one's home, one's family, my spouse, my husband, my wife, signed on behalf of (husband's name) by his wife, I, me, imperial palace grounds, emperor</span>-->
+                  <!--<span>内々 【うちうち】 private, confidential, informal, secret, (within the) family circle, (on the) inside</span>-->
+                  <!--<span>幕内 【まくうち】 highest-ranking division</span>-->
+                  <!--<span>幕の内 【まくのうち】 box lunch (containing rice and 10-15 small portions of fish, meat, and vegetables), highest-ranking division, intermission (between acts), interlude</span>-->
+               </div>
             </div>
          </div>
-       }
-       <hr/>
-       <!-- Reading Compounds -->
-       <div class="kanji-entry d-flex flex-row">
-          <!-- On Reading -->
-          <div class="on-reading">
-             <h3 class="noselect">
-                On reading compounds
-             </h3>
-             <div class="d-flex flex-column">
-                  <!-- !!! Alle on reading sachen !!! -->
-                <!--<span>内 【ナイ】 inside, within</span>-->
-                <!--<span>内科 【ナイカ】 internal medicine, i.e. treatment by medical procedures rather than surgical procedures, department of internal medicine (hospital, etc.)</span>-->
-                <!--<span>島内 【トウナイ】 on an island, on-island</span>-->
-                <!--<span>内裏 【ダイリ】 imperial palace, festival dolls representing the emperor and the empress</span>-->
-                <!--<span>内府 【ナイフ】 Minister of the Interior (669-1868 CE), Lord Keeper of the Privy Seal (1885-1945 CE)</span>-->
-                <!--<span>海内 【カイダイ】 the whole country</span>-->
-             </div>
-          </div>
-          <!-- Kun Reading -->
-          <div class="kun-reading">
-             <h3 class="noselect">
-                Kun reading compounds
-             </h3>
-             <div class="d-flex flex-column">
-                 <!-- !!! Alle kun reading sachen !!! -->
-                <!--<span>内 【うち】 inside, within, while (e.g. one is young), during, within (e.g. a day), in the course of, among, amongst, (out) of, between, in (secret, chaos, poverty, etc.), amidst, with (e.g. success), within oneself, one's feelings, inner thoughts, we, our company, our organization, one's home, one's family, my spouse, my husband, my wife, signed on behalf of (husband's name) by his wife, I, me, imperial palace grounds, emperor</span>-->
-                <!--<span>内々 【うちうち】 private, confidential, informal, secret, (within the) family circle, (on the) inside</span>-->
-                <!--<span>幕内 【まくうち】 highest-ranking division</span>-->
-                <!--<span>幕の内 【まくのうち】 box lunch (containing rice and 10-15 small portions of fish, meat, and vegetables), highest-ranking division, intermission (between acts), interlude</span>-->
-             </div>
-          </div>
-       </div>
-    </div>
- </div>
+      </div>
+   </div>
 
- <!-- Load this page's script -->
- <script src="assets/js/kanjiAnimation.js"></script>
+   <!-- Load this page's script -->
+   <script src="assets/js/kanjiAnimation.js"></script>
+}

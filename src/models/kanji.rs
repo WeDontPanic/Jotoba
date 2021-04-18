@@ -141,7 +141,7 @@ pub async fn exists(db: &DbPool) -> Result<bool, Error> {
 }
 
 /// Find a kanji by its literal
-pub async fn find_by_literal(db: &DbPool, l: &str) -> Result<Kanji, Error> {
+pub async fn find_by_literal(db: &DbPool, l: String) -> Result<Kanji, Error> {
     use crate::schema::kanji::dsl::*;
     kanji
         .filter(literal.eq(l))

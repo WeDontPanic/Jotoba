@@ -86,9 +86,9 @@ async fn kanji_search(
     query_data: QueryStruct,
 ) -> Result<HttpResponse, actix_web::Error> {
     let start = std::time::SystemTime::now();
-    let kanji = search::kanji::by_literal(&pool, query_data.query.as_ref().unwrap())
+    let kanji = search::kanji::by_literals(&pool, query_data.query.as_ref().unwrap())
         .await
-        .unwrap();
+        .unwrap_or_default();
     println!("kanji loading took: {:?}", start.elapsed().unwrap());
 
     Ok(HttpResponse::Ok().body(render!(
