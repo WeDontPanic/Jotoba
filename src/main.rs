@@ -29,6 +29,7 @@ struct Options {
     import: bool,
     jmdict_path: String,
     kanjidict_path: String,
+    jlpt_paches_path: String,
     start: bool,
 }
 
@@ -49,6 +50,7 @@ pub async fn main() {
     // import data
     if options.import {
         let mut imported_kanji = false;
+        let mut imported_dicts = false;
         if !options.kanjidict_path.is_empty() {
             import::kanjidict::import(&database, options.kanjidict_path).await;
             imported_kanji = true;
@@ -61,6 +63,16 @@ pub async fn main() {
             }
 
             import::jmdict::import(&database, options.jmdict_path).await;
+            imported_dicts = true;
+        }
+
+        if !options.jlpt_paches_path.is_empty() {
+            if (!kanji_exists && !imported_kanji) || (!dict_exists && !imported_dicts) {
+                println!("Dict or kanji entries missing. Import them first!");
+                return;
+            }
+
+            import::jlpt_patches::import(&&database, options.jlpt_paches_path).await;
         }
 
         return;
@@ -127,20 +139,30 @@ fn parse_args() -> Option<Options> {
         ap.refer(&mut options.kanjidict_path).add_option(
             &["--kanjidict-path"],
             Store,
-            "The pah to import the kanjidict from. Required for --import",
+            "The path to import the kanjidict from. Required for --import",
         );
 
         ap.refer(&mut options.jmdict_path).add_option(
             &["--jmdict-path"],
             Store,
-            "The pah to import the jmdict from. Required for --import",
+            "The path to import the jmdict from. Required for --import",
+        );
+
+        ap.refer(&mut options.jlpt_paches_path).add_option(
+            &["--jlpt-patches-path"],
+            Store,
+            "The path to import the jlpt patches from. Required for --import",
         );
 
         ap.parse_args_or_exit();
     }
 
-    if options.import && options.jmdict_path.is_empty() && options.kanjidict_path.is_empty() {
-        println!("--jmdict-path or --kanjidict-path required");
+    if options.import
+        && options.jmdict_path.is_empty()
+        && options.kanjidict_path.is_empty()
+        && options.jlpt_paches_path.is_empty()
+    {
+        println!("--jmdict-path, --kanjidict-path or --jlpt-patches-path required");
         return None;
     }
 

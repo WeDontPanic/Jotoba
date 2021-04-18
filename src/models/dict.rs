@@ -20,6 +20,7 @@ pub struct Dict {
     pub priorities: Option<Vec<Priority>>,
     pub information: Option<Vec<Information>>,
     pub kanji_info: Option<Vec<i32>>,
+    pub jlpt_lvl: Option<i32>,
 }
 
 #[derive(Insertable, Clone, Debug, PartialEq)]
@@ -32,6 +33,7 @@ pub struct NewDict {
     pub priorities: Option<Vec<Priority>>,
     pub information: Option<Vec<Information>>,
     pub kanji_info: Option<Vec<i32>>,
+    pub jlpt_lvl: Option<i32>,
 }
 
 impl PartialEq for Dict {
@@ -96,6 +98,7 @@ pub fn new_dicts_from_entry(entry: &Entry) -> Vec<NewDict> {
             reading: item.value.clone(),
             priorities: (!item.priorities.is_empty()).then(|| item.priorities.clone()),
             kanji_info: None,
+            jlpt_lvl: None,
         })
         .collect()
 }

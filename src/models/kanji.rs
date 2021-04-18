@@ -69,6 +69,16 @@ fn to_option<T>(vec: Vec<T>) -> Option<Vec<T>> {
     }
 }
 
+pub async fn update_jlpt(db: &DbPool, l: &str, level: i32) -> Result<(), Error> {
+    use crate::schema::kanji::dsl::*;
+    diesel::update(kanji)
+        .filter(literal.eq(l))
+        .set(jlpt.eq(level))
+        .execute_async(db)
+        .await?;
+    Ok(())
+}
+
 impl Kanji {
     /// Print kanji grade pretty for frontend
     pub fn school_str(&self) -> Option<String> {

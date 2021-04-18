@@ -248,9 +248,8 @@ pub mod word {
 
         /// Returns the jplt level of a word. None if
         /// a word doesn't have a JPLT lvl assigned
-        pub fn get_jplt_lvl(&self) -> Option<u8> {
-            // TODO
-            None
+        pub fn get_jplt_lvl(&self) -> Option<i32> {
+            self.get_reading().jlpt_lvl
         }
     }
 

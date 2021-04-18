@@ -8,6 +8,7 @@ table! {
         priorities -> Nullable<Array<Text>>,
         information -> Nullable<Array<Text>>,
         kanji_info -> Nullable<Array<Int4>>,
+        jlpt_lvl -> Nullable<Int4>,
     }
 }
 
