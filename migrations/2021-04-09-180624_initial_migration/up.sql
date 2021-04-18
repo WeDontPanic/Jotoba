@@ -5,7 +5,7 @@ CREATE TABLE dict (
   kanji boolean NOT NULL,
   no_kanji boolean NOT NULL,
   priorities TEXT[],
-  information TEXT[],
+  information INTEGER[],
   kanji_info INTEGER[],
   jlpt_lvl INTEGER
 );
@@ -15,14 +15,14 @@ CREATE INDEX index_seq_dict ON dict (sequence);
 CREATE TABLE sense (
   id SERIAL PRIMARY KEY,
   sequence INTEGER NOT NULL,
-  language TEXT NOT NULL,
+  language INTEGER NOT NULL,
   gloss_pos INTEGER NOT NULL,
   gloss TEXT NOT NULL,
   misc TEXT,
   part_of_speech TEXT[],
   dialect TEXT,
   xref TEXT,
-  gtype TEXT,
+  gtype INTEGER,
   field TEXT,
   information TEXT,
   antonym TEXT
