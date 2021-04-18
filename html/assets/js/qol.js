@@ -71,3 +71,10 @@ function copyTranslationAndShowMessage(textParent) {
 		showMessage("success", "meaning copied to clipboard.");
 	}
 }
+
+// Navigate to the newly picked seach type directly on change
+function onLangChange(value) {
+  var params = new URLSearchParams(location.search);
+  params.set('type', value);
+  window.location.search = params.toString();
+}

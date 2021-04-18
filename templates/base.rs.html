@@ -58,7 +58,7 @@
                      <div class="inner-form">
                         <div class="input-field first-wrap">
                            <div class="input-select">
-                              <select data-trigger="" name="type">
+                              <select data-trigger="" name="type" onchange="onLangChange(value)">
                                  <option value="0" @sel_str(&search_query, QueryType::Words) >Words</option>
                                  <option value="1" @sel_str(&search_query, QueryType::Kanji) >Kanji</option>
                                  <option value="2" @sel_str(&search_query, QueryType::Sentences) >Sentences</option>
