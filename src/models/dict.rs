@@ -85,6 +85,23 @@ where
     None
 }
 
+pub async fn update_jlpt(db: &DbPool, l: &str, level: i32) -> Result<(), Error> {
+    use crate::schema::dict::dsl::*;
+    let seq_ids = dict
+        .select(sequence)
+        .filter(reading.eq(l))
+        .get_results_async::<i32>(db)
+        .await?;
+
+    diesel::update(dict)
+        .filter(sequence.eq_any(&seq_ids))
+        .set(jlpt_lvl.eq(level))
+        .execute_async(db)
+        .await?;
+
+    Ok(())
+}
+
 /// Get all Database-dict structures from an entry
 pub fn new_dicts_from_entry(entry: &Entry) -> Vec<NewDict> {
     entry
