@@ -1,3 +1,5 @@
+use std::{fs::read_to_string, path::Path};
+
 use super::super::schema::kanji;
 use crate::{error::Error, parse::kanjidict::Character, DbPool};
 use diesel::prelude::*;
@@ -71,6 +73,40 @@ impl Kanji {
     /// Print kanji grade pretty for frontend
     pub fn school_str(&self) -> Option<String> {
         self.grade.map(|grade| format!("Taught in {} grade", grade))
+    }
+
+    pub fn get_animation_path(&self) -> String {
+        format!("html/assets/svg/{}_animated.svgs", self.literal)
+    }
+
+    pub fn get_stroke_frames_url(&self) -> String {
+        format!("assets/svg/{}_frames.svg", self.literal)
+    }
+
+    // Returns true if the kanji has a stroke animation file
+    pub fn has_animation_file(&self) -> bool {
+        Path::new(&self.get_animation_path()).exists()
+    }
+
+    // Returns true if the kanji has stroke frames
+    pub fn has_stroke_frames(&self) -> bool {
+        Path::new(&self.get_animation_path()).exists()
+    }
+
+    /// Return the animation entries for the template
+    pub fn get_animation_entries(&self) -> Vec<(String, String)> {
+        if let Ok(content) = read_to_string(self.get_animation_path()) {
+            content
+                .split("\n")
+                .into_iter()
+                .map(|i| {
+                    let mut s = i.split(";");
+                    (s.next().unwrap().to_owned(), s.next().unwrap().to_owned())
+                })
+                .collect::<Vec<(String, String)>>()
+        } else {
+            vec![]
+        }
     }
 }
 

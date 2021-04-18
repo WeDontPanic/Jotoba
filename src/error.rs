@@ -6,6 +6,7 @@ use tokio_diesel::AsyncError;
 
 #[derive(Debug)]
 pub enum Error {
+    NotFound,
     ParseInt(ParseIntError),
     XmlError(quick_xml::Error),
     Utf8Error(FromUtf8Error),
@@ -14,6 +15,15 @@ pub enum Error {
     Undefined,
     DbError(DbError),
     Checkout(r2d2::Error),
+}
+
+/// Map a diesel not-found error to Error::NotFound
+/// Other diesel errors will be handled noramlly
+pub fn map_notfound(err: DbError) -> Error {
+    match err {
+        DbError::NotFound => Error::NotFound,
+        _ => err.into(),
+    }
 }
 
 impl From<DbError> for Error {

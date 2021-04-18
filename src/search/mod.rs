@@ -1,6 +1,7 @@
 #![allow(dead_code)]
 
 pub mod everything;
+pub mod kanji;
 pub mod result;
 mod result_order;
 pub mod word;

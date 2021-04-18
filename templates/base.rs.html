@@ -1,8 +1,12 @@
 @use crate::search::result::Item;
-@use crate::web::search::{QueryType, QueryStruct};
-@use crate::web::utils::*;
-@use super::{index_html, word_search_html};
-@(search_query: Option<QueryStruct>, search_result: Option<Vec<Item>>)
+@use crate::models::kanji::Kanji;
+@use crate::web::{
+  utils::*,
+  search::{QueryType, QueryStruct},
+};
+@use super::{index_html, word_search_html, kanji_details};
+
+@(search_query: Option<QueryStruct>, word_search_result: Option<Vec<Item>>, kanji_info_search_result: Option<Kanji>)
 <!DOCTYPE html>
 <html lang="en">
    <head>
@@ -87,10 +91,14 @@
           <div class="main-container">
             <br>
 
-            @if let Some(results) = search_result {
+            @if let Some(results) = word_search_result {
               @:word_search_html(results)
             } else {
-              @:index_html()
+              @if let Some(kanji_info) = kanji_info_search_result {
+                @:kanji_details(kanji_info)
+              }else {
+                @:index_html()
+              }
             }
             
           </div>
