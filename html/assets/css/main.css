@@ -95,6 +95,7 @@ h4 {
 
 .clickable:hover{
    text-decoration: underline;
+   color: var(--green);
 }
 
 .no-align {
@@ -489,4 +490,28 @@ svg {
 
 .res-separator {
   border-top: 2px solid rgba(0,0,0,.1);
+}
+
+.green {
+  color: var(--green);
+}
+
+.black {
+  color: black;
+}
+
+a {
+  text-decoration: none;
+}
+
+.kanji-preview.large:hover {
+   text-decoration: none;
+}
+
+.black:hover { 
+  color: black;
+}
+
+.green:hover {
+  color: var(--green);
 }

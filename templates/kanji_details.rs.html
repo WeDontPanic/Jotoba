@@ -29,7 +29,7 @@
                    @k_item.meaning.join(", ")
                </div>
                 @if let Some(ref kun_readings) = k_item.kunyomi {
-                 <div class="d-flex flex-row">
+                 <div class="d-flex flex-row wrap">
                     <div class="tags no-margin fat right-padding-10 noselect">Kun:</div>
                     <!-- !!! for i in kunReadings oder so hier. immer abwechslung die reading und nen komma !!! --> 
                       @for (pos, kun) in kun_readings.iter().enumerate() {
@@ -41,7 +41,7 @@
                  </div>
                 }
                 @if let Some(ref on_readings) = k_item.onyomi {
-                 <div class="d-flex flex-row">
+                 <div class="d-flex flex-row wrap">
                     <div class="tags no-margin fat right-padding-20 noselect">On:</div>
                      <!-- !!! for i in onReadings oder so hier. immer abwechslung die reading und nen komma !!! --> 
                       @for (pos, on) in on_readings.iter().enumerate() {

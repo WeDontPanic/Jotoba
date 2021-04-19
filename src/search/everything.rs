@@ -138,27 +138,20 @@ pub async fn search_word_by_glosses(
         return Ok(vec![]);
     }
 
-    let mut wordresults: Vec<result::word::Item> = Vec::new();
-
-    let mut ws1 = word::WordSearch::new(db, query);
-    ws1.with_language(Language::German)
-        .with_mode(SearchMode::Exact);
-
-    let mut ws2 = word::WordSearch::new(db, query);
-    ws2.with_language(Language::German)
+    let exact_words = word::WordSearch::new(db, query)
+        .with_language(Language::German)
         .with_case_insensitivity(true)
-        .with_mode(SearchMode::Exact);
-
-    let (exact_words, mut case_ignoring) =
-        futures::try_join!(ws1.search_by_glosses(), ws2.search_by_glosses())?;
+        .with_mode(SearchMode::Exact)
+        .search_by_glosses()
+        .await?;
 
     // TODO sort results
+
+    return Ok(exact_words);
 
     /*
     exact_words.sort();
     case_ignoring.sort();
-    */
-    case_ignoring.retain(|i| !exact_words.contains(&i));
 
     // Search for exact matches
 
@@ -180,4 +173,5 @@ pub async fn search_word_by_glosses(
     wordresults.extend(case_ignoring);
 
     Ok(wordresults)
+        */
 }
