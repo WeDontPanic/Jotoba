@@ -24,12 +24,25 @@ pub trait JapaneseExt {
 
     /// Returns true if inp contains japanese characters
     fn has_japanese(&self) -> bool;
+
+    /// Returns true if self is written in katakana
+    fn is_katakana(&self) -> bool;
+
+    /// Returns true if self is written in hiragana
+    fn is_hiragana(&self) -> bool;
 }
 
 impl JapaneseExt for char {
+    fn is_katakana(&self) -> bool {
+        (*self) >= '\u{30A0}' && (*self) <= '\u{30FF}'
+    }
+
+    fn is_hiragana(&self) -> bool {
+        (*self) >= '\u{3040}' && (*self) <= '\u{309F}'
+    }
+
     fn is_kana(&self) -> bool {
-        (*self) >= '\u{3040}' && (*self) <= '\u{30FF}'
-            || (*self) >= '\u{FF66}' && (*self) <= '\u{FF9F}'
+        self.is_hiragana() || self.is_katakana()
     }
 
     fn is_kanji(&self) -> bool {
@@ -84,6 +97,14 @@ impl JapaneseExt for str {
         } else {
             CharType::Other
         }
+    }
+
+    fn is_hiragana(&self) -> bool {
+        !self.chars().into_iter().any(|s| !s.is_hiragana())
+    }
+
+    fn is_katakana(&self) -> bool {
+        !self.chars().into_iter().any(|s| !s.is_katakana())
     }
 
     fn has_kana(&self) -> bool {
@@ -277,6 +298,7 @@ mod test {
         assert!("𩺊".is_kanji())
     }
 
+    /*
     #[test]
     fn test_furigana_pairs7() {
         let kanji = "新しい酒は古い革袋に入れる";
@@ -328,7 +350,6 @@ mod test {
         assert_eq!(furigana_pairs(kanji, kana), Some(result));
     }
 
-    /*
     #[test]
     fn test_kanji_readings() {
         let kanji = "先生はとくに田中を選び出して誉めた";

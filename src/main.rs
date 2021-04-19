@@ -13,6 +13,7 @@ pub mod models;
 mod parse;
 pub mod schema;
 pub mod search;
+pub mod utils;
 mod web;
 
 use actix_web::{middleware, web as actixweb, App, HttpServer};

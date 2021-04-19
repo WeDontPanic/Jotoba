@@ -1,7 +1,7 @@
 use std::{fs::read_to_string, path::Path};
 
 use super::super::schema::kanji;
-use crate::{error::Error, parse::kanjidict::Character, DbPool};
+use crate::{error::Error, parse::kanjidict::Character, utils::to_option, DbPool};
 use diesel::prelude::*;
 use tokio_diesel::*;
 
@@ -58,14 +58,6 @@ impl From<Character> for NewKanji {
             korean_h: to_option(k.korean_hangul),
             natori: to_option(k.natori),
         }
-    }
-}
-
-fn to_option<T>(vec: Vec<T>) -> Option<Vec<T>> {
-    if vec.is_empty() {
-        None
-    } else {
-        Some(vec)
     }
 }
 

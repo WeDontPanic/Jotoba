@@ -5,7 +5,11 @@ use crate::{
     error::Error, japanese::JapaneseExt, models::kanji, parse::jmdict::languages::Language, DbPool,
 };
 
-use super::{result, result_order::NativeWordOrder, word, SearchMode};
+use super::{
+    result,
+    result_order::{GlossWordOrder, NativeWordOrder},
+    word, SearchMode,
+};
 
 const MAX_KANJI_INFO_ITEMS: usize = 4;
 
@@ -138,40 +142,18 @@ pub async fn search_word_by_glosses(
         return Ok(vec![]);
     }
 
-    let exact_words = word::WordSearch::new(db, query)
+    let mut wordresults = word::WordSearch::new(db, query)
         .with_language(Language::German)
         .with_case_insensitivity(true)
         .with_mode(SearchMode::Exact)
         .search_by_glosses()
         .await?;
 
-    // TODO sort results
+    // Sort the results based
+    GlossWordOrder::new(query).sort(&mut wordresults);
 
-    return Ok(exact_words);
-
-    /*
-    exact_words.sort();
-    case_ignoring.sort();
-
-    // Search for exact matches
-
-    /*
-    let mut right_variable = word::WordSearch::new(db, query)
-        .with_language(Language::German)
-        .with_mode(SearchMode::RightVariable)
-        .search_by_glosses()
-        .await?;
-
-    right_variable.retain(|i| !exact_words.contains(&i));
-    right_variable.sort();
-    right_variable.truncate(10);
-    wordresults.extend(right_variable);
-    */
-
-    // Search for right variable
-    wordresults.extend(exact_words);
-    wordresults.extend(case_ignoring);
+    // Limit search to 10 results
+    wordresults.truncate(10);
 
     Ok(wordresults)
-        */
 }

@@ -20,6 +20,7 @@ impl From<Kanji> for Item {
 
 /// Defines a word result item
 pub mod word {
+    use crate::japanese::JapaneseExt;
     use itertools::Itertools;
 
     use crate::{
@@ -29,6 +30,7 @@ pub mod word {
             dialect::Dialect, field::Field, gtype::GType, information::Information,
             languages::Language, misc::Misc, part_of_speech::PartOfSpeech, priority::Priority,
         },
+        utils,
     };
 
     /// A single word item
@@ -231,7 +233,7 @@ pub mod word {
             let first_p_o_s = sense_iter.next().unwrap().glosses[0].part_of_speech.clone();
 
             for i in sense_iter {
-                if i.glosses[0].part_of_speech != first_p_o_s {
+                if !utils::same_elements(&i.glosses[0].part_of_speech, &first_p_o_s) {
                     return false;
                 }
             }
@@ -252,9 +254,19 @@ pub mod word {
 
             c
         }
+
+        /// Return true if item is a katakana word
+        pub fn is_katakana_word(&self) -> bool {
+            self.reading.is_katakana()
+        }
     }
 
     impl Reading {
+        /// Return true if reading represents a katakana only word
+        pub fn is_katakana(&self) -> bool {
+            self.kana.as_ref().unwrap().reading.is_katakana() && self.kanji.is_none()
+        }
+
         /// Returns the word-reading of a Reading object
         pub fn get_reading(&self) -> &Dict {
             self.kanji.as_ref().unwrap_or(self.kana.as_ref().unwrap())
@@ -292,5 +304,26 @@ pub mod word {
                 })
                 .join(", ")
         }
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use super::word::*;
+    use crate::japanese::JapaneseExt;
+    use crate::models::dict::Dict;
+
+    #[test]
+    fn test_katakana() {
+        let reading = Reading {
+            kana: Some(Dict {
+                reading: String::from("カタカナ"),
+                ..Default::default()
+            }),
+            ..Default::default()
+        };
+
+        assert!(reading.kana.as_ref().unwrap().reading.is_katakana());
+        assert!(reading.is_katakana());
     }
 }
