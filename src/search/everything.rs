@@ -1,3 +1,4 @@
+use cached::{proc_macro::cached, SizedCache};
 use itertools::Itertools;
 use std::time::SystemTime;
 
@@ -14,6 +15,12 @@ use super::{
 const MAX_KANJI_INFO_ITEMS: usize = 4;
 
 /// Search among all data based on the input query
+#[cached(
+    result = true,
+    type = "SizedCache<String,Vec<result::Item>>",
+    create = "{SizedCache::with_size(10000)}",
+    convert = r#"{query.to_owned()}"#
+)]
 pub async fn search(db: &DbPool, query: &str) -> Result<Vec<result::Item>, Error> {
     let start = SystemTime::now();
 
@@ -132,7 +139,6 @@ pub async fn load_word_kanji_info(
     Ok(items_new.into_iter().take(limit).collect_vec())
 }
 
-// TODO
 /// Search gloss readings
 pub async fn search_word_by_glosses(
     db: &DbPool,

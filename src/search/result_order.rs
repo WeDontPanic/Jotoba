@@ -95,8 +95,8 @@ impl<'a> GlossWordOrder<'a> {
 
     /// Returns an Ordering variant based on the input items
     fn native_words(&self, this: &Item, other: &Item) -> Ordering {
-        let this_exact_l = self.calc_likelynes(this, SearchMode::Exact, false);
-        let other_exact_l = self.calc_likelynes(other, SearchMode::Exact, false);
+        let this_exact_l = self.calc_likelienes(this, SearchMode::Exact, false);
+        let other_exact_l = self.calc_likelienes(other, SearchMode::Exact, false);
 
         if this.is_katakana_word() && !other.is_katakana_word() {
             return Ordering::Greater;
@@ -140,7 +140,7 @@ impl<'a> GlossWordOrder<'a> {
     }
     */
 
-    pub fn calc_likelynes(&self, this: &Item, s_mode: SearchMode, ign_case: bool) -> u8 {
+    pub fn calc_likelienes(&self, this: &Item, s_mode: SearchMode, ign_case: bool) -> u8 {
         let n: usize = this.senses.iter().map(|i| i.glosses.iter().count()).sum();
         let pos = Self::get_query_pos_in_gloss(&self, this, s_mode, ign_case);
         if pos.is_none() {
@@ -263,11 +263,17 @@ mod test {
         let item_b = make_word1_item(vec!["Hello", "good day"]);
         let item_c = make_word2_item(vec!["hello", "good day"], vec!["bye"]);
 
-        assert_eq!(search.calc_likelynes(&item_a, SearchMode::Exact, false), 67);
-        assert_eq!(search.calc_likelynes(&item_a, SearchMode::Exact, true), 67);
+        assert_eq!(
+            search.calc_likelienes(&item_a, SearchMode::Exact, false),
+            67
+        );
+        assert_eq!(search.calc_likelienes(&item_a, SearchMode::Exact, true), 67);
 
-        assert_eq!(search.calc_likelynes(&item_b, SearchMode::Exact, false), 0);
+        assert_eq!(search.calc_likelienes(&item_b, SearchMode::Exact, false), 0);
 
-        assert_eq!(search.calc_likelynes(&item_c, SearchMode::Exact, true), 100);
+        assert_eq!(
+            search.calc_likelienes(&item_c, SearchMode::Exact, true),
+            100
+        );
     }
 }

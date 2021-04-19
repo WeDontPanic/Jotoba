@@ -142,9 +142,19 @@ pub async fn exists(db: &DbPool) -> Result<bool, Error> {
     Ok(kanji.select(id).limit(1).execute_async(db).await? == 1)
 }
 
+use cached::proc_macro::cached;
+use cached::SizedCache;
+
 /// Find a kanji by its literal
+#[cached(
+    result = true,
+    type = "SizedCache<String, Kanji>",
+    create = "{SizedCache::with_size(600)}",
+    convert = r#"{l.clone()}"#
+)]
 pub async fn find_by_literal(db: &DbPool, l: String) -> Result<Kanji, Error> {
     use crate::schema::kanji::dsl::*;
+
     kanji
         .filter(literal.eq(l))
         .limit(1)
@@ -154,6 +164,12 @@ pub async fn find_by_literal(db: &DbPool, l: String) -> Result<Kanji, Error> {
 }
 
 /// Find Kanji items by its ids
+#[cached(
+    result = true,
+    type = "SizedCache<Vec<i32>,Vec<Kanji>>",
+    create = "{SizedCache::with_size(400)}",
+    convert = r#"{ids.clone()}"#
+)]
 pub async fn load_by_ids(db: &DbPool, ids: &Vec<i32>) -> Result<Vec<Kanji>, Error> {
     use crate::schema::kanji::dsl::*;
     kanji

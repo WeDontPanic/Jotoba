@@ -2,6 +2,7 @@
 
 #[macro_use]
 extern crate diesel;
+extern crate cached;
 
 include!(concat!(env!("OUT_DIR"), "/templates.rs"));
 
