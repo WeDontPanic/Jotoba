@@ -305,14 +305,11 @@ pub mod word {
         }
 
         // Get a senses tags prettified
-        pub fn get_tags(&self) -> String {
+        pub fn get_parts_of_speech(&self) -> String {
             self.glosses[0]
                 .part_of_speech
                 .iter()
-                .map(|i| {
-                    let s: String = i.clone().into();
-                    s
-                })
+                .map(|i| i.humanized())
                 .join(", ")
         }
     }

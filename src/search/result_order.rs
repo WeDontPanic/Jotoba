@@ -22,14 +22,14 @@ impl<'a> NativeWordOrder<'a> {
     /// Returns an Ordering variant based on the input items
     fn native_words(&self, this: &Item, other: &Item) -> Ordering {
         let other_has_reading = other.has_reading(self.query, true);
-        let this_has_reading = this.has_reading(self.query, true);
+        let this_has_reading_o = this.has_reading(self.query, true);
 
         // Show common items at the top
-        let this_is_common = this.is_common() && !other.is_common() && !other_has_reading;
-        let other_is_common = other.is_common() && !this.is_common() && !this_has_reading;
+        let this_is_common = this.is_common() && !other.is_common();
+        let other_is_common = other.is_common() && !this.is_common();
         // Show exact readings at the top
-        let this_has_reading = this.has_reading(self.query, true) && !other_has_reading;
-        let other_has_reading = this.has_reading(self.query, true) && !this_has_reading;
+        let this_has_reading = this_has_reading_o && !other_has_reading;
+        let other_has_reading = !this_has_reading_o && other_has_reading;
 
         let this_is_exact_reading = self.is_exact_reading(this);
         let other_is_exact_reading = self.is_exact_reading(other);
@@ -44,15 +44,25 @@ impl<'a> NativeWordOrder<'a> {
             Ordering::Less
         } else if this.reading.kana.is_some() && other.reading.kana.is_some() {
             // If both have a kana reading
-            let self_read = this.reading.get_reading();
-            let other_read = other.reading.get_reading();
+            let self_read = this.reading.kana.as_ref().unwrap();
+            let other_read = other.reading.kana.as_ref().unwrap();
 
             // Order by length,
             // shorter words will be displayed first
             if self_read.len() < other_read.len() {
                 Ordering::Less
-            } else {
+            } else if self_read.len() > other_read.len() {
                 Ordering::Greater
+            } else {
+                if this.reading.get_jplt_lvl().is_some() && other.reading.get_jplt_lvl().is_none() {
+                    Ordering::Less
+                } else if this.reading.get_jplt_lvl().is_none()
+                    && other.reading.get_jplt_lvl().is_some()
+                {
+                    Ordering::Greater
+                } else {
+                    Ordering::Equal
+                }
             }
         } else {
             // In case one word doesn't have a
@@ -95,8 +105,8 @@ impl<'a> GlossWordOrder<'a> {
 
     /// Returns an Ordering variant based on the input items
     fn native_words(&self, this: &Item, other: &Item) -> Ordering {
-        let this_exact_l = self.calc_likelienes(this, SearchMode::Exact, false);
-        let other_exact_l = self.calc_likelienes(other, SearchMode::Exact, false);
+        let this_exact_l = self.calc_likelienes(this, SearchMode::Exact, true);
+        let other_exact_l = self.calc_likelienes(other, SearchMode::Exact, true);
 
         if this.is_katakana_word() && !other.is_katakana_word() {
             return Ordering::Greater;
@@ -125,6 +135,12 @@ impl<'a> GlossWordOrder<'a> {
 
         if this.is_common() && !other.is_common() {
             return Ordering::Less;
+        }
+
+        if this.reading.get_jplt_lvl().is_some() && other.reading.get_jplt_lvl().is_none() {
+            return Ordering::Less;
+        } else if this.reading.get_jplt_lvl().is_none() && other.reading.get_jplt_lvl().is_some() {
+            return Ordering::Greater;
         }
 
         Ordering::Equal

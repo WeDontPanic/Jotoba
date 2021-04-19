@@ -18,7 +18,7 @@ use super::{
 static KANJICACHE_C: Lazy<Mutex<SharedCache<String, Vec<result::Item>>>> =
     Lazy::new(|| Mutex::new(SharedCache::with_capacity(1000)));
 
-const MAX_KANJI_INFO_ITEMS: usize = 4;
+const MAX_KANJI_INFO_ITEMS: usize = 5;
 
 /// Search among all data based on the input query
 pub async fn search(db: &DbPool, query: &str) -> Result<Vec<result::Item>, Error> {
@@ -86,6 +86,7 @@ pub async fn search_word_by_native(
             .await?;
 
         if res.is_empty() {
+            // Do another search if no exact result was found
             word_search
                 .with_mode(SearchMode::RightVariable)
                 .search_native()

@@ -165,6 +165,46 @@ pub enum GodanVerbEnding {
     IkuYuku,
 }
 
+impl PartOfSpeech {
+    pub fn humanized(&self) -> String {
+        match *self {
+            Self::Noun(noun_type) => noun_type.humanized(),
+            Self::SFX => "SoundFx".to_string(),
+            Self::Expr => "Expression".to_string(),
+            Self::Counter => "Counter".to_string(),
+            Self::Suffix => "Suffix".to_string(),
+            Self::Prefix => "Prefix".to_string(),
+            Self::Particle => "Particle".to_string(),
+            Self::Interjection => "Interjection".to_string(),
+            Self::Pronoun => "Pronoun".to_string(),
+            Self::Auxilary => "Auxilary".to_string(),
+            Self::Adjective(adj) => adj.humanized(),
+            Self::Nummeric => "Nummeric".to_string(),
+            Self::AdverbTo => "Adverb-To".to_string(),
+            Self::Adverb => "Adverb".to_string(),
+            Self::Verb(verb) => verb.humanized(),
+            _ => (*self).into(),
+        }
+    }
+}
+
+impl VerbType {
+    fn humanized(&self) -> String {
+        match *self {
+            VerbType::Irregular(irreg) => irreg.humanize(),
+            VerbType::Unspecified => "Unspecified verb".to_string(),
+            VerbType::Intransitive => "Intransitive verb".to_string(),
+            VerbType::Transitive => "Transitive verb".to_string(),
+            VerbType::Ichidan => "Ichidan verb".to_string(),
+            VerbType::IchidanZuru => "Ichidan zuru verb".to_string(),
+            VerbType::IchidanKureru => "Ichidan kureru verb".to_string(),
+            VerbType::Kuru => "Kuru verb".to_string(),
+            // TODO do other
+            _ => format!("{:?}", self),
+        }
+    }
+}
+
 /// VerbType into String
 impl Into<String> for VerbType {
     fn into(self) -> String {
@@ -220,6 +260,19 @@ impl TryFrom<&str> for VerbType {
                 _ => VerbType::Irregular(IrregularVerb::try_from(value)?),
             },
         })
+    }
+}
+
+impl IrregularVerb {
+    fn humanize(&self) -> String {
+        match *self {
+            IrregularVerb::Nu => "Nu verb",
+            IrregularVerb::Ru => "Ru verb",
+            IrregularVerb::Suru | IrregularVerb::NounOrAuxSuru => "Suru verb",
+            IrregularVerb::SuruSpecial => "Suru verb (special class)",
+            IrregularVerb::Su => "Su verb",
+        }
+        .to_string()
     }
 }
 
@@ -402,6 +455,20 @@ impl Into<String> for NounType {
     }
 }
 
+impl NounType {
+    fn humanized(&self) -> String {
+        match *self {
+            NounType::Normal => "Noun",
+            NounType::Adverbial => "Noun adverbial",
+            NounType::Proper => "Noun (proper)",
+            NounType::Prefix => "Noun (prefix)",
+            NounType::Suffix => "Noun (suffix)",
+            NounType::Temporal => "Temporal noun",
+        }
+        .to_string()
+    }
+}
+
 /// Implement TryFrom for NounType
 impl TryFrom<&str> for NounType {
     type Error = error::Error;
@@ -415,6 +482,19 @@ impl TryFrom<&str> for NounType {
             "t" => NounType::Temporal,
             _ => return Err(error::Error::Undefined),
         })
+    }
+}
+
+impl AdjectiveType {
+    fn humanized(&self) -> String {
+        match *self {
+            Self::Na => "Na adjective".to_string(),
+            Self::No => "No adjective".to_string(),
+            Self::PreNounVerb => "Prenoun adjective".to_string(),
+            Self::Keiyoushi => "I adjective".to_string(),
+            // TODO implement properly
+            _ => format!("{:?}", *self),
+        }
     }
 }
 
