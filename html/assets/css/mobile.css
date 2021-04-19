@@ -26,6 +26,13 @@
     .main-info {
         height: max-content;
     }
+	
+	.main-info > .d-flex {
+		-ms-flex-direction: column!important;
+        flex-direction: column!important;
+		align-self: center;
+		align-items: center;
+	}
     
     .definition-wrapper.d-flex.flex-row {
         padding-bottom: 5px;
@@ -35,16 +42,10 @@
         height: max-content;
         align-self: center;
         width: 100%;
-        padding-left: 15%;
     }
-    
-    .secondary-info > h3 {
-        padding-right: 75px;
-        padding-bottom: 10px;
-    }
-    
-    .secondary-info > div {
-        padding-left: 75px;
+	
+    .secondary-info > div > .d-flex.flex-row {
+        justify-content: center;
     }
     
     .kanji-preview.large {
@@ -53,6 +54,14 @@
     }
     
     .translation.kanji {
-        padding-left: 0px;
+        padding-left: 100px;
     }
+
+	.definition-wrapper {
+		justify-content: center;
+	}
+	
+	.tags, .notes {
+		text-align: center;
+	}
 }
