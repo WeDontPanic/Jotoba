@@ -238,6 +238,20 @@ pub mod word {
 
             true
         }
+
+        /// Get amount of tags which will be displayed below the reading
+        pub fn get_word_tag_count(&self) -> u8 {
+            let mut c = 0;
+            if self.is_common() {
+                c += 1;
+            }
+
+            if self.get_reading().jlpt_lvl.is_some() {
+                c += 1;
+            }
+
+            c
+        }
     }
 
     impl Reading {
