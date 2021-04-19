@@ -20,15 +20,15 @@ impl From<Kanji> for Item {
 
 /// Defines a word result item
 pub mod word {
-    use crate::japanese::JapaneseExt;
+    use crate::{japanese::JapaneseExt, parse::jmdict::languages::Language, utils::to_option};
     use itertools::Itertools;
 
     use crate::{
         japanese::{self, SentencePart},
         models::{dict::Dict, sense::Sense as DbSenseEntry},
         parse::jmdict::{
-            dialect::Dialect, field::Field, gtype::GType, information::Information,
-            languages::Language, misc::Misc, part_of_speech::PartOfSpeech, priority::Priority,
+            dialect::Dialect, field::Field, gtype::GType, information::Information, misc::Misc,
+            part_of_speech::PartOfSpeech, priority::Priority,
         },
         utils,
     };
@@ -200,6 +200,17 @@ pub mod word {
             }
 
             vec![other, english]
+        }
+
+        /// Return all senses of a language
+        pub fn senses_by_lang(&self, language: Language) -> Option<Vec<Sense>> {
+            to_option(
+                self.senses
+                    .iter()
+                    .filter(|i| i.language == language)
+                    .cloned()
+                    .collect_vec(),
+            )
         }
 
         /// Return true if all 'misc' items are of the same value

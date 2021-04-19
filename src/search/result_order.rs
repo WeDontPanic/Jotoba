@@ -1,7 +1,7 @@
 use std::cmp::Ordering;
 
 use super::{result::word::Item, SearchMode};
-use crate::japanese::JapaneseExt;
+use crate::{japanese::JapaneseExt, parse::jmdict::languages::Language};
 
 /// Represents the ordering for result based on
 /// native search-input
@@ -108,6 +108,21 @@ impl<'a> GlossWordOrder<'a> {
             return Ordering::Less;
         }
 
+        // Show single translations more on top
+        if this_exact_l == 100 && other_exact_l == 100 {
+            if let Some(this_language) = self.find_lang(this) {
+                if let Some(other_language) = self.find_lang(other) {
+                    let this_l_sense = this.senses_by_lang(this_language);
+                    let other_l_sense = other.senses_by_lang(other_language);
+                    if this_l_sense.is_some() && other_l_sense.is_some() {
+                        if this_l_sense.unwrap().len() == 1 && other_l_sense.unwrap().len() > 1 {
+                            return Ordering::Less;
+                        }
+                    }
+                }
+            }
+        }
+
         if this.is_common() && !other.is_common() {
             return Ordering::Less;
         }
@@ -147,6 +162,32 @@ impl<'a> GlossWordOrder<'a> {
             return 0;
         }
         100 - Self::calc_importance(pos.unwrap(), n) as u8
+    }
+
+    pub fn find_lang(&self, this: &Item) -> Option<Language> {
+        self.get_lang(this, SearchMode::Exact, false)
+            .map(|i| Some(i))
+            .unwrap_or(
+                self.get_lang(this, SearchMode::Exact, true)
+                    .map(|i| Some(i))
+                    .unwrap_or(self.get_lang(this, SearchMode::Variable, true)),
+            )
+    }
+
+    pub fn get_lang(&self, this: &Item, s_mode: SearchMode, ign_case: bool) -> Option<Language> {
+        let items = this.get_senses();
+
+        for lang_senes in items.iter() {
+            for sense in lang_senes {
+                for gloss in sense.glosses.iter() {
+                    if s_mode.str_eq(gloss.gloss.as_str(), self.query, ign_case) {
+                        return Some(sense.language);
+                    }
+                }
+            }
+        }
+
+        None
     }
 
     pub fn get_query_pos_in_gloss(

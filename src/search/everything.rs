@@ -1,9 +1,11 @@
-use cached::{proc_macro::cached, SizedCache};
+use async_std::sync::{Mutex, MutexGuard};
 use itertools::Itertools;
+use once_cell::sync::Lazy;
 use std::time::SystemTime;
 
 use crate::{
-    error::Error, japanese::JapaneseExt, models::kanji, parse::jmdict::languages::Language, DbPool,
+    cache::SharedCache, error::Error, japanese::JapaneseExt, models::kanji,
+    parse::jmdict::languages::Language, DbPool,
 };
 
 use super::{
@@ -12,17 +14,25 @@ use super::{
     word, SearchMode,
 };
 
+/// An in memory Cache for search results
+static KANJICACHE_C: Lazy<Mutex<SharedCache<String, Vec<result::Item>>>> =
+    Lazy::new(|| Mutex::new(SharedCache::with_capacity(1000)));
+
 const MAX_KANJI_INFO_ITEMS: usize = 4;
 
 /// Search among all data based on the input query
-#[cached(
-    result = true,
-    type = "SizedCache<String,Vec<result::Item>>",
-    create = "{SizedCache::with_size(10000)}",
-    convert = r#"{query.to_owned()}"#
-)]
 pub async fn search(db: &DbPool, query: &str) -> Result<Vec<result::Item>, Error> {
     let start = SystemTime::now();
+
+    // Lock cache
+    let mut search_cache: MutexGuard<SharedCache<String, Vec<result::Item>>> =
+        KANJICACHE_C.lock().await;
+
+    // Try to use cached value
+    if let Some(c_res) = search_cache.cache_get(&query.to_owned()) {
+        println!("cached search took {:?}", start.elapsed());
+        return Ok(c_res.clone());
+    }
 
     // Perform (word) searches asynchronously
     let (native_word_res, gloss_word_res): (Vec<result::word::Item>, Vec<result::word::Item>) = futures::try_join!(
@@ -47,6 +57,9 @@ pub async fn search(db: &DbPool, query: &str) -> Result<Vec<result::Item>, Error
         .collect_vec();
 
     println!("full search took {:?}", start.elapsed());
+
+    // Set cache for future usage
+    search_cache.cache_set(query.to_owned(), results.clone());
 
     Ok(results)
 }

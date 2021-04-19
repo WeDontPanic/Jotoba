@@ -1,9 +1,17 @@
 use std::{fs::read_to_string, path::Path};
 
 use super::super::schema::kanji;
-use crate::{error::Error, parse::kanjidict::Character, utils::to_option, DbPool};
+use crate::{
+    cache::SharedCache, error::Error, parse::kanjidict::Character, utils::to_option, DbPool,
+};
+use async_std::sync::{Mutex, MutexGuard};
 use diesel::prelude::*;
+use once_cell::sync::Lazy;
 use tokio_diesel::*;
+
+/// An in memory Cache for kanji items
+static KANJICACHE_C: Lazy<Mutex<SharedCache<i32, Kanji>>> =
+    Lazy::new(|| Mutex::new(SharedCache::with_capacity(10000)));
 
 #[derive(Queryable, Clone, Debug, Default, PartialEq)]
 pub struct Kanji {
@@ -61,16 +69,6 @@ impl From<Character> for NewKanji {
     }
 }
 
-pub async fn update_jlpt(db: &DbPool, l: &str, level: i32) -> Result<(), Error> {
-    use crate::schema::kanji::dsl::*;
-    diesel::update(kanji)
-        .filter(literal.eq(l))
-        .set(jlpt.eq(level))
-        .execute_async(db)
-        .await?;
-    Ok(())
-}
-
 impl Kanji {
     /// Print kanji grade pretty for frontend
     pub fn school_str(&self) -> Option<String> {
@@ -112,7 +110,18 @@ impl Kanji {
     }
 }
 
-/// Inserts new kanji into db
+/// Update the jlpt information for a kanji by its literal
+pub async fn update_jlpt(db: &DbPool, l: &str, level: i32) -> Result<(), Error> {
+    use crate::schema::kanji::dsl::*;
+    diesel::update(kanji)
+        .filter(literal.eq(l))
+        .set(jlpt.eq(level))
+        .execute_async(db)
+        .await?;
+    Ok(())
+}
+
+/// Inserts a new kanji into db
 pub async fn insert<T>(db: &DbPool, new_kanji: Vec<T>) -> Result<(), Error>
 where
     T: Into<NewKanji>,
@@ -142,39 +151,59 @@ pub async fn exists(db: &DbPool) -> Result<bool, Error> {
     Ok(kanji.select(id).limit(1).execute_async(db).await? == 1)
 }
 
-use cached::proc_macro::cached;
-use cached::SizedCache;
-
 /// Find a kanji by its literal
-#[cached(
-    result = true,
-    type = "SizedCache<String, Kanji>",
-    create = "{SizedCache::with_size(600)}",
-    convert = r#"{l.clone()}"#
-)]
 pub async fn find_by_literal(db: &DbPool, l: String) -> Result<Kanji, Error> {
-    use crate::schema::kanji::dsl::*;
+    // Try to find literal in kanji cache
+    let mut k_cache: MutexGuard<SharedCache<i32, Kanji>> = KANJICACHE_C.lock().await;
+    if let Some(k) = k_cache.find_by_predicate(|i| i.literal == l) {
+        return Ok(k.clone());
+    }
 
-    kanji
-        .filter(literal.eq(l))
-        .limit(1)
-        .get_result_async(db)
-        .await
-        .map_err(|i| i.into())
+    let db_kanji = load_by_literal(db, &l).await?;
+
+    // Add to cache for future usage
+    k_cache.cache_set(db_kanji.id, db_kanji.clone());
+
+    Ok(db_kanji)
 }
 
 /// Find Kanji items by its ids
-#[cached(
-    result = true,
-    type = "SizedCache<Vec<i32>,Vec<Kanji>>",
-    create = "{SizedCache::with_size(400)}",
-    convert = r#"{ids.clone()}"#
-)]
 pub async fn load_by_ids(db: &DbPool, ids: &Vec<i32>) -> Result<Vec<Kanji>, Error> {
+    // Lock cache
+    let mut k_cache: MutexGuard<SharedCache<i32, Kanji>> = KANJICACHE_C.lock().await;
+
+    // Get cached kanji
+    let cached_kanji = k_cache.get_values(&ids);
+
+    // Determine which of the kanji
+    // still needs to get looked up
+    let to_lookup = ids
+        .iter()
+        .filter(|k_id| !cached_kanji.iter().any(|ci| ci.id == **k_id))
+        .copied()
+        .collect::<Vec<_>>();
+
+    let db_result = retrieve_by_ids(&db, &to_lookup).await?;
+
+    // Add result to cache for next time
+    k_cache.extend(db_result.clone(), |i| i.id);
+
+    Ok([db_result, cached_kanji].concat())
+}
+
+/// Retrieve kanji by ids from DB
+async fn retrieve_by_ids(db: &DbPool, ids: &Vec<i32>) -> Result<Vec<Kanji>, Error> {
     use crate::schema::kanji::dsl::*;
-    kanji
-        .filter(id.eq_any(ids))
-        .get_results_async(db)
-        .await
-        .map_err(|i| i.into())
+    Ok(kanji.filter(id.eq_any(ids)).get_results_async(db).await?)
+}
+
+/// Load a kanji by its literal from DB
+async fn load_by_literal(db: &DbPool, l: &str) -> Result<Kanji, Error> {
+    use crate::schema::kanji::dsl::*;
+
+    Ok(kanji
+        .filter(literal.eq(l))
+        .limit(1)
+        .get_result_async(db)
+        .await?)
 }

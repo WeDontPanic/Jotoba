@@ -56,6 +56,7 @@ impl Dict {
 
         // Load kanji from DB
         let mut items = super::kanji::load_by_ids(db, ids).await?;
+        let _ = super::kanji::load_by_ids(db, ids).await?;
         // Order items based on their occurence
         items.sort_by(|a, b| utils::get_item_order(ids, a.id, b.id).unwrap_or(Ordering::Equal));
 

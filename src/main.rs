@@ -2,10 +2,10 @@
 
 #[macro_use]
 extern crate diesel;
-extern crate cached;
 
 include!(concat!(env!("OUT_DIR"), "/templates.rs"));
 
+pub mod cache;
 mod db;
 pub mod error;
 mod import;
