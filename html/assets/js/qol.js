@@ -2,6 +2,11 @@
  * This JS-File contains some Quality of Life improvements for the website
  */
 
+// Prevent random dragging of <a> elements
+$('a').mousedown((event) => {
+    event.preventDefault();
+});
+
 // Press / to focus search bar
 $(document).on("keypress", (event) => {
     if (event.key === '/') {
@@ -9,14 +14,6 @@ $(document).on("keypress", (event) => {
         $('#search').focus();
     }  
 });
-
-/*
-// Copies Kanji (right side) to clipboard on click
-$('.kanji-preview.large').on("click", (event) => {
-    showMessage("success", "kanji copied to clipboard.");
-    copyToClipboard(event.target.innerHTML.trim());
-});
-*/
 
 // Copies Furigana to clipboard on click
 $('.furigana-kanji-container > .furigana-preview').on("click", (event) => {
