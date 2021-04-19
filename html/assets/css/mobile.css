@@ -1,0 +1,58 @@
+/*
+    Used to make mobile shit ~p~r~e~t~t~y~ less ugly
+*/
+
+@media only screen and (max-width: 1100px) {
+    #content-container {
+        -ms-flex-direction: column!important;
+        flex-direction: column!important;
+    }
+    
+    body {
+        zoom: 2;
+        -moz-transform: scale(2); 
+        -moz-transform-origin: 0 0;
+        height: max-content;
+    }
+    
+    .btn-container, .main-tab-select {
+        display: none;
+    }
+    
+    .title-div {
+        padding-top: 10px;
+    }
+    
+    .main-info {
+        height: max-content;
+    }
+    
+    .definition-wrapper.d-flex.flex-row {
+        padding-bottom: 5px;
+    }
+    
+    .secondary-info {
+        height: max-content;
+        align-self: center;
+        width: 100%;
+        padding-left: 15%;
+    }
+    
+    .secondary-info > h3 {
+        padding-right: 75px;
+        padding-bottom: 10px;
+    }
+    
+    .secondary-info > div {
+        padding-left: 75px;
+    }
+    
+    .kanji-preview.large {
+        position: absolute;
+        left: 50px;
+    }
+    
+    .translation.kanji {
+        padding-left: 0px;
+    }
+}
