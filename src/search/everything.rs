@@ -80,10 +80,19 @@ pub async fn search_word_by_native(
     // Perform the word search
     let mut wordresults = if query.chars().count() <= 2 && query.is_kana() {
         // Search for exact matches only if query.len() <= 2
-        word_search
+        let res = word_search
             .with_mode(SearchMode::Exact)
             .search_native()
-            .await?
+            .await?;
+
+        if res.is_empty() {
+            word_search
+                .with_mode(SearchMode::RightVariable)
+                .search_native()
+                .await?
+        } else {
+            res
+        }
     } else {
         word_search
             .with_mode(SearchMode::RightVariable)

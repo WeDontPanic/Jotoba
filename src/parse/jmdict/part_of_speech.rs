@@ -45,6 +45,8 @@ pub enum PartOfSpeech {
     Particle,
     Unclassified,
 
+    SFX,
+
     // Verb
     Verb(VerbType),
 }
@@ -484,6 +486,7 @@ impl Into<String> for PartOfSpeech {
                 PartOfSpeech::AuxilaryAdj => "aux-adj",
                 PartOfSpeech::AuxilaryVerb => "aux-v",
                 PartOfSpeech::Prefix => "pref",
+                PartOfSpeech::SFX => "sfx",
                 _ => unreachable!(), // already checked above
             }
             .to_string(),
@@ -499,6 +502,7 @@ impl TryFrom<&str> for PartOfSpeech {
         Ok(match value {
             "n" => PartOfSpeech::Noun(NounType::Normal),
             "pn" => PartOfSpeech::Pronoun,
+            "sfx" => PartOfSpeech::SFX,
             "adv" => PartOfSpeech::Adverb,
             "aux" => PartOfSpeech::Auxilary,
             "cop" => PartOfSpeech::Copula,

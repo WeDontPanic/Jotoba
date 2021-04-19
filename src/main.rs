@@ -32,6 +32,7 @@ struct Options {
     jmdict_path: String,
     kanjidict_path: String,
     jlpt_paches_path: String,
+    manga_sfx_path: String,
     start: bool,
 }
 
@@ -75,6 +76,10 @@ pub async fn main() {
             }
 
             import::jlpt_patches::import(&&database, options.jlpt_paches_path).await;
+        }
+
+        if !options.manga_sfx_path.is_empty() {
+            import::manga_sfx::import(&database, options.manga_sfx_path).await;
         }
 
         return;
@@ -156,6 +161,12 @@ fn parse_args() -> Option<Options> {
             "The path to import the jlpt patches from. Required for --import",
         );
 
+        ap.refer(&mut options.manga_sfx_path).add_option(
+            &["--manga-sfx-path"],
+            Store,
+            "The path to import the manga sfx entries from. Required for --import",
+        );
+
         ap.parse_args_or_exit();
     }
 
@@ -163,8 +174,11 @@ fn parse_args() -> Option<Options> {
         && options.jmdict_path.is_empty()
         && options.kanjidict_path.is_empty()
         && options.jlpt_paches_path.is_empty()
+        && options.manga_sfx_path.is_empty()
     {
-        println!("--jmdict-path, --kanjidict-path or --jlpt-patches-path required");
+        println!(
+            "--manga-sfx-path, --jmdict-path, --kanjidict-path or --jlpt-patches-path required"
+        );
         return None;
     }
 

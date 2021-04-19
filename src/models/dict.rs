@@ -129,3 +129,15 @@ pub async fn clear_dicts(db: &DbPool) -> Result<(), Error> {
     diesel::delete(dict).execute_async(db).await?;
     Ok(())
 }
+
+/// Get the min(sequence) of all dicts
+pub async fn min_sequence(db: &DbPool) -> Result<i32, Error> {
+    use crate::schema::dict::dsl::*;
+
+    let res: Option<i32> = dict
+        .select(diesel::dsl::min(sequence))
+        .get_result_async(&db)
+        .await?;
+
+    Ok(res.unwrap_or(0))
+}

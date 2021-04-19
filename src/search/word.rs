@@ -21,6 +21,7 @@ pub struct WordSearch<'a> {
     db: &'a DbPool,
     language: Option<Language>,
     ignore_case: bool,
+    kana_only: bool,
 }
 
 sql_function! {
@@ -34,6 +35,7 @@ impl<'a> WordSearch<'a> {
             db,
             language: None,
             ignore_case: false,
+            kana_only: false,
         }
     }
 
@@ -61,6 +63,12 @@ impl<'a> WordSearch<'a> {
         self
     }
 
+    /// Use a specific limit for the search
+    pub fn with_kana_only(&mut self, kana_only: bool) -> &mut Self {
+        self.kana_only = kana_only;
+        self
+    }
+
     /// Searches by translations
     pub async fn search_by_glosses(&mut self) -> Result<Vec<Item>, Error> {
         // Load sequence ids to display
@@ -72,7 +80,20 @@ impl<'a> WordSearch<'a> {
     pub async fn search_native(&mut self) -> Result<Vec<Item>, Error> {
         // Load sequence ids to display
         let seq_ids = self.get_sequence_ids_by_native().await?;
-        self.get_results(&seq_ids).await
+        Ok(self
+            .get_results(&seq_ids)
+            .await?
+            .into_iter()
+            .filter(|i| self.post_search_check(&i))
+            .collect_vec())
+    }
+
+    fn post_search_check(&self, item: &Item) -> bool {
+        if self.kana_only && item.reading.kanji.is_some() {
+            false
+        } else {
+            true
+        }
     }
 
     /// Get search results of seq_ids
