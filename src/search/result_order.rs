@@ -34,12 +34,15 @@ impl<'a> NativeWordOrder<'a> {
         let this_is_exact_reading = self.is_exact_reading(this);
         let other_is_exact_reading = self.is_exact_reading(other);
 
-        if other_is_common
+        if (other_is_common && !this_is_exact_reading)
             || (other_is_exact_reading && !this_is_exact_reading)
             || other_has_reading
         {
             Ordering::Greater
-        } else if this_is_common || this_has_reading || this_is_exact_reading {
+        } else if (this_is_common && !other_is_exact_reading)
+            || this_has_reading
+            || (this_is_exact_reading && !other_is_exact_reading)
+        {
             // Show directly matching and common items at the top
             Ordering::Less
         } else if this.reading.kana.is_some() && other.reading.kana.is_some() {
@@ -54,12 +57,21 @@ impl<'a> NativeWordOrder<'a> {
             } else if self_read.len() > other_read.len() {
                 Ordering::Greater
             } else {
-                if this.reading.get_jplt_lvl().is_some() && other.reading.get_jplt_lvl().is_none() {
+                let this_jlpt = this.reading.get_jplt_lvl();
+                let other_jlpt = other.reading.get_jplt_lvl();
+
+                if this_jlpt.is_some() && other_jlpt.is_none() {
                     Ordering::Less
-                } else if this.reading.get_jplt_lvl().is_none()
-                    && other.reading.get_jplt_lvl().is_some()
-                {
+                } else if this_jlpt.is_none() && other_jlpt.is_some() {
                     Ordering::Greater
+                } else if this_jlpt.is_some() && other_jlpt.is_some() {
+                    if this_jlpt.unwrap() > other_jlpt.unwrap() {
+                        Ordering::Less
+                    } else if this_jlpt.unwrap() < other_jlpt.unwrap() {
+                        Ordering::Greater
+                    } else {
+                        Ordering::Equal
+                    }
                 } else {
                     Ordering::Equal
                 }
@@ -105,8 +117,8 @@ impl<'a> GlossWordOrder<'a> {
 
     /// Returns an Ordering variant based on the input items
     fn native_words(&self, this: &Item, other: &Item) -> Ordering {
-        let this_exact_l = self.calc_likelienes(this, SearchMode::Exact, true);
-        let other_exact_l = self.calc_likelienes(other, SearchMode::Exact, true);
+        let this_exact_l = self.calc_likelienes(this, SearchMode::Exact, false);
+        let other_exact_l = self.calc_likelienes(other, SearchMode::Exact, false);
 
         if this.is_katakana_word() && !other.is_katakana_word() {
             return Ordering::Greater;
@@ -118,15 +130,26 @@ impl<'a> GlossWordOrder<'a> {
             return Ordering::Less;
         }
 
-        // Show single translations more on top
         if this_exact_l == 100 && other_exact_l == 100 {
+            // Show single translations more on top
             if let Some(this_language) = self.find_lang(this) {
                 if let Some(other_language) = self.find_lang(other) {
                     let this_l_sense = this.senses_by_lang(this_language);
                     let other_l_sense = other.senses_by_lang(other_language);
+
                     if this_l_sense.is_some() && other_l_sense.is_some() {
-                        if this_l_sense.unwrap().len() == 1 && other_l_sense.unwrap().len() > 1 {
-                            return Ordering::Less;
+                        if this_l_sense.as_ref().unwrap().len() == 1
+                            && other_l_sense.as_ref().unwrap().len() > 1
+                        {
+                            if this.is_common() && !other.is_common() {
+                                return Ordering::Less;
+                            }
+                        } else if this_l_sense.as_ref().unwrap().len() > 1
+                            && other_l_sense.as_ref().unwrap().len() == 1
+                        {
+                            if !this.is_common() && other.is_common() {
+                                return Ordering::Greater;
+                            }
                         }
                     }
                 }
@@ -135,12 +158,26 @@ impl<'a> GlossWordOrder<'a> {
 
         if this.is_common() && !other.is_common() {
             return Ordering::Less;
+        } else if !this.is_common() && other.is_common() {
+            return Ordering::Greater;
         }
 
-        if this.reading.get_jplt_lvl().is_some() && other.reading.get_jplt_lvl().is_none() {
+        let this_jlpt = this.reading.get_jplt_lvl();
+        let other_jlpt = other.reading.get_jplt_lvl();
+
+        if this_jlpt.is_some() && other_jlpt.is_none() {
             return Ordering::Less;
-        } else if this.reading.get_jplt_lvl().is_none() && other.reading.get_jplt_lvl().is_some() {
+        } else if this_jlpt.is_none() && other_jlpt.is_some() {
             return Ordering::Greater;
+        } else if this_jlpt.is_some() && other_jlpt.is_some() {
+            let this_jlpt = this_jlpt.unwrap();
+            let other_jlpt = other_jlpt.unwrap();
+
+            if this_jlpt > other_jlpt {
+                return Ordering::Less;
+            } else if this_jlpt < other_jlpt {
+                return Ordering::Greater;
+            }
         }
 
         Ordering::Equal

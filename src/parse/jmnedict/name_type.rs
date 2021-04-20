@@ -1,5 +1,6 @@
 use std::{convert::TryFrom, io::Write};
 
+use crate::error;
 use diesel::{
     deserialize,
     pg::Pg,
@@ -8,8 +9,6 @@ use diesel::{
     types::{FromSql, ToSql},
 };
 use strum_macros::{AsRefStr, EnumString};
-
-use crate::{error, DbPool};
 
 #[derive(AsExpression, FromSqlRow, Debug, PartialEq, Clone, Copy, AsRefStr, EnumString)]
 #[sql_type = "Integer"]
