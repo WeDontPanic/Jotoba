@@ -25,11 +25,20 @@
                <div class="notes">@name.transcription</div>
             </div>
 
-            @if let Some(n_type) = name.name_type {
-              <div class="row-tag-entry">
-                <div class="tags">@if !n_type.is_gender() { Name origin } else { Sex }</div>
-                 <div class="notes">@n_type.humanized()</div>
-              </div>
+            @if name.name_type.is_some() {
+              @if let Some(gender) = name.get_gender() {
+                <div class="row-tag-entry">
+                  <div class="tags">Sex</div>
+                   <div class="notes">@gender</div>
+                </div>
+              } 
+
+              @if name.has_non_gender_tags() {
+                <div class="row-tag-entry">
+                  <div class="tags">Name origin</div>
+                   <div class="notes">@name.get_types_humanized()</div>
+                </div>
+              }
             }
          </div>
          <hr/>

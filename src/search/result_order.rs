@@ -1,7 +1,9 @@
 use std::cmp::Ordering;
 
+use levenshtein::levenshtein;
+
 use super::{result::word::Item, SearchMode};
-use crate::{japanese::JapaneseExt, parse::jmdict::languages::Language};
+use crate::{japanese::JapaneseExt, models::name::Name, parse::jmdict::languages::Language};
 
 /// Represents the ordering for result based on
 /// native search-input
@@ -369,5 +371,91 @@ mod test {
             search.calc_likelienes(&item_c, SearchMode::Exact, true),
             100
         );
+    }
+}
+
+/// Represents the ordering for nome search
+/// result based on native search-input
+pub(crate) struct NameSearchNative<'a> {
+    query: &'a str,
+}
+
+impl<'a> NameSearchNative<'a> {
+    pub(crate) fn new(query: &'a str) -> Self {
+        Self { query }
+    }
+
+    /// Sort native words results
+    pub(crate) fn sort(&self, vec: &mut Vec<Name>) {
+        vec.sort_by(|a, b| self.native_words(a, b))
+    }
+
+    /// Returns an Ordering variant based on the input items
+    fn native_words(&self, this: &Name, other: &Name) -> Ordering {
+        let order = if self.query.is_kanji() {
+            self.kanji_check(this, other)
+        } else if self.query.is_kana() {
+            self.kana_check(this, other)
+        } else {
+            Ordering::Equal
+        };
+
+        if order == Ordering::Equal {
+            if self.query.is_kana() {
+                if this.kanji.is_none() && other.kanji.is_some() {
+                    return Ordering::Less;
+                } else if this.kanji.is_some() && other.kanji.is_none() {
+                    return Ordering::Greater;
+                }
+            }
+        }
+
+        order
+    }
+
+    fn kanji_check(&self, this: &Name, other: &Name) -> Ordering {
+        let this_le = levenshtein(&this.kanji.as_ref().unwrap_or(&this.kana), self.query);
+        let other_le = levenshtein(&other.kanji.as_ref().unwrap_or(&other.kana), self.query);
+        levenshtein_cmp(this_le, other_le)
+    }
+
+    fn kana_check(&self, this: &Name, other: &Name) -> Ordering {
+        let this_le = levenshtein(&this.kana, self.query);
+        let other_le = levenshtein(&other.kana, self.query);
+        levenshtein_cmp(this_le, other_le)
+    }
+}
+
+/// Represents the ordering for nome search
+/// result based on non-native search-input
+pub(crate) struct NameSearchTranscription<'a> {
+    query: &'a str,
+}
+
+impl<'a> NameSearchTranscription<'a> {
+    pub(crate) fn new(query: &'a str) -> Self {
+        Self { query }
+    }
+
+    /// Sort native words results
+    pub(crate) fn sort(&self, vec: &mut Vec<Name>) {
+        vec.sort_by(|a, b| self.native_words(a, b))
+    }
+
+    /// Returns an Ordering variant based on the input items
+    fn native_words(&self, this: &Name, other: &Name) -> Ordering {
+        let this_le = levenshtein(&this.transcription, self.query);
+        let other_le = levenshtein(&other.transcription, self.query);
+        levenshtein_cmp(this_le, other_le)
+    }
+}
+
+fn levenshtein_cmp(a: usize, b: usize) -> Ordering {
+    if a < b {
+        Ordering::Less
+    } else if a > b {
+        Ordering::Greater
+    } else {
+        Ordering::Equal
     }
 }

@@ -177,7 +177,7 @@ pub struct NameEntry {
     pub kana_element: String,
     pub kanji_element: Option<String>,
     pub transcription: String,
-    pub name_type: Option<NameType>,
+    pub name_type: Option<Vec<NameType>>,
     pub xref: Option<String>,
 }
 
@@ -191,7 +191,15 @@ impl NameEntry {
             Tag::Xref => self.xref = Some(value),
             Tag::KanjiB => self.kanji_element = Some(value),
             Tag::ReadingB => self.kana_element = value,
-            Tag::NameType => self.name_type = Some(NameType::from_str(&value)?),
+            Tag::NameType => {
+                let nt = NameType::from_str(&value)?;
+
+                if let Some(ref mut arr) = self.name_type {
+                    arr.push(nt);
+                } else {
+                    self.name_type = Some(vec![nt]);
+                }
+            }
             _ => (),
         }
         Ok(())

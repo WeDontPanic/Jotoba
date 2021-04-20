@@ -55,7 +55,7 @@ CREATE TABLE name (
   kana TEXT NOT NULL,
   kanji TEXT,
   transcription TEXT NOT NULL,
-  name_type INTEGER,
+  name_type INTEGER[],
   xref TEXT
 );
 CREATE INDEX index_kana_name ON name (kana);

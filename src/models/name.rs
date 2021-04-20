@@ -5,6 +5,7 @@ use crate::{
     DbPool,
 };
 use diesel::prelude::*;
+use itertools::Itertools;
 use tokio_diesel::*;
 
 #[derive(Queryable, Clone, Debug, Default)]
@@ -14,7 +15,7 @@ pub struct Name {
     pub kana: String,
     pub kanji: Option<String>,
     pub transcription: String,
-    pub name_type: Option<NameType>,
+    pub name_type: Option<Vec<NameType>>,
     pub xref: Option<String>,
 }
 
@@ -25,8 +26,47 @@ pub struct NewName {
     pub kana: String,
     pub kanji: Option<String>,
     pub transcription: String,
-    pub name_type: Option<NameType>,
+    pub name_type: Option<Vec<NameType>>,
     pub xref: Option<String>,
+}
+
+impl Name {
+    /// Returns the Name's types in an human readable way
+    pub fn get_types_humanized(&self) -> String {
+        if let Some(ref n_types) = self.name_type {
+            n_types
+                .iter()
+                // Don't display gendered types here. We need to
+                // display genederd  tags in onether div within the template
+                .filter_map(|i| (!i.is_gender()).then(|| i.humanized()))
+                .join(", ")
+        } else {
+            String::from("")
+        }
+    }
+
+    /// Return true if name is gendered
+    pub fn is_gendered(&self) -> bool {
+        self.name_type
+            .as_ref()
+            .map(|i| i.iter().any(|i| i.is_gender()))
+            .unwrap_or(false)
+    }
+
+    /// Get the gender name-type if exists
+    pub fn get_gender(&self) -> Option<NameType> {
+        self.name_type
+            .as_ref()
+            .and_then(|i| i.iter().find(|i| i.is_gender()).copied())
+    }
+
+    /// Returns true if name has at least one non-gender tag
+    pub fn has_non_gender_tags(&self) -> bool {
+        self.name_type
+            .as_ref()
+            .map(|i| i.iter().any(|j| !j.is_gender()))
+            .unwrap_or(false)
+    }
 }
 
 impl From<NameEntry> for NewName {

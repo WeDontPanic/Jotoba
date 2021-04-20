@@ -1,4 +1,4 @@
-use std::{convert::TryFrom, io::Write};
+use std::{convert::TryFrom, fmt::Display, io::Write};
 
 use crate::error;
 use diesel::{
@@ -60,6 +60,12 @@ impl NameType {
 
     pub fn is_gender(&self) -> bool {
         matches!(self, Self::Female | Self::Male)
+    }
+}
+
+impl Display for NameType {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", self.humanized())
     }
 }
 

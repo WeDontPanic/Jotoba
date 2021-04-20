@@ -1,5 +1,5 @@
 use actix_web::{web, HttpResponse};
-use search::Search;
+use search::name;
 use serde::Deserialize;
 
 use crate::{search, templates, DbPool};
@@ -121,11 +121,7 @@ async fn name_search(
     let start = std::time::SystemTime::now();
     let query = query_data.query.as_ref().unwrap();
 
-    let names =
-        search::name::NameSearch::new(&pool, Search::new(&query, search::SearchMode::Variable))
-            .search_native()
-            .await
-            .unwrap();
+    let names = name::search(&pool, query).await.unwrap();
 
     println!("name search took {:?}", start.elapsed());
     Ok(HttpResponse::Ok().body(render!(

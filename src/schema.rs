@@ -38,7 +38,7 @@ table! {
         kana -> Text,
         kanji -> Nullable<Text>,
         transcription -> Text,
-        name_type -> Nullable<Int4>,
+        name_type -> Nullable<Array<Int4>>,
         xref -> Nullable<Text>,
     }
 }
