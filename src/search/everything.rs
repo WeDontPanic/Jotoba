@@ -174,7 +174,7 @@ pub async fn search_word_by_glosses(
     let mut wordresults = word::WordSearch::new(db, query)
         .with_language(Language::German)
         .with_case_insensitivity(true)
-        .with_mode(SearchMode::Exact)
+        .with_mode(SearchMode::Variable)
         .search_by_glosses()
         .await?;
 

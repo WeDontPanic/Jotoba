@@ -18,6 +18,14 @@ where
     true
 }
 
+/// Returns a vector of all items both vectors contain
+pub fn union_elements<'a, T>(v1: &'a Vec<T>, v2: &'a Vec<T>) -> Vec<&'a T>
+where
+    T: PartialEq,
+{
+    v1.iter().filter(|i| v2.contains(i)).collect::<Vec<_>>()
+}
+
 /// Get the order of two elements in a vector
 /// requires that a, b are element of vec
 pub fn get_item_order<T>(vec: &Vec<T>, a: T, b: T) -> Option<Ordering>

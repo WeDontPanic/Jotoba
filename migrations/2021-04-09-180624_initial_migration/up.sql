@@ -61,3 +61,53 @@ CREATE TABLE name (
 CREATE INDEX index_kana_name ON name (kana);
 CREATE INDEX index_kanji_name ON name (kanji);
 CREATE INDEX index_transcription_name ON name (transcription);
+
+CREATE OR REPLACE FUNCTION is_kanji(IN inp text)
+ RETURNS boolean AS
+ $BODY$
+     SELECT
+         inp ~ '^[\x3400-\x4DB5\x4E00-\x9FCB\xF900-\xFA6A]*$'
+ $BODY$
+ LANGUAGE sql
+ IMMUTABLE
+ STRICT;
+
+CREATE OR REPLACE FUNCTION is_kana(IN inp text)
+ RETURNS boolean AS
+ $BODY$
+     SELECT
+         inp ~ '^[ぁ-んァ-ン]*$'
+ $BODY$
+ LANGUAGE sql
+ IMMUTABLE
+ STRICT;
+
+CREATE OR REPLACE FUNCTION is_hiragana(IN inp text)
+ RETURNS boolean AS
+ $BODY$
+     SELECT
+         inp ~ '^[ぁ-ゔゞ゛゜ー]*$'
+ $BODY$
+ LANGUAGE sql
+ IMMUTABLE
+ STRICT;
+
+CREATE OR REPLACE FUNCTION is_katakana(IN inp text)
+ RETURNS boolean AS
+ $BODY$
+     SELECT
+         inp ~ '^[ァ-・ヽヾ゛゜ー]*$'
+ $BODY$
+ LANGUAGE sql
+ IMMUTABLE
+ STRICT;
+
+CREATE OR REPLACE FUNCTION ends_with_hiragana(IN inp text)
+ RETURNS boolean AS
+ $BODY$
+     SELECT
+         inp ~ '[ぁ-ゔゞ゛゜ー]+$'
+ $BODY$
+ LANGUAGE sql
+ IMMUTABLE
+ STRICT;

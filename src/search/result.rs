@@ -180,13 +180,12 @@ pub mod word {
                 .into_iter()
                 .partition(|i| i.language == Language::English);
 
-            // Set other's p_o_s items to the ones from english if they are all the same
-            if Self::all_pos_same(&english) && !english.is_empty() && !english[0].glosses.is_empty()
-            {
-                let pos = english[0].glosses[0].part_of_speech.clone();
+            // Set other's p_o_s items to the ones from english which are available in each sense
+            let unionized_pos = Self::pos_unionized(&english);
+            if !unionized_pos.is_empty() {
                 other.iter_mut().for_each(|item| {
                     for gloss in item.glosses.iter_mut() {
-                        gloss.part_of_speech = pos.clone();
+                        gloss.part_of_speech = unionized_pos.clone();
                     }
                 });
             }
@@ -232,24 +231,25 @@ pub mod word {
         }
 
         /// Return true if all 'part_of_speech' items are of the same value
-        pub fn all_pos_same(senses: &Vec<Sense>) -> bool {
+        pub fn pos_unionized(senses: &Vec<Sense>) -> Vec<PartOfSpeech> {
             if senses.is_empty()
                 || senses[0].glosses.is_empty()
                 || senses[0].glosses[0].part_of_speech.is_empty()
             {
-                return false;
+                return vec![];
             }
 
             let mut sense_iter = senses.iter();
-            let first_p_o_s = sense_iter.next().unwrap().glosses[0].part_of_speech.clone();
+            let mut pos = sense_iter.next().unwrap().glosses[0].part_of_speech.clone();
 
             for i in sense_iter {
-                if !utils::same_elements(&i.glosses[0].part_of_speech, &first_p_o_s) {
-                    return false;
-                }
+                pos = utils::union_elements(&pos, &i.glosses[0].part_of_speech)
+                    .into_iter()
+                    .cloned()
+                    .collect_vec();
             }
 
-            true
+            pos
         }
 
         /// Get amount of tags which will be displayed below the reading
