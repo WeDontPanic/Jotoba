@@ -1,20 +1,22 @@
-use std::{io::Write, str::FromStr};
+use std::{convert::TryFrom, io::Write};
 
 use diesel::{
     deserialize,
     pg::Pg,
     serialize::{self, Output},
-    sql_types::Text,
+    sql_types::Integer,
     types::{FromSql, ToSql},
 };
 use strum_macros::{AsRefStr, EnumString};
 
+use crate::{error, DbPool};
+
 #[derive(AsExpression, FromSqlRow, Debug, PartialEq, Clone, Copy, AsRefStr, EnumString)]
-#[sql_type = "Text"]
+#[sql_type = "Integer"]
 pub enum NameType {
     #[strum(serialize = "company")]
     Company,
-    #[strum(serialize = "female")]
+    #[strum(serialize = "fem")]
     Female,
     #[strum(serialize = "masc")]
     Male,
@@ -38,16 +40,56 @@ pub enum NameType {
     Work,
 }
 
-impl ToSql<Text, Pg> for NameType {
+impl ToSql<Integer, Pg> for NameType {
     fn to_sql<W: Write>(&self, out: &mut Output<W, Pg>) -> serialize::Result {
-        <&str as ToSql<Text, Pg>>::to_sql(&self.as_ref(), out)
+        <i32 as ToSql<Integer, Pg>>::to_sql(&(*self).into(), out)
     }
 }
 
-impl FromSql<Text, Pg> for NameType {
+impl FromSql<Integer, Pg> for NameType {
     fn from_sql(bytes: Option<&[u8]>) -> deserialize::Result<Self> {
-        Ok(Self::from_str(
-            (<String as FromSql<Text, Pg>>::from_sql(bytes)?).as_str(),
-        )?)
+        Ok(Self::try_from(<i32 as FromSql<Integer, Pg>>::from_sql(
+            bytes,
+        )?)?)
+    }
+}
+
+impl TryFrom<i32> for NameType {
+    type Error = crate::error::Error;
+    fn try_from(value: i32) -> Result<Self, Self::Error> {
+        Ok(match value {
+            0 => NameType::Company,
+            1 => NameType::Female,
+            2 => NameType::Male,
+            3 => NameType::Given,
+            4 => NameType::Organization,
+            5 => NameType::Person,
+            6 => NameType::Place,
+            7 => NameType::Product,
+            8 => NameType::RailwayStation,
+            9 => NameType::Surname,
+            10 => NameType::Unclassified,
+            11 => NameType::Work,
+            _ => return Err(error::Error::ParseError),
+        })
+    }
+}
+
+impl Into<i32> for NameType {
+    fn into(self) -> i32 {
+        match self {
+            NameType::Company => 0,
+            NameType::Female => 1,
+            NameType::Male => 2,
+            NameType::Given => 3,
+            NameType::Organization => 4,
+            NameType::Person => 5,
+            NameType::Place => 6,
+            NameType::Product => 7,
+            NameType::RailwayStation => 8,
+            NameType::Surname => 9,
+            NameType::Unclassified => 10,
+            NameType::Work => 11,
+        }
     }
 }

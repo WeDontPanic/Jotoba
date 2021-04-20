@@ -15,7 +15,7 @@ use super::{
 };
 
 /// An in memory Cache for search results
-static KANJICACHE_C: Lazy<Mutex<SharedCache<String, Vec<result::Item>>>> =
+static SEARCH_CACHE: Lazy<Mutex<SharedCache<String, Vec<result::Item>>>> =
     Lazy::new(|| Mutex::new(SharedCache::with_capacity(1000)));
 
 const MAX_KANJI_INFO_ITEMS: usize = 5;
@@ -26,7 +26,7 @@ pub async fn search(db: &DbPool, query: &str) -> Result<Vec<result::Item>, Error
 
     // Lock cache
     let mut search_cache: MutexGuard<SharedCache<String, Vec<result::Item>>> =
-        KANJICACHE_C.lock().await;
+        SEARCH_CACHE.lock().await;
 
     // Try to use cached value
     if let Some(c_res) = search_cache.cache_get(&query.to_owned()) {

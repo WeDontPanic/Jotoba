@@ -71,7 +71,11 @@ function copyTranslationAndShowMessage(textParent) {
 
 // Navigate to the newly picked seach type directly on change
 function onLangChange(value) {
-  var params = new URLSearchParams(location.search);
-  params.set('type', value);
-  window.location.search = params.toString();
+  var search_value = $('#search').val();
+  if (search_value.length > 0) {
+    var params = new URLSearchParams(location.search);
+    params.set('type', value);
+    params.set('search', search_value);
+    window.location.search = params.toString();
+  }
 }

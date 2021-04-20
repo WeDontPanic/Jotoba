@@ -48,3 +48,16 @@ CREATE TABLE kanji (
   natori TEXT[]
 );
 CREATE INDEX index_literal_kanji ON kanji (literal);
+
+CREATE TABLE name (
+  id SERIAL PRIMARY KEY,
+  sequence INTEGER NOT NULL,
+  kana TEXT NOT NULL,
+  kanji TEXT,
+  transcription TEXT NOT NULL,
+  name_type INTEGER,
+  xref TEXT
+);
+CREATE INDEX index_kana_name ON name (kana);
+CREATE INDEX index_kanji_name ON name (kanji);
+CREATE INDEX index_transcription_name ON name (transcription);

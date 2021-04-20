@@ -32,6 +32,18 @@ table! {
 }
 
 table! {
+    name (id) {
+        id -> Int4,
+        sequence -> Int4,
+        kana -> Text,
+        kanji -> Nullable<Text>,
+        transcription -> Text,
+        name_type -> Nullable<Int4>,
+        xref -> Nullable<Text>,
+    }
+}
+
+table! {
     sense (id) {
         id -> Int4,
         sequence -> Int4,
@@ -52,5 +64,6 @@ table! {
 allow_tables_to_appear_in_same_query!(
     dict,
     kanji,
+    name,
     sense,
 );
