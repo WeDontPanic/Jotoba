@@ -1,4 +1,5 @@
 use actix_web::{web, HttpResponse};
+use search::Search;
 use serde::Deserialize;
 
 use crate::{search, templates, DbPool};
@@ -66,7 +67,7 @@ pub async fn search(
     match query_data.search_type.as_ref().unwrap() {
         QueryType::Kanji => kanji_search(&pool, query_data).await,
         QueryType::Sentences => sentence_search().await,
-        QueryType::Names => name_search().await,
+        QueryType::Names => name_search(&pool, query_data).await,
         QueryType::Words => word_search(&pool, query_data).await,
     }
 }
@@ -106,16 +107,34 @@ async fn kanji_search(
         templates::base,
         Some(query_data),
         None,
-        Some(kanji)
+        Some(kanji),
+        None
     )))
 }
 
 /// Perform a name search and
 /// render name_search tempalte
-async fn name_search() -> Result<HttpResponse, actix_web::Error> {
-    Ok(HttpResponse::MovedPermanently()
-        .header("Location", "/")
-        .finish())
+async fn name_search(
+    pool: &web::Data<DbPool>,
+    query_data: QueryStruct,
+) -> Result<HttpResponse, actix_web::Error> {
+    let start = std::time::SystemTime::now();
+    let query = query_data.query.as_ref().unwrap();
+
+    let names =
+        search::name::NameSearch::new(&pool, Search::new(&query, search::SearchMode::Variable))
+            .search_native()
+            .await
+            .unwrap();
+
+    println!("name search took {:?}", start.elapsed());
+    Ok(HttpResponse::Ok().body(render!(
+        templates::base,
+        Some(query_data),
+        None,
+        None,
+        Some(names),
+    )))
 }
 
 /// Perform a word search and
@@ -133,6 +152,7 @@ async fn word_search(
         templates::base,
         Some(query_data),
         Some(result),
-        None
+        None,
+        None,
     )))
 }

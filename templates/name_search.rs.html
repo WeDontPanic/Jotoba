@@ -1,0 +1,40 @@
+@use crate::models::name::Name;
+@(names: Vec<Name>)
+<div class="d-flex center">
+  <div class="main-info d-flex flex-column">
+
+    @for name in names.iter() {
+      <div class="list-entry">
+         <div class="d-flex flex-row">
+            @if let Some(ref kanji) = name.kanji {
+              <div class="kanji-preview small">
+                 @kanji
+              </div>
+            }
+            <div class="kanji-preview small">
+              @if name.kanji.is_some() {
+               【@name.kana】
+              } else {
+                @name.kana
+              }
+            </div>
+         </div>
+         <div class="d-flex flex-row">
+            <div class="row-tag-entry">
+               <div class="tags">Full name</div>
+               <div class="notes">@name.transcription</div>
+            </div>
+
+            @if let Some(n_type) = name.name_type {
+              <div class="row-tag-entry">
+                <div class="tags">@if !n_type.is_gender() { Name origin } else { Sex }</div>
+                 <div class="notes">@n_type.humanized()</div>
+              </div>
+            }
+         </div>
+         <hr/>
+      </div>
+    }
+
+  </div>
+</div>

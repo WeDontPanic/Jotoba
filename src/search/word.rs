@@ -149,13 +149,9 @@ impl<'a> WordSearch<'a> {
                 Ok(sense
                     .select(sequence)
                     .filter(
-                        match self.search.mode {
-                            SearchMode::Exact => lower(gloss).like(query),
-                            SearchMode::Variable => lower(gloss).like(format!("%{}%", query)),
-                            SearchMode::LeftVariable => lower(gloss).like(format!("%{}", query)),
-                            SearchMode::RightVariable => lower(gloss).like(format!("{}%", query)),
-                        }
-                        .and(language_predicate),
+                        lower(gloss)
+                            .like(self.search.mode.to_like(query))
+                            .and(language_predicate),
                     )
                     .limit(self.search.limit as i64)
                     .get_results_async(&self.db)
@@ -164,13 +160,9 @@ impl<'a> WordSearch<'a> {
                 Ok(sense
                     .select(sequence)
                     .filter(
-                        match self.search.mode {
-                            SearchMode::Exact => gloss.like(query),
-                            SearchMode::Variable => gloss.like(format!("%{}%", query)),
-                            SearchMode::LeftVariable => gloss.like(format!("%{}", query)),
-                            SearchMode::RightVariable => gloss.like(format!("{}%", query)),
-                        }
-                        .and(language_predicate),
+                        gloss
+                            .like(self.search.mode.to_like(query))
+                            .and(language_predicate),
                     )
                     .limit(self.search.limit as i64)
                     .get_results_async(&self.db)
@@ -181,13 +173,9 @@ impl<'a> WordSearch<'a> {
                 Ok(sense
                     .select(sequence)
                     .filter(
-                        match self.search.mode {
-                            SearchMode::Exact => lower(gloss).like(query),
-                            SearchMode::Variable => lower(gloss).like(format!("%{}%", query)),
-                            SearchMode::LeftVariable => lower(gloss).like(format!("%{}", query)),
-                            SearchMode::RightVariable => lower(gloss).like(format!("{}%", query)),
-                        }
-                        .and(language_predicate),
+                        lower(gloss)
+                            .like(self.search.mode.to_like(query))
+                            .and(language_predicate),
                     )
                     .get_results_async(&self.db)
                     .await?)
@@ -195,13 +183,9 @@ impl<'a> WordSearch<'a> {
                 Ok(sense
                     .select(sequence)
                     .filter(
-                        match self.search.mode {
-                            SearchMode::Exact => gloss.like(query),
-                            SearchMode::Variable => gloss.like(format!("%{}%", query)),
-                            SearchMode::LeftVariable => gloss.like(format!("%{}", query)),
-                            SearchMode::RightVariable => gloss.like(format!("{}%", query)),
-                        }
-                        .and(language_predicate),
+                        gloss
+                            .like(self.search.mode.to_like(query))
+                            .and(language_predicate),
                     )
                     .get_results_async(&self.db)
                     .await?)

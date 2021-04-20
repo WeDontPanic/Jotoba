@@ -39,6 +39,30 @@ pub enum NameType {
     Work,
 }
 
+impl NameType {
+    pub fn humanized(self) -> String {
+        match self {
+            NameType::Company => "Company",
+            NameType::Female => "Female",
+            NameType::Male => "Male",
+            NameType::Given => "Given name",
+            NameType::Organization => "Organization",
+            NameType::Person => "Persons name",
+            NameType::Place => "Place",
+            NameType::Product => "Product",
+            NameType::RailwayStation => "(Railway)Station",
+            NameType::Surname => "Surname",
+            NameType::Unclassified => "Unknown",
+            NameType::Work => "Art work",
+        }
+        .to_string()
+    }
+
+    pub fn is_gender(&self) -> bool {
+        matches!(self, Self::Female | Self::Male)
+    }
+}
+
 impl ToSql<Integer, Pg> for NameType {
     fn to_sql<W: Write>(&self, out: &mut Output<W, Pg>) -> serialize::Result {
         <i32 as ToSql<Integer, Pg>>::to_sql(&(*self).into(), out)

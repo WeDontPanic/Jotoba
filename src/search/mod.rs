@@ -2,6 +2,7 @@
 
 pub mod everything;
 pub mod kanji;
+pub mod name;
 pub mod result;
 mod result_order;
 pub mod word;
@@ -32,6 +33,16 @@ impl SearchMode {
             SearchMode::Variable => a.contains(&b),
             SearchMode::LeftVariable => a.starts_with(&b),
             SearchMode::RightVariable => a.ends_with(&b),
+        }
+    }
+
+    /// Returns a string which can be placed inside a like query
+    pub fn to_like<S: AsRef<str>>(&self, a: S) -> String {
+        match self {
+            SearchMode::Exact => a.as_ref().to_owned(),
+            SearchMode::Variable => format!("%{}%", a.as_ref()),
+            SearchMode::LeftVariable => format!("%{}", a.as_ref()),
+            SearchMode::RightVariable => format!("{}%", a.as_ref()),
         }
     }
 }

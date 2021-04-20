@@ -7,7 +7,7 @@ macro_rules! render {
         Render(|o| $template(o, $($arg),*))
     }};
     ($template:path, $($arg:expr),* ,) => {{
-        use actix_ructe::Render;
+        use super::actix_ructe::Render;
         Render(|o| $template(o, $($arg),*))
     }};
 }

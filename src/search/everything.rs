@@ -171,10 +171,11 @@ pub async fn search_word_by_glosses(
         return Ok(vec![]);
     }
 
+    // TODO don't make exact search
     let mut wordresults = word::WordSearch::new(db, query)
         .with_language(Language::German)
         .with_case_insensitivity(true)
-        .with_mode(SearchMode::Variable)
+        .with_mode(SearchMode::Exact)
         .search_by_glosses()
         .await?;
 
