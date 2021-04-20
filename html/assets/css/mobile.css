@@ -3,6 +3,9 @@
 */
 
 @media only screen and (max-width: 1100px) {
+	
+	/* -------- Word Search -------- */
+	
     #content-container {
         -ms-flex-direction: column!important;
         flex-direction: column!important;
@@ -42,26 +45,91 @@
         height: max-content;
         align-self: center;
         width: 100%;
+       /* padding-left: 15%; */
     }
 	
     .secondary-info > div > .d-flex.flex-row {
         justify-content: center;
     }
+	
+	.kanji-entry.left.fixed > .d-flex {
+		padding-bottom: 5px;
+	}
     
     .kanji-preview.large {
         position: absolute;
-        left: 50px;
     }
     
     .translation.kanji {
-        padding-left: 100px;
+        padding-top: 70px;
+		padding-left: 0px;
+		padding-right: 0px;
     }
-
-	.definition-wrapper {
-		justify-content: center;
+	
+	.kanji-entry.right {
+		width: 45vw
 	}
 	
 	.tags, .notes {
 		text-align: center;
+	}
+	
+	.tags {
+		padding-bottom: 5px;
+	}
+	
+	/* -------- Kanji Details -------- */
+	
+	.main-container > .d-flex {
+		flex-direction: column;
+	}
+	
+	.kanji-entry.left.detail {
+		align-self: center;
+		padding-left: 0px;
+	}
+	
+	.kanji-preview.x-large {
+		align-self: center;
+	}
+	
+	.kanji-preview-info {
+		padding-left: 0px;
+	}
+	
+	.kanji-entry.right.detail {
+		width: unset;
+		padding-left: 0px;
+	}
+	
+	.kanji-entry.right.detail > .kanji-entry {
+		flex-direction: column !important;
+	}
+	
+	.kanji-preview-left {
+		padding: 0;
+		width: 100%;
+		text-align: center;
+	}	
+	
+	.kanji-preview-left > .d-flex {
+		padding-left: 20px;
+	}
+	
+	.kanji-preview-right {
+		padding-top: 10px;
+	}
+	
+	.stroke-container {
+		max-width: 48vw;
+	}
+	
+	.on-reading {
+		padding-top: 10px;
+	}
+	
+	.kun-reading {
+		width: 100%;
+		padding-top: 20px;
 	}
 }
