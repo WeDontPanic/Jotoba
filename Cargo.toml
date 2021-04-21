@@ -31,6 +31,7 @@ strum = { version = "0.20.0", features = ["derive"] }
 strum_macros = "0.20.1"
 tokio = { version = "1.5.0", features = ["macros","rt-multi-thread","sync"] }
 tokio-diesel = {git = "https://github.com/mehcode/tokio-diesel" }
+typed-igo = {git = "https://github.com/statiolake/typed-igo-rs"}
 
 [dev-dependencies]
 rand = "0.8.3"

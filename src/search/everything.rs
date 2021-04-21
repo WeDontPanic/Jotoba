@@ -11,7 +11,7 @@ use crate::{
 use super::{
     result,
     result_order::{GlossWordOrder, NativeWordOrder},
-    word, SearchMode,
+    utils, word, SearchMode,
 };
 
 /// An in memory Cache for search results
@@ -69,12 +69,16 @@ pub async fn search_word_by_native(
     db: &DbPool,
     query: &str,
 ) -> Result<Vec<result::word::Item>, Error> {
-    if !query.is_japanese() || query.is_empty() {
+    let query = utils::parse_jp_query(query);
+
+    if !query.has_japanese() || query.is_empty() {
         return Ok(vec![]);
     }
 
+    // Remove particles here
+
     // Define basic search structure
-    let mut word_search = word::WordSearch::new(db, query);
+    let mut word_search = word::WordSearch::new(db, &query);
     word_search.with_language(Language::German);
 
     // Perform the word search
@@ -102,7 +106,7 @@ pub async fn search_word_by_native(
     };
 
     // Sort the results based
-    NativeWordOrder::new(query).sort(&mut wordresults);
+    NativeWordOrder::new(&query).sort(&mut wordresults);
 
     // Limit search to 10 results
     wordresults.truncate(10);
@@ -167,12 +171,13 @@ pub async fn search_word_by_glosses(
     db: &DbPool,
     query: &str,
 ) -> Result<Vec<result::word::Item>, Error> {
+    let query = utils::parse_foreign_query(query);
     if query.is_japanese() {
         return Ok(vec![]);
     }
 
     // TODO don't make exact search
-    let mut wordresults = word::WordSearch::new(db, query)
+    let mut wordresults = word::WordSearch::new(db, &query)
         .with_language(Language::German)
         .with_case_insensitivity(true)
         .with_mode(SearchMode::Exact)
@@ -180,7 +185,7 @@ pub async fn search_word_by_glosses(
         .await?;
 
     // Sort the results based
-    GlossWordOrder::new(query).sort(&mut wordresults);
+    GlossWordOrder::new(&query).sort(&mut wordresults);
 
     // Limit search to 10 results
     wordresults.truncate(10);

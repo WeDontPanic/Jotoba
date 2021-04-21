@@ -5,6 +5,7 @@ pub mod kanji;
 pub mod name;
 pub mod result;
 mod result_order;
+pub mod utils;
 pub mod word;
 
 pub use self::result::Item as ResultItem;

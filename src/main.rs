@@ -21,10 +21,15 @@ use actix_web::{middleware, web as actixweb, App, HttpServer};
 use argparse::{ArgumentParser, Print, Store, StoreTrue};
 use diesel::{r2d2::ConnectionManager, PgConnection};
 use models::{dict, kanji, sense};
+use once_cell::sync::Lazy;
 use r2d2::{Pool, PooledConnection};
 
 pub type DbConnection = PooledConnection<ConnectionManager<PgConnection>>;
 pub type DbPool = Pool<ConnectionManager<PgConnection>>;
+
+/// An in memory Cache for kanji items
+static JA_NL_PARSER: once_cell::sync::Lazy<typed_igo::Parser> =
+    Lazy::new(|| typed_igo::Parser::new());
 
 #[derive(Default)]
 struct Options {
@@ -108,6 +113,9 @@ pub async fn main() {
 /// Start the webserver
 #[actix_web::main]
 async fn start_server(db: DbPool) -> std::io::Result<()> {
+    println!("Loading Japanese natural language parser");
+    JA_NL_PARSER.parse("");
+
     env_logger::init_from_env(env_logger::Env::new().default_filter_or("debug"));
     HttpServer::new(move || {
         App::new()
