@@ -17,6 +17,15 @@
         -moz-transform-origin: 0 0;
         height: max-content;
     }
+
+    .searchDivInner form .inner-form .input-field.first-wrap {
+      width: 150px;
+      border-right: 1px solid rgba(0, 0, 0, 0.1);
+    }
+
+    h3 {
+      margin-bottom: 2rem;
+    }
     
     .btn-container, .main-tab-select {
         display: none;
@@ -24,6 +33,7 @@
     
     .title-div {
         padding-top: 10px;
+        width: 100%;
     }
     
     .main-info {
@@ -71,7 +81,7 @@
 	}
 	
 	.tags, .notes {
-		text-align: center;
+		text-align: left;
 	}
 	
 	.tags {
@@ -132,4 +142,5 @@
 		width: 100%;
 		padding-top: 20px;
 	}
+
 }
