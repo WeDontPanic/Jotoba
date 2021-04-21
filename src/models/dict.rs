@@ -10,7 +10,8 @@ use crate::{
 use diesel::prelude::*;
 use tokio_diesel::*;
 
-#[derive(Queryable, Clone, Debug, Default)]
+#[derive(Queryable, QueryableByName, Clone, Debug, Default)]
+#[table_name = "dict"]
 pub struct Dict {
     pub id: i32,
     pub sequence: i32,
@@ -56,9 +57,8 @@ impl Dict {
 
         // Load kanji from DB
         let mut items = super::kanji::load_by_ids(db, ids).await?;
-        let _ = super::kanji::load_by_ids(db, ids).await?;
         // Order items based on their occurence
-        items.sort_by(|a, b| utils::get_item_order(ids, a.id, b.id).unwrap_or(Ordering::Equal));
+        items.sort_by(|a, b| utils::get_item_order(ids, &a.id, &b.id).unwrap_or(Ordering::Equal));
 
         Ok(items)
     }
@@ -97,6 +97,11 @@ pub fn new_dicts_from_entry(entry: &Entry) -> Vec<NewDict> {
             jlpt_lvl: None,
         })
         .collect()
+}
+
+pub async fn load_by_ids(db: &DbPool, ids: &[i32]) -> Result<Vec<Dict>, Error> {
+    use crate::schema::dict::dsl::*;
+    Ok(dict.filter(id.eq_any(ids)).get_results_async(db).await?)
 }
 
 /// Returns Ok(true) if at least one dict exists in the Db

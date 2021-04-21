@@ -1,5 +1,5 @@
-@use crate::models::kanji::Kanji;
-@(kanji: Vec<Kanji>)
+@use crate::search::result::kanji::Item;
+@(kanji: Vec<Item>)
 <!-- Inner Main Body -->
 @for (kpos, k_item) in kanji.iter().enumerate() {
   @if kpos > 0 {
@@ -9,10 +9,10 @@
       <!-- Left side: Kanji -->
       <div class="kanji-entry left detail d-flex flex-column">
          <span class="kanji-preview x-large">
-           @k_item.literal
+           @k_item.kanji.literal
          </span>
          <div class="kanji-preview-info">
-           <div class="notes"><b>@k_item.stroke_count</b> strokes </div>
+           <div class="notes"><b>@k_item.kanji.stroke_count</b> strokes </div>
             <!--TODO-->
             <!--<div class="notes"><b>Radical:</b> [> !!! Radical(s) hier. (z.b.: open country 冂) !!! <] </div>-->
             <!--<div class="notes"><b>Parts:</b>  [> !!! Parts hier. (z.b.: 人 冂) !!! <] </div>-->
@@ -26,9 +26,9 @@
             <div class="kanji-preview-left">
                <div class="translation big">
                    <!-- !!! Translation hier !!! (z.b. inside, within, between, among, house, home)--> 
-                   @k_item.meaning.join(", ")
+                   @k_item.kanji.meaning.join(", ")
                </div>
-                @if let Some(ref kun_readings) = k_item.kunyomi {
+                @if let Some(ref kun_readings) = k_item.kanji.kunyomi {
                  <div class="d-flex flex-row wrap">
                     <div class="tags no-margin fat right-padding-10 noselect">Kun:</div>
                     <!-- !!! for i in kunReadings oder so hier. immer abwechslung die reading und nen komma !!! --> 
@@ -40,7 +40,7 @@
                       }
                  </div>
                 }
-                @if let Some(ref on_readings) = k_item.onyomi {
+                @if let Some(ref on_readings) = k_item.kanji.onyomi {
                  <div class="d-flex flex-row wrap">
                     <div class="tags no-margin fat right-padding-20 noselect">On:</div>
                      <!-- !!! for i in onReadings oder so hier. immer abwechslung die reading und nen komma !!! --> 
@@ -56,13 +56,13 @@
             <!-- Inner Right Side -->
             <div class="kanji-preview-right">
                 <!-- !!! for i in notes oder sowas hier !!! --> 
-                @if let Some(ref grade) = k_item.school_str() {
+                @if let Some(ref grade) = k_item.kanji.school_str() {
                  <div class="notes">@grade</div>
                 }
-                @if let Some(n_lvl) = k_item.jlpt {
+                @if let Some(n_lvl) = k_item.kanji.jlpt {
                  <div class="notes">JLPT level <b>N@n_lvl</b></div>
                 }
-                @if let Some(frequency) = k_item.frequency {
+                @if let Some(frequency) = k_item.kanji.frequency {
                  <div class="notes"><b>@frequency</b> of 2500 most used kanji in newspapers</div>
                 }
             </div>
@@ -115,13 +115,23 @@
                <h3 class="noselect">
                   Kun reading compounds
                </h3>
-               <div class="d-flex flex-column">
+               @if let Some(ref kuns) = k_item.kun_dicts {
+                 <div class="d-flex flex-column">
                    <!-- !!! Alle kun reading sachen !!! -->
-                  <!--<span>内 【うち】 inside, within, while (e.g. one is young), during, within (e.g. a day), in the course of, among, amongst, (out) of, between, in (secret, chaos, poverty, etc.), amidst, with (e.g. success), within oneself, one's feelings, inner thoughts, we, our company, our organization, one's home, one's family, my spouse, my husband, my wife, signed on behalf of (husband's name) by his wife, I, me, imperial palace grounds, emperor</span>-->
-                  <!--<span>内々 【うちうち】 private, confidential, informal, secret, (within the) family circle, (on the) inside</span>-->
-                  <!--<span>幕内 【まくうち】 highest-ranking division</span>-->
-                  <!--<span>幕の内 【まくのうち】 box lunch (containing rice and 10-15 small portions of fish, meat, and vegetables), highest-ranking division, intermission (between acts), interlude</span>-->
-               </div>
+                   @for kun in kuns.iter() {
+                    <span>
+                      @if let Some(ref kanji_reading) = kun.reading.kanji {
+                        <a class="clickable green" href="/search?type=0&search=@kanji_reading.reading">@kanji_reading.reading</a> 【@kun.reading.kana.as_ref().unwrap().reading】@kun.glosses_pretty()
+                      }
+                    </span>
+
+                    <!--<span>内 【うち】 inside, within, while (e.g. one is young), during, within (e.g. a day), in the course of, among, amongst, (out) of, between, in (secret, chaos, poverty, etc.), amidst, with (e.g. success), within oneself, one's feelings, inner thoughts, we, our company, our organization, one's home, one's family, my spouse, my husband, my wife, signed on behalf of (husband's name) by his wife, I, me, imperial palace grounds, emperor</span>-->
+                    <!--<span>内々 【うちうち】 private, confidential, informal, secret, (within the) family circle, (on the) inside</span>-->
+                    <!--<span>幕内 【まくうち】 highest-ranking division</span>-->
+                    <!--<span>幕の内 【まくのうち】 box lunch (containing rice and 10-15 small portions of fish, meat, and vegetables), highest-ranking division, intermission (between acts), interlude</span>-->
+                   }
+                 </div>
+               }
             </div>
          </div>
       </div>

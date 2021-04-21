@@ -73,15 +73,22 @@ impl<'a> WordSearch<'a> {
     pub async fn search_by_glosses(&mut self) -> Result<Vec<Item>, Error> {
         // Load sequence ids to display
         let seq_ids = self.get_sequence_ids_by_glosses().await?;
-        self.get_results(&seq_ids).await
+
+        // always search by a language.
+        let lang = self.language.unwrap_or(Language::default());
+
+        Self::load_words_by_seq(&self.db, &seq_ids, lang).await
     }
 
     /// Searches by native
     pub async fn search_native(&mut self) -> Result<Vec<Item>, Error> {
         // Load sequence ids to display
         let seq_ids = self.get_sequence_ids_by_native().await?;
-        Ok(self
-            .get_results(&seq_ids)
+
+        // always search by a language.
+        let lang = self.language.unwrap_or(Language::default());
+
+        Ok(Self::load_words_by_seq(&self.db, &seq_ids, lang)
             .await?
             .into_iter()
             .filter(|i| self.post_search_check(&i))
@@ -97,10 +104,16 @@ impl<'a> WordSearch<'a> {
     }
 
     /// Get search results of seq_ids
-    async fn get_results(&self, seq_ids: &Vec<i32>) -> Result<Vec<Item>, Error> {
+    pub async fn load_words_by_seq(
+        db: &DbPool,
+        seq_ids: &Vec<i32>,
+        lang: Language,
+    ) -> Result<Vec<Item>, Error> {
         // Request Redings and Senses in parallel
-        let (word_items, senses): (Vec<Item>, Vec<sense::Sense>) =
-            futures::try_join!(self.load_readings(&seq_ids), self.load_senses(&seq_ids))?;
+        let (word_items, senses): (Vec<Item>, Vec<sense::Sense>) = futures::try_join!(
+            Self::load_readings(&db, &seq_ids),
+            Self::load_senses(&db, &seq_ids, lang)
+        )?;
 
         Ok(Self::merge_words_with_senses(word_items, senses))
     }
@@ -224,11 +237,12 @@ impl<'a> WordSearch<'a> {
     }
 
     /// Load all senses for the sequence ids
-    async fn load_senses(&self, sequence_ids: &Vec<i32>) -> Result<Vec<sense::Sense>, Error> {
+    async fn load_senses(
+        db: &DbPool,
+        sequence_ids: &Vec<i32>,
+        lang: Language,
+    ) -> Result<Vec<sense::Sense>, Error> {
         use crate::schema::sense as sense_schema;
-
-        // Always search by a language.
-        let lang = self.language.unwrap_or(Language::default());
 
         let senses: Vec<sense::Sense> = sense_schema::table
             .filter(
@@ -238,21 +252,21 @@ impl<'a> WordSearch<'a> {
                         .or(sense_schema::language.eq(Language::default())),
                 ),
             )
-            .get_results_async(&self.db)
+            .get_results_async(db)
             .await?;
 
         Ok(senses)
     }
 
     /// Load readings for all sequences
-    async fn load_readings(&self, sequence_ids: &Vec<i32>) -> Result<Vec<Item>, Error> {
+    async fn load_readings(db: &DbPool, sequence_ids: &Vec<i32>) -> Result<Vec<Item>, Error> {
         use crate::schema::dict as dict_schema;
 
         // load dicts from DB
         let dicts: Vec<Dict> = dict_schema::table
             .filter(dict_schema::sequence.eq_any(sequence_ids))
             .order_by(dict_schema::id)
-            .get_results_async(&self.db)
+            .get_results_async(&db)
             .await?;
 
         Ok(dicts

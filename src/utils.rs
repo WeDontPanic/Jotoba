@@ -28,7 +28,7 @@ where
 
 /// Get the order of two elements in a vector
 /// requires that a, b are element of vec
-pub fn get_item_order<T>(vec: &Vec<T>, a: T, b: T) -> Option<Ordering>
+pub fn get_item_order<T>(vec: &Vec<T>, a: &T, b: &T) -> Option<Ordering>
 where
     T: PartialEq,
 {
@@ -37,10 +37,10 @@ where
     }
 
     for i in vec {
-        if *i == a {
+        if *i == *a {
             return Some(Ordering::Less);
         }
-        if *i == b {
+        if *i == *b {
             return Some(Ordering::Greater);
         }
     }

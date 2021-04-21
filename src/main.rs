@@ -61,7 +61,7 @@ pub async fn main() {
         let mut imported_kanji = false;
         let mut imported_dicts = false;
         if !options.kanjidict_path.is_empty() {
-            import::kanjidict::import(&database, options.kanjidict_path).await;
+            import::kanjidict::import(&database, options.kanjidict_path.clone()).await;
             imported_kanji = true;
         }
 
@@ -71,8 +71,14 @@ pub async fn main() {
                 return;
             }
 
-            import::jmdict::import(&database, options.jmdict_path).await;
+            import::jmdict::import(&database, options.jmdict_path.clone()).await;
             imported_dicts = true;
+        }
+
+        if !options.kanjidict_path.is_empty() && (dict_exists || !options.jmdict_path.is_empty()) {
+            kanji::update_kun_links(&database)
+                .await
+                .expect("failed to update kun links");
         }
 
         if !options.jlpt_paches_path.is_empty() {

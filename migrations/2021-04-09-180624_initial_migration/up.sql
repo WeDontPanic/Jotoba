@@ -45,7 +45,8 @@ CREATE TABLE kanji (
   chinese TEXT,
   korean_r TEXT[],
   korean_h TEXT[],
-  natori TEXT[]
+  natori TEXT[],
+  kun_dicts INTEGER[]
 );
 CREATE INDEX index_literal_kanji ON kanji (literal);
 
@@ -111,3 +112,9 @@ CREATE OR REPLACE FUNCTION ends_with_hiragana(IN inp text)
  LANGUAGE sql
  IMMUTABLE
  STRICT;
+
+CREATE OR REPLACE FUNCTION get_kun_dicts(i integer)
+RETURNS table (id INTEGER, sequence INTEGER, reading TEXT, kanji boolean, no_kanji boolean, priorities TEXT[], information INTEGER[], kanji_info INTEGER[], jlpt_lvl INTEGER)  AS $$
+  select * from dict where reading in ( SELECT literal || SUBSTRING(UNNEST(kunyomi) from POSITION('.' in  UNNEST(kunyomi))+1) from kanji where kanji.id = i)
+$$
+LANGUAGE sql stable;

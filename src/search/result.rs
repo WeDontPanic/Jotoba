@@ -18,6 +18,78 @@ impl From<Kanji> for Item {
     }
 }
 
+pub mod kanji {
+    use super::word::Item as WordItem;
+    use std::{fs::read_to_string, path::Path, vec};
+
+    use crate::{
+        models::kanji::Kanji as DbKanji, parse::jmdict::languages::Language, search, DbPool,
+    };
+
+    #[derive(Debug, PartialEq, Clone)]
+    pub struct Item {
+        pub kanji: DbKanji,
+        pub kun_dicts: Option<Vec<WordItem>>,
+    }
+
+    impl Item {
+        pub async fn from_db(db: &DbPool, k: DbKanji) -> Self {
+            let kun_dicts = k.kun_dicts.clone().unwrap_or_default();
+
+            let loaded_kd =
+                search::word::WordSearch::load_words_by_seq(db, &kun_dicts, Language::German)
+                    .await
+                    .unwrap();
+
+            Self {
+                kanji: k,
+                kun_dicts: Some(loaded_kd),
+            }
+        }
+    }
+
+    impl Item {
+        /// Print kanji grade pretty for frontend
+        pub fn school_str(&self) -> Option<String> {
+            self.kanji.school_str()
+        }
+
+        pub fn get_animation_path(&self) -> String {
+            format!("html/assets/svg/{}_animated.svgs", self.kanji.literal)
+        }
+
+        pub fn get_stroke_frames_url(&self) -> String {
+            format!("assets/svg/{}_frames.svg", self.kanji.literal)
+        }
+
+        // Returns true if the kanji has a stroke animation file
+        pub fn has_animation_file(&self) -> bool {
+            Path::new(&self.get_animation_path()).exists()
+        }
+
+        // Returns true if the kanji has stroke frames
+        pub fn has_stroke_frames(&self) -> bool {
+            Path::new(&self.get_animation_path()).exists()
+        }
+
+        /// Return the animation entries for the template
+        pub fn get_animation_entries(&self) -> Vec<(String, String)> {
+            if let Ok(content) = read_to_string(self.get_animation_path()) {
+                content
+                    .split("\n")
+                    .into_iter()
+                    .map(|i| {
+                        let mut s = i.split(";");
+                        (s.next().unwrap().to_owned(), s.next().unwrap().to_owned())
+                    })
+                    .collect::<Vec<(String, String)>>()
+            } else {
+                vec![]
+            }
+        }
+    }
+}
+
 /// Defines a word result item
 pub mod word {
     use crate::{japanese::JapaneseExt, parse::jmdict::languages::Language, utils::to_option};
@@ -130,6 +202,26 @@ pub mod word {
         /// Returns the reading of a word
         pub fn get_reading(&self) -> &Dict {
             return self.reading.get_reading();
+        }
+
+        pub fn glosses_pretty(&self) -> String {
+            let senses = self.get_senses();
+
+            if !senses[0].is_empty() {
+                Self::pretty_print_senses(&senses[0])
+            } else {
+                Self::pretty_print_senses(&senses[1])
+            }
+        }
+
+        fn pretty_print_senses(senses: &Vec<Sense>) -> String {
+            senses
+                .iter()
+                .map(|i| i.glosses.clone())
+                .flatten()
+                .into_iter()
+                .map(|i| i.gloss)
+                .join(", ")
         }
 
         /// Returns furigana reading-pairs of an Item

@@ -12,7 +12,7 @@ where
 
     parsed
         .iter()
-        .filter_map(|i| (!p(&i.wordclass)).then(|| i.basic))
+        .filter_map(|i| (!p(&i.wordclass)).then(|| i.surface))
         .collect::<Vec<_>>()
         .join("")
 }
@@ -36,7 +36,10 @@ pub fn parse_jp_query(inp: &str) -> String {
 
     // Workaround for now. Just remove all particles from jp input
     let query = remove_by_wordclass(&inp, |m| {
-        matches!(m, WordClass::Postpositional(..) | WordClass::Symbol(..))
+        matches!(
+            m,
+            WordClass::Postpositional(..) | WordClass::Symbol(..) | WordClass::AuxiliaryVerb
+        )
     });
 
     // TODO do a proper query parsing here
