@@ -25,37 +25,33 @@
             <!-- Inner Left Side -->
             <div class="kanji-preview-left">
                <div class="translation big">
-                   <!-- !!! Translation hier !!! (z.b. inside, within, between, among, house, home)--> 
                    @k_item.kanji.meaning.join(", ")
                </div>
                 @if let Some(ref kun_readings) = k_item.kanji.kunyomi {
                  <div class="d-flex flex-row wrap">
                     <div class="tags no-margin fat right-padding-10 noselect">Kun:</div>
-                    <!-- !!! for i in kunReadings oder so hier. immer abwechslung die reading und nen komma !!! --> 
                       @for (pos, kun) in kun_readings.iter().enumerate() {
                         @if pos > 0 {
                           <div class="tags no-margin fat right-padding-10">,</div>
                         }
-                        <div class="clickable no-align fat">@kun</div>
+                        <a class="clickable no-align fat" href="/search?type=0&search=@kun">@kun</a>
                       }
                  </div>
                 }
                 @if let Some(ref on_readings) = k_item.kanji.onyomi {
                  <div class="d-flex flex-row wrap">
                     <div class="tags no-margin fat right-padding-20 noselect">On:</div>
-                     <!-- !!! for i in onReadings oder so hier. immer abwechslung die reading und nen komma !!! --> 
                       @for (pos, on) in on_readings.iter().enumerate() {
                         @if pos > 0 {
                           <div class="tags no-margin fat right-padding-10">,</div>
                         }
-                        <div class="clickable no-align fat">@on</div>
+                        <a class="clickable no-align fat" href="/search?type=0&search=@on">@on</a>
                       }
                  </div>
                }
             </div>
             <!-- Inner Right Side -->
             <div class="kanji-preview-right">
-                <!-- !!! for i in notes oder sowas hier !!! --> 
                 @if let Some(ref grade) = k_item.kanji.school_str() {
                  <div class="notes">@grade</div>
                 }
@@ -96,43 +92,39 @@
          <!-- Reading Compounds -->
          <div class="kanji-entry d-flex flex-row">
             <!-- On Reading -->
-            <div class="on-reading">
-               <h3 class="noselect">
-                  On reading compounds
-               </h3>
-               <div class="d-flex flex-column">
-                    <!-- !!! Alle on reading sachen !!! -->
-                  <!--<span>内 【ナイ】 inside, within</span>-->
-                  <!--<span>内科 【ナイカ】 internal medicine, i.e. treatment by medical procedures rather than surgical procedures, department of internal medicine (hospital, etc.)</span>-->
-                  <!--<span>島内 【トウナイ】 on an island, on-island</span>-->
-                  <!--<span>内裏 【ダイリ】 imperial palace, festival dolls representing the emperor and the empress</span>-->
-                  <!--<span>内府 【ナイフ】 Minister of the Interior (669-1868 CE), Lord Keeper of the Privy Seal (1885-1945 CE)</span>-->
-                  <!--<span>海内 【カイダイ】 the whole country</span>-->
-               </div>
-            </div>
-            <!-- Kun Reading -->
-            <div class="kun-reading">
-               <h3 class="noselect">
-                  Kun reading compounds
-               </h3>
-               @if let Some(ref kuns) = k_item.kun_dicts {
+            @if let Some(ref ons) = k_item.on_dicts {
+              <div class="on-reading">
+                 <h3 class="noselect">
+                    On reading compounds
+                 </h3>
                  <div class="d-flex flex-column">
-                   <!-- !!! Alle kun reading sachen !!! -->
-                   @for kun in kuns.iter() {
+                   @for on in ons.iter() {
+                      <span>
+                        @if let Some(ref kanji_reading) = on.reading.kanji {
+                          <a class="clickable green" href="/search?type=0&search=@kanji_reading.reading">@kanji_reading.reading</a> 【@on.reading.kana.as_ref().unwrap().reading】@on.glosses_pretty()
+                        }
+                      </span>
+                    }
+                 </div>
+              </div>
+            }
+            <!-- Kun Reading -->
+            @if let Some(ref kuns) = k_item.kun_dicts {
+              <div class="kun-reading">
+                <h3 class="noselect">
+                   Kun reading compounds
+                </h3>
+                <div class="d-flex flex-column">
+                  @for kun in kuns.iter() {
                     <span>
                       @if let Some(ref kanji_reading) = kun.reading.kanji {
                         <a class="clickable green" href="/search?type=0&search=@kanji_reading.reading">@kanji_reading.reading</a> 【@kun.reading.kana.as_ref().unwrap().reading】@kun.glosses_pretty()
                       }
                     </span>
-
-                    <!--<span>内 【うち】 inside, within, while (e.g. one is young), during, within (e.g. a day), in the course of, among, amongst, (out) of, between, in (secret, chaos, poverty, etc.), amidst, with (e.g. success), within oneself, one's feelings, inner thoughts, we, our company, our organization, one's home, one's family, my spouse, my husband, my wife, signed on behalf of (husband's name) by his wife, I, me, imperial palace grounds, emperor</span>-->
-                    <!--<span>内々 【うちうち】 private, confidential, informal, secret, (within the) family circle, (on the) inside</span>-->
-                    <!--<span>幕内 【まくうち】 highest-ranking division</span>-->
-                    <!--<span>幕の内 【まくのうち】 box lunch (containing rice and 10-15 small portions of fish, meat, and vegetables), highest-ranking division, intermission (between acts), interlude</span>-->
-                   }
-                 </div>
-               }
-            </div>
+                  }
+                </div>
+              </div>
+            }
          </div>
       </div>
    </div>

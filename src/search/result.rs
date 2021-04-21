@@ -23,13 +23,14 @@ pub mod kanji {
     use std::{fs::read_to_string, path::Path, vec};
 
     use crate::{
-        models::kanji::Kanji as DbKanji, parse::jmdict::languages::Language, search, DbPool,
+        models::kanji::Kanji as DbKanji, parse::jmdict::languages::Language, search, utils, DbPool,
     };
 
     #[derive(Debug, PartialEq, Clone)]
     pub struct Item {
         pub kanji: DbKanji,
         pub kun_dicts: Option<Vec<WordItem>>,
+        pub on_dicts: Option<Vec<WordItem>>,
     }
 
     impl Item {
@@ -43,7 +44,8 @@ pub mod kanji {
 
             Self {
                 kanji: k,
-                kun_dicts: Some(loaded_kd),
+                kun_dicts: utils::to_option(loaded_kd),
+                on_dicts: None,
             }
         }
     }

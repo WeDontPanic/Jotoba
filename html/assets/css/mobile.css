@@ -23,6 +23,23 @@
       border-right: 1px solid rgba(0, 0, 0, 0.1);
     }
 
+    .searchDivInner form .inner-form .input-field input {
+      height: 100%;
+      background: transparent;
+      border: 0;
+      display: block;
+      width: 100%;
+      padding: 10px 32px;
+      font-size: 23px;
+      color: #555;
+    }
+
+    #searchDiv {
+        margin: 0px;
+        width: 100%;
+        max-width: 1000px;
+    }
+
     h3 {
       margin-bottom: 2rem;
     }
@@ -81,9 +98,9 @@
 	}
 	
 	.tags, .notes {
-		text-align: left;
+		text-align: center;
 	}
-	
+
 	.tags {
 		padding-bottom: 5px;
 	}
