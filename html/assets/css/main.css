@@ -312,6 +312,10 @@ svg {
     padding-left: 5px;
 }
 
+.kanji-preview-right {
+    max-width: 350px;
+}
+
 .inline-kana-preview {
     display: block;
     line-height: 1.1;
