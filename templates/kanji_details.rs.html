@@ -74,12 +74,12 @@
            <div class="animation-container d-flex flex-row">
               <div class="d-flex flex-column slider-parent">
                  <div class="slidecontainer">
-                    <input type="range" min="0.05" max="2" value="1" step="0.05" class="slider" id="speedSlider">
+                    <input type="range" min="0.05" max="2" value="1" step="0.05" class="slider speedSlider">
                  </div>
-                 <span id="currentAnimationSpeed" class="slider-output noselect">Animation speed: 1</span>
+                 <span class="slider-output noselect currentAnimationSpeed">Animation speed: 1</span>
               </div>
-              <div>
-                <svg id="kanjisvg" width="109px" height="109px">
+              <div class="kanjisvgParent">
+                <svg class="kanjisvg" width="109px" height="109px">
                 @for (del, d) in k_item.get_animation_entries() {
                   <path style="animation-delay: @del;" class="draw2" stroke-linejoin="round" stroke="black" fill="none" stroke-width="5" d="@d">
                   </path>  

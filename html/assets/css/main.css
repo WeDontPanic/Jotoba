@@ -425,7 +425,7 @@ svg {
     animation: dash2 1s linear forwards;
 }
 
-#kanjisvg:hover {
+.kanjisvg:hover {
     cursor: pointer;
 }
 
