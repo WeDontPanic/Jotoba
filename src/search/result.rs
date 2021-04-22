@@ -19,6 +19,8 @@ impl From<Kanji> for Item {
 }
 
 pub mod kanji {
+    use search::word::WordSearch;
+
     use super::word::Item as WordItem;
     use std::{fs::read_to_string, path::Path, vec};
 
@@ -36,10 +38,9 @@ pub mod kanji {
         pub async fn from_db(db: &DbPool, k: DbKanji) -> Self {
             let kun_dicts = k.kun_dicts.clone().unwrap_or_default();
 
-            let loaded_kd =
-                search::word::WordSearch::load_words_by_seq(db, &kun_dicts, Language::German)
-                    .await
-                    .unwrap();
+            let loaded_kd = WordSearch::load_words_by_seq(db, &kun_dicts, Language::German)
+                .await
+                .unwrap();
 
             Self {
                 kanji: k,

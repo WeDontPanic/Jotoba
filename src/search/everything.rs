@@ -47,7 +47,7 @@ pub async fn search(db: &DbPool, query: &str) -> Result<Vec<result::Item>, Error
         .collect_vec();
 
     // Chain and map results into one result vector
-    let results = load_word_kanji_info(db, &word_results)
+    let results = load_word_kanji_info(db, query, &word_results)
         .await?
         .into_iter()
         .map(|i| i.into())
@@ -117,34 +117,48 @@ pub async fn search_word_by_native(
 /// load word assigned kanji
 pub async fn load_word_kanji_info(
     db: &DbPool,
+    query: &str,
     words: &Vec<result::word::Item>,
 ) -> Result<Vec<kanji::Kanji>, Error> {
-    use futures::future::join_all;
+    use futures::future::try_join_all;
 
-    let res: Vec<Vec<kanji::Kanji>> = join_all(
-        words
-            .iter()
-            // Filter only words with kanji readings
-            .filter_map(|i| {
-                i.reading
-                    .kanji
-                    .is_some()
-                    .then(|| i.reading.kanji.as_ref().unwrap())
-            })
-            // Don't load too much
-            .take(10)
-            // Load kanji from DB
-            .map(|word| word.load_kanji_info(db)),
-    )
-    .await
-    .into_iter()
-    .collect::<Result<Vec<Vec<kanji::Kanji>>, Error>>()?;
+    let kanji_words = words
+        .iter()
+        // Filter only words with kanji readings
+        .filter_map(|i| {
+            i.reading
+                .kanji
+                .is_some()
+                .then(|| i.reading.kanji.as_ref().unwrap())
+        })
+        // Don't load too much
+        .take(10)
+        .collect_vec();
 
-    // if first word with kanji reading has more
+    // Load kanji from DB
+    let retrieved_kanji = {
+        // Also show kanji even if no word was found
+        if !kanji_words.is_empty() {
+            try_join_all(kanji_words.iter().map(|word| word.load_kanji_info(db)))
+                .await?
+                .into_iter()
+                .flatten()
+                .collect_vec()
+        } else {
+            // No words found, search only for kanji from query
+            try_join_all(query.chars().into_iter().filter_map(|i| {
+                i.is_kanji()
+                    .then(|| kanji::find_by_literal(db, i.to_string()))
+            }))
+            .await?
+        }
+    };
+
+    // If first word with kanji reading has more
     // than MAX_KANJI_INFO_ITEMS kanji, display all of them only
     let limit = {
-        if !res.is_empty() && res[0].len() > MAX_KANJI_INFO_ITEMS {
-            res[0].len()
+        if !kanji_words.is_empty() && kanji_words[0].reading.kanji_count() > MAX_KANJI_INFO_ITEMS {
+            kanji_words[0].reading.kanji_count()
         } else {
             MAX_KANJI_INFO_ITEMS
         }
@@ -152,15 +166,11 @@ pub async fn load_word_kanji_info(
 
     // Remove duplicates
     let mut items_new = Vec::new();
-    res.into_iter()
-        .flatten()
-        .collect_vec()
-        .into_iter()
-        .for_each(|i| {
-            if !items_new.contains(&i) {
-                items_new.push(i);
-            }
-        });
+    retrieved_kanji.into_iter().for_each(|i| {
+        if !items_new.contains(&i) {
+            items_new.push(i);
+        }
+    });
 
     // Limit result and map to result::Item
     Ok(items_new.into_iter().take(limit).collect_vec())

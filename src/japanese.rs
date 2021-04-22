@@ -30,6 +30,9 @@ pub trait JapaneseExt {
 
     /// Returns true if self is written in hiragana
     fn is_hiragana(&self) -> bool;
+
+    /// Returns the amount of kanji self has
+    fn kanji_count(&self) -> usize;
 }
 
 impl JapaneseExt for char {
@@ -81,6 +84,14 @@ impl JapaneseExt for char {
 
     fn has_japanese(&self) -> bool {
         self.is_japanese()
+    }
+
+    fn kanji_count(&self) -> usize {
+        if self.is_kanji() {
+            1
+        } else {
+            0
+        }
     }
 }
 
@@ -137,6 +148,10 @@ impl JapaneseExt for str {
             let s = c.encode_utf8(&mut buf);
             s.is_kana() || s.is_kanji()
         })
+    }
+
+    fn kanji_count(&self) -> usize {
+        self.chars().into_iter().filter(|i| i.is_kanji()).count()
     }
 }
 
