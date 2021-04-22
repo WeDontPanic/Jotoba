@@ -93,7 +93,6 @@ async fn kanji_search(
         .await
         .unwrap_or_default();
 
-    println!("{:#?}", kanji);
     println!("kanji loading took: {:?}", start.elapsed().unwrap());
 
     // if not kanji was found,

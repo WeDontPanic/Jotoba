@@ -153,6 +153,28 @@ pub async fn find_by_literal(db: &DbPool, l: String) -> Result<Kanji, Error> {
     Ok(db_kanji)
 }
 
+/// Find a kanji by its literal
+pub async fn find_by_literals(db: &DbPool, l: &[String]) -> Result<Vec<Kanji>, Error> {
+    // Try to find literal in kanji cache
+    let mut k_cache: MutexGuard<SharedCache<i32, Kanji>> = KANJICACHE_C.lock().await;
+
+    // Get cached kanji
+    let cached_kanji = k_cache.filter_values(|i| l.contains(&i.literal));
+
+    // Filter all literals which are not cached
+    let missing_literals = l
+        .iter()
+        .filter_map(|i| (!cached_kanji.iter().any(|j| j.literal == **i)).then(|| i))
+        .collect_vec();
+
+    let db_kanji = load_by_literals(db, &missing_literals).await?;
+
+    // Add to cache for future usage
+    k_cache.extend(db_kanji.clone(), |i| i.id);
+
+    Ok(cached_kanji.into_iter().chain(db_kanji).collect_vec())
+}
+
 /// Find Kanji items by its ids
 pub async fn load_by_ids(db: &DbPool, ids: &Vec<i32>) -> Result<Vec<Kanji>, Error> {
     // Lock cache
@@ -181,6 +203,16 @@ pub async fn load_by_ids(db: &DbPool, ids: &Vec<i32>) -> Result<Vec<Kanji>, Erro
 async fn retrieve_by_ids(db: &DbPool, ids: &Vec<i32>) -> Result<Vec<Kanji>, Error> {
     use crate::schema::kanji::dsl::*;
     Ok(kanji.filter(id.eq_any(ids)).get_results_async(db).await?)
+}
+
+/// Load a kanji by its literal from DB
+async fn load_by_literals(db: &DbPool, l: &[&String]) -> Result<Vec<Kanji>, Error> {
+    use crate::schema::kanji::dsl::*;
+
+    Ok(kanji
+        .filter(literal.eq_any(l))
+        .get_results_async(db)
+        .await?)
 }
 
 /// Load a kanji by its literal from DB
