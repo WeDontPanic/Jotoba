@@ -1,10 +1,10 @@
 // Restarts the animation of the kanji strokes
-function restartAnimation(delayMultiplier) {
+function restartAnimation(target, delayMultiplier) {
     if (delayMultiplier == undefined)
         delayMultiplier = 1;
 
     // Element Delay and Speed
-    let paths = document.getElementsByClassName("draw2");
+    let paths = [...$(target).children('.draw2')];
     for (var i = 0; i < paths.length; i++) {
         var elm = paths[i];
 
@@ -12,21 +12,30 @@ function restartAnimation(delayMultiplier) {
         elm.style.animationDelay = (i * 0.8 * 1 / delayMultiplier) + "s";
         elm.style.animationDuration = (1 / ((i + 1) * delayMultiplier)) + "s";
 
+        // Replace old svg with new one; restarting the animation
         var newone = elm.cloneNode(true);
         elm.parentNode.replaceChild(newone, elm);
     }
 }
 
-// Clicking on the kanji svg will restart it's animation
-var element = document.getElementById("kanjisvg");
-element.addEventListener("click", function(e) {
-    e.preventDefault;
-    restartAnimation();
-}, false);
+// Kanji and SVG list
+var kanjis = $('.kanjisvg');
+var sliders = $('.speedSlider');
+
+// Restart Animation by clicking on Kanji
+kanjis.click(function(e) {
+    e.preventDefault();
+    restartAnimation(e.target);
+});
+
+// Tell every slider their kanji and text field
+sliders.each(function() {
+    this.textField = $(this).parent().parent().find('span')[0];
+    this.kanjisvg = $(this).parent().parent().parent().children('.kanjisvgParent').children()[0];
+});
 
 // Adjust svg's draw speed using the slider
-var slider = document.getElementById("speedSlider");
-slider.oninput = function() {;
-    $('#currentAnimationSpeed').html("Animation speed: "+this.value);
-    restartAnimation(this.value);
-}
+sliders.on('input', function() {
+    this.textField.innerHTML = "Animation speed: "+this.value;
+    restartAnimation(this.kanjisvg, this.value);
+});

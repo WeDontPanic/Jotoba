@@ -1,14 +1,22 @@
 <!DOCTYPE html>
 <html lang="en">
    <head>
-      <title>Jisho</title>
+      <title>Jotoba</title>
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <meta http-equiv="Content-type" content="text/html; charset=utf-8">
       <link rel="stylesheet" type="text/css" href="assets/css/lib/bootstrap.min.css">
+      <link rel="stylesheet" type="text/css" href="assets/css/lib/alertify.min.css">
+      <link rel="stylesheet" type="text/css" href="assets/css/lib/alertifyThemes/bootstrap.min.css">
+      <link rel="stylesheet" type="text/css" href="assets/css/alerts.css">
       <link rel="stylesheet" type="text/css" href="assets/css/main.css">
       <link rel="stylesheet" type="text/css" href="assets/css/searchBar.css">
+      <link rel="stylesheet" type="text/css" href="assets/css/mobile.css">
       <script src="assets/js/lib/jquery.min.js"></script>
       <script defer src="assets/js/lib/bootstrap.min.js"></script>
       <script defer src="assets/js/lib/choices.js"></script>
-      <script defer src="assets/js/kanjiAnimation.js"></script>
+      <script defer src="assets/js/lib/alertify.min.js"></script>
+      <script defer src="assets/js/utils.js"></script>
+	   <script defer src="assets/js/qol.js"></script>
    </head>
 
    <body>
@@ -131,13 +139,13 @@
                        <div class="animation-container d-flex flex-row">
                            <div class="d-flex flex-column slider-parent">
                               <div class="slidecontainer">
-                                 <input type="range" min="0.05" max="2" value="1" step="0.05" class="slider" id="speedSlider">
-                               </div>
-                               <span id="currentAnimationSpeed" class="slider-output noselect">Animation speed: 1</span>
+                                 <input type="range" min="0.05" max="2" value="1" step="0.05" class="slider speedSlider">
+                              </div>
+                              <span class="slider-output noselect currentAnimationSpeed">Animation speed: 1</span>
                            </div>
                            
-                           <div> <!-- Kanji Svg goes here -->
-                              <svg id="kanjisvg" width="109px" height="109px" viewBox="0 0 109px 109px" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" version="1.1"  baseProfile="full">
+                           <div class="kanjisvgParent"> <!-- Kanji Svg goes here -->
+                              <svg class="kanjisvg" width="109px" height="109px" viewBox="0 0 109 109" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" version="1.1"  baseProfile="full">
                                  <path style="animation-delay: 0.0s;" class="draw2" stroke-linejoin="round" stroke="black" fill="none" stroke-width="5" d="M25.8,15.25c2.34,1.41,6.04,5.8,6.63,8">
                                  </path>
                                  <path style="animation-delay: 0.8s;" class="draw2" stroke-linejoin="round" stroke="black" fill="none" stroke-width="5" d="M13.62,33.58c1.9,0.62,4.19,0.52,6.14,0.25c8.74-1.2,14.95-2.17,20.8-3.39c1.16-0.24,2.7-0.14,3.29-0.02">
@@ -210,5 +218,7 @@
         </div>
       </div>
    </body>
+   <!-- Load this page's script -->
+   <script src="assets/js/kanjiAnimation.js"></script>
 </html>
 

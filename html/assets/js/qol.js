@@ -12,6 +12,7 @@ $(document).on("keypress", (event) => {
     if (event.key === '/') {
         event.preventDefault();
         $('#search').focus();
+        $('#search').select();
     }  
 });
 
