@@ -2,7 +2,7 @@
     Used to make mobile shit ~p~r~e~t~t~y~ less ugly
 */
 
-@media only screen and (max-width: 1100px) {
+@media only screen and (max-width: 600px) {
 	
 	/* -------- Word Search -------- */
 	
@@ -12,10 +12,11 @@
     }
     
     body {
-        zoom: 2;
-        -moz-transform: scale(2); 
-        -moz-transform-origin: 0 0;
         height: max-content;
+    }
+
+    .choices[data-type*="select-one"]:after {
+        margin-right: -15px;
     }
 
     .searchDivInner form .inner-form .input-field.first-wrap {
@@ -57,12 +58,17 @@
         height: max-content;
     }
 	
-	.main-info > .d-flex {
+	.main-info > .d-flex.center {
 		-ms-flex-direction: column!important;
         flex-direction: column!important;
 		align-self: center;
 		align-items: center;
 	}
+
+    .main-info > .d-flex.flex-row {
+        align-self: center;
+		align-items: center;
+    }
     
     .definition-wrapper.d-flex.flex-row {
         padding-bottom: 5px;
@@ -75,7 +81,7 @@
        /* padding-left: 15%; */
     }
 	
-    .secondary-info > div > .d-flex.flex-row {
+    .secondary-info > div > .kanji-entry {
         justify-content: center;
     }
 	
@@ -94,7 +100,7 @@
     }
 	
 	.kanji-entry.right {
-		width: 45vw
+        padding-left: 2vw;
 	}
 	
 	.tags, .notes {
@@ -104,6 +110,11 @@
 	.tags {
 		padding-bottom: 5px;
 	}
+
+    .list-entry > .tags, .kanji-entry.right, .tags.no-margin {
+        text-align: left;
+    }
+
 	
 	/* -------- Kanji Details -------- */
 	

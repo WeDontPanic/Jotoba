@@ -199,7 +199,7 @@ svg {
 
 .main-tab-select {
     padding-top: 25px;
-    width: 10%;
+    width: 21vw;
 }
 
 .main-tab-select.l {
@@ -248,6 +248,10 @@ svg {
     min-height: 180px
 }
 
+.main-info > .d-flex.flex-row {
+    padding-left: 1vw;
+}
+
 .kanji-entry {
     height: fit-content;
     padding-bottom: 10px;
@@ -279,19 +283,6 @@ svg {
 .kanji-entry.right.detail {
     padding-left: 35px;
 }
-
-/*
-.kanji-entry .clickable {
-    padding-right: 90px;
-    padding-left: 10px;
-}
-*/
-
-/*
-.furigana-preview {
-    padding-left: 35px;
-}
-*/
 
 .kanji-preview {
     display: block;
