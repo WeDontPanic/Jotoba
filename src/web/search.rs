@@ -89,7 +89,7 @@ async fn kanji_search(
     let start = std::time::SystemTime::now();
     let query = query_data.query.as_ref().unwrap();
 
-    let kanji = search::kanji::by_literals(&pool, &query)
+    let kanji = search::kanji::search(&pool, &query)
         .await
         .unwrap_or_default();
 

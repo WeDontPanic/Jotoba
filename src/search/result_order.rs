@@ -2,7 +2,10 @@ use std::cmp::Ordering;
 
 use levenshtein::levenshtein;
 
-use super::{result::word::Item, SearchMode};
+use super::{
+    result::{kanji::Item as KanjiItem, word::Item},
+    SearchMode,
+};
 use crate::{japanese::JapaneseExt, models::name::Name, parse::jmdict::languages::Language};
 
 /// Represents the ordering for result based on
@@ -457,5 +460,34 @@ fn levenshtein_cmp(a: usize, b: usize) -> Ordering {
         Ordering::Greater
     } else {
         Ordering::Equal
+    }
+}
+
+pub(crate) fn order_kanji_by_meaning(a: &KanjiItem, b: &KanjiItem) -> Ordering {
+    let a = &a.kanji;
+    let b = &b.kanji;
+
+    if let Some(o) = option_order(&a.grade, &b.grade) {
+        return o;
+    }
+
+    if let Some(o) = option_order(&a.frequency, &b.frequency) {
+        return o;
+    }
+
+    if let Some(o) = option_order(&a.jlpt, &b.jlpt) {
+        return o;
+    }
+
+    Ordering::Equal
+}
+
+fn option_order<T>(a: &Option<T>, b: &Option<T>) -> Option<Ordering> {
+    if a.is_some() && !b.is_some() {
+        Some(Ordering::Less)
+    } else if !a.is_some() && b.is_some() {
+        Some(Ordering::Greater)
+    } else {
+        None
     }
 }

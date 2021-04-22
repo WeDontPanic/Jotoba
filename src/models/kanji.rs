@@ -21,7 +21,8 @@ use tokio_diesel::*;
 static KANJICACHE_C: Lazy<Mutex<SharedCache<i32, Kanji>>> =
     Lazy::new(|| Mutex::new(SharedCache::with_capacity(10000)));
 
-#[derive(Queryable, Clone, Debug, Default, PartialEq)]
+#[derive(Queryable, QueryableByName, Clone, Debug, Default, PartialEq)]
+#[table_name = "kanji"]
 pub struct Kanji {
     pub id: i32,
     pub literal: String,

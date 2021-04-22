@@ -118,3 +118,10 @@ RETURNS table (id INTEGER, sequence INTEGER, reading TEXT, kanji boolean, no_kan
   select * from dict where reading in ( SELECT literal || SUBSTRING(UNNEST(kunyomi) from POSITION('.' in  UNNEST(kunyomi))+1) from kanji where kanji.id = i)
 $$
 LANGUAGE sql stable;
+
+CREATE OR REPLACE FUNCTION find_kanji_by_meaning(mea TEXT)
+  RETURNS set  "kanji" AS $$
+    select id, literal, meaning, grade, stroke_count, frequency, jlpt, variant, onyomi, kunyomi, chinese, korean_r, korean_h, natori, kun_dicts
+  from (select *, unnest(meaning) m from kanji) x order by mea <-> m limit 4
+  $$
+ LANGUAGE sql stable;
