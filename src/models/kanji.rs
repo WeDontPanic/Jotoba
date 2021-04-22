@@ -81,10 +81,6 @@ impl From<Character> for NewKanji {
     }
 }
 
-sql_function! {
-    fn get_kun_dicts(a: diesel::sql_types::Integer) -> Vec<Dict>;
-}
-
 impl Kanji {
     /// Returns all dict entries assigned to the kanji's kun readings
     pub async fn get_kun_readings(db: &DbPool, ids: &[i32]) -> Result<Vec<Dict>, Error> {
