@@ -17,6 +17,8 @@ pub mod search;
 pub mod utils;
 mod web;
 
+use std::path::Path;
+
 use actix_web::{middleware, web as actixweb, App, HttpServer};
 use argparse::{ArgumentParser, Print, Store, StoreTrue};
 use diesel::{r2d2::ConnectionManager, PgConnection};
@@ -29,7 +31,7 @@ pub type DbPool = Pool<ConnectionManager<PgConnection>>;
 
 /// An in memory Cache for kanji items
 static JA_NL_PARSER: once_cell::sync::Lazy<typed_igo::Parser> =
-    Lazy::new(|| typed_igo::Parser::new());
+    Lazy::new(|| typed_igo::Parser::new(Path::new("./ipadic").to_path_buf()));
 
 #[derive(Default)]
 struct Options {
