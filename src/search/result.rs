@@ -90,6 +90,23 @@ pub mod kanji {
                 vec![]
             }
         }
+
+        pub fn get_korean(&self) -> Option<Vec<String>> {
+            if self.kanji.korean_r.is_some() && self.kanji.korean_h.is_some() {
+                let korean_h = self.kanji.korean_h.as_ref().unwrap();
+                let korean_r = self.kanji.korean_r.as_ref().unwrap();
+
+                Some(
+                    korean_h
+                        .iter()
+                        .zip(korean_r.iter())
+                        .map(|(h, k)| format!("{} ({})", h, k))
+                        .collect(),
+                )
+            } else {
+                None
+            }
+        }
     }
 }
 
