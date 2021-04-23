@@ -3,7 +3,7 @@ use crate::{
     japanese::JapaneseExt,
     models::kanji::{self, Kanji},
     search::result::kanji::Item,
-    DbPool,
+    utils, DbPool,
 };
 
 use diesel::sql_types::Text;
@@ -30,7 +30,10 @@ pub async fn by_literals(db: &DbPool, query: &str) -> Result<Vec<Item>, Error> {
         .filter_map(|i| i.is_kanji().then(|| i.to_string()))
         .collect_vec();
 
-    let items = kanji::find_by_literals(db, &kanji).await?;
+    let mut items = kanji::find_by_literals(db, &kanji).await?;
+
+    // Order them by occurence in query
+    items.sort_by(|a, b| utils::get_item_order(&kanji, &a.literal, &b.literal).unwrap());
 
     to_item(db, items).await
 }

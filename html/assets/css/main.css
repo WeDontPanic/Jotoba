@@ -364,8 +364,10 @@ svg {
 }
 
 .tags.slim {
-    font-weight: normal;
+    font-size: 20px;
+    font-weight: 400;
     color: black;
+    margin-top: -5px !important;
 }
 
 .tags.no-margin {
