@@ -69,7 +69,7 @@
             <div class="notes d-flex flex-row wrap"><b class="right-padding-10">Japanese names:</b> 
               @for (pos, n) in natori.iter().enumerate() {
                 @if pos > 0 {
-                  <div class="tags no-margin fat right-padding-10">,</div>
+                  <div class="tags no-margin slim right-padding-10">,</div>
                 }
                 <a class="clickable no-align" href="/search?type=3&search=@k_item.kanji.literal+@n">@n</a>
               }

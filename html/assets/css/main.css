@@ -363,6 +363,11 @@ svg {
     color: black;
 }
 
+.tags.slim {
+    font-weight: normal;
+    color: black;
+}
+
 .tags.no-margin {
     margin-top: 0px;
 }
