@@ -274,9 +274,7 @@ svg {
 }
 
 .kanji-entry.right {
-    /* background-color: fuchsia; */
-    /* padding-left: 5%; */
-    width: 100%;
+    width: 40vw;
 }
 
 
