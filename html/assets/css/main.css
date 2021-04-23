@@ -238,6 +238,16 @@ svg {
     padding-left: 10px;
 }
 
+/* ------------------   Index   ----------------- */
+
+.index-text {
+    text-align: center;
+    font-size: 1rem;
+    padding-left: 0vw;
+    font-family: inherit;
+    font-weight: normal;
+}
+
 /* -----------------  Templates ----------------- */
 
 .entry-min-height-1 {
@@ -348,7 +358,6 @@ svg {
 .kanji-entry .list-entry + .list-entry {
     padding-top: 5px;
 }
-
 .tags {
     color: #888;
     font-size: 12px;

@@ -70,6 +70,7 @@ function copyTranslationAndShowMessage(textParent) {
 	}
 }
 
+// Changes the search type in the upper row depending on the users input
 function changeSearchType(newType) {
   var search_value = $('#search').val();
   if (search_value.length > 0) {
@@ -79,3 +80,15 @@ function changeSearchType(newType) {
     window.location.search = params.toString();
   }
 }
+
+// Iterate all audio Btns on the page (if any) and enable their audio feature
+$('.audioBtn').each((e, i) => {
+
+    let audioParent = $(i);
+
+    audioParent.click((e) => {
+        let audio = $(e.target).children()[0];
+        audio.play();
+    });
+
+});
