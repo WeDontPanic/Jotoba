@@ -457,6 +457,7 @@ fn kun_matches_kanji(literal: &str, kun: &str, kana_reading: &str, kanji_reading
     match_mode.str_eq(kana_reading, kanji_out.as_str(), false)
 }
 
+/*
 #[cfg(test)]
 mod test {
     use super::*;
@@ -497,3 +498,4 @@ mod test {
         assert!(kun_matches_kanji(literal, kun, reading, kanji_reading));
     }
 }
+*/

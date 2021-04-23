@@ -314,6 +314,11 @@ mod test {
         assert!("𩺊".is_kanji())
     }
 
+    #[test]
+    fn test_is_jp() {
+        assert!(!"後で 絵".is_japanese())
+    }
+
     /*
     #[test]
     fn test_furigana_pairs7() {

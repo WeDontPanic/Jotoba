@@ -3,6 +3,8 @@
 pub mod everything;
 pub mod kanji;
 pub mod name;
+pub mod query;
+pub mod query_parser;
 pub mod result;
 mod result_order;
 pub mod utils;

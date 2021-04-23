@@ -2,7 +2,10 @@ use actix_web::{web, HttpResponse};
 use search::name;
 use serde::Deserialize;
 
-use crate::{search, templates, DbPool};
+use crate::{
+    search::{self, query_parser::QueryParser},
+    templates, DbPool,
+};
 
 #[derive(Deserialize, Debug)]
 pub struct QueryStruct {
@@ -61,6 +64,13 @@ pub async fn search(
             .header("Location", "/")
             .finish());
     }
+
+    let q_parser = QueryParser::new(
+        query_data.query.clone().unwrap(),
+        search::query_parser::QueryType::Words,
+    )
+    .parse();
+    println!("{:#?}", q_parser);
 
     // Perform the requested type of search and render
     // the appropriate template
