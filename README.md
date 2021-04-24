@@ -11,6 +11,7 @@ A free online, selfhostable, multilang japanese dictionary.
 - [Diesel](https://github.com/diesel-rs/diesel) with postgres feature (`cargo install diesel_cli --no-default-features --features postgres`)
 
 ### Optional
+- [Audio files](https://github.com/tofugu/japanese-vocabulary-pronunciation-audio/tree/master/lib/ogg)
 - Manga SFX
 - Kanji stroke animations
 
