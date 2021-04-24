@@ -66,7 +66,7 @@ function loadCookieData() {
     if (prim_color === undefined)
         prim_color = "#34a83c";
 
-    $('#bg_col_settings').val(prim_color);
+    $('#prim_col_settings').val(prim_color);
     document.documentElement.style.setProperty('--primaryColor', prim_color);
 
     // Default_Lang 
