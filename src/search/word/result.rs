@@ -119,14 +119,6 @@ impl Word {
         self.reading.get_reading().priorities.is_some()
     }
 
-    /// Return the amount of priorities a word has
-    pub fn priorities_count(&self) -> usize {
-        self.priorities
-            .as_ref()
-            .map(|i| i.len())
-            .unwrap_or_default()
-    }
-
     /// Returns the reading of a word
     pub fn get_reading(&self) -> &Dict {
         return self.reading.get_reading();
@@ -334,6 +326,28 @@ impl Sense {
             let s: String = i.into();
             s
         })
+    }
+
+    /// Return a human readable string of misc, field or both
+    pub fn misc_and_field(&self) -> Option<String> {
+        // Return joined with ','
+        if self.misc.is_some() && self.field.is_some() {
+            return Some(format!(
+                "{}, {}",
+                self.field.as_ref().unwrap().humanize(),
+                self.get_misc().unwrap()
+            ));
+        }
+
+        if let Some(misc) = self.misc {
+            return Some(misc.into());
+        }
+
+        if let Some(field) = self.field {
+            return Some(field.humanize());
+        }
+
+        None
     }
 
     // Get a senses tags prettified

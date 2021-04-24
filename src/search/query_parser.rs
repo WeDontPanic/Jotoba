@@ -8,6 +8,7 @@ use super::query::{Form, KanjiReading, Query, QueryLang, Tag};
 pub struct QueryParser {
     q_type: QueryType,
     query: String,
+    original_query: String,
     tags: Vec<Tag>,
 }
 
@@ -32,12 +33,13 @@ impl Default for QueryType {
 impl QueryParser {
     pub fn new(query: String, q_type: QueryType) -> QueryParser {
         // Split query into the actual query and possibly available tags
-        let (query, tags) = Self::partition_tags_query(&query);
-        let query = Self::format_query(query);
+        let (parsed_query, tags) = Self::partition_tags_query(&query);
+        let parsed_query = Self::format_query(parsed_query);
 
         QueryParser {
             q_type,
-            query,
+            query: parsed_query,
+            original_query: query,
             tags,
         }
     }
@@ -67,12 +69,13 @@ impl QueryParser {
             form: self.parse_form(),
             tags: self.tags,
             query: self.query,
+            original_query: self.original_query,
         })
     }
 
     /// Formats the query
     fn format_query(query: String) -> String {
-        query.trim().to_string()
+        query.trim().replace("%", "")
     }
 
     /// Parses the QueryType based on the user selection and tags

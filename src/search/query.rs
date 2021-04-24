@@ -4,6 +4,7 @@ use super::query_parser::QueryType;
 /// parsed format
 #[derive(Debug, Clone, PartialEq, Default)]
 pub struct Query {
+    pub original_query: String,
     pub query: String,
     pub type_: QueryType,
     pub tags: Vec<Tag>,
