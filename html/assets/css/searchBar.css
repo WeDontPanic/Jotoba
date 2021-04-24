@@ -1,6 +1,6 @@
-/*===============================
-=            Choices            =
-===============================*/
+/*
+    Used by the search bar only. So much css for a damn text field..
+*/
 .choices {
   position: relative;
   margin-bottom: 24px;
@@ -15,19 +15,6 @@
   margin-bottom: 0;
 }
 
-.choices.is-disabled .choices__inner, .choices.is-disabled .choices__input {
-  background-color: #EAEAEA;
-  cursor: not-allowed;
-  -webkit-user-select: none;
-     -moz-user-select: none;
-      -ms-user-select: none;
-          user-select: none;
-}
-
-.choices.is-disabled .choices__item {
-  cursor: not-allowed;
-}
-
 .choices[data-type*="select-one"] {
   cursor: pointer;
 }
@@ -36,45 +23,11 @@
   padding-bottom: 7.5px;
 }
 
-.choices[data-type*="select-one"] .choices__input {
-  display: block;
-  width: 100%;
-  padding: 10px;
-  border-bottom: 1px solid #DDDDDD;
-  background-color: #FFFFFF;
-  margin: 0;
-}
-
-.choices[data-type*="select-one"] .choices__button {
-  background-image: url("../../icons/cross-inverse.svg");
-  padding: 0;
-  background-size: 8px;
-  height: 100%;
-  position: absolute;
-  top: 50%;
-  right: 0;
-  margin-top: -10px;
-  margin-right: 25px;
-  height: 20px;
-  width: 20px;
-  border-radius: 10em;
-  opacity: .5;
-}
-
-.choices[data-type*="select-one"] .choices__button:hover, .choices[data-type*="select-one"] .choices__button:focus {
-  opacity: 1;
-}
-
-.choices[data-type*="select-one"] .choices__button:focus {
-  box-shadow: 0px 0px 0px 2px #00BCD4;
-}
-
 .choices[data-type*="select-one"]:after {
   content: "";
   height: 0;
   width: 0;
   border-style: solid;
-  border-color: #333333 transparent transparent transparent;
   border-width: 5px;
   position: absolute;
   right: 11.5px;
@@ -84,69 +37,23 @@
 }
 
 .choices[data-type*="select-one"].is-open:after {
-  border-color: transparent transparent #333333 transparent;
+  border-color: transparent transparent var(--tagColor) transparent !important;
   margin-top: -7.5px;
-}
-
-.choices[data-type*="select-one"][dir="rtl"]:after {
-  left: 11.5px;
-  right: auto;
-}
-
-.choices[data-type*="select-one"][dir="rtl"] .choices__button {
-  right: auto;
-  left: 0;
-  margin-left: 25px;
-  margin-right: 0;
-}
-
-.choices[data-type*="select-multiple"] .choices__inner, .choices[data-type*="text"] .choices__inner {
-  cursor: text;
-}
-
-.choices[data-type*="select-multiple"] .choices__button, .choices[data-type*="text"] .choices__button {
-  position: relative;
-  display: inline-block;
-  margin-top: 0;
-  margin-right: -4px;
-  margin-bottom: 0;
-  margin-left: 8px;
-  padding-left: 16px;
-  border-left: 1px solid #008fa1;
-  background-image: url("../../icons/cross.svg");
-  background-size: 8px;
-  width: 8px;
-  line-height: 1;
-  opacity: .75;
-}
-
-.choices[data-type*="select-multiple"] .choices__button:hover, .choices[data-type*="select-multiple"] .choices__button:focus, .choices[data-type*="text"] .choices__button:hover, .choices[data-type*="text"] .choices__button:focus {
-  opacity: 1;
 }
 
 .choices__inner {
   display: inline-block;
   vertical-align: top;
   width: 100%;
-  background-color: #f9f9f9;
   padding: 7.5px 7.5px 3.75px;
-  border: 1px solid #DDDDDD;
   border-radius: 2.5px;
   font-size: 14px;
   min-height: 44px;
   overflow: hidden;
 }
 
-.is-focused .choices__inner, .is-open .choices__inner {
-  border-color: #b7b7b7;
-}
-
 .is-open .choices__inner {
   border-radius: 2.5px 2.5px 0 0;
-}
-
-.is-flipped.is-open .choices__inner {
-  border-radius: 0 0 2.5px 2.5px;
 }
 
 .choices__list {
@@ -161,51 +68,8 @@
   width: 100%;
 }
 
-[dir="rtl"] .choices__list--single {
-  padding-right: 4px;
-  padding-left: 16px;
-}
-
 .choices__list--single .choices__item {
   width: 100%;
-}
-
-.choices__list--multiple {
-  display: inline;
-}
-
-.choices__list--multiple .choices__item {
-  display: inline-block;
-  vertical-align: middle;
-  border-radius: 20px;
-  padding: 4px 10px;
-  font-size: 12px;
-  font-weight: 500;
-  margin-right: 3.75px;
-  margin-bottom: 3.75px;
-  background-color: #00BCD4;
-  border: 1px solid #00a5bb;
-  color: #FFFFFF;
-  word-break: break-all;
-}
-
-.choices__list--multiple .choices__item[data-deletable] {
-  padding-right: 5px;
-}
-
-[dir="rtl"] .choices__list--multiple .choices__item {
-  margin-right: 0;
-  margin-left: 3.75px;
-}
-
-.choices__list--multiple .choices__item.is-highlighted {
-  background-color: #00a5bb;
-  border: 1px solid #008fa1;
-}
-
-.is-disabled .choices__list--multiple .choices__item {
-  background-color: #aaaaaa;
-  border: 1px solid #919191;
 }
 
 .choices__list--dropdown {
@@ -213,8 +77,8 @@
   z-index: 1;
   position: absolute;
   width: 100%;
-  background-color: #FFFFFF;
-  border: 1px solid #DDDDDD;
+  background-color: var(--searchBackground);
+  border: 1px solid var(--searchBackground);
   top: 100%;
   margin-top: -1px;
   border-bottom-left-radius: 2.5px;
@@ -225,18 +89,6 @@
 
 .choices__list--dropdown.is-active {
   display: block;
-}
-
-.is-open .choices__list--dropdown {
-  border-color: #b7b7b7;
-}
-
-.is-flipped .choices__list--dropdown {
-  top: auto;
-  bottom: 100%;
-  margin-top: 0;
-  margin-bottom: -1px;
-  border-radius: .25rem .25rem 0 0;
 }
 
 .choices__list--dropdown .choices__list {
@@ -253,8 +105,12 @@
   font-size: 14px;
 }
 
-[dir="rtl"] .choices__list--dropdown .choices__item {
-  text-align: right;
+.is-flipped .choices__list--dropdown {
+  top: auto;
+  bottom: 100%;
+  margin-top: 0;
+  margin-bottom: -1px;
+  border-radius: .25rem .25rem 0 0;
 }
 
 @media (min-width: 640px) {
@@ -270,23 +126,6 @@
     top: 50%;
     transform: translateY(-50%);
   }
-  [dir="rtl"] .choices__list--dropdown .choices__item--selectable {
-    text-align: right;
-    padding-left: 100px;
-    padding-right: 10px;
-  }
-  [dir="rtl"] .choices__list--dropdown .choices__item--selectable:after {
-    right: auto;
-    left: 10px;
-  }
-}
-
-.choices__list--dropdown .choices__item--selectable.is-highlighted {
-  background-color: #f2f2f2;
-}
-
-.choices__list--dropdown .choices__item--selectable.is-highlighted:after {
-  opacity: .5;
 }
 
 .choices__item {
@@ -297,43 +136,9 @@
   cursor: pointer;
 }
 
-.choices__item--disabled {
-  cursor: not-allowed;
-  -webkit-user-select: none;
-     -moz-user-select: none;
-      -ms-user-select: none;
-          user-select: none;
-  opacity: .5;
-}
-
-.choices__heading {
-  font-weight: 600;
-  font-size: 12px;
-  padding: 10px;
-  border-bottom: 1px solid #f7f7f7;
-  color: gray;
-}
-
-.choices__button {
-  text-indent: -9999px;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-       appearance: none;
-  border: 0;
-  background-color: transparent;
-  background-repeat: no-repeat;
-  background-position: center;
-  cursor: pointer;
-}
-
-.choices__button:focus {
-  outline: none;
-}
-
 .choices__input {
   display: inline-block;
   vertical-align: baseline;
-  background-color: #f9f9f9;
   font-size: 14px;
   margin-bottom: 5px;
   border: 0;
@@ -346,19 +151,14 @@
   outline: 0;
 }
 
-[dir="rtl"] .choices__input {
-  padding-right: 2px;
-  padding-left: 0;
-}
-
-.choices__placeholder {
-  opacity: .5;
+.choices__button:focus {
+  outline: none;
 }
 
 /* ----------------- Upper Part itself -------------- */
 
 .searchDivInner form .inner-form {
-  background: #fff;
+  background: var(--searchBackground);
   display: -ms-flexbox;
   display: flex;
   width: 100%;
@@ -382,28 +182,22 @@
   width: 100%;
   padding: 10px 32px;
   font-size: 16px;
-  color: #555;
+  color: var(--searchTextColor);
 }
 
 .searchDivInner form .inner-form .input-field input.placeholder {
-  color: #888;
+  color: var(--tagColor);
   font-size: 16px;
 }
 
 .searchDivInner form .inner-form .input-field input:-moz-placeholder {
-  color: #888;
+  color: var(--tagColor);
   font-size: 16px;
 }
 
 .searchDivInner form .inner-form .input-field input::-webkit-input-placeholder {
-  color: #888;
+  color: var(--tagColor);
   font-size: 16px;
-}
-
-.searchDivInner form .inner-form .input-field input:hover, .searchDivInner form .inner-form .input-field input:focus {
-  box-shadow: none;
-  outline: 0;
-  border-color: #fff;
 }
 
 .searchDivInner form .inner-form .input-field.first-wrap {
@@ -416,11 +210,10 @@
   border-radius: 0;
   border: 0;
   height: 100%;
-  color: #fff;
   display: -ms-flexbox;
   display: flex;
   -ms-flex-align: center;
-      align-items: center;
+  align-items: center;
   padding: 10px 30px;
 }
 
@@ -429,7 +222,7 @@
   display: flex;
   padding: 0;
   -ms-flex-align: center;
-      align-items: center;
+  align-items: center;
   height: 100%;
 }
 
@@ -437,29 +230,33 @@
   display: -ms-flexbox;
   display: flex;
   -ms-flex-align: center;
-      align-items: center;
+  align-items: center;
   height: 100%;
   opacity: 1;
-  color: #888;
+  color: var(--tagColor);
 }
 
 .searchDivInner form .inner-form .input-field.first-wrap .choices__inner .choices__list--single .choices__item {
   display: -ms-flexbox;
   display: flex;
   -ms-flex-align: center;
-      align-items: center;
+  align-items: center;
   height: 100%;
-  color: #555;
+  color: var(--searchTextColor);
 }
 
 .searchDivInner form .inner-form .input-field.first-wrap .choices[data-type*="select-one"]:after {
   right: 30px;
-  border-color: #e5e5e5 transparent transparent transparent;
+  border-color: var(--tagColor) transparent transparent transparent;
+}
+
+.searchDivInner form .inner-form .input-field input:hover, .searchDivInner form .inner-form .input-field input:focus {
+  box-shadow: none;
+  outline: 0;
 }
 
 .searchDivInner form .inner-form .input-field.first-wrap .choices__list.choices__list--dropdown {
   border: 0;
-  background: #fff;
   margin-top: 2px;
   border-radius: 4px;
   box-shadow: 0px 8px 20px 0px rgba(0, 0, 0, 0.15);
@@ -470,12 +267,11 @@
 }
 
 .searchDivInner form .inner-form .input-field.first-wrap .choices__list--dropdown .choices__item--selectable.is-highlighted {
-  background: #fff;
-  color: var(--primaryColor);;
+  color: var(--primaryColor);
 }
 
 .searchDivInner form .inner-form .input-field.first-wrap .choices__list--dropdown .choices__item {
-  color: #555;
+  color: var(--searchTextColor);
   min-height: 24px;
 }
 
@@ -492,7 +288,6 @@
   height: 100%;
   width: 100%;
   white-space: nowrap;
-  color: #fff;
   border: 0;
   cursor: pointer;
   background: var(--primaryColor);
@@ -504,7 +299,7 @@
 }
 
 .searchDivInner form .inner-form .input-field.third-wrap .btn-search:hover {
-  background: #50c058;
+  background: var(--primaryColor_hover);
 }
 
 .searchDivInner form .inner-form .input-field.third-wrap .btn-search:focus {
@@ -522,4 +317,8 @@
 
 .searchDivInner form .inner-form .input-field {
   height: 50px;
+}
+
+.btn-search > svg > path {
+  fill: var(--secondaryTextColor);
 }

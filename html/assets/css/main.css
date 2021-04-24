@@ -4,14 +4,18 @@
     --backgroundHighlight: #f3f3f3;
 
     --primaryColor: #34a83c;
+    --primaryColor_hover: #50c058;
     --secondaryColor: #909dc0;
     
     --currentColor: rgb(102,102,102);
     --primaryTextColor: #222;    
     --secondaryTextColor: #fff;
 
-    --searchTextcolor: #555;
+    --searchBackground: #fff;
+    --searchTextColor: #555;
+    
     --tagColor: #888;
+    --scrollBG: #d3d3d3;
 }
 
 /* ----------------- Overall Page Adjustments ----------------- */
@@ -482,7 +486,7 @@ svg {
     width: 130px;
     height: 15px;
     border-radius: 10px;  
-    background: #d3d3d3;
+    background: var(--scrollBG);
     outline: none;
     opacity: 0.7;
     -webkit-transition: .2s;
@@ -501,15 +505,24 @@ svg {
     width: 25px;
     height: 25px;
     border-radius: 50%; 
-    background: #4CAF50;
+    background: var(--primaryColor_hover);
     cursor: pointer;
 }
+
+.slider::-webkit-slider-thumb:hover {
+    background-color: var(--primaryColor);
+}
+
 .slider::-moz-range-thumb {
     width: 25px;
-     height: 25px;
+    height: 25px;
     border-radius: 50%;
-    background: #4CAF50;
+    background: var(--primaryColor_hover);
     cursor: pointer;
+}
+
+.slider::-moz-range-thumb:hover {
+    background-color: var(--primaryColor);
 }
 
 .lang-separator {
