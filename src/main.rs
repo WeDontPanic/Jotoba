@@ -138,7 +138,7 @@ async fn start_server(db: DbPool) -> std::io::Result<()> {
             .route("/index.html", actixweb::get().to(web::index::index))
             .route("/", actixweb::get().to(web::index::index))
             .route("/search", actixweb::get().to(web::search::search))
-            .service(actix_files::Files::new("/assets", "html/assets").show_files_listing())
+            .service(actix_files::Files::new("/assets", "html/assets"))
     })
     .bind("0.0.0.0:8080")?
     .run()

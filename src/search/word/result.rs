@@ -16,6 +16,12 @@ use crate::{
 };
 
 #[derive(Debug, Clone, PartialEq)]
+pub struct WordResult {
+    pub items: Vec<Item>,
+    pub contains_kanji: bool,
+}
+
+#[derive(Debug, Clone, PartialEq)]
 pub enum Item {
     Word(Word),
     Kanji(Kanji),

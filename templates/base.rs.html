@@ -1,11 +1,11 @@
-@use crate::search::word::result::Item;
+@use crate::search::word::result::WordResult;
 @use crate::search::kanji::result::Item as kanjiItem;
 @use crate::search::{query::Query, query_parser::QueryType};
 @use crate::models::name::Name;
 @use crate::web::utils::*;
 @use super::{index_html, word_search_html, kanji_details, name_search};
 
-@(search_query: Option<&Query>, word_search_result: Option<Vec<Item>>, kanji_info_search_result: Option<Vec<kanjiItem>>, name_search_result: Option<Vec<Name>>)
+@(search_query: Option<&Query>, word_search_result: Option<WordResult>, kanji_info_search_result: Option<Vec<kanjiItem>>, name_search_result: Option<Vec<Name>>)
 <!DOCTYPE html>
 <html lang="en">
    <head>
