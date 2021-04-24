@@ -355,6 +355,8 @@
   opacity: .5;
 }
 
+/* ----------------- Upper Part itself -------------- */
+
 .searchDivInner form .inner-form {
   background: #fff;
   display: -ms-flexbox;

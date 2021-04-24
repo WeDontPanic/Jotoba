@@ -71,6 +71,10 @@ function setRecognitionLang(lang) {
             recognition.lang = "en-US";
             $('#currentSpeechLang').html("English");
             break
+        case "rus":
+            recognition.lang = "ru";
+            $('#currentSpeechLang').html("Russian");
+            break
         case "spa":
             recognition.lang = "es-ES";
             $('#currentSpeechLang').html("Spanish");

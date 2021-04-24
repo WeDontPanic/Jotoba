@@ -22,30 +22,32 @@
       <script defer src="assets/js/utils.js"></script>
       <script defer src="assets/js/qol.js"></script>
       <script defer src ="assets/js/stt.js"></script>
-      <script defer src ="assets/js/cookieHandler.js"></script>
+      <script defer src ="assets/js/settings.js"></script>
    </head>
    <body>
       <!-- Search Row -->
       <div id="search-row" class="wrap-row">
          <div class="d-flex center">
-            <!-- Left Buttons -->
-            <div class="btn-container">
-               <svg height="30" width="30">
-                  <path d="M22.996,25.811L4.12,25.816L4.124,6.942L17.34,6.937l2.07-2.195H2.997c-0.611,0-1.108,0.496-1.108,1.108v21.064   c0,0.613,0.497,1.109,1.108,1.109h21.063c0.61,0,1.105-0.496,1.105-1.109V11.329l-2.23,2.192L22.996,25.811z M26.798,3.291   C24.878,1.37,23.9,2.123,23.9,2.123L9.488,16.534L7.679,22.41l5.875-1.811L27.965,6.19C27.965,6.19,28.721,5.213,26.798,3.291z    M10.33,20.861l-0.918-1.286l0.745-2.312l2.392,2.854L10.33,20.861z"></path>
+            <!-- Settings -->
+            <div class="btn-container" data-toggle="modal" data-target="#settingsModal">
+               <svg id="settingsSvg" height="30" width="30" viewBox="0 0 100 100">
+                  <path d="m50.011 0c-2.8839 0-5.7139 0.25936-8.4642 0.7281l-1.3424 14.221c-2.8444 0.79287-5.5365 1.9015-8.0546 3.322l-10.99-9.0785c-4.6419 3.286-8.7054 7.3259-11.991 11.968l9.1012 10.99c-1.4188 2.5151-2.552 5.214-3.3447 8.0546l-14.197 1.35c-0.46893 2.75-0.728 5.58-0.728 8.49 0 2.8897 0.25747 5.7085 0.7281 8.4641l14.198 1.3425c0.79274 2.8406 1.926 5.5395 3.3447 8.0546l-9.0785 10.99c3.2796 4.6294 7.3161 8.6885 11.945 11.968l11.013-9.1013c2.5197 1.4217 5.2082 2.5515 8.0546 3.3447l1.3424 14.221c2.7503 0.4688 5.5803 0.7054 8.4642 0.7054 2.8838 0 5.6911-0.2366 8.4414-0.7054l1.3424-14.221c2.8465-0.7932 5.5349-1.923 8.0546-3.3447l11.013 9.1013c4.6293-3.2797 8.6658-7.3388 11.945-11.968l-9.0785-10.99c1.4188-2.5151 2.552-5.214 3.3447-8.0546l14.198-1.3425c0.47063-2.7556 0.7281-5.5744 0.7281-8.4641 0-2.8848-0.25907-5.7131-0.7281-8.4642l-14.198-1.3424c-0.79274-2.8406-1.926-5.5395-3.3447-8.0546l9.1012-10.99c-3.2855-4.6423-7.349-8.6821-11.991-11.968l-10.99 9.0785c-2.5181-1.4205-5.2102-2.5291-8.0546-3.322l-1.3424-14.221c-2.7503-0.46874-5.5576-0.7281-8.4414-0.7281zm0 30.967c10.516 0 19.022 8.528 19.022 19.044s-8.5053 19.044-19.022 19.044c-10.516 0-19.044-8.528-19.044-19.044s8.528-19.044 19.044-19.044z"></path>
                </svg>
-               <h4>Zeichnen</h4>
+               <h4>Settings</h4>              
             </div>
+            <!-- Radicals -->
             <div class="btn-container">
                <svg height="30" width="30">
                   <path d="M11.986,13.132H2.599v1.653h14.053v-1.653H12.68c0.613-1.333,1.28-3.253,1.679-4.559c0.321-0.027,0.507-0.107,0.561-0.268   L12.866,7.72c-0.374,1.521-1.092,3.759-1.705,5.146L11.986,13.132L11.986,13.132z M5.026,8.306c0.561,1.387,1.041,3.228,1.172,4.4   l1.573-0.373c-0.159-1.174-0.666-2.987-1.28-4.347L5.026,8.306L5.026,8.306z M6.146,27.4V25.88h7.121v1.359h1.734v-9.974H4.44V27.4   H6.146L6.146,27.4z M13.266,24.279H6.145v-5.413h7.121V24.279z M10.573,5.719V3.105c0.347-0.052,0.507-0.186,0.533-0.373L8.838,2.6   v3.119H3.292v1.6H16.2v-1.6H10.573L10.573,5.719z M25.88,4.199h-8.187v23.174h1.729V5.908h5.311   c-0.907,2.159-2.053,4.667-3.36,7.306c2.909,2.667,4.214,4.534,4.214,6.267c0,2.453-1.279,2.533-3.066,2.533   c-0.506,0-1.063-0.022-1.647-0.08c0.346,0.508,0.584,1.281,0.61,1.762c0.4,0.027,0.826,0.027,1.229,0.027   c1.731,0,4.642,0,4.642-4.188c0-1.921-1.199-3.92-4.08-6.614c1.467-2.8,2.881-5.679,3.896-7.946   c0.106-0.053,0.214-0.133,0.239-0.267L26.23,4.12L25.885,4.2L25.88,4.199L25.88,4.199z"></path>
                </svg>
-               <h4>Radikale</h4>
+               <h4>Radicals</h4>
             </div>
+            <!-- Voice -->
             <div class="btn-container" onclick='toggleSpeakOverlay()'>
                <svg height="30" width="30">
                   <path d="M15.93,24.714v3.091c3.09,0.168,5.483,1.19,5.483,2.146c0,0.023-12.679,0.023-12.679,0c0-0.919,2.213-1.91,5.139-2.133   v-3.115c-3.734-0.535-6.616-3.717-6.616-7.602v-1.541h1.027v1.541c0,3.688,2.992,6.682,6.681,6.683h0.005   c3.691-0.001,6.743-2.991,6.743-6.683v-1.541h1.029v1.541C22.743,21.031,19.729,24.236,15.93,24.714L15.93,24.714z M14.965,22.693   c-3.122,0-5.654-2.532-5.654-5.654v-1.477h11.373v1.477C20.684,20.161,18.087,22.693,14.965,22.693z M9.312,5.685   c0-3.121,2.531-5.653,5.654-5.653s5.718,2.532,5.718,5.653v8.849H9.312V5.685z"></path>
                </svg>
-               <h4>Sprechen</h4>
+               <h4>Voice</h4>
             </div>
             <!-- Search Bar -->
             <div id="searchDiv">
@@ -99,7 +101,6 @@
                   <div>
                   </div>
                </div>
-
                <!-- !!! Speech Overlay !!! -->
                <div class="speech-overlay hidden">
                   <span class="x-button noselect" onclick="toggleSpeakOverlay()">x</span>
@@ -123,9 +124,64 @@
                   </div>
                </div>
                <!-- !!! End of Speech Overlay !!! -->
-
             </div>
          </div> 
+
+         <!-- !!! Start of Settings Overlay !!! -->
+         <div class="modal fade" id="settingsModal">
+            <div class="modal-dialog">
+               <div class="modal-content">
+              
+                  <!-- Modal Header -->
+                  <div class="modal-header">
+                     <h3 class="modal-title">Settings</h4>
+                     <button type="button" class="close" data-dismiss="modal">&times;</button>
+                  </div>
+                
+                  <!-- Modal body -->
+                  <div class="modal-body">
+                     <span class="inner-title">Select color scheme</span>
+                     <div class="d-flex flex-column">
+                        <div>
+                           <span>background:</span>
+                           <input id="bg_col_settings" type="color" value="#f2f1f0" onchange='onSettingsChange_BackgroundColor(event)'/>
+                           <span onclick='onSettingsChange_BackgroundColor()' class="clickable ">reset</span>
+                        </div>
+                        <div>
+                           <span>primary:</span>
+                           <input id="prim_col_settings" type="color" value="#34a83c" style="margin-left: 30px;" onchange='onSettingsChange_PrimaryColor(event)'/>
+                           <span onclick='onSettingsChange_PrimaryColor()' class="clickable ">reset</span>
+                        </div>
+                     </div>
+                     <br>
+                     <span class="inner-title">Default search language</span>
+                     <br>
+                     <select id="default_lang_settings" class="choices no-margin" onchange="onSettingsChange_DefaultLanguage(event)">
+                        <option value="de-DE">German</option>
+                        <option value="en-US">English</option>
+                        <option value="ru">Russian</option>
+                        <option value="es-ES">Spanish</option>
+                        <option value="sv-SE">Swedish</option>
+                        <option value="fr-FR">French</option>
+                        <option value="nl-NL">Dutch</option>
+                        <option value="hu">Hungarian</option>
+                        <option value="sl-SI">Slovenian</option>
+                     </select>
+                     <span class="tags">Results will try to match the selected language</span>
+                     <br>
+                     <span>Always show english results:</span>  
+                     <input id="show_eng_settings" type="checkbox" value="true"  onchange="onSettingsChange_ShowEnglish(event)">
+                  </div>
+                
+                  <!-- Modal footer -->
+                  <div class="modal-footer">
+                     <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                  </div>
+                
+               </div>
+            </div>
+         </div>
+        <!-- !!! End of Settings Overlay !!! -->
       </div>
       <!-- Main Body -->
       <div id="page-container">
@@ -138,15 +194,15 @@
                         <p>Jotoba is a multilingual Japanese dictionary.</p>
                         <p>It is easy to find translations for words or kanji, see<br>example sentences and the way names can be written.</p>
                         <p>Here are some examples on how to use this page:</p>
-                        <ul class="">
+                        <ul>
                            <li>Press ' / ' to instantly focus the search bar</li>
                            <li>Use the selector drop-down to directly search for words, kanji, sentences or names</li>
-                           <li>Use <a href='/search?type=0&search=world+%23kanji'>#kanji</a> or <a href='/search?type=1&search=world+%23words'>#words</a> if you don't want to click on the selector</li>
+                           <li>Use <a class="clickable" href='/search?type=0&search=world+%23kanji'>#kanji</a> or <a class="clickable" href='/search?type=1&search=world+%23words'>#words</a> if you don't want to click on the selector</li>
                            <li>Click on the 'speak' icon to use your voice when searching. It's a good practice!</li>
-                           <li>You can search multiple kanji at once: <a href="/search?type=1&search=足跡">足跡</a></li>
+                           <li>You can search multiple kanji at once: <a class="clickable" href="/search?type=1&search=足跡">足跡</a></li>
                         </ul>
 
-                        <p>Jotoba is open source. Check out our <a href='https://github.com/WeDontPanic/Jotoba'>Github page</a> if you want to contribute or host Jotoba yourself.</p>
+                        <p>Jotoba is open source. Check out our <a class="clickable" href='https://github.com/WeDontPanic/Jotoba'>Github page</a> if you want to contribute or host Jotoba yourself.</p>
                     </div>
                   </article>
                </div>
