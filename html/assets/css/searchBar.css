@@ -471,7 +471,7 @@
 
 .searchDivInner form .inner-form .input-field.first-wrap .choices__list--dropdown .choices__item--selectable.is-highlighted {
   background: #fff;
-  color: #63c76a;
+  color: var(--primaryColor);;
 }
 
 .searchDivInner form .inner-form .input-field.first-wrap .choices__list--dropdown .choices__item {
@@ -495,7 +495,7 @@
   color: #fff;
   border: 0;
   cursor: pointer;
-  background: #63c76a;
+  background: var(--primaryColor);
   transition: all .2s ease-out, color .2s ease-out;
 }
 
