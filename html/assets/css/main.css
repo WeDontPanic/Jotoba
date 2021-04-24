@@ -172,12 +172,13 @@ svg {
     border: 2px solid lightgray;
     border-top: none;
     background-color: #f3f3f3;
+    box-shadow: 0px 8px 20px 0px rgb(0 0 0 / 25%);
 }
 
 .x-button {
     position: absolute;
     right: 10px;
-    font-size: 1.5vw;
+    font-size: larger;
 }
 
 .x-button:hover {
@@ -244,15 +245,14 @@ svg {
 
 .main-info {
     /* background-color: red; */
-    width: 100%;
-    height: 100px;
+    width: 85%;
+    height: max-content;
     padding-bottom: 10px;
 }
 
 .secondary-info {
     /* background-color: green; */
-    width: 40%;
-    height: 100px;
+    height: max-content;
     padding-bottom: 10px;
     padding-left: 10px;
 }
@@ -270,11 +270,11 @@ svg {
 /* -----------------  Templates ----------------- */
 
 .entry-min-height-1 {
-    min-height: 90px
+    min-height: 90px;
 }
 
 .entry-min-height-2 {
-    min-height: 180px
+    min-height: 180px;
 }
 
 .main-info > .d-flex.flex-row {
@@ -303,19 +303,18 @@ svg {
 }
 
 .kanji-entry.right {
-    width: 25vw;
+    width: 100%;
 }
-
 
 .kanji-entry.right.detail {
     padding-left: 35px;
+    width: 100%;
 }
 
 .kanji-preview {
     display: block;
     line-height: 1.1;
     font-size: xx-large;
-    /* padding-left: 35px; */
 }
 
 .kanji-preview.large {

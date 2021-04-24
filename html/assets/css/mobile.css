@@ -60,6 +60,7 @@
     
     .main-info {
         height: max-content;
+        width: 100%;
     }
 	
 	.main-info > .d-flex.center {
@@ -67,6 +68,7 @@
         flex-direction: column!important;
 		align-self: center;
 		align-items: center;
+        width: 100%;
 	}
 
     .main-info > .d-flex.flex-row {
@@ -92,6 +94,11 @@
 	.kanji-entry.left.fixed > .d-flex {
 		padding-bottom: 5px;
 	}
+
+    .kanji-entry.right {
+        padding-left: 2vw;
+        width: 100%;
+	}
     
     .kanji-preview.large {
         position: absolute;
@@ -103,10 +110,6 @@
 		padding-right: 0px;
     }
 	
-	.kanji-entry.right {
-        padding-left: 2vw;
-	}
-	
 	.tags {
 		padding-bottom: 5px;
 	}
@@ -115,6 +118,16 @@
         text-align: left;
     }
 
+    .entry-min-height-1 {
+        min-height: unset;
+    }
+    
+    .entry-min-height-2 {
+        min-height: unset;
+    }
+    
+
+   
 	
 	/* -------- Kanji Details -------- */
 	
