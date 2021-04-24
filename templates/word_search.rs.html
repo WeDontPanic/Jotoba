@@ -123,6 +123,11 @@
                             @misc
                           </div>
                         }
+                        @if let Some(ref field) = sense.field {
+                          <div class="tags no-margin">
+                            @field.humanize()
+                          </div>
+                        }
                       </div>
                     }
                   }

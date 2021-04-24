@@ -153,6 +153,13 @@ pub enum Field {
     Zoology,
 }
 
+impl Field {
+    pub fn humanize(&self) -> String {
+        // TODO generate proper string
+        format!("{:?}", self)
+    }
+}
+
 impl ToSql<Text, Pg> for Field {
     fn to_sql<W: Write>(&self, out: &mut Output<W, Pg>) -> serialize::Result {
         <&str as ToSql<Text, Pg>>::to_sql(&self.as_ref(), out)

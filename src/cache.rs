@@ -17,7 +17,7 @@ impl<K: Hash + Eq, V: Clone> SharedCache<K, V> {
 }
 
 impl<K: Hash + Eq, V: Clone> SharedCache<K, V> {
-    pub fn cache_get(&mut self, k: &K) -> Option<&V> {
+    pub fn cache_get(&self, k: &K) -> Option<&V> {
         self.store.get(k)
     }
 

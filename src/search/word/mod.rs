@@ -35,15 +35,27 @@ const MAX_KANJI_INFO_ITEMS: usize = 5;
 pub async fn search(db: &DbPool, query: &Query) -> Result<Vec<Item>, Error> {
     let start = SystemTime::now();
 
-    // Lock cache
-    let mut search_cache: MutexGuard<SharedCache<String, Vec<Item>>> = SEARCH_CACHE.lock().await;
-
-    // Try to use cached value
-    if let Some(c_res) = search_cache.cache_get(&query.query.clone()) {
-        println!("cached search took {:?}", start.elapsed());
+    if let Some(c_res) = SEARCH_CACHE
+        .lock()
+        .await
+        .cache_get(&query.original_query.clone())
+    {
         return Ok(c_res.clone());
     }
 
+    let results = do_word_search(db, query).await?;
+
+    // Set cache for future usage
+    SEARCH_CACHE
+        .lock()
+        .await
+        .cache_set(query.original_query.clone(), results.clone());
+
+    println!("word search took: {:?}", start.elapsed());
+    Ok(results)
+}
+
+async fn do_word_search(db: &DbPool, query: &Query) -> Result<Vec<Item>, Error> {
     // Perform (word) searches asynchronously
     let (native_word_res, gloss_word_res): (Vec<Word>, Vec<Word>) = futures::try_join!(
         search_word_by_native(db, &query),
@@ -66,12 +78,7 @@ pub async fn search(db: &DbPool, query: &Query) -> Result<Vec<Item>, Error> {
         .chain(word_results.into_iter().map(|i| i.into()).collect_vec())
         .collect_vec();
 
-    println!("full search took {:?}", start.elapsed());
-
-    // Set cache for future usage
-    search_cache.cache_set(query.query.clone(), results.clone());
-
-    Ok(results)
+    return Ok(results);
 }
 
 /// Perform a native word search
