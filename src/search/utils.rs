@@ -54,3 +54,20 @@ pub fn levenshtein_cmp(a: usize, b: usize) -> Ordering {
         Ordering::Equal
     }
 }
+
+/// Remove duplicates from a vector and return a
+/// newly allocated one
+pub fn remove_dups<T>(inp: Vec<T>) -> Vec<T>
+where
+    T: PartialEq,
+{
+    let mut new: Vec<T> = Vec::new();
+
+    for item in inp {
+        if !new.contains(&item) {
+            new.push(item)
+        }
+    }
+
+    new
+}

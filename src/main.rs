@@ -29,7 +29,8 @@ use r2d2::{Pool, PooledConnection};
 pub type DbConnection = PooledConnection<ConnectionManager<PgConnection>>;
 pub type DbPool = Pool<ConnectionManager<PgConnection>>;
 
-/// An in memory Cache for kanji items
+/// A global natural language parser
+// TODO check if dir exists first
 static JA_NL_PARSER: once_cell::sync::Lazy<typed_igo::Parser> =
     Lazy::new(|| typed_igo::Parser::new(Path::new("./ipadic").to_path_buf()));
 
@@ -58,6 +59,7 @@ pub async fn main() {
     let dict_exists = dict::exists(&database).await.expect("fatal db err");
     let kanji_exists = kanji::exists(&database).await.expect("fatal db err");
 
+    // TODO make beautiful
     // import data
     if options.import {
         let mut imported_kanji = false;
