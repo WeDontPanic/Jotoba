@@ -118,14 +118,9 @@
                             @sense.get_glosses()
                           </div>
                         </div>
-                        @if let Some(ref misc) = sense.get_misc() {
+                        @if let Some(add_tags) = sense.misc_and_field() {
                           <div class="tags no-margin">
-                            @misc
-                          </div>
-                        }
-                        @if let Some(ref field) = sense.field {
-                          <div class="tags no-margin">
-                            @field.humanize()
+                            @add_tags
                           </div>
                         }
                       </div>

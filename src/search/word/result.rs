@@ -328,6 +328,28 @@ impl Sense {
         })
     }
 
+    /// Return a human readable string of misc, field or both
+    pub fn misc_and_field(&self) -> Option<String> {
+        // Return joined with ','
+        if self.misc.is_some() && self.field.is_some() {
+            return Some(format!(
+                "{}, {}",
+                self.field.as_ref().unwrap().humanize(),
+                self.get_misc().unwrap()
+            ));
+        }
+
+        if let Some(misc) = self.misc {
+            return Some(misc.into());
+        }
+
+        if let Some(field) = self.field {
+            return Some(field.humanize());
+        }
+
+        None
+    }
+
     // Get a senses tags prettified
     pub fn get_parts_of_speech(&self) -> String {
         self.glosses[0]
