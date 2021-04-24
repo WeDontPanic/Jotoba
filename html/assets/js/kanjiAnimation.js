@@ -1,3 +1,7 @@
+/**
+ * This JS-File implements the Speech to Text functionality for text input
+ */
+
 // Restarts the animation of the kanji strokes
 function restartAnimation(target, delayMultiplier) {
     if (delayMultiplier == undefined)
