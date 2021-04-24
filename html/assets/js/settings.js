@@ -56,16 +56,18 @@ function loadCookieData() {
     let show_english = Cookies.get("show_english");
 
     // Background
-    if (bg_color !== undefined)
-        $('#bg_col_settings').val(bg_color);
-    else 
-        $('#bg_col_settings').val("#f2f1f0");
+    if (bg_color === undefined)
+        bg_color = "#f2f1f0";
+
+    $('#bg_col_settings').val(bg_color);
+    document.documentElement.style.setProperty('--background', bg_color);
 
     // Primary 
-    if (prim_color !== undefined)
-        $('#prim_col_settings').val(prim_color);
-    else 
-        $('#prim_col_settings').val("#34a83c");
+    if (prim_color === undefined)
+        prim_color = "#34a83c";
+
+    $('#bg_col_settings').val(prim_color);
+    document.documentElement.style.setProperty('--primaryColor', prim_color);
 
     // Default_Lang 
     if (default_lang !== undefined)
