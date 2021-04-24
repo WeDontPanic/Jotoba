@@ -17,6 +17,7 @@
       <script defer src="assets/js/lib/alertify.min.js"></script>
       <script defer src="assets/js/utils.js"></script>
       <script defer src="assets/js/qol.js"></script>
+      <script defer src ="assets/js/stt.js"></script>
    </head>
    <body>
       <!-- Search Row -->
@@ -35,7 +36,7 @@
                </svg>
                <h4>Radikale</h4>
             </div>
-            <div class="btn-container">
+            <div class="btn-container" onclick='toggleSpeakOverlay()'>
                <svg height="30" width="30">
                   <path d="M15.93,24.714v3.091c3.09,0.168,5.483,1.19,5.483,2.146c0,0.023-12.679,0.023-12.679,0c0-0.919,2.213-1.91,5.139-2.133   v-3.115c-3.734-0.535-6.616-3.717-6.616-7.602v-1.541h1.027v1.541c0,3.688,2.992,6.682,6.681,6.683h0.005   c3.691-0.001,6.743-2.991,6.743-6.683v-1.541h1.029v1.541C22.743,21.031,19.729,24.236,15.93,24.714L15.93,24.714z M14.965,22.693   c-3.122,0-5.654-2.532-5.654-5.654v-1.477h11.373v1.477C20.684,20.161,18.087,22.693,14.965,22.693z M9.312,5.685   c0-3.121,2.531-5.653,5.654-5.653s5.718,2.532,5.718,5.653v8.849H9.312V5.685z"></path>
                </svg>
@@ -93,8 +94,33 @@
                   <div>
                   </div>
                </div>
+
+               <!-- !!! Speech Overlay !!! -->
+               <div class="speech-overlay hidden">
+                  <span class="x-button noselect" onclick="toggleSpeakOverlay()">x</span>
+                  <div class="d-flex flex-column">
+                     <span>Current language: <b id="currentSpeechLang">English</b></span>
+                     <span>Currently listening: <b id="currentlyListening">No</b></span>
+                     <br>
+                     <span>To change your language, select one of the following:</span>
+                     <div class="d-flex flex-row wrap">
+                        <span class="clickable right-padding-10" onclick='setRecognitionLang("jap")'>Japanese</span>
+                        <span class="clickable right-padding-10" onclick='setRecognitionLang("ger")'>German</span>
+                        <span class="clickable right-padding-10" onclick='setRecognitionLang("eng")'>English</span>
+                        <span class="clickable right-padding-10" onclick='setRecognitionLang("rus")'>Russian</span>
+                        <span class="clickable right-padding-10" onclick='setRecognitionLang("spa")'>Spanish</span>
+                        <span class="clickable right-padding-10" onclick='setRecognitionLang("swe")'>Swedish</span>
+                        <span class="clickable right-padding-10" onclick='setRecognitionLang("fre")'>French</span>
+                        <span class="clickable right-padding-10" onclick='setRecognitionLang("dut")'>Dutch</span>
+                        <span class="clickable right-padding-10" onclick='setRecognitionLang("hun")'>Hungarian</span>
+                        <span class="clickable right-padding-10" onclick='setRecognitionLang("svl")'>Slovenian</span>
+                     </div>
+                  </div>
+               </div>
+               <!-- !!! End of Speech Overlay !!! -->
+
             </div>
-         </div>
+         </div> 
       </div>
       <!-- Main Body -->
       <div id="page-container">

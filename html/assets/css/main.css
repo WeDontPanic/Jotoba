@@ -157,15 +157,34 @@ svg {
     margin-left: 15px;
     width: 100%;
     max-width: 1000px;
+    position: relative;
 }
  
-
 .d-flex.left {
     flex-direction: row;
     justify-content: left;
 }
 
-/* ----------------- Search Row ----------------- */
+.speech-overlay {
+    position: absolute;
+    width: 100%;
+    height: max-content;
+    border: 2px solid lightgray;
+    border-top: none;
+    background-color: #f3f3f3;
+}
+
+.x-button {
+    position: absolute;
+    right: 10px;
+    font-size: 1.5vw;
+}
+
+.x-button:hover {
+    cursor: pointer;
+}
+
+/* ----------------- Main Page container ----------------- */
 
 .page-container {
     padding-top: 10px;
@@ -284,7 +303,7 @@ svg {
 }
 
 .kanji-entry.right {
-    width: 40vw;
+    width: 25vw;
 }
 
 
