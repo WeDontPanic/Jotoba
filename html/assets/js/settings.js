@@ -63,7 +63,7 @@ function loadCookieData() {
 
     // Primary 
     if (prim_color !== undefined)
-        $('#prim_col_settings').val(bg_color);
+        $('#prim_col_settings').val(prim_color);
     else 
         $('#prim_col_settings').val("#34a83c");
 
