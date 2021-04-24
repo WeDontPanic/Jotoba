@@ -63,10 +63,10 @@ impl QueryParser {
 
         Some(Query {
             language: self.parse_language(&self.query),
+            type_: self.parse_query_type(),
             form: self.parse_form(),
             tags: self.tags,
-            items: self.query,
-            type_: self.q_type,
+            query: self.query,
         })
     }
 
@@ -75,8 +75,30 @@ impl QueryParser {
         query.trim().to_string()
     }
 
+    /// Parses the QueryType based on the user selection and tags
+    fn parse_query_type(&self) -> QueryType {
+        if self.tags.contains(&Tag::Kanji) {
+            QueryType::Kanji
+        } else if self.tags.contains(&Tag::Word) {
+            QueryType::Words
+        } else if self.tags.contains(&Tag::Sentence) {
+            QueryType::Sentences
+        } else if self.tags.contains(&Tag::Name) {
+            QueryType::Names
+        } else {
+            // No QueryType-Tag provided use
+            // drop-down selection
+            self.q_type
+        }
+    }
+
     fn parse_form(&self) -> Form {
         let query = &self.query;
+
+        // Detect a kanji reading query
+        if let Some(kr) = self.parse_kanji_reading() {
+            return Form::KanjiReading(kr);
+        }
 
         // Japanese only input
         if query.is_japanese() {
@@ -95,11 +117,6 @@ impl QueryParser {
             };
         }
 
-        // Detect a kanji reading query
-        if let Some(kr) = self.parse_kanji_reading() {
-            return Form::KanjiReading(kr);
-        }
-
         Form::Undetected
     }
 
@@ -109,7 +126,7 @@ impl QueryParser {
         if utils::real_string_len(&self.query) >= 3 && self.query.contains(' ') {
             let split: Vec<_> = self.query.split(' ').collect();
 
-            if split[0].trim().is_kanji() && split[1].is_japanese() {
+            if split[0].trim().is_kanji() && Self::format_kanji_reading(split[1]).is_japanese() {
                 // Kanji detected
                 return Some(KanjiReading {
                     literal: split[0].chars().next().unwrap(),
@@ -123,6 +140,7 @@ impl QueryParser {
 
     // Tries to determine between Japanese/Non japnaese
     fn parse_language(&self, query: &str) -> QueryLang {
+        let query = Self::format_kanji_reading(query);
         if query.is_japanese() {
             QueryLang::Japanese
         } else if !query.has_japanese() {
@@ -130,6 +148,10 @@ impl QueryParser {
         } else {
             QueryLang::Undetected
         }
+    }
+
+    fn format_kanji_reading(s: &str) -> String {
+        s.replace('.', "").replace('-', "").replace(' ', "")
     }
 }
 

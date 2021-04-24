@@ -4,7 +4,7 @@ use super::query_parser::QueryType;
 /// parsed format
 #[derive(Debug, Clone, PartialEq, Default)]
 pub struct Query {
-    pub items: Vec<String>,
+    pub query: String,
     pub type_: QueryType,
     pub tags: Vec<Tag>,
     pub form: Form,
@@ -83,16 +83,16 @@ impl Tag {
     // Parse a tag from a string
     pub fn from_str(s: &str) -> Option<Tag> {
         Some(match s[1..].to_lowercase().as_str() {
-            "noun" => Self::Noun,
-            "adverb" => Self::Adverb,
-            "sfx" => Self::Sfx,
-            "verb" => Self::Verb,
-            "adjective" => Self::Adjective,
+            "noun" | "nouns" | "n" => Self::Noun,
+            "adverb" | "adverbs" | "adv" => Self::Adverb,
+            "sfx" | "s" => Self::Sfx,
+            "verb" | "verbs" | "v" => Self::Verb,
+            "adjective" | "adj" | "adjectives" => Self::Adjective,
 
             "kanji" => Self::Kanji,
-            "sentence" => Self::Sentence,
-            "name" => Self::Name,
-            "word" => Self::Word,
+            "sentence" | "sentences" => Self::Sentence,
+            "name" | "names" => Self::Name,
+            "word" | "words" => Self::Word,
             _ => return None,
         })
     }
@@ -100,6 +100,6 @@ impl Tag {
 
 impl Query {
     pub fn is_valid(&self) -> bool {
-        !self.items.is_empty()
+        !self.query.is_empty()
     }
 }

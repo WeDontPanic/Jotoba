@@ -11,20 +11,21 @@ use futures::future::join_all;
 use itertools::Itertools;
 use tokio_diesel::AsyncRunQueryDsl;
 
-use super::result_order::order_kanji_by_meaning;
+use super::{query::Query, result_order::order_kanji_by_meaning};
 
 /// A kanji search. Automatically decides whether to search for meaning or literal
-pub async fn search(db: &DbPool, query: &str) -> Result<Vec<Item>, Error> {
-    if query.is_japanese() {
-        by_literals(db, query).await
+pub async fn search(db: &DbPool, query: &Query) -> Result<Vec<Item>, Error> {
+    if query.query.is_japanese() {
+        by_literals(db, &query).await
     } else {
-        by_meaning(db, query).await
+        by_meaning(db, &query).await
     }
 }
 
 /// Find a kanji by its literal
-pub async fn by_literals(db: &DbPool, query: &str) -> Result<Vec<Item>, Error> {
+pub async fn by_literals(db: &DbPool, query: &Query) -> Result<Vec<Item>, Error> {
     let kanji = query
+        .query
         .chars()
         .into_iter()
         .filter_map(|i| i.is_kanji().then(|| i.to_string()))
@@ -39,9 +40,9 @@ pub async fn by_literals(db: &DbPool, query: &str) -> Result<Vec<Item>, Error> {
 }
 
 /// Find kanji by mits meaning
-pub async fn by_meaning(db: &DbPool, query: &str) -> Result<Vec<Item>, Error> {
+pub async fn by_meaning(db: &DbPool, query: &Query) -> Result<Vec<Item>, Error> {
     let items: Vec<Kanji> = diesel::sql_query("select * from find_kanji_by_meaning($1)")
-        .bind::<Text, _>(query)
+        .bind::<Text, _>(&query.query)
         .get_results_async(db)
         .await
         .unwrap();

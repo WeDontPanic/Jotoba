@@ -31,17 +31,6 @@ pub fn trim_non_jp(inp: &str) -> String {
         .collect()
 }
 
-pub fn parse_jp_query(inp: &str) -> String {
-    let inp = trim_non_jp(inp);
-
-    // Workaround for now. Just remove all particles from jp input
-    let query = remove_by_wordclass(&inp, |m| matches!(m, WordClass::Symbol(..),));
-
-    // TODO do a proper query parsing here
-
-    query
-}
-
 pub fn parse_foreign_query(inp: &str) -> String {
     let inp = trim_jp(inp);
 

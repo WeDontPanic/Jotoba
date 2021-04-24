@@ -9,9 +9,10 @@ use crate::{
 };
 
 use super::{
+    query::{Query, QueryLang},
     result,
     result_order::{GlossWordOrder, NativeWordOrder},
-    utils, word, SearchMode,
+    word, SearchMode,
 };
 
 /// An in memory Cache for search results
@@ -21,7 +22,7 @@ static SEARCH_CACHE: Lazy<Mutex<SharedCache<String, Vec<result::Item>>>> =
 const MAX_KANJI_INFO_ITEMS: usize = 5;
 
 /// Search among all data based on the input query
-pub async fn search(db: &DbPool, query: &str) -> Result<Vec<result::Item>, Error> {
+pub async fn search(db: &DbPool, query: &Query) -> Result<Vec<result::Item>, Error> {
     let start = SystemTime::now();
 
     // Lock cache
@@ -29,15 +30,15 @@ pub async fn search(db: &DbPool, query: &str) -> Result<Vec<result::Item>, Error
         SEARCH_CACHE.lock().await;
 
     // Try to use cached value
-    if let Some(c_res) = search_cache.cache_get(&query.to_owned()) {
+    if let Some(c_res) = search_cache.cache_get(&query.query.clone()) {
         println!("cached search took {:?}", start.elapsed());
         return Ok(c_res.clone());
     }
 
     // Perform (word) searches asynchronously
     let (native_word_res, gloss_word_res): (Vec<result::word::Item>, Vec<result::word::Item>) = futures::try_join!(
-        search_word_by_native(db, query),
-        search_word_by_glosses(db, query)
+        search_word_by_native(db, &query),
+        search_word_by_glosses(db, &query)
     )?;
 
     // Chain native and word results into one vector
@@ -47,7 +48,7 @@ pub async fn search(db: &DbPool, query: &str) -> Result<Vec<result::Item>, Error
         .collect_vec();
 
     // Chain and map results into one result vector
-    let results = load_word_kanji_info(db, query, &word_results)
+    let results = load_word_kanji_info(db, &query, &word_results)
         .await?
         .into_iter()
         .map(|i| i.into())
@@ -59,7 +60,7 @@ pub async fn search(db: &DbPool, query: &str) -> Result<Vec<result::Item>, Error
     println!("full search took {:?}", start.elapsed());
 
     // Set cache for future usage
-    search_cache.cache_set(query.to_owned(), results.clone());
+    search_cache.cache_set(query.query.clone(), results.clone());
 
     Ok(results)
 }
@@ -67,22 +68,20 @@ pub async fn search(db: &DbPool, query: &str) -> Result<Vec<result::Item>, Error
 /// Perform a native word search
 pub async fn search_word_by_native(
     db: &DbPool,
-    query: &str,
+    query: &Query,
 ) -> Result<Vec<result::word::Item>, Error> {
-    let query = utils::parse_jp_query(query);
-
-    if !query.has_japanese() || query.is_empty() {
+    if query.language != QueryLang::Japanese {
         return Ok(vec![]);
     }
 
     // Remove particles here
 
     // Define basic search structure
-    let mut word_search = word::WordSearch::new(db, &query);
+    let mut word_search = word::WordSearch::new(db, &query.query);
     word_search.with_language(Language::German);
 
     // Perform the word search
-    let mut wordresults = if query.chars().count() <= 2 && query.is_kana() {
+    let mut wordresults = if query.query.chars().count() <= 2 && query.query.is_kana() {
         // Search for exact matches only if query.len() <= 2
         let res = word_search
             .with_mode(SearchMode::Exact)
@@ -106,7 +105,7 @@ pub async fn search_word_by_native(
     };
 
     // Sort the results based
-    NativeWordOrder::new(&query).sort(&mut wordresults);
+    NativeWordOrder::new(&query.query).sort(&mut wordresults);
 
     // Limit search to 10 results
     wordresults.truncate(10);
@@ -117,7 +116,7 @@ pub async fn search_word_by_native(
 /// load word assigned kanji
 pub async fn load_word_kanji_info(
     db: &DbPool,
-    query: &str,
+    query: &Query,
     words: &Vec<result::word::Item>,
 ) -> Result<Vec<kanji::Kanji>, Error> {
     use futures::future::try_join_all;
@@ -146,7 +145,7 @@ pub async fn load_word_kanji_info(
                 .collect_vec()
         } else {
             // No words found, search only for kanji from query
-            try_join_all(query.chars().into_iter().filter_map(|i| {
+            try_join_all(query.query.chars().into_iter().filter_map(|i| {
                 i.is_kanji()
                     .then(|| kanji::find_by_literal(db, i.to_string()))
             }))
@@ -179,15 +178,14 @@ pub async fn load_word_kanji_info(
 /// Search gloss readings
 pub async fn search_word_by_glosses(
     db: &DbPool,
-    query: &str,
+    query: &Query,
 ) -> Result<Vec<result::word::Item>, Error> {
-    let query = utils::parse_foreign_query(query);
-    if query.is_japanese() {
+    if !(query.language == QueryLang::Foreign || query.language == QueryLang::Undetected) {
         return Ok(vec![]);
     }
 
     // TODO don't make exact search
-    let mut wordresults = word::WordSearch::new(db, &query)
+    let mut wordresults = word::WordSearch::new(db, &query.query)
         .with_language(Language::German)
         .with_case_insensitivity(true)
         .with_mode(SearchMode::RightVariable)
@@ -195,7 +193,7 @@ pub async fn search_word_by_glosses(
         .await?;
 
     // Sort the results based
-    GlossWordOrder::new(&query).sort(&mut wordresults);
+    GlossWordOrder::new(&query.query).sort(&mut wordresults);
 
     // Limit search to 10 results
     wordresults.truncate(10);

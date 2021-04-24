@@ -1,8 +1,10 @@
 use std::time::SystemTime;
 
-use super::word::lower;
+use super::{query::Query, word::lower};
 use super::{result_order, Search, SearchMode};
-use crate::{cache::SharedCache, error::Error, japanese::JapaneseExt, models::name::Name, DbPool};
+use crate::{
+    cache::SharedCache, error::Error, japanese::JapaneseExt, models::name::Name, utils, DbPool,
+};
 use async_std::sync::Mutex;
 use once_cell::sync::Lazy;
 use tokio_diesel::*;
@@ -21,28 +23,28 @@ pub struct NameSearch<'a> {
 }
 
 /// Search for names
-pub async fn search(db: &DbPool, query: &str) -> Result<Vec<Name>, Error> {
+pub async fn search(db: &DbPool, query: &Query) -> Result<Vec<Name>, Error> {
     let mut ns_cache = NAME_SEARCH_CACHE.lock().await;
 
-    if let Some(cached) = ns_cache.cache_get(&query.to_owned()) {
+    if let Some(cached) = ns_cache.cache_get(&query.query.clone()) {
         return Ok(cached.clone());
     }
 
-    let res = if query.is_japanese() {
-        search_native(db, query).await?
+    let res = if query.query.is_japanese() {
+        search_native(db, &query).await?
     } else {
-        search_transcription(db, query).await?
+        search_transcription(db, &query).await?
     };
 
-    ns_cache.cache_set(query.to_owned(), res.clone());
+    ns_cache.cache_set(query.query.clone(), res.clone());
 
     Ok(res)
 }
 
-async fn search_transcription(db: &DbPool, query: &str) -> Result<Vec<Name>, Error> {
-    let mut search = NameSearch::new(&db, Search::new(&query, SearchMode::Variable));
+async fn search_transcription(db: &DbPool, query: &Query) -> Result<Vec<Name>, Error> {
+    let mut search = NameSearch::new(&db, Search::new(&query.query, SearchMode::Variable));
 
-    if query.len() < 4 {
+    if utils::real_string_len(&query.query) < 4 {
         search.with_limit(100);
         search.search.mode = SearchMode::Exact;
     }
@@ -51,7 +53,7 @@ async fn search_transcription(db: &DbPool, query: &str) -> Result<Vec<Name>, Err
 
     let start = SystemTime::now();
     // Sort the results based
-    result_order::NameSearchTranscription::new(query).sort(&mut items);
+    result_order::NameSearchTranscription::new(&query.query).sort(&mut items);
     println!("order took: {:?}", start.elapsed());
 
     // Limit search to 10 results
@@ -60,10 +62,10 @@ async fn search_transcription(db: &DbPool, query: &str) -> Result<Vec<Name>, Err
     Ok(items)
 }
 
-async fn search_native(db: &DbPool, query: &str) -> Result<Vec<Name>, Error> {
-    let mut search = NameSearch::new(&db, Search::new(&query, SearchMode::Variable));
+async fn search_native(db: &DbPool, query: &Query) -> Result<Vec<Name>, Error> {
+    let mut search = NameSearch::new(&db, Search::new(&query.query, SearchMode::Variable));
 
-    if query.len() < 4 {
+    if utils::real_string_len(&query.query) < 4 {
         search.with_limit(100);
         search.search.mode = SearchMode::Exact;
     }
@@ -72,7 +74,7 @@ async fn search_native(db: &DbPool, query: &str) -> Result<Vec<Name>, Error> {
 
     let start = SystemTime::now();
     // Sort the results based
-    result_order::NameSearchNative::new(query).sort(&mut items);
+    result_order::NameSearchNative::new(&query.query).sort(&mut items);
     println!("order took: {:?}", start.elapsed());
 
     // Limit search to 10 results
