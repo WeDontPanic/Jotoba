@@ -90,11 +90,13 @@
                   jlpt n@lvl
                 </div>
               }
-              <span class="clickable audioBtn">Play audio
-                <audio>
-                  <source src="assets/audio/騎士【きし】.ogg" type="audio/ogg">
-                </audio>
-              </span>
+              @if let Some(audio) = word.audio_file() {
+                <span class="clickable audioBtn">Play audio
+                  <audio>
+                    <source src="assets/audio/@audio" type="audio/ogg">
+                  </audio>
+                </span>
+              }
             </div>
 
             <div class="kanji-entry right">
