@@ -75,7 +75,7 @@ impl QueryParser {
 
     /// Formats the query
     fn format_query(query: String) -> String {
-        query.trim().to_string()
+        query.trim().replace("%", "")
     }
 
     /// Parses the QueryType based on the user selection and tags

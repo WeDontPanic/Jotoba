@@ -28,7 +28,7 @@ CREATE TABLE sense (
   antonym TEXT
 );
 CREATE INDEX index_seq_sense ON sense (sequence);
-CREATE INDEX index_gloss_sense ON sense (gloss);
+CREATE INDEX index_gloss_sense ON sense (gloss text_pattern_ops);
 CREATE INDEX index_lang_sense ON sense (language);
 
 CREATE TABLE kanji (

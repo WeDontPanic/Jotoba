@@ -143,11 +143,17 @@ impl<'a> Search<'a> {
             return Ok(vec![]);
         }
 
+        let mode = if real_string_len(&self.query.query) < 4 {
+            SearchMode::Exact
+        } else {
+            SearchMode::Variable
+        };
+
         // TODO don't make exact search
         let mut wordresults = WordSearch::new(self.db, &self.query.query)
             .with_language(Language::German)
             .with_case_insensitivity(true)
-            .with_mode(SearchMode::RightVariable)
+            .with_mode(mode)
             .search_by_glosses()
             .await?;
 

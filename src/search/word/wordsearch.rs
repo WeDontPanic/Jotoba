@@ -4,7 +4,7 @@ use crate::{
     error::Error,
     models::{dict::Dict, sense},
     parse::jmdict::{information::Information, languages::Language, priority::Priority},
-    search::{lower, Search, SearchMode},
+    search::{Search, SearchMode},
     DbPool,
 };
 
@@ -147,58 +147,38 @@ impl<'a> WordSearch<'a> {
             }
         };
 
-        let language_predicate = language
-            .eq(Language::English)
-            .or(language.eq(Language::German));
+        use diesel::dsl::sql;
 
-        // Wait for tokio-diesel to support boxed queries #20
-        if self.search.limit > 0 {
-            if self.ignore_case {
-                Ok(sense
-                    .select(sequence)
-                    .filter(
-                        lower(gloss)
-                            .like(self.search.mode.to_like(query))
-                            .and(language_predicate),
-                    )
-                    .limit(self.search.limit as i64)
-                    .get_results_async(&self.db)
-                    .await?)
-            } else {
-                Ok(sense
-                    .select(sequence)
-                    .filter(
-                        gloss
-                            .like(self.search.mode.to_like(query))
-                            .and(language_predicate),
-                    )
-                    .limit(self.search.limit as i64)
-                    .get_results_async(&self.db)
-                    .await?)
-            }
+        // Since boxed queries don't work with tokio-diesel
+        // this has to be done. If #20 gets resolved, change this !!
+        let mut filter = String::new();
+
+        // Main condidion
+        let like = self.search.mode.to_like(query);
+        if self.ignore_case {
+            filter.push_str(format!("lower(gloss) like '{}'", like).as_str());
         } else {
-            if self.ignore_case {
-                Ok(sense
-                    .select(sequence)
-                    .filter(
-                        lower(gloss)
-                            .like(self.search.mode.to_like(query))
-                            .and(language_predicate),
-                    )
-                    .get_results_async(&self.db)
-                    .await?)
-            } else {
-                Ok(sense
-                    .select(sequence)
-                    .filter(
-                        gloss
-                            .like(self.search.mode.to_like(query))
-                            .and(language_predicate),
-                    )
-                    .get_results_async(&self.db)
-                    .await?)
-            }
+            filter.push_str(format!("gloss like '{}'", like).as_str());
         }
+
+        // Language filter
+        let lang: i32 = self.language.unwrap_or_default().into();
+        if self.language.unwrap_or_default() == Language::English {
+            filter.push_str(format!(" AND language = {}", lang).as_str());
+        } else {
+            filter.push_str(format!(" AND (language = {} or language = 1)", lang).as_str());
+        }
+
+        // Limit
+        if self.search.limit > 0 {
+            filter.push_str(format!(" limit {}", self.search.limit).as_str());
+        }
+
+        return Ok(sense
+            .select(sequence)
+            .filter(sql(&filter))
+            .get_results_async(&self.db)
+            .await?);
     }
 
     /// Find the sequence ids of the results to load
