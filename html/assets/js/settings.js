@@ -76,8 +76,6 @@ function loadCookieData() {
         $('#default_lang_settings').val(navigator.language);
 
     // English results
-    if (show_english === "true")
-        $('#show_eng_settings').val(true);
-    else 
-        $('#show_eng_settings').val(false);
+    if (show_english === "false")
+        $('#show_eng_settings').prop('checked', false);
 }
