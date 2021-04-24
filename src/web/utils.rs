@@ -1,19 +1,19 @@
-use super::search::{QueryStruct, QueryType};
+use crate::search::{query::Query, query_parser::QueryType};
 
 /// Return a string 'selected' if the query_type in qs is equal to i
 /// required by the base template
-pub fn sel_str(qs: &Option<QueryStruct>, i: QueryType) -> String {
+pub fn sel_str(qs: &Option<&Query>, i: QueryType) -> String {
     if qs
-        .as_ref()
-        .and_then(|query_str| {
-            query_str
-                .search_type
-                .and_then(|st| if st == i { Some(true) } else { None })
-        })
+        .and_then(|query| (query.type_ == i).then(|| true))
         .is_some()
     {
         String::from("selected")
     } else {
         String::from("")
     }
+}
+
+/// Gets an owned String of the query
+pub fn get_query_str(qs: &Option<&Query>) -> String {
+    qs.map(|qs| qs.query.clone()).unwrap_or_default()
 }

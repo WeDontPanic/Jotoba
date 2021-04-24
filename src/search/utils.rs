@@ -1,7 +1,6 @@
-use typed_igo::wordclass::*;
+use std::cmp::Ordering;
 
-use crate::japanese::JapaneseExt;
-
+/*
 /// Removes particles from inp text
 pub fn remove_by_wordclass<P>(inp: &str, mut p: P) -> String
 where
@@ -30,20 +29,28 @@ pub fn trim_non_jp(inp: &str) -> String {
         .filter(|i| i.is_japanese())
         .collect()
 }
+*/
 
-pub fn parse_jp_query(inp: &str) -> String {
-    let inp = trim_non_jp(inp);
-
-    // Workaround for now. Just remove all particles from jp input
-    let query = remove_by_wordclass(&inp, |m| matches!(m, WordClass::Symbol(..),));
-
-    // TODO do a proper query parsing here
-
-    query
+/// Returns an ordering based on the option variants.
+/// Ordering: Some < None
+/// In case both are equal, None gets returned
+pub fn option_order<T>(a: &Option<T>, b: &Option<T>) -> Option<Ordering> {
+    if a.is_some() && !b.is_some() {
+        Some(Ordering::Less)
+    } else if !a.is_some() && b.is_some() {
+        Some(Ordering::Greater)
+    } else {
+        None
+    }
 }
 
-pub fn parse_foreign_query(inp: &str) -> String {
-    let inp = trim_jp(inp);
-
-    inp
+/// Compares two levenshtein values
+pub fn levenshtein_cmp(a: usize, b: usize) -> Ordering {
+    if a < b {
+        Ordering::Less
+    } else if a > b {
+        Ordering::Greater
+    } else {
+        Ordering::Equal
+    }
 }

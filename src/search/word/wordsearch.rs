@@ -1,11 +1,10 @@
-use super::{
-    result::word::{Item, Reading},
-    Search, SearchMode,
-};
+use super::result::{Reading, Word};
+
 use crate::{
     error::Error,
     models::{dict::Dict, sense},
     parse::jmdict::{information::Information, languages::Language, priority::Priority},
+    search::{lower, Search, SearchMode},
     DbPool,
 };
 
@@ -22,10 +21,6 @@ pub struct WordSearch<'a> {
     language: Option<Language>,
     ignore_case: bool,
     kana_only: bool,
-}
-
-sql_function! {
-    fn lower(a: diesel::types::VarChar) -> diesel::types::VarChar;
 }
 
 impl<'a> WordSearch<'a> {
@@ -70,7 +65,7 @@ impl<'a> WordSearch<'a> {
     }
 
     /// Searches by translations
-    pub async fn search_by_glosses(&mut self) -> Result<Vec<Item>, Error> {
+    pub async fn search_by_glosses(&mut self) -> Result<Vec<Word>, Error> {
         // Load sequence ids to display
         let seq_ids = self.get_sequence_ids_by_glosses().await?;
 
@@ -81,7 +76,7 @@ impl<'a> WordSearch<'a> {
     }
 
     /// Searches by native
-    pub async fn search_native(&mut self) -> Result<Vec<Item>, Error> {
+    pub async fn search_native(&mut self) -> Result<Vec<Word>, Error> {
         // Load sequence ids to display
         let seq_ids = self.get_sequence_ids_by_native().await?;
 
@@ -95,7 +90,7 @@ impl<'a> WordSearch<'a> {
             .collect_vec())
     }
 
-    fn post_search_check(&self, item: &Item) -> bool {
+    fn post_search_check(&self, item: &Word) -> bool {
         if self.kana_only && item.reading.kanji.is_some() {
             false
         } else {
@@ -108,9 +103,9 @@ impl<'a> WordSearch<'a> {
         db: &DbPool,
         seq_ids: &Vec<i32>,
         lang: Language,
-    ) -> Result<Vec<Item>, Error> {
+    ) -> Result<Vec<Word>, Error> {
         // Request Redings and Senses in parallel
-        let (word_items, senses): (Vec<Item>, Vec<sense::Sense>) = futures::try_join!(
+        let (word_items, senses): (Vec<Word>, Vec<sense::Sense>) = futures::try_join!(
             Self::load_readings(&db, &seq_ids),
             Self::load_senses(&db, &seq_ids, lang)
         )?;
@@ -119,8 +114,8 @@ impl<'a> WordSearch<'a> {
     }
 
     /// Merge word_items with its senses
-    fn merge_words_with_senses(word_items: Vec<Item>, senses: Vec<sense::Sense>) -> Vec<Item> {
-        // Map result into a usable word::Item an return it
+    fn merge_words_with_senses(word_items: Vec<Word>, senses: Vec<sense::Sense>) -> Vec<Word> {
+        // Map result into a usable word::Word an return it
         word_items
             .into_iter()
             .map(|mut word| {
@@ -259,7 +254,7 @@ impl<'a> WordSearch<'a> {
     }
 
     /// Load readings for all sequences
-    async fn load_readings(db: &DbPool, sequence_ids: &Vec<i32>) -> Result<Vec<Item>, Error> {
+    async fn load_readings(db: &DbPool, sequence_ids: &Vec<i32>) -> Result<Vec<Word>, Error> {
         use crate::schema::dict as dict_schema;
 
         // load dicts from DB
@@ -302,7 +297,7 @@ impl<'a> WordSearch<'a> {
                     reading.alternative.push(dict);
                 });
 
-                Item {
+                Word {
                     reading,
                     priorities,
                     information,

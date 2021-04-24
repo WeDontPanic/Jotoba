@@ -1,12 +1,9 @@
 use std::cmp::Ordering;
 
-use levenshtein::levenshtein;
+use crate::search::SearchMode;
+use crate::{japanese::JapaneseExt, parse::jmdict::languages::Language};
 
-use super::{
-    result::{kanji::Item as KanjiItem, word::Item},
-    SearchMode,
-};
-use crate::{japanese::JapaneseExt, models::name::Name, parse::jmdict::languages::Language};
+use super::result::Word;
 
 /// Represents the ordering for result based on
 /// native search-input
@@ -20,12 +17,12 @@ impl<'a> NativeWordOrder<'a> {
     }
 
     /// Sort native words results
-    pub(crate) fn sort(&self, vec: &mut Vec<Item>) {
+    pub(crate) fn sort(&self, vec: &mut Vec<Word>) {
         vec.sort_by(|a, b| self.native_words(a, b))
     }
 
     /// Returns an Ordering variant based on the input items
-    fn native_words(&self, this: &Item, other: &Item) -> Ordering {
+    fn native_words(&self, this: &Word, other: &Word) -> Ordering {
         let other_has_reading = other.has_reading(self.query, true);
         let this_has_reading_o = this.has_reading(self.query, true);
 
@@ -89,7 +86,7 @@ impl<'a> NativeWordOrder<'a> {
         }
     }
 
-    fn is_exact_reading(&self, this: &Item) -> bool {
+    fn is_exact_reading(&self, this: &Word) -> bool {
         if self.query.has_kanji() && this.reading.kanji.is_none() {
             return false;
         }
@@ -116,12 +113,12 @@ impl<'a> GlossWordOrder<'a> {
     }
 
     /// Sort native words results
-    pub(crate) fn sort(&self, vec: &mut Vec<Item>) {
+    pub(crate) fn sort(&self, vec: &mut Vec<Word>) {
         vec.sort_by(|a, b| self.native_words(a, b))
     }
 
     /// Returns an Ordering variant based on the input items
-    fn native_words(&self, this: &Item, other: &Item) -> Ordering {
+    fn native_words(&self, this: &Word, other: &Word) -> Ordering {
         let this_exact_l = self.calc_likelienes(this, SearchMode::Exact, false);
         let other_exact_l = self.calc_likelienes(other, SearchMode::Exact, false);
 
@@ -188,32 +185,7 @@ impl<'a> GlossWordOrder<'a> {
         Ordering::Equal
     }
 
-    /*
-    pub fn get_likelynes(&self, this: &Item) -> u8 {
-        let l_exact = self.calc_likelynes(this, SearchMode::Exact, false);
-        let l_exact_icase = self.calc_likelynes(this, SearchMode::Exact, true) / 3;
-        let l_contains = self.calc_likelynes(this, SearchMode::Variable, true) / 10;
-        println!("exact: {}", l_exact);
-        println!("exact_icase: {}", l_exact_icase);
-        println!("contains: {}", l_contains);
-
-        if l_exact > 0 {
-            return l_exact;
-        }
-
-        if l_exact_icase > 0 {
-            return l_exact_icase;
-        }
-
-        if l_contains > 0 {
-            return l_contains;
-        }
-
-        0
-    }
-    */
-
-    pub fn calc_likelienes(&self, this: &Item, s_mode: SearchMode, ign_case: bool) -> u8 {
+    pub fn calc_likelienes(&self, this: &Word, s_mode: SearchMode, ign_case: bool) -> u8 {
         let n: usize = this.senses.iter().map(|i| i.glosses.iter().count()).sum();
         let pos = Self::get_query_pos_in_gloss(&self, this, s_mode, ign_case);
         if pos.is_none() {
@@ -222,7 +194,7 @@ impl<'a> GlossWordOrder<'a> {
         100 - Self::calc_importance(pos.unwrap(), n) as u8
     }
 
-    pub fn find_lang(&self, this: &Item) -> Option<Language> {
+    pub fn find_lang(&self, this: &Word) -> Option<Language> {
         self.get_lang(this, SearchMode::Exact, false)
             .map(|i| Some(i))
             .unwrap_or(
@@ -232,7 +204,7 @@ impl<'a> GlossWordOrder<'a> {
             )
     }
 
-    pub fn get_lang(&self, this: &Item, s_mode: SearchMode, ign_case: bool) -> Option<Language> {
+    pub fn get_lang(&self, this: &Word, s_mode: SearchMode, ign_case: bool) -> Option<Language> {
         let items = this.get_senses();
 
         for lang_senes in items.iter() {
@@ -250,7 +222,7 @@ impl<'a> GlossWordOrder<'a> {
 
     pub fn get_query_pos_in_gloss(
         &self,
-        this: &Item,
+        this: &Word,
         s_mode: SearchMode,
         ign_case: bool,
     ) -> Option<usize> {
@@ -277,7 +249,7 @@ impl<'a> GlossWordOrder<'a> {
         (pos * 100) / total
     }
 
-    fn is_exact_reading(&self, this: &Item) -> bool {
+    fn is_exact_reading(&self, this: &Word) -> bool {
         if self.query.has_kanji() && this.reading.kanji.is_none() {
             return false;
         }
@@ -295,9 +267,11 @@ impl<'a> GlossWordOrder<'a> {
 #[cfg(test)]
 mod test {
     use super::GlossWordOrder;
-    use super::Item;
-    use crate::search::result::word::{Gloss, Sense};
-    use crate::search::SearchMode;
+    use super::Word;
+    use crate::search::{
+        word::result::{Gloss, Sense},
+        SearchMode,
+    };
 
     fn str_to_gloss(values1_sense: Vec<&str>) -> Vec<Gloss> {
         values1_sense
@@ -309,22 +283,22 @@ mod test {
             .collect::<Vec<_>>()
     }
 
-    fn make_word1_item(values1_sense: Vec<&str>) -> Item {
+    fn make_word1_item(values1_sense: Vec<&str>) -> Word {
         let glosses1 = str_to_gloss(values1_sense);
-        Item {
+        Word {
             senses: vec![Sense {
                 glosses: glosses1,
                 ..Default::default()
             }],
-            ..Item::default()
+            ..Word::default()
         }
     }
 
-    fn make_word2_item(values1_sense: Vec<&str>, values2_sense: Vec<&str>) -> Item {
+    fn make_word2_item(values1_sense: Vec<&str>, values2_sense: Vec<&str>) -> Word {
         let glosses1 = str_to_gloss(values1_sense);
         let glosses2 = str_to_gloss(values2_sense);
 
-        Item {
+        Word {
             senses: vec![
                 Sense {
                     glosses: glosses1,
@@ -335,7 +309,7 @@ mod test {
                     ..Default::default()
                 },
             ],
-            ..Item::default()
+            ..Word::default()
         }
     }
 
@@ -374,120 +348,5 @@ mod test {
             search.calc_likelienes(&item_c, SearchMode::Exact, true),
             100
         );
-    }
-}
-
-/// Represents the ordering for nome search
-/// result based on native search-input
-pub(crate) struct NameSearchNative<'a> {
-    query: &'a str,
-}
-
-impl<'a> NameSearchNative<'a> {
-    pub(crate) fn new(query: &'a str) -> Self {
-        Self { query }
-    }
-
-    /// Sort native words results
-    pub(crate) fn sort(&self, vec: &mut Vec<Name>) {
-        vec.sort_by(|a, b| self.native_words(a, b))
-    }
-
-    /// Returns an Ordering variant based on the input items
-    fn native_words(&self, this: &Name, other: &Name) -> Ordering {
-        let order = if self.query.is_kanji() {
-            self.kanji_check(this, other)
-        } else if self.query.is_kana() {
-            self.kana_check(this, other)
-        } else {
-            Ordering::Equal
-        };
-
-        if order == Ordering::Equal {
-            if self.query.is_kana() {
-                if this.kanji.is_none() && other.kanji.is_some() {
-                    return Ordering::Less;
-                } else if this.kanji.is_some() && other.kanji.is_none() {
-                    return Ordering::Greater;
-                }
-            }
-        }
-
-        order
-    }
-
-    fn kanji_check(&self, this: &Name, other: &Name) -> Ordering {
-        let this_le = levenshtein(&this.kanji.as_ref().unwrap_or(&this.kana), self.query);
-        let other_le = levenshtein(&other.kanji.as_ref().unwrap_or(&other.kana), self.query);
-        levenshtein_cmp(this_le, other_le)
-    }
-
-    fn kana_check(&self, this: &Name, other: &Name) -> Ordering {
-        let this_le = levenshtein(&this.kana, self.query);
-        let other_le = levenshtein(&other.kana, self.query);
-        levenshtein_cmp(this_le, other_le)
-    }
-}
-
-/// Represents the ordering for nome search
-/// result based on non-native search-input
-pub(crate) struct NameSearchTranscription<'a> {
-    query: &'a str,
-}
-
-impl<'a> NameSearchTranscription<'a> {
-    pub(crate) fn new(query: &'a str) -> Self {
-        Self { query }
-    }
-
-    /// Sort native words results
-    pub(crate) fn sort(&self, vec: &mut Vec<Name>) {
-        vec.sort_by(|a, b| self.native_words(a, b))
-    }
-
-    /// Returns an Ordering variant based on the input items
-    fn native_words(&self, this: &Name, other: &Name) -> Ordering {
-        let this_le = levenshtein(&this.transcription, self.query);
-        let other_le = levenshtein(&other.transcription, self.query);
-        levenshtein_cmp(this_le, other_le)
-    }
-}
-
-fn levenshtein_cmp(a: usize, b: usize) -> Ordering {
-    if a < b {
-        Ordering::Less
-    } else if a > b {
-        Ordering::Greater
-    } else {
-        Ordering::Equal
-    }
-}
-
-pub(crate) fn order_kanji_by_meaning(a: &KanjiItem, b: &KanjiItem) -> Ordering {
-    let a = &a.kanji;
-    let b = &b.kanji;
-
-    if let Some(o) = option_order(&a.grade, &b.grade) {
-        return o;
-    }
-
-    if let Some(o) = option_order(&a.frequency, &b.frequency) {
-        return o;
-    }
-
-    if let Some(o) = option_order(&a.jlpt, &b.jlpt) {
-        return o;
-    }
-
-    Ordering::Equal
-}
-
-fn option_order<T>(a: &Option<T>, b: &Option<T>) -> Option<Ordering> {
-    if a.is_some() && !b.is_some() {
-        Some(Ordering::Less)
-    } else if !a.is_some() && b.is_some() {
-        Some(Ordering::Greater)
-    } else {
-        None
     }
 }

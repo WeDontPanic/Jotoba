@@ -1,8 +1,14 @@
 use actix_web::{web, HttpResponse};
-use search::name;
 use serde::Deserialize;
 
-use crate::{search, templates, DbPool};
+use crate::{
+    search::{
+        self,
+        query::Query,
+        query_parser::{QueryParser, QueryType},
+    },
+    templates, DbPool,
+};
 
 #[derive(Deserialize, Debug)]
 pub struct QueryStruct {
@@ -10,24 +16,6 @@ pub struct QueryStruct {
     pub query: Option<String>,
     #[serde(rename = "type")]
     pub search_type: Option<QueryType>,
-}
-
-#[derive(Deserialize, Debug, Copy, Clone, PartialEq)]
-pub enum QueryType {
-    #[serde(rename = "1")]
-    Kanji,
-    #[serde(rename = "2")]
-    Sentences,
-    #[serde(rename = "3")]
-    Names,
-    #[serde(rename = "0", other)]
-    Words,
-}
-
-impl Default for QueryType {
-    fn default() -> Self {
-        Self::Words
-    }
 }
 
 impl QueryStruct {
@@ -48,6 +36,12 @@ impl QueryStruct {
     }
 }
 
+fn redirect_home() -> HttpResponse {
+    HttpResponse::MovedPermanently()
+        .header("Location", "/")
+        .finish()
+}
+
 /// Endpoint to perform a search
 pub async fn search(
     pool: web::Data<DbPool>,
@@ -55,39 +49,41 @@ pub async fn search(
 ) -> Result<HttpResponse, actix_web::Error> {
     let query_data = query_data.adjust();
 
-    // Refer to index page if query is empty
-    if query_data.query.is_none() {
-        return Ok(HttpResponse::MovedPermanently()
-            .header("Location", "/")
-            .finish());
-    }
+    let q_parser = QueryParser::new(
+        query_data.query.clone().unwrap_or_default(),
+        query_data.search_type.unwrap_or_default(),
+    );
+
+    let query = match q_parser.parse() {
+        Some(k) => k,
+        None => return Ok(redirect_home()),
+    };
+
+    println!("{:#?}", query);
 
     // Perform the requested type of search and render
     // the appropriate template
-    match query_data.search_type.as_ref().unwrap() {
-        QueryType::Kanji => kanji_search(&pool, query_data).await,
+    match query.type_ {
+        QueryType::Kanji => kanji_search(&pool, query).await,
         QueryType::Sentences => sentence_search().await,
-        QueryType::Names => name_search(&pool, query_data).await,
-        QueryType::Words => word_search(&pool, query_data).await,
+        QueryType::Names => name_search(&pool, query).await,
+        QueryType::Words => word_search(&pool, query).await,
     }
 }
 
 /// Perform a sentence search and
 /// render sentence_search tempalte
 async fn sentence_search() -> Result<HttpResponse, actix_web::Error> {
-    Ok(HttpResponse::MovedPermanently()
-        .header("Location", "/")
-        .finish())
+    Ok(redirect_home())
 }
 
 /// Perform a kanji search and
 /// render kanji_details tempalte
 async fn kanji_search(
     pool: &web::Data<DbPool>,
-    query_data: QueryStruct,
+    query: Query,
 ) -> Result<HttpResponse, actix_web::Error> {
     let start = std::time::SystemTime::now();
-    let query = query_data.query.as_ref().unwrap();
 
     let kanji = search::kanji::search(&pool, &query)
         .await
@@ -99,13 +95,13 @@ async fn kanji_search(
     // redirect to word search
     if kanji.is_empty() {
         return Ok(HttpResponse::MovedPermanently()
-            .header("Location", format!("/search?type=0&search={}", query))
+            .header("Location", format!("/search?type=0&search={}", query.query))
             .finish());
     }
 
     Ok(HttpResponse::Ok().body(render!(
         templates::base,
-        Some(query_data),
+        Some(&query),
         None,
         Some(kanji),
         None
@@ -116,17 +112,16 @@ async fn kanji_search(
 /// render name_search tempalte
 async fn name_search(
     pool: &web::Data<DbPool>,
-    query_data: QueryStruct,
+    query: Query,
 ) -> Result<HttpResponse, actix_web::Error> {
     let start = std::time::SystemTime::now();
-    let query = query_data.query.as_ref().unwrap();
 
-    let names = name::search(&pool, query).await.unwrap();
+    let names = crate::search::name::search(&pool, &query).await.unwrap();
 
     println!("name search took {:?}", start.elapsed());
     Ok(HttpResponse::Ok().body(render!(
         templates::base,
-        Some(query_data),
+        Some(&query),
         None,
         None,
         Some(names),
@@ -137,16 +132,14 @@ async fn name_search(
 /// render word_search tempalte
 async fn word_search(
     pool: &web::Data<DbPool>,
-    query_data: QueryStruct,
+    query: Query,
 ) -> Result<HttpResponse, actix_web::Error> {
     // Perform a search
-    let result = search::everything::search(&pool, query_data.query.as_ref().unwrap())
-        .await
-        .unwrap();
+    let result = search::word::search(&pool, &query).await.unwrap();
 
     Ok(HttpResponse::Ok().body(render!(
         templates::base,
-        Some(query_data),
+        Some(&query),
         Some(result),
         None,
         None,

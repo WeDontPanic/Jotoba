@@ -1,12 +1,11 @@
-@use crate::search::result::{Item, kanji::Item as kanjiItem};
+@use crate::search::word::result::Item;
+@use crate::search::kanji::result::Item as kanjiItem;
+@use crate::search::{query::Query, query_parser::QueryType};
 @use crate::models::name::Name;
-@use crate::web::{
-  utils::*,
-  search::{QueryType, QueryStruct},
-};
+@use crate::web::utils::*;
 @use super::{index_html, word_search_html, kanji_details, name_search};
 
-@(search_query: Option<QueryStruct>, word_search_result: Option<Vec<Item>>, kanji_info_search_result: Option<Vec<kanjiItem>>, name_search_result: Option<Vec<Name>>)
+@(search_query: Option<&Query>, word_search_result: Option<Vec<Item>>, kanji_info_search_result: Option<Vec<kanjiItem>>, name_search_result: Option<Vec<Name>>)
 <!DOCTYPE html>
 <html lang="en">
    <head>
@@ -70,7 +69,7 @@
                            </div>
                         </div>
                         <div class="input-field second-wrap">
-                           <input id="search" name="search" type="text" value="@search_query.map(|i| i.query.clone().unwrap_or_default()).unwrap_or_default()" placeholder="German, Japanese, Romaji, words or text" tabindex="1" lang="ja" autocapitalize="off" autocomplete="off" data-autoload="false" data-effective-keyword=""/>
+                           <input id="search" name="search" type="text" value="@get_query_str(&search_query)" placeholder="German, Japanese, Romaji, words or text" tabindex="1" lang="ja" autocapitalize="off" autocomplete="off" data-autoload="false" data-effective-keyword=""/>
                         </div>
                         <div class="input-field third-wrap">
                            <button class="btn-search" type="submit">
