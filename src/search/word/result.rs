@@ -1,3 +1,5 @@
+use std::path::Path;
+
 use crate::models::kanji::Kanji;
 
 use crate::{japanese::JapaneseExt, parse::jmdict::languages::Language, utils::to_option};
@@ -284,6 +286,21 @@ impl Word {
     /// Return true if item is a katakana word
     pub fn is_katakana_word(&self) -> bool {
         self.reading.is_katakana()
+    }
+
+    /// Get the audio filename of a word
+    pub fn audio_file(&self) -> Option<String> {
+        self.reading.kanji.as_ref().and_then(|kanji| {
+            let file = format!(
+                "{}【{}】.ogg",
+                kanji.reading,
+                self.reading.kana.as_ref().unwrap().reading
+            );
+
+            Path::new(&format!("html/assets/audio/{}", file))
+                .exists()
+                .then(|| file)
+        })
     }
 }
 
