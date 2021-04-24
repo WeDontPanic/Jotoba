@@ -1,5 +1,5 @@
-@use crate::search::word::result::Item;
-@(results: Vec<Item>)
+@use crate::search::word::result::{Item, WordResult};
+@(result: WordResult)
   <!-- Inner Top Row -->
   <div class="d-flex center no-drag">
     <div class="main-tab-select l">
@@ -19,7 +19,7 @@
       <h3 class="noselect">Words</h3>
 
       <!-- Word, Sentence, Name Templates here -->
-      @for i in results.iter() {
+      @for i in result.items.iter() {
         @if let Item::Word(word) = i {
 
           @if word.get_reading().len() > 3 {
@@ -146,10 +146,10 @@
       }
       
     </div>
-    <div id="secondaryInfo" class="secondary-info">
+    <div id="secondaryInfo" class="secondary-info @if !result.contains_kanji { hidden }">
       <h3 class="noselect">Kanji</h3>
       <!-- Kanji Templates here -->
-      @for i in results {
+      @for i in result.items.iter() {
         @if let Item::Kanji(kanji) = i {
           <div>
             <!-- Tags -->

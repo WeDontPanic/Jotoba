@@ -26,10 +26,12 @@ use crate::{
     DbPool,
 };
 
+use self::result::WordResult;
+
 use super::{query::Form, utils};
 
 /// An in memory Cache for word search results
-static SEARCH_CACHE: Lazy<Mutex<SharedCache<String, Vec<Item>>>> =
+static SEARCH_CACHE: Lazy<Mutex<SharedCache<String, WordResult>>> =
     Lazy::new(|| Mutex::new(SharedCache::with_capacity(1000)));
 
 const MAX_KANJI_INFO_ITEMS: usize = 5;
@@ -40,7 +42,7 @@ struct Search<'a> {
 }
 
 /// Search among all data based on the input query
-pub async fn search(db: &DbPool, query: &Query) -> Result<Vec<Item>, Error> {
+pub async fn search(db: &DbPool, query: &Query) -> Result<WordResult, Error> {
     let start = SystemTime::now();
     let search = Search { query, db };
 
@@ -51,7 +53,7 @@ pub async fn search(db: &DbPool, query: &Query) -> Result<Vec<Item>, Error> {
 
     // Do requested search
     let results = match query.form {
-        Form::KanjiReading(_) => search.kanji_search().await,
+        Form::KanjiReading(_) => search.kanji_meaning_search().await,
         _ => search.do_word_search().await,
     }?;
 
@@ -61,11 +63,14 @@ pub async fn search(db: &DbPool, query: &Query) -> Result<Vec<Item>, Error> {
 }
 
 impl<'a> Search<'a> {
-    async fn kanji_search(&self) -> Result<Vec<Item>, Error> {
-        Ok(vec![])
+    async fn kanji_meaning_search(&self) -> Result<WordResult, Error> {
+        Ok(WordResult {
+            items: vec![],
+            contains_kanji: false,
+        })
     }
 
-    async fn do_word_search(&self) -> Result<Vec<Item>, Error> {
+    async fn do_word_search(&self) -> Result<WordResult, Error> {
         // Perform searches asynchronously
         let (native_word_res, gloss_word_res): (Vec<Word>, Vec<Word>) =
             futures::try_join!(self.native_results(), self.gloss_results())?;
@@ -77,9 +82,10 @@ impl<'a> Search<'a> {
             .collect_vec();
 
         // Chain and map results into one result vector
-        let results = self
-            .load_word_kanji_info(&word_results)
-            .await?
+        let kanji_results = self.load_word_kanji_info(&word_results).await?;
+        let kanji_items = kanji_results.len();
+
+        let result = kanji_results
             .into_iter()
             .map(|i| i.into())
             .collect::<Vec<Item>>()
@@ -87,7 +93,10 @@ impl<'a> Search<'a> {
             .chain(word_results.into_iter().map(|i| i.into()).collect_vec())
             .collect_vec();
 
-        return Ok(results);
+        return Ok(WordResult {
+            items: result,
+            contains_kanji: kanji_items > 0,
+        });
     }
 
     /// Perform a native word search
@@ -226,7 +235,7 @@ impl<'a> Search<'a> {
             .take(limit)
             .collect_vec())
     }
-    async fn get_cache(&self) -> Option<Vec<Item>> {
+    async fn get_cache(&self) -> Option<WordResult> {
         SEARCH_CACHE
             .lock()
             .await
@@ -234,7 +243,7 @@ impl<'a> Search<'a> {
             .map(|i| i.clone())
     }
 
-    async fn save_cache(&self, result: Vec<Item>) {
+    async fn save_cache(&self, result: WordResult) {
         SEARCH_CACHE
             .lock()
             .await
