@@ -1,15 +1,22 @@
+mod order;
+pub mod result;
+
 use std::time::SystemTime;
 
-use super::{query::Query, word::lower};
-use super::{result_order, Search, SearchMode};
 use crate::{
-    cache::SharedCache, error::Error, japanese::JapaneseExt, models::name::Name, utils, DbPool,
+    cache::SharedCache,
+    error::Error,
+    japanese::JapaneseExt,
+    models::name::Name,
+    search::{lower, query::Query, Search, SearchMode},
+    utils, DbPool,
 };
+
 use async_std::sync::Mutex;
 use once_cell::sync::Lazy;
 use tokio_diesel::*;
 
-/// An in memory Cache for search results
+/// An in memory Cache for namesearch results
 static NAME_SEARCH_CACHE: Lazy<Mutex<SharedCache<String, Vec<Name>>>> =
     Lazy::new(|| Mutex::new(SharedCache::with_capacity(1000)));
 
@@ -41,6 +48,7 @@ pub async fn search(db: &DbPool, query: &Query) -> Result<Vec<Name>, Error> {
     Ok(res)
 }
 
+/// Search by transcription
 async fn search_transcription(db: &DbPool, query: &Query) -> Result<Vec<Name>, Error> {
     let mut search = NameSearch::new(&db, Search::new(&query.query, SearchMode::Variable));
 
@@ -53,7 +61,7 @@ async fn search_transcription(db: &DbPool, query: &Query) -> Result<Vec<Name>, E
 
     let start = SystemTime::now();
     // Sort the results based
-    result_order::NameSearchTranscription::new(&query.query).sort(&mut items);
+    order::ByTranscription::new(&query.query).sort(&mut items);
     println!("order took: {:?}", start.elapsed());
 
     // Limit search to 10 results
@@ -62,6 +70,7 @@ async fn search_transcription(db: &DbPool, query: &Query) -> Result<Vec<Name>, E
     Ok(items)
 }
 
+/// Search by japanese input
 async fn search_native(db: &DbPool, query: &Query) -> Result<Vec<Name>, Error> {
     let mut search = NameSearch::new(&db, Search::new(&query.query, SearchMode::Variable));
 
@@ -74,7 +83,7 @@ async fn search_native(db: &DbPool, query: &Query) -> Result<Vec<Name>, Error> {
 
     let start = SystemTime::now();
     // Sort the results based
-    result_order::NameSearchNative::new(&query.query).sort(&mut items);
+    order::ByNative::new(&query.query).sort(&mut items);
     println!("order took: {:?}", start.elapsed());
 
     // Limit search to 10 results

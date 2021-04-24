@@ -1,5 +1,4 @@
 use actix_web::{web, HttpResponse};
-use search::name;
 use serde::Deserialize;
 
 use crate::{
@@ -117,7 +116,7 @@ async fn name_search(
 ) -> Result<HttpResponse, actix_web::Error> {
     let start = std::time::SystemTime::now();
 
-    let names = name::search(&pool, &query).await.unwrap();
+    let names = crate::search::name::search(&pool, &query).await.unwrap();
 
     println!("name search took {:?}", start.elapsed());
     Ok(HttpResponse::Ok().body(render!(
@@ -136,7 +135,7 @@ async fn word_search(
     query: Query,
 ) -> Result<HttpResponse, actix_web::Error> {
     // Perform a search
-    let result = search::everything::search(&pool, &query).await.unwrap();
+    let result = search::word::search(&pool, &query).await.unwrap();
 
     Ok(HttpResponse::Ok().body(render!(
         templates::base,

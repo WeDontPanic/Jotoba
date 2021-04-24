@@ -1,16 +1,16 @@
 #![allow(dead_code)]
 
-pub mod everything;
 pub mod kanji;
 pub mod name;
 pub mod query;
 pub mod query_parser;
-pub mod result;
-mod result_order;
+pub mod sentence;
 pub mod utils;
 pub mod word;
 
-pub use self::result::Item as ResultItem;
+sql_function! {
+    fn lower(a: diesel::types::VarChar) -> diesel::types::VarChar;
+}
 
 /// How db entries should be matched with
 /// the query in order to be valid as result

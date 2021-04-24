@@ -1,19 +1,22 @@
+mod order;
+pub mod result;
+
+use result::Item;
+
 use crate::{
     error::Error,
     japanese::JapaneseExt,
     models::kanji::{self, Kanji},
-    search::result::kanji::Item,
     utils, DbPool,
 };
 
+use super::query::Query;
 use diesel::sql_types::Text;
 use futures::future::join_all;
 use itertools::Itertools;
 use tokio_diesel::AsyncRunQueryDsl;
 
-use super::{query::Query, result_order::order_kanji_by_meaning};
-
-/// A kanji search. Automatically decides whether to search for meaning or literal
+/// The entry of a kanji search
 pub async fn search(db: &DbPool, query: &Query) -> Result<Vec<Item>, Error> {
     if query.query.is_japanese() {
         by_literals(db, &query).await
@@ -23,7 +26,7 @@ pub async fn search(db: &DbPool, query: &Query) -> Result<Vec<Item>, Error> {
 }
 
 /// Find a kanji by its literal
-pub async fn by_literals(db: &DbPool, query: &Query) -> Result<Vec<Item>, Error> {
+async fn by_literals(db: &DbPool, query: &Query) -> Result<Vec<Item>, Error> {
     let kanji = query
         .query
         .chars()
@@ -35,12 +38,11 @@ pub async fn by_literals(db: &DbPool, query: &Query) -> Result<Vec<Item>, Error>
 
     // Order them by occurence in query
     items.sort_by(|a, b| utils::get_item_order(&kanji, &a.literal, &b.literal).unwrap());
-
     to_item(db, items).await
 }
 
 /// Find kanji by mits meaning
-pub async fn by_meaning(db: &DbPool, query: &Query) -> Result<Vec<Item>, Error> {
+async fn by_meaning(db: &DbPool, query: &Query) -> Result<Vec<Item>, Error> {
     let items: Vec<Kanji> = diesel::sql_query("select * from find_kanji_by_meaning($1)")
         .bind::<Text, _>(&query.query)
         .get_results_async(db)
@@ -48,11 +50,11 @@ pub async fn by_meaning(db: &DbPool, query: &Query) -> Result<Vec<Item>, Error> 
         .unwrap();
 
     let mut res = to_item(db, items).await?;
-    res.sort_by(order_kanji_by_meaning);
+    res.sort_by(order::by_meaning);
     Ok(res)
 }
 
-pub async fn to_item(db: &DbPool, items: Vec<Kanji>) -> Result<Vec<Item>, Error> {
+async fn to_item(db: &DbPool, items: Vec<Kanji>) -> Result<Vec<Item>, Error> {
     Ok(join_all(
         items
             .into_iter()

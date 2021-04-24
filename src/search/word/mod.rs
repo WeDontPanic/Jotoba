@@ -1,33 +1,42 @@
+mod order;
+pub mod result;
+mod wordsearch;
+
+use order::{GlossWordOrder, NativeWordOrder};
+use result::{Item, Word};
+pub use wordsearch::WordSearch;
+
 use async_std::sync::{Mutex, MutexGuard};
+use futures::future::try_join_all;
 use itertools::Itertools;
 use once_cell::sync::Lazy;
 use std::time::SystemTime;
 
 use crate::{
-    cache::SharedCache, error::Error, japanese::JapaneseExt, models::kanji,
-    parse::jmdict::languages::Language, DbPool,
+    cache::SharedCache,
+    error::Error,
+    japanese::JapaneseExt,
+    models::kanji,
+    parse::jmdict::languages::Language,
+    search::{
+        query::{Query, QueryLang},
+        SearchMode,
+    },
+    DbPool,
 };
 
-use super::{
-    query::{Query, QueryLang},
-    result,
-    result_order::{GlossWordOrder, NativeWordOrder},
-    word, SearchMode,
-};
-
-/// An in memory Cache for search results
-static SEARCH_CACHE: Lazy<Mutex<SharedCache<String, Vec<result::Item>>>> =
+/// An in memory Cache for word search results
+static SEARCH_CACHE: Lazy<Mutex<SharedCache<String, Vec<Item>>>> =
     Lazy::new(|| Mutex::new(SharedCache::with_capacity(1000)));
 
 const MAX_KANJI_INFO_ITEMS: usize = 5;
 
 /// Search among all data based on the input query
-pub async fn search(db: &DbPool, query: &Query) -> Result<Vec<result::Item>, Error> {
+pub async fn search(db: &DbPool, query: &Query) -> Result<Vec<Item>, Error> {
     let start = SystemTime::now();
 
     // Lock cache
-    let mut search_cache: MutexGuard<SharedCache<String, Vec<result::Item>>> =
-        SEARCH_CACHE.lock().await;
+    let mut search_cache: MutexGuard<SharedCache<String, Vec<Item>>> = SEARCH_CACHE.lock().await;
 
     // Try to use cached value
     if let Some(c_res) = search_cache.cache_get(&query.query.clone()) {
@@ -36,7 +45,7 @@ pub async fn search(db: &DbPool, query: &Query) -> Result<Vec<result::Item>, Err
     }
 
     // Perform (word) searches asynchronously
-    let (native_word_res, gloss_word_res): (Vec<result::word::Item>, Vec<result::word::Item>) = futures::try_join!(
+    let (native_word_res, gloss_word_res): (Vec<Word>, Vec<Word>) = futures::try_join!(
         search_word_by_native(db, &query),
         search_word_by_glosses(db, &query)
     )?;
@@ -52,7 +61,7 @@ pub async fn search(db: &DbPool, query: &Query) -> Result<Vec<result::Item>, Err
         .await?
         .into_iter()
         .map(|i| i.into())
-        .collect::<Vec<result::Item>>()
+        .collect::<Vec<Item>>()
         .into_iter()
         .chain(word_results.into_iter().map(|i| i.into()).collect_vec())
         .collect_vec();
@@ -66,10 +75,7 @@ pub async fn search(db: &DbPool, query: &Query) -> Result<Vec<result::Item>, Err
 }
 
 /// Perform a native word search
-pub async fn search_word_by_native(
-    db: &DbPool,
-    query: &Query,
-) -> Result<Vec<result::word::Item>, Error> {
+async fn search_word_by_native(db: &DbPool, query: &Query) -> Result<Vec<Word>, Error> {
     if query.language != QueryLang::Japanese {
         return Ok(vec![]);
     }
@@ -77,7 +83,7 @@ pub async fn search_word_by_native(
     // Remove particles here
 
     // Define basic search structure
-    let mut word_search = word::WordSearch::new(db, &query.query);
+    let mut word_search = WordSearch::new(db, &query.query);
     word_search.with_language(Language::German);
 
     // Perform the word search
@@ -114,13 +120,11 @@ pub async fn search_word_by_native(
 }
 
 /// load word assigned kanji
-pub async fn load_word_kanji_info(
+async fn load_word_kanji_info(
     db: &DbPool,
     query: &Query,
-    words: &Vec<result::word::Item>,
+    words: &Vec<Word>,
 ) -> Result<Vec<kanji::Kanji>, Error> {
-    use futures::future::try_join_all;
-
     let kanji_words = words
         .iter()
         // Filter only words with kanji readings
@@ -176,16 +180,13 @@ pub async fn load_word_kanji_info(
 }
 
 /// Search gloss readings
-pub async fn search_word_by_glosses(
-    db: &DbPool,
-    query: &Query,
-) -> Result<Vec<result::word::Item>, Error> {
+async fn search_word_by_glosses(db: &DbPool, query: &Query) -> Result<Vec<Word>, Error> {
     if !(query.language == QueryLang::Foreign || query.language == QueryLang::Undetected) {
         return Ok(vec![]);
     }
 
     // TODO don't make exact search
-    let mut wordresults = word::WordSearch::new(db, &query.query)
+    let mut wordresults = WordSearch::new(db, &query.query)
         .with_language(Language::German)
         .with_case_insensitivity(true)
         .with_mode(SearchMode::RightVariable)
