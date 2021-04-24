@@ -119,14 +119,6 @@ impl Word {
         self.reading.get_reading().priorities.is_some()
     }
 
-    /// Return the amount of priorities a word has
-    pub fn priorities_count(&self) -> usize {
-        self.priorities
-            .as_ref()
-            .map(|i| i.len())
-            .unwrap_or_default()
-    }
-
     /// Returns the reading of a word
     pub fn get_reading(&self) -> &Dict {
         return self.reading.get_reading();
