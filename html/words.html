@@ -16,14 +16,12 @@
       <script defer src="assets/js/lib/choices.js"></script>
       <script defer src="assets/js/lib/alertify.min.js"></script>
       <script defer src="assets/js/utils.js"></script>
-	   <script defer src="assets/js/qol.js"></script>
+      <script defer src="assets/js/qol.js"></script>
    </head>
-
    <body>
       <!-- Search Row -->
       <div id="search-row" class="wrap-row">
          <div class="d-flex center">
-
             <!-- Left Buttons -->
             <div class="btn-container">
                <svg height="30" width="30">
@@ -43,7 +41,6 @@
                </svg>
                <h4>Sprechen</h4>
             </div>
-
             <!-- Search Bar -->
             <div id="searchDiv">
                <div class="searchDivInner">
@@ -52,18 +49,33 @@
                         <div class="input-field first-wrap">
                            <div class="input-select">
                               <div class="choices" role="listbox" data-type="select-one" tabindex="0" aria-haspopup="true" aria-expanded="false" dir="ltr" aria-activedescendant="choices-type-16-item-choice-1">
-          <div class="choices__inner"><select data-trigger="" name="type" onchange="changeSearchType(this.value)" class="choices__input is-hidden" tabindex="-1" style="display:none;" aria-hidden="true" data-choice="active"><option value="0" selected="">Words</option></select><div class="choices__list choices__list--single"><div class="choices__item choices__item--selectable" data-item="" data-id="1" data-value="0" aria-selected="true">
-            Words
-          </div></div></div><div class="choices__list choices__list--dropdown" aria-expanded="false">
-          <div class="choices__list" dir="ltr" role="listbox"><div class="choices__item choices__item--choice choices__item--selectable is-highlighted" data-select-text="" data-choice="" data-id="1" data-value="0" data-choice-selectable="" id="choices-type-16-item-choice-1" role="option" aria-selected="true">
-            Words
-          </div><div class="choices__item choices__item--choice choices__item--selectable" data-select-text="" data-choice="" data-id="2" data-value="1" data-choice-selectable="" id="choices-type-16-item-choice-2" role="option">
-            Kanji
-          </div><div class="choices__item choices__item--choice choices__item--selectable" data-select-text="" data-choice="" data-id="3" data-value="2" data-choice-selectable="" id="choices-type-16-item-choice-3" role="option">
-            Sentences
-          </div><div class="choices__item choices__item--choice choices__item--selectable" data-select-text="" data-choice="" data-id="4" data-value="3" data-choice-selectable="" id="choices-type-16-item-choice-4" role="option">
-            Names
-          </div></div></div></div>
+                                 <div class="choices__inner">
+                                    <select data-trigger="" name="type" onchange="changeSearchType(this.value)" class="choices__input is-hidden" tabindex="-1" style="display:none;" aria-hidden="true" data-choice="active">
+                                       <option value="0" selected="">Words</option>
+                                    </select>
+                                    <div class="choices__list choices__list--single">
+                                       <div class="choices__item choices__item--selectable" data-item="" data-id="1" data-value="0" aria-selected="true">
+                                          Words
+                                       </div>
+                                    </div>
+                                 </div>
+                                 <div class="choices__list choices__list--dropdown" aria-expanded="false">
+                                    <div class="choices__list" dir="ltr" role="listbox">
+                                       <div class="choices__item choices__item--choice choices__item--selectable is-highlighted" data-select-text="" data-choice="" data-id="1" data-value="0" data-choice-selectable="" id="choices-type-16-item-choice-1" role="option" aria-selected="true">
+                                          Words
+                                       </div>
+                                       <div class="choices__item choices__item--choice choices__item--selectable" data-select-text="" data-choice="" data-id="2" data-value="1" data-choice-selectable="" id="choices-type-16-item-choice-2" role="option">
+                                          Kanji
+                                       </div>
+                                       <div class="choices__item choices__item--choice choices__item--selectable" data-select-text="" data-choice="" data-id="3" data-value="2" data-choice-selectable="" id="choices-type-16-item-choice-3" role="option">
+                                          Sentences
+                                       </div>
+                                       <div class="choices__item choices__item--choice choices__item--selectable" data-select-text="" data-choice="" data-id="4" data-value="3" data-choice-selectable="" id="choices-type-16-item-choice-4" role="option">
+                                          Names
+                                       </div>
+                                    </div>
+                                 </div>
+                              </div>
                            </div>
                         </div>
                         <div class="input-field second-wrap">
@@ -84,501 +96,298 @@
             </div>
          </div>
       </div>
-
       <!-- Main Body -->
-      <div id="page-container"> 
-        <div class="d-flex center">
-          <div class="main-container">
-            <br>
-
-            
-              <!-- Inner Top Row -->
-  <div class="d-flex center no-drag">
-    <div class="main-tab-select l">
-      <h2 id="previousTabBtn" onclick="changeSearchType(2)" class="tab-btn">← Sentences</h2>
-    </div>
-    <div class="title-div">
-      <h1>Words and kanji</h1>
-    </div>
-    <div class="main-tab-select r">
-      <h2 id="nextTabBtn" onclick="changeSearchType(3)" class="tab-btn">Names →</h2>
-    </div>
-  </div>
-  <br>
-  <!-- Inner Main Body -->
-  <div id="content-container" class="d-flex center">
-    <div class="main-info d-flex flex-column">
-      <h3 class="noselect">Words</h3>
-
-      <!-- Word, Sentence, Name Templates here -->
-      
-        
-      
-        
-      
-        
-      
-        
-
-          
-
-          <div class="d-flex center">
-            <!-- Left side: Writing -->
-            <div class="kanji-entry left fixed d-flex flex-column">
-
-              
-                <div class="d-flex flex-row"> 
-                  
-                    
-                      
-                         <div class="furigana-kanji-container">
-                            <span class="furigana-preview noselect">
-                               あしあと
-                            </span>
-                            <span class="kanji-preview">
-                               足跡
-                            </span>
-                         </div>
-                      
-                    
-                  
-                </div>
-              
-
-              
-                <div class="word-frequency common">
-                  common word
-                </div>
-              
-              
-                <div class="word-frequency">
-                  jlpt n2
-                </div>
-              
-              <span class="clickable">Play audio</span>
-            </div>
-
-            <div class="kanji-entry right">
-              <div class="entry-min-height-2">
-                <!-- Right side: Info -->
-                
-                  
-                    
-                      <!-- Sense entry -->
-                      <div class="list-entry">
-                        <div class="tags">
-                          Noun
+      <div id="page-container">
+         <div class="d-flex center">
+            <div class="main-container">
+               <br>
+               <!-- Inner Top Row -->
+               <div class="d-flex center no-drag">
+                  <div class="main-tab-select l">
+                     <h2 id="previousTabBtn" onclick="changeSearchType(2)" class="tab-btn">← Sentences</h2>
+                  </div>
+                  <div class="title-div">
+                     <h1>Words and kanji</h1>
+                  </div>
+                  <div class="main-tab-select r">
+                     <h2 id="nextTabBtn" onclick="changeSearchType(3)" class="tab-btn">Names →</h2>
+                  </div>
+               </div>
+               <br>
+               <!-- Inner Main Body -->
+               <div id="content-container" class="d-flex center">
+                  <div class="main-info d-flex flex-column">
+                     <h3 class="noselect">Words</h3>
+                     <!-- Word, Sentence, Name Templates here -->
+                     <div class="d-flex center">
+                        <!-- Left side: Writing -->
+                        <div class="kanji-entry left fixed d-flex flex-column">
+                           <div class="d-flex flex-row">
+                              <div class="furigana-kanji-container">
+                                 <span class="furigana-preview noselect">
+                                 あしあと
+                                 </span>
+                                 <span class="kanji-preview">
+                                 足跡
+                                 </span>
+                              </div>
+                           </div>
+                           <div class="word-frequency common">
+                              common word
+                           </div>
+                           <div class="word-frequency">
+                              jlpt n2
+                           </div>
+                           <span class="clickable audioBtn">Play audio
+                                 <audio>
+                                    <source src="assets/audio/騎士【きし】.ogg" type="audio/ogg">
+                                  </audio>
+                           </span>
                         </div>
-                        <div class="definition-wrapper d-flex flex-row">
-                          <div class="entry-count">
-                            1.
-                          </div>
-                          <div class="translation">
-                            Fußabdruck; Fußspur; Fußstapfen; Fußabdruck; Fußspur; Fußstapfen
-                          </div>
+                        <div class="kanji-entry right">
+                           <div class="entry-min-height-2">
+                              <!-- Right side: Info -->
+                              <!-- Sense entry -->
+                              <div class="list-entry">
+                                 <div class="tags">
+                                    Noun
+                                 </div>
+                                 <div class="definition-wrapper d-flex flex-row">
+                                    <div class="entry-count">
+                                       1.
+                                    </div>
+                                    <div class="translation">
+                                       Fußabdruck; Fußspur; Fußstapfen; Fußabdruck; Fußspur; Fußstapfen
+                                    </div>
+                                 </div>
+                                 <div class="tags no-margin">
+                                  Hier kann ne super tolle Geschichte über Astronomie, Fußabdrücke und Schweißgestank stehen
+                                </div>
+                              </div>
+                              <!-- Sense entry -->
+                              <div class="list-entry">
+                                 <div class="tags">
+                                    Noun
+                                 </div>
+                                 <div class="definition-wrapper d-flex flex-row">
+                                    <div class="entry-count">
+                                       2.
+                                    </div>
+                                    <div class="translation">
+                                       Beitrag; Leistung
+                                    </div>
+                                 </div>
+                              </div>
+                              <hr class="lang-separator">
+                              <!-- Sense entry -->
+                              <div class="list-entry">
+                                 <div class="tags">
+                                    Noun
+                                 </div>
+                                 <div class="definition-wrapper d-flex flex-row">
+                                    <div class="entry-count">
+                                       1.
+                                    </div>
+                                    <div class="translation">
+                                       footprints
+                                    </div>
+                                 </div>
+                              </div>
+                              <!-- Sense entry -->
+                              <div class="list-entry">
+                                 <div class="tags">
+                                    Noun
+                                 </div>
+                                 <div class="definition-wrapper d-flex flex-row">
+                                    <div class="entry-count">
+                                       2.
+                                    </div>
+                                    <div class="translation">
+                                       record of page visitors (e.g. in social networking sites)
+                                    </div>
+                                 </div>
+                              </div>
+                           </div>
+                           <!-- Additional Informations-->
+                           <div class="tags">Other forms</div>
+                           <div class="notes">足あと, そくせき</div>
+                           <hr class="res-separator">
                         </div>
-                        
-                      </div>
-                    
-                  
-                    
-                      <!-- Sense entry -->
-                      <div class="list-entry">
-                        <div class="tags">
-                          Noun
-                        </div>
-                        <div class="definition-wrapper d-flex flex-row">
-                          <div class="entry-count">
-                            2.
-                          </div>
-                          <div class="translation">
-                            Beitrag; Leistung
-                          </div>
-                        </div>
-                        
-                      </div>
-                    
-                  
-
-                  
-                    <hr class="lang-separator">
-                  
-                
-                  
-                    
-                      <!-- Sense entry -->
-                      <div class="list-entry">
-                        <div class="tags">
-                          Noun
-                        </div>
-                        <div class="definition-wrapper d-flex flex-row">
-                          <div class="entry-count">
-                            1.
-                          </div>
-                          <div class="translation">
-                            footprints
-                          </div>
-                        </div>
-                        
-                      </div>
-                    
-                  
-                    
-                      <!-- Sense entry -->
-                      <div class="list-entry">
-                        <div class="tags">
-                          Noun
-                        </div>
-                        <div class="definition-wrapper d-flex flex-row">
-                          <div class="entry-count">
-                            2.
-                          </div>
-                          <div class="translation">
-                            record of page visitors (e.g. in social networking sites)
-                          </div>
-                        </div>
-                        
-                      </div>
-                    
-                  
-
-                  
-                
-              </div>
-
-              <!-- Additional Informations-->
-              
-                <div class="tags">Other forms</div>
-                <div class="notes">足あと, そくせき</div>
-              
-
-              <hr class="res-separator">
-            </div>
-          </div>
-        
-      
-        
-
-          
-            <div class="d-flex flex-row"> 
-              
-                
-                  
-                     <div class="furigana-kanji-container">
-                        <span class="furigana-preview noselect">
+                     </div>
+                     <div class="d-flex flex-row">
+                        <div class="furigana-kanji-container">
+                           <span class="furigana-preview noselect">
                            あしあと
-                        </span>
-                        <span class="kanji-preview">
+                           </span>
+                           <span class="kanji-preview">
                            足跡
-                        </span>
-                     </div>
-                  
-                
-                  
-                     <div class="inline-kana-preview">
-                        を
-                     </div>
-                  
-                
-                  
-                     <div class="furigana-kanji-container">
-                        <span class="furigana-preview noselect">
+                           </span>
+                        </div>
+                        <div class="inline-kana-preview">
+                           を
+                        </div>
+                        <div class="furigana-kanji-container">
+                           <span class="furigana-preview noselect">
                            のこ
-                        </span>
-                        <span class="kanji-preview">
+                           </span>
+                           <span class="kanji-preview">
                            残
-                        </span>
+                           </span>
+                        </div>
+                        <div class="inline-kana-preview">
+                           す
+                        </div>
                      </div>
-                  
-                
-                  
-                     <div class="inline-kana-preview">
-                        す
+                     <div class="d-flex center">
+                        <!-- Left side: Writing -->
+                        <div class="kanji-entry left fixed d-flex flex-column">
+                           <span class="clickable">Play audio</span>
+                        </div>
+                        <div class="kanji-entry right">
+                           <div class="entry-min-height-0">
+                              <!-- Right side: Info -->
+                              <!-- Sense entry -->
+                              <div class="list-entry">
+                                 <div class="tags">
+                                    Expression, Godan(Su)
+                                 </div>
+                                 <div class="definition-wrapper d-flex flex-row">
+                                    <div class="entry-count">
+                                       1.
+                                    </div>
+                                    <div class="translation">
+                                       seine Fußspuren hinterlassen
+                                    </div>
+                                 </div>
+                              </div>
+                              <hr class="lang-separator">
+                              <!-- Sense entry -->
+                              <div class="list-entry">
+                                 <div class="tags">
+                                    Expression, Godan(Su)
+                                 </div>
+                                 <div class="definition-wrapper d-flex flex-row">
+                                    <div class="entry-count">
+                                       1.
+                                    </div>
+                                    <div class="translation">
+                                       to leave one's footprints; to leave one's mark on; to leave a message (behind)
+                                    </div>
+                                 </div>
+                              </div>
+                           </div>
+                           <!-- Additional Informations-->
+                           <div class="tags">Other forms</div>
+                           <div class="notes">そくせきをのこす</div>
+                           <hr class="res-separator">
+                        </div>
                      </div>
-                  
-                
-              
-            </div>
-          
-
-          <div class="d-flex center">
-            <!-- Left side: Writing -->
-            <div class="kanji-entry left fixed d-flex flex-column">
-
-              
-
-              
-              
-              <span class="clickable">Play audio</span>
-            </div>
-
-            <div class="kanji-entry right">
-              <div class="entry-min-height-0">
-                <!-- Right side: Info -->
-                
-                  
-                    
-                      <!-- Sense entry -->
-                      <div class="list-entry">
+                  </div>
+                  <div id="secondaryInfo" class="secondary-info">
+                     <h3 class="noselect">Kanji</h3>
+                     <!-- Kanji Templates here -->
+                     <div>
+                        <!-- Tags -->
                         <div class="tags">
-                          Expression, Godan(Su)
+                           7 strokes.
+                           JLPT N4.
+                           Taught in 1 grade
                         </div>
-                        <div class="definition-wrapper d-flex flex-row">
-                          <div class="entry-count">
-                            1.
-                          </div>
-                          <div class="translation">
-                            seine Fußspuren hinterlassen
-                          </div>
+                        <!-- Kanji and translation -->
+                        <div class="kanji-entry left d-flex flex-row">
+                           <a class="kanji-preview large black" href="/search?type=1&amp;search=足">
+                           足
+                           </a>
+                           <div class="translation kanji">
+                              leg, foot, be sufficient, counter for pairs of footwear
+                           </div>
                         </div>
-                        
-                      </div>
-                    
-                  
-
-                  
-                    <hr class="lang-separator">
-                  
-                
-                  
-                    
-                      <!-- Sense entry -->
-                      <div class="list-entry">
+                        <!-- Kun readings -->
+                        <div class="tags no-margin">Kun</div>
+                        <div class="d-flex flex-row wrap noselect">
+                           <a class="clickable no-align green" href="/search?type=1&amp;search=あし">あし</a>
+                           <span class="tags no-margin fat right-padding-10">,</span>
+                           <a class="clickable no-align green" href="/search?type=1&amp;search=た.りる">た.りる</a>
+                           <span class="tags no-margin fat right-padding-10">,</span>
+                           <a class="clickable no-align green" href="/search?type=1&amp;search=た.る">た.る</a>
+                           <span class="tags no-margin fat right-padding-10">,</span>
+                           <a class="clickable no-align green" href="/search?type=1&amp;search=た.す">た.す</a>
+                        </div>
+                        <!-- On readings -->
+                        <div class="tags no-margin">On</div>
+                        <div class="d-flex flex-row wrap noselect">
+                           <a class="clickable no-align green" href="/search?type=1&amp;search=ソク">ソク</a>
+                        </div>
+                        <hr>
+                     </div>
+                     <div>
+                        <!-- Tags -->
                         <div class="tags">
-                          Expression, Godan(Su)
+                           13 strokes.
+                           JLPT N2.
+                           Taught in 8 grade
                         </div>
-                        <div class="definition-wrapper d-flex flex-row">
-                          <div class="entry-count">
-                            1.
-                          </div>
-                          <div class="translation">
-                            to leave one's footprints; to leave one's mark on; to leave a message (behind)
-                          </div>
+                        <!-- Kanji and translation -->
+                        <div class="kanji-entry left d-flex flex-row">
+                           <a class="kanji-preview large black" href="/search?type=1&amp;search=跡">
+                           跡
+                           </a>
+                           <div class="translation kanji">
+                              tracks, mark, print, impression
+                           </div>
                         </div>
-                        
-                      </div>
-                    
-                  
-
-                  
-                
-              </div>
-
-              <!-- Additional Informations-->
-              
-                <div class="tags">Other forms</div>
-                <div class="notes">そくせきをのこす</div>
-              
-
-              <hr class="res-separator">
+                        <!-- Kun readings -->
+                        <div class="tags no-margin">Kun</div>
+                        <div class="d-flex flex-row wrap noselect">
+                           <a class="clickable no-align green" href="/search?type=1&amp;search=あと">あと</a>
+                        </div>
+                        <!-- On readings -->
+                        <div class="tags no-margin">On</div>
+                        <div class="d-flex flex-row wrap noselect">
+                           <a class="clickable no-align green" href="/search?type=1&amp;search=セキ">セキ</a>
+                        </div>
+                        <hr>
+                     </div>
+                     <div>
+                        <!-- Tags -->
+                        <div class="tags">
+                           10 strokes.
+                           JLPT N3.
+                           Taught in 4 grade
+                        </div>
+                        <!-- Kanji and translation -->
+                        <div class="kanji-entry left d-flex flex-row">
+                           <a class="kanji-preview large black" href="/search?type=1&amp;search=残">
+                           残
+                           </a>
+                           <div class="translation kanji">
+                              remainder, leftover, balance
+                           </div>
+                        </div>
+                        <!-- Kun readings -->
+                        <div class="tags no-margin">Kun</div>
+                        <div class="d-flex flex-row wrap noselect">
+                           <a class="clickable no-align green" href="/search?type=1&amp;search=のこ.る">のこ.る</a>
+                           <span class="tags no-margin fat right-padding-10">,</span>
+                           <a class="clickable no-align green" href="/search?type=1&amp;search=のこ.す">のこ.す</a>
+                           <span class="tags no-margin fat right-padding-10">,</span>
+                           <a class="clickable no-align green" href="/search?type=1&amp;search=そこな.う">そこな.う</a>
+                           <span class="tags no-margin fat right-padding-10">,</span>
+                           <a class="clickable no-align green" href="/search?type=1&amp;search=のこ.り">のこ.り</a>
+                        </div>
+                        <!-- On readings -->
+                        <div class="tags no-margin">On</div>
+                        <div class="d-flex flex-row wrap noselect">
+                           <a class="clickable no-align green" href="/search?type=1&amp;search=ザン">ザン</a>
+                           <span class="tags no-margin fat right-padding-10">,</span>
+                           <a class="clickable no-align green" href="/search?type=1&amp;search=サン">サン</a>
+                        </div>
+                        <hr>
+                     </div>
+                  </div>
+               </div>
             </div>
-          </div>
-        
-      
-      
-    </div>
-    <div id="secondaryInfo" class="secondary-info">
-      <h3 class="noselect">Kanji</h3>
-      <!-- Kanji Templates here -->
-      
-        
-          <div>
-            <!-- Tags -->
-            <div class="tags">
-              7 strokes.
-              
-                JLPT N4.
-              
-              
-                Taught in 1 grade
-              
-            </div>
-
-            <!-- Kanji and translation -->
-            <div class="kanji-entry left d-flex flex-row">
-              <a class="kanji-preview large black" href="/search?type=1&amp;search=足">
-                足
-              </a>
-              <div class="translation kanji">
-                leg, foot, be sufficient, counter for pairs of footwear
-              </div>
-            </div>
-
-            <!-- Kun readings -->
-            
-              <div class="tags no-margin">Kun</div>
-              <div class="d-flex flex-row wrap noselect">
-                
-                  
-                  <a class="clickable no-align green" href="/search?type=1&amp;search=あし">あし</a>
-                
-                  
-                    <span class="tags no-margin fat right-padding-10">,</span>
-                  
-                  <a class="clickable no-align green" href="/search?type=1&amp;search=た.りる">た.りる</a>
-                
-                  
-                    <span class="tags no-margin fat right-padding-10">,</span>
-                  
-                  <a class="clickable no-align green" href="/search?type=1&amp;search=た.る">た.る</a>
-                
-                  
-                    <span class="tags no-margin fat right-padding-10">,</span>
-                  
-                  <a class="clickable no-align green" href="/search?type=1&amp;search=た.す">た.す</a>
-                
-              </div>
-            
-
-            <!-- On readings -->
-            
-              <div class="tags no-margin">On</div>
-              <div class="d-flex flex-row wrap noselect">
-                
-                  
-                  <a class="clickable no-align green" href="/search?type=1&amp;search=ソク">ソク</a>
-                
-              </div>
-            
-
-            <hr>
-          </div>
-        
-      
-        
-          <div>
-            <!-- Tags -->
-            <div class="tags">
-              13 strokes.
-              
-                JLPT N2.
-              
-              
-                Taught in 8 grade
-              
-            </div>
-
-            <!-- Kanji and translation -->
-            <div class="kanji-entry left d-flex flex-row">
-              <a class="kanji-preview large black" href="/search?type=1&amp;search=跡">
-                跡
-              </a>
-              <div class="translation kanji">
-                tracks, mark, print, impression
-              </div>
-            </div>
-
-            <!-- Kun readings -->
-            
-              <div class="tags no-margin">Kun</div>
-              <div class="d-flex flex-row wrap noselect">
-                
-                  
-                  <a class="clickable no-align green" href="/search?type=1&amp;search=あと">あと</a>
-                
-              </div>
-            
-
-            <!-- On readings -->
-            
-              <div class="tags no-margin">On</div>
-              <div class="d-flex flex-row wrap noselect">
-                
-                  
-                  <a class="clickable no-align green" href="/search?type=1&amp;search=セキ">セキ</a>
-                
-              </div>
-            
-
-            <hr>
-          </div>
-        
-      
-        
-          <div>
-            <!-- Tags -->
-            <div class="tags">
-              10 strokes.
-              
-                JLPT N3.
-              
-              
-                Taught in 4 grade
-              
-            </div>
-
-            <!-- Kanji and translation -->
-            <div class="kanji-entry left d-flex flex-row">
-              <a class="kanji-preview large black" href="/search?type=1&amp;search=残">
-                残
-              </a>
-              <div class="translation kanji">
-                remainder, leftover, balance
-              </div>
-            </div>
-
-            <!-- Kun readings -->
-            
-              <div class="tags no-margin">Kun</div>
-              <div class="d-flex flex-row wrap noselect">
-                
-                  
-                  <a class="clickable no-align green" href="/search?type=1&amp;search=のこ.る">のこ.る</a>
-                
-                  
-                    <span class="tags no-margin fat right-padding-10">,</span>
-                  
-                  <a class="clickable no-align green" href="/search?type=1&amp;search=のこ.す">のこ.す</a>
-                
-                  
-                    <span class="tags no-margin fat right-padding-10">,</span>
-                  
-                  <a class="clickable no-align green" href="/search?type=1&amp;search=そこな.う">そこな.う</a>
-                
-                  
-                    <span class="tags no-margin fat right-padding-10">,</span>
-                  
-                  <a class="clickable no-align green" href="/search?type=1&amp;search=のこ.り">のこ.り</a>
-                
-              </div>
-            
-
-            <!-- On readings -->
-            
-              <div class="tags no-margin">On</div>
-              <div class="d-flex flex-row wrap noselect">
-                
-                  
-                  <a class="clickable no-align green" href="/search?type=1&amp;search=ザン">ザン</a>
-                
-                  
-                    <span class="tags no-margin fat right-padding-10">,</span>
-                  
-                  <a class="clickable no-align green" href="/search?type=1&amp;search=サン">サン</a>
-                
-              </div>
-            
-
-            <hr>
-          </div>
-        
-      
-        
-      
-        
-      
-    </div>
-  </div>
-
-            
-            
-          </div>
-        </div>
+         </div>
       </div>
-
-   
-
-</body>
-
+   </body>
 </html>
-
