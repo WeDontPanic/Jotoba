@@ -164,7 +164,13 @@ function createSchemeCode() {
 function parseSchemeCode() {
 
     // Get color code
-    let colorCode = $("#scheme_input").val();
+    let colorCode = $("#scheme_input").val().toUpperChase();
+
+    // Error check
+    if (colorCode.length % 6 !== 0) {
+        showMessage("error", "Please enter a valid code.");
+        return;
+    }
 
     // A string containing all hex values in a row
     let allHex = "";

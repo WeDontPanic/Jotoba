@@ -184,6 +184,10 @@ svg {
 }
 
 /* ----------------- Overlays ----------------- */
+.modal-content {
+    background-color: var(--overlay);
+}
+
 .inner-title {
     text-decoration: underline;
     font-size: 15px;
