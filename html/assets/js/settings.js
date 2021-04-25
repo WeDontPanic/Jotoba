@@ -163,10 +163,12 @@ function createSchemeCode() {
     $("#scheme_input").val(colorCode);
 }
 
-function parseSchemeCode() {
+function parseSchemeCode(colorCode) {
 
     // Get color code
-    let colorCode = $("#scheme_input").val().toUpperChase();
+    if (colorCode === undefined) {
+        colorCode = $("#scheme_input").val().toUpperCase();
+    }
 
     // Error check
     if (colorCode.length % 6 !== 0) {
