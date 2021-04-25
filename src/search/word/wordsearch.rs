@@ -336,7 +336,7 @@ pub fn merge_words_with_senses(
                 });
             }
 
-            word.senses = if include_english {
+            word.senses = if include_english || other.is_empty() {
                 english.into_iter().chain(other).collect_vec()
             } else {
                 other
