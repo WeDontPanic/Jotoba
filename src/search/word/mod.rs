@@ -17,7 +17,6 @@ use crate::{
     error::Error,
     japanese::JapaneseExt,
     models::{dict::Dict, kanji},
-    parse::jmdict::languages::Language,
     search::{
         query::{Query, QueryLang},
         SearchMode,
@@ -31,7 +30,7 @@ use self::result::WordResult;
 use super::{query::Form, utils};
 
 /// An in memory Cache for word search results
-static SEARCH_CACHE: Lazy<Mutex<SharedCache<String, WordResult>>> =
+static SEARCH_CACHE: Lazy<Mutex<SharedCache<u64, WordResult>>> =
     Lazy::new(|| Mutex::new(SharedCache::with_capacity(1000)));
 
 const MAX_KANJI_INFO_ITEMS: usize = 5;
@@ -107,7 +106,9 @@ impl<'a> Search<'a> {
 
         // Define basic search structure
         let mut word_search = WordSearch::new(self.db, &self.query.query);
-        word_search.with_language(Language::German);
+        word_search
+            .with_language(self.query.settings.user_lang)
+            .with_english_glosses(self.query.settings.show_english);
 
         // Perform the word search
 
@@ -160,8 +161,9 @@ impl<'a> Search<'a> {
 
         // TODO don't make exact search
         let mut wordresults = WordSearch::new(self.db, &self.query.query)
-            .with_language(Language::German)
+            .with_language(self.query.settings.user_lang)
             .with_case_insensitivity(true)
+            .with_english_glosses(self.query.settings.show_english)
             .with_mode(mode)
             .search_by_glosses()
             .await?;
@@ -239,7 +241,7 @@ impl<'a> Search<'a> {
         SEARCH_CACHE
             .lock()
             .await
-            .cache_get(&self.query.original_query.clone())
+            .cache_get(&self.query.get_hash())
             .map(|i| i.clone())
     }
 
@@ -247,6 +249,6 @@ impl<'a> Search<'a> {
         SEARCH_CACHE
             .lock()
             .await
-            .cache_set(self.query.original_query.clone(), result);
+            .cache_set(self.query.get_hash(), result);
     }
 }

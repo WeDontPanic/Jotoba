@@ -2,7 +2,7 @@ use serde::Deserialize;
 
 use crate::{japanese::JapaneseExt, utils};
 
-use super::query::{Form, KanjiReading, Query, QueryLang, Tag};
+use super::query::{Form, KanjiReading, Query, QueryLang, Tag, UserSettings};
 
 /// Represents a query
 pub struct QueryParser {
@@ -10,9 +10,10 @@ pub struct QueryParser {
     query: String,
     original_query: String,
     tags: Vec<Tag>,
+    user_settings: UserSettings,
 }
 
-#[derive(Deserialize, Debug, Copy, Clone, PartialEq)]
+#[derive(Deserialize, Debug, Copy, Clone, PartialEq, Hash)]
 pub enum QueryType {
     #[serde(rename = "1")]
     Kanji,
@@ -31,7 +32,7 @@ impl Default for QueryType {
 }
 
 impl QueryParser {
-    pub fn new(query: String, q_type: QueryType) -> QueryParser {
+    pub fn new(query: String, q_type: QueryType, user_settings: UserSettings) -> QueryParser {
         // Split query into the actual query and possibly available tags
         let (parsed_query, tags) = Self::partition_tags_query(&query);
         let parsed_query = Self::format_query(parsed_query);
@@ -41,6 +42,7 @@ impl QueryParser {
             query: parsed_query,
             original_query: query,
             tags,
+            user_settings,
         }
     }
 
@@ -70,6 +72,7 @@ impl QueryParser {
             tags: self.tags,
             query: self.query,
             original_query: self.original_query,
+            settings: self.user_settings,
         })
     }
 
@@ -155,37 +158,5 @@ impl QueryParser {
 
     fn format_kanji_reading(s: &str) -> String {
         s.replace('.', "").replace('-', "").replace(' ', "")
-    }
-}
-
-#[cfg(test)]
-mod test {
-    use super::*;
-
-    #[test]
-    fn test_partition_tags() {
-        let query = QueryParser::new("ashi #kanji".to_string(), QueryType::Words);
-
-        assert_eq!(query.query, "ashi".to_string());
-        assert_eq!(query.tags, vec![Tag::Kanji]);
-
-        let query = QueryParser::new("#kanji #adjective #ee #  #ea".to_string(), QueryType::Words);
-
-        assert_eq!(query.query, "".to_string());
-        assert_eq!(query.tags, vec![Tag::Kanji, Tag::Adjective]);
-    }
-
-    #[test]
-    fn test_kanji_reading_detection() {
-        let query = QueryParser::new("気 ケ".to_string(), QueryType::Words).parse();
-        assert!(query.is_some());
-        let query = query.unwrap();
-        assert_eq!(
-            query.form,
-            Form::KanjiReading(KanjiReading {
-                literal: '気',
-                reading: "ケ".to_string(),
-            })
-        );
     }
 }

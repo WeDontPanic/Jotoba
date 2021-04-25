@@ -1,10 +1,13 @@
-use actix_web::{web, HttpResponse};
+use std::str::FromStr;
+
+use actix_web::{web, HttpMessage, HttpRequest, HttpResponse};
 use serde::Deserialize;
 
 use crate::{
+    parse::jmdict::languages::Language,
     search::{
         self,
-        query::Query,
+        query::{Query, UserSettings},
         query_parser::{QueryParser, QueryType},
     },
     templates, DbPool,
@@ -36,22 +39,18 @@ impl QueryStruct {
     }
 }
 
-fn redirect_home() -> HttpResponse {
-    HttpResponse::MovedPermanently()
-        .header("Location", "/")
-        .finish()
-}
-
 /// Endpoint to perform a search
 pub async fn search(
     pool: web::Data<DbPool>,
     query_data: web::Query<QueryStruct>,
+    request: HttpRequest,
 ) -> Result<HttpResponse, actix_web::Error> {
     let query_data = query_data.adjust();
 
     let q_parser = QueryParser::new(
         query_data.query.clone().unwrap_or_default(),
         query_data.search_type.unwrap_or_default(),
+        parse_settings(&request),
     );
 
     let query = match q_parser.parse() {
@@ -144,4 +143,24 @@ async fn word_search(
         None,
         None,
     )))
+}
+
+fn redirect_home() -> HttpResponse {
+    HttpResponse::MovedPermanently()
+        .header("Location", "/")
+        .finish()
+}
+
+fn parse_settings(request: &HttpRequest) -> UserSettings {
+    UserSettings {
+        user_lang: request
+            .cookie("default_lang")
+            .and_then(|i| Language::from_str(i.value()).ok())
+            .unwrap_or_default(),
+        show_english: request
+            .cookie("show_english")
+            .and_then(|i| i.value().parse().ok())
+            .unwrap_or_else(|| UserSettings::default().show_english),
+        ..Default::default()
+    }
 }

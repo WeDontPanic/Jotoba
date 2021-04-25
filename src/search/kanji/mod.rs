@@ -12,7 +12,7 @@ use crate::{
 
 use super::query::Query;
 use diesel::sql_types::Text;
-use futures::future::join_all;
+use futures::future::try_join_all;
 use itertools::Itertools;
 use tokio_diesel::AsyncRunQueryDsl;
 
@@ -38,7 +38,7 @@ async fn by_literals(db: &DbPool, query: &Query) -> Result<Vec<Item>, Error> {
 
     // Order them by occurence in query
     items.sort_by(|a, b| utils::get_item_order(&kanji, &a.literal, &b.literal).unwrap());
-    to_item(db, items).await
+    to_item(db, items, &query).await
 }
 
 /// Find kanji by mits meaning
@@ -49,17 +49,17 @@ async fn by_meaning(db: &DbPool, query: &Query) -> Result<Vec<Item>, Error> {
         .await
         .unwrap();
 
-    let mut res = to_item(db, items).await?;
+    let mut res = to_item(db, items, &query).await?;
     res.sort_by(order::by_meaning);
     Ok(res)
 }
 
-async fn to_item(db: &DbPool, items: Vec<Kanji>) -> Result<Vec<Item>, Error> {
-    Ok(join_all(
+async fn to_item(db: &DbPool, items: Vec<Kanji>, query: &Query) -> Result<Vec<Item>, Error> {
+    Ok(try_join_all(
         items
             .into_iter()
-            .map(|i| Item::from_db(db, i))
+            .map(|i| Item::from_db(db, i, query.settings.user_lang, query.settings.show_english))
             .collect::<Vec<_>>(),
     )
-    .await)
+    .await?)
 }

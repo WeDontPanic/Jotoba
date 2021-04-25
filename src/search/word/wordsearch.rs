@@ -1,9 +1,12 @@
-use super::result::{Reading, Word};
+use super::result::{Reading, Sense, Word};
 
 use crate::{
     error::Error,
     models::{dict::Dict, sense},
-    parse::jmdict::{information::Information, languages::Language, priority::Priority},
+    parse::jmdict::{
+        information::Information, languages::Language, part_of_speech::PartOfSpeech,
+        priority::Priority,
+    },
     search::{Search, SearchMode},
     DbPool,
 };
@@ -21,6 +24,7 @@ pub struct WordSearch<'a> {
     language: Option<Language>,
     ignore_case: bool,
     kana_only: bool,
+    english_glosses: bool,
 }
 
 impl<'a> WordSearch<'a> {
@@ -31,6 +35,7 @@ impl<'a> WordSearch<'a> {
             language: None,
             ignore_case: false,
             kana_only: false,
+            english_glosses: true,
         }
     }
 
@@ -58,9 +63,15 @@ impl<'a> WordSearch<'a> {
         self
     }
 
-    /// Use a specific limit for the search
+    /// Only search for kana words
     pub fn with_kana_only(&mut self, kana_only: bool) -> &mut Self {
         self.kana_only = kana_only;
+        self
+    }
+
+    /// Use a specific limit for the search
+    pub fn with_english_glosses(&mut self, english_glosses: bool) -> &mut Self {
+        self.english_glosses = english_glosses;
         self
     }
 
@@ -72,7 +83,7 @@ impl<'a> WordSearch<'a> {
         // always search by a language.
         let lang = self.language.unwrap_or(Language::default());
 
-        Self::load_words_by_seq(&self.db, &seq_ids, lang).await
+        Self::load_words_by_seq(&self.db, &seq_ids, lang, self.english_glosses).await
     }
 
     /// Searches by native
@@ -83,11 +94,13 @@ impl<'a> WordSearch<'a> {
         // always search by a language.
         let lang = self.language.unwrap_or(Language::default());
 
-        Ok(Self::load_words_by_seq(&self.db, &seq_ids, lang)
-            .await?
-            .into_iter()
-            .filter(|i| self.post_search_check(&i))
-            .collect_vec())
+        Ok(
+            Self::load_words_by_seq(&self.db, &seq_ids, lang, self.english_glosses)
+                .await?
+                .into_iter()
+                .filter(|i| self.post_search_check(&i))
+                .collect_vec(),
+        )
     }
 
     fn post_search_check(&self, item: &Word) -> bool {
@@ -103,6 +116,7 @@ impl<'a> WordSearch<'a> {
         db: &DbPool,
         seq_ids: &Vec<i32>,
         lang: Language,
+        include_english: bool,
     ) -> Result<Vec<Word>, Error> {
         // Request Redings and Senses in parallel
         let (dicts, senses): (Vec<Dict>, Vec<sense::Sense>) = futures::try_join!(
@@ -113,7 +127,11 @@ impl<'a> WordSearch<'a> {
         let word_items = convert_dicts_to_words(dicts);
 
         //Self::load_readings(&db, &seq_ids),
-        Ok(merge_words_with_senses(word_items, senses))
+        Ok(merge_words_with_senses(
+            word_items,
+            senses,
+            include_english || lang == Language::default(),
+        ))
     }
 
     /// Find the sequence ids of the results to load
@@ -144,7 +162,7 @@ impl<'a> WordSearch<'a> {
 
         // Language filter
         let lang: i32 = self.language.unwrap_or_default().into();
-        if self.language.unwrap_or_default() == Language::English {
+        if self.is_default_language() || !self.english_glosses {
             filter.push_str(format!(" AND language = {}", lang).as_str());
         } else {
             filter.push_str(format!(" AND (language = {} or language = 1)", lang).as_str());
@@ -188,14 +206,20 @@ impl<'a> WordSearch<'a> {
         lang: Language,
     ) -> Result<Vec<sense::Sense>, Error> {
         use crate::schema::sense as sense_schema;
+        use diesel::dsl::sql;
+
+        let lang_i: i32 = lang.into();
+        let language = {
+            if lang == Language::default() {
+                format!(" language = {}", lang_i)
+            } else {
+                format!(" (language = {} or language = 1)", lang_i)
+            }
+        };
 
         Ok(sense_schema::table
             .filter(sense_schema::sequence.eq_any(sequence_ids))
-            .filter(
-                sense_schema::language
-                    .eq(lang)
-                    .or(sense_schema::language.eq(Language::default())),
-            )
+            .filter(sql(&language))
             .get_results_async(db)
             .await?)
     }
@@ -209,6 +233,15 @@ impl<'a> WordSearch<'a> {
             .order_by(dict_schema::id)
             .get_results_async(&db)
             .await?)
+    }
+
+    /// Returns true if the search will run against
+    /// the default language
+    fn is_default_language(&self) -> bool {
+        self.language
+            .map(|i| i == Language::default())
+            // No language selected => default
+            .unwrap_or(true)
     }
 }
 
@@ -262,12 +295,16 @@ pub fn convert_dicts_to_words(dicts: Vec<Dict>) -> Vec<Word> {
 }
 
 /// Merge word_items with its senses
-pub fn merge_words_with_senses(words: Vec<Word>, senses: Vec<sense::Sense>) -> Vec<Word> {
+pub fn merge_words_with_senses(
+    words: Vec<Word>,
+    senses: Vec<sense::Sense>,
+    include_english: bool,
+) -> Vec<Word> {
     // Map result into a usable word::Word an return it
     words
         .into_iter()
         .map(|mut word| {
-            word.senses = senses
+            let (english, mut other): (Vec<Sense>, Vec<Sense>) = senses
                 .iter()
                 .filter(|i| i.sequence == word.sequence)
                 .cloned()
@@ -275,10 +312,77 @@ pub fn merge_words_with_senses(words: Vec<Word>, senses: Vec<sense::Sense>) -> V
                 // Create a Vec<Sense> grouped by the gloss position
                 .group_by(|i| i.gloss_pos)
                 .into_iter()
-                .map(|(_, j)| j.collect_vec().into())
-                .collect_vec();
+                .map(|(_, j)| {
+                    let e: Sense = j.collect_vec().into();
+                    e
+                })
+                .partition(|i| i.language == Language::English);
+
+            // Set other's p_o_s items to the ones from english which are available in each sense
+            let unionized_pos = pos_unionized(&english);
+            if !unionized_pos.is_empty() {
+                other.iter_mut().for_each(|item| {
+                    for gloss in item.glosses.iter_mut() {
+                        gloss.part_of_speech = unionized_pos.clone();
+                    }
+                });
+            }
+
+            // Set other's misc items to the ones from english if they are all the same
+            if all_misc_same(&english) && !english.is_empty() && english[0].misc.is_some() {
+                let misc = english[0].misc;
+                other.iter_mut().for_each(|item| {
+                    item.misc = misc;
+                });
+            }
+
+            word.senses = if include_english {
+                english.into_iter().chain(other).collect_vec()
+            } else {
+                other
+            };
 
             word
         })
         .collect_vec()
+}
+
+/// Return true if all 'misc' items are of the same value
+fn all_misc_same(senses: &Vec<Sense>) -> bool {
+    if senses.is_empty() || senses[0].misc.is_none() {
+        return false;
+    }
+
+    let mut sense_iter = senses.iter();
+    let first_misc = sense_iter.next().unwrap().misc;
+
+    for i in sense_iter {
+        if i.misc != first_misc {
+            return false;
+        }
+    }
+
+    true
+}
+
+/// Return true if all 'part_of_speech' items are of the same value
+fn pos_unionized(senses: &Vec<Sense>) -> Vec<PartOfSpeech> {
+    if senses.is_empty()
+        || senses[0].glosses.is_empty()
+        || senses[0].glosses[0].part_of_speech.is_empty()
+    {
+        return vec![];
+    }
+
+    let mut sense_iter = senses.iter();
+    let mut pos = sense_iter.next().unwrap().glosses[0].part_of_speech.clone();
+
+    for i in sense_iter {
+        pos = crate::utils::union_elements(&pos, &i.glosses[0].part_of_speech)
+            .into_iter()
+            .cloned()
+            .collect_vec();
+    }
+
+    pos
 }

@@ -12,7 +12,6 @@ use crate::{
         dialect::Dialect, field::Field, gtype::GType, information::Information, misc::Misc,
         part_of_speech::PartOfSpeech, priority::Priority,
     },
-    utils,
 };
 
 #[derive(Debug, Clone, PartialEq)]
@@ -133,9 +132,11 @@ impl Word {
     pub fn glosses_pretty(&self) -> String {
         let senses = self.get_senses();
 
+        // Try to use glosses with users language
         if !senses[0].is_empty() {
             Self::pretty_print_senses(&senses[0])
         } else {
+            // Fallback use english gloses
             Self::pretty_print_senses(&senses[1])
         }
     }
@@ -189,29 +190,11 @@ impl Word {
 
     /// Get senses ordered by language (non-english first)
     pub fn get_senses(&self) -> Vec<Vec<Sense>> {
-        let (english, mut other): (Vec<Sense>, Vec<Sense>) = self
+        let (english, other): (Vec<Sense>, Vec<Sense>) = self
             .senses
             .clone()
             .into_iter()
             .partition(|i| i.language == Language::English);
-
-        // Set other's p_o_s items to the ones from english which are available in each sense
-        let unionized_pos = Self::pos_unionized(&english);
-        if !unionized_pos.is_empty() {
-            other.iter_mut().for_each(|item| {
-                for gloss in item.glosses.iter_mut() {
-                    gloss.part_of_speech = unionized_pos.clone();
-                }
-            });
-        }
-
-        // Set other's misc items to the ones from english if they are all the same
-        if Self::all_misc_same(&english) && !english.is_empty() && english[0].misc.is_some() {
-            let misc = english[0].misc;
-            other.iter_mut().for_each(|item| {
-                item.misc = misc;
-            });
-        }
 
         vec![other, english]
     }
@@ -227,58 +210,12 @@ impl Word {
         )
     }
 
-    /// Return true if all 'misc' items are of the same value
-    pub fn all_misc_same(senses: &Vec<Sense>) -> bool {
-        if senses.is_empty() || senses[0].misc.is_none() {
-            return false;
-        }
-
-        let mut sense_iter = senses.iter();
-        let first_misc = sense_iter.next().unwrap().misc;
-
-        for i in sense_iter {
-            if i.misc != first_misc {
-                return false;
-            }
-        }
-
-        true
-    }
-
-    /// Return true if all 'part_of_speech' items are of the same value
-    pub fn pos_unionized(senses: &Vec<Sense>) -> Vec<PartOfSpeech> {
-        if senses.is_empty()
-            || senses[0].glosses.is_empty()
-            || senses[0].glosses[0].part_of_speech.is_empty()
-        {
-            return vec![];
-        }
-
-        let mut sense_iter = senses.iter();
-        let mut pos = sense_iter.next().unwrap().glosses[0].part_of_speech.clone();
-
-        for i in sense_iter {
-            pos = utils::union_elements(&pos, &i.glosses[0].part_of_speech)
-                .into_iter()
-                .cloned()
-                .collect_vec();
-        }
-
-        pos
-    }
-
     /// Get amount of tags which will be displayed below the reading
     pub fn get_word_tag_count(&self) -> u8 {
-        let mut c = 0;
-        if self.is_common() {
-            c += 1;
-        }
-
-        if self.get_reading().jlpt_lvl.is_some() {
-            c += 1;
-        }
-
-        c
+        [self.is_common(), self.get_reading().jlpt_lvl.is_some()]
+            .iter()
+            .filter(|b| **b)
+            .count() as u8
     }
 
     /// Return true if item is a katakana word

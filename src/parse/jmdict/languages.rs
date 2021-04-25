@@ -12,27 +12,27 @@ use strum_macros::{AsRefStr, Display, EnumString};
 use crate::error;
 
 #[derive(
-    AsExpression, FromSqlRow, Debug, PartialEq, Clone, Copy, AsRefStr, EnumString, Display,
+    AsExpression, FromSqlRow, Debug, PartialEq, Clone, Copy, AsRefStr, EnumString, Display, Hash,
 )]
 #[sql_type = "Integer"]
 pub enum Language {
-    #[strum(serialize = "ger")]
+    #[strum(serialize = "ger", serialize = "de-DE")]
     German,
-    #[strum(serialize = "eng")]
+    #[strum(serialize = "eng", serialize = "en-US")]
     English,
-    #[strum(serialize = "rus")]
+    #[strum(serialize = "rus", serialize = "ru")]
     Russain,
-    #[strum(serialize = "spa")]
+    #[strum(serialize = "spa", serialize = "es-ES")]
     Spanish,
-    #[strum(serialize = "swe")]
+    #[strum(serialize = "swe", serialize = "sv-SE")]
     Swedish,
-    #[strum(serialize = "fre")]
+    #[strum(serialize = "fre", serialize = "fr-FR")]
     French,
-    #[strum(serialize = "dut")]
+    #[strum(serialize = "dut", serialize = "nl-NL")]
     Dutch,
-    #[strum(serialize = "hun")]
+    #[strum(serialize = "hun", serialize = "hu")]
     Hungarian,
-    #[strum(serialize = "slv")]
+    #[strum(serialize = "slv", serialize = "sl-SL")]
     Slovenian,
 }
 

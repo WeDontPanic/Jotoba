@@ -1,8 +1,31 @@
+use std::{
+    collections::hash_map::DefaultHasher,
+    hash::{Hash, Hasher},
+};
+
+use crate::parse::jmdict::languages::Language;
+
 use super::query_parser::QueryType;
+
+/// In-cookie saved personalized settings
+#[derive(Debug, Clone, Copy, PartialEq, Hash)]
+pub struct UserSettings {
+    pub user_lang: Language,
+    pub show_english: bool,
+}
+
+impl Default for UserSettings {
+    fn default() -> Self {
+        Self {
+            show_english: true,
+            user_lang: Language::default(),
+        }
+    }
+}
 
 /// A single user provided query in a
 /// parsed format
-#[derive(Debug, Clone, PartialEq, Default)]
+#[derive(Debug, Clone, PartialEq, Default, Hash)]
 pub struct Query {
     pub original_query: String,
     pub query: String,
@@ -10,10 +33,11 @@ pub struct Query {
     pub tags: Vec<Tag>,
     pub form: Form,
     pub language: QueryLang,
+    pub settings: UserSettings,
 }
 
 /// Hashtag based search tags
-#[derive(Debug, Clone, Copy, PartialEq)]
+#[derive(Debug, Clone, Copy, PartialEq, Hash)]
 pub enum Tag {
     // Word search
     Noun,
@@ -30,7 +54,7 @@ pub enum Tag {
 }
 
 /// The language of the query
-#[derive(Debug, Clone, Copy, PartialEq)]
+#[derive(Debug, Clone, Copy, PartialEq, Hash)]
 pub enum QueryLang {
     Japanese,
     Foreign,
@@ -38,7 +62,7 @@ pub enum QueryLang {
 }
 
 /// The form the query was provided in
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Hash)]
 pub enum Form {
     /// A single word was provided
     SingleWord,
@@ -51,7 +75,7 @@ pub enum Form {
 }
 
 /// A kanji-reading search
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Hash)]
 pub struct KanjiReading {
     /// The provided kanji literal
     pub literal: char,
@@ -102,5 +126,11 @@ impl Tag {
 impl Query {
     pub fn is_valid(&self) -> bool {
         !self.query.is_empty()
+    }
+
+    pub fn get_hash(&self) -> u64 {
+        let mut hash = DefaultHasher::new();
+        self.hash(&mut hash);
+        hash.finish()
     }
 }
