@@ -117,7 +117,9 @@ function setColorFromArray(array) {
             color = getCssValue(cssName);
         $('#'+id).val(color);
 
+        // Set Property and Cookie
         document.documentElement.style.setProperty(cssName, color);
+        Cookies.set(id, color);
     });
 
 }
