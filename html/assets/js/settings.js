@@ -2,6 +2,21 @@
  * This JS-File handles saving and loading from browser cookies
  */
 
+// Array containing all ids of color settings
+let colorIdentifiers = [
+    "background_value", "overlay_value", "primaryColor_value", "primaryColor_hover_value", "secondaryColor_value",
+    "primaryTextColor_value", "secondaryTextColor_value", "searchBackground_value", "searchTextColor_value", "tagColor_value", 
+    "scrollBG_value"
+];
+
+// Arrays for color coding
+let colorCodings = [
+    "0gú*+q", "1hó&-r", "2ií$%s", "3jté.M", "4ku~,N", "5lv\\§O", "6mw}/P", "7nx]:Q", "8oy[;R", "9pz{?S",
+    "AaG@)T", "BbH°(U", "CdI^_V", "DYJ´!W", "EeK'#X", "FfL=áZ",
+]
+
+/* ------------------------------------------------------------------- */
+
 // On load, get all the cookie's data
 loadCookieData();
 
@@ -66,19 +81,14 @@ function loadCookieData() {
     $('#show_eng_settings').prop('checked', false);
 
     // Load all Color Data
-    let colors = [
-        "background_value", "overlay_value", "primaryColor_value", "primaryColor_hover_value", "secondaryColor_value",
-        "primaryTextColor_value", "secondaryTextColor_value", "searchBackground_value", "searchTextColor_value", "tagColor_value", 
-        "scrollBG_value"
-    ];
-    setColorFromCookie(colors);
+    setColorFromCookie();
 }
 
 // Loads all colors form the cookie from a given array of identifiers
-function setColorFromCookie(identifiers) {
+function setColorFromCookie() {
 
     // Iterate all entries
-    identifiers.forEach(id => {
+    colorIdentifiers.forEach(id => {
         // Get the cookie's data
         let color = Cookies.get(id);
         let cssName = "--" + id.split("_value")[0]
@@ -91,4 +101,104 @@ function setColorFromCookie(identifiers) {
         document.documentElement.style.setProperty(cssName, color);
     });
 
+}
+
+// Loads all colors form the given array
+function setColorFromArray(array) {
+
+    // Iterate all entries
+    colorIdentifiers.forEach((id, index) => {
+        // Get the cookie's data
+        let color = array[index];
+        let cssName = "--" + id.split("_value")[0]
+
+        // Set all the Color informations
+        if (color === undefined)
+            color = getCssValue(cssName);
+        $('#'+id).val(color);
+
+        document.documentElement.style.setProperty(cssName, color);
+    });
+
+}
+
+// Calculates a code from all identifiers
+function createSchemeCode() {
+    let colorCode = "";
+
+    let currentNum = -1;
+    let count = 0;
+
+    // Iterate all entries
+    colorIdentifiers.forEach(id => {
+        let color = $('#'+id).val().substring(1);
+        console.log(color);
+        for (var i = 0; i < color.length; i++) {
+            
+            let num = hex2num_single(color.charAt(i))
+
+            // Count appearance time
+            if (currentNum == num) {
+                count++;
+            } else {
+                // Add to colorCode
+                if (currentNum !== -1) {
+                    colorCode += colorCodings[currentNum].charAt(count);
+                }
+                
+                currentNum = num;
+                count = 0;
+            }
+        }
+
+        if (count === 5) {
+            colorCode += colorCodings[currentNum].charAt(count);
+            currentNum = -1;
+            count = 0;
+        }
+    });
+
+    $("#scheme_input").val(colorCode);
+}
+
+function parseSchemeCode() {
+
+    // Get color code
+    let colorCode = $("#scheme_input").val();
+
+    // A string containing all hex values in a row
+    let allHex = "";
+
+    // Iterate the colorCode's parts
+    for (var i = 0; i < colorCode.length; i++) {    
+        // Find where the code appears in
+        let arrayIndex = -1;
+        let entryIndex = -1;
+        for (var j = 0; j < colorCodings.length; j++) {
+            entryIndex = colorCodings[j].indexOf(colorCode[i]);
+            if (entryIndex != -1) {
+                arrayIndex = j;
+                break;
+            }
+        }
+
+        // Code Error
+        if (arrayIndex === -1) {
+            showMessage("error", "Please enter a valid code.");
+            return;
+        }
+
+        // Add Hex
+        for (var j = 0; j <= entryIndex; j++) {
+            allHex += num2hex_single(arrayIndex);
+        }
+    }
+
+    // Parse Hex String into respective single ones
+    let parsedHex = [];
+    for (var i = 0; i < allHex.length; i += 6) {   
+        parsedHex.push("#"+allHex.substring(i, i+6));
+    }
+
+    setColorFromArray(parsedHex);
 }
