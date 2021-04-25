@@ -5,28 +5,29 @@
 // On load, get all the cookie's data
 loadCookieData();
 
-// Changes the Background Color
-function onSettingsChange_BackgroundColor(event) {
-    let color = "#f2f1f0";
-    if (event !== undefined)
-        color = event.target.value;
-    else 
-        $('#bg_col_settings').val(color);
+// Changes the color that the caller represents
+function onSettingsChange_Color(event) {
+    // Find the input div
+    let input = $(event.target.parentElement).children('input');
+    let id = input.attr("id");
+    let cssName = "--" + id.split("_value")[0];
+    let color = input[0].value;
 
-    Cookies.set('bg_color', color);
-    document.documentElement.style.setProperty('--background', color);
+    // Reset if clicked
+    if (event.target.classList.contains("clickable")) {
+        document.documentElement.style.removeProperty(cssName);
+        $(input[0]).val(getCssValue(cssName));
+    } else { // Set the selected color if not
+        document.documentElement.style.setProperty(cssName, color);
+    }
+
+    // Set the Cookie
+    Cookies.set(id, color);
 }
 
-// Changes the Primary Page Color (--green)
-function onSettingsChange_PrimaryColor(event) {
-    let color = "#34a83c";
-    if (event !== undefined)
-        color = event.target.value;
-    else 
-        $('#prim_col_settings').val(color);
-
-    Cookies.set('prim_color', color);
-    document.documentElement.style.setProperty('--primaryColor', color);
+// Returns the value of the given CSS-Variable's name
+function getCssValue(cssName) {
+    return  getComputedStyle(document.documentElement).getPropertyValue(cssName).trim();
 }
 
 // Changes the Default Language to search for
@@ -50,32 +51,44 @@ function showEnglish() {
 
 // Load the cookie's data into important stuff
 function loadCookieData() {
-    let bg_color = Cookies.get("bg_color");
-    let prim_color = Cookies.get("prim_color");
+    // Load search data
     let default_lang = Cookies.get("default_lang");
     let show_english = Cookies.get("show_english");
 
-    // Background
-    if (bg_color === undefined)
-        bg_color = "#f2f1f0";
-
-    $('#bg_col_settings').val(bg_color);
-    document.documentElement.style.setProperty('--background', bg_color);
-
-    // Primary 
-    if (prim_color === undefined)
-        prim_color = "#34a83c";
-
-    $('#prim_col_settings').val(prim_color);
-    document.documentElement.style.setProperty('--primaryColor', prim_color);
-
-    // Default_Lang 
+    // Set Default_Lang 
     if (default_lang !== undefined)
         $('#default_lang_settings').val(default_lang);
     else 
         $('#default_lang_settings').val(navigator.language);
 
-    // English results
+    // Set English results
     if (show_english === "false")
-        $('#show_eng_settings').prop('checked', false);
+    $('#show_eng_settings').prop('checked', false);
+
+    // Load all Color Data
+    let colors = [
+        "background_value", "overlay_value", "primaryColor_value", "primaryColor_hover_value", "secondaryColor_value",
+        "primaryTextColor_value", "secondaryTextColor_value", "searchBackground_value", "searchTextColor_value", "tagColor_value", 
+        "scrollBG_value"
+    ];
+    setColorFromCookie(colors);
+}
+
+// Loads all colors form the cookie from a given array of identifiers
+function setColorFromCookie(identifiers) {
+
+    // Iterate all entries
+    identifiers.forEach(id => {
+        // Get the cookie's data
+        let color = Cookies.get(id);
+        let cssName = "--" + id.split("_value")[0]
+
+        // Set all the Color informations
+        if (color === undefined)
+            color = getCssValue(cssName);
+        $('#'+id).val(color);
+
+        document.documentElement.style.setProperty(cssName, color);
+    });
+
 }
