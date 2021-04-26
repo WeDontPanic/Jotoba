@@ -17,18 +17,18 @@ $(document).on("keypress", (event) => {
 });
 
 // You might just unlock a secret
-var lastTenKeys = [];
+var lastKeys = [];
 var lastKeyDown = -1;
 $(document).on("keydown", (event) => {
     if (event.keyCode != lastKeyDown) {
         lastKeyDown = event.keyCode;
-        lastTenKeys.push(event.keyCode);
-        if (lastTenKeys.length == 9) {
-            lastTenKeys.shift();
+        lastKeys.push(event.keyCode);
+        if (lastKeys.length == 9) {
+            lastKeys.shift();
         }
     }
-    if (lastTenKeys.toString() === "38,40,37,39,37,39,66,65") {
-        parseSchemeCode("2023241F21232A8630338F4F384463D3CFC9E8E6E3181A1BB2ACA29D9488313537");
+    if (lastKeys.toString() === "38,40,37,39,37,39,66,65") {
+        parseSchemeCode("2023241F212362CF6Aj8F4F38k63D3CFC9E8E6E3181A1b2ACA29D94o313537");
     }
 });
 

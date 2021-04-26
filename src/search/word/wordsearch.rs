@@ -190,11 +190,6 @@ impl<'a> WordSearch<'a> {
             filter.push_str(format!(" AND (language = {} or language = 1)", lang).as_str());
         }
 
-        // Part of speech filter
-        if let Some(ref pos) = self.build_pos_filter() {
-            filter.push_str(format!(" AND {}", pos).as_str());
-        }
-
         // Limit
         if self.search.limit > 0 {
             filter.push_str(format!(" limit {}", self.search.limit).as_str());
@@ -271,10 +266,12 @@ impl<'a> WordSearch<'a> {
             .unwrap_or(true)
     }
 
+    /*
     /// Returns a sql query to filter out certain PartOfSpeech's if provided
     fn build_pos_filter(&self) -> Option<String> {
         self.p_o_s_filter.as_ref().map(|pos| {
             let mut filter = String::new();
+            filter.push_str("(");
             for (i, p) in pos.iter().enumerate() {
                 if i > 0 {
                     filter.push_str("AND");
@@ -286,7 +283,7 @@ impl<'a> WordSearch<'a> {
             filter.push_str(")");
             filter
         })
-    }
+    }*/
 }
 
 /// Convert dictionaries to Words
@@ -381,7 +378,7 @@ pub fn merge_words_with_senses(
                 });
             }
 
-            // filter further by pos in case sql did miss some
+            // filter words by part of speach if a filter was provided
             if let Some(pos_filter) = pos_filter {
                 if !has_pos(&other, pos_filter) && !has_pos(&english, pos_filter) {
                     return None;
