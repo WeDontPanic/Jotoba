@@ -4,7 +4,7 @@
 
 // Array containing all ids of color settings
 let colorIdentifiers = [
-    "background_value", "overlay_value", "primaryColor_value", "primaryColor_hover_value", "secondaryColor_value",
+    "background_value", "overlay_value", "primaryColor_value", "bgPrimaryColor_value", "secondaryColor_value",
     "primaryTextColor_value", "secondaryTextColor_value", "searchBackground_value", "searchTextColor_value", "tagColor_value", 
     "itemBG_value"
 ];
@@ -132,11 +132,14 @@ function setColorFromArray(array) {
 
 // Sets variables with (e.g.) lower opacity
 function setSpecialColorVars() {
+    let hexVal_itemBg = getComputedStyle(document.documentElement).getPropertyValue("--itemBG").trim();
+    let rgbVal_itemBg = hexToRgb(hexVal_itemBg);
+    document.documentElement.style.setProperty("--itemBG_075", "rgba("+rgbVal_itemBg.r+","+rgbVal_itemBg.g+","+rgbVal_itemBg.b+",0.75)");
 
-    let hexVal = getComputedStyle(document.documentElement).getPropertyValue("--itemBG").trim();
-    let rgbVal = hexToRgb(hexVal);
-    document.documentElement.style.setProperty("--itemBG_075", "rgba("+rgbVal.r+","+rgbVal.g+","+rgbVal.b+",0.75)");
-    console.log("rgba("+rgbVal.r+","+rgbVal.g+","+rgbVal.b+",0.75)");
+    let hexVal_lineColor = getComputedStyle(document.documentElement).getPropertyValue("--primaryTextColor").trim();
+    let rgbVal_lineColor = hexToRgb(hexVal_lineColor);
+    document.documentElement.style.setProperty("--lineColor", "rgba("+rgbVal_lineColor.r+","+rgbVal_lineColor.g+","+rgbVal_lineColor.b+",0.1)");
+
 }
 
 // Calculates a code from all identifiers
@@ -147,13 +150,11 @@ function createSchemeCode() {
     let count = 0;
 
     // Iterate all entries
-    colorIdentifiers.forEach(id => {
+    colorIdentifiers.forEach((id, index) => {
         let color = $('#'+id).val().substring(1);
-        console.log(color);
         for (var i = 0; i < color.length; i++) {
             
             let num = hex2num_single(color.charAt(i))
-
             // Count appearance time
             if (currentNum == num) {
                 count++;
@@ -162,12 +163,18 @@ function createSchemeCode() {
                 if (currentNum !== -1) {
                     colorCode += colorCodings[currentNum].charAt(count);
                 }
-                
+
                 currentNum = num;
                 count = 0;
             }
+
+            // Handle last element
+            if (index == colorIdentifiers.length - 1 && i == color.length - 1) {
+                colorCode += colorCodings[num].charAt(count);
+            }
         }
 
+        // Handle max counts
         if (count === 5) {
             colorCode += colorCodings[currentNum].charAt(count);
             currentNum = -1;
@@ -209,7 +216,6 @@ function parseSchemeCode(colorCode) {
 
         // Add Hex
         for (var j = 0; j <= entryIndex; j++) {
-            console.log("\t call", num2hex_single(arrayIndex));
             allHex += num2hex_single(arrayIndex);
         }
     }

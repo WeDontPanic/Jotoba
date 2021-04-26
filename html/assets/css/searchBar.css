@@ -166,7 +166,7 @@
       justify-content: space-between;
   -ms-flex-align: center;
       align-items: center;
-  box-shadow: 0px 8px 20px 0px rgba(0, 0, 0, 0.15);
+  box-shadow: 0px 8px 20px 0px var(--lineColor);
   border-radius: 3px;
 }
 
@@ -202,7 +202,7 @@
 
 .searchDivInner form .inner-form .input-field.first-wrap {
   width: 200px;
-  border-right: 1px solid rgba(0, 0, 0, 0.1);
+  border-right: 1px solid var(--lineColor);
 }
 
 .searchDivInner form .inner-form .input-field.first-wrap .choices__inner {
@@ -259,7 +259,7 @@
   border: 0;
   margin-top: 2px;
   border-radius: 4px;
-  box-shadow: 0px 8px 20px 0px rgba(0, 0, 0, 0.15);
+  box-shadow: 0px 8px 20px 0px var(--lineColor);
 }
 
 .searchDivInner form .inner-form .input-field.first-wrap .choices__list.choices__list--dropdown .choices__item--selectable {
@@ -290,7 +290,7 @@
   white-space: nowrap;
   border: 0;
   cursor: pointer;
-  background: var(--primaryColor);
+  background: var(--bgPrimaryColor);
   transition: all .2s ease-out, color .2s ease-out;
 }
 
@@ -299,7 +299,7 @@
 }
 
 .searchDivInner form .inner-form .input-field.third-wrap .btn-search:hover {
-  background: var(--primaryColor_hover);
+  background: var(--primaryColor);
 }
 
 .searchDivInner form .inner-form .input-field.third-wrap .btn-search:focus {

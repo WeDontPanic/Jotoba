@@ -1,10 +1,11 @@
 /* ----------------- Color Design ----------------- */
 :root {
+    /* Editable */
     --background: #f2f1f0;
     --overlay: #f3f3f3;
 
     --primaryColor: #34a83c;
-    --primaryColor_hover: #50c058;
+    --bgPrimaryColor: #50c058;
     --secondaryColor: #909dc0;
     
     --primaryTextColor: #222222;    
@@ -15,7 +16,11 @@
     
     --tagColor: #888888;
     --itemBG: #d3d3d3;
+
+    /* Special */
     --itemBG_075: rgb(211, 211, 211, 0.75);
+    --langSep: rgba(50,103,51,.1);
+    --lineColor: rgba(0,0,0,.1);
 }
 
 /* ----------------- Overall Page Adjustments ----------------- */
@@ -168,7 +173,7 @@ svg {
     position: absolute;
     width: 100%;
     height: max-content;
-    border: 2px solid lightgray;
+    border: 2px solid var(--itemBG);
     border-top: none;
     background-color: var(--overlay);
     box-shadow: 0px 8px 20px 0px rgb(0 0 0 / 25%);
@@ -185,6 +190,10 @@ svg {
 }
 
 /* ----------------- Overlays ----------------- */
+.modal-header {
+    border-bottom-color: var(--lineColor);
+}
+
 .modal-content {
     background-color: var(--overlay);
 }
@@ -206,11 +215,12 @@ svg {
     padding-left: 1%;
     display: inline;
     color: var(--primaryTextColor);
+    background: var(--searchBackground);
+    border-color: var(--lineColor);
 }
 
 .form-control.small:focus {
     box-shadow: unset;
-    border-color: rgb(206,212,218);
 }
 
 .hr-settings {
@@ -220,7 +230,7 @@ svg {
 }
 
 .vl-settings {
-    border-left: 1px solid rgba(0,0,0,.1);
+    border-left: 1px solid var(--lineColor);
     height: 100%;
     margin-right: 0.25rem;
 }
@@ -543,7 +553,7 @@ svg {
     width: 25px;
     height: 25px;
     border-radius: 50%; 
-    background: var(--primaryColor_hover);
+    background: var(--bgPrimaryColor);
     cursor: pointer;
 }
 
@@ -555,7 +565,7 @@ svg {
     width: 25px;
     height: 25px;
     border-radius: 50%;
-    background: var(--primaryColor_hover);
+    background: var(--bgPrimaryColor);
     cursor: pointer;
 }
 
@@ -564,11 +574,11 @@ svg {
 }
 
 .lang-separator {
-  border-top: 1px solid rgba(50,103,51,.1);
+  border-top: 1px solid var(--langSep);
   margin-left: 30px;
   margin-right: 30px;
 }
 
 .res-separator {
-  border-top: 2px solid rgba(0,0,0,.1);
+  border-top: 2px solid var(--lineColor);
 }
