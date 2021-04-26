@@ -1,6 +1,6 @@
 use std::path::Path;
 
-use crate::models::kanji::Kanji;
+use crate::{models::kanji::Kanji, parse::jmdict::part_of_speech::PosSimple};
 
 use crate::{japanese::JapaneseExt, parse::jmdict::languages::Language, utils::to_option};
 use itertools::Itertools;
@@ -78,6 +78,7 @@ pub struct Gloss {
     pub gloss: String,
     pub g_type: Option<GType>,
     pub part_of_speech: Vec<PartOfSpeech>,
+    pub pos_simple: Vec<PosSimple>,
 }
 
 impl From<Vec<DbSenseEntry>> for Sense {
@@ -97,6 +98,7 @@ impl From<Vec<DbSenseEntry>> for Sense {
                 .into_iter()
                 .map(|i| Gloss {
                     part_of_speech: i.part_of_speech.unwrap_or_default(),
+                    pos_simple: i.pos_simplified.unwrap_or_default(),
                     g_type: (*gtype),
                     gloss: i.gloss,
                 })
@@ -300,5 +302,14 @@ impl Sense {
             .iter()
             .map(|i| i.humanized())
             .join(", ")
+    }
+
+    // Get all pos_simple
+    pub fn get_pos_simple(&self) -> Vec<PosSimple> {
+        self.glosses
+            .iter()
+            .map(|i| i.pos_simple.to_owned())
+            .flatten()
+            .collect::<Vec<_>>()
     }
 }

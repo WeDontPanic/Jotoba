@@ -1,3 +1,5 @@
+CREATE EXTENSION pg_trgm;
+
 CREATE TABLE dict (
   id SERIAL PRIMARY KEY,
   sequence INTEGER NOT NULL,
@@ -25,11 +27,13 @@ CREATE TABLE sense (
   gtype INTEGER,
   field TEXT,
   information TEXT,
-  antonym TEXT
+  antonym TEXT,
+  pos_simplified INTEGER[]
 );
 CREATE INDEX index_seq_sense ON sense (sequence);
 CREATE INDEX index_gloss_sense ON sense (gloss text_pattern_ops);
 CREATE INDEX index_lang_sense ON sense (language);
+CREATE INDEX index_pos_simple_sense ON sense (pos_simplified);
 
 CREATE TABLE kanji (
   id SERIAL PRIMARY KEY,
@@ -120,7 +124,7 @@ $$
 LANGUAGE sql stable;
 
 CREATE OR REPLACE FUNCTION find_kanji_by_meaning(mea TEXT)
-  RETURNS set  "kanji" AS $$
+  RETURNS setof "kanji" AS $$
     select id, literal, meaning, grade, stroke_count, frequency, jlpt, variant, onyomi, kunyomi, chinese, korean_r, korean_h, natori, kun_dicts
   from (select *, unnest(meaning) m from kanji) x order by mea <-> m limit 4
   $$

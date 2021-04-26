@@ -59,6 +59,7 @@ table! {
         field -> Nullable<Text>,
         information -> Nullable<Text>,
         antonym -> Nullable<Text>,
+        pos_simplified -> Nullable<Array<Int4>>,
     }
 }
 

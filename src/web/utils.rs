@@ -15,5 +15,6 @@ pub fn sel_str(qs: &Option<&Query>, i: QueryType) -> String {
 
 /// Gets an owned String of the query
 pub fn get_query_str(qs: &Option<&Query>) -> String {
-    qs.map(|qs| qs.query.clone()).unwrap_or_default()
+    qs.map(|qs| qs.without_search_type_tags())
+        .unwrap_or_default()
 }

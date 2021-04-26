@@ -2,7 +2,7 @@ use serde::Deserialize;
 
 use crate::{japanese::JapaneseExt, utils};
 
-use super::query::{Form, KanjiReading, Query, QueryLang, Tag, UserSettings};
+use super::query::{Form, KanjiReading, Query, QueryLang, SearchTypeTag, Tag, UserSettings};
 
 /// Represents a query
 pub struct QueryParser {
@@ -83,13 +83,16 @@ impl QueryParser {
 
     /// Parses the QueryType based on the user selection and tags
     fn parse_query_type(&self) -> QueryType {
-        if self.tags.contains(&Tag::Kanji) {
+        if self.tags.contains(&Tag::SearchType(SearchTypeTag::Kanji)) {
             QueryType::Kanji
-        } else if self.tags.contains(&Tag::Word) {
+        } else if self.tags.contains(&Tag::SearchType(SearchTypeTag::Word)) {
             QueryType::Words
-        } else if self.tags.contains(&Tag::Sentence) {
+        } else if self
+            .tags
+            .contains(&Tag::SearchType(SearchTypeTag::Sentence))
+        {
             QueryType::Sentences
-        } else if self.tags.contains(&Tag::Name) {
+        } else if self.tags.contains(&Tag::SearchType(SearchTypeTag::Name)) {
             QueryType::Names
         } else {
             // No QueryType-Tag provided use

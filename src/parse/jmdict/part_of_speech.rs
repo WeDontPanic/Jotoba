@@ -8,11 +8,139 @@ use diesel::{
     deserialize,
     pg::Pg,
     serialize::{self, Output},
-    sql_types::Text,
+    sql_types::{Integer, Text},
     types::{FromSql, ToSql},
 };
 
 use crate::error;
+use strum_macros::EnumString;
+
+#[derive(AsExpression, FromSqlRow, Debug, PartialEq, Clone, Copy, Hash, EnumString)]
+#[sql_type = "Integer"]
+pub enum PosSimple {
+    #[strum(serialize = "adverb", serialize = "adv")]
+    Adverb,
+    #[strum(serialize = "auxilary", serialize = "aux")]
+    Auxilary,
+    #[strum(serialize = "conjungation", serialize = "conj")]
+    Conjungation,
+    #[strum(serialize = "noun", serialize = "n")]
+    Noun,
+    #[strum(serialize = "prefix", serialize = "pre")]
+    Prefix,
+    #[strum(serialize = "suffix", serialize = "suf")]
+    Suffix,
+    #[strum(serialize = "particle", serialize = "part")]
+    Particle,
+    #[strum(serialize = "sfx")]
+    SFX,
+    #[strum(serialize = "verb", serialize = "v")]
+    Verb,
+    #[strum(serialize = "adjective", serialize = "adj")]
+    Adjective,
+    #[strum(serialize = "counter", serialize = "count")]
+    Counter,
+    #[strum(serialize = "expression", serialize = "expr")]
+    Expr,
+    #[strum(serialize = "interjection", serialize = "inter")]
+    Interjection,
+    #[strum(serialize = "pronoun", serialize = "pron")]
+    Pronoun,
+    #[strum(serialize = "copula", serialize = "cop")]
+    Copula,
+    #[strum(serialize = "nummeric", serialize = "nr")]
+    Nummeric,
+    #[strum(serialize = "unclassified", serialize = "unc")]
+    Unclassified,
+}
+
+impl TryFrom<i32> for PosSimple {
+    type Error = error::Error;
+    fn try_from(i: i32) -> Result<Self, Self::Error> {
+        Ok(match i {
+            0 => Self::Adverb,
+            1 => Self::Auxilary,
+            2 => Self::Conjungation,
+            3 => Self::Noun,
+            4 => Self::Prefix,
+            5 => Self::Suffix,
+            6 => Self::Particle,
+            7 => Self::SFX,
+            8 => Self::Verb,
+            9 => Self::Adjective,
+            10 => Self::Counter,
+            11 => Self::Expr,
+            12 => Self::Interjection,
+            13 => Self::Pronoun,
+            14 => Self::Copula,
+            15 => Self::Nummeric,
+            16 => Self::Unclassified,
+            _ => return Err(error::Error::ParseError),
+        })
+    }
+}
+
+impl Into<i32> for PosSimple {
+    fn into(self) -> i32 {
+        match self {
+            Self::Adverb => 0,
+            Self::Auxilary => 1,
+            Self::Conjungation => 2,
+            Self::Noun => 3,
+            Self::Prefix => 4,
+            Self::Suffix => 5,
+            Self::Particle => 6,
+            Self::SFX => 7,
+            Self::Verb => 8,
+            Self::Adjective => 9,
+            Self::Counter => 10,
+            Self::Expr => 11,
+            Self::Interjection => 12,
+            Self::Pronoun => 13,
+            Self::Copula => 14,
+            Self::Nummeric => 15,
+            Self::Unclassified => 16,
+        }
+    }
+}
+
+impl From<PartOfSpeech> for PosSimple {
+    fn from(pos: PartOfSpeech) -> PosSimple {
+        match pos {
+            PartOfSpeech::Adjective(_) | PartOfSpeech::AuxilaryAdj => PosSimple::Adjective,
+            PartOfSpeech::Adverb | PartOfSpeech::AdverbTo => PosSimple::Adverb,
+            PartOfSpeech::Auxilary => PosSimple::Auxilary,
+            PartOfSpeech::Conjungation => PosSimple::Conjungation,
+            PartOfSpeech::Copula => PosSimple::Copula,
+            PartOfSpeech::Counter => PosSimple::Counter,
+            PartOfSpeech::Expr => PosSimple::Expr,
+            PartOfSpeech::Interjection => PosSimple::Interjection,
+            PartOfSpeech::Noun(_) => PosSimple::Noun,
+            PartOfSpeech::Nummeric => PosSimple::Nummeric,
+            PartOfSpeech::Pronoun => PosSimple::Pronoun,
+            PartOfSpeech::Prefix => PosSimple::Prefix,
+            PartOfSpeech::Suffix => PosSimple::Suffix,
+            PartOfSpeech::Particle => PosSimple::Particle,
+            PartOfSpeech::Unclassified => PosSimple::Unclassified,
+            PartOfSpeech::SFX => PosSimple::SFX,
+            PartOfSpeech::Verb(_) | PartOfSpeech::AuxilaryVerb => PosSimple::Verb,
+        }
+    }
+}
+
+impl ToSql<Integer, Pg> for PosSimple {
+    fn to_sql<W: Write>(&self, out: &mut Output<W, Pg>) -> serialize::Result {
+        <i32 as ToSql<Integer, Pg>>::to_sql(&(*self).into(), out)
+    }
+}
+
+impl FromSql<Integer, Pg> for PosSimple {
+    fn from_sql(bytes: Option<&[u8]>) -> deserialize::Result<Self> {
+        Ok(Self::try_from(<i32 as FromSql<Integer, Pg>>::from_sql(
+            bytes,
+        )?)?)
+    }
+}
 
 #[derive(AsExpression, FromSqlRow, Debug, PartialEq, Clone, Copy)]
 #[sql_type = "Text"]

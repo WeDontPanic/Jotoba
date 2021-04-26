@@ -3,8 +3,12 @@ use crate::{
     error::Error,
     parse::jmdict::Entry,
     parse::jmdict::{
-        dialect::Dialect, field::Field, gtype::GType, languages::Language, misc::Misc,
-        part_of_speech::PartOfSpeech,
+        dialect::Dialect,
+        field::Field,
+        gtype::GType,
+        languages::Language,
+        misc::Misc,
+        part_of_speech::{PartOfSpeech, PosSimple},
     },
     DbPool,
 };
@@ -26,6 +30,7 @@ pub struct Sense {
     pub field: Option<Field>,
     pub information: Option<String>,
     pub antonym: Option<String>,
+    pub pos_simplified: Option<Vec<PosSimple>>,
 }
 
 impl PartialEq for Sense {
@@ -49,6 +54,7 @@ pub struct NewSense {
     pub field: Option<Field>,
     pub information: Option<String>,
     pub antonym: Option<String>,
+    pub pos_simplified: Option<Vec<PosSimple>>,
 }
 
 /// Get all Database-dict structures from an entry
@@ -76,11 +82,17 @@ pub fn new_from_entry(entry: &Entry) -> Vec<NewSense> {
                     field: item.field,
                     antonym: item.antonym.clone(),
                     information: item.information.clone(),
+                    pos_simplified: (!item.part_of_speech.is_empty())
+                        .then(|| pos_simplified(&item.part_of_speech)),
                 })
                 .collect::<Vec<NewSense>>()
         })
         .flatten()
         .collect()
+}
+
+pub fn pos_simplified(pos: &[PartOfSpeech]) -> Vec<PosSimple> {
+    pos.iter().map(|i| (*i).into()).collect()
 }
 
 /// Returns Ok(true) if at least one sense exists in the Db

@@ -110,6 +110,10 @@ impl<'a> Search<'a> {
             .with_language(self.query.settings.user_lang)
             .with_english_glosses(self.query.settings.show_english);
 
+        if self.query.has_part_of_speech_tags() {
+            word_search.with_pos_filter(&self.query.get_part_of_speech_tags());
+        }
+
         // Perform the word search
 
         let mut wordresults =
@@ -160,13 +164,18 @@ impl<'a> Search<'a> {
         };
 
         // TODO don't make exact search
-        let mut wordresults = WordSearch::new(self.db, &self.query.query)
+        let mut word_search = WordSearch::new(self.db, &self.query.query);
+        word_search
             .with_language(self.query.settings.user_lang)
             .with_case_insensitivity(true)
             .with_english_glosses(self.query.settings.show_english)
-            .with_mode(mode)
-            .search_by_glosses()
-            .await?;
+            .with_mode(mode);
+
+        if self.query.has_part_of_speech_tags() {
+            word_search.with_pos_filter(&self.query.get_part_of_speech_tags());
+        }
+
+        let mut wordresults = word_search.search_by_glosses().await?;
 
         // Sort the results based
         GlossWordOrder::new(&self.query.query).sort(&mut wordresults);

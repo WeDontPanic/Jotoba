@@ -28,7 +28,7 @@ impl Item {
     ) -> Result<Self, Error> {
         let kun_dicts = k.kun_dicts.clone().unwrap_or_default();
 
-        let loaded_kd = WordSearch::load_words_by_seq(db, &kun_dicts, lang, show_english)
+        let loaded_kd = WordSearch::load_words_by_seq(db, &kun_dicts, lang, show_english, &None)
             .await?
             .into_iter()
             // Filter english items if user don't want to se them
