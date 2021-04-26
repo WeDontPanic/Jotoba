@@ -5,13 +5,14 @@
 @media only screen and (max-width: 600px) {
 	
     /* -------- Index -------- */
+   
     .circle {
         width: 1.25em;
         height: 1.25em;
         border-radius: 50%;
         font-size: 50px;
         text-align: center;
-        background: var(--scrollBG);
+        background-color: var(--itemBG_075);
         line-height: 110%;
         position: fixed;
         bottom: .5em;

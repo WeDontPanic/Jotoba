@@ -28,7 +28,7 @@ $(document).on("keydown", (event) => {
         }
     }
     if (lastTenKeys.toString() === "38,40,37,39,37,39,66,65") {
-        parseSchemeCode("2023241F21232A8630338F4F384463D3CFC9E8E6E3181A1BB2ACA29D9488313537");
+        parseSchemeCode("2023241F212362CF6Aj8F4F38k63D3CFC9E8E6E3181A1b2ACA29D94o313537");
     }
 });
 

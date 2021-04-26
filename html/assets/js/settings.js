@@ -6,7 +6,7 @@
 let colorIdentifiers = [
     "background_value", "overlay_value", "primaryColor_value", "primaryColor_hover_value", "secondaryColor_value",
     "primaryTextColor_value", "secondaryTextColor_value", "searchBackground_value", "searchTextColor_value", "tagColor_value", 
-    "scrollBG_value"
+    "itemBG_value"
 ];
 
 // Arrays for color coding
@@ -38,6 +38,7 @@ function onSettingsChange_Color(event) {
         Cookies.set(id, color);
     }
     
+    setSpecialColorVars();
 }
 
 // Returns the value of the given CSS-Variable's name
@@ -48,6 +49,9 @@ function getCssValue(cssName) {
 // Changes the Default Language to search for
 function onSettingsChange_DefaultLanguage(event) {
     Cookies.set('default_lang', event.target.value);
+    if (window.location.href.includes("/search")) {
+        location.reload();
+    }
 }
 
 // Changes whether english results should be shown
@@ -101,6 +105,7 @@ function setColorFromCookie() {
         document.documentElement.style.setProperty(cssName, color);
     });
 
+    setSpecialColorVars();
 }
 
 // Loads all colors form the given array
@@ -122,6 +127,16 @@ function setColorFromArray(array) {
         Cookies.set(id, color);
     });
 
+    setSpecialColorVars();
+}
+
+// Sets variables with (e.g.) lower opacity
+function setSpecialColorVars() {
+
+    let hexVal = getComputedStyle(document.documentElement).getPropertyValue("--itemBG").trim();
+    let rgbVal = hexToRgb(hexVal);
+    document.documentElement.style.setProperty("--itemBG_075", "rgba("+rgbVal.r+","+rgbVal.g+","+rgbVal.b+",0.75)");
+    console.log("rgba("+rgbVal.r+","+rgbVal.g+","+rgbVal.b+",0.75)");
 }
 
 // Calculates a code from all identifiers

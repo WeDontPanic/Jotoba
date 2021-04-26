@@ -14,7 +14,8 @@
     --searchTextColor: #555555;
     
     --tagColor: #888888;
-    --scrollBG: #d3d3d3;
+    --itemBG: #d3d3d3;
+    --itemBG_075: rgb(211, 211, 211, 0.75);
 }
 
 /* ----------------- Overall Page Adjustments ----------------- */
@@ -523,7 +524,7 @@ svg {
     width: 130px;
     height: 15px;
     border-radius: 10px;  
-    background: var(--scrollBG);
+    background: var(--itemBG);
     outline: none;
     opacity: 0.7;
     -webkit-transition: .2s;
