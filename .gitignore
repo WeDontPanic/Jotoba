@@ -6,4 +6,5 @@ out
 .env
 resources*
 ipadic/
+unidic/
 resources.tar.gz
