@@ -1,9 +1,12 @@
 use std::{
     collections::hash_map::DefaultHasher,
     hash::{Hash, Hasher},
+    str::FromStr,
 };
 
-use crate::parse::jmdict::languages::Language;
+use itertools::Itertools;
+
+use crate::parse::jmdict::{languages::Language, part_of_speech::PosSimple};
 
 use super::query_parser::QueryType;
 
@@ -38,19 +41,18 @@ pub struct Query {
 
 /// Hashtag based search tags
 #[derive(Debug, Clone, Copy, PartialEq, Hash)]
-pub enum Tag {
-    // Word search
-    Noun,
-    Adverb,
-    Sfx,
-    Verb,
-    Adjective,
-
-    // Search types
+pub enum SearchTypeTag {
     Kanji,
     Sentence,
     Name,
     Word,
+}
+
+/// Hashtag based search tags
+#[derive(Debug, Clone, Copy, PartialEq, Hash)]
+pub enum Tag {
+    SearchType(SearchTypeTag),
+    PartOfSpeech(PosSimple),
 }
 
 /// The language of the query
@@ -107,19 +109,51 @@ impl Default for QueryLang {
 impl Tag {
     // Parse a tag from a string
     pub fn from_str(s: &str) -> Option<Tag> {
-        Some(match s[1..].to_lowercase().as_str() {
-            "noun" | "nouns" | "n" => Self::Noun,
-            "adverb" | "adverbs" | "adv" => Self::Adverb,
-            "sfx" | "s" => Self::Sfx,
-            "verb" | "verbs" | "v" => Self::Verb,
-            "adjective" | "adj" | "adjectives" => Self::Adjective,
+        Some(if let Some(tag) = Self::parse_search_type(s) {
+            tag
+        } else {
+            match PosSimple::from_str(&s[1..]) {
+                Ok(pos) => Self::PartOfSpeech(pos),
+                Err(_) => return None,
+            }
+        })
+    }
 
-            "kanji" => Self::Kanji,
-            "sentence" | "sentences" => Self::Sentence,
-            "name" | "names" => Self::Name,
-            "word" | "words" => Self::Word,
+    /// Parse only search type
+    pub fn parse_search_type(s: &str) -> Option<Tag> {
+        Some(match s[1..].to_lowercase().as_str() {
+            "kanji" => Self::SearchType(SearchTypeTag::Kanji),
+            "sentence" | "sentences" => Self::SearchType(SearchTypeTag::Sentence),
+            "name" | "names" => Self::SearchType(SearchTypeTag::Name),
+            "word" | "words" => Self::SearchType(SearchTypeTag::Word),
             _ => return None,
         })
+    }
+
+    /// Returns `true` if the tag is [`SearchType`].
+    pub fn is_search_type(&self) -> bool {
+        matches!(self, Self::SearchType(..))
+    }
+
+    /// Returns `true` if the tag is [`PartOfSpeech`].
+    pub fn is_part_of_speech(&self) -> bool {
+        matches!(self, Self::PartOfSpeech(..))
+    }
+
+    pub fn as_search_type(&self) -> Option<&SearchTypeTag> {
+        if let Self::SearchType(v) = self {
+            Some(v)
+        } else {
+            None
+        }
+    }
+
+    pub fn as_part_of_speech(&self) -> Option<&PosSimple> {
+        if let Self::PartOfSpeech(v) = self {
+            Some(v)
+        } else {
+            None
+        }
     }
 }
 
@@ -132,5 +166,44 @@ impl Query {
         let mut hash = DefaultHasher::new();
         self.hash(&mut hash);
         hash.finish()
+    }
+
+    /// Returns true if the query has at least one pos tag
+    pub fn has_part_of_speech_tags(&self) -> bool {
+        !self.get_part_of_speech_tags().is_empty()
+    }
+
+    /// Returns all search type tags
+    pub fn get_search_type_tags(&self) -> Vec<SearchTypeTag> {
+        self.tags
+            .iter()
+            .filter(|i| i.is_search_type())
+            .map(|i| i.as_search_type().unwrap())
+            .copied()
+            .collect()
+    }
+
+    /// Returns all PosSimple tags
+    pub fn get_part_of_speech_tags(&self) -> Vec<PosSimple> {
+        self.tags
+            .iter()
+            .filter(|i| i.is_part_of_speech())
+            .map(|i| i.as_part_of_speech().unwrap())
+            .copied()
+            .collect()
+    }
+
+    /// Returns the original_query with search type tags omitted
+    pub fn without_search_type_tags(&self) -> String {
+        self.original_query
+            .clone()
+            .split(" ")
+            .into_iter()
+            .filter(|i| {
+                // Filter out all search type tags
+                (i.starts_with("#") && Tag::parse_search_type(i).is_none()) || !i.starts_with("#")
+            })
+            .join(" ")
+            .to_owned()
     }
 }

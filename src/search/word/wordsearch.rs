@@ -4,7 +4,9 @@ use crate::{
     error::Error,
     models::{dict::Dict, sense},
     parse::jmdict::{
-        information::Information, languages::Language, part_of_speech::PartOfSpeech,
+        information::Information,
+        languages::Language,
+        part_of_speech::{PartOfSpeech, PosSimple},
         priority::Priority,
     },
     search::{Search, SearchMode},
@@ -25,6 +27,7 @@ pub struct WordSearch<'a> {
     ignore_case: bool,
     kana_only: bool,
     english_glosses: bool,
+    p_o_s_filter: Option<Vec<PosSimple>>,
 }
 
 impl<'a> WordSearch<'a> {
@@ -36,6 +39,7 @@ impl<'a> WordSearch<'a> {
             ignore_case: false,
             kana_only: false,
             english_glosses: true,
+            p_o_s_filter: None,
         }
     }
 
@@ -75,6 +79,14 @@ impl<'a> WordSearch<'a> {
         self
     }
 
+    /// Use part of speech filtetr
+    pub fn with_pos_filter(&mut self, filter: &[PosSimple]) -> &mut Self {
+        if !filter.is_empty() {
+            self.p_o_s_filter = Some(filter.iter().copied().collect_vec());
+        }
+        self
+    }
+
     /// Searches by translations
     pub async fn search_by_glosses(&mut self) -> Result<Vec<Word>, Error> {
         // Load sequence ids to display
@@ -83,7 +95,14 @@ impl<'a> WordSearch<'a> {
         // always search by a language.
         let lang = self.language.unwrap_or(Language::default());
 
-        Self::load_words_by_seq(&self.db, &seq_ids, lang, self.english_glosses).await
+        Self::load_words_by_seq(
+            &self.db,
+            &seq_ids,
+            lang,
+            self.english_glosses,
+            &self.p_o_s_filter,
+        )
+        .await
     }
 
     /// Searches by native
@@ -94,21 +113,25 @@ impl<'a> WordSearch<'a> {
         // always search by a language.
         let lang = self.language.unwrap_or(Language::default());
 
-        Ok(
-            Self::load_words_by_seq(&self.db, &seq_ids, lang, self.english_glosses)
-                .await?
-                .into_iter()
-                .filter(|i| self.post_search_check(&i))
-                .collect_vec(),
+        Ok(Self::load_words_by_seq(
+            &self.db,
+            &seq_ids,
+            lang,
+            self.english_glosses,
+            &self.p_o_s_filter,
         )
+        .await?
+        .into_iter()
+        .filter(|i| self.post_search_check(&i))
+        .collect_vec())
     }
 
     fn post_search_check(&self, item: &Word) -> bool {
         if self.kana_only && item.reading.kanji.is_some() {
-            false
-        } else {
-            true
+            return false;
         }
+
+        true
     }
 
     /// Get search results of seq_ids
@@ -117,6 +140,7 @@ impl<'a> WordSearch<'a> {
         seq_ids: &Vec<i32>,
         lang: Language,
         include_english: bool,
+        pos_filter: &Option<Vec<PosSimple>>,
     ) -> Result<Vec<Word>, Error> {
         // Request Redings and Senses in parallel
         let (dicts, senses): (Vec<Dict>, Vec<sense::Sense>) = futures::try_join!(
@@ -131,22 +155,20 @@ impl<'a> WordSearch<'a> {
             word_items,
             senses,
             include_english || lang == Language::default(),
+            pos_filter,
         ))
     }
 
     /// Find the sequence ids of the results to load
     async fn get_sequence_ids_by_glosses(&mut self) -> Result<Vec<i32>, Error> {
         use crate::schema::sense::dsl::*;
-
-        let query = {
-            if self.ignore_case {
-                self.search.query.to_lowercase()
-            } else {
-                self.search.query.to_string()
-            }
-        };
-
         use diesel::dsl::sql;
+
+        let query = if self.ignore_case {
+            self.search.query.to_lowercase()
+        } else {
+            self.search.query.to_string()
+        };
 
         // Since boxed queries don't work with tokio-diesel
         // this has to be done. If #20 gets resolved, change this !!
@@ -166,6 +188,11 @@ impl<'a> WordSearch<'a> {
             filter.push_str(format!(" AND language = {}", lang).as_str());
         } else {
             filter.push_str(format!(" AND (language = {} or language = 1)", lang).as_str());
+        }
+
+        // Part of speech filter
+        if let Some(ref pos) = self.build_pos_filter() {
+            filter.push_str(format!(" AND {}", pos).as_str());
         }
 
         // Limit
@@ -243,6 +270,23 @@ impl<'a> WordSearch<'a> {
             // No language selected => default
             .unwrap_or(true)
     }
+
+    /// Returns a sql query to filter out certain PartOfSpeech's if provided
+    fn build_pos_filter(&self) -> Option<String> {
+        self.p_o_s_filter.as_ref().map(|pos| {
+            let mut filter = String::new();
+            for (i, p) in pos.iter().enumerate() {
+                if i > 0 {
+                    filter.push_str("AND");
+                }
+                let ipos: i32 = (*p).into();
+                filter.push_str(format!(" {}=ANY(pos_simplified) ", ipos).as_str());
+            }
+
+            filter.push_str(")");
+            filter
+        })
+    }
 }
 
 /// Convert dictionaries to Words
@@ -299,11 +343,12 @@ pub fn merge_words_with_senses(
     words: Vec<Word>,
     senses: Vec<sense::Sense>,
     include_english: bool,
+    pos_filter: &Option<Vec<PosSimple>>,
 ) -> Vec<Word> {
     // Map result into a usable word::Word an return it
     words
         .into_iter()
-        .map(|mut word| {
+        .filter_map(|mut word| {
             let (english, mut other): (Vec<Sense>, Vec<Sense>) = senses
                 .iter()
                 .filter(|i| i.sequence == word.sequence)
@@ -336,15 +381,35 @@ pub fn merge_words_with_senses(
                 });
             }
 
+            // filter further by pos in case sql did miss some
+            if let Some(pos_filter) = pos_filter {
+                if !has_pos(&other, pos_filter) && !has_pos(&english, pos_filter) {
+                    return None;
+                }
+            }
+
             word.senses = if include_english || other.is_empty() {
                 english.into_iter().chain(other).collect_vec()
             } else {
                 other
             };
 
-            word
+            Some(word)
         })
         .collect_vec()
+}
+
+/// Returns true if a vec of senses has at least one Pos provided by the filter
+fn has_pos(senses: &Vec<Sense>, pos_filter: &Vec<PosSimple>) -> bool {
+    for sense in senses.iter() {
+        for p in sense.get_pos_simple() {
+            if pos_filter.contains(&p) {
+                return true;
+            }
+        }
+    }
+
+    false
 }
 
 /// Return true if all 'misc' items are of the same value
