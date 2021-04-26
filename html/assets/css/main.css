@@ -509,9 +509,9 @@ input[type="color"] {
 }
 
 .draw2 {
-    stroke-dasharray: 100;
-    stroke-dashoffset: 100;
-    animation: dash2 1s linear forwards;
+    stroke-dasharray: 1000;
+    stroke-dashoffset: 1000;
+    animation: dash2 10s linear forwards;
 }
 
 .kanjisvg:hover {

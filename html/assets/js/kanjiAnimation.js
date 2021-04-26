@@ -1,5 +1,5 @@
 /**
- * This JS-File implements the Speech to Text functionality for text input
+ * This JS-File implements the Kanji Animation
  */
 
 // Restarts the animation of the kanji strokes
@@ -14,7 +14,7 @@ function restartAnimation(target, delayMultiplier) {
 
         // Set Animation
         elm.style.animationDelay = (i * 0.8 * 1 / delayMultiplier) + "s";
-        elm.style.animationDuration = (1 / ((i + 1) * delayMultiplier)) + "s";
+        elm.style.animationDuration = ((1 / ((i + 1) * delayMultiplier))*10)+ "s";
 
         // Replace old svg with new one; restarting the animation
         var newone = elm.cloneNode(true);
