@@ -1,17 +1,20 @@
 /* ----------------- Color Design ----------------- */
 :root {
     --background: #f2f1f0;
-    --backgroundHighlight: #f3f3f3;
+    --overlay: #f3f3f3;
 
     --primaryColor: #34a83c;
+    --primaryColor_hover: #50c058;
     --secondaryColor: #909dc0;
     
-    --currentColor: rgb(102,102,102);
-    --primaryTextColor: #222;    
-    --secondaryTextColor: #fff;
+    --primaryTextColor: #222222;    
+    --secondaryTextColor: #ffffff;
 
-    --searchTextcolor: #555;
-    --tagColor: #888;
+    --searchBackground: #ffffff;
+    --searchTextColor: #555555;
+    
+    --tagColor: #888888;
+    --scrollBG: #d3d3d3;
 }
 
 /* ----------------- Overall Page Adjustments ----------------- */
@@ -44,7 +47,7 @@ body {
 }
 
 .vl {
-    border-left: 1px solid var(--currentColor);
+    border-left: 1px solid var(--searchTextColor);
 }
 
 h3 {
@@ -55,7 +58,7 @@ h3 {
 
 h4 {
     font-size: 11px;
-    color: var(--currentColor);
+    color: var(--searchTextColor);
     margin: 2px 0 0 0;
 }
 
@@ -94,6 +97,10 @@ h4 {
     text-align: unset;
 }
 
+.top-padding-05-rem {
+    padding-top: 0.5rem
+}
+
 .right-padding-10 {
     padding-right: 10px;
 }
@@ -124,7 +131,7 @@ a:hover {
 }
 
 svg {
-    fill: var(--currentColor);
+    fill: var(--searchTextColor);
 }
 
 .d-flex.center {
@@ -162,7 +169,7 @@ svg {
     height: max-content;
     border: 2px solid lightgray;
     border-top: none;
-    background-color: var(--backgroundHighlight);
+    background-color: var(--overlay);
     box-shadow: 0px 8px 20px 0px rgb(0 0 0 / 25%);
 }
 
@@ -177,10 +184,44 @@ svg {
 }
 
 /* ----------------- Overlays ----------------- */
+.modal-content {
+    background-color: var(--overlay);
+}
+
 .inner-title {
     text-decoration: underline;
     font-size: 15px;
     font-weight: bold;
+}
+
+#default_lang_settings {
+    margin-top: 0.25rem !important;
+}
+
+.form-control.small {
+    width: 100%;
+    height: 20px;
+    padding: 0;
+    padding-left: 1%;
+    display: inline;
+    color: var(--primaryTextColor);
+}
+
+.form-control.small:focus {
+    box-shadow: unset;
+    border-color: rgb(206,212,218);
+}
+
+.hr-settings {
+    width: 100%;
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.vl-settings {
+    border-left: 1px solid rgba(0,0,0,.1);
+    height: 100%;
+    margin-right: 0.25rem;
 }
 
 /* ----------------- Main Page container ----------------- */
@@ -482,7 +523,7 @@ svg {
     width: 130px;
     height: 15px;
     border-radius: 10px;  
-    background: #d3d3d3;
+    background: var(--scrollBG);
     outline: none;
     opacity: 0.7;
     -webkit-transition: .2s;
@@ -501,15 +542,24 @@ svg {
     width: 25px;
     height: 25px;
     border-radius: 50%; 
-    background: #4CAF50;
+    background: var(--primaryColor_hover);
     cursor: pointer;
 }
+
+.slider::-webkit-slider-thumb:hover {
+    background-color: var(--primaryColor);
+}
+
 .slider::-moz-range-thumb {
     width: 25px;
-     height: 25px;
+    height: 25px;
     border-radius: 50%;
-    background: #4CAF50;
+    background: var(--primaryColor_hover);
     cursor: pointer;
+}
+
+.slider::-moz-range-thumb:hover {
+    background-color: var(--primaryColor);
 }
 
 .lang-separator {

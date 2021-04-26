@@ -16,6 +16,22 @@ $(document).on("keypress", (event) => {
     }  
 });
 
+// You might just unlock a secret
+var lastTenKeys = [];
+var lastKeyDown = -1;
+$(document).on("keydown", (event) => {
+    if (event.keyCode != lastKeyDown) {
+        lastKeyDown = event.keyCode;
+        lastTenKeys.push(event.keyCode);
+        if (lastTenKeys.length == 9) {
+            lastTenKeys.shift();
+        }
+    }
+    if (lastTenKeys.toString() === "38,40,37,39,37,39,66,65") {
+        parseSchemeCode("F2F1F0F3F3F3f*50C058909DC0sZZORD3D3D");
+    }
+});
+
 // Copies Furigana to clipboard on click
 $('.furigana-kanji-container > .furigana-preview').on("click", (event) => {
     showMessage("success", "furigana copied to clipboard.");
