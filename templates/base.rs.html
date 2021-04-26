@@ -148,68 +148,74 @@
                      <br>
                      <span class="inner-title">Select color scheme</span>
                      <div class="d-flex flex-column top-padding-05-rem">
-                        <div>
-                           <span>background:</span>
-                           <input id="background_value" type="color" value="#f2f1f0" style="margin-left: 1px" onchange='onSettingsChange_Color(event)'/>
-                           <span onclick='onSettingsChange_Color(event)' class="clickable ">reset</span>
-                        </div>
-                        <div>
-                           <span>overlay:</span>
-                           <input id="overlay_value" type="color" value="#f3f3f3" style="margin-left: 33px;"  onchange='onSettingsChange_Color(event)'/>
-                           <span onclick='onSettingsChange_Color(event)' class="clickable ">reset</span>
+                        <div class="d-flex flex-row">
+                           <span class="colorLbl">Use theme:</span>  
+                           <span onclick='parseSchemeCode("F2F1F0F3F3Fj4A83C50C058909DC0sZZORD3D3D3");' class="clickable" style="padding-right: 0.5em;">Light</span>
+                           <span onclick='parseSchemeCode("2023241F212362CF6A2A863038k63D3CFC9E8E6E3181A1b2ACA29D94o313531");' class="clickable">Dark</span>
                         </div>
                         <hr class="hr-settings"/>
-                        <div>
-                           <span>primary:</span>
-                           <input id="primaryColor_value" type="color" value="#34a83c" style="margin-left: 31px;" onchange='onSettingsChange_Color(event)'/>
-                           <span onclick='onSettingsChange_Color(event)' class="clickable ">reset</span>
+                        <div class="d-flex flex-row">
+                           <span class="colorLbl">background:</span>
+                           <input id="background_value" type="color" value="#f2f1f0"  onchange='onSettingsChange_Color(event)'/>
+                           <span onclick='onSettingsChange_Color(event)' class="clickable">reset</span>
                         </div>
-                        <div> 
-                           <span>primHover:</span>
-                           <input id="bgPrimaryColor_value" type="color" value="#50c058"  style="margin-left: 11px" onchange='onSettingsChange_Color(event)'/>
-                           <span onclick='onSettingsChange_Color(event)' class="clickable ">reset</span>
-                        </div>
-                        <div> 
-                           <span>secondary:</span>
-                           <input id="secondaryColor_value" type="color" value="#909dc0" style="margin-left: 11px" onchange='onSettingsChange_Color(event)'/>
-                           <span onclick='onSettingsChange_Color(event)' class="clickable ">reset</span>
+                        <div class="d-flex flex-row">
+                           <span class="colorLbl">overlay:</span>
+                           <input id="overlay_value" type="color" value="#f3f3f3" onchange='onSettingsChange_Color(event)'/>
+                           <span onclick='onSettingsChange_Color(event)' class="clickable">reset</span>
                         </div>
                         <hr class="hr-settings"/>
-                        <div> 
-                           <span>text:</span>
-                           <input id="primaryTextColor_value" type="color" value="#909dc0" style="margin-left: 59px" onchange='onSettingsChange_Color(event)'/>
-                           <span onclick='onSettingsChange_Color(event)' class="clickable ">reset</span>
+                        <div class="d-flex flex-row">
+                           <span class="colorLbl">primary:</span>
+                           <input id="primaryColor_value" type="color" value="#34a83c" onchange='onSettingsChange_Color(event)'/>
+                           <span onclick='onSettingsChange_Color(event)' class="clickable">reset</span>
                         </div>
-                        <div> 
-                           <span>overlayText:</span>
-                           <input id="secondaryTextColor_value" type="color" value="#909dc0" style="margin-left: 4px" onchange='onSettingsChange_Color(event)'/>
-                           <span onclick='onSettingsChange_Color(event)' class="clickable ">reset</span>
+                        <div class="d-flex flex-row"> 
+                           <span class="colorLbl">primHover:</span>
+                           <input id="bgPrimaryColor_value" type="color" value="#50c058" onchange='onSettingsChange_Color(event)'/>
+                           <span onclick='onSettingsChange_Color(event)' class="clickable">reset</span>
                         </div>
-                        <hr class="hr-settings"/>
-                        <div>
-                           <span>searchBG:</span>
-                           <input id="searchBackground_value" type="color" value="#909dc0" style="margin-left: 13px" onchange='onSettingsChange_Color(event)'/>
-                           <span onclick='onSettingsChange_Color(event)' class="clickable ">reset</span>
-                        </div>
-                        <div>
-                           <span>searchText:</span>
-                           <input id="searchTextColor_value" type="color" value="#909dc0" style="margin-left: 7px" onchange='onSettingsChange_Color(event)'/>
-                           <span onclick='onSettingsChange_Color(event)' class="clickable ">reset</span>
+                        <div class="d-flex flex-row"> 
+                           <span class="colorLbl">secondary:</span>
+                           <input id="secondaryColor_value" type="color" value="#909dc0" onchange='onSettingsChange_Color(event)'/>
+                           <span onclick='onSettingsChange_Color(event)' class="clickable">reset</span>
                         </div>
                         <hr class="hr-settings"/>
-                        <div>
-                           <span>tags:</span>
-                           <input id="tagColor_value" type="color" value="#909dc0" style="margin-left: 54px" onchange='onSettingsChange_Color(event)'/>
-                           <span onclick='onSettingsChange_Color(event)' class="clickable ">reset</span>
+                        <div class="d-flex flex-row"> 
+                           <span class="colorLbl">text:</span>
+                           <input id="primaryTextColor_value" type="color" value="#909dc0" onchange='onSettingsChange_Color(event)'/>
+                           <span onclick='onSettingsChange_Color(event)' class="clickable">reset</span>
                         </div>
-                        <div> 
-                           <span>itemBG:</span>
-                           <input id="itemBG_value" type="color" value="#909dc0" style="margin-left: 31px" onchange='onSettingsChange_Color(event)'/>
-                           <span onclick='onSettingsChange_Color(event)' class="clickable ">reset</span>
+                        <div class="d-flex flex-row"> 
+                           <span class="colorLbl">overlayText:</span>
+                           <input id="secondaryTextColor_value" type="color" value="#909dc0" onchange='onSettingsChange_Color(event)'/>
+                           <span onclick='onSettingsChange_Color(event)' class="clickable">reset</span>
+                        </div>
+                        <hr class="hr-settings"/>
+                        <div class="d-flex flex-row">
+                           <span class="colorLbl">searchBG:</span>
+                           <input id="searchBackground_value" type="color" value="#909dc0" onchange='onSettingsChange_Color(event)'/>
+                           <span onclick='onSettingsChange_Color(event)' class="clickable">reset</span>
+                        </div>
+                        <div class="d-flex flex-row">
+                           <span class="colorLbl">searchText:</span>
+                           <input id="searchTextColor_value" type="color" value="#909dc0" onchange='onSettingsChange_Color(event)'/>
+                           <span onclick='onSettingsChange_Color(event)' class="clickable">reset</span>
+                        </div>
+                        <hr class="hr-settings"/>
+                        <div class="d-flex flex-row">
+                           <span class="colorLbl">tags:</span>
+                           <input id="tagColor_value" type="color" value="#909dc0" onchange='onSettingsChange_Color(event)'/>
+                           <span onclick='onSettingsChange_Color(event)' class="clickable">reset</span>
+                        </div>
+                        <div class="d-flex flex-row"> 
+                           <span class="colorLbl">itemBG:</span>
+                           <input id="itemBG_value" type="color" value="#909dc0" onchange='onSettingsChange_Color(event)'/>
+                           <span onclick='onSettingsChange_Color(event)' class="clickable">reset</span>
                         </div>
                         <br>
                         <div>
-                           <span>scheme code:</span>
+                           <span class="colorLbl">scheme code:</span>
                            <input id="scheme_input" class="form-control small" id="bg_col_settings_hex">
                            <span onclick='parseSchemeCode()' class="clickable ">apply</span>
                            <vl class="vl-settings"></vl>
