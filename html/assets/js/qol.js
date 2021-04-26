@@ -7,13 +7,31 @@ $('a').mousedown((event) => {
     event.preventDefault();
 });
 
-// Press / to focus search bar
+// Key Events, or how I like to call 'em: The Jojii-Only events
 $(document).on("keypress", (event) => {
-    if (event.key === '/') {
-        event.preventDefault();
-        $('#search').focus();
-        $('#search').select();
-    }  
+    if ($('#search').is(":focus")) return;
+    
+    switch (event.key) {
+        case '/':
+            event.preventDefault();
+            $('#search').focus();
+            $('#search').select();
+            break
+        case 'w':
+            choices.setChoiceByValue("0");
+            break;
+        case 'k':
+            choices.setChoiceByValue("1");
+            break;
+        case 's':
+            choices.setChoiceByValue("2");
+            break;
+        case 'n':
+            choices.setChoiceByValue("3");
+            break;
+        case 'p':
+            break;
+    }
 });
 
 // You might just unlock a secret
