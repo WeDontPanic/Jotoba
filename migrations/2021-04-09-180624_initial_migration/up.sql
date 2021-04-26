@@ -11,7 +11,7 @@ CREATE TABLE dict (
   kanji_info INTEGER[],
   jlpt_lvl INTEGER
 );
-CREATE INDEX index_reading_dict ON dict (reading);
+CREATE INDEX index_reading_dict on dict (reading text_pattern_ops);
 CREATE INDEX index_seq_dict ON dict (sequence);
 
 CREATE TABLE sense (
