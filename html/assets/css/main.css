@@ -194,6 +194,10 @@ svg {
     border-bottom-color: var(--lineColor);
 }
 
+.modal-footer {
+    border-top-color: var(--lineColor);
+}
+
 .modal-content {
     background-color: var(--overlay);
 }
