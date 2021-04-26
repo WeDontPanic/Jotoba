@@ -32,12 +32,12 @@ function onSettingsChange_Color(event) {
     if (event.target.classList.contains("clickable")) {
         document.documentElement.style.removeProperty(cssName);
         $(input[0]).val(getCssValue(cssName));
+        Cookies.set(id, getComputedStyle(document.documentElement).getPropertyValue(cssName).trim());
     } else { // Set the selected color if not
         document.documentElement.style.setProperty(cssName, color);
+        Cookies.set(id, color);
     }
-
-    // Set the Cookie
-    Cookies.set(id, color);
+    
 }
 
 // Returns the value of the given CSS-Variable's name
@@ -167,13 +167,7 @@ function parseSchemeCode(colorCode) {
 
     // Get color code
     if (colorCode === undefined) {
-        colorCode = $("#scheme_input").val().toUpperCase();
-    }
-
-    // Error check
-    if (colorCode.length % 6 !== 0) {
-        showMessage("error", "Please enter a valid code.");
-        return;
+        colorCode = $("#scheme_input").val();
     }
 
     // A string containing all hex values in a row
@@ -194,12 +188,13 @@ function parseSchemeCode(colorCode) {
 
         // Code Error
         if (arrayIndex === -1) {
-            showMessage("error", "Please enter a valid code.");
+            showMessage("error", "Please enter a valid code. (Index = -1)");
             return;
         }
 
         // Add Hex
         for (var j = 0; j <= entryIndex; j++) {
+            console.log("\t call", num2hex_single(arrayIndex));
             allHex += num2hex_single(arrayIndex);
         }
     }
