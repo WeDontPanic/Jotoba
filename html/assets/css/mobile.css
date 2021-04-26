@@ -4,6 +4,25 @@
 
 @media only screen and (max-width: 600px) {
 	
+    /* -------- Index -------- */
+    .circle {
+        width: 1.25em;
+        height: 1.25em;
+        border-radius: 50%;
+        font-size: 50px;
+        text-align: center;
+        background: var(--scrollBG);
+        line-height: 110%;
+        position: fixed;
+        bottom: .5em;
+        right: .5em;
+    }
+
+    article {
+        padding-left: 1em;
+        padding-right: 1em;
+    }
+
 	/* -------- Word Search -------- */
 	
     #content-container {
@@ -227,5 +246,12 @@
 
     .slider-output {
         margin-left: -10px;
+    }
+}
+
+
+@media only screen and (min-width: 600px) {
+    .circle {
+        display: none;
     }
 }
