@@ -30,7 +30,15 @@ $(document).on("keypress", (event) => {
             choices.setChoiceByValue("3");
             break;
         case 'p':
+            $(".audioBtn").first().trigger("click");
             break;
+        default:
+            if (event.key > 0 && event.key < 10) {
+                let kanji = $('.kanji-preview.large.black')[event.key]
+                if (kanji !== undefined) {
+                    kanji.click();
+                }
+            }
     }
 });
 
