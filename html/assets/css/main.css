@@ -136,6 +136,22 @@ a:hover {
     padding-right: 10px;
 }
 
+#emptyInput {
+    position: absolute;
+    height: 30px;
+    margin-top: 10px; 
+    right: 5px;
+}
+
+#emptyInput:focus {
+    outline: none;
+    box-shadow: none;
+}
+
+.input-group {
+    height: 100%;
+}
+
 svg {
     fill: var(--searchTextColor);
 }

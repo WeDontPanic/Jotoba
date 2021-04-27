@@ -50,8 +50,8 @@
         border: 0;
         display: block;
         width: 100%;
-        padding: 10px 32px;
-        font-size: 23px;
+        padding: 27px 30px 27px 10px;
+        font-size: 1em;
         color: var(--searchTextcolor);
     }
 

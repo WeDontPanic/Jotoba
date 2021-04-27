@@ -123,6 +123,12 @@ function changeSearchType(newType) {
   }
 }
 
+// Resets the value of the search input
+function emptySearchInput() {
+    console.log("hi")
+    $('#search').val("");
+}
+
 // Iterate all audio Btns on the page (if any) and enable their audio feature
 $('.audioBtn').each((e, i) => {
 
