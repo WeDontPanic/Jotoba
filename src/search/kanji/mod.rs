@@ -43,7 +43,7 @@ async fn by_literals(db: &DbPool, query: &Query) -> Result<Vec<Item>, Error> {
 
 /// Find kanji by mits meaning
 async fn by_meaning(db: &DbPool, query: &Query) -> Result<Vec<Item>, Error> {
-    let items: Vec<Kanji> = diesel::sql_query("select * from find_kanji_by_meaning($1)")
+    let items: Vec<Kanji> = diesel::sql_query(include_str!("../../../sql/find_by_meaning.sql"))
         .bind::<Text, _>(&query.query)
         .get_results_async(db)
         .await
