@@ -1,6 +1,6 @@
 use std::cmp::Ordering;
 
-use crate::search::SearchMode;
+use crate::search::{query::Query, SearchMode};
 use crate::{japanese::JapaneseExt, parse::jmdict::languages::Language};
 
 use super::result::Word;
@@ -264,89 +264,23 @@ impl<'a> GlossWordOrder<'a> {
     }
 }
 
-#[cfg(test)]
-mod test {
-    use super::GlossWordOrder;
-    use super::Word;
-    use crate::search::{
-        word::result::{Gloss, Sense},
-        SearchMode,
-    };
-
-    fn str_to_gloss(values1_sense: Vec<&str>) -> Vec<Gloss> {
-        values1_sense
-            .into_iter()
-            .map(|i| Gloss {
-                gloss: i.to_owned(),
-                ..Default::default()
-            })
-            .collect::<Vec<_>>()
+/// Order by kanji reading search
+pub struct KanjiReading<'a> {
+    query: &'a Query,
+}
+impl<'a> KanjiReading<'a> {
+    pub(crate) fn new(query: &'a Query) -> Self {
+        Self { query }
     }
 
-    fn make_word1_item(values1_sense: Vec<&str>) -> Word {
-        let glosses1 = str_to_gloss(values1_sense);
-        Word {
-            senses: vec![Sense {
-                glosses: glosses1,
-                ..Default::default()
-            }],
-            ..Word::default()
-        }
+    /// Sort native words results
+    pub(crate) fn sort(&self, vec: &mut Vec<Word>) {
+        vec.sort_by(|a, b| self.native_words(a, b))
     }
 
-    fn make_word2_item(values1_sense: Vec<&str>, values2_sense: Vec<&str>) -> Word {
-        let glosses1 = str_to_gloss(values1_sense);
-        let glosses2 = str_to_gloss(values2_sense);
-
-        Word {
-            senses: vec![
-                Sense {
-                    glosses: glosses1,
-                    ..Default::default()
-                },
-                Sense {
-                    glosses: glosses2,
-                    ..Default::default()
-                },
-            ],
-            ..Word::default()
-        }
-    }
-
-    #[test]
-    fn test_calc_likeliness_char() {
-        let search = GlossWordOrder { query: "c" };
-
-        let item_a = make_word2_item(vec!["a", "b"], vec!["c"]);
-        let item_b = make_word2_item(vec!["c", "b"], vec!["0"]);
-        let item_c = make_word2_item(vec!["b", "c"], vec!["0"]);
-
-        /*
-        assert_eq!(search.get_likelynes(&item_a), 34);
-        assert_eq!(search.get_likelynes(&item_b), 100);
-        assert_eq!(search.get_likelynes(&item_c), 67);
-        */
-    }
-
-    #[test]
-    fn test_calc_likeliness_word_1() {
-        let search = GlossWordOrder { query: "hello" };
-
-        let item_a = make_word2_item(vec!["good day", "hello"], vec!["good afternoon"]);
-        let item_b = make_word1_item(vec!["Hello", "good day"]);
-        let item_c = make_word2_item(vec!["hello", "good day"], vec!["bye"]);
-
-        assert_eq!(
-            search.calc_likelienes(&item_a, SearchMode::Exact, false),
-            67
-        );
-        assert_eq!(search.calc_likelienes(&item_a, SearchMode::Exact, true), 67);
-
-        assert_eq!(search.calc_likelienes(&item_b, SearchMode::Exact, false), 0);
-
-        assert_eq!(
-            search.calc_likelienes(&item_c, SearchMode::Exact, true),
-            100
-        );
+    /// Returns an Ordering variant based on the input items
+    fn native_words(&self, this: &Word, other: &Word) -> Ordering {
+        // TODO IMPLEMENT
+        Ordering::Equal
     }
 }
