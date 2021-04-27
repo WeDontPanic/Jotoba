@@ -15,6 +15,7 @@ use super::query_parser::QueryType;
 pub struct UserSettings {
     pub user_lang: Language,
     pub show_english: bool,
+    pub english_on_top: bool,
 }
 
 impl Default for UserSettings {
@@ -22,6 +23,7 @@ impl Default for UserSettings {
         Self {
             show_english: true,
             user_lang: Language::default(),
+            english_on_top: false,
         }
     }
 }

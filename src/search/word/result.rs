@@ -1,6 +1,6 @@
 use std::path::Path;
 
-use crate::{models::kanji::Kanji, parse::jmdict::part_of_speech::PosSimple};
+use crate::{models::kanji::Kanji, parse::jmdict::part_of_speech::PosSimple, search::query::Query};
 
 use crate::{japanese::JapaneseExt, parse::jmdict::languages::Language, utils::to_option};
 use itertools::Itertools;
@@ -199,6 +199,21 @@ impl Word {
             .partition(|i| i.language == Language::English);
 
         vec![other, english]
+    }
+
+    /// Get senses ordered by language (non-english first)
+    pub fn get_senses_orderd(&self, query: &Query) -> Vec<Vec<Sense>> {
+        let (english, other): (Vec<Sense>, Vec<Sense>) = self
+            .senses
+            .clone()
+            .into_iter()
+            .partition(|i| i.language == Language::English);
+
+        if query.settings.english_on_top {
+            vec![english, other]
+        } else {
+            vec![other, english]
+        }
     }
 
     /// Return all senses of a language

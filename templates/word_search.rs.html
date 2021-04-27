@@ -1,5 +1,6 @@
 @use crate::search::word::result::{Item, WordResult};
-@(result: WordResult)
+@use crate::search::query::Query;
+@(query: &Query, result: WordResult)
   <!-- Inner Top Row -->
   <div class="d-flex center no-drag">
     <div class="main-tab-select l">
@@ -105,7 +106,7 @@
             <div class="kanji-entry right">
               <div class="entry-min-height-@word.get_word_tag_count()">
                 <!-- Right side: Info -->
-                @for (spos, senses_compound) in word.get_senses().iter().enumerate() {
+                @for (spos, senses_compound) in word.get_senses_orderd(&query).iter().enumerate() {
                   @for (pos, sense) in senses_compound.iter().enumerate() {
                     @if !sense.glosses.is_empty() {
                       <!-- Sense entry -->

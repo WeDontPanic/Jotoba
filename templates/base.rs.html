@@ -267,7 +267,7 @@
             <br>
 
             @if let Some(results) = word_search_result {
-              @:word_search_html(results)
+              @:word_search_html(search_query.as_ref().unwrap(), results)
             } else {
               @if let Some(kanji_info) = kanji_info_search_result {
                 @:kanji_details(kanji_info)
