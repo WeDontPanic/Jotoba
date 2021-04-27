@@ -76,6 +76,16 @@ pub enum Form {
     Undetected,
 }
 
+impl Form {
+    pub fn as_kanji_reading(&self) -> Option<&KanjiReading> {
+        if let Self::KanjiReading(v) = self {
+            Some(v)
+        } else {
+            None
+        }
+    }
+}
+
 /// A kanji-reading search
 #[derive(Debug, Clone, PartialEq, Hash)]
 pub struct KanjiReading {

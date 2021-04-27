@@ -6,14 +6,19 @@ use crate::{
     cache::SharedCache,
     error::Error,
     parse::kanjidict::Character,
-    search::SearchMode,
+    search::{query::KanjiReading, SearchMode},
     utils::{self, to_option},
     DbPool, JA_NL_PARSER,
 };
 use async_std::sync::{Mutex, MutexGuard};
-use diesel::prelude::*;
+use diesel::{
+    pg::Pg,
+    prelude::*,
+    sql_types::{Bool, Text},
+};
 use itertools::Itertools;
 use once_cell::sync::Lazy;
+use romaji::RomajiExt;
 use std::{cmp::Ordering, collections::HashMap};
 use tokio_diesel::*;
 
@@ -137,6 +142,45 @@ impl Kanji {
                     .and_then(|j| j.contains(reading).then(|| true))
                     .unwrap_or(false)
             })
+    }
+
+    /// Find sequence ids of dict entries containing
+    /// the kanji and the passed reading
+    pub async fn find_readings(
+        &self,
+        db: &DbPool,
+        reading: &KanjiReading,
+        r_type: ReadingType,
+        mode: SearchMode,
+    ) -> Result<Vec<i32>, Error> {
+        let query = include_str!("../../sql/words_with_kanji_readings.sql");
+
+        let lit_sql = mode.to_like(&reading.literal.to_string());
+        let lit_reading = mode.to_like(self.format_reading(&reading.reading, r_type));
+
+        let res = diesel::sql_query(query)
+            .bind::<Text, _>(&lit_sql)
+            .bind::<Text, _>(&lit_reading)
+            .bind::<Bool, _>(true)
+            .get_results_async::<Dict>(db)
+            .await?;
+
+        Ok(res.into_iter().map(|i| i.sequence).collect())
+    }
+
+    pub fn format_reading(&self, reading: &str, r_type: ReadingType) -> String {
+        match r_type {
+            ReadingType::Kunyomi => {
+                let reading = if reading.contains('.') {
+                    let right = reading.split('.').skip(1).next().unwrap_or_default();
+                    format!("{}{}", self.literal, right)
+                } else {
+                    reading.to_string()
+                };
+                reading.replace("-", "").to_hiragana()
+            }
+            ReadingType::Onyomi => reading.to_hiragana(),
+        }
     }
 }
 

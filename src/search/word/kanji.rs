@@ -1,40 +1,92 @@
-use super::{result::Word, Search};
+use super::{order, result::Word, Search, WordSearch};
 use crate::{
     error::Error,
     japanese::JapaneseExt,
     models::{
         dict::Dict,
-        kanji::{self, Kanji as DbKanji},
+        kanji::{self, Kanji as DbKanji, ReadingType},
     },
-    search::{query::KanjiReading, query::Query, utils},
+    search::{query::Query, utils, SearchMode},
+    utils::to_option,
 };
 use futures::future::try_join_all;
 use itertools::Itertools;
 
 const MAX_KANJI_INFO_ITEMS: usize = 5;
 
-pub(super) async fn reading<'a>(
-    search: &Search<'a>,
-    reading: &KanjiReading,
-) -> Result<Vec<Word>, Error> {
+pub(super) async fn by_reading<'a>(search: &Search<'a>) -> Result<Vec<Word>, Error> {
+    let reading = search
+        .query
+        .form
+        .as_kanji_reading()
+        .ok_or(Error::Undefined)?;
+
     let kanji = kanji::find_by_literal(&search.db, reading.literal.to_string()).await?;
 
     let reading_type = kanji.get_reading_type(&reading.reading);
     if !kanji.has_reading(&reading.reading) || reading_type.is_none() {
-        // only search for reading
-        return Search {
-            db: search.db,
-            query: &Query {
-                query: kanji::kun_literal_reading(&reading.reading),
-                ..search.query.to_owned()
-            },
-        }
-        .do_word_search()
-        .await;
+        return alternative_reading_search(search).await;
     }
-    let reading_type = reading_type.unwrap();
 
-    Ok(vec![])
+    let mode = if reading.reading.starts_with('-') {
+        SearchMode::LeftVariable
+    } else {
+        SearchMode::RightVariable
+    };
+
+    let mut seq_ids = kanji
+        .find_readings(search.db, reading, reading_type.unwrap(), mode)
+        .await?;
+
+    // Do 2nd search if 1st one din't return anything
+    if seq_ids.is_empty() {
+        seq_ids = kanji
+            .find_readings(
+                search.db,
+                reading,
+                reading_type.unwrap(),
+                SearchMode::Variable,
+            )
+            .await?;
+    }
+
+    // If still nothing was found return
+    if seq_ids.is_empty() {
+        return alternative_reading_search(search).await;
+    }
+
+    let mut w = WordSearch::load_words_by_seq(
+        search.db,
+        &seq_ids,
+        search.query.settings.user_lang,
+        search.query.settings.show_english,
+        &to_option(search.query.get_part_of_speech_tags()),
+    )
+    .await?;
+
+    order::KanjiReading::new(&search.query).sort(&mut w);
+
+    w.truncate(10);
+
+    Ok(w)
+}
+
+/// Do a search without the kanji literal or reading
+pub(super) async fn alternative_reading_search<'a>(
+    search: &Search<'a>,
+) -> Result<Vec<Word>, Error> {
+    let reading = search.query.form.as_kanji_reading().unwrap();
+
+    // Modify search query
+    Search {
+        db: search.db,
+        query: &Query {
+            query: kanji::kun_literal_reading(&reading.reading),
+            ..search.query.to_owned()
+        },
+    }
+    .do_word_search()
+    .await
 }
 
 /// load word assigned kanji

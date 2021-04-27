@@ -57,16 +57,10 @@ pub async fn search(db: &DbPool, query: &Query) -> Result<WordResult, Error> {
 }
 
 impl<'a> Search<'a> {
-    async fn kanji_meaning_search(&self) -> Result<WordResult, Error> {
-        Ok(WordResult {
-            items: vec![],
-            contains_kanji: false,
-        })
-    }
-
+    /// Do the search
     async fn do_search(&self) -> Result<WordResult, Error> {
         let word_results = match self.query.form {
-            Form::KanjiReading(ref reading) => kanji::reading(self, reading).await?,
+            Form::KanjiReading(_) => kanji::by_reading(self).await?,
             _ => self.do_word_search().await?,
         };
 
@@ -80,7 +74,7 @@ impl<'a> Search<'a> {
         });
     }
 
-    // Search by a word
+    /// Search by a word
     async fn do_word_search(&self) -> Result<Vec<Word>, Error> {
         // Perform searches asynchronously
         let (native_word_res, gloss_word_res): (Vec<Word>, Vec<Word>) =
