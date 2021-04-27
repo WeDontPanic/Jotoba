@@ -18,16 +18,16 @@ $(document).on("keypress", (event) => {
             $('#search').select();
             break
         case 'w':
-            choices.setChoiceByValue("0");
+            changeSearchType("0");
             break;
         case 'k':
-            choices.setChoiceByValue("1");
+            changeSearchType("1");
             break;
         case 's':
-            choices.setChoiceByValue("2");
+            changeSearchType("2");
             break;
         case 'n':
-            choices.setChoiceByValue("3");
+            changeSearchType("3");
             break;
         case 'p':
             $(".audioBtn").first().trigger("click");
