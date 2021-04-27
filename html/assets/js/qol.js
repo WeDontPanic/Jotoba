@@ -34,7 +34,7 @@ $(document).on("keypress", (event) => {
             break;
         default:
             if (event.key > 0 && event.key < 10) {
-                let kanji = $('.kanji-preview.large.black')[event.key]
+                let kanji = $('.kanji-preview.large.black')[event.key+1]
                 if (kanji !== undefined) {
                     kanji.click();
                 }
