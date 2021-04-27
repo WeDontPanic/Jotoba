@@ -57,6 +57,11 @@ function onSettingsChange_DefaultLanguage(event) {
 // Changes whether english results should be shown
 function onSettingsChange_ShowEnglish(event) {
     Cookies.set('show_english', event.target.checked);
+    if (!event.target.checked)
+        $('#show_eng_on_top_settings_parent').addClass("hidden");
+    else
+        $('#show_eng_on_top_settings_parent').removeClass("hidden");
+    
 }
 
 // Changes whether english results should be shown on top
@@ -89,10 +94,15 @@ function loadCookieData() {
         $('#default_lang_settings').val(navigator.language);
 
     // Set English results
-    if (show_english === "false")
+    if (show_english === "false") {
         $('#show_eng_settings').prop('checked', false);
-    if (show_english_on_top === "true")
+        $('#show_eng_on_top_settings_parent').addClass("hidden");
+    } else {
+        $('#show_eng_on_top_settings_parent').removeClass("hidden");
+    }
+    if (show_english_on_top === "true") {
         $('#show_eng_on_top_settings').prop('checked', true);
+    }
 
     // Load anim speed
     $('#show_anim_speed_settings').val(anim_speed);
