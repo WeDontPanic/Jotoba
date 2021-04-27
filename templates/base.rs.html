@@ -74,7 +74,15 @@
                            </div>
                         </div>
                         <div class="input-field second-wrap">
-                           <input id="search" name="search" type="text" value="@get_query_str(&search_query)" placeholder="German, Japanese, Romaji, words or text" tabindex="1" lang="ja" autocapitalize="off" autocomplete="off" data-autoload="false" data-effective-keyword=""/>
+                           <div class="input-group">
+                              <input id="search" name="search" type="text" value="@get_query_str(&search_query)" placeholder="Search..." tabindex="1" lang="ja" autocapitalize="off" autocomplete="off" data-autoload="false" data-effective-keyword=""/>
+                              <button id="emptyInput" type="button" class="btn bg-transparent" onclick="emptySearchInput()">
+                                 <svg height="10" width="10" viewBox="0 0 503.021 503.021" style="margin-top: -5px">
+                                    <path d="M491.613,75.643l-64.235-64.235c-15.202-15.202-39.854-15.202-55.056,0L251.507,132.222L130.686,11.407c-15.202-15.202-39.853-15.202-55.055,0L11.401,75.643c-15.202,15.202-15.202,39.854,0,55.056l120.821,120.815L11.401,372.328c-15.202,15.202-15.202,39.854,0,55.056l64.235,64.229c15.202,15.202,39.854,15.202,55.056,0l120.815-120.814l120.822,120.814c15.202,15.202,39.854,15.202,55.056,0l64.235-64.229c15.202-15.202,15.202-39.854,0-55.056L370.793,251.514l120.82-120.815C506.815,115.49,506.815,90.845,491.613,75.643z">
+                                    </path>
+                                 </svg>
+                              </button>
+                          </div>
                         </div>
                         <div class="input-field third-wrap">
                            <button class="btn-search" type="submit">

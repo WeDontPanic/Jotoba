@@ -125,7 +125,6 @@ function changeSearchType(newType) {
 
 // Resets the value of the search input
 function emptySearchInput() {
-    console.log("hi")
     $('#search').val("");
 }
 
