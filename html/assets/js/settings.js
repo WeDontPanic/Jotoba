@@ -91,8 +91,8 @@ function loadCookieData() {
     // Set English results
     if (show_english === "false")
         $('#show_eng_settings').prop('checked', false);
-    if (show_english_on_top === "false")
-        $('#show_eng_on_top_settings').prop('checked', false);
+    if (show_english_on_top === "true")
+        $('#show_eng_on_top_settings').prop('checked', true);
 
     // Load anim speed
     $('#show_anim_speed_settings').val(anim_speed);

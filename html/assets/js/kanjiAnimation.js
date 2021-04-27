@@ -24,7 +24,7 @@ function restartAnimation(target, delayMultiplier) {
 
 // Kanji and SVG list
 var kanjis = $('.kanjisvg');
-var sliders = $('.speedSlider');
+var sliders = $('.slidecontainer > .speedSlider');
 
 // Restart Animation by clicking on Kanji
 kanjis.click(function(e) {
