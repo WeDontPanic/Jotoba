@@ -131,14 +131,13 @@
                     <hr class="lang-separator"/>
                   }
                 }
+              
+                <!-- Additional Informations -->
+                @if !word.reading.alternative.is_empty() {
+                  <div class="tags">Other forms</div>
+                  <div class="notes">@word.alt_readings_beautified()</div>
+                }
               </div>
-
-              <!-- Additional Informations-->
-              @if !word.reading.alternative.is_empty() {
-                <div class="tags">Other forms</div>
-                <div class="notes">@word.alt_readings_beautified()</div>
-              }
-
               <hr class="res-separator" />
             </div>
           </div>
