@@ -128,6 +128,33 @@ function emptySearchInput() {
     $('#search').val("");
 }
 
+// Jumps to the top or kanji part (mobile only)
+function pageJump(pos) {
+    if (pos === "top") {
+        document.body.scrollTop = 0; // For Safari
+        document.documentElement.scrollTop = 0; // For Chrome, Firefox, IE and Opera
+    } else {
+        let kanjiPos = $("#content-container")[0].getBoundingClientRect();
+        let newPageY = kanjiPos.height - 1290;
+
+        document.body.scrollTop = newPageY; 
+        document.documentElement.scrollTop = newPageY; 
+    }
+}
+
+// The Jmp Buttons
+var topBtn = $("#jmp-btn-top");
+
+// Window Scroll checks
+window.onscroll = function() {
+    console.log(getBrowserWidth());
+    if (getBrowserWidth() < 600 && (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20)) {
+        topBtn.css("display", "block");
+    } else {
+        topBtn.css("display", "none");
+    }
+  }
+
 // Iterate all audio Btns on the page (if any) and enable their audio feature
 $('.audioBtn').each((e, i) => {
 
