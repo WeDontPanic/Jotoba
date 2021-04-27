@@ -142,9 +142,23 @@
                      </select>
                      <span class="tags">Results will try to match the selected language</span>
                      <br>
+                     <br>
+                     <span class="inner-title">Result settings</span>
+                     <br>
                      <span>Always show english results:</span>  
                      <input id="show_eng_settings" type="checkbox" checked onchange="onSettingsChange_ShowEnglish(event)">
                      <br>
+                     <span>Show english results on top:</span> 
+                     <input id="show_eng_on_top_settings" type="checkbox" checked onchange="onSettingsChange_ShowEnglishOnTop(event)">
+                     <br>
+                     <br>
+                     <span class="inner-title">Display settings</span>
+                     <br>
+                     <span>Default kanji animation speed:</span>
+                     <div class="slidecontainer">
+                        <input id="show_anim_speed_settings" type="range" min="0.05" max="2" value="1" step="0.05" class="slider speedSlider" oninput="onSettingsChange_AnimationSpeed(event)">
+                        <span id="show_anim_speed_settings_slider">1.0</span>
+                     </div>
                      <br>
                      <span class="inner-title">Select color scheme</span>
                      <div class="d-flex flex-column top-padding-05-rem">

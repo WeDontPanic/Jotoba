@@ -59,20 +59,28 @@ function onSettingsChange_ShowEnglish(event) {
     Cookies.set('show_english', event.target.checked);
 }
 
-// Returns the value of Cookie "show_english" if availiable
-function showEnglish() {
-    let show = Cookies.get('show_english');
-    if (show === "true")
-        return true;
-    else
-        return false;
+// Changes whether english results should be shown on top
+function onSettingsChange_ShowEnglishOnTop(event) {
+    Cookies.set('show_english_on_top', event.target.checked);
+}
+
+// Sets the default kanji animation speed
+function onSettingsChange_AnimationSpeed(event) {
+    $('#show_anim_speed_settings_slider').html(event.target.value);
+    Cookies.set('anim_speed', event.target.value);
 }
 
 // Load the cookie's data into important stuff
 function loadCookieData() {
-    // Load search data
+    // Load search language
     let default_lang = Cookies.get("default_lang");
+
+    // Load result settings
     let show_english = Cookies.get("show_english");
+    let show_english_on_top = Cookies.get("show_english_on_top");
+
+    // Load display settings
+    let anim_speed = Cookies.get("anim_speed");
 
     // Set Default_Lang 
     if (default_lang !== undefined)
@@ -82,7 +90,13 @@ function loadCookieData() {
 
     // Set English results
     if (show_english === "false")
-    $('#show_eng_settings').prop('checked', false);
+        $('#show_eng_settings').prop('checked', false);
+    if (show_english_on_top === "false")
+        $('#show_eng_on_top_settings').prop('checked', false);
+
+    // Load anim speed
+    $('#show_anim_speed_settings').val(anim_speed);
+    $('#show_anim_speed_settings_slider').html(anim_speed);
 
     // Load all Color Data
     setColorFromCookie();
@@ -228,3 +242,22 @@ function parseSchemeCode(colorCode) {
 
     setColorFromArray(parsedHex);
 }
+
+// Returns the Kanji's default speed
+function getDefaultAnimSpeed() {
+    let speed = Cookies.get("anim_speed");
+    if (speed === undefined) {
+        speed = 1;
+    }
+
+   return speed;
+}
+
+// Set all sliders (if any) to their default value
+var sliders = $('.speedSlider');
+sliders.each(function() {
+    this.value = getDefaultAnimSpeed();
+    if (this.textField !== undefined) {
+        this.textField.innerHTML = "Animation speed: "+ this.value;
+    }
+});
