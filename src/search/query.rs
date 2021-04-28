@@ -39,6 +39,8 @@ pub struct Query {
     pub form: Form,
     pub language: QueryLang,
     pub settings: UserSettings,
+    pub page: usize,
+    pub word_index: usize,
 }
 
 /// Hashtag based search tags

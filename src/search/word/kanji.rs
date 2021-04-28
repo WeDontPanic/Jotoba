@@ -4,7 +4,7 @@ use crate::{
     japanese::JapaneseExt,
     models::{
         dict::Dict,
-        kanji::{self, Kanji as DbKanji, ReadingType},
+        kanji::{self, Kanji as DbKanji},
     },
     search::{query::Query, utils, SearchMode},
     utils::to_option,

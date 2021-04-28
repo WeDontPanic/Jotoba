@@ -11,6 +11,8 @@ pub struct QueryParser {
     original_query: String,
     tags: Vec<Tag>,
     user_settings: UserSettings,
+    page: usize,
+    word_index: usize,
 }
 
 #[derive(Deserialize, Debug, Copy, Clone, PartialEq, Hash)]
@@ -32,7 +34,13 @@ impl Default for QueryType {
 }
 
 impl QueryParser {
-    pub fn new(query: String, q_type: QueryType, user_settings: UserSettings) -> QueryParser {
+    pub fn new(
+        query: String,
+        q_type: QueryType,
+        user_settings: UserSettings,
+        page: usize,
+        word_index: usize,
+    ) -> QueryParser {
         // Split query into the actual query and possibly available tags
         let (parsed_query, tags) = Self::partition_tags_query(&query);
         let parsed_query = Self::format_query(parsed_query);
@@ -43,6 +51,8 @@ impl QueryParser {
             original_query: query,
             tags,
             user_settings,
+            page,
+            word_index,
         }
     }
 
@@ -73,6 +83,8 @@ impl QueryParser {
             query: self.query,
             original_query: self.original_query,
             settings: self.user_settings,
+            page: self.page,
+            word_index: self.word_index,
         })
     }
 

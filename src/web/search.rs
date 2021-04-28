@@ -19,6 +19,10 @@ pub struct QueryStruct {
     pub query: Option<String>,
     #[serde(rename = "type")]
     pub search_type: Option<QueryType>,
+    #[serde(rename = "word_index")]
+    pub word_index: Option<usize>,
+    #[serde(rename = "page")]
+    pub page: Option<usize>,
 }
 
 impl QueryStruct {
@@ -35,6 +39,8 @@ impl QueryStruct {
         QueryStruct {
             query: search_query,
             search_type: Some(self.search_type.unwrap_or_default()),
+            page: self.page,
+            word_index: self.word_index,
         }
     }
 }
@@ -51,6 +57,8 @@ pub async fn search(
         query_data.query.clone().unwrap_or_default(),
         query_data.search_type.unwrap_or_default(),
         parse_settings(&request),
+        query_data.page.unwrap_or_default(),
+        query_data.word_index.unwrap_or_default(),
     );
 
     let query = match q_parser.parse() {

@@ -1,3 +1,4 @@
+mod jp_parsing;
 mod kanji;
 mod order;
 pub mod result;
@@ -25,7 +26,7 @@ use crate::{
     DbPool,
 };
 
-use self::result::WordResult;
+use self::{jp_parsing::InputTextParser, result::WordResult};
 
 use super::query::Form;
 
@@ -93,8 +94,26 @@ impl<'a> Search<'a> {
             return Ok(vec![]);
         }
 
+        let parser =
+            InputTextParser::new(&self.db, &self.query.query, &crate::JA_NL_PARSER).await?;
+
+        let query = if let Some(parsed) = parser.parse() {
+            println!("parsed: {:#?}", parsed);
+            let index = self.query.word_index.clamp(0, parsed.items.len() - 1);
+            let res = &parsed.items[index];
+            if res.lexeme.is_empty() {
+                res.surface.to_string()
+            } else {
+                res.lexeme.to_string()
+            }
+        } else {
+            self.query.query.clone()
+        };
+
+        println!("query: {}", query);
+
         // Define basic search structure
-        let mut word_search = WordSearch::new(self.db, &self.query.query);
+        let mut word_search = WordSearch::new(self.db, &query);
         word_search
             .with_language(self.query.settings.user_lang)
             .with_english_glosses(self.query.settings.show_english);
@@ -104,33 +123,32 @@ impl<'a> Search<'a> {
         }
 
         // Perform the word search
-        let mut wordresults =
-            if real_string_len(&self.query.query) <= 2 && self.query.query.is_kana() {
-                // Search for exact matches only if query.len() <= 2
-                let res = word_search
-                    .with_mode(SearchMode::Exact)
-                    .with_language(self.query.settings.user_lang)
-                    .search_native()
-                    .await?;
+        let mut wordresults = if real_string_len(&query) <= 2 && query.is_kana() {
+            // Search for exact matches only if query.len() <= 2
+            let res = word_search
+                .with_mode(SearchMode::Exact)
+                .with_language(self.query.settings.user_lang)
+                .search_native()
+                .await?;
 
-                if res.is_empty() {
-                    // Do another search if no exact result was found
-                    word_search
-                        .with_mode(SearchMode::RightVariable)
-                        .search_native()
-                        .await?
-                } else {
-                    res
-                }
-            } else {
+            if res.is_empty() {
+                // Do another search if no exact result was found
                 word_search
                     .with_mode(SearchMode::RightVariable)
                     .search_native()
                     .await?
-            };
+            } else {
+                res
+            }
+        } else {
+            word_search
+                .with_mode(SearchMode::RightVariable)
+                .search_native()
+                .await?
+        };
 
         // Sort the results based
-        NativeWordOrder::new(&self.query.query).sort(&mut wordresults);
+        NativeWordOrder::new(&query).sort(&mut wordresults);
 
         // Limit search to 10 results
         wordresults.truncate(10);
