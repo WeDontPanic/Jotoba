@@ -43,6 +43,12 @@ impl<'a> WordSearch<'a> {
         }
     }
 
+    /// Set the query of the search
+    pub fn with_query(&mut self, query: &'a str) -> &mut Self {
+        self.search.query = query;
+        self
+    }
+
     /// Use a specific language for the search
     pub fn with_case_insensitivity(&mut self, ignore_case: bool) -> &mut Self {
         self.ignore_case = ignore_case;

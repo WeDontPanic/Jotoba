@@ -109,6 +109,7 @@ impl<'a> Search<'a> {
         } else {
             self.query.query.clone()
         };
+        let query_modified = query != self.query.query;
 
         println!("query: {}", query);
 
@@ -141,10 +142,24 @@ impl<'a> Search<'a> {
                 res
             }
         } else {
-            word_search
+            let results = word_search
                 .with_mode(SearchMode::RightVariable)
                 .search_native()
-                .await?
+                .await?;
+
+            // if query was modified search for the
+            // original term too
+            if query_modified {
+                let origi_res = word_search
+                    .with_query(&self.query.query)
+                    .with_mode(SearchMode::Exact)
+                    .search_native()
+                    .await?;
+
+                results.into_iter().chain(origi_res).collect()
+            } else {
+                results
+            }
         };
 
         // Sort the results based
