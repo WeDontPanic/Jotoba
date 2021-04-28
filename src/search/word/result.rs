@@ -288,26 +288,50 @@ impl Sense {
         })
     }
 
-    /// Return a human readable string of misc, field or both
-    pub fn misc_and_field(&self) -> Option<String> {
-        // Return joined with ','
-        if self.misc.is_some() && self.field.is_some() {
-            return Some(format!(
-                "{}, {}",
-                self.field.as_ref().unwrap().humanize(),
-                self.get_misc().unwrap()
-            ));
+    pub fn get_xref(&self) -> Option<&str> {
+        self.xref.as_ref().and_then(|xref| xref.split("・").next())
+    }
+
+    pub fn get_antonym(&self) -> Option<&str> {
+        self.antonym
+            .as_ref()
+            .and_then(|antonym| antonym.split("・").next())
+    }
+
+    pub fn get_infos(&self) -> Option<(Option<String>, Option<&str>, Option<&str>)> {
+        let info_str = self.get_information_string();
+        let xref = self.get_xref();
+        let antonym = self.get_antonym();
+
+        if xref.is_none() && info_str.is_none() && antonym.is_none() {
+            None
+        } else {
+            Some((info_str, xref, antonym))
+        }
+    }
+
+    /// Return human readable information about a gloss
+    pub fn get_information_string(&self) -> Option<String> {
+        let arr: [Option<String>; 3] = [
+            map_to_str(&self.misc),
+            map_to_str(&self.field),
+            self.information.clone(),
+        ];
+
+        let res = arr
+            .iter()
+            .filter_map(|i| i.is_some().then(|| i.as_ref().unwrap()))
+            .collect_vec();
+
+        if res.is_empty() {
+            return None;
         }
 
-        if let Some(misc) = self.misc {
-            return Some(misc.into());
+        if self.xref.is_some() || self.antonym.is_some() {
+            Some(format!("{}.", res.iter().join(", ")))
+        } else {
+            Some(res.iter().join(", "))
         }
-
-        if let Some(field) = self.field {
-            return Some(field.humanize());
-        }
-
-        None
     }
 
     // Get a senses tags prettified
@@ -327,4 +351,14 @@ impl Sense {
             .flatten()
             .collect::<Vec<_>>()
     }
+}
+
+fn map_to_str<T>(i: &Option<T>) -> Option<String>
+where
+    T: Into<String> + Copy,
+{
+    i.as_ref().map(|i| {
+        let s: String = (*i).into();
+        s
+    })
 }

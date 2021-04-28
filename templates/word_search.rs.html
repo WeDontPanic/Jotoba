@@ -96,7 +96,7 @@
               }
               @if let Some(audio) = word.audio_file() {
                 <span class="clickable audioBtn">Play audio
-                  <audio>
+                  <audio preload="none">
                     <source src="assets/audio/@audio" type="audio/ogg">
                   </audio>
                 </span>
@@ -122,9 +122,20 @@
                             @sense.get_glosses()
                           </div>
                         </div>
-                        @if let Some(add_tags) = sense.misc_and_field() {
+                        @if let Some((info, xref, antonym)) = sense.get_infos() {
                           <div class="tags no-margin">
-                            @add_tags
+                            @if let Some(ref info) = info {
+                              @info
+                            }
+                            @if let Some(ref antonym) = antonym {
+                              Antonym of <a class="clickable no-align green" href="/search?type=0&search=@antonym">@antonym</a>
+                            }
+                            @if let Some(ref xref) = xref {
+                              @if antonym.is_some() {
+                                .
+                              }
+                              See also <a class="clickable no-align green" href="/search?type=0&search=@xref">@xref</a>
+                            }
                           </div>
                         }
                       </div>

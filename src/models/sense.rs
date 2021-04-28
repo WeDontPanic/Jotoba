@@ -59,6 +59,12 @@ pub struct NewSense {
 
 /// Get all Database-dict structures from an entry
 pub fn new_from_entry(entry: &Entry) -> Vec<NewSense> {
+    let antonym = entry
+        .senses
+        .iter()
+        .filter_map(|i| i.antonym.to_owned())
+        .next();
+
     let mut gloss_pos = -1;
     entry
         .senses
@@ -80,7 +86,7 @@ pub fn new_from_entry(entry: &Entry) -> Vec<NewSense> {
                     misc: item.misc,
                     language: item.lang,
                     field: item.field,
-                    antonym: item.antonym.clone(),
+                    antonym: antonym.clone(),
                     information: item.information.clone(),
                     pos_simplified: (!item.part_of_speech.is_empty())
                         .then(|| pos_simplified(&item.part_of_speech)),
