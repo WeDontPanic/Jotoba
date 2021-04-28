@@ -33,6 +33,28 @@ pub enum Information {
     UsuallyKana,
 }
 
+impl Into<&'static str> for Information {
+    fn into(self) -> &'static str {
+        match self {
+            Information::Ateji => "Ateji",
+            Information::IrregularKana => "irregular kana",
+            Information::IrregularKanji => "irregular kanji",
+            Information::IrregularOkurigana => "irregular okurigana",
+            Information::OutdatedKanji => "outdated kana",
+            Information::OutdatedKana => "outdated kana",
+            Information::Gikun => "gikun",
+            Information::UsuallyKana => "usually written in kana",
+        }
+    }
+}
+
+impl ToString for Information {
+    fn to_string(&self) -> String {
+        let s: &'static str = (*self).into();
+        s.to_string()
+    }
+}
+
 impl ToSql<Integer, Pg> for Information {
     fn to_sql<W: Write>(&self, out: &mut Output<W, Pg>) -> serialize::Result {
         <i32 as ToSql<Integer, Pg>>::to_sql(&(*self).into(), out)

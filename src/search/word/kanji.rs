@@ -14,6 +14,7 @@ use itertools::Itertools;
 
 const MAX_KANJI_INFO_ITEMS: usize = 5;
 
+/// Runs a kanji reading search
 pub(super) async fn by_reading<'a>(search: &Search<'a>) -> Result<Vec<Word>, Error> {
     let reading = search
         .query

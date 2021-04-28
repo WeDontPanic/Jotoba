@@ -119,10 +119,75 @@ pub enum Misc {
     Yojijukugo,
 }
 
+impl Into<&'static str> for Misc {
+    fn into(self) -> &'static str {
+        match self {
+            Misc::Abbreviation => "Abbreviation",
+            Misc::Archaism => "Anarchism",
+            Misc::Character => "Character",
+            Misc::ChildrensLanguage => "Childrens language",
+            Misc::Colloquialism => "Colloquialism",
+            Misc::CompanyName => "Company name",
+            Misc::Creature => "Creature",
+            Misc::DatedTerm => "Dated term",
+            Misc::Deity => "Deity",
+            Misc::Derogatory => "Derogatory",
+            Misc::Event => "Event",
+            Misc::FamiliarLanguage => "Familiar language",
+            Misc::FemaleTermOrLanguage => "Female term/language",
+            Misc::Fiction => "Fiction",
+            Misc::GivenName => "Given name",
+            Misc::HistoricalTerm => "Historical term",
+            Misc::HonorificLanguage => "Honorific language",
+            Misc::HumbleLanguage => "Humble language",
+            Misc::IdiomaticExpression => "Idiomatic expression",
+            Misc::JocularHumorousTerm => "Jocular humorous term",
+            Misc::Legend => "Legend",
+            Misc::LiteraryOrFormalTerm => "Literary/formal term",
+            Misc::MangaSlang => "Manga slang",
+            Misc::MaleTermOrLanguage => "Male term/language",
+            Misc::Mythology => "Mythology",
+            Misc::InternetSlang => "Internet slang",
+            Misc::Object => "Object",
+            Misc::ObsoleteTerm => "Obsolete term",
+            Misc::ObscureTerm => "Obscure term",
+            Misc::OnomatopoeicOrMimeticWord => "Onomatopoetic or mimetic word",
+            Misc::OrganizationName => "Organization name",
+            Misc::Other => "Other",
+            Misc::Personname => "Person name",
+            Misc::PlaceName => "Place name",
+            Misc::PoeticalTerm => "Poetical term",
+            Misc::PoliteLanguage => "Polite language",
+            Misc::ProductName => "Product name",
+            Misc::Proverb => "Proverb",
+            Misc::Quotation => "Qutation",
+            Misc::Rare => "Rare",
+            Misc::Religion => "Religion",
+            Misc::Sensitive => "Sensitive",
+            Misc::Service => "Service",
+            Misc::Slang => "Slang",
+            Misc::RailwayStation => "Railway station",
+            Misc::FamilyOrSurname => "Family or surname",
+            Misc::UsuallyWrittenInKana => "Usually written in kana",
+            Misc::UnclassifiedName => "Unclassified name",
+            Misc::VulgarExpressionOrWord => "Vulgar expression/word",
+            Misc::ArtWork => "Artwork",
+            Misc::RudeOrXRatedTerm => "Rude/x-rated term",
+            Misc::Yojijukugo => "Yojijukugo",
+        }
+    }
+}
+
 impl Into<String> for Misc {
     fn into(self) -> String {
-        // TODO proper to-string
-        format!("{:?}", self)
+        self.to_string()
+    }
+}
+
+impl ToString for Misc {
+    fn to_string(&self) -> String {
+        let s: &str = (*self).into();
+        s.to_string()
     }
 }
 

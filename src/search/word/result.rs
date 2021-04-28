@@ -298,15 +298,18 @@ impl Sense {
             .and_then(|antonym| antonym.split("・").next())
     }
 
-    pub fn get_infos(&self) -> Option<(Option<String>, Option<&str>, Option<&str>)> {
+    pub fn get_infos(
+        &self,
+    ) -> Option<(Option<String>, Option<&str>, Option<&str>, Option<String>)> {
         let info_str = self.get_information_string();
         let xref = self.get_xref();
         let antonym = self.get_antonym();
+        let dialect = self.dialect.map(|i| i.to_string());
 
         if xref.is_none() && info_str.is_none() && antonym.is_none() {
             None
         } else {
-            Some((info_str, xref, antonym))
+            Some((info_str, xref, antonym, dialect))
         }
     }
 

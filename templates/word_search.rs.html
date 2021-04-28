@@ -122,16 +122,19 @@
                             @sense.get_glosses()
                           </div>
                         </div>
-                        @if let Some((info, xref, antonym)) = sense.get_infos() {
+                        @if let Some((info, xref, antonym, dialect)) = sense.get_infos() {
                           <div class="tags no-margin">
                             @if let Some(ref info) = info {
                               @info
+                            }
+                            @if let Some(ref dialect) = dialect {
+                              @dialect
                             }
                             @if let Some(ref antonym) = antonym {
                               Antonym of <a class="clickable no-align green" href="/search?type=0&search=@antonym">@antonym</a>
                             }
                             @if let Some(ref xref) = xref {
-                              @if antonym.is_some() {
+                              @if antonym.is_some() || dialect.is_some() {
                                 .
                               }
                               See also <a class="clickable no-align green" href="/search?type=0&search=@xref">@xref</a>
