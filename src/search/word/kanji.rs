@@ -1,4 +1,8 @@
-use super::{order, result::Word, Search, WordSearch};
+use super::{
+    order::{self, SearchOrder},
+    result::Word,
+    Search, WordSearch,
+};
 use crate::{
     error::Error,
     japanese::JapaneseExt,
@@ -36,7 +40,7 @@ pub(super) async fn by_reading<'a>(search: &Search<'a>) -> Result<Vec<Word>, Err
     };
 
     let mut seq_ids = kanji
-        .find_readings(search.db, reading, reading_type.unwrap(), mode)
+        .find_readings(search.db, reading, reading_type.unwrap(), mode, false)
         .await?;
 
     // Do 2nd search if 1st one din't return anything
@@ -47,6 +51,7 @@ pub(super) async fn by_reading<'a>(search: &Search<'a>) -> Result<Vec<Word>, Err
                 reading,
                 reading_type.unwrap(),
                 SearchMode::Variable,
+                false,
             )
             .await?;
     }
@@ -65,7 +70,7 @@ pub(super) async fn by_reading<'a>(search: &Search<'a>) -> Result<Vec<Word>, Err
     )
     .await?;
 
-    order::KanjiReading::new(&search.query).sort(&mut w);
+    SearchOrder::new(search.query, &None).sort(&mut w, order::kanji_reading_search);
 
     w.truncate(10);
 

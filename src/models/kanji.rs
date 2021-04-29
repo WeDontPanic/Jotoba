@@ -151,16 +151,18 @@ impl Kanji {
         reading: &KanjiReading,
         r_type: ReadingType,
         mode: SearchMode,
+        only_main_readins: bool,
     ) -> Result<Vec<i32>, Error> {
         let query = include_str!("../../sql/words_with_kanji_readings.sql");
 
         let lit_sql = mode.to_like(&reading.literal.to_string());
-        let lit_reading = mode.to_like(self.format_reading(&reading.reading, r_type));
+        let reading_format = self.format_reading(&reading.reading, r_type);
+        let lit_reading = mode.to_like(reading_format);
 
         let res = diesel::sql_query(query)
             .bind::<Text, _>(&lit_sql)
             .bind::<Text, _>(&lit_reading)
-            .bind::<Bool, _>(true)
+            .bind::<Bool, _>(only_main_readins)
             .get_results_async::<Dict>(db)
             .await?;
 
@@ -170,13 +172,13 @@ impl Kanji {
     pub fn format_reading(&self, reading: &str, r_type: ReadingType) -> String {
         match r_type {
             ReadingType::Kunyomi => {
-                let reading = if reading.contains('.') {
+                let r = if reading.contains('.') {
                     let right = reading.split('.').skip(1).next().unwrap_or_default();
                     format!("{}{}", self.literal, right)
                 } else {
                     reading.to_string()
                 };
-                reading.replace("-", "").to_hiragana()
+                r.replace("-", "").to_hiragana()
             }
             ReadingType::Onyomi => reading.to_hiragana(),
         }
@@ -242,6 +244,10 @@ pub async fn find_by_literal(db: &DbPool, l: String) -> Result<Kanji, Error> {
 
 /// Find a kanji by its literal
 pub async fn find_by_literals(db: &DbPool, l: &[String]) -> Result<Vec<Kanji>, Error> {
+    if l.is_empty() {
+        return Ok(vec![]);
+    }
+
     // Try to find literal in kanji cache
     let mut k_cache: MutexGuard<SharedCache<i32, Kanji>> = KANJICACHE_C.lock().await;
 
@@ -264,6 +270,9 @@ pub async fn find_by_literals(db: &DbPool, l: &[String]) -> Result<Vec<Kanji>, E
 
 /// Find Kanji items by its ids
 pub async fn load_by_ids(db: &DbPool, ids: &Vec<i32>) -> Result<Vec<Kanji>, Error> {
+    if ids.is_empty() {
+        return Ok(vec![]);
+    }
     // Lock cache
     let mut k_cache: MutexGuard<SharedCache<i32, Kanji>> = KANJICACHE_C.lock().await;
 
@@ -288,6 +297,9 @@ pub async fn load_by_ids(db: &DbPool, ids: &Vec<i32>) -> Result<Vec<Kanji>, Erro
 
 /// Retrieve kanji by ids from DB
 async fn retrieve_by_ids(db: &DbPool, ids: &Vec<i32>) -> Result<Vec<Kanji>, Error> {
+    if ids.is_empty() {
+        return Ok(vec![]);
+    }
     use crate::schema::kanji::dsl::*;
     Ok(kanji.filter(id.eq_any(ids)).get_results_async(db).await?)
 }
@@ -295,6 +307,10 @@ async fn retrieve_by_ids(db: &DbPool, ids: &Vec<i32>) -> Result<Vec<Kanji>, Erro
 /// Load a kanji by its literal from DB
 async fn load_by_literals(db: &DbPool, l: &[&String]) -> Result<Vec<Kanji>, Error> {
     use crate::schema::kanji::dsl::*;
+
+    if l.is_empty() {
+        return Ok(vec![]);
+    }
 
     Ok(kanji
         .filter(literal.eq_any(l))

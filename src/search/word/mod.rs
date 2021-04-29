@@ -4,7 +4,6 @@ mod order;
 pub mod result;
 mod wordsearch;
 
-use order::{GlossWordOrder, NativeWordOrder};
 use result::{Item, Word};
 pub use wordsearch::WordSearch;
 
@@ -20,6 +19,7 @@ use crate::{
     models::kanji::Kanji as DbKanji,
     search::{
         query::{Query, QueryLang},
+        word::order::SearchOrder,
         SearchMode,
     },
     utils::real_string_len,
@@ -97,17 +97,13 @@ impl<'a> Search<'a> {
         let parser =
             InputTextParser::new(&self.db, &self.query.query, &crate::JA_NL_PARSER).await?;
 
-        let query = if let Some(parsed) = parser.parse() {
+        let (query, morpheme) = if let Some(parsed) = parser.parse() {
             println!("parsed: {:#?}", parsed);
             let index = self.query.word_index.clamp(0, parsed.items.len() - 1);
-            let res = &parsed.items[index];
-            if res.lexeme.is_empty() {
-                res.surface.to_string()
-            } else {
-                res.lexeme.to_string()
-            }
+            let res = parsed.items[index].clone();
+            (res.get_lexeme().to_string(), Some(res))
         } else {
-            self.query.query.clone()
+            (self.query.query.clone(), None)
         };
         let query_modified = query != self.query.query;
 
@@ -132,7 +128,7 @@ impl<'a> Search<'a> {
                 .search_native()
                 .await?;
 
-            if res.is_empty() {
+            let r = if res.is_empty() {
                 // Do another search if no exact result was found
                 word_search
                     .with_mode(SearchMode::RightVariable)
@@ -140,6 +136,17 @@ impl<'a> Search<'a> {
                     .await?
             } else {
                 res
+            };
+
+            if query_modified {
+                let origi_res = word_search
+                    .with_query(&self.query.query)
+                    .with_mode(SearchMode::Exact)
+                    .search_native()
+                    .await?;
+                r.into_iter().chain(origi_res).collect()
+            } else {
+                r
             }
         } else {
             let results = word_search
@@ -163,7 +170,8 @@ impl<'a> Search<'a> {
         };
 
         // Sort the results based
-        NativeWordOrder::new(&query).sort(&mut wordresults);
+        //NativeWordOrder::new(&query).sort(&mut wordresults);
+        SearchOrder::new(self.query, &morpheme).sort(&mut wordresults, order::native_search_order);
 
         // Limit search to 10 results
         wordresults.truncate(10);
@@ -179,7 +187,7 @@ impl<'a> Search<'a> {
             return Ok(vec![]);
         }
 
-        let mode = if real_string_len(&self.query.query) < 4 {
+        let mode = if real_string_len(&self.query.query) <= 2 {
             SearchMode::Exact
         } else {
             SearchMode::Variable
@@ -200,7 +208,8 @@ impl<'a> Search<'a> {
         let mut wordresults = word_search.search_by_glosses().await?;
 
         // Sort the results based
-        GlossWordOrder::new(&self.query.query).sort(&mut wordresults);
+        //GlossWordOrder::new(&self.query.query).sort(&mut wordresults);
+        SearchOrder::new(self.query, &None).sort(&mut wordresults, order::foreign_search_order);
 
         // Limit search to 10 results
         wordresults.truncate(10);

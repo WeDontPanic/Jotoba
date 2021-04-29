@@ -62,6 +62,15 @@ pub fn to_option<T>(vec: Vec<T>) -> Option<Vec<T>> {
     }
 }
 
+/// Returns an inverted Ordering of order
+pub fn invert_ordering(order: Ordering) -> Ordering {
+    match order {
+        Ordering::Less => Ordering::Greater,
+        Ordering::Equal => Ordering::Equal,
+        Ordering::Greater => Ordering::Less,
+    }
+}
+
 /*
 #[cfg(test)]
 mod test {

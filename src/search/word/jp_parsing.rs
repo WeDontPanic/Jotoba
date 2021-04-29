@@ -55,6 +55,14 @@ impl<'dict, 'input> WordItem<'dict, 'input> {
             inflections,
         }
     }
+
+    pub fn get_lexeme(&self) -> &str {
+        if self.lexeme.is_empty() {
+            self.surface
+        } else {
+            self.lexeme
+        }
+    }
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -149,10 +157,15 @@ impl<'dict, 'input> InputTextParser<'dict, 'input> {
             None,
         );
 
-        if self.is_sentence() && !self.is_word_inflection() {
+        println!("sentence: {}", self.is_sentence());
+        println!("in db: {}", self.in_db);
+        println!("inflecions: {:#?}", inflections);
+        println!("word inflection: {:}", self.is_word_inflection());
+
+        if self.is_sentence() && !self.in_db {
             self.parse_sentence()
         } else {
-            if !inflections.is_empty() && self.is_word_inflection() {
+            if !inflections.is_empty() && self.is_word_inflection() && !self.is_sentence() {
                 let items = self
                     .morphemes
                     .into_iter()
@@ -250,7 +263,7 @@ impl<'dict, 'input> InputTextParser<'dict, 'input> {
 
     /// Returns true if input text is (very likely) a sentence
     pub fn is_sentence(&self) -> bool {
-        !self.in_db && self.word_count() > 1
+        self.word_count() > 1 && !self.is_word_inflection()
     }
 
     /// Returns inflections of the morphemes

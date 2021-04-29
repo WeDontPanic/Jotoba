@@ -112,6 +112,9 @@ pub fn new_dicts_from_entry(entry: &Entry) -> Vec<NewDict> {
 
 pub async fn load_by_ids(db: &DbPool, ids: &[i32]) -> Result<Vec<Dict>, Error> {
     use crate::schema::dict::dsl::*;
+    if ids.is_empty() {
+        return Ok(vec![]);
+    }
     Ok(dict.filter(id.eq_any(ids)).get_results_async(db).await?)
 }
 

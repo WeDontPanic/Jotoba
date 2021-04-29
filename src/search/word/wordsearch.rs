@@ -148,6 +148,10 @@ impl<'a> WordSearch<'a> {
         include_english: bool,
         pos_filter: &Option<Vec<PosSimple>>,
     ) -> Result<Vec<Word>, Error> {
+        if seq_ids.is_empty() {
+            return Ok(vec![]);
+        }
+
         // Request Redings and Senses in parallel
         let (dicts, senses): (Vec<Dict>, Vec<sense::Sense>) = futures::try_join!(
             Self::load_dictionaries(&db, &seq_ids),
@@ -233,6 +237,10 @@ impl<'a> WordSearch<'a> {
         sequence_ids: &Vec<i32>,
         lang: Language,
     ) -> Result<Vec<sense::Sense>, Error> {
+        if sequence_ids.is_empty() {
+            return Ok(vec![]);
+        }
+
         use crate::schema::sense as sense_schema;
         use diesel::dsl::sql;
 
@@ -255,6 +263,9 @@ impl<'a> WordSearch<'a> {
     /// Load Dictionaries of all sequences
     async fn load_dictionaries(db: &DbPool, sequence_ids: &Vec<i32>) -> Result<Vec<Dict>, Error> {
         use crate::schema::dict as dict_schema;
+        if sequence_ids.is_empty() {
+            return Ok(vec![]);
+        }
 
         Ok(dict_schema::table
             .filter(dict_schema::sequence.eq_any(sequence_ids))
