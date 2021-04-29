@@ -129,17 +129,9 @@ function emptySearchInput() {
 }
 
 // Jumps to the top or kanji part (mobile only)
-function pageJump(pos) {
-    if (pos === "top") {
-        document.body.scrollTop = 0; // For Safari
-        document.documentElement.scrollTop = 0; // For Chrome, Firefox, IE and Opera
-    } else {
-        let kanjiPos = $("#content-container")[0].getBoundingClientRect();
-        let newPageY = kanjiPos.height - 1290;
-
-        document.body.scrollTop = newPageY; 
-        document.documentElement.scrollTop = newPageY; 
-    }
+function jumpToTop() {
+  document.body.scrollTop = 0; // For Safari
+  document.documentElement.scrollTop = 0; // For Chrome, Firefox, IE and Opera
 }
 
 // The Jmp Buttons
