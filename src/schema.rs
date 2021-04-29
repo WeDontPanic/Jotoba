@@ -9,6 +9,7 @@ table! {
         information -> Nullable<Array<Int4>>,
         kanji_info -> Nullable<Array<Int4>>,
         jlpt_lvl -> Nullable<Int4>,
+        is_main -> Bool,
     }
 }
 

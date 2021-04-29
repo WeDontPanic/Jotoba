@@ -6,14 +6,18 @@ use crate::{
     cache::SharedCache,
     error::Error,
     parse::kanjidict::Character,
-    search::SearchMode,
+    search::{query::KanjiReading, SearchMode},
     utils::{self, to_option},
     DbPool, JA_NL_PARSER,
 };
 use async_std::sync::{Mutex, MutexGuard};
-use diesel::prelude::*;
+use diesel::{
+    prelude::*,
+    sql_types::{Bool, Text},
+};
 use itertools::Itertools;
 use once_cell::sync::Lazy;
+use romaji::RomajiExt;
 use std::{cmp::Ordering, collections::HashMap};
 use tokio_diesel::*;
 
@@ -81,6 +85,12 @@ impl From<Character> for NewKanji {
     }
 }
 
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub enum ReadingType {
+    Kunyomi,
+    Onyomi,
+}
+
 impl Kanji {
     /// Returns all dict entries assigned to the kanji's kun readings
     pub async fn get_kun_readings(db: &DbPool, ids: &[i32]) -> Result<Vec<Dict>, Error> {
@@ -90,6 +100,86 @@ impl Kanji {
     /// Print kanji grade pretty for frontend
     pub fn school_str(&self) -> Option<String> {
         self.grade.map(|grade| format!("Taught in {} grade", grade))
+    }
+
+    /// Returns the ReadingType of the reading for a kanji
+    pub fn get_reading_type(&self, reading: &String) -> Option<ReadingType> {
+        let in_on = self.in_on_reading(reading);
+        let in_kun = self.in_kun_reading(reading);
+
+        if in_on && !in_kun {
+            return Some(ReadingType::Onyomi);
+        } else if !in_on && in_kun {
+            return Some(ReadingType::Kunyomi);
+        }
+
+        None
+    }
+
+    pub fn in_kun_reading(&self, reading: &String) -> bool {
+        self.kunyomi
+            .as_ref()
+            .and_then(|j| j.contains(reading).then(|| true))
+            .unwrap_or(false)
+    }
+
+    pub fn in_on_reading(&self, reading: &String) -> bool {
+        self.onyomi
+            .as_ref()
+            .and_then(|j| j.contains(reading).then(|| true))
+            .unwrap_or(false)
+    }
+
+    /// Returns true if kanji has a given reading
+    pub fn has_reading(&self, reading: &String) -> bool {
+        self.kunyomi
+            .as_ref()
+            .and_then(|i| i.contains(reading).then(|| true))
+            .unwrap_or_else(|| {
+                self.onyomi
+                    .as_ref()
+                    .and_then(|j| j.contains(reading).then(|| true))
+                    .unwrap_or(false)
+            })
+    }
+
+    /// Find sequence ids of dict entries containing
+    /// the kanji and the passed reading
+    pub async fn find_readings(
+        &self,
+        db: &DbPool,
+        reading: &KanjiReading,
+        r_type: ReadingType,
+        mode: SearchMode,
+    ) -> Result<Vec<i32>, Error> {
+        let query = include_str!("../../sql/words_with_kanji_readings.sql");
+
+        let lit_sql = mode.to_like(&reading.literal.to_string());
+        let lit_reading = mode.to_like(self.format_reading(&reading.reading, r_type));
+
+        let res = diesel::sql_query(query)
+            .bind::<Text, _>(&lit_sql)
+            .bind::<Text, _>(&lit_reading)
+            .bind::<Bool, _>(true)
+            .get_results_async::<Dict>(db)
+            .await?;
+
+        Ok(res.into_iter().map(|i| i.sequence).collect())
+    }
+
+    pub fn format_reading(&self, reading: &str, r_type: ReadingType) -> String {
+        match r_type {
+            ReadingType::Kunyomi => {
+                let reading = if reading.contains('.') {
+                    let right = reading.split('.').skip(1).next().unwrap_or_default();
+                    format!("{}{}", self.literal, right)
+                } else {
+                    reading.to_string()
+                };
+                reading.replace("-", "").to_hiragana()
+            }
+            ReadingType::Onyomi => reading.to_hiragana(),
+        }
     }
 }
 
@@ -422,11 +512,11 @@ pub fn get_kun_by_literal(
     Ok(kuns.iter().map(|i| i.sequence).collect())
 }
 
-fn kun_len(kun: &str) -> usize {
+pub fn kun_len(kun: &str) -> usize {
     utils::real_string_len(&kun.replace('-', "").replace('.', ""))
 }
 
-fn kun_literal_reading(kun: &str) -> String {
+pub fn kun_literal_reading(kun: &str) -> String {
     kun.replace('-', "").split('.').next().unwrap().to_string()
 }
 

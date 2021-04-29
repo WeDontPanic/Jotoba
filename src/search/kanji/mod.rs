@@ -16,9 +16,14 @@ use futures::future::try_join_all;
 use itertools::Itertools;
 use tokio_diesel::AsyncRunQueryDsl;
 
+fn format_query(query: &str) -> String {
+    query.replace(" ", "").replace(".", "").trim().to_string()
+}
+
 /// The entry of a kanji search
 pub async fn search(db: &DbPool, query: &Query) -> Result<Vec<Item>, Error> {
-    if query.query.is_japanese() {
+    let q = format_query(&query.query);
+    if q.is_japanese() {
         by_literals(db, &query).await
     } else {
         by_meaning(db, &query).await
@@ -43,7 +48,7 @@ async fn by_literals(db: &DbPool, query: &Query) -> Result<Vec<Item>, Error> {
 
 /// Find kanji by mits meaning
 async fn by_meaning(db: &DbPool, query: &Query) -> Result<Vec<Item>, Error> {
-    let items: Vec<Kanji> = diesel::sql_query("select * from find_kanji_by_meaning($1)")
+    let items: Vec<Kanji> = diesel::sql_query(include_str!("../../../sql/find_by_meaning.sql"))
         .bind::<Text, _>(&query.query)
         .get_results_async(db)
         .await

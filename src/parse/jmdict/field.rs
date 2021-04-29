@@ -153,9 +153,9 @@ pub enum Field {
     Zoology,
 }
 
-impl Field {
-    pub fn humanize(&self) -> String {
-        // TODO generate proper string
+impl Into<String> for Field {
+    fn into(self) -> String {
+        // TODO proper to-string
         format!("{:?}", self)
     }
 }

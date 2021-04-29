@@ -22,6 +22,7 @@ pub struct Dict {
     pub information: Option<Vec<Information>>,
     pub kanji_info: Option<Vec<i32>>,
     pub jlpt_lvl: Option<i32>,
+    pub is_main: bool,
 }
 
 #[derive(Insertable, Clone, Debug, PartialEq)]
@@ -35,6 +36,7 @@ pub struct NewDict {
     pub information: Option<Vec<Information>>,
     pub kanji_info: Option<Vec<i32>>,
     pub jlpt_lvl: Option<i32>,
+    pub is_main: bool,
 }
 
 impl PartialEq for Dict {
@@ -83,18 +85,27 @@ pub async fn update_jlpt(db: &DbPool, l: &str, level: i32) -> Result<(), Error> 
 
 /// Get all Database-dict structures from an entry
 pub fn new_dicts_from_entry(entry: &Entry) -> Vec<NewDict> {
+    let mut found_main = false;
+    let has_kanji = entry.elements.iter().any(|i| i.kanji);
     entry
         .elements
         .iter()
-        .map(|item| NewDict {
-            sequence: entry.sequence as i32,
-            information: (!item.information.is_empty()).then(|| item.information.clone()),
-            no_kanji: item.no_true_reading,
-            kanji: item.kanji,
-            reading: item.value.clone(),
-            priorities: (!item.priorities.is_empty()).then(|| item.priorities.clone()),
-            kanji_info: None,
-            jlpt_lvl: None,
+        .map(|item| {
+            let is_main = !found_main && ((item.kanji && has_kanji) || (!has_kanji) && !item.kanji);
+            if is_main {
+                found_main = true;
+            }
+            NewDict {
+                sequence: entry.sequence as i32,
+                information: (!item.information.is_empty()).then(|| item.information.clone()),
+                no_kanji: item.no_true_reading,
+                kanji: item.kanji,
+                reading: item.value.clone(),
+                priorities: (!item.priorities.is_empty()).then(|| item.priorities.clone()),
+                kanji_info: None,
+                jlpt_lvl: None,
+                is_main,
+            }
         })
         .collect()
 }

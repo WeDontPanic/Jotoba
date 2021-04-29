@@ -15,6 +15,7 @@ use super::query_parser::QueryType;
 pub struct UserSettings {
     pub user_lang: Language,
     pub show_english: bool,
+    pub english_on_top: bool,
 }
 
 impl Default for UserSettings {
@@ -22,6 +23,7 @@ impl Default for UserSettings {
         Self {
             show_english: true,
             user_lang: Language::default(),
+            english_on_top: false,
         }
     }
 }
@@ -37,6 +39,8 @@ pub struct Query {
     pub form: Form,
     pub language: QueryLang,
     pub settings: UserSettings,
+    pub page: usize,
+    pub word_index: usize,
 }
 
 /// Hashtag based search tags
@@ -74,6 +78,16 @@ pub enum Form {
     KanjiReading(KanjiReading),
     /// Form was not recognized
     Undetected,
+}
+
+impl Form {
+    pub fn as_kanji_reading(&self) -> Option<&KanjiReading> {
+        if let Self::KanjiReading(v) = self {
+            Some(v)
+        } else {
+            None
+        }
+    }
 }
 
 /// A kanji-reading search

@@ -37,6 +37,31 @@ pub enum Dialect {
     Tsugaru,
 }
 
+impl Into<&'static str> for Dialect {
+    fn into(self) -> &'static str {
+        match self {
+            Dialect::Hokkaido => "Hokkaido",
+            Dialect::Kansai => "Kansai",
+            Dialect::Kantou => "Kantou",
+            Dialect::Kyoto => "Kyoto",
+            Dialect::Kyuushuu => "Kyuushuu",
+            Dialect::Nagano => "Nagano",
+            Dialect::Osaka => "Osaka",
+            Dialect::Ryuukyuu => "Ryuukyuu",
+            Dialect::Touhoku => "Touhoku",
+            Dialect::Tosa => "Tosa",
+            Dialect::Tsugaru => "Tsugaru",
+        }
+    }
+}
+
+impl ToString for Dialect {
+    fn to_string(&self) -> String {
+        let s: &str = (*self).into();
+        format!("{} dialect", s)
+    }
+}
+
 impl ToSql<Text, Pg> for Dialect {
     fn to_sql<W: Write>(&self, out: &mut Output<W, Pg>) -> serialize::Result {
         <&str as ToSql<Text, Pg>>::to_sql(&self.as_ref(), out)

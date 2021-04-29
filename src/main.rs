@@ -27,10 +27,12 @@ use r2d2::{Pool, PooledConnection};
 pub type DbConnection = PooledConnection<ConnectionManager<PgConnection>>;
 pub type DbPool = Pool<ConnectionManager<PgConnection>>;
 
+const NL_PARSER_PATH: &str = "./unidic";
+
 /// A global natural language parser
 // TODO check if dir exists first
 static JA_NL_PARSER: once_cell::sync::Lazy<igo_unidic::Parser> =
-    Lazy::new(|| igo_unidic::Parser::new("./unidic").unwrap());
+    Lazy::new(|| igo_unidic::Parser::new(NL_PARSER_PATH).unwrap());
 
 #[derive(Default)]
 struct Options {
