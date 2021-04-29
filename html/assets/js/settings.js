@@ -260,7 +260,7 @@ function getDefaultAnimSpeed() {
         speed = 1;
     }
 
-   return speed;
+    return speed;
 }
 
 // Set all sliders (if any) to their default value
@@ -270,4 +270,10 @@ sliders.each(function() {
     if (this.textField !== undefined) {
         this.textField.innerHTML = "Animation speed: "+ this.value;
     }
+});
+
+// Set all kanji animation's initial speed
+var kanjis = $('.kanjisvg');
+kanjis.each(function() {
+    restartAnimation(this, getDefaultAnimSpeed());
 });

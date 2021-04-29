@@ -147,7 +147,6 @@ var topBtn = $("#jmp-btn-top");
 
 // Window Scroll checks
 window.onscroll = function() {
-    console.log(getBrowserWidth());
     if (getBrowserWidth() < 600 && (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20)) {
         topBtn.css("display", "block");
     } else {
