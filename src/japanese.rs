@@ -1,3 +1,5 @@
+use std::iter::Peekable;
+
 use itertools::Itertools;
 
 pub trait JapaneseExt {
@@ -156,6 +158,66 @@ impl JapaneseExt for str {
     }
 }
 
+impl JapaneseExt for Vec<char> {
+    fn is_of_type(&self, ct: CharType) -> bool {
+        self.get_text_type() == ct
+    }
+
+    fn get_text_type(&self) -> CharType {
+        if self.is_kanji() {
+            CharType::Kanji
+        } else if self.is_kana() {
+            CharType::Kana
+        } else {
+            CharType::Other
+        }
+    }
+
+    fn is_hiragana(&self) -> bool {
+        !self.iter().any(|s| !s.is_hiragana())
+    }
+
+    fn is_katakana(&self) -> bool {
+        !self.iter().any(|s| !s.is_katakana())
+    }
+
+    fn has_kana(&self) -> bool {
+        self.iter().any(|s| s.is_kana())
+    }
+
+    fn is_kana(&self) -> bool {
+        !self.iter().any(|s| !s.is_kana())
+    }
+
+    fn is_kanji(&self) -> bool {
+        !self.iter().any(|s| !s.is_kanji())
+    }
+
+    fn has_kanji(&self) -> bool {
+        self.iter().any(|s| s.is_kanji())
+    }
+
+    fn is_japanese(&self) -> bool {
+        let mut buf = [0; 16];
+        !self.iter().any(|c| {
+            let s = c.encode_utf8(&mut buf);
+            !s.is_kana() && !s.is_kanji()
+        })
+    }
+
+    fn has_japanese(&self) -> bool {
+        let mut buf = [0; 16];
+        self.iter().any(|c| {
+            let s = c.encode_utf8(&mut buf);
+            s.is_kana() || s.is_kanji()
+        })
+    }
+
+    fn kanji_count(&self) -> usize {
+        self.iter().filter(|i| i.is_kanji()).count()
+    }
+}
+
 pub fn furigana(kanji: &str, kana: &str) -> String {
     let mut new_str = String::from(kana);
     kanji.chars().into_iter().for_each(|c| {
@@ -178,7 +240,9 @@ pub fn furigana_pairs(kanji: &str, kana: &str) -> Option<Vec<SentencePart>> {
         return None;
     }
 
-    let mut kanji_readings = kanji_readings(kanji, kana).into_iter();
+    //let mut kanji_readings = kanji_readings(kanji, kana).into_iter();
+    let mut kanji_readings = furi_algo(kanji, kana).into_iter();
+
     let mut parts: Vec<SentencePart> = Vec::new();
     let mut last_char_type: Option<CharType> = None;
 
@@ -305,451 +369,119 @@ impl SentencePart {
     }
 }
 
-#[cfg(test)]
-mod test {
-    use super::*;
+pub fn furi_algo(kanji: &str, kana: &str) -> Vec<String> {
+    let mut kanji_iter = kanji.chars().into_iter().peekable();
+    let kana = kana.chars().into_iter().collect::<Vec<_>>();
 
-    #[test]
-    fn test_is_kanji2() {
-        assert!("𩺊".is_kanji())
+    let mut kana_pos = strip_until_kanji(&mut kanji_iter);
+
+    let mut result: Vec<String> = Vec::new();
+
+    let mut curr_kanji = Vec::new();
+    loop {
+        if kana_pos >= kana.len() {
+            break;
+        }
+
+        // Kana from current position to end
+        let curr_kana = &kana[kana_pos..];
+
+        // Get all chars until next kanji
+        let (part_kana, part_kanji) = to_next_kanji(&mut kanji_iter);
+
+        // If last part is kanji only take rest of kana reading
+        if part_kana.is_empty() {
+            result.push(curr_kana.into_iter().collect());
+            break;
+        }
+
+        // Current kanji buff
+        curr_kanji.clear();
+        let found = loop {
+            curr_kanji.push(kana[kana_pos]);
+            kana_pos += 1;
+
+            if starts_with(&curr_kana, &curr_kanji, &part_kana) {
+                break true;
+            }
+
+            if curr_kanji.len() >= curr_kana.len() || kana_pos >= kana.len() {
+                break false;
+            }
+        };
+
+        if !found {
+            // Error
+            println!("error");
+            return vec![];
+        }
+
+        result.push(char_arr_to_string(&curr_kanji));
+
+        for _ in 0..(part_kana.len() + part_kanji.len()) {
+            kanji_iter.next();
+        }
+
+        kana_pos += part_kana.len();
     }
 
-    #[test]
-    fn test_is_jp() {
-        assert!(!"後で 絵".is_japanese())
+    //println!("out: {:?}", result);
+    result
+}
+
+/// Checks whether 'arr' starts with a+b
+fn starts_with<T>(arr: &[T], a: &[T], b: &[T]) -> bool
+where
+    T: PartialEq,
+{
+    if a.len() + b.len() > arr.len() {
+        return false;
     }
 
-    /*
-    #[test]
-    fn test_furigana_pairs7() {
-        let kanji = "新しい酒は古い革袋に入れる";
-        let kana = "あたらしいさけはふるいかわぶくろにいれる";
-
-        let result = vec![
-            SentencePart {
-                kana: String::from("あたら"),
-                kanji: Some(String::from("新")),
-            },
-            SentencePart {
-                kana: String::from("しい"),
-                kanji: None,
-            },
-            SentencePart {
-                kana: String::from("さけ"),
-                kanji: Some(String::from("酒")),
-            },
-            SentencePart {
-                kana: String::from("は"),
-                kanji: None,
-            },
-            SentencePart {
-                kana: String::from("ふる"),
-                kanji: Some(String::from("古")),
-            },
-            SentencePart {
-                kana: String::from("い"),
-                kanji: None,
-            },
-            SentencePart {
-                kana: String::from("革袋"),
-                kanji: Some(String::from("かわぶくろ")),
-            },
-            SentencePart {
-                kana: String::from("に"),
-                kanji: None,
-            },
-            SentencePart {
-                kana: String::from("い"),
-                kanji: Some(String::from("入")),
-            },
-            SentencePart {
-                kana: String::from("れる"),
-                kanji: None,
-            },
-        ];
-
-        assert_eq!(furigana_pairs(kanji, kana), Some(result));
-    }
-
-    #[test]
-    fn test_kanji_readings() {
-        let kanji = "先生はとくに田中を選び出して誉めた";
-        let kana = "せんはいはとくにたなかをえらびだしてほめた";
-        assert_eq!(
-            kanji_readings(kanji, kana),
-            vec!["せんはい", "たなか", "えら", "だ", "ほ"]
-        )
-    }
-
-    #[test]
-    fn test_kanji_readings2() {
-        let kanji = "先生い";
-        let kana = "せんせいい";
-        assert_eq!(kanji_readings(kanji, kana), vec!["せんせい"])
-    }
-
-    #[test]
-    fn test_furigana_pairs33() {
-        let kanji = "気持ち";
-        let kana = "きもち";
-
-        let result = vec![
-            SentencePart {
-                kana: "きも".to_string(),
-                kanji: Some("気持".to_string()),
-            },
-            SentencePart {
-                kana: "ち".to_string(),
-                kanji: None,
-            },
-        ];
-
-        assert_eq!(furigana_pairs(kanji, kana), Some(result));
-    }
-
-    #[test]
-    fn test_furigana_pairs0() {
-        let kanji = "時々";
-        let kana = "ときどき";
-
-        let result = vec![SentencePart {
-            kana: kana.to_string(),
-            kanji: Some(kanji.to_string()),
-        }];
-
-        assert_eq!(furigana_pairs(kanji, kana), Some(result));
-    }
-
-    #[test]
-    fn test_furigana_pairs() {
-        let kanji = "先生はとくに田中を選び出して誉めた";
-        let kana = "せんはいはとくにたなかをえらびだしてほめた";
-
-        let result = vec![
-            SentencePart {
-                kana: "せんはい".to_string(),
-                kanji: Some("先生".to_string()),
-            },
-            SentencePart {
-                kana: "はとくに".to_string(),
-                kanji: None,
-            },
-            SentencePart {
-                kana: "たなか".to_string(),
-                kanji: Some("田中".to_string()),
-            },
-            SentencePart {
-                kana: "を".to_string(),
-                kanji: None,
-            },
-            SentencePart {
-                kana: "えら".to_string(),
-                kanji: Some("選".to_string()),
-            },
-            SentencePart {
-                kana: "び".to_string(),
-                kanji: None,
-            },
-            SentencePart {
-                kana: "だ".to_string(),
-                kanji: Some("出".to_string()),
-            },
-            SentencePart {
-                kana: "して".to_string(),
-                kanji: None,
-            },
-            SentencePart {
-                kana: "ほ".to_string(),
-                kanji: Some("誉".to_string()),
-            },
-            SentencePart {
-                kana: "めた".to_string(),
-                kanji: None,
-            },
-        ];
-
-        assert_eq!(furigana_pairs(kanji, kana), Some(result));
-    }
-
-    #[test]
-    fn test_furigana_pairs6() {
-        let kanji = "先生せい";
-        let kana = "せんせいせい";
-
-        let result = vec![
-            SentencePart {
-                kana: "せんせい".to_string(),
-                kanji: Some("先生".to_string()),
-            },
-            SentencePart {
-                kana: "せい".to_string(),
-                kanji: None,
-            },
-        ];
-
-        assert_eq!(furigana_pairs(kanji, kana), Some(result));
-    }
-    #[test]
-    fn test_furigana_pairs1() {
-        let kanji = "はとくに田中を選び出して誉めた";
-        let kana = "はとくにたなかをえらびだしてほめた";
-
-        let result = vec![
-            SentencePart {
-                kana: "はとくに".to_string(),
-                kanji: None,
-            },
-            SentencePart {
-                kana: "たなか".to_string(),
-                kanji: Some("田中".to_string()),
-            },
-            SentencePart {
-                kana: "を".to_string(),
-                kanji: None,
-            },
-            SentencePart {
-                kana: "えら".to_string(),
-                kanji: Some("選".to_string()),
-            },
-            SentencePart {
-                kana: "び".to_string(),
-                kanji: None,
-            },
-            SentencePart {
-                kana: "だ".to_string(),
-                kanji: Some("出".to_string()),
-            },
-            SentencePart {
-                kana: "して".to_string(),
-                kanji: None,
-            },
-            SentencePart {
-                kana: "ほ".to_string(),
-                kanji: Some("誉".to_string()),
-            },
-            SentencePart {
-                kana: "めた".to_string(),
-                kanji: None,
-            },
-        ];
-
-        assert_eq!(furigana_pairs(kanji, kana), Some(result));
-    }
-
-    #[test]
-    fn test_furigana_pairs2() {
-        let kanji = "はとくにたなかをえらびだしてほめた";
-        let kana = "はとくにたなかをえらびだしてほめた";
-
-        let result = vec![SentencePart {
-            kana: kana.clone().to_string(),
-            kanji: None,
-        }];
-
-        assert_eq!(furigana_pairs(kanji, kana), Some(result));
-    }
-
-    #[test]
-    fn test_furigana_pairs3() {
-        let kanji = "先生";
-        let kana = "せんせい";
-
-        let result = vec![SentencePart {
-            kana: kana.clone().to_string(),
-            kanji: Some(kanji.clone().to_string()),
-        }];
-
-        assert_eq!(furigana_pairs(kanji, kana), Some(result));
-    }
-
-    #[test]
-    fn test_furigana_pairs4() {
-        let kanji = "先生いい";
-        let kana = "せんせいいい";
-
-        let result = vec![
-            SentencePart {
-                kana: "せんせい".to_string(),
-                kanji: Some("先生".to_string()),
-            },
-            SentencePart {
-                kanji: None,
-                kana: "いい".to_string(),
-            },
-        ];
-
-        assert_eq!(furigana_pairs(kanji, kana), Some(result));
-    }
-
-    #[test]
-    fn test_get_all_kana_ka_only() {
-        let kanji = "きょう";
-        assert_eq!(all_words_with_ct(kanji, CharType::Kana), vec![kanji]);
-    }
-
-    #[test]
-    fn test_get_all_kana_empty() {
-        let kanji = "先生頭";
-        assert_eq!(all_words_with_ct(kanji, CharType::Kana).len(), 0);
-    }
-
-    #[test]
-    fn test_get_all_kana() {
-        let kanji = "先生はとくに田中を選び出して誉めた";
-        assert_eq!(
-            all_words_with_ct(kanji, CharType::Kana),
-            vec!["はとくに", "を", "び", "して", "めた"]
-        );
-    }
-
-    #[test]
-    fn test_get_all_kanji_ka_only() {
-        let kanji = "先生頭";
-        assert_eq!(all_words_with_ct(kanji, CharType::Kanji), vec![kanji]);
-    }
-
-    #[test]
-    fn test_get_all_kanji_empty() {
-        let kanji = "せんはいはとくにたなかをえらびだしてほめた";
-        assert_eq!(all_words_with_ct(kanji, CharType::Kanji).len(), 0);
-    }
-
-    #[test]
-    fn test_get_all_kanji() {
-        let kanji = "先生はとくに田中を選び出して誉めた";
-        assert_eq!(
-            all_words_with_ct(kanji, CharType::Kanji),
-            vec!["先生", "田中", "選", "出", "誉",]
-        );
-    }
-
-    #[test]
-    fn test_furigana2() {
-        let kanji = "今日は";
-        let kana = "こんにちは";
-        assert_eq!(furigana(kanji, kana), String::from("こんにち"));
-    }
-
-    #[test]
-    fn test_furigana() {
-        let kanji = "今日";
-        let kana = "きょう";
-        assert_eq!(furigana(kanji, kana), String::from(kana));
-    }
-
-    #[test]
-    fn test_has_kana() {
-        let items: Vec<(&'static str, bool)> = vec![
-            ("hallo", false),
-            ("コンニチワ", true),
-            ("こんいちは", true),
-            ("koニチwa", true),
-            ("コンnichiハ", true),
-            ("コンnichiwa", true),
-            ("lol", false),
-            ("lolる", true),
-        ];
-
-        for item in items {
-            assert_eq!(item.0.has_kana(), item.1);
+    for (pos, item) in a.iter().enumerate() {
+        if arr[pos] != *item {
+            return false;
         }
     }
 
-    #[test]
-    fn test_is_kana() {
-        let items: Vec<(&'static str, bool)> = vec![
-            ("hallo", false),
-            ("コンニチワ", true),
-            ("こんいちは", true),
-            ("koニチwa", false),
-            ("コンnichiハ", false),
-            ("コンnichiwa", false),
-            ("lol", false),
-            ("lolる", false),
-        ];
-
-        for item in items {
-            assert_eq!(item.0.is_kana(), item.1);
+    for (pos, item) in b.iter().enumerate() {
+        if arr[pos + a.len()] != *item {
+            return false;
         }
     }
 
-    #[test]
-    fn test_is_kanji() {
-        let items: Vec<(&'static str, bool)> = vec![
-            ("hallo", false),
-            ("コンニチワ", false),
-            ("koニチwa", false),
-            ("こんnichiは", false),
-            ("コンnichiハ", false),
-            ("こんいちは", false),
-            ("今日は", false),
-            ("飛行機", true),
-            ("lol", false),
-        ];
+    true
+}
 
-        for item in items {
-            assert_eq!(item.0.is_kanji(), item.1);
+fn char_arr_to_string(vec: &Vec<char>) -> String {
+    vec.iter().collect()
+}
+
+fn to_next_kanji<T>(kanji_iter: &mut Peekable<T>) -> (Vec<char>, Vec<char>)
+where
+    T: Iterator<Item = char> + Clone,
+{
+    let mut kanji_iter = kanji_iter.clone();
+    let kanji = kanji_iter
+        .take_while_ref(|i| i.is_kanji())
+        .collect::<Vec<_>>();
+    let kana = kanji_iter
+        .take_while_ref(|i| i.is_kana())
+        .collect::<Vec<_>>();
+    (kana, kanji)
+}
+
+fn strip_until_kanji<T>(kanji_iter: &mut Peekable<T>) -> usize
+where
+    T: Iterator<Item = char>,
+{
+    let mut i = 0;
+    loop {
+        if kanji_iter.peek().map(|i| i.is_kanji()).unwrap_or(true) {
+            break i;
         }
+
+        kanji_iter.next();
+        i += 1;
     }
-
-    #[test]
-    fn test_has_japanese() {
-        let items: Vec<(&'static str, bool)> = vec![
-            ("hallo", false),
-            ("こんにちは", true),
-            ("コンニチワ", true),
-            ("koニチwa", true),
-            ("こんnichiは", true),
-            ("コンnichiハ京都", true),
-            ("こんいちは", true),
-            ("今日は", true),
-            ("飛行機", true),
-            ("lol今", true),
-            ("lol", false),
-        ];
-
-        for item in items {
-            assert_eq!(item.0.has_japanese(), item.1);
-        }
-    }
-
-    #[test]
-    fn test_is_japanese() {
-        let items: Vec<(&'static str, bool)> = vec![
-            ("hallo", false),
-            ("こんにちは", true),
-            ("コンニチワ", true),
-            ("koニチwa", false),
-            ("こんnichiは", false),
-            ("コンnichiハ", false),
-            ("こんいちは", true),
-            ("今日は", true),
-            ("飛行機", true),
-            ("lol", false),
-        ];
-
-        for item in items {
-            assert_eq!(item.0.is_japanese(), item.1);
-        }
-    }
-
-    #[test]
-    fn test_has_kanji() {
-        let items: Vec<(&'static str, bool)> = vec![
-            ("hallo", false),
-            ("コンニチワ", false),
-            ("koニチwa", false),
-            ("こんnichiは", false),
-            ("コンnichiハ", false),
-            ("こんいちは", false),
-            ("今日は", true),
-            ("飛行機", true),
-            ("lol", false),
-        ];
-
-        for item in items {
-            assert_eq!(item.0.has_kanji(), item.1);
-        }
-    }
-    */
 }
