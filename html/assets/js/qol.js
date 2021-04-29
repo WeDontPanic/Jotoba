@@ -126,6 +126,7 @@ function changeSearchType(newType) {
 // Resets the value of the search input
 function emptySearchInput() {
     $('#search').val("");
+    $('#search').focus();
 }
 
 // Jumps to the top or kanji part (mobile only)
