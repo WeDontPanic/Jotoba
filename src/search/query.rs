@@ -37,7 +37,7 @@ impl Default for UserSettings {
 
 /// A single user provided query in a
 /// parsed format
-#[derive(Debug, Clone, PartialEq, Default)]
+#[derive(Debug, Clone, PartialEq, Default, Hash)]
 pub struct Query {
     pub original_query: String,
     pub query: String,
@@ -48,13 +48,6 @@ pub struct Query {
     pub settings: UserSettings,
     pub page: usize,
     pub word_index: usize,
-}
-
-impl Hash for Query {
-    fn hash<H: Hasher>(&self, state: &mut H) {
-        self.original_query.hash(state);
-        self.settings.hash(state);
-    }
 }
 
 /// Hashtag based search tags
