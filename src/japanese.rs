@@ -238,7 +238,7 @@ pub fn furigana_pairs(kanji: &str, kana: &str) -> Option<Vec<SentencePart>> {
 
     //let mut kanji_readings = kanji_readings(kanji, kana).into_iter();
     let kanji_readings = furi_algo(kanji, kana);
-    if kanji_readings.is_none() {
+    if kanji_readings.is_none() || !kanji.has_kana() {
         return Some(vec![SentencePart {
             kanji: Some(kanji.to_owned()),
             kana: kana.to_owned(),
