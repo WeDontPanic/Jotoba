@@ -101,6 +101,7 @@ pub(super) async fn load_word_kanji_info<'a>(
     words: &Vec<Word>,
 ) -> Result<Vec<DbKanji>, Error> {
     let kanji_words = get_kanji_words(words);
+    println!("kanji words :{:?}", kanji_words);
 
     let retrieved_kanji = {
         // Also show kanji even if no word was found

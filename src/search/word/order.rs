@@ -87,6 +87,11 @@ pub(super) fn native_search_order(word: &Word, search_order: &SearchOrder) -> us
 
     if reading.reading == *query_str || kana_reading.reading == *query_str {
         score += 30;
+
+        // Show kana only readings on top if they match with query
+        if kana_reading.reading == *query_str && word.reading.kanji.is_none() {
+            score += 20;
+        }
     }
 
     if let Some(jlpt) = reading.jlpt_lvl {
@@ -97,6 +102,11 @@ pub(super) fn native_search_order(word: &Word, search_order: &SearchOrder) -> us
         let lexeme = morpheme.get_lexeme();
         if reading.reading == lexeme || kana_reading.reading == lexeme {
             score += 15;
+        }
+
+        // Show kana only readings on top if they match with lexeme
+        if kana_reading.reading == lexeme && word.reading.kanji.is_none() {
+            score += 30;
         }
     }
 

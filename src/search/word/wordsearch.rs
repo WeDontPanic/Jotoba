@@ -97,6 +97,9 @@ impl<'a> WordSearch<'a> {
     pub async fn search_by_glosses(&mut self) -> Result<Vec<Word>, Error> {
         // Load sequence ids to display
         let seq_ids = self.get_sequence_ids_by_glosses().await?;
+        if seq_ids.is_empty() {
+            return Ok(vec![]);
+        }
 
         // always search by a language.
         let lang = self.language.unwrap_or(Language::default());

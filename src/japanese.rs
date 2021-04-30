@@ -43,6 +43,8 @@ pub trait JapaneseExt {
     fn has_symbol(&self) -> bool;
 
     fn to_hiragana(&self) -> String;
+
+    fn is_roman_letter(&self) -> bool;
 }
 
 impl JapaneseExt for char {
@@ -62,15 +64,21 @@ impl JapaneseExt for char {
         romaji::RomajiExt::to_hiragana(self.to_string().as_str())
     }
 
+    fn is_roman_letter(&self) -> bool {
+        (*self) >= '\u{FF01}' && (*self) <= '\u{FF5A}'
+            || ((*self) >= '\u{2000}' && (*self) <= '\u{206F}')
+            || ((*self) >= '\u{20000}' && (*self) <= '\u{2A6DF}')
+            || (*self) == '\u{2010}'
+            || (*self) == '\u{2212}'
+    }
+
     fn is_kanji(&self) -> bool {
         ((*self) >= '\u{3400}' && (*self) <= '\u{4DBF}')
             || ((*self) >= '\u{4E00}' && (*self) <= '\u{9FFF}')
             || ((*self) >= '\u{F900}' && (*self) <= '\u{FAFF}')
             || ((*self) >= '\u{FF10}' && (*self) <= '\u{FF19}')
-            || ((*self) >= '\u{FF01}' && (*self) <= '\u{FF5A}')
             || ((*self) >= '\u{20000}' && (*self) <= '\u{2A6DF}')
             || (*self) == '\u{3005}'
-            || (*self) == '\u{2212}'
             || (*self) == '\u{29E8A}'
     }
 
@@ -79,7 +87,6 @@ impl JapaneseExt for char {
             || ((*self) >= '\u{0370}' && (*self) <= '\u{03FF}')
             || ((*self) >= '\u{25A0}' && (*self) <= '\u{25FF}')
             || ((*self) >= '\u{FF00}' && (*self) <= '\u{FFEF}')
-            || ((*self) >= '\u{2000}' && (*self) <= '\u{206F}')
             || (*self) == '\u{002D}'
             || (*self) == '\u{00D7}'
     }
@@ -103,7 +110,7 @@ impl JapaneseExt for char {
     fn get_text_type(&self) -> CharType {
         if self.is_kana() {
             CharType::Kana
-        } else if self.is_kanji() {
+        } else if self.is_kanji() || self.is_roman_letter() {
             CharType::Kanji
         } else {
             CharType::Other
@@ -111,7 +118,7 @@ impl JapaneseExt for char {
     }
 
     fn is_japanese(&self) -> bool {
-        self.is_kana() || self.is_kanji() || self.is_symbol()
+        self.is_kana() || self.is_kanji() || self.is_symbol() || self.is_roman_letter()
     }
 
     fn has_japanese(&self) -> bool {
@@ -150,6 +157,10 @@ impl JapaneseExt for str {
         !self.chars().into_iter().any(|s| !s.is_katakana())
     }
 
+    fn is_roman_letter(&self) -> bool {
+        !self.chars().into_iter().any(|s| !s.is_roman_letter())
+    }
+
     fn has_kana(&self) -> bool {
         self.chars().into_iter().any(|s| s.is_kana())
     }
@@ -174,7 +185,7 @@ impl JapaneseExt for str {
         let mut buf = [0; 16];
         !self.chars().into_iter().any(|c| {
             let s = c.encode_utf8(&mut buf);
-            !s.is_kana() && !s.is_kanji() && !s.is_symbol()
+            !s.is_kana() && !s.is_kanji() && !s.is_symbol() && !s.is_roman_letter()
         })
     }
 
@@ -182,7 +193,7 @@ impl JapaneseExt for str {
         let mut buf = [0; 16];
         self.chars().into_iter().any(|c| {
             let s = c.encode_utf8(&mut buf);
-            s.is_kana() || s.is_kanji() || s.is_symbol()
+            s.is_kana() || s.is_kanji() || s.is_symbol() || s.is_roman_letter()
         })
     }
 
@@ -450,7 +461,9 @@ where
         return false;
     }
 
-    arr[offset..].iter().any(|i| i.is_kanji())
+    arr[offset..]
+        .iter()
+        .any(|i| i.is_kanji() || i.is_roman_letter())
 }
 
 /// Checks whether 'arr' starts with a+b
@@ -483,10 +496,6 @@ where
     true
 }
 
-fn to_hiragana(inp: &str) -> String {
-    romaji::RomajiExt::to_hiragana(inp)
-}
-
 fn char_arr_to_string(vec: &Vec<char>) -> String {
     vec.iter().collect()
 }
@@ -497,7 +506,7 @@ where
 {
     let mut kanji_iter = kanji_iter.clone();
     let kanji = kanji_iter
-        .take_while_ref(|i| i.is_kanji() || i.is_symbol())
+        .take_while_ref(|i| i.is_kanji() || i.is_symbol() || i.is_roman_letter())
         .collect::<Vec<_>>();
     let kana = kanji_iter
         .take_while_ref(|i| i.is_kana())
@@ -513,7 +522,7 @@ where
     loop {
         if kanji_iter
             .peek()
-            .map(|i| i.is_kanji() || i.is_symbol())
+            .map(|i| i.is_kanji() || i.is_symbol() || i.is_roman_letter())
             .unwrap_or(true)
         {
             break i;
