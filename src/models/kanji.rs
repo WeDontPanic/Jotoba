@@ -159,11 +159,27 @@ impl Kanji {
     ) -> Result<Vec<i32>, Error> {
         let query = include_str!("../../sql/words_with_kanji_readings.sql");
 
-        let lit_sql = mode.to_like(&reading.reading.replace(".", "").replace("-", ""));
+        let lit_sql_hg = mode.to_like(format_reading(&reading.reading).to_hiragana());
+        let lit_sql_kk = mode.to_like(format_reading(&reading.reading).to_katakana());
         let lit_reading = mode.to_like(self.format_reading(&reading.reading, r_type));
 
+        /*
+        println!(
+            "{}",
+            diesel::debug_query::<diesel::pg::Pg, _>(
+                &diesel::sql_query(query)
+                    .bind::<Text, _>(&lit_sql_hg)
+                    .bind::<Text, _>(&lit_sql_kk)
+                    .bind::<Text, _>(&lit_reading)
+                    .bind::<Bool, _>(only_main_readins)
+            )
+            .to_string()
+        );
+        */
+
         let res = diesel::sql_query(query)
-            .bind::<Text, _>(&lit_sql)
+            .bind::<Text, _>(&lit_sql_hg)
+            .bind::<Text, _>(&lit_sql_kk)
             .bind::<Text, _>(&lit_reading)
             .bind::<Bool, _>(only_main_readins)
             .get_results_async::<Dict>(db)
@@ -179,13 +195,18 @@ impl Kanji {
                     let right = reading.split('.').skip(1).next().unwrap_or_default();
                     format!("{}{}", self.literal, right)
                 } else {
-                    reading.to_string()
+                    self.literal.to_string()
                 };
-                r.replace("-", "").to_hiragana()
+                r.replace("-", "")
             }
-            ReadingType::Onyomi => reading.to_hiragana(),
+            ReadingType::Onyomi => self.literal.clone(),
         }
     }
+}
+
+/// Formats a kun/on reading to a kana entry
+pub fn format_reading(reading: &str) -> String {
+    reading.replace("-", "").replace(".", "").to_owned()
 }
 
 /// Update the jlpt information for a kanji by its literal
@@ -535,7 +556,7 @@ pub fn get_kun_by_literal(
 }
 
 pub fn kun_len(kun: &str) -> usize {
-    utils::real_string_len(&kun.replace('-', "").replace('.', ""))
+    utils::real_string_len(&format_reading(kun))
 }
 
 pub fn kun_literal_reading(kun: &str) -> String {

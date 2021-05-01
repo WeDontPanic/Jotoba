@@ -1,4 +1,8 @@
+use levenshtein::levenshtein;
+
 use crate::{
+    japanese::JapaneseExt,
+    models::kanji,
     search::{query::Query, SearchMode},
     utils,
 };
@@ -121,8 +125,45 @@ pub(super) fn native_search_order(word: &Word, search_order: &SearchOrder) -> us
 
 pub(super) fn kanji_reading_search(word: &Word, search_order: &SearchOrder) -> usize {
     let mut score = 0;
+    // This function should only be called for kanji reading search queries!
+    debug_assert!(search_order.query.form.as_kanji_reading().is_some());
+    let kanji_reading = search_order.query.form.as_kanji_reading().unwrap();
+    let formatted_reading = kanji::format_reading(&kanji_reading.reading);
+    let kana_reading = &word.reading.kana.as_ref().unwrap().reading;
 
-    // TODO implement
+    if formatted_reading.is_hiragana() {
+        // Kun reading
+        if *kana_reading == formatted_reading
+            // Don't show direct readings if the kanji reading is a suffix/prefix
+            && !kanji_reading.reading.starts_with("-")
+            && !kanji_reading.reading.ends_with("-")
+        {
+            score += 20;
+        }
+    } else {
+        if kana_reading.to_hiragana() == formatted_reading.to_hiragana() {
+            score += 100;
+        } else if kana_reading
+            .to_hiragana()
+            .contains(&formatted_reading.to_hiragana())
+        {
+            // On reading
+            score +=
+                (20 - levenshtein(
+                    &kana_reading.to_hiragana(),
+                    &formatted_reading.to_hiragana(),
+                )) * 2;
+        }
+    }
+
+    if word.is_common() {
+        score += 8;
+    }
+
+    if let Some(jlpt) = word.get_reading().jlpt_lvl {
+        score += jlpt as usize;
+    }
+
     score
 }
 

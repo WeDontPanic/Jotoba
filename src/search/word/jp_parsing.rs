@@ -4,7 +4,7 @@ use igo_unidic::{ConjungationForm, Morpheme, Parser, ParticleType, VerbType, Wor
 use tokio_diesel::AsyncRunQueryDsl;
 
 /// Potentially lexemes of inflections
-pub const INFLECTION_LEXEMES: [&str; 12] = [
+pub const INFLECTION_LEXEMES: [&str; 13] = [
     "ない",    // Negative
     "ます",    // polite from
     "て",       // Te form
@@ -17,6 +17,7 @@ pub const INFLECTION_LEXEMES: [&str; 12] = [
     "な",       // na
     "ぬ",       // ン
     "で",       // some shit lol
+    "たい",    // Tai form
 ];
 
 async fn db_contains_word(db: &DbPool, word: &str) -> Result<bool, Error> {
@@ -82,6 +83,7 @@ pub enum Inflection {
     Causative,
     CausativePassive,
     Imperative,
+    Tai,
 }
 
 impl Inflection {
@@ -110,6 +112,7 @@ impl Inflection {
             "れる" => Self::Passive,
             "せる" => Self::Causative,
             "られる" => Self::CausativePassive,
+            "たい" => Self::Tai,
             "" => Self::Negative,
             _ => return None,
         })

@@ -142,7 +142,7 @@ impl<'a> Search<'a> {
         }
 
         // Perform the word search
-        let mut wordresults = if real_string_len(&query) <= 2 && query.is_kana() {
+        let mut wordresults = if real_string_len(&query) == 1 && query.is_kana() {
             // Search for exact matches only if query.len() <= 2
             let res = word_search
                 .with_mode(SearchMode::Exact)
