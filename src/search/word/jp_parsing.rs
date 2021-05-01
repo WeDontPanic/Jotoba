@@ -176,10 +176,16 @@ impl<'dict, 'input> InputTextParser<'dict, 'input> {
 
                 Some(ParseResult { items })
             } else {
+                let lexeme = if self.morphemes.len() == 1 {
+                    self.morphemes[0].lexeme
+                } else {
+                    ""
+                };
+
                 // Return blank query
                 let items = vec![WordItem {
                     surface: self.original,
-                    lexeme: "",
+                    lexeme,
                     word_class: None,
                     was_in_db: self.in_db,
                     inflections: vec![],

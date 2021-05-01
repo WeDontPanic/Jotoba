@@ -27,7 +27,7 @@ use r2d2::{Pool, PooledConnection};
 pub type DbConnection = PooledConnection<ConnectionManager<PgConnection>>;
 pub type DbPool = Pool<ConnectionManager<PgConnection>>;
 
-const NL_PARSER_PATH: &str = "./unidic";
+const NL_PARSER_PATH: &str = "./unidic-mecab";
 
 /// A global natural language parser
 // TODO check if dir exists first

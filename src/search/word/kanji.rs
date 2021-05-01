@@ -40,7 +40,7 @@ pub(super) async fn by_reading<'a>(search: &Search<'a>) -> Result<Vec<Word>, Err
     };
 
     let mut seq_ids = kanji
-        .find_readings(search.db, reading, reading_type.unwrap(), mode, false)
+        .find_readings(search.db, reading, reading_type.unwrap(), mode, true)
         .await?;
 
     // Do 2nd search if 1st one din't return anything
@@ -81,6 +81,7 @@ pub(super) async fn by_reading<'a>(search: &Search<'a>) -> Result<Vec<Word>, Err
 pub(super) async fn alternative_reading_search<'a>(
     search: &Search<'a>,
 ) -> Result<Vec<Word>, Error> {
+    println!("alternative search");
     let reading = search.query.form.as_kanji_reading().unwrap();
 
     // Modify search query
@@ -101,8 +102,6 @@ pub(super) async fn load_word_kanji_info<'a>(
     words: &Vec<Word>,
 ) -> Result<Vec<DbKanji>, Error> {
     let kanji_words = get_kanji_words(words);
-    println!("kanji words :{:?}", kanji_words);
-
     let retrieved_kanji = {
         // Also show kanji even if no word was found
         if !kanji_words.is_empty() {
