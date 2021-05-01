@@ -4,16 +4,19 @@ use tokio_diesel::AsyncRunQueryDsl;
 use crate::schema::{sentence, sentence_translation};
 use crate::{error::Error, parse::jmdict::languages::Language, DbPool};
 
-#[derive(Queryable, Clone, Debug, PartialEq)]
+#[derive(Queryable, Clone, Debug, PartialEq, QueryableByName)]
+#[table_name = "sentence"]
 pub struct Sentence {
     pub id: i32,
     pub content: String,
+    pub furigana: String,
 }
 
 #[derive(Insertable, Clone, PartialEq)]
 #[table_name = "sentence"]
 pub struct NewSentence {
     pub content: String,
+    pub furigana: String,
 }
 
 #[derive(Queryable, Clone, Debug, PartialEq)]
@@ -36,9 +39,13 @@ pub struct NewTranslation {
 pub async fn insert_sentence(
     db: &DbPool,
     text: String,
+    furigana: String,
     translations: Vec<(String, Language)>,
 ) -> Result<(), Error> {
-    let new_sentence = NewSentence { content: text };
+    let new_sentence = NewSentence {
+        content: text,
+        furigana,
+    };
 
     let sid: i32 = diesel::insert_into(sentence::table)
         .values(new_sentence)

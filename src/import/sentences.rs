@@ -25,6 +25,11 @@ pub async fn import(db: &DbPool, path: String) {
                     return None;
                 }
                 let jp = jp.unwrap();
+                let furigana = sentence_object
+                    .get("furi")
+                    .and_then(|i| i.as_str())
+                    .unwrap()
+                    .to_owned();
                 let translations = translations
                     .unwrap()
                     .into_iter()
@@ -37,7 +42,12 @@ pub async fn import(db: &DbPool, path: String) {
                     })
                     .collect_vec();
 
-                Some(sentence::insert_sentence(&db, jp.to_owned(), translations))
+                Some(sentence::insert_sentence(
+                    &db,
+                    jp.to_owned(),
+                    furigana.to_owned(),
+                    translations,
+                ))
             } else {
                 None
             }

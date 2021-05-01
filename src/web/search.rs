@@ -72,7 +72,7 @@ pub async fn search(
     // the appropriate template
     match query.type_ {
         QueryType::Kanji => kanji_search(&pool, query).await,
-        QueryType::Sentences => sentence_search().await,
+        QueryType::Sentences => sentence_search(&pool, query).await,
         QueryType::Names => name_search(&pool, query).await,
         QueryType::Words => word_search(&pool, query).await,
     }
@@ -80,8 +80,14 @@ pub async fn search(
 
 /// Perform a sentence search and
 /// render sentence_search tempalte
-async fn sentence_search() -> Result<HttpResponse, actix_web::Error> {
-    Ok(redirect_home())
+async fn sentence_search(
+    pool: &web::Data<DbPool>,
+    query: Query,
+) -> Result<HttpResponse, actix_web::Error> {
+    let result = search::sentence::search(&pool, &query).await.unwrap();
+    println!("{:#?}", result);
+
+    Ok(HttpResponse::Ok().finish())
 }
 
 /// Perform a kanji search and

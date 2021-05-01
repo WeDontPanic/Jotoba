@@ -68,6 +68,7 @@ table! {
     sentence (id) {
         id -> Int4,
         content -> Text,
+        furigana -> Text,
     }
 }
 
