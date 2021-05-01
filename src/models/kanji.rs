@@ -252,7 +252,6 @@ pub async fn exists(db: &DbPool) -> Result<bool, Error> {
 
 /// Find a kanji by its literal
 pub async fn find_by_literal(db: &DbPool, l: String) -> Result<Kanji, Error> {
-    println!("searhing for kanji: {}", l);
     // Try to find literal in kanji cache
     let mut k_cache: MutexGuard<SharedCache<i32, Kanji>> = KANJICACHE_C.lock().await;
     if let Some(k) = k_cache.find_by_predicate(|i| i.literal == l) {

@@ -64,9 +64,25 @@ CREATE TABLE name (
   name_type INTEGER[],
   xref TEXT
 );
-CREATE INDEX index_kana_name ON name (kana);
-CREATE INDEX index_kanji_name ON name (kanji);
+CREATE INDEX index_kana_name ON name (kana text_pattern_ops);
+CREATE INDEX index_kanji_name ON name (kanji text_pattern_ops);
 CREATE INDEX index_transcription_name ON name (transcription);
+
+CREATE TABLE sentence (
+  id SERIAL PRIMARY KEY,
+  content TEXT NOT NULL 
+);
+CREATE INDEX index_sentence_content ON sentence (content text_pattern_ops);
+
+CREATE TABLE sentence_translation (
+  id SERIAL PRIMARY KEY,
+  sentence_id INTEGER NOT NULL,
+  language INTEGER NOT NULL,
+  content TEXT NOT NULL, 
+  foreign key (sentence_id) references sentence(id)
+);
+CREATE INDEX index_sentence_translation_content ON sentence_translation (content text_pattern_ops);
+
 
 CREATE OR REPLACE FUNCTION is_kanji(IN inp text)
  RETURNS boolean AS

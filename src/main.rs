@@ -46,6 +46,7 @@ struct Options {
     jlpt_paches_path: String,
     manga_sfx_path: String,
     jmnedict_path: String,
+    sentences_path: String,
     start: bool,
 }
 
@@ -95,7 +96,16 @@ pub async fn main() {
                 return;
             }
 
-            import::jlpt_patches::import(&&database, options.jlpt_paches_path).await;
+            import::jlpt_patches::import(&database, options.jlpt_paches_path).await;
+        }
+
+        if !options.sentences_path.is_empty() {
+            if !dict_exists && !imported_dicts {
+                println!("Dict entries missing. Import them first!");
+                return;
+            }
+
+            import::sentences::import(&database, options.sentences_path).await;
         }
 
         if !options.manga_sfx_path.is_empty() {
@@ -206,7 +216,13 @@ fn parse_args() -> Option<Options> {
         ap.refer(&mut options.jmnedict_path).add_option(
             &["--jmnedict-path"],
             Store,
-            "The path to import the manga name entries from. Required for --import",
+            "The path to import the name entries from. Required for --import",
+        );
+
+        ap.refer(&mut options.sentences_path).add_option(
+            &["--sentences-path"],
+            Store,
+            "The path to import the sentences from. Required for --import",
         );
 
         ap.parse_args_or_exit();
@@ -218,6 +234,7 @@ fn parse_args() -> Option<Options> {
         && options.jlpt_paches_path.is_empty()
         && options.manga_sfx_path.is_empty()
         && options.jmnedict_path.is_empty()
+        && options.sentences_path.is_empty()
     {
         println!(
             "--manga-sfx-path, --jmdict-path, --jmnedict-path, --kanjidict-path or --jlpt-patches-path required"
