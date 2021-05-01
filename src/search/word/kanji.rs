@@ -70,7 +70,13 @@ pub(super) async fn by_reading<'a>(search: &Search<'a>) -> Result<Vec<Word>, Err
     )
     .await?;
 
-    SearchOrder::new(search.query, &None).sort(&mut w, order::kanji_reading_search);
+    #[cfg(feature = "tokenizer")]
+    let search_order = SearchOrder::new(search.query, &None);
+
+    #[cfg(not(feature = "tokenizer"))]
+    let search_order = SearchOrder::new(search.query);
+
+    search_order.sort(&mut w, order::kanji_reading_search);
 
     w.truncate(10);
 

@@ -1,4 +1,6 @@
+#[cfg(feature = "tokenizer")]
 mod jp_parsing;
+
 mod kanji;
 mod order;
 pub mod result;
@@ -26,7 +28,12 @@ use crate::{
     DbPool,
 };
 
-use self::{jp_parsing::InputTextParser, result::WordResult};
+#[cfg(feature = "tokenizer")]
+use self::jp_parsing::InputTextParser;
+#[cfg(feature = "tokenizer")]
+use jp_parsing::WordItem;
+
+use self::result::WordResult;
 
 use super::query::Form;
 
@@ -88,23 +95,38 @@ impl<'a> Search<'a> {
             .collect_vec())
     }
 
+    #[cfg(not(feature = "tokenizer"))]
+    fn get_query(&self) -> String {
+        self.query.query.clone()
+    }
+
+    #[cfg(feature = "tokenizer")]
+    async fn get_query<'b>(&'b self) -> Result<(String, Option<WordItem<'static, 'b>>), Error> {
+        let parser =
+            InputTextParser::new(&self.db, &self.query.query, &crate::JA_NL_PARSER).await?;
+
+        if let Some(parsed) = parser.parse() {
+            println!("parsed: {:#?}", parsed);
+            let index = self.query.word_index.clamp(0, parsed.items.len() - 1);
+            let res = parsed.items[index].clone();
+            Ok((res.get_lexeme().to_string(), Some(res)))
+        } else {
+            Ok((self.query.query.clone(), None))
+        }
+    }
+
     /// Perform a native word search
     async fn native_results(&self) -> Result<Vec<Word>, Error> {
         if self.query.language != QueryLang::Japanese {
             return Ok(vec![]);
         }
 
-        let parser =
-            InputTextParser::new(&self.db, &self.query.query, &crate::JA_NL_PARSER).await?;
+        #[cfg(feature = "tokenizer")]
+        let (query, morpheme) = self.get_query().await?;
 
-        let (query, morpheme) = if let Some(parsed) = parser.parse() {
-            println!("parsed: {:#?}", parsed);
-            let index = self.query.word_index.clamp(0, parsed.items.len() - 1);
-            let res = parsed.items[index].clone();
-            (res.get_lexeme().to_string(), Some(res))
-        } else {
-            (self.query.query.clone(), None)
-        };
+        #[cfg(not(feature = "tokenizer"))]
+        let query = self.get_query();
+
         let query_modified = query != self.query.query;
 
         println!("query: {}", query);
@@ -169,9 +191,14 @@ impl<'a> Search<'a> {
             }
         };
 
+        #[cfg(feature = "tokenizer")]
+        let search_order = SearchOrder::new(self.query, &morpheme);
+
+        #[cfg(not(feature = "tokenizer"))]
+        let search_order = SearchOrder::new(self.query);
+
         // Sort the results based
-        //NativeWordOrder::new(&query).sort(&mut wordresults);
-        SearchOrder::new(self.query, &morpheme).sort(&mut wordresults, order::native_search_order);
+        search_order.sort(&mut wordresults, order::native_search_order);
 
         // Limit search to 10 results
         wordresults.truncate(10);
@@ -207,9 +234,15 @@ impl<'a> Search<'a> {
 
         let mut wordresults = word_search.search_by_glosses().await?;
 
+        #[cfg(feature = "tokenizer")]
+        let search_order = SearchOrder::new(self.query, &None);
+
+        #[cfg(not(feature = "tokenizer"))]
+        let search_order = SearchOrder::new(self.query);
+
         // Sort the results based
         //GlossWordOrder::new(&self.query.query).sort(&mut wordresults);
-        SearchOrder::new(self.query, &None).sort(&mut wordresults, order::foreign_search_order);
+        search_order.sort(&mut wordresults, order::foreign_search_order);
 
         // Limit search to 10 results
         wordresults.truncate(10);

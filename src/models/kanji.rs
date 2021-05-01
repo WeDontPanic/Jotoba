@@ -8,8 +8,12 @@ use crate::{
     parse::kanjidict::Character,
     search::{query::KanjiReading, SearchMode},
     utils::{self, to_option},
-    DbPool, JA_NL_PARSER,
+    DbPool,
 };
+
+#[cfg(feature = "tokenizer")]
+use crate::JA_NL_PARSER;
+
 use async_std::sync::{Mutex, MutexGuard};
 use diesel::{
     prelude::*,
@@ -155,9 +159,8 @@ impl Kanji {
     ) -> Result<Vec<i32>, Error> {
         let query = include_str!("../../sql/words_with_kanji_readings.sql");
 
-        let lit_sql = mode.to_like(&reading.literal.to_string());
-        let reading_format = self.format_reading(&reading.reading, r_type);
-        let lit_reading = mode.to_like(reading_format);
+        let lit_sql = mode.to_like(&reading.reading.replace(".", "").replace("-", ""));
+        let lit_reading = mode.to_like(self.format_reading(&reading.reading, r_type));
 
         let res = diesel::sql_query(query)
             .bind::<Text, _>(&lit_sql)
@@ -485,9 +488,11 @@ pub fn get_kun_by_literal(
                 return Ordering::Greater;
             }
 
+            #[cfg(feature = "tokenizer")]
             let a_parsed = JA_NL_PARSER.parse(&a.reading).len();
+            #[cfg(feature = "tokenizer")]
             let b_parsed = JA_NL_PARSER.parse(&b.reading).len();
-
+            #[cfg(feature = "tokenizer")]
             if a_parsed == 1 && b_parsed > 0 {
                 return Ordering::Less;
             } else if a_parsed > 1 && b_parsed == 0 {

@@ -3,7 +3,10 @@ use crate::{
     utils,
 };
 
-use super::{jp_parsing::WordItem, result::Word};
+#[cfg(feature = "tokenizer")]
+use super::jp_parsing::WordItem;
+
+use super::result::Word;
 
 pub(super) fn foreign_search_order(word: &Word, search_order: &SearchOrder) -> usize {
     let mut score = 0;
@@ -71,7 +74,9 @@ pub fn calc_likenes(
 
 /// Search order for words searched by japanese meaning/kanji/reading
 pub(super) fn native_search_order(word: &Word, search_order: &SearchOrder) -> usize {
+    #[cfg(feature = "tokenizer")]
     let morpheme = search_order.morpheme;
+
     let reading = word.get_reading();
     let kana_reading = word.reading.kana.as_ref().unwrap();
     // Original query
@@ -98,6 +103,7 @@ pub(super) fn native_search_order(word: &Word, search_order: &SearchOrder) -> us
         score += jlpt as usize;
     }
 
+    #[cfg(feature = "tokenizer")]
     if let Some(morpheme) = morpheme {
         let lexeme = morpheme.get_lexeme();
         if reading.reading == lexeme || kana_reading.reading == lexeme {
@@ -114,19 +120,43 @@ pub(super) fn native_search_order(word: &Word, search_order: &SearchOrder) -> us
 }
 
 pub(super) fn kanji_reading_search(word: &Word, search_order: &SearchOrder) -> usize {
+    let mut score = 0;
+
     // TODO implement
-    0
+    score
 }
 
+#[cfg(feature = "tokenizer")]
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct SearchOrder<'a, 'parser> {
     query: &'a Query,
     morpheme: &'a Option<WordItem<'parser, 'a>>,
 }
 
+#[cfg(not(feature = "tokenizer"))]
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub struct SearchOrder<'a> {
+    query: &'a Query,
+}
+
+#[cfg(feature = "tokenizer")]
 impl<'a, 'parser> SearchOrder<'a, 'parser> {
     pub fn new(query: &'a Query, morpheme: &'a Option<WordItem<'parser, 'a>>) -> Self {
         SearchOrder { query, morpheme }
+    }
+
+    pub fn sort<U, T>(&self, vec: &mut Vec<U>, order_fn: T)
+    where
+        T: Fn(&U, &SearchOrder) -> usize,
+    {
+        vec.sort_by(|a, b| utils::invert_ordering(order_fn(a, &self).cmp(&order_fn(b, &self))))
+    }
+}
+
+#[cfg(not(feature = "tokenizer"))]
+impl<'a, 'parser> SearchOrder<'a> {
+    pub fn new(query: &'a Query) -> Self {
+        SearchOrder { query }
     }
 
     pub fn sort<U, T>(&self, vec: &mut Vec<U>, order_fn: T)
