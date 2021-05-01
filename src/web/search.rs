@@ -87,7 +87,14 @@ async fn sentence_search(
     let result = search::sentence::search(&pool, &query).await.unwrap();
     println!("{:#?}", result);
 
-    Ok(HttpResponse::Ok().finish())
+    Ok(HttpResponse::Ok().body(render!(
+        templates::base,
+        Some(&query),
+        None,
+        None,
+        None,
+        Some(result),
+    )))
 }
 
 /// Perform a kanji search and
@@ -117,7 +124,8 @@ async fn kanji_search(
         Some(&query),
         None,
         Some(kanji),
-        None
+        None,
+        None,
     )))
 }
 
@@ -138,6 +146,7 @@ async fn name_search(
         None,
         None,
         Some(names),
+        None,
     )))
 }
 
@@ -154,6 +163,7 @@ async fn word_search(
         templates::base,
         Some(&query),
         Some(result),
+        None,
         None,
         None,
     )))

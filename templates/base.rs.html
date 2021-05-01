@@ -1,11 +1,12 @@
+@use crate::search::sentence::result::Sentence;
 @use crate::search::word::result::WordResult;
 @use crate::search::kanji::result::Item as kanjiItem;
 @use crate::search::{query::Query, query_parser::QueryType};
 @use crate::models::name::Name;
 @use crate::web::utils::*;
-@use super::{index_html, word_search_html, kanji_details, name_search};
+@use super::{index_html, word_search_html, kanji_details, name_search, sentence_search};
 
-@(search_query: Option<&Query>, word_search_result: Option<WordResult>, kanji_info_search_result: Option<Vec<kanjiItem>>, name_search_result: Option<Vec<Name>>)
+@(search_query: Option<&Query>, word_search_result: Option<WordResult>, kanji_info_search_result: Option<Vec<kanjiItem>>, name_search_result: Option<Vec<Name>>, sentence_results: Option<Vec<Sentence>>)
 <!DOCTYPE html>
 <html lang="en">
    <head>
@@ -275,7 +276,11 @@
                 @if let Some(name_results) = name_search_result {
                   @:name_search(name_results)
                 }else {
-                  @:index_html()
+                  @if let Some(sentences) = sentence_results {
+                    @:sentence_search(sentences)
+                  }else{
+                    @:index_html()
+                  }
                 }
               }
             }

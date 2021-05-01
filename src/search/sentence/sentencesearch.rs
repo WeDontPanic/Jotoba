@@ -35,6 +35,7 @@ impl<'a> SentenceSearch<'a> {
         }
     }
 
+    // TODO Improve matching for verbs/adjectives
     pub(super) async fn by_jp(&self) -> Result<Vec<result::Sentence>, Error> {
         let query = include_str!("../../../sql/find_sentence_jp.sql");
 

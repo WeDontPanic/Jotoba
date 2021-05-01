@@ -1,19 +1,19 @@
 use diesel::sql_types::Text;
 
-use crate::japanese::SentencePart;
+use crate::japanese::{self, SentencePart};
 
 #[derive(Debug, PartialEq, Clone, QueryableByName)]
 pub struct Sentence {
     #[sql_type = "Text"]
-    content: String,
+    pub content: String,
     #[sql_type = "Text"]
     furigana: String,
     #[sql_type = "Text"]
-    translation: String,
+    pub translation: String,
 }
 
 impl Sentence {
-    fn furigana_pairs(&self) -> Vec<SentencePart> {
-        vec![]
+    pub fn furigana_pairs(&self) -> Vec<SentencePart> {
+        japanese::format_pairs(japanese::furigana_from_str(&self.furigana))
     }
 }
