@@ -1,4 +1,4 @@
-use std::str::FromStr;
+use std::{str::FromStr, time::SystemTime};
 
 use actix_web::{web, HttpMessage, HttpRequest, HttpResponse};
 use serde::Deserialize;
@@ -84,8 +84,9 @@ async fn sentence_search(
     pool: &web::Data<DbPool>,
     query: Query,
 ) -> Result<HttpResponse, actix_web::Error> {
+    let start = SystemTime::now();
     let result = search::sentence::search(&pool, &query).await.unwrap();
-    println!("{:#?}", result);
+    println!("sentence searh took: {:?}", start.elapsed());
 
     Ok(HttpResponse::Ok().body(render!(
         templates::base,

@@ -120,6 +120,13 @@ pub(super) fn native_search_order(word: &Word, search_order: &SearchOrder) -> us
         }
     }
 
+    score += word
+        .priorities
+        .as_ref()
+        .map(|i| i.len())
+        .unwrap_or_default()
+        * 2;
+
     score
 }
 

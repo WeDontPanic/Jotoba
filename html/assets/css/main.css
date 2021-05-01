@@ -612,6 +612,5 @@ input[type="color"] {
 }
 
 .res-separator.sentence {
-    border-top: 2px solid var(--lineColor);
     width: 100%;
 }
