@@ -64,9 +64,27 @@ CREATE TABLE name (
   name_type INTEGER[],
   xref TEXT
 );
-CREATE INDEX index_kana_name ON name (kana);
-CREATE INDEX index_kanji_name ON name (kanji);
+CREATE INDEX index_kana_name ON name (kana text_pattern_ops);
+CREATE INDEX index_kanji_name ON name (kanji text_pattern_ops);
 CREATE INDEX index_transcription_name ON name (transcription);
+
+CREATE TABLE sentence (
+  id SERIAL PRIMARY KEY,
+  content TEXT NOT NULL,
+  furigana TEXT NOT NULL
+);
+CREATE INDEX index_sentence_content ON sentence (content text_pattern_ops);
+
+CREATE TABLE sentence_translation (
+  id SERIAL PRIMARY KEY,
+  sentence_id INTEGER NOT NULL,
+  language INTEGER NOT NULL,
+  content TEXT NOT NULL, 
+  foreign key (sentence_id) references sentence(id)
+);
+CREATE INDEX index_sentence_translation_content ON sentence_translation (content text_pattern_ops);
+CREATE INDEX index_sentence_translation_language ON sentence_translation (language);
+
 
 CREATE OR REPLACE FUNCTION is_kanji(IN inp text)
  RETURNS boolean AS
@@ -130,3 +148,23 @@ CREATE OR REPLACE FUNCTION find_kanji_by_meaning(mea TEXT)
   from (select *, unnest(meaning) m from kanji) x order by mea <-> m limit 4
   $$
  LANGUAGE sql stable;
+
+CREATE OR REPLACE FUNCTION search_sentence_jp(squery TEXT, off integer, lim integer, lang integer)
+   RETURNS table (content text, furigana text, translation text) AS $$
+     SELECT sentence.content, sentence.furigana, sentence_translation.content FROM sentence 
+      INNER JOIN sentence_translation ON sentence_translation.sentence_id = sentence.id  
+        WHERE language = lang and 
+          sentence.content like '%'||squery||'%' 
+        ORDER BY squery <-> sentence.content limit lim offset off
+   $$
+LANGUAGE sql stable;
+
+CREATE OR REPLACE FUNCTION search_sentence_foreign(squery TEXT, off integer, lim integer, lang integer)
+   RETURNS table (content text, furigana text, translation text) AS $$
+     SELECT sentence.content, sentence.furigana, sentence_translation.content FROM sentence 
+      INNER JOIN sentence_translation ON sentence_translation.sentence_id = sentence.id 
+        WHERE language = lang 
+      ORDER BY squery <-> sentence_translation.content
+      LIMIT lim OFFSET off
+ $$
+LANGUAGE sql stable;

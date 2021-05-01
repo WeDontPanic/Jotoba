@@ -32,7 +32,7 @@ pub enum Language {
     Dutch,
     #[strum(serialize = "hun", serialize = "hu")]
     Hungarian,
-    #[strum(serialize = "slv", serialize = "sl-SL")]
+    #[strum(serialize = "slv", serialize = "sl-SL", serialize = "svl")]
     Slovenian,
 }
 

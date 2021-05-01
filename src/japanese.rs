@@ -352,7 +352,7 @@ pub fn kanji_readings(kanji: &str, kana: &str) -> Vec<String> {
         .collect()
 }
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Default)]
 pub struct SentencePart {
     pub kana: String,
     pub kanji: Option<String>,
@@ -381,6 +381,81 @@ impl SentencePart {
             self.kana.clone()
         }
     }
+
+    fn clear(&mut self) {
+        self.kana = String::new();
+        self.kanji = None;
+    }
+
+    fn is_empty(&self) -> bool {
+        self.kana.is_empty() && self.kanji.is_none()
+    }
+}
+
+/// Generates sentence parts from stringy-furigana
+pub fn furigana_from_str(input: &str) -> Vec<SentencePart> {
+    let mut in_furi_pairs = false;
+    let mut bef_splitter = false;
+    let mut result: Vec<SentencePart> = Vec::new();
+
+    let mut curr_part = SentencePart::default();
+
+    for c in input.chars() {
+        if c == '[' {
+            bef_splitter = true;
+            in_furi_pairs = true;
+            if !curr_part.is_empty() {
+                result.push(curr_part.clone());
+                curr_part.clear();
+            }
+            continue;
+        }
+
+        if c == ']' {
+            in_furi_pairs = false;
+            result.push(curr_part.clone());
+            curr_part.clear();
+            continue;
+        }
+
+        if c == '|' && in_furi_pairs {
+            bef_splitter = false;
+            continue;
+        }
+
+        if in_furi_pairs {
+            if bef_splitter {
+                if let Some(kanji) = curr_part.kanji.as_mut() {
+                    kanji.push(c);
+                } else {
+                    curr_part.kanji = Some(String::from(c));
+                }
+            } else {
+                curr_part.kana.push(c);
+            }
+        } else {
+            curr_part.kana.push(c);
+        }
+    }
+    result.push(curr_part);
+
+    result
+}
+
+pub fn format_pairs(pairs: Vec<SentencePart>) -> Vec<SentencePart> {
+    pairs
+        .into_iter()
+        .map(|i| {
+            if i.kana.is_empty() && i.kanji.is_some() {
+                SentencePart {
+                    kana: i.kanji.unwrap(),
+                    kanji: None,
+                }
+            } else {
+                i
+            }
+        })
+        .collect()
 }
 
 pub fn furi_algo(kanji: &str, kana: &str) -> Option<Vec<(String, String)>> {

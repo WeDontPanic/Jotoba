@@ -64,9 +64,30 @@ table! {
     }
 }
 
+table! {
+    sentence (id) {
+        id -> Int4,
+        content -> Text,
+        furigana -> Text,
+    }
+}
+
+table! {
+    sentence_translation (id) {
+        id -> Int4,
+        sentence_id -> Int4,
+        language -> Int4,
+        content -> Text,
+    }
+}
+
+joinable!(sentence_translation -> sentence (sentence_id));
+
 allow_tables_to_appear_in_same_query!(
     dict,
     kanji,
     name,
     sense,
+    sentence,
+    sentence_translation,
 );
