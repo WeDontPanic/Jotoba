@@ -134,6 +134,7 @@ async fn start_server(db: DbPool) -> std::io::Result<()> {
             .app_data(db.clone())
             // Middlewares
             .wrap(middleware::Logger::default())
+            .wrap(middleware::Compress::default())
             // Static files
             .route("/index.html", actixweb::get().to(web::index::index))
             .route("/", actixweb::get().to(web::index::index))
