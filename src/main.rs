@@ -6,6 +6,7 @@ extern crate diesel;
 include!(concat!(env!("OUT_DIR"), "/templates.rs"));
 
 pub mod cache;
+mod config;
 mod db;
 pub mod error;
 mod import;
@@ -17,8 +18,11 @@ pub mod search;
 pub mod utils;
 mod web;
 
+use std::path::Path;
+
 use actix_web::{middleware, web as actixweb, App, HttpServer};
 use argparse::{ArgumentParser, Print, Store, StoreTrue};
+use config::Config;
 use diesel::{r2d2::ConnectionManager, PgConnection};
 use models::{dict, kanji, sense};
 use r2d2::{Pool, PooledConnection};
@@ -33,7 +37,6 @@ pub type DbPool = Pool<ConnectionManager<PgConnection>>;
 const NL_PARSER_PATH: &str = "./unidic-mecab";
 
 /// A global natural language parser
-// TODO check if dir exists first
 #[cfg(feature = "tokenizer")]
 static JA_NL_PARSER: once_cell::sync::Lazy<igo_unidic::Parser> =
     Lazy::new(|| igo_unidic::Parser::new(NL_PARSER_PATH).unwrap());
@@ -137,13 +140,17 @@ pub async fn main() {
 /// Start the webserver
 #[actix_web::main]
 async fn start_server(db: DbPool) -> std::io::Result<()> {
+    let config = Config::new().await.expect("config failed");
     load_tokenizer();
 
     env_logger::init_from_env(env_logger::Env::new().default_filter_or("debug"));
+
+    let config_clone = config.clone();
     HttpServer::new(move || {
         App::new()
             // Data
             .data(db.clone())
+            .data(config_clone.clone())
             .app_data(db.clone())
             // Middlewares
             .wrap(middleware::Logger::default())
@@ -152,9 +159,12 @@ async fn start_server(db: DbPool) -> std::io::Result<()> {
             .route("/index.html", actixweb::get().to(web::index::index))
             .route("/", actixweb::get().to(web::index::index))
             .route("/search", actixweb::get().to(web::search::search))
-            .service(actix_files::Files::new("/assets", "html/assets"))
+            .service(actix_files::Files::new(
+                "/assets",
+                config_clone.server.get_html_files(),
+            ))
     })
-    .bind("0.0.0.0:8080")?
+    .bind(&config.server.listen_address)?
     .run()
     .await
 }
@@ -162,6 +172,10 @@ async fn start_server(db: DbPool) -> std::io::Result<()> {
 #[cfg(feature = "tokenizer")]
 fn load_tokenizer() {
     println!("Loading Japanese natural language parser");
+    if !Path::new(NL_PARSER_PATH).exists() {
+        panic!("No NL dict was found! Place the following folder in he binaries root dir: ./unidic-mecab");
+    }
+
     JA_NL_PARSER.parse("");
 }
 

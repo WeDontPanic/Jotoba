@@ -9,3 +9,5 @@ ipadic/
 unidic/
 resources.tar.gz
 unidic-mecab/
+data/
+data
