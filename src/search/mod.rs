@@ -4,6 +4,7 @@ pub mod kanji;
 pub mod name;
 pub mod query;
 pub mod query_parser;
+pub mod search_order;
 pub mod sentence;
 pub mod utils;
 pub mod word;

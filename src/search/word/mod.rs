@@ -1,5 +1,5 @@
 #[cfg(feature = "tokenizer")]
-mod jp_parsing;
+pub mod jp_parsing;
 
 mod kanji;
 mod order;
@@ -21,7 +21,7 @@ use crate::{
     models::kanji::Kanji as DbKanji,
     search::{
         query::{Query, QueryLang},
-        word::order::SearchOrder,
+        search_order::SearchOrder,
         SearchMode,
     },
     utils::real_string_len,

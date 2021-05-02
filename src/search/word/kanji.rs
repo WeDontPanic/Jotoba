@@ -1,8 +1,4 @@
-use super::{
-    order::{self, SearchOrder},
-    result::Word,
-    Search, WordSearch,
-};
+use super::{order, result::Word, Search, WordSearch};
 use crate::{
     error::Error,
     japanese::JapaneseExt,
@@ -10,7 +6,7 @@ use crate::{
         dict::Dict,
         kanji::{self, Kanji as DbKanji},
     },
-    search::{query::Query, utils, SearchMode},
+    search::{query::Query, search_order::SearchOrder, utils, SearchMode},
     utils::to_option,
 };
 use futures::future::try_join_all;
