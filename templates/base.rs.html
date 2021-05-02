@@ -1,4 +1,4 @@
-@use crate::search::sentence::result::Sentence;
+@use crate::search::sentence::result::Item as SentenceItem;
 @use crate::search::word::result::WordResult;
 @use crate::search::kanji::result::Item as kanjiItem;
 @use crate::search::{query::Query, query_parser::QueryType};
@@ -6,7 +6,7 @@
 @use crate::web::utils::*;
 @use super::{index_html, word_search_html, kanji_details, name_search, sentence_search};
 
-@(search_query: Option<&Query>, word_search_result: Option<WordResult>, kanji_info_search_result: Option<Vec<kanjiItem>>, name_search_result: Option<Vec<Name>>, sentence_results: Option<Vec<Sentence>>)
+@(search_query: Option<&Query>, word_search_result: Option<WordResult>, kanji_info_search_result: Option<Vec<kanjiItem>>, name_search_result: Option<Vec<Name>>, sentence_results: Option<Vec<SentenceItem>>)
 <!DOCTYPE html>
 <html lang="en">
    <head>

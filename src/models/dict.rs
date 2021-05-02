@@ -3,6 +3,7 @@ use std::cmp::Ordering;
 use super::{super::schema::dict, kanji::Kanji};
 use crate::{
     error::Error,
+    japanese::JapaneseExt,
     parse::jmdict::Entry,
     parse::jmdict::{information::Information, priority::Priority},
     utils, DbPool,
@@ -119,9 +120,10 @@ pub async fn load_by_ids(db: &DbPool, ids: &[i32]) -> Result<Vec<Dict>, Error> {
 }
 
 /// Finds words by their exact readings and retuns a vec of their sequence ids
+#[cfg(feature = "tokenizer")]
 pub(crate) async fn find_by_reading(
     db: &DbPool,
-    readings: &[(&str, i32)],
+    readings: &[(&str, i32, bool)],
 ) -> Result<Vec<(i32, i32)>, Error> {
     use crate::schema::dict::dsl::*;
     if readings.is_empty() {
@@ -129,11 +131,17 @@ pub(crate) async fn find_by_reading(
     }
 
     let mut result = Vec::new();
-    for (reading_str, start) in readings {
-        let dict_res: Result<Dict, tokio_diesel::AsyncError> = dict
-            .filter(reading.eq(reading_str))
-            .get_result_async(db)
-            .await;
+    for (reading_str, start, only_kana) in readings {
+        let dict_res: Result<Vec<Dict>, tokio_diesel::AsyncError> = if *only_kana {
+            dict.filter(reading.eq(reading_str))
+                .filter(is_main.eq(true))
+                .get_results_async(db)
+                .await
+        } else {
+            dict.filter(reading.eq(reading_str))
+                .get_results_async(db)
+                .await
+        };
 
         // Don't break with error if its just a 'not found error'
         if let Err(err) = dict_res {
@@ -145,8 +153,31 @@ pub(crate) async fn find_by_reading(
                 _ => return Err(err.into()),
             }
         }
+        let mut dict_res = dict_res.unwrap();
 
-        result.push((dict_res.unwrap().sequence, *start));
+        // Order results by probability
+        dict_res.sort_by(|a, b| {
+            if a.is_main && !b.is_main {
+                return Ordering::Less;
+            } else if !a.is_main && b.is_main {
+                return Ordering::Greater;
+            }
+
+            if reading_str.is_kana() {
+                let a_is_kana = a.is_main && !a.kanji;
+                let b_is_kana = b.is_main && !b.kanji;
+
+                if a_is_kana && !b_is_kana {
+                    return Ordering::Less;
+                } else if !a_is_kana && b_is_kana {
+                    return Ordering::Greater;
+                }
+            }
+
+            Ordering::Equal
+        });
+
+        result.extend(dict_res.into_iter().map(|i| (i.sequence, *start)));
     }
 
     Ok(result)

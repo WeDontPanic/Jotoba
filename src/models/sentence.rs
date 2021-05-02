@@ -37,7 +37,7 @@ pub struct NewTranslation {
     pub content: String,
 }
 
-#[derive(Queryable, Clone, PartialEq)]
+#[derive(Queryable, Clone, PartialEq, Debug)]
 pub struct SentenceVocabulary {
     pub id: i32,
     pub sentence_id: i32,
@@ -68,6 +68,7 @@ pub async fn insert_sentence(
     Ok(())
 }
 
+/// Generates the relations between sentences and its words from [`dict`]
 #[cfg(feature = "tokenizer")]
 async fn generate_dict_relations(db: &DbPool, sentence_id: i32, text: String) -> Result<(), Error> {
     let lexemes = crate::JA_NL_PARSER
@@ -79,7 +80,7 @@ async fn generate_dict_relations(db: &DbPool, sentence_id: i32, text: String) ->
         db,
         &lexemes
             .iter()
-            .map(|i| (i.lexeme, i.start as i32))
+            .map(|i| (i.lexeme, i.start as i32, i.word_class.is_particle()))
             .collect::<Vec<_>>(),
     )
     .await?

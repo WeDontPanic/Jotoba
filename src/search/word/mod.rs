@@ -106,6 +106,10 @@ impl<'a> Search<'a> {
             InputTextParser::new(&self.db, &self.query.query, &crate::JA_NL_PARSER).await?;
 
         if let Some(parsed) = parser.parse() {
+            if parsed.items.is_empty() {
+                return Ok((self.query.query.clone(), None));
+            }
+
             println!("parsed: {:#?}", parsed);
             let index = self.query.word_index.clamp(0, parsed.items.len() - 1);
             let res = parsed.items[index].clone();

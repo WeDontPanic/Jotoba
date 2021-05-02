@@ -1,5 +1,5 @@
-@use crate::search::sentence::result::Sentence;
-@(sentences: Vec<Sentence>)
+@use crate::search::sentence::result::Item;
+@(sentences: Vec<Item>)
 
 <!-- Inner Top Row -->
 <div class="d-flex center no-drag">
@@ -24,7 +24,7 @@
       <div class="list-entry">
         <div class="d-flex flex-row wrap">
 
-          @for spair in sentence.furigana_pairs() {
+          @for spair in sentence.sentence.furigana_pairs() {
             @if spair.kanji.is_some() {
               <div>
                 <span class="furigana-preview small">
@@ -43,7 +43,7 @@
         </div>
 
         <div class="sentence-translation">
-          @sentence.translation
+          @sentence.sentence.translation
         </div>
       </div>
      <hr class="res-separator sentence" />
