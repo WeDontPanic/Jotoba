@@ -42,13 +42,15 @@
           }
         </div>
 
-        <div class="sentence-translation original"> <!-- Hier die eigentliche Übersetzung (deutsch z.b.)-->
+        <div class="sentence-translation original">
           @sentence.sentence.translation
         </div>
-        <hr class="lang-separator"/>
-        <div class="sentence-translation"> <!-- Hier die englische Übersetzung-->
-          @sentence.sentence.translation 2
-        </div>
+        @if let Some(ref english) = sentence.sentence.get_english() {
+          <hr class="lang-separator"/>
+          <div class="sentence-translation">
+            @english
+          </div>
+        }
       </div>
      <hr class="res-separator sentence" />
     }
