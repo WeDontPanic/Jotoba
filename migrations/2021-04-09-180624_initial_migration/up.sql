@@ -85,6 +85,14 @@ CREATE TABLE sentence_translation (
 CREATE INDEX index_sentence_translation_content ON sentence_translation (content text_pattern_ops);
 CREATE INDEX index_sentence_translation_language ON sentence_translation (language);
 
+CREATE TABLE sentence_vocabulary (
+  id SERIAL PRIMARY KEY,
+  sentence_id INTEGER NOT NULL,
+  dict_sequence INTEGER NOT NULL,
+  start INTEGER NOT NULL,
+  foreign key (sentence_id) references sentence(id)
+);
+
 
 CREATE OR REPLACE FUNCTION is_kanji(IN inp text)
  RETURNS boolean AS

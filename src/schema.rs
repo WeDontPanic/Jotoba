@@ -81,7 +81,17 @@ table! {
     }
 }
 
+table! {
+    sentence_vocabulary (id) {
+        id -> Int4,
+        sentence_id -> Int4,
+        dict_sequence -> Int4,
+        start -> Int4,
+    }
+}
+
 joinable!(sentence_translation -> sentence (sentence_id));
+joinable!(sentence_vocabulary -> sentence (sentence_id));
 
 allow_tables_to_appear_in_same_query!(
     dict,
@@ -90,4 +100,5 @@ allow_tables_to_appear_in_same_query!(
     sense,
     sentence,
     sentence_translation,
+    sentence_vocabulary,
 );

@@ -118,6 +118,40 @@ pub async fn load_by_ids(db: &DbPool, ids: &[i32]) -> Result<Vec<Dict>, Error> {
     Ok(dict.filter(id.eq_any(ids)).get_results_async(db).await?)
 }
 
+/// Finds words by their exact readings and retuns a vec of their sequence ids
+pub(crate) async fn find_by_reading(
+    db: &DbPool,
+    readings: &[(&str, i32)],
+) -> Result<Vec<(i32, i32)>, Error> {
+    use crate::schema::dict::dsl::*;
+    if readings.is_empty() {
+        return Ok(vec![]);
+    }
+
+    let mut result = Vec::new();
+    for (reading_str, start) in readings {
+        let dict_res: Result<Dict, tokio_diesel::AsyncError> = dict
+            .filter(reading.eq(reading_str))
+            .get_result_async(db)
+            .await;
+
+        // Don't break with error if its just a 'not found error'
+        if let Err(err) = dict_res {
+            match err {
+                AsyncError::Error(ref e) => match e {
+                    diesel::result::Error::NotFound => continue,
+                    _ => return Err(err.into()),
+                },
+                _ => return Err(err.into()),
+            }
+        }
+
+        result.push((dict_res.unwrap().sequence, *start));
+    }
+
+    Ok(result)
+}
+
 /// Returns Ok(true) if at least one dict exists in the Db
 pub async fn exists(db: &DbPool) -> Result<bool, Error> {
     use crate::schema::dict::dsl::*;

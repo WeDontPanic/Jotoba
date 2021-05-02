@@ -123,7 +123,6 @@ impl QueryParser {
 
         // Japanese only input
         if query.is_japanese() {
-            // TODO actually dected if there are multiple words
             return Form::SingleWord;
         }
 

@@ -43,8 +43,8 @@ pub(super) async fn by_reading<'a>(search: &Search<'a>) -> Result<Vec<Word>, Err
         .find_readings(search.db, reading, reading_type.unwrap(), mode, true)
         .await?;
 
-    // Do 2nd search if 1st one din't return anything
-    if seq_ids.is_empty() {
+    // Do 2nd search if 1st didn't return enough
+    if seq_ids.len() <= 2 {
         seq_ids = kanji
             .find_readings(
                 search.db,
@@ -121,7 +121,7 @@ pub(super) async fn load_word_kanji_info<'a>(
             .flatten()
             .collect_vec()
         } else {
-            // No words found, search only for kanji from query
+            // No words found, search only for kanji appearing in the search query
             try_join_all(search.query.query.chars().into_iter().filter_map(|i| {
                 i.is_kanji()
                     .then(|| crate::models::kanji::find_by_literal(&search.db, i.to_string()))

@@ -7,6 +7,7 @@ drop function get_kun_dicts;
 drop function find_kanji_by_meaning;
 drop function search_sentence_jp;
 drop function search_sentence_foreign;
+drop table sentence_vocabulary;
 drop table sense;
 drop table dict;
 drop table name;

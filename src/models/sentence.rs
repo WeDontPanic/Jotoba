@@ -1,8 +1,10 @@
 use itertools::Itertools;
 use tokio_diesel::AsyncRunQueryDsl;
 
-use crate::schema::{sentence, sentence_translation};
+use crate::schema::{sentence, sentence_translation, sentence_vocabulary};
 use crate::{error::Error, parse::jmdict::languages::Language, DbPool};
+
+use super::dict;
 
 #[derive(Queryable, Clone, Debug, PartialEq, QueryableByName)]
 #[table_name = "sentence"]
@@ -35,6 +37,22 @@ pub struct NewTranslation {
     pub content: String,
 }
 
+#[derive(Queryable, Clone, PartialEq)]
+pub struct SentenceVocabulary {
+    pub id: i32,
+    pub sentence_id: i32,
+    pub dict_sequence: i32,
+    pub start: i32,
+}
+
+#[derive(Insertable, Clone, PartialEq)]
+#[table_name = "sentence_vocabulary"]
+pub struct NewSentenceVocabulary {
+    pub sentence_id: i32,
+    pub dict_sequence: i32,
+    pub start: i32,
+}
+
 /// Inserts a new sentence into the DB
 pub async fn insert_sentence(
     db: &DbPool,
@@ -42,6 +60,52 @@ pub async fn insert_sentence(
     furigana: String,
     translations: Vec<(String, Language)>,
 ) -> Result<(), Error> {
+    let sentence_id = insert_new_sentence(db, text.clone(), furigana, translations).await?;
+
+    #[cfg(feature = "tokenizer")]
+    generate_dict_relations(db, sentence_id, text).await?;
+
+    Ok(())
+}
+
+#[cfg(feature = "tokenizer")]
+async fn generate_dict_relations(db: &DbPool, sentence_id: i32, text: String) -> Result<(), Error> {
+    let lexemes = crate::JA_NL_PARSER
+        .parse(&text)
+        .into_iter()
+        .collect::<Vec<_>>();
+
+    let readings = dict::find_by_reading(
+        db,
+        &lexemes
+            .iter()
+            .map(|i| (i.lexeme, i.start as i32))
+            .collect::<Vec<_>>(),
+    )
+    .await?
+    .into_iter()
+    .map(|(sequence, start)| NewSentenceVocabulary {
+        sentence_id,
+        dict_sequence: sequence,
+        start,
+    })
+    .collect::<Vec<_>>();
+
+    diesel::insert_into(sentence_vocabulary::table)
+        .values(&readings)
+        .execute_async(db)
+        .await?;
+
+    Ok(())
+}
+
+/// Insert a new sentence into DB and returns the created sentence ID
+async fn insert_new_sentence(
+    db: &DbPool,
+    text: String,
+    furigana: String,
+    translations: Vec<(String, Language)>,
+) -> Result<i32, Error> {
     let new_sentence = NewSentence {
         content: text,
         furigana,
@@ -67,12 +131,15 @@ pub async fn insert_sentence(
         .execute_async(db)
         .await?;
 
-    Ok(())
+    Ok(sid)
 }
 
-/// Clear all sense entries
+/// Clear all sentence entries
 pub async fn clear(db: &DbPool) -> Result<(), Error> {
     diesel::delete(sentence_translation::table)
+        .execute_async(db)
+        .await?;
+    diesel::delete(sentence_vocabulary::table)
         .execute_async(db)
         .await?;
     diesel::delete(sentence::table).execute_async(db).await?;
