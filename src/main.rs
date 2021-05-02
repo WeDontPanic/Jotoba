@@ -141,6 +141,8 @@ pub async fn main() {
 #[actix_web::main]
 async fn start_server(db: DbPool) -> std::io::Result<()> {
     let config = Config::new().await.expect("config failed");
+
+    #[cfg(feature = "tokenizer")]
     load_tokenizer();
 
     env_logger::init_from_env(env_logger::Env::new().default_filter_or("debug"));
@@ -178,9 +180,6 @@ fn load_tokenizer() {
 
     JA_NL_PARSER.parse("");
 }
-
-#[cfg(not(feature = "tokenizer"))]
-fn load_tokenizer() {}
 
 /// parse and verify cli args
 fn parse_args() -> Option<Options> {
