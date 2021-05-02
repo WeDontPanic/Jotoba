@@ -89,5 +89,13 @@ function getBrowserWidth() {
       document.documentElement.offsetWidth,
       document.documentElement.clientWidth
     );
-  }
+}
   
+
+// Removes any current drag selection (not supported on IE)
+function deleteSelection() {
+    if (window.getSelection) {
+        var selection = window.getSelection();
+        selection.empty();
+    }
+}
