@@ -116,13 +116,14 @@ function copyTranslationAndShowMessage(textParent) {
 
 // Changes the search type in the upper row depending on the users input
 function changeSearchType(newType) {
-  var search_value = $('#search').val();
-  if (search_value.length > 0) {
-    var params = new URLSearchParams(location.search+"/search");
-    params.set('type', newType);
-    params.set('search', search_value);
-    window.location.search = params.toString();
-  }
+    var search_value = $('#search').val();
+    if (search_value.length > 0) {
+        var params = new URLSearchParams(location.search);
+        params.set('type', newType);
+        params.set('search', search_value);
+        alert( params.toString());
+        window.location = window.location + "/search?" + params.toString();
+    }
 }
 
 // Resets the value of the search input
