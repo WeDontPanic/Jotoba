@@ -1171,6 +1171,7 @@ dependencies = [
 [[package]]
 name = "igo-unidic"
 version = "0.1.0"
+source = "git+https://github.com/JojiiOfficial/igo-unidic#a6bfc320d1f47c535639dfdb202fbe90e8c8be99"
 dependencies = [
  "igo-rs-fork",
  "postgres",
