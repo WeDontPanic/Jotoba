@@ -12,7 +12,7 @@ CREATE TABLE dict (
   jlpt_lvl INTEGER,
   is_main BOOLEAN NOT NULL
 );
-CREATE INDEX index_reading_dict on dict (reading text_pattern_ops);
+CREATE INDEX index_reading_dict on dict using gin (reading gin_trgm_ops);
 CREATE INDEX index_seq_dict ON dict (sequence);
 
 CREATE TABLE sense (
@@ -32,7 +32,7 @@ CREATE TABLE sense (
   pos_simplified INTEGER[]
 );
 CREATE INDEX index_seq_sense ON sense (sequence);
-CREATE INDEX index_gloss_sense ON sense (gloss text_pattern_ops);
+CREATE INDEX index_gloss_sense ON sense using gin (gloss gin_trgm_ops);
 CREATE INDEX index_lang_sense ON sense (language);
 CREATE INDEX index_pos_simple_sense ON sense (pos_simplified);
 
