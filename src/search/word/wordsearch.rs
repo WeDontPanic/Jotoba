@@ -259,6 +259,7 @@ impl<'a> WordSearch<'a> {
         Ok(sense_schema::table
             .filter(sense_schema::sequence.eq_any(sequence_ids))
             .filter(sql(&language))
+            .order(sense_schema::id)
             .get_results_async(db)
             .await?)
     }
