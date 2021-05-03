@@ -106,6 +106,7 @@ pub(super) async fn load_word_kanji_info<'a>(
     let kanji_words = get_kanji_words(words);
     let retrieved_kanji = {
         // Also show kanji even if no word was found
+        // TODO make only one DB query for this
         if !kanji_words.is_empty() {
             try_join_all(
                 kanji_words

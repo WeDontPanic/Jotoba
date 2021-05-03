@@ -187,13 +187,8 @@ impl<'a> WordSearch<'a> {
         // this has to be done. If #20 gets resolved, change this !!
         let mut filter = String::new();
 
-        // Main condidion
-        let like = self.search.mode.to_like(query);
-        if self.ignore_case {
-            filter.push_str(format!("lower(gloss) like '{}'", like).as_str());
-        } else {
-            filter.push_str(format!("gloss like '{}'", like).as_str());
-        }
+        // TODO make operator adjustable
+        filter.push_str(format!("gloss &@~ '{}'", query).as_str());
 
         // Language filter
         let lang: i32 = self.language.unwrap_or_default().into();
@@ -218,10 +213,16 @@ impl<'a> WordSearch<'a> {
     /// Find the sequence ids of the results to load
     async fn get_sequence_ids_by_native(&mut self) -> Result<Vec<i32>, Error> {
         use crate::schema::dict::dsl::*;
+        use diesel::dsl::sql;
 
+        /*
         let query = dict
             .select(sequence)
             .filter(reading.like(self.search.mode.to_like(self.search.query.to_string())));
+        */
+        let query =
+            dict.select(sequence)
+                .filter(sql(format!("reading &@ '{}'", self.search.query).as_str()));
 
         // Wait for tokio-diesel to support boxed queries #20
         if self.search.limit > 0 {

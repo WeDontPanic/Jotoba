@@ -1,5 +1,3 @@
-CREATE EXTENSION pg_trgm;
-
 CREATE TABLE dict (
   id SERIAL PRIMARY KEY,
   sequence INTEGER NOT NULL,
@@ -12,7 +10,8 @@ CREATE TABLE dict (
   jlpt_lvl INTEGER,
   is_main BOOLEAN NOT NULL
 );
-CREATE INDEX index_reading_dict on dict using gin (reading gin_trgm_ops);
+CREATE INDEX index_reading_dict on dict using pgroonga (reading);
+CREATE INDEX index_reading_dict_text_pattern_ops on dict (reading text_pattern_ops);
 CREATE INDEX index_seq_dict ON dict (sequence);
 
 CREATE TABLE sense (
@@ -32,7 +31,8 @@ CREATE TABLE sense (
   pos_simplified INTEGER[]
 );
 CREATE INDEX index_seq_sense ON sense (sequence);
-CREATE INDEX index_gloss_sense ON sense using gin (gloss gin_trgm_ops);
+CREATE INDEX index_gloss_sense on sense using pgroonga (gloss);
+CREATE INDEX index_gloss_sense_text_pattern_ops on sense (gloss text_pattern_ops);
 CREATE INDEX index_lang_sense ON sense (language);
 CREATE INDEX index_pos_simple_sense ON sense (pos_simplified);
 
@@ -73,7 +73,7 @@ CREATE TABLE sentence (
   content TEXT NOT NULL,
   furigana TEXT NOT NULL
 );
-CREATE INDEX index_sentence_content ON sentence (content text_pattern_ops);
+CREATE INDEX index_sentence_content ON sentence using pgroonga (content) WITH (tokenizer='TokenMecab');
 
 CREATE TABLE sentence_translation (
   id SERIAL PRIMARY KEY,
@@ -82,7 +82,7 @@ CREATE TABLE sentence_translation (
   content TEXT NOT NULL, 
   foreign key (sentence_id) references sentence(id)
 );
-CREATE INDEX index_sentence_translation_content ON sentence_translation (content text_pattern_ops);
+CREATE INDEX index_sentence_translation_content ON sentence_translation using pgroonga (content);
 CREATE INDEX index_sentence_translation_language ON sentence_translation (language);
 
 CREATE TABLE sentence_vocabulary (
