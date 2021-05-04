@@ -141,7 +141,7 @@ var topBtn = $("#jmp-btn-top");
 
 // Focus Search Bar on index page
 $(document).ready(() => {
-    if (window.location.href == window.location.origin) {
+    if (window.location.href.substring(0,window.location.href.length - 1) == window.location.origin) {
         $('#search').focus();
         $('#search').select();
     }
