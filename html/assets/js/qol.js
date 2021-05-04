@@ -121,7 +121,7 @@ function changeSearchType(newType) {
         var params = new URLSearchParams();
         params.set('type', newType);
         params.set('search', search_value);
-        window.location = window.location.href + "search?" + params.toString();
+        window.location = window.location.origin + "search?" + params.toString();
     }
 }
 
