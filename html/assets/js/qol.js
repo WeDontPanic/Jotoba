@@ -133,7 +133,7 @@ function emptySearchInput() {
 
 // Jumps to the top or kanji part (mobile only)
 function jumpToTop() {
-  (!window.requestAnimationFrame) ? window.scrollTo(0, 0) : Util.scrollTo(0, 1000);
+  (!window.requestAnimationFrame) ? window.scrollTo(0, 0) : Util.scrollTo(0, 400);
 }
 
 // The Jmp Buttons
