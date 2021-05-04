@@ -12,6 +12,7 @@ use crate::{
     search::{Search, SearchMode},
     DbPool,
 };
+use diesel::sql_types::{Integer, Text};
 
 use diesel::prelude::*;
 use itertools::Itertools;
@@ -174,21 +175,12 @@ impl<'a> WordSearch<'a> {
 
     /// Find the sequence ids of the results to load
     async fn get_sequence_ids_by_glosses(&mut self) -> Result<Vec<i32>, Error> {
-        use crate::schema::sense::dsl::*;
-        use diesel::dsl::sql;
-
-        let query = if self.ignore_case {
-            self.search.query.to_lowercase()
-        } else {
-            self.search.query.to_string()
-        };
-
         // Since boxed queries don't work with tokio-diesel
         // this has to be done. If #20 gets resolved, change this !!
-        let mut filter = String::new();
+        let mut filter = String::from("SELECT sequence from sense WHERE");
 
         // TODO make operator adjustable
-        filter.push_str(format!("gloss &@~ '{}'", query).as_str());
+        filter.push_str(" gloss &@~ $1 ");
 
         // Language filter
         let lang: i32 = self.language.unwrap_or_default().into();
@@ -203,36 +195,37 @@ impl<'a> WordSearch<'a> {
             filter.push_str(format!(" limit {}", self.search.limit).as_str());
         }
 
-        return Ok(sense
-            .select(sequence)
-            .filter(sql(&filter))
-            .get_results_async(&self.db)
-            .await?);
+        println!("query: {}", filter);
+        return Ok(diesel::sql_query(&filter)
+            .bind::<Text, _>(&self.search.query)
+            .get_results_async::<SenqenceSelect>(&self.db)
+            .await?
+            .into_iter()
+            .map(|i| i.sequence)
+            .collect());
     }
 
     /// Find the sequence ids of the results to load
     async fn get_sequence_ids_by_native(&mut self) -> Result<Vec<i32>, Error> {
-        use crate::schema::dict::dsl::*;
-        use diesel::dsl::sql;
-
         /*
         let query = dict
             .select(sequence)
             .filter(reading.like(self.search.mode.to_like(self.search.query.to_string())));
         */
-        let query =
-            dict.select(sequence)
-                .filter(sql(format!("reading &@ '{}'", self.search.query).as_str()));
+        let mut filter = String::from("SELECT sequence from dict WHERE reading &@ $1");
 
         // Wait for tokio-diesel to support boxed queries #20
         if self.search.limit > 0 {
-            Ok(query
-                .limit(self.search.limit as i64)
-                .get_results_async(&self.db)
-                .await?)
-        } else {
-            Ok(query.get_results_async(&self.db).await?)
+            filter.push_str(format!(" limit {} ", self.search.limit).as_str());
         }
+
+        return Ok(diesel::sql_query(&filter)
+            .bind::<Text, _>(&self.search.query)
+            .get_results_async::<SenqenceSelect>(&self.db)
+            .await?
+            .into_iter()
+            .map(|i| i.sequence)
+            .collect());
     }
 
     /// Load all senses for the sequence ids
@@ -469,4 +462,10 @@ fn pos_unionized(senses: &Vec<Sense>) -> Vec<PartOfSpeech> {
     }
 
     pos
+}
+
+#[derive(Debug, PartialEq, Clone, QueryableByName)]
+pub struct SenqenceSelect {
+    #[sql_type = "Integer"]
+    pub sequence: i32,
 }
