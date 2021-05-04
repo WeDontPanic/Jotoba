@@ -450,8 +450,9 @@ input[type="color"] {
     padding-top: 5px;
 }
 
-.list-entry.sentence {
-    padding-top: 0.5rem;
+.list-entry.sentence > .lang-separator {
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
 }
 
 .tags {
@@ -633,4 +634,5 @@ input[type="color"] {
 
 .sentence-translation.original {
     font-size: 19px;
+    padding-top: 0.2rem;
 }   
