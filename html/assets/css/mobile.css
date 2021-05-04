@@ -269,8 +269,12 @@
 
     .kanji-jump {
         text-align: center;
-        margin-top: -30px;
-        margin-bottom: 15px;
+        margin-top: -25px;
+        margin-bottom: 20px;
+    }
+
+    .word-title {
+        display: none;
     }
 }
 
