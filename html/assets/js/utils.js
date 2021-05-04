@@ -2,6 +2,8 @@
  * This JS-File contains some functions that are commonly used
  */
 
+// The util "parent"
+function Util () {};
 
 // Displays the given message of type "succes", "error" or "info"
 function showMessage(type, message) {
@@ -99,3 +101,38 @@ function deleteSelection() {
         selection.empty();
     }
 }
+
+// Scrolls to the destination in x miliseconds
+Util.scrollTo = function (final, duration) {
+    var start = window.scrollY || document.documentElement.scrollTop,
+        currentTime = null;
+        
+    var animateScroll = function(timestamp) {
+        if (!currentTime) {
+            currentTime = timestamp;  
+        }      
+
+        let progress = timestamp - currentTime;
+
+        if(progress > duration) {
+            progress = duration;
+        }
+
+        let val = Math.easeInOutQuad(progress, start, final-start, duration);
+        window.scrollTo(0, val);
+
+        if(progress < duration) {
+            window.requestAnimationFrame(animateScroll);
+        }
+    };
+  
+    window.requestAnimationFrame(animateScroll);
+};
+  
+// Used for animation curves
+Math.easeInOutQuad = function (t, b, c, d) {
+    t /= d/2;
+    if (t < 1) return c/2*t*t + b;
+    t--;
+    return -c/2 * (t*(t-2) - 1) + b;
+};

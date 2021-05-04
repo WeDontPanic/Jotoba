@@ -260,11 +260,9 @@
         border: none;
         outline: none; 
         background-color: var(--itemBG_075);
-        color: var(--primaryTextColor);
-        cursor: pointer; 
-        padding: 15px;
         border-radius: 10px;
-        font-size: 18px;
+        width: 50px;
+        height: 50px;
     }
 
     .kanji-jump {
