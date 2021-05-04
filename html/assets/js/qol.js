@@ -142,7 +142,7 @@ var topBtn = $("#jmp-btn-top");
 
 // Focus Search Bar on index page
 $(document).ready(() => {
-    if (window.location.href.length < 20) {
+    if (window.location.href == window.location.origin) {
         $('#search').focus();
     }
 });
