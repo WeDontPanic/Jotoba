@@ -144,6 +144,7 @@ var topBtn = $("#jmp-btn-top");
 $(document).ready(() => {
     if (window.location.href == window.location.origin) {
         $('#search').focus();
+        $('#search').select();
     }
 });
 
