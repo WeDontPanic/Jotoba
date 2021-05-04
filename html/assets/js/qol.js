@@ -140,6 +140,13 @@ function jumpToTop() {
 // The Jmp Buttons
 var topBtn = $("#jmp-btn-top");
 
+// Focus Search Bar on index page
+$(document).ready(() => {
+    if (window.location.href.length < 20) {
+        $('#search').focus();
+    }
+});
+
 // Window Scroll checks
 window.onscroll = function() {
     if (getBrowserWidth() < 600 && (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20)) {
