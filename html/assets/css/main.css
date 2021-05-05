@@ -338,6 +338,16 @@ input[type="color"] {
 
 /* -----------------  Templates ----------------- */
 
+.search-annotation {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin-top: -1.5rem;
+    margin-bottom: 1.5rem;
+    color: var(--tagColor);
+}
+
 .entry-min-height-1 {
     min-height: 90px;
 }
