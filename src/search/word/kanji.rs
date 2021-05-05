@@ -1,4 +1,8 @@
-use super::{order, result::Word, Search, WordSearch};
+use super::{
+    order,
+    result::{InflectionInformation, Word},
+    Search, WordSearch,
+};
 use crate::{
     error::Error,
     japanese::JapaneseExt,
@@ -15,7 +19,9 @@ use itertools::Itertools;
 const MAX_KANJI_INFO_ITEMS: usize = 5;
 
 /// Runs a kanji reading search
-pub(super) async fn by_reading<'a>(search: &Search<'a>) -> Result<Vec<Word>, Error> {
+pub(super) async fn by_reading<'a>(
+    search: &Search<'a>,
+) -> Result<(Vec<Word>, Option<InflectionInformation>), Error> {
     let reading = search
         .query
         .form
@@ -76,13 +82,13 @@ pub(super) async fn by_reading<'a>(search: &Search<'a>) -> Result<Vec<Word>, Err
 
     w.truncate(10);
 
-    Ok(w)
+    Ok((w, None))
 }
 
 /// Do a search without the kanji literal or reading
 pub(super) async fn alternative_reading_search<'a>(
     search: &Search<'a>,
-) -> Result<Vec<Word>, Error> {
+) -> Result<(Vec<Word>, Option<InflectionInformation>), Error> {
     println!("alternative search");
     let reading = search.query.form.as_kanji_reading().unwrap();
 

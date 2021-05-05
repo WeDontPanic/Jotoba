@@ -15,25 +15,30 @@
   </div>
  
   <!-- TODO Shown if no results were found and an alternative is displayed -->
-  <div class="search-annotation">
-    <span>
-      No results found.
-    </span>
-    <span>
-      Showing results for xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-    </span>
-  </div>
+  <!--<div class="search-annotation">-->
+    <!--<span>-->
+      <!--No results found.-->
+    <!--</span>-->
+    <!--<span>-->
+      <!--Showing results for xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx-->
+    <!--</span>-->
+  <!--</div>-->
 
-  <!-- TODO Shown if word is an inflection with another -->
-  <div class="search-annotation">
-    <div class="search-inflection">
-      <span>
-        あります could be an inflection of ある, with these forms:
-        <br>
-        Masu-form. It is the polite form of the verb.
-      </span>
+  @if let Some(ref inflection) = result.inflection_info {
+    <div class="search-annotation">
+      <div class="search-inflection">
+        <span>
+          @query.query could be an inflection of <a class="clickable no-align green" href="/search?type=0&search=@inflection.lexeme">@inflection.lexeme</a>, with these forms:
+          <br>
+          @for form in inflection.forms.iter() {
+            <!--Masu-form. It is the polite form of the verb.-->
+            @form.as_ref()
+            <br>
+          }
+        </span>
+      </div>
     </div>
-  </div>
+  }
   
   <br>
   

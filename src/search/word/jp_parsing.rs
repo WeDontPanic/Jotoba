@@ -1,4 +1,4 @@
-use crate::{error::Error, DbPool};
+use crate::{error::Error, japanese::Inflection, DbPool};
 use diesel::{dsl::exists, prelude::*};
 use igo_unidic::{ConjungationForm, Morpheme, Parser, ParticleType, VerbType, WordClass};
 use tokio_diesel::AsyncRunQueryDsl;
@@ -69,21 +69,6 @@ impl<'dict, 'input> WordItem<'dict, 'input> {
 #[derive(Debug, Clone, PartialEq)]
 pub struct ParseResult<'dict, 'input> {
     pub items: Vec<WordItem<'dict, 'input>>,
-}
-
-#[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord)]
-pub enum Inflection {
-    Negative,
-    Polite,
-    Present,
-    Past,
-    TeForm,
-    Potential,
-    Passive,
-    Causative,
-    CausativePassive,
-    Imperative,
-    Tai,
 }
 
 impl Inflection {

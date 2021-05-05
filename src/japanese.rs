@@ -1,6 +1,22 @@
 use std::iter::Peekable;
 
 use itertools::Itertools;
+use strum_macros::AsRefStr;
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, AsRefStr)]
+pub enum Inflection {
+    Negative,
+    Polite,
+    Present,
+    Past,
+    TeForm,
+    Potential,
+    Passive,
+    Causative,
+    CausativePassive,
+    Imperative,
+    Tai,
+}
 
 pub trait JapaneseExt {
     /// Returns true if self is of type ct

@@ -5,24 +5,27 @@ use crate::{models::sentence, parse::jmdict::languages::Language};
 use itertools::Itertools;
 use serde_json::Value;
 
-use futures::future::try_join_all;
-
 /// Import jlpt patche file
 pub async fn import(db: &DbPool, path: String) {
     println!("Clearing old sentences");
     sentence::clear(db).await.unwrap();
+    let f = std::fs::File::open(&path).expect("Error reading sentences file!");
+    println!("Counting sentences...");
+    let json: Value = serde_json::from_reader(f).expect("invalid json data");
+    let len = json.get("sentences").unwrap().as_array().unwrap().len();
+
     println!("Importing sentences...");
     let f = std::fs::File::open(path).expect("Error reading sentences file!");
     let json: Value = serde_json::from_reader(f).expect("invalid json data");
 
     // Import kanji patches
     if let Some(sentences) = json.get("sentences").and_then(|i| i.as_array()) {
-        try_join_all(sentences.into_iter().filter_map(|sentence| {
+        for (pos, sentence) in sentences.into_iter().enumerate() {
             if let Some(sentence_object) = sentence.as_object() {
                 let jp = sentence_object.get("jp").and_then(|i| i.as_str());
                 let translations = sentence_object.get("translated").and_then(|i| i.as_array());
                 if jp.is_none() || translations.is_none() {
-                    return None;
+                    continue;
                 }
                 let jp = jp.unwrap();
                 let furigana = sentence_object
@@ -42,17 +45,11 @@ pub async fn import(db: &DbPool, path: String) {
                     })
                     .collect_vec();
 
-                Some(sentence::insert_sentence(
-                    &db,
-                    jp.to_owned(),
-                    furigana.to_owned(),
-                    translations,
-                ))
-            } else {
-                None
+                sentence::insert_sentence(&db, jp.to_owned(), furigana.to_owned(), translations)
+                    .await
+                    .expect("err");
+                print!("Imported {}/{}\r", pos, len);
             }
-        }))
-        .await
-        .expect("db error");
+        }
     }
 }

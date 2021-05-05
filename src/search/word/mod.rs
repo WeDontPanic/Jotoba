@@ -33,7 +33,7 @@ use self::jp_parsing::InputTextParser;
 #[cfg(feature = "tokenizer")]
 use jp_parsing::WordItem;
 
-use self::result::WordResult;
+use self::result::{InflectionInformation, WordResult};
 
 use super::query::Form;
 
@@ -67,7 +67,7 @@ pub async fn search(db: &DbPool, query: &Query) -> Result<WordResult, Error> {
 impl<'a> Search<'a> {
     /// Do the search
     async fn do_search(&self) -> Result<WordResult, Error> {
-        let word_results = match self.query.form {
+        let (word_results, infl_info) = match self.query.form {
             Form::KanjiReading(_) => kanji::by_reading(self).await?,
             _ => self.do_word_search().await?,
         };
@@ -79,20 +79,26 @@ impl<'a> Search<'a> {
         return Ok(WordResult {
             items: Self::merge_words_with_kanji(word_results, kanji_results),
             contains_kanji: kanji_items > 0,
+            inflection_info: infl_info,
         });
     }
 
     /// Search by a word
-    async fn do_word_search(&self) -> Result<Vec<Word>, Error> {
+    async fn do_word_search(&self) -> Result<(Vec<Word>, Option<InflectionInformation>), Error> {
         // Perform searches asynchronously
-        let (native_word_res, gloss_word_res): (Vec<Word>, Vec<Word>) =
-            futures::try_join!(self.native_results(), self.gloss_results())?;
+        let ((native_word_res, infl_info), gloss_word_res): (
+            (Vec<Word>, Option<InflectionInformation>),
+            Vec<Word>,
+        ) = futures::try_join!(self.native_results(), self.gloss_results())?;
 
         // Chain native and word results into one vector
-        Ok(native_word_res
-            .into_iter()
-            .chain(gloss_word_res)
-            .collect_vec())
+        Ok((
+            native_word_res
+                .into_iter()
+                .chain(gloss_word_res)
+                .collect_vec(),
+            infl_info,
+        ))
     }
 
     #[cfg(not(feature = "tokenizer"))]
@@ -120,9 +126,9 @@ impl<'a> Search<'a> {
     }
 
     /// Perform a native word search
-    async fn native_results(&self) -> Result<Vec<Word>, Error> {
+    async fn native_results(&self) -> Result<(Vec<Word>, Option<InflectionInformation>), Error> {
         if self.query.language != QueryLang::Japanese {
-            return Ok(vec![]);
+            return Ok((vec![], None));
         }
 
         #[cfg(feature = "tokenizer")]
@@ -132,6 +138,17 @@ impl<'a> Search<'a> {
         let query = self.get_query();
 
         let query_modified = query != self.query.query;
+
+        #[cfg(feature = "tokenizer")]
+        let infl_info = morpheme.as_ref().and_then(|i| {
+            (!i.inflections.is_empty()).then(|| InflectionInformation {
+                lexeme: i.lexeme.to_owned(),
+                forms: i.inflections.clone(),
+            })
+        });
+
+        #[cfg(not(feature = "tokenizer"))]
+        let infl_info: Option<InflectionInformation> = None;
 
         println!("query: {}", query);
 
@@ -207,7 +224,7 @@ impl<'a> Search<'a> {
         // Limit search to 10 results
         wordresults.truncate(10);
 
-        Ok(wordresults)
+        Ok((wordresults, infl_info))
     }
 
     /// Search gloss readings

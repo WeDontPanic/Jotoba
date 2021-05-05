@@ -15,6 +15,7 @@ pub mod models;
 mod parse;
 pub mod schema;
 pub mod search;
+pub mod sql;
 pub mod utils;
 mod web;
 

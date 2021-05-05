@@ -18,6 +18,13 @@ use crate::{
 pub struct WordResult {
     pub items: Vec<Item>,
     pub contains_kanji: bool,
+    pub inflection_info: Option<InflectionInformation>,
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub struct InflectionInformation {
+    pub lexeme: String,
+    pub forms: Vec<japanese::Inflection>,
 }
 
 #[derive(Debug, Clone, PartialEq)]

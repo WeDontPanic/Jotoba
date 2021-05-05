@@ -12,7 +12,7 @@ pub struct Sentence {
     #[sql_type = "Text"]
     pub content: String,
     #[sql_type = "Text"]
-    furigana: String,
+    pub furigana: String,
     #[sql_type = "Text"]
     pub translation: String,
     #[sql_type = "Integer"]
