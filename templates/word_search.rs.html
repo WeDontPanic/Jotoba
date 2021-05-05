@@ -13,9 +13,8 @@
       <h2 id="nextTabBtn" onclick="changeSearchType(3)" class="tab-btn">Names &rarr;</h2>
     </div>
   </div>
-  <br>
-
-  <!-- Used when showing different results TODO -->
+ 
+  <!-- TODO Shown if no results were found and an alternative is displayed -->
   <div class="search-annotation">
     <span>
       No results found.
@@ -24,6 +23,19 @@
       Showing results for xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     </span>
   </div>
+
+  <!-- TODO Shown if word is an inflection with another -->
+  <div class="search-annotation">
+    <div class="search-inflection">
+      <span>
+        あります could be an inflection of ある, with these forms:
+        <br>
+        Masu-form. It is the polite form of the verb.
+      </span>
+    </div>
+  </div>
+  
+  <br>
   
   <!-- Inner Main Body -->
   <div id="content-container" class="d-flex left">
