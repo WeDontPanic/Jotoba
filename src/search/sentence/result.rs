@@ -1,13 +1,9 @@
 use diesel::sql_types::{Integer, Text};
 
 use crate::{
-    error::Error,
     japanese::{self, SentencePart},
-    models::sentence::SentenceVocabulary,
-    DbPool,
+    parse::jmdict::languages::Language,
 };
-
-use super::sentencesearch::SentenceSearch;
 
 #[derive(Debug, PartialEq, Clone, QueryableByName)]
 pub struct Sentence {
@@ -19,12 +15,15 @@ pub struct Sentence {
     furigana: String,
     #[sql_type = "Text"]
     pub translation: String,
+    #[sql_type = "Integer"]
+    pub language: Language,
+    #[sql_type = "Text"]
+    pub eng: String,
 }
 
 #[derive(Debug, PartialEq, Clone)]
 pub struct Item {
     pub sentence: Sentence,
-    pub vocabularies: Vec<(String, SentenceVocabulary)>,
 }
 
 impl Sentence {
@@ -32,14 +31,11 @@ impl Sentence {
         japanese::format_pairs(japanese::furigana_from_str(&self.furigana))
     }
 
-    pub async fn into_item(self, db: &DbPool) -> Result<Item, Error> {
-        let vocs = SentenceSearch::get_vocabularies(db, self.id).await?;
-        println!("vocs: {:#?}", vocs);
-        println!("sparts: {:#?}", self.furigana_pairs());
-
-        Ok(Item {
-            vocabularies: vocs,
-            sentence: self,
-        })
+    pub fn get_english(&self) -> Option<&str> {
+        if self.eng == "-" {
+            None
+        } else {
+            Some(&self.eng)
+        }
     }
 }

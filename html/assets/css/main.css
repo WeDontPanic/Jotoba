@@ -350,6 +350,10 @@ input[type="color"] {
     padding-left: 1vw;
 }
 
+.d-flex.flex-row.sentence {
+    padding-bottom: 0.1rem;
+}
+
 .kanji-entry {
     height: fit-content;
     padding-bottom: 10px;
@@ -445,6 +449,12 @@ input[type="color"] {
 .kanji-entry .list-entry + .list-entry {
     padding-top: 5px;
 }
+
+.list-entry.sentence > .lang-separator {
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
 .tags {
     color: var(--tagColor);
     font-size: 12px;
@@ -602,9 +612,14 @@ input[type="color"] {
 }
 
 .lang-separator {
-  border-top: 1px solid var(--langSep);
-  margin-left: 30px;
-  margin-right: 30px;
+    border-top: 1px solid var(--langSep);
+    margin-left: 30px;
+    margin-right: 30px;
+}
+
+.lang-separator.sentence {
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
 }
 
 .res-separator {
@@ -614,3 +629,10 @@ input[type="color"] {
 .res-separator.sentence {
     width: 100%;
 }
+
+/* Specific sentence stuff */
+
+.sentence-translation.original {
+    font-size: 19px;
+    padding-top: 0.2rem;
+}   

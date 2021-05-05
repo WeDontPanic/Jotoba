@@ -158,21 +158,22 @@ CREATE OR REPLACE FUNCTION find_kanji_by_meaning(mea TEXT)
  LANGUAGE sql stable;
 
 CREATE OR REPLACE FUNCTION search_sentence_foreign(squery TEXT, off integer, lim integer, lang integer)
-    RETURNS table (content text, furigana text, translation text, id integer) AS $$
-      SELECT sentence.content, sentence.furigana, sentence_translation.content,sentence.id FROM sentence
-       INNER JOIN sentence_translation ON sentence_translation.sentence_id = sentence.id
-         WHERE language = lang
-       ORDER BY squery <-> sentence_translation.content
-       LIMIT lim OFFSET off
-  $$
- LANGUAGE sql stable;
+       RETURNS table (content text, furigana text, translation text,id integer, language integer, eng text) AS $$
+         SELECT sentence.content, sentence.furigana, sentence_translation.content, sentence.id, sentence_translation.language,
+        COALESCE((select content as eng from sentence_translation where sentence_translation.sentence_id = sentence.id and sentence_translation.language = 1 limit 1), '-') FROM sentence
+          INNER JOIN sentence_translation ON sentence_translation.sentence_id = sentence.id
+            WHERE sentence_translation.language = lang
+            ORDER BY squery <-> sentence_translation.content limit lim offset off
+   $$
+LANGUAGE sql stable;
+
 
 CREATE OR REPLACE FUNCTION search_sentence_jp(squery TEXT, off integer, lim integer, lang integer)
-    RETURNS table (content text, furigana text, translation text,id integer) AS $$
-      SELECT sentence.content, sentence.furigana, sentence_translation.content, sentence.id FROM sentence
-       INNER JOIN sentence_translation ON sentence_translation.sentence_id = sentence.id
-         WHERE language = lang and
-           sentence.content like '%'||squery||'%'
-         ORDER BY squery <-> sentence.content limit lim offset off
-    $$
- LANGUAGE sql stable;
+      RETURNS table (content text, furigana text, translation text,id integer, language integer, eng text) AS $$
+        SELECT sentence.content, sentence.furigana, sentence_translation.content, sentence.id, sentence_translation.language,
+       COALESCE((select content as eng from sentence_translation where sentence_translation.sentence_id = sentence.id and sentence_translation.language = 1 limit 1), '-') FROM sentence
+         INNER JOIN sentence_translation ON sentence_translation.sentence_id = sentence.id
+           WHERE sentence_translation.language = lang
+           ORDER BY squery <-> sentence.content limit lim offset off
+  $$
+LANGUAGE sql stable;

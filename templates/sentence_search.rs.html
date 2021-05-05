@@ -21,13 +21,13 @@
 
     <!-- !!! Start of Sentence Template  !!! -->
     @for sentence in sentences {
-      <div class="list-entry">
-        <div class="d-flex flex-row wrap">
+      <div class="list-entry sentence">
+        <div class="d-flex flex-row wrap sentence">
 
           @for spair in sentence.sentence.furigana_pairs() {
             @if spair.kanji.is_some() {
-              <div>
-                <span class="furigana-preview small">
+              <div class="furigana-kanji-container">
+                <span class="furigana-preview small noselect">
                   @spair.as_furigana()
                 </span>
                 <span class="kanji-preview small">
@@ -42,9 +42,15 @@
           }
         </div>
 
-        <div class="sentence-translation">
+        <div class="sentence-translation original">
           @sentence.sentence.translation
         </div>
+        @if let Some(ref english) = sentence.sentence.get_english() {
+          <hr class="lang-separator"/>
+          <div class="sentence-translation">
+            @english
+          </div>
+        }
       </div>
      <hr class="res-separator sentence" />
     }

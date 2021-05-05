@@ -67,12 +67,14 @@ $('.furigana-kanji-container > .furigana-preview').on("click", (event) => {
 // Copies translations to clipboard on double click
 $('.furigana-kanji-container > .kanji-preview').on("dblclick", (event) => {
 	event.preventDefault();
+    deleteSelection();
     copyTranslationAndShowMessage(event.target.parentElement.parentElement);
 });
 
 // Copies translations to clipboard on double click
 $('.inline-kana-preview').on("dblclick", (event) => {
 	event.preventDefault();
+    deleteSelection();
     copyTranslationAndShowMessage(event.target.parentElement);
 });
 
@@ -114,13 +116,13 @@ function copyTranslationAndShowMessage(textParent) {
 
 // Changes the search type in the upper row depending on the users input
 function changeSearchType(newType) {
-  var search_value = $('#search').val();
-  if (search_value.length > 0) {
-    var params = new URLSearchParams(location.search);
-    params.set('type', newType);
-    params.set('search', search_value);
-    window.location.search = params.toString();
-  }
+    var search_value = $('#search').val();
+    if (search_value.length > 0) {
+        var params = new URLSearchParams();
+        params.set('type', newType);
+        params.set('search', search_value);
+        window.location = window.location.origin + "/search?" + params.toString();
+    }
 }
 
 // Resets the value of the search input
@@ -131,12 +133,19 @@ function emptySearchInput() {
 
 // Jumps to the top or kanji part (mobile only)
 function jumpToTop() {
-  document.body.scrollTop = 0; // For Safari
-  document.documentElement.scrollTop = 0; // For Chrome, Firefox, IE and Opera
+  (!window.requestAnimationFrame) ? window.scrollTo(0, 0) : Util.scrollTo(0, 400);
 }
 
 // The Jmp Buttons
 var topBtn = $("#jmp-btn-top");
+
+// Focus Search Bar on index page
+$(document).ready(() => {
+    if (window.location.href.substring(0,window.location.href.length - 1) == window.location.origin) {
+        $('#search').focus();
+        $('#search').select();
+    }
+});
 
 // Window Scroll checks
 window.onscroll = function() {
