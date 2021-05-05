@@ -353,6 +353,7 @@ input[type="color"] {
     color: var(--tagColor);
     border-style: groove;
     width: fit-content;
+    color: var(--primaryTextColor);
 }
 
 .entry-min-height-1 {
@@ -653,3 +654,27 @@ input[type="color"] {
     font-size: 19px;
     padding-top: 0.2rem;
 }   
+
+/* Pitch Accent Borders */
+.pitch {
+    border-radius: 3px;
+    margin-right: -4px;
+    font-size: large;
+    color: var(--primaryColor);
+}
+
+.pitch.t {
+    border-top: 1px dotted var(--tagColor);
+}
+
+.pitch.r {
+    border-right: 1px dotted var(--tagColor);
+}
+
+.pitch.b {
+    border-bottom: 1px dotted var(--tagColor);
+}
+
+.pitch.l {
+    border-left: 1px dotted var(--tagColor);
+}
