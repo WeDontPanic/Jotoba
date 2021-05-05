@@ -1,4 +1,4 @@
-use std::str::FromStr;
+use std::{io::Write, str::FromStr};
 
 use crate::DbPool;
 use crate::{models::sentence, parse::jmdict::languages::Language};
@@ -49,6 +49,7 @@ pub async fn import(db: &DbPool, path: String) {
                     .await
                     .expect("err");
                 print!("Imported {}/{}\r", pos, len);
+                std::io::stdout().flush().ok();
             }
         }
     }

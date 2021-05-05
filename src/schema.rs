@@ -10,6 +10,7 @@ table! {
         kanji_info -> Nullable<Array<Int4>>,
         jlpt_lvl -> Nullable<Int4>,
         is_main -> Bool,
+        accents -> Nullable<Array<Int4>>,
     }
 }
 

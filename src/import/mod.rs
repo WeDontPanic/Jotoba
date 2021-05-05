@@ -1,3 +1,4 @@
+pub mod accents;
 pub mod jlpt_patches;
 pub mod jmdict;
 pub mod jmnedict;

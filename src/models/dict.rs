@@ -6,7 +6,7 @@ use crate::{
     japanese::JapaneseExt,
     parse::jmdict::Entry,
     parse::jmdict::{information::Information, priority::Priority},
-    utils, DbPool,
+    utils, DbConnection, DbPool,
 };
 use diesel::prelude::*;
 use tokio_diesel::*;
@@ -24,6 +24,7 @@ pub struct Dict {
     pub kanji_info: Option<Vec<i32>>,
     pub jlpt_lvl: Option<i32>,
     pub is_main: bool,
+    pub accents: Option<Vec<i32>>,
 }
 
 #[derive(Insertable, Clone, Debug, PartialEq)]
@@ -38,6 +39,7 @@ pub struct NewDict {
     pub kanji_info: Option<Vec<i32>>,
     pub jlpt_lvl: Option<i32>,
     pub is_main: bool,
+    pub accents: Option<Vec<i32>>,
 }
 
 impl PartialEq for Dict {
@@ -65,6 +67,22 @@ impl Dict {
 
         Ok(items)
     }
+}
+
+pub fn update_accents(db: &DbConnection, l: &str, a: &[i32]) -> Result<(), Error> {
+    use crate::schema::dict::dsl::*;
+
+    let seq_ids = dict
+        .select(sequence)
+        .filter(reading.eq(l))
+        .get_results::<i32>(db)?;
+
+    diesel::update(dict)
+        .filter(sequence.eq_any(&seq_ids))
+        .set(accents.eq(a))
+        .execute(db)?;
+
+    Ok(())
 }
 
 pub async fn update_jlpt(db: &DbPool, l: &str, level: i32) -> Result<(), Error> {
@@ -106,6 +124,7 @@ pub fn new_dicts_from_entry(entry: &Entry) -> Vec<NewDict> {
                 kanji_info: None,
                 jlpt_lvl: None,
                 is_main,
+                accents: None,
             }
         })
         .collect()

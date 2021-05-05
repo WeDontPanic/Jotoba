@@ -14,6 +14,7 @@ pub enum Error {
     ParseError,
     Undefined,
     DbError(DbError),
+    IoError(std::io::Error),
     Checkout(r2d2::Error),
 }
 
@@ -23,6 +24,12 @@ pub fn map_notfound(err: DbError) -> Error {
     match err {
         DbError::NotFound => Error::NotFound,
         _ => err.into(),
+    }
+}
+
+impl From<std::io::Error> for Error {
+    fn from(err: std::io::Error) -> Self {
+        Self::IoError(err)
     }
 }
 
