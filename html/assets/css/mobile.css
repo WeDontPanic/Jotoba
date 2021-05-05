@@ -153,6 +153,7 @@
 	
 	.main-container > .d-flex {
 		flex-direction: column;
+        margin-left: 1rem;
 	}
 
 	.kanji-entry.left.detail {
