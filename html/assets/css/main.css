@@ -657,24 +657,27 @@ input[type="color"] {
 
 /* Pitch Accent Borders */
 .pitch {
-    border-radius: 3px;
+    border-radius: 0px;
     margin-right: -4px;
     font-size: large;
     color: var(--primaryColor);
 }
 
 .pitch.t {
-    border-top: 1px dotted var(--tagColor);
+    border-top: 1px solid var(--tagColor);
+    padding-left: 5px;
+    padding-right: 5px;
 }
 
 .pitch.r {
-    border-right: 1px dotted var(--tagColor);
+    border-right: 1px solid var(--tagColor);
+    margin-right: -6px;
 }
 
 .pitch.b {
-    border-bottom: 1px dotted var(--tagColor);
+    border-bottom: 1px solid var(--tagColor);
 }
 
-.pitch.l {
-    border-left: 1px dotted var(--tagColor);
+.pitch.b:not(.r) {
+    padding-left: 2px;
 }
