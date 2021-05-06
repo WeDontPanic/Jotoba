@@ -65,14 +65,14 @@ $('.furigana-kanji-container > .furigana-preview').on("click", (event) => {
 });
 
 // Copies translations to clipboard on double click
-$('.furigana-kanji-container > .kanji-preview').on("dblclick", (event) => {
+$('.furigana-kanji-container > .kanji-preview').on("dblclick copy", (event) => {
 	event.preventDefault();
     deleteSelection();
     copyTranslationAndShowMessage(event.target.parentElement.parentElement);
 });
 
 // Copies translations to clipboard on double click
-$('.inline-kana-preview').on("dblclick", (event) => {
+$('.inline-kana-preview').on("dblclick copy", (event) => {
 	event.preventDefault();
     deleteSelection();
     copyTranslationAndShowMessage(event.target.parentElement);
