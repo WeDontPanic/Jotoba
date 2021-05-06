@@ -642,6 +642,7 @@ input[type="color"] {
 
 .res-separator {
   border-top: 2px solid var(--lineColor);
+  margin-right: 5px;
 }
 
 .res-separator.sentence {
@@ -679,5 +680,5 @@ input[type="color"] {
 }
 
 .pitch.b:not(.r) {
-    padding-left: 2px;
+    padding-left: 3px;
 }
