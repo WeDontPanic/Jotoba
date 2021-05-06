@@ -2,11 +2,15 @@ use std::path::Path;
 
 use crate::{models::kanji::Kanji, parse::jmdict::part_of_speech::PosSimple, search::query::Query};
 
-use crate::{japanese::JapaneseExt, parse::jmdict::languages::Language, utils::to_option};
+use crate::{
+    japanese::{furigana, inflection::Inflection, JapaneseExt},
+    parse::jmdict::languages::Language,
+    utils::to_option,
+};
 use itertools::Itertools;
 
 use crate::{
-    japanese::{self, SentencePart},
+    japanese::furigana::SentencePart,
     models::{dict::Dict, sense::Sense as DbSenseEntry},
     parse::jmdict::{
         dialect::Dialect, field::Field, gtype::GType, information::Information, misc::Misc,
@@ -24,7 +28,7 @@ pub struct WordResult {
 #[derive(Debug, Clone, PartialEq)]
 pub struct InflectionInformation {
     pub lexeme: String,
-    pub forms: Vec<japanese::Inflection>,
+    pub forms: Vec<Inflection>,
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -163,7 +167,7 @@ impl Word {
     /// Returns furigana reading-pairs of an Item
     pub fn get_furigana(&self) -> Option<Vec<SentencePart>> {
         if self.reading.kanji.is_some() && self.reading.kana.is_some() {
-            japanese::furigana_pairs(
+            furigana::furigana_pairs(
                 self.reading
                     .kanji
                     .as_ref()

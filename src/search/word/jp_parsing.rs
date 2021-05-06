@@ -1,4 +1,4 @@
-use crate::{error::Error, japanese::Inflection, DbPool};
+use crate::{error::Error, japanese::inflection::Inflection, DbPool};
 use diesel::{dsl::exists, prelude::*};
 use igo_unidic::{ConjungationForm, Morpheme, Parser, ParticleType, VerbType, WordClass};
 use tokio_diesel::AsyncRunQueryDsl;
