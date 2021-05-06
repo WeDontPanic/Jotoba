@@ -3,7 +3,7 @@ use std::cmp::Ordering;
 use super::{super::schema::dict, kanji::Kanji};
 use crate::{
     error::Error,
-    japanese::JapaneseExt,
+    japanese::{self, JapaneseExt},
     parse::jmdict::Entry,
     parse::jmdict::{information::Information, priority::Priority},
     utils, DbConnection, DbPool,
@@ -66,6 +66,24 @@ impl Dict {
         items.sort_by(|a, b| utils::get_item_order(ids, &a.id, &b.id).unwrap_or(Ordering::Equal));
 
         Ok(items)
+    }
+
+    pub fn get_accents(&self) -> Option<Vec<(&str, bool)>> {
+        self.accents.as_ref().and_then(|accents| {
+            if accents.is_empty() {
+                return None;
+            }
+            let accent = if accents.len() == 1 {
+                accents[0]
+            } else {
+                accents
+                    .iter()
+                    .find(|i| **i != 0)
+                    .map(|i| *i)
+                    .unwrap_or(accents[0])
+            };
+            japanese::accent::calc_pitch(&self.reading, accent)
+        })
     }
 }
 

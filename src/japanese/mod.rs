@@ -47,6 +47,15 @@ pub trait JapaneseExt {
     fn to_hiragana(&self) -> String;
 
     fn is_roman_letter(&self) -> bool;
+
+    /// Returns true if self is a small katakana letter
+    fn is_small_katakana(&self) -> bool;
+
+    /// Returns true if self is a small hiragana letter
+    fn is_small_hiragana(&self) -> bool;
+
+    /// Returns true if self is a small hiragana letter
+    fn is_small_kana(&self) -> bool;
 }
 
 impl JapaneseExt for char {
@@ -134,6 +143,18 @@ impl JapaneseExt for char {
             0
         }
     }
+
+    fn is_small_hiragana(&self) -> bool {
+        *self == '\u{3083}' || *self == '\u{3085}' || *self == '\u{3087}'
+    }
+
+    fn is_small_katakana(&self) -> bool {
+        *self == '\u{30E3}' || *self == '\u{30E5}' || *self == '\u{30E7}'
+    }
+
+    fn is_small_kana(&self) -> bool {
+        self.is_small_katakana() || self.is_small_hiragana()
+    }
 }
 
 impl JapaneseExt for str {
@@ -209,6 +230,18 @@ impl JapaneseExt for str {
 
     fn to_hiragana(&self) -> String {
         romaji::RomajiExt::to_hiragana(self)
+    }
+
+    fn is_small_katakana(&self) -> bool {
+        !self.chars().into_iter().any(|s| !s.is_small_katakana())
+    }
+
+    fn is_small_hiragana(&self) -> bool {
+        !self.chars().into_iter().any(|s| !s.is_small_hiragana())
+    }
+
+    fn is_small_kana(&self) -> bool {
+        self.is_small_katakana() || self.is_small_hiragana()
     }
 }
 

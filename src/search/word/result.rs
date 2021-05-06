@@ -265,6 +265,42 @@ impl Word {
                 .then(|| file)
         })
     }
+
+    pub fn get_accents(&self) -> Option<Vec<AccentChar>> {
+        let kana = self.reading.kana.as_ref().unwrap();
+        let accents = kana.get_accents()?;
+        let accent_iter = accents.iter().peekable().enumerate();
+
+        Some(
+            accent_iter
+                .map(|(pos, (part, is_high))| {
+                    let mut borders = vec![];
+                    if *is_high {
+                        borders.push(Border::Top);
+                    }
+                    if pos != accents.len() {
+                        borders.push(Border::Right);
+                    }
+                    vec![AccentChar { borders, c: part }]
+                })
+                .flatten()
+                .into_iter()
+                .collect_vec(),
+        )
+    }
+}
+
+#[derive(Clone, Debug, PartialEq)]
+pub struct AccentChar<'a> {
+    pub c: &'a str,
+    pub borders: Vec<Border>,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub enum Border {
+    Left,
+    Right,
+    Top,
 }
 
 impl Reading {
