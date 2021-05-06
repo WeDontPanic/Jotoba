@@ -14,3 +14,4 @@ drop table name;
 drop table kanji;
 drop table sentence_translation;
 drop table sentence;
+drop table radical;

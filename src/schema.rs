@@ -47,6 +47,17 @@ table! {
 }
 
 table! {
+    radical (id) {
+        id -> Int4,
+        literal -> Bpchar,
+        alternative -> Nullable<Bpchar>,
+        stroke_count -> Int4,
+        readings -> Array<Text>,
+        translations -> Nullable<Array<Text>>,
+    }
+}
+
+table! {
     sense (id) {
         id -> Int4,
         sequence -> Int4,
@@ -98,6 +109,7 @@ allow_tables_to_appear_in_same_query!(
     dict,
     kanji,
     name,
+    radical,
     sense,
     sentence,
     sentence_translation,

@@ -94,6 +94,15 @@ CREATE TABLE sentence_vocabulary (
   foreign key (sentence_id) references sentence(id)
 );
 
+CREATE TABLE radical (
+  id INTEGER PRIMARY KEY,
+  literal CHAR(1) NOT NULL,
+  alternative CHAR(1),
+  stroke_count INTEGER NOT NULL,
+  readings TEXT[] NOT NULL,
+  translations TEXT[]
+);
+CREATE INDEX index_radical_literal ON radical (literal);
 
 CREATE OR REPLACE FUNCTION is_kanji(IN inp text)
  RETURNS boolean AS
