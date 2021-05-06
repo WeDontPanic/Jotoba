@@ -13,6 +13,12 @@
       <h2 id="nextTabBtn" onclick="changeSearchType(3)" class="tab-btn">Names &rarr;</h2>
     </div>
   </div>
+
+  <div class="kanji-jump parent">
+    <a href="#secondaryInfo" class="kanji-jump clickable">
+       Jump to kanji
+    </a>
+ </div>
  
   <!-- TODO Shown if no results were found and an alternative is displayed -->
   <!--<div class="search-annotation">-->
@@ -38,10 +44,10 @@
         </span>
       </div>
     </div>
+
+    <br>
   }
-  
-  <br>
-  
+   
   <!-- Inner Main Body -->
   <div id="content-container" class="d-flex left">
     <a href="#secondaryInfo" class="kanji-jump clickable">
@@ -160,6 +166,15 @@
             <div class="kanji-entry right">
               <div class="entry-min-height-@word.get_word_tag_count()">
                 <!-- Right side: Info -->
+
+                <!-- !!! Tooltip -->
+                <div class="word-tooltip d-flex flex-column noselect" data-toggle="modal" data-target="#ENTER_OVERLAY_ID_HERE">
+                  <span>.</span>
+                  <span>.</span>
+                  <span>.</span>
+                </div>
+                <!-- !!! Tooltip-->
+
                 @for (spos, senses_compound) in word.get_senses_orderd(&query).iter().enumerate() {
                   @for (pos, sense) in senses_compound.iter().enumerate() {
                     @if !sense.glosses.is_empty() {
@@ -219,6 +234,99 @@
                   <div class="notes">@word.alt_readings_beautified()</div>
                 }
               </div>
+
+              <!-- !!! START OF INFO OVERLAY -->
+              <!-- Word Info Overlay -->
+              <div class="modal fade" id="#ENTER_OVERLAY_ID_HERE">
+                <div class="modal-dialog  modal-lg">
+                  <div class="modal-content">
+       
+                   <!-- Modal Body -->
+                   <div class="modal-body">
+                      <button type="button" class="close" data-dismiss="modal">×</button>
+       
+                      <!-- Word collocations -->
+       
+                      <h3 class="info-h3">Word collocations</h3>
+       
+                      <div class="d-flex flex-column wrap">
+                         <a class="clickable collocation" href='https://jotoba.de/search?type=0&search=%E4%B8%96%E9%96%93%E3%81%AE%E5%8F%A3'>世間の口 - what people say</a>
+                         <a class="clickable collocation" href='https://jotoba.de/search?type=0&search=%E4%B8%96%E9%96%93%E3%81%AE%E7%9B%AE'>世間の目 - spotlight</a>
+                      </div>
+       
+                      <!-- Br Only used when both are present -->
+                      <br>
+       
+                      <!-- Verb conjugation table -->
+       
+                      <h3 class="info-h3">Godan verb with ku ending</h3>
+       
+                      <table class="table conjugation">
+                         <thead>
+                           <tr>
+                             <th scope="col"></th>
+                             <th scope="col">Affirmative</th>
+                             <th scope="col">Negative</th>
+                           </tr>
+                         </thead>
+                         <tbody>
+                            <tr>
+                               <th scope="row">Present</th>
+                               <td>聞く</td>
+                               <td>聞かない</td>
+                            </tr>
+                            <tr>
+                               <th scope="row">Present, polite</th>
+                               <td>聞きます</td>
+                               <td>聞きません</td>
+                            </tr>
+                            <tr>
+                               <th scope="row">Past</th>
+                               <td>聞いた</td>
+                               <td>聞かなかった</td>
+                            </tr>
+                            <tr>
+                               <th scope="row">Past, polite</th>
+                               <td>聞いた</td>
+                               <td>聞かなかった</td>
+                            </tr>
+                            <tr>
+                               <th scope="row">Te-form</th>
+                               <td>聞いた</td>
+                               <td>聞かなかった</td>
+                            </tr>
+                            <tr>
+                               <th scope="row">Potential</th>
+                               <td>聞いた</td>
+                               <td>聞かなかった</td>
+                            </tr>
+                            <tr>
+                               <th scope="row">Passive</th>
+                               <td>聞いた</td>
+                               <td>聞かなかった</td>
+                            </tr>
+                            <tr>
+                               <th scope="row">Causative</th>
+                               <td>聞いた</td>
+                               <td>聞かなかった</td>
+                            </tr>
+                            <tr>
+                               <th scope="row">Causative Passive</th>
+                               <td>聞いた</td>
+                               <td>聞かなかった</td>
+                            </tr>
+                            <tr>
+                               <th scope="row">Imperative</th>
+                               <td>聞いた</td>
+                               <td>聞かなかった</td>
+                            </tr>
+                         </tbody>
+                       </table>
+                      </div>
+                   </div>
+                </div>
+             </div>
+             <!-- !!! END OF INFO OVERLAY -->
               <hr class="res-separator" />
             </div>
           </div>
