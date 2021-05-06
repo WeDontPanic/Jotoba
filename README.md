@@ -33,7 +33,7 @@ CREATE DATABASE jotoba with owner jotoba
      TEMPLATE template0;
 ```
 
-2. Install [Pgroonga](https://pgroonga.github.io/install/debian.html)
+2. Install [Pgroonga](#postgres-installation)
 2. Install groonga-tokenizer-mecab
 2. Run `CREATE EXTENSION pg_trgm;`
 3. Run `CREATE EXTENSION pgroonga;`

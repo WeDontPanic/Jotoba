@@ -178,3 +178,9 @@ CREATE OR REPLACE FUNCTION search_sentence_jp(squery TEXT, off integer, lim inte
            ORDER BY squery <-> sentence.content limit lim offset off
   $$
 LANGUAGE sql stable;
+
+CREATE OR REPLACE FUNCTION find_jp_word(kanji_a text, kana_a text)
+       RETURNS table (sequence integer) AS $$
+        select dict.sequence from dict join dict as d2 on dict.sequence = d2.sequence where  dict.reading = kanji_a  and  d2.reading = kana_a
+   $$
+ LANGUAGE sql stable;

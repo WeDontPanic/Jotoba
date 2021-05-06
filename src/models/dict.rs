@@ -8,7 +8,8 @@ use crate::{
     parse::jmdict::{information::Information, priority::Priority},
     utils, DbConnection, DbPool,
 };
-use diesel::prelude::*;
+use diesel::sql_types::Integer;
+use diesel::{prelude::*, sql_types::Text};
 use tokio_diesel::*;
 
 #[derive(Queryable, QueryableByName, Clone, Debug, Default)]
@@ -78,20 +79,50 @@ impl Dict {
     }
 }
 
-pub fn update_accents(db: &DbConnection, l: &str, a: &[i32]) -> Result<(), Error> {
+pub fn update_accents(
+    db: &DbConnection,
+    acc_kanji: &str,
+    acc_kana: &str,
+    a: &[i32],
+) -> Result<(), Error> {
     use crate::schema::dict::dsl::*;
 
-    let seq_ids = dict
-        .select(sequence)
-        .filter(reading.eq(l))
-        .get_results::<i32>(db)?;
+    let seq = find_jp_word(db, acc_kanji, acc_kana)?;
+
+    if seq.is_none() {
+        return Ok(());
+    }
 
     diesel::update(dict)
-        .filter(sequence.eq_any(&seq_ids))
+        .filter(sequence.eq(&seq.unwrap().sequence))
+        .filter(reading.eq(acc_kana))
         .set(accents.eq(a))
         .execute(db)?;
 
     Ok(())
+}
+
+pub fn find_jp_word(db: &DbConnection, kanji: &str, kana: &str) -> Result<Option<Sequence>, Error> {
+    let query = include_str!("../../sql/find_jp_word.sql");
+    let sequence = diesel::sql_query(query)
+        .bind::<Text, _>(kanji)
+        .bind::<Text, _>(kana)
+        .get_result(db);
+
+    if let Err(e) = sequence {
+        match e {
+            diesel::result::Error::NotFound => return Ok(None),
+            _ => return Err(e.into()),
+        }
+    }
+
+    Ok(sequence.unwrap())
+}
+
+#[derive(QueryableByName, Clone, Copy, Debug, PartialEq)]
+pub struct Sequence {
+    #[sql_type = "Integer"]
+    sequence: i32,
 }
 
 pub async fn update_jlpt(db: &DbPool, l: &str, level: i32) -> Result<(), Error> {

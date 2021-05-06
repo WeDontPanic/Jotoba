@@ -7,8 +7,8 @@ pub async fn import(db: &DbPool, path: String) {
     println!("Importing pitch accents...");
     let db = db.get().unwrap();
 
-    accents::parse(path, |(kanji, _, pitch), pos, len| {
-        dict::update_accents(&db, &kanji, &pitch).unwrap();
+    accents::parse(path, |(kanji, kana, pitch), pos, len| {
+        dict::update_accents(&db, &kanji, &kana, &pitch).unwrap();
 
         print!("\rImporting pitch {}/{}", pos, len);
         std::io::stdout().flush().ok();
