@@ -42,6 +42,7 @@ CREATE TABLE kanji (
   literal CHAR(1) NOT NULL,
   meaning TEXT[] NOT NULL,
   grade INTEGER,
+  radical INTEGER,
   stroke_count INTEGER NOT NULL,
   frequency INTEGER,
   jlpt INTEGER,
@@ -162,7 +163,7 @@ LANGUAGE sql stable;
 
 CREATE OR REPLACE FUNCTION find_kanji_by_meaning(mea TEXT)
   RETURNS setof "kanji" AS $$
-    select id, literal, meaning, grade, stroke_count, frequency, jlpt, variant, onyomi, kunyomi, chinese, korean_r, korean_h, natori, kun_dicts
+    select id, literal, meaning, grade, radical , stroke_count, frequency, jlpt, variant, onyomi, kunyomi, chinese, korean_r, korean_h, natori, kun_dicts
   from (select *, unnest(meaning) m from kanji) x order by mea <-> m limit 4
   $$
  LANGUAGE sql stable;

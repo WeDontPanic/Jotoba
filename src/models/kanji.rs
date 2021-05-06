@@ -1,6 +1,7 @@
 use super::{
     super::schema::kanji,
     dict::{self, Dict},
+    radical::{self, Radical},
 };
 use crate::{
     cache::SharedCache,
@@ -36,6 +37,7 @@ pub struct Kanji {
     pub literal: String,
     pub meaning: Vec<String>,
     pub grade: Option<i32>,
+    pub radical: Option<i32>,
     pub stroke_count: i32,
     pub frequency: Option<i32>,
     pub jlpt: Option<i32>,
@@ -55,6 +57,7 @@ pub struct NewKanji {
     pub literal: String,
     pub meaning: Vec<String>,
     pub grade: Option<i32>,
+    pub radical: Option<i32>,
     pub stroke_count: i32,
     pub frequency: Option<i32>,
     pub jlpt: Option<i32>,
@@ -85,6 +88,7 @@ impl From<Character> for NewKanji {
             korean_h: to_option(k.korean_hangul),
             natori: to_option(k.natori),
             kun_dicts: None,
+            radical: k.radical,
         }
     }
 }
@@ -99,6 +103,10 @@ impl Kanji {
     /// Returns all dict entries assigned to the kanji's kun readings
     pub async fn get_kun_readings(db: &DbPool, ids: &[i32]) -> Result<Vec<Dict>, Error> {
         dict::load_by_ids(db, ids).await
+    }
+
+    pub async fn load_radical(&self, db: &DbPool) -> Result<Radical, Error> {
+        Ok(radical::find_by_id(db, self.radical.unwrap()).await?)
     }
 
     /// Print kanji grade pretty for frontend

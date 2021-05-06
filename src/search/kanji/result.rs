@@ -2,7 +2,7 @@ use std::{fs::read_to_string, path::Path, vec};
 
 use crate::{
     error::Error,
-    models::kanji::Kanji as DbKanji,
+    models::{kanji::Kanji as DbKanji, radical::Radical},
     parse::jmdict::languages::Language,
     search::word::{result::Word, WordSearch},
     utils, DbPool,
@@ -13,6 +13,7 @@ pub struct Item {
     pub kanji: DbKanji,
     pub kun_dicts: Option<Vec<Word>>,
     pub on_dicts: Option<Vec<Word>>,
+    pub radical: Radical,
 }
 
 impl Item {
@@ -35,10 +36,13 @@ impl Item {
             .filter(|i| show_english || (!show_english && !i.senses.is_empty()))
             .collect();
 
+        let radical = k.load_radical(db).await?;
+
         Ok(Self {
             kanji: k,
             kun_dicts: utils::to_option(loaded_kd),
             on_dicts: None,
+            radical,
         })
     }
 }

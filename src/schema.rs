@@ -20,6 +20,7 @@ table! {
         literal -> Bpchar,
         meaning -> Array<Text>,
         grade -> Nullable<Int4>,
+        radical -> Nullable<Int4>,
         stroke_count -> Int4,
         frequency -> Nullable<Int4>,
         jlpt -> Nullable<Int4>,
