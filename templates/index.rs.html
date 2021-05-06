@@ -1,19 +1,23 @@
 @()
 <div class="d-flex center">
-    <article>
+   <article style="height: 700px;">
       <div class="small-12 medium-6 columns small-centered">
           <p>Jotoba is a multilingual Japanese dictionary.</p>
           <p>It is easy to find translations for words or kanji, see<br>example sentences and the way names can be written.</p>
           <p>Here are some examples on how to use this page:</p>
           <ul>
-             <li>Press ' / ' to instantly focus the search bar</li>
-             <li>Use the selector drop-down to directly search for words, kanji, sentences or names</li>
-             <li>Use <a class="clickable" href='/search?type=0&search=world+%23kanji'>#kanji</a> or <a class="clickable" href='/search?type=1&search=world+%23words'>#words</a> if you don't want to click on the selector</li>
-             <li>Click on the 'speak' icon to use your voice when searching. It's a good practice!</li>
+             <li>Press ' <span class="highlight">/</span> ' to instantly focus the search bar</li>
+             <li>Quickly change the search type by pressing <span class="highlight"> w / s / n / k </span></li>
+             <li>You can specify your search by typing <span class="highlight">#kanji</span>, <span class="highlight">#adjective</span>, <span class="highlight">#adverb</span>, <span class="highlight">#verb</span> or <span class="highlight">#counter</span>
+             <li>You can find verbs that are conjugated: <a class="clickable" href="/search?type=1&search=食べませんでした">食べませんでした</a></li>
              <li>You can search multiple kanji at once: <a class="clickable" href="/search?type=1&search=足跡">足跡</a></li>
           </ul>
 
-          <p>Jotoba is open source. Check out our <a class="clickable" href='https://github.com/WeDontPanic/Jotoba'>Github page</a> if you want to contribute or host Jotoba yourself.</p>
+          <p>
+             Jotoba is open source. Check out our <a class="clickable" href='https://github.com/WeDontPanic/Jotoba'>Github page</a> if you want to contribute or host Jotoba yourself.
+             <br>
+             Check out our <a class="clickable" href='https://trello.com/b/nmG0xgaW/jotoba'>Trello Board</a> aswell if you are interested in upcoming features and what we are currently working on!
+          </p>
       </div>
     </article>
  </div>
