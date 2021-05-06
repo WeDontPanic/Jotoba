@@ -1,6 +1,11 @@
 use std::path::Path;
 
-use crate::{models::kanji::Kanji, parse::jmdict::part_of_speech::PosSimple, search::query::Query};
+use crate::{
+    japanese::accent::{AccentChar, Border},
+    models::kanji::Kanji,
+    parse::jmdict::part_of_speech::PosSimple,
+    search::query::Query,
+};
 
 use crate::{
     japanese::{furigana, inflection::Inflection, JapaneseExt},
@@ -266,6 +271,7 @@ impl Word {
         })
     }
 
+    /// Returns a renderable vec of accents with kana characters
     pub fn get_accents(&self) -> Option<Vec<AccentChar>> {
         let kana = self.reading.kana.as_ref().unwrap();
         let accents = kana.get_accents()?;
@@ -274,52 +280,22 @@ impl Word {
         Some(
             accent_iter
                 .map(|(pos, (part, is_high))| {
-                    let mut borders = vec![];
-                    if *is_high {
-                        borders.push(Border::Top);
+                    let borders = vec![if *is_high {
+                        Border::Top
                     } else {
-                        borders.push(Border::Bottom);
-                    }
-                    if pos != accents.len() - 1 {
-                        borders.push(Border::Right);
-                    }
+                        Border::Bottom
+                    }];
+                    let borders = if pos != accents.len() - 1 {
+                        borders.into_iter().chain(vec![Border::Right]).collect_vec()
+                    } else {
+                        borders
+                    };
                     vec![AccentChar { borders, c: part }]
                 })
                 .flatten()
                 .into_iter()
                 .collect_vec(),
         )
-    }
-}
-
-#[derive(Clone, Debug, PartialEq)]
-pub struct AccentChar<'a> {
-    pub c: &'a str,
-    pub borders: Vec<Border>,
-}
-
-#[derive(Clone, Copy, Debug, PartialEq)]
-pub enum Border {
-    Left,
-    Right,
-    Top,
-    Bottom,
-}
-
-impl Border {
-    pub fn get_class(&self) -> &'static str {
-        match self {
-            Border::Left => "l",
-            Border::Right => "r",
-            Border::Top => "t",
-            Border::Bottom => "b",
-        }
-    }
-}
-
-impl<'a> AccentChar<'a> {
-    pub fn get_classes(&self) -> String {
-        self.borders.iter().map(|i| i.get_class()).join(" ")
     }
 }
 

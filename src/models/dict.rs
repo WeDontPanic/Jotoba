@@ -73,16 +73,7 @@ impl Dict {
             if accents.is_empty() {
                 return None;
             }
-            let accent = if accents.len() == 1 {
-                accents[0]
-            } else {
-                accents
-                    .iter()
-                    .find(|i| **i != 0)
-                    .map(|i| *i)
-                    .unwrap_or(accents[0])
-            };
-            japanese::accent::calc_pitch(&self.reading, accent)
+            japanese::accent::calc_pitch(&self.reading, accents[0])
         })
     }
 }

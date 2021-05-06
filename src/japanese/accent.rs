@@ -1,4 +1,37 @@
+use itertools::Itertools;
+
 use super::JapaneseExt;
+
+#[derive(Clone, Debug, PartialEq)]
+pub struct AccentChar<'a> {
+    pub c: &'a str,
+    pub borders: Vec<Border>,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub enum Border {
+    Left,
+    Right,
+    Top,
+    Bottom,
+}
+
+impl Border {
+    pub fn get_class(&self) -> &'static str {
+        match self {
+            Border::Left => "l",
+            Border::Right => "r",
+            Border::Top => "t",
+            Border::Bottom => "b",
+        }
+    }
+}
+
+impl<'a> AccentChar<'a> {
+    pub fn get_classes(&self) -> String {
+        self.borders.iter().map(|i| i.get_class()).join(" ")
+    }
+}
 
 /// Returns a vec of all compounds with the same pitch assigned to the accent (true = pitch up) in
 /// the order they appeared in the word text
@@ -32,13 +65,16 @@ pub fn calc_pitch(kana_word: &str, drop: i32) -> Option<Vec<(&str, bool)>> {
     } else {
         let up: usize = kana_items
             .by_ref()
-            .take((drop) as usize)
+            .take((drop - 1) as usize)
             .map(|i| i.bytes().len())
             .sum();
         return Some(vec![
             (first_kana, false),
-            (&kana_word[first_kana.bytes().len()..up], true),
-            (&kana_word[up..], true),
+            (
+                &kana_word[first_kana.bytes().len()..first_kana.bytes().len() + up],
+                true,
+            ),
+            (&kana_word[first_kana.bytes().len() + up..], false),
         ]);
     }
 }
