@@ -181,9 +181,9 @@
                 @if let Some(accents) = word.get_accents() {
                   <div class="tags">Pitch Accent</div>
                   <div class="pitch">
-                    <span class="pitch b r">く</span>
-                    <span class="pitch t r">い･はぐ~れ</span>
-                    <span class="pitch b">る</span>
+                    @for accent in accents {
+                      <span class="pitch @accent.get_classes()">@accent.c</span>
+                    }
                   </div>
                 }
 

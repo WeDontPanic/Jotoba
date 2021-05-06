@@ -277,8 +277,10 @@ impl Word {
                     let mut borders = vec![];
                     if *is_high {
                         borders.push(Border::Top);
+                    } else {
+                        borders.push(Border::Bottom);
                     }
-                    if pos != accents.len() {
+                    if pos != accents.len() - 1 {
                         borders.push(Border::Right);
                     }
                     vec![AccentChar { borders, c: part }]
@@ -301,6 +303,24 @@ pub enum Border {
     Left,
     Right,
     Top,
+    Bottom,
+}
+
+impl Border {
+    pub fn get_class(&self) -> &'static str {
+        match self {
+            Border::Left => "l",
+            Border::Right => "r",
+            Border::Top => "t",
+            Border::Bottom => "b",
+        }
+    }
+}
+
+impl<'a> AccentChar<'a> {
+    pub fn get_classes(&self) -> String {
+        self.borders.iter().map(|i| i.get_class()).join(" ")
+    }
 }
 
 impl Reading {
