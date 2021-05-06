@@ -130,6 +130,10 @@ a:hover {
 .black {
     color: var(--primaryTextColor);
 }
+
+.fat {
+    font-weight: bold;
+}
   
 
 /* ----------------- Search Row ----------------- */
