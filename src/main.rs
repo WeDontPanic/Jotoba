@@ -53,6 +53,7 @@ struct Options {
     sentences_path: String,
     accents_path: String,
     radicals_path: String,
+    elements_path: String,
     start: bool,
 }
 
@@ -103,6 +104,15 @@ pub async fn main() {
             }
 
             import::radicals::import(&database, options.radicals_path).await;
+        }
+
+        if !options.elements_path.is_empty() {
+            if !kanji_exists && !imported_kanji {
+                println!("Kanji entries are missing. Import them first!");
+                return;
+            }
+
+            import::kanji_elements::import(&database, options.elements_path).await;
         }
 
         if !options.jlpt_paches_path.is_empty() {
@@ -271,6 +281,12 @@ fn parse_args() -> Option<Options> {
             "The path to import the radicals from. Required for --import",
         );
 
+        ap.refer(&mut options.elements_path).add_option(
+            &["--elements-path"],
+            Store,
+            "The path to import the kanji elements from. Required for --import",
+        );
+
         ap.parse_args_or_exit();
     }
 
@@ -283,9 +299,10 @@ fn parse_args() -> Option<Options> {
         && options.sentences_path.is_empty()
         && options.accents_path.is_empty()
         && options.radicals_path.is_empty()
+        && options.elements_path.is_empty()
     {
         println!(
-            "--manga-sfx-path, --jmdict-path, --jmnedict-path, --kanjidict-path, --accents-path, --sentences-path, --radicals-path or --jlpt-patches-path required"
+            "--manga-sfx-path, --jmdict-path, --jmnedict-path, --kanjidict-path, --accents-path, --sentences-path, --radicals-path, --elements-path or --jlpt-patches-path required"
         );
         return None;
     }

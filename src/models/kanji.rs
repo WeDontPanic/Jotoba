@@ -1,15 +1,15 @@
 use super::{
-    super::schema::kanji,
+    super::schema::{kanji, kanji_element},
     dict::{self, Dict},
     radical::{self, Radical},
 };
 use crate::{
     cache::SharedCache,
     error::Error,
-    parse::kanjidict::Character,
+    parse::{kanji_ele::KanjiPart, kanjidict::Character},
     search::{query::KanjiReading, SearchMode},
     utils::{self, to_option},
-    DbPool,
+    DbConnection, DbPool,
 };
 
 #[cfg(feature = "tokenizer")]
@@ -71,6 +71,21 @@ pub struct NewKanji {
     pub kun_dicts: Option<Vec<i32>>,
 }
 
+#[derive(Queryable, QueryableByName, Clone, Debug, Default, PartialEq)]
+#[table_name = "kanji_element"]
+pub struct KanjiElement {
+    pub id: i32,
+    pub kanji_id: i32,
+    pub radical_id: i32,
+}
+
+#[derive(Insertable, Clone, Debug, Default, PartialEq)]
+#[table_name = "kanji_element"]
+pub struct NewKanjiElement {
+    pub kanji_id: i32,
+    pub radical_id: i32,
+}
+
 impl From<Character> for NewKanji {
     fn from(k: Character) -> Self {
         Self {
@@ -97,6 +112,32 @@ impl From<Character> for NewKanji {
 pub enum ReadingType {
     Kunyomi,
     Onyomi,
+}
+
+use futures::future::try_join_all;
+
+pub async fn insert_kanji_part(db: &DbPool, element: KanjiPart) -> Result<(), Error> {
+    println!("{:?}", element);
+    let kanji = match find_by_literal(db, element.radical.to_string()).await {
+        Ok(v) => v,
+        Err(err) => match err {
+            Error::DbError(ref db) => match db {
+                diesel::result::Error::NotFound => return Ok(()),
+                _ => return Err(err.into()),
+            },
+            _ => return Err(err.into()),
+        },
+    };
+
+    let literals = try_join_all(
+        element
+            .parts
+            .into_iter()
+            .map(|i| radical::find_by_literal(db, i)),
+    )
+    .await?;
+
+    Ok(())
 }
 
 impl Kanji {
@@ -301,7 +342,7 @@ pub async fn find_by_literals(db: &DbPool, l: &[String]) -> Result<Vec<Kanji>, E
 }
 
 /// Find Kanji items by its ids
-pub async fn load_by_ids(db: &DbPool, ids: &Vec<i32>) -> Result<Vec<Kanji>, Error> {
+pub async fn load_by_ids(db: &DbPool, ids: &[i32]) -> Result<Vec<Kanji>, Error> {
     if ids.is_empty() {
         return Ok(vec![]);
     }
@@ -328,7 +369,7 @@ pub async fn load_by_ids(db: &DbPool, ids: &Vec<i32>) -> Result<Vec<Kanji>, Erro
 }
 
 /// Retrieve kanji by ids from DB
-async fn retrieve_by_ids(db: &DbPool, ids: &Vec<i32>) -> Result<Vec<Kanji>, Error> {
+async fn retrieve_by_ids(db: &DbPool, ids: &[i32]) -> Result<Vec<Kanji>, Error> {
     if ids.is_empty() {
         return Ok(vec![]);
     }

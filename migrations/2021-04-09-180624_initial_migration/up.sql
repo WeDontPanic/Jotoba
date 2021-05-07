@@ -105,6 +105,14 @@ CREATE TABLE radical (
 );
 CREATE INDEX index_radical_literal ON radical (literal);
 
+CREATE TABLE kanji_element (
+  id INTEGER PRIMARY KEY,
+  kanji_id INTEGER NOT NULL,
+  radical_id INTEGER NOT NULL,
+  foreign key (kanji_id) references kanji (id),
+  foreign key (radical_id) references radical (id)
+);
+
 CREATE OR REPLACE FUNCTION is_kanji(IN inp text)
  RETURNS boolean AS
  $BODY$

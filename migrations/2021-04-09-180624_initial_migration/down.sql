@@ -11,6 +11,7 @@ drop table sentence_vocabulary;
 drop table sense;
 drop table dict;
 drop table name;
+drop table kanji_element;
 drop table kanji;
 drop table sentence_translation;
 drop table sentence;

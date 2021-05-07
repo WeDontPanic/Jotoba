@@ -56,3 +56,12 @@ pub async fn find_by_id(db: &DbPool, i: i32) -> Result<Radical, Error> {
     use crate::schema::radical::dsl::*;
     Ok(radical.filter(id.eq(i)).get_result_async(db).await?)
 }
+
+pub async fn find_by_literal(db: &DbPool, l: char) -> Result<Radical, Error> {
+    use crate::schema::radical::dsl::*;
+    println!("{}", l);
+    Ok(radical
+        .filter(literal.eq(l.to_string()).or(alternative.eq(l.to_string())))
+        .get_result_async(db)
+        .await?)
+}
