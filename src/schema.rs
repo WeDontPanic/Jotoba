@@ -27,7 +27,7 @@ table! {
         variant -> Nullable<Array<Text>>,
         onyomi -> Nullable<Array<Text>>,
         kunyomi -> Nullable<Array<Text>>,
-        chinese -> Nullable<Text>,
+        chinese -> Nullable<Array<Text>>,
         korean_r -> Nullable<Array<Text>>,
         korean_h -> Nullable<Array<Text>>,
         natori -> Nullable<Array<Text>>,

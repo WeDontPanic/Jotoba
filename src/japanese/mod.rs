@@ -121,7 +121,7 @@ impl JapaneseExt for char {
     fn get_text_type(&self) -> CharType {
         if self.is_kana() {
             CharType::Kana
-        } else if self.is_kanji() || self.is_roman_letter() {
+        } else if self.is_kanji() || self.is_roman_letter() || self.is_symbol() {
             CharType::Kanji
         } else {
             CharType::Other
@@ -163,7 +163,7 @@ impl JapaneseExt for str {
     }
 
     fn get_text_type(&self) -> CharType {
-        if self.is_kanji() {
+        if self.is_kanji() || self.is_symbol() {
             CharType::Kanji
         } else if self.is_kana() {
             CharType::Kana

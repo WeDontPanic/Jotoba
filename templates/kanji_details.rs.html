@@ -14,7 +14,11 @@
          <div class="kanji-preview-info">
            <div class="notes"><b>@k_item.kanji.stroke_count</b> strokes </div>
             <!--TODO-->
-            <div class="notes"><b>Radical:</b> @k_item.radical.literal </div>
+            <div class="notes"><b>Radical:</b> @k_item.radical.literal 
+              @if let Some(ref translations) = k_item.radical.translations {
+                (@translations.join(", "))
+              }
+            </div>
             <!--<div class="notes"><b>Parts:</b>  [> !!! Parts hier. (z.b.: 人 冂) !!! <] </div>-->
          </div>
       </div>
@@ -76,7 +80,7 @@
             </div>
           }
           @if let Some(ref chinese) = k_item.kanji.chinese {
-            <div class="notes"><b>Chinese reading:</b> @chinese</div>
+            <div class="notes"><b>Chinese reading:</b> @chinese.join(", ")</div>
           }
           @if let Some(ref korean) = k_item.get_korean() {
             <div class="notes"><b>Korean reading:</b>&nbsp;&nbsp; @korean.join(", ")</div>

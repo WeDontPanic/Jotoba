@@ -49,7 +49,7 @@ CREATE TABLE kanji (
   variant TEXT[],
   onyomi TEXT[],
   kunyomi TEXT[],
-  chinese TEXT,
+  chinese TEXT[],
   korean_r TEXT[],
   korean_h TEXT[],
   natori TEXT[],
