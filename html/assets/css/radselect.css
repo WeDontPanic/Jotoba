@@ -33,7 +33,7 @@
 }
 
 .rad-btn.picker {
-    background-color: var(--itemBG_075)
+    background-color: none;
 }
 
 .rad-btn.result {
@@ -49,6 +49,10 @@
     font-size: 20px;
     padding: 0 5px;
 }
+
+.rad-btn.picker.num {
+    background-color: var(--itemBG_075);
+} 
 
 .rad-btn:hover:not(.num) {
     cursor: pointer;
