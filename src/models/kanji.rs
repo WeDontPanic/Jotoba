@@ -117,7 +117,7 @@ pub enum ReadingType {
 use futures::future::try_join_all;
 
 pub async fn insert_kanji_part(db: &DbPool, element: KanjiPart) -> Result<(), Error> {
-    println!("{:?}", element);
+    // Find kanji
     let kanji = match find_by_literal(db, element.radical.to_string()).await {
         Ok(v) => v,
         Err(err) => match err {
@@ -129,14 +129,36 @@ pub async fn insert_kanji_part(db: &DbPool, element: KanjiPart) -> Result<(), Er
         },
     };
 
+    // Find search_radicals IDs for all parts
     let literals = try_join_all(
         element
             .parts
             .into_iter()
-            .map(|i| radical::find_by_literal(db, i)),
+            .map(|i| radical::search_radical_find_by_literal(db, i)),
     )
     .await?;
 
+    // Insert all search_radicals assigned to the kanji in kanji_elements table
+    insert_kanji_elements(
+        db,
+        &literals
+            .into_iter()
+            .map(|i| NewKanjiElement {
+                search_radical_id: i.id,
+                kanji_id: kanji.id,
+            })
+            .collect(),
+    )
+    .await?;
+
+    Ok(())
+}
+
+async fn insert_kanji_elements(db: &DbPool, items: &Vec<NewKanjiElement>) -> Result<(), Error> {
+    diesel::insert_into(kanji_element::table)
+        .values(items)
+        .execute_async(db)
+        .await?;
     Ok(())
 }
 
@@ -283,6 +305,13 @@ where
         .execute_async(db)
         .await?;
 
+    Ok(())
+}
+
+/// Clear all kanji entries
+pub async fn clear_kanji_elements(db: &DbPool) -> Result<(), Error> {
+    use crate::schema::kanji_element::dsl::*;
+    diesel::delete(kanji_element).execute_async(db).await?;
     Ok(())
 }
 

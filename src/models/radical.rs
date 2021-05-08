@@ -94,11 +94,10 @@ pub async fn find_by_id(db: &DbPool, i: i32) -> Result<Radical, Error> {
     Ok(radical.filter(id.eq(i)).get_result_async(db).await?)
 }
 
-pub async fn find_by_literal(db: &DbPool, l: char) -> Result<Radical, Error> {
-    use crate::schema::radical::dsl::*;
-    println!("{}", l);
-    Ok(radical
-        .filter(literal.eq(l.to_string()).or(alternative.eq(l.to_string())))
+pub async fn search_radical_find_by_literal(db: &DbPool, l: char) -> Result<SearchRadical, Error> {
+    use crate::schema::search_radical::dsl::*;
+    Ok(search_radical
+        .filter(literal.eq(l.to_string()))
         .get_result_async(db)
         .await?)
 }
