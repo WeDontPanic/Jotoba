@@ -73,7 +73,7 @@ async fn find_by_radicals(db: &DbPool, radicals: &[char]) -> Result<Vec<SqlFindR
             (SELECT k.kanji_id FROM kanji_element AS k 
                 JOIN search_radical AS r on r.id = k.search_radical_id 
                 WHERE {} GROUP BY k.kanji_id
-                HAVING COUNT(*) >= {})",
+                HAVING COUNT(*) >= {}) order by stroke_count, grade",
         rad_where.join("OR"),
         radicals.len(),
     );
