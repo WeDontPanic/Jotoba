@@ -20,17 +20,26 @@ table! {
         literal -> Bpchar,
         meaning -> Array<Text>,
         grade -> Nullable<Int4>,
+        radical -> Nullable<Int4>,
         stroke_count -> Int4,
         frequency -> Nullable<Int4>,
         jlpt -> Nullable<Int4>,
         variant -> Nullable<Array<Text>>,
         onyomi -> Nullable<Array<Text>>,
         kunyomi -> Nullable<Array<Text>>,
-        chinese -> Nullable<Text>,
+        chinese -> Nullable<Array<Text>>,
         korean_r -> Nullable<Array<Text>>,
         korean_h -> Nullable<Array<Text>>,
         natori -> Nullable<Array<Text>>,
         kun_dicts -> Nullable<Array<Int4>>,
+    }
+}
+
+table! {
+    kanji_element (id) {
+        id -> Int4,
+        kanji_id -> Int4,
+        search_radical_id -> Int4,
     }
 }
 
@@ -43,6 +52,25 @@ table! {
         transcription -> Text,
         name_type -> Nullable<Array<Int4>>,
         xref -> Nullable<Text>,
+    }
+}
+
+table! {
+    radical (id) {
+        id -> Int4,
+        literal -> Bpchar,
+        alternative -> Nullable<Bpchar>,
+        stroke_count -> Int4,
+        readings -> Array<Text>,
+        translations -> Nullable<Array<Text>>,
+    }
+}
+
+table! {
+    search_radical (id) {
+        id -> Int4,
+        literal -> Bpchar,
+        stroke_count -> Int4,
     }
 }
 
@@ -91,13 +119,18 @@ table! {
     }
 }
 
+joinable!(kanji_element -> kanji (kanji_id));
+joinable!(kanji_element -> search_radical (search_radical_id));
 joinable!(sentence_translation -> sentence (sentence_id));
 joinable!(sentence_vocabulary -> sentence (sentence_id));
 
 allow_tables_to_appear_in_same_query!(
     dict,
     kanji,
+    kanji_element,
     name,
+    radical,
+    search_radical,
     sense,
     sentence,
     sentence_translation,

@@ -52,6 +52,9 @@ struct Options {
     jmnedict_path: String,
     sentences_path: String,
     accents_path: String,
+    radicals_path: String,
+    elements_path: String,
+    search_radicals_path: String,
     start: bool,
 }
 
@@ -95,6 +98,24 @@ pub async fn main() {
                 .expect("failed to update kun links");
         }
 
+        if !options.radicals_path.is_empty() {
+            if !kanji_exists && !imported_kanji {
+                println!("Kanji entries are missing. Import them first!");
+                return;
+            }
+
+            import::radicals::import(&database, options.radicals_path).await;
+        }
+
+        if !options.elements_path.is_empty() {
+            if !kanji_exists && !imported_kanji {
+                println!("Kanji entries are missing. Import them first!");
+                return;
+            }
+
+            import::kanji_elements::import(&database, options.elements_path).await;
+        }
+
         if !options.jlpt_paches_path.is_empty() {
             if (!kanji_exists && !imported_kanji) || (!dict_exists && !imported_dicts) {
                 println!("Dict or kanji entries missing. Import them first!");
@@ -120,6 +141,10 @@ pub async fn main() {
             }
 
             import::sentences::import(&database, options.sentences_path).await;
+        }
+
+        if !options.search_radicals_path.is_empty() {
+            import::search_radicals::import(&database, options.search_radicals_path).await;
         }
 
         if !options.manga_sfx_path.is_empty() {
@@ -172,6 +197,10 @@ async fn start_server(db: DbPool) -> std::io::Result<()> {
             .route("/index.html", actixweb::get().to(web::index::index))
             .route("/", actixweb::get().to(web::index::index))
             .route("/search", actixweb::get().to(web::search::search))
+            .route(
+                "/api/kanji/by_radical",
+                actixweb::post().to(web::api::radical::kanji_by_radicals),
+            )
             .service(actix_files::Files::new(
                 "/assets",
                 config_clone.server.get_html_files(),
@@ -255,6 +284,24 @@ fn parse_args() -> Option<Options> {
             "The path to import the accents from. Required for --import",
         );
 
+        ap.refer(&mut options.radicals_path).add_option(
+            &["--radicals-path"],
+            Store,
+            "The path to import the radicals from. Required for --import",
+        );
+
+        ap.refer(&mut options.elements_path).add_option(
+            &["--elements-path"],
+            Store,
+            "The path to import the kanji elements from. Required for --import",
+        );
+
+        ap.refer(&mut options.search_radicals_path).add_option(
+            &["--sradicals-path"],
+            Store,
+            "The path to import the search radicals from. Required for --import",
+        );
+
         ap.parse_args_or_exit();
     }
 
@@ -266,9 +313,12 @@ fn parse_args() -> Option<Options> {
         && options.jmnedict_path.is_empty()
         && options.sentences_path.is_empty()
         && options.accents_path.is_empty()
+        && options.radicals_path.is_empty()
+        && options.elements_path.is_empty()
+        && options.search_radicals_path.is_empty()
     {
         println!(
-            "--manga-sfx-path, --jmdict-path, --jmnedict-path, --kanjidict-path, --accents-path, --sentences-path or --jlpt-patches-path required"
+            "--manga-sfx-path, --jmdict-path, --jmnedict-path, --kanjidict-path, --accents-path, --sentences-path, --radicals-path, --elements-path, --search-radicals-path or --jlpt-patches-path required"
         );
         return None;
     }

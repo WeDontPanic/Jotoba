@@ -42,13 +42,14 @@ CREATE TABLE kanji (
   literal CHAR(1) NOT NULL,
   meaning TEXT[] NOT NULL,
   grade INTEGER,
+  radical INTEGER,
   stroke_count INTEGER NOT NULL,
   frequency INTEGER,
   jlpt INTEGER,
   variant TEXT[],
   onyomi TEXT[],
   kunyomi TEXT[],
-  chinese TEXT,
+  chinese TEXT[],
   korean_r TEXT[],
   korean_h TEXT[],
   natori TEXT[],
@@ -94,6 +95,30 @@ CREATE TABLE sentence_vocabulary (
   foreign key (sentence_id) references sentence(id)
 );
 
+CREATE TABLE radical (
+  id INTEGER PRIMARY KEY,
+  literal CHAR(1) NOT NULL,
+  alternative CHAR(1),
+  stroke_count INTEGER NOT NULL,
+  readings TEXT[] NOT NULL,
+  translations TEXT[]
+);
+CREATE INDEX index_radical_literal ON radical (literal);
+
+CREATE TABLE search_radical (
+  id SERIAL PRIMARY KEY,
+  literal CHAR(1) NOT NULL,
+  stroke_count INTEGER NOT NULL
+);
+CREATE INDEX index_search_radical_literal ON search_radical (literal);
+
+CREATE TABLE kanji_element (
+  id SERIAL PRIMARY KEY,
+  kanji_id INTEGER NOT NULL,
+  search_radical_id INTEGER NOT NULL,
+  foreign key (kanji_id) references kanji (id),
+  foreign key (search_radical_id) references search_radical (id)
+);
 
 CREATE OR REPLACE FUNCTION is_kanji(IN inp text)
  RETURNS boolean AS
@@ -153,7 +178,7 @@ LANGUAGE sql stable;
 
 CREATE OR REPLACE FUNCTION find_kanji_by_meaning(mea TEXT)
   RETURNS setof "kanji" AS $$
-    select id, literal, meaning, grade, stroke_count, frequency, jlpt, variant, onyomi, kunyomi, chinese, korean_r, korean_h, natori, kun_dicts
+    select id, literal, meaning, grade, radical , stroke_count, frequency, jlpt, variant, onyomi, kunyomi, chinese, korean_r, korean_h, natori, kun_dicts
   from (select *, unnest(meaning) m from kanji) x order by mea <-> m limit 4
   $$
  LANGUAGE sql stable;

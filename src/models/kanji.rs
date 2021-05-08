@@ -1,11 +1,12 @@
 use super::{
-    super::schema::kanji,
+    super::schema::{kanji, kanji_element},
     dict::{self, Dict},
+    radical::{self, Radical},
 };
 use crate::{
     cache::SharedCache,
     error::Error,
-    parse::kanjidict::Character,
+    parse::{kanji_ele::KanjiPart, kanjidict::Character},
     search::{query::KanjiReading, SearchMode},
     utils::{self, to_option},
     DbPool,
@@ -36,13 +37,14 @@ pub struct Kanji {
     pub literal: String,
     pub meaning: Vec<String>,
     pub grade: Option<i32>,
+    pub radical: Option<i32>,
     pub stroke_count: i32,
     pub frequency: Option<i32>,
     pub jlpt: Option<i32>,
     pub variant: Option<Vec<String>>,
     pub onyomi: Option<Vec<String>>,
     pub kunyomi: Option<Vec<String>>,
-    pub chinese: Option<String>,
+    pub chinese: Option<Vec<String>>,
     pub korean_r: Option<Vec<String>>,
     pub korean_h: Option<Vec<String>>,
     pub natori: Option<Vec<String>>,
@@ -55,17 +57,33 @@ pub struct NewKanji {
     pub literal: String,
     pub meaning: Vec<String>,
     pub grade: Option<i32>,
+    pub radical: Option<i32>,
     pub stroke_count: i32,
     pub frequency: Option<i32>,
     pub jlpt: Option<i32>,
     pub variant: Option<Vec<String>>,
     pub onyomi: Option<Vec<String>>,
     pub kunyomi: Option<Vec<String>>,
-    pub chinese: Option<String>,
+    pub chinese: Option<Vec<String>>,
     pub korean_r: Option<Vec<String>>,
     pub korean_h: Option<Vec<String>>,
     pub natori: Option<Vec<String>>,
     pub kun_dicts: Option<Vec<i32>>,
+}
+
+#[derive(Queryable, QueryableByName, Clone, Debug, Default, PartialEq)]
+#[table_name = "kanji_element"]
+pub struct KanjiElement {
+    pub id: i32,
+    pub kanji_id: i32,
+    pub search_radical_id: i32,
+}
+
+#[derive(Insertable, Clone, Debug, Default, PartialEq)]
+#[table_name = "kanji_element"]
+pub struct NewKanjiElement {
+    pub kanji_id: i32,
+    pub search_radical_id: i32,
 }
 
 impl From<Character> for NewKanji {
@@ -80,11 +98,12 @@ impl From<Character> for NewKanji {
             variant: to_option(k.variant),
             onyomi: to_option(k.on_readings),
             kunyomi: to_option(k.kun_readings),
-            chinese: k.chinese_reading,
+            chinese: to_option(k.chinese_readings),
             korean_r: to_option(k.korean_romanized),
             korean_h: to_option(k.korean_hangul),
             natori: to_option(k.natori),
             kun_dicts: None,
+            radical: k.radical,
         }
     }
 }
@@ -95,10 +114,62 @@ pub enum ReadingType {
     Onyomi,
 }
 
+use futures::future::try_join_all;
+
+pub async fn insert_kanji_part(db: &DbPool, element: KanjiPart) -> Result<(), Error> {
+    // Find kanji
+    let kanji = match find_by_literal(db, element.radical.to_string()).await {
+        Ok(v) => v,
+        Err(err) => match err {
+            Error::DbError(ref db) => match db {
+                diesel::result::Error::NotFound => return Ok(()),
+                _ => return Err(err.into()),
+            },
+            _ => return Err(err.into()),
+        },
+    };
+
+    // Find search_radicals IDs for all parts
+    let literals = try_join_all(
+        element
+            .parts
+            .into_iter()
+            .map(|i| radical::search_radical_find_by_literal(db, i)),
+    )
+    .await?;
+
+    // Insert all search_radicals assigned to the kanji in kanji_elements table
+    insert_kanji_elements(
+        db,
+        &literals
+            .into_iter()
+            .map(|i| NewKanjiElement {
+                search_radical_id: i.id,
+                kanji_id: kanji.id,
+            })
+            .collect(),
+    )
+    .await?;
+
+    Ok(())
+}
+
+async fn insert_kanji_elements(db: &DbPool, items: &Vec<NewKanjiElement>) -> Result<(), Error> {
+    diesel::insert_into(kanji_element::table)
+        .values(items)
+        .execute_async(db)
+        .await?;
+    Ok(())
+}
+
 impl Kanji {
     /// Returns all dict entries assigned to the kanji's kun readings
     pub async fn get_kun_readings(db: &DbPool, ids: &[i32]) -> Result<Vec<Dict>, Error> {
         dict::load_by_ids(db, ids).await
+    }
+
+    pub async fn load_radical(&self, db: &DbPool) -> Result<Radical, Error> {
+        Ok(radical::find_by_id(db, self.radical.unwrap()).await?)
     }
 
     /// Print kanji grade pretty for frontend
@@ -238,6 +309,13 @@ where
 }
 
 /// Clear all kanji entries
+pub async fn clear_kanji_elements(db: &DbPool) -> Result<(), Error> {
+    use crate::schema::kanji_element::dsl::*;
+    diesel::delete(kanji_element).execute_async(db).await?;
+    Ok(())
+}
+
+/// Clear all kanji entries
 pub async fn clear_kanji(db: &DbPool) -> Result<(), Error> {
     use crate::schema::kanji::dsl::*;
     diesel::delete(kanji).execute_async(db).await?;
@@ -293,7 +371,7 @@ pub async fn find_by_literals(db: &DbPool, l: &[String]) -> Result<Vec<Kanji>, E
 }
 
 /// Find Kanji items by its ids
-pub async fn load_by_ids(db: &DbPool, ids: &Vec<i32>) -> Result<Vec<Kanji>, Error> {
+pub async fn load_by_ids(db: &DbPool, ids: &[i32]) -> Result<Vec<Kanji>, Error> {
     if ids.is_empty() {
         return Ok(vec![]);
     }
@@ -320,7 +398,7 @@ pub async fn load_by_ids(db: &DbPool, ids: &Vec<i32>) -> Result<Vec<Kanji>, Erro
 }
 
 /// Retrieve kanji by ids from DB
-async fn retrieve_by_ids(db: &DbPool, ids: &Vec<i32>) -> Result<Vec<Kanji>, Error> {
+async fn retrieve_by_ids(db: &DbPool, ids: &[i32]) -> Result<Vec<Kanji>, Error> {
     if ids.is_empty() {
         return Ok(vec![]);
     }

@@ -155,7 +155,7 @@ pub struct Character {
     pub literal: char,
     pub on_readings: Vec<String>,
     pub kun_readings: Vec<String>,
-    pub chinese_reading: Option<String>,
+    pub chinese_readings: Vec<String>,
     pub korean_romanized: Vec<String>,
     pub korean_hangul: Vec<String>,
     pub meaning: Vec<String>,
@@ -165,6 +165,7 @@ pub struct Character {
     pub frequency: Option<i32>,
     pub jlpt: Option<i32>,
     pub natori: Vec<String>,
+    pub radical: Option<i32>,
 }
 
 impl Character {
@@ -187,12 +188,18 @@ impl Character {
                     self.meaning.push(value)
                 }
             }
+            Tag::RadValue(v) => {
+                if v && self.radical.is_none() {
+                    self.radical = value.parse().ok();
+                }
+            }
+
             Tag::Reading(ref r) => match r {
                 ReadingType::JapaneseOn => self.on_readings.push(value),
                 ReadingType::JapaneseKun => self.kun_readings.push(value),
                 ReadingType::KoreanRomanized => self.korean_romanized.push(value),
                 ReadingType::KoreanHangul => self.korean_hangul.push(value),
-                ReadingType::Chinese => self.chinese_reading = Some(value),
+                ReadingType::Chinese => self.chinese_readings.push(value),
                 _ => (),
             },
             _ => (),
@@ -208,7 +215,7 @@ enum Tag {
     Literal,
     Codepoint,
     Radical,
-    RadValue,
+    RadValue(bool),
     RadName,
     Misc,
     Grade,
@@ -277,7 +284,18 @@ impl Tag {
             "literal" => Tag::Literal,
             "codepoint" => Tag::Codepoint,
             "radical" => Tag::Radical,
-            "rad_value" => Tag::RadValue,
+            "rad_value" => {
+                // TODO fix this shit
+                let val = if let Some(attr) = attributes {
+                    attr.filter_map(|i| i.is_ok().then(|| i.unwrap())).any(|i| {
+                        i.key == b"rad_type"
+                            && str::from_utf8(&i.value.to_vec()).unwrap() == "classical"
+                    })
+                } else {
+                    false
+                };
+                Tag::RadValue(val)
+            }
             "rad_name" => Tag::RadName,
             "misc" => Tag::Misc,
             "grade" => Tag::Grade,

@@ -1257,6 +1257,7 @@ dependencies = [
  "serde_json",
  "strum",
  "strum_macros",
+ "thiserror",
  "tokio 1.5.0",
  "tokio-diesel",
  "toml",
