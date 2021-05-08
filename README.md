@@ -6,6 +6,10 @@ A free online, selfhostable, multilang japanese dictionary.
 - [Kanjidict2](https://www.edrdg.org/wiki/index.php/KANJIDIC_Project)
 - [jmnedict.xml](http://www.edrdg.org/enamdict/enamdict_doc.html)
 - [SVG files]()
+- [Radicals](https://github.com/mifunetoshiro/kanjium/blob/master/data/source_files/radicals.txt/)
+- [Search radicals]()
+- [Kanji elements]()
+- [SVG files]()
 - JLPT patches
 - PostgresDB
 - [Diesel](https://github.com/diesel-rs/diesel) with postgres feature (`cargo install diesel_cli --no-default-features --features postgres`)
