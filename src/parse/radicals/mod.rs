@@ -1,3 +1,4 @@
+pub mod search_radicals;
 use std::{
     fs::File,
     io::{BufRead, BufReader},

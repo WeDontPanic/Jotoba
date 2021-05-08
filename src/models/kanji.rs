@@ -9,7 +9,7 @@ use crate::{
     parse::{kanji_ele::KanjiPart, kanjidict::Character},
     search::{query::KanjiReading, SearchMode},
     utils::{self, to_option},
-    DbConnection, DbPool,
+    DbPool,
 };
 
 #[cfg(feature = "tokenizer")]
@@ -76,14 +76,14 @@ pub struct NewKanji {
 pub struct KanjiElement {
     pub id: i32,
     pub kanji_id: i32,
-    pub radical_id: i32,
+    pub search_radical_id: i32,
 }
 
 #[derive(Insertable, Clone, Debug, Default, PartialEq)]
 #[table_name = "kanji_element"]
 pub struct NewKanjiElement {
     pub kanji_id: i32,
-    pub radical_id: i32,
+    pub search_radical_id: i32,
 }
 
 impl From<Character> for NewKanji {

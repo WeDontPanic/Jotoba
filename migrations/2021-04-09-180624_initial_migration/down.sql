@@ -16,3 +16,4 @@ drop table kanji;
 drop table sentence_translation;
 drop table sentence;
 drop table radical;
+drop table search_radical;

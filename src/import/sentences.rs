@@ -5,7 +5,7 @@ use crate::{models::sentence, parse::jmdict::languages::Language};
 use itertools::Itertools;
 use serde_json::Value;
 
-/// Import jlpt patche file
+/// Import sentence patche file
 pub async fn import(db: &DbPool, path: String) {
     println!("Clearing old sentences");
     sentence::clear(db).await.unwrap();

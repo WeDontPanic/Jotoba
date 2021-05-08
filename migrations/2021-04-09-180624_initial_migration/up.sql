@@ -105,12 +105,19 @@ CREATE TABLE radical (
 );
 CREATE INDEX index_radical_literal ON radical (literal);
 
+CREATE TABLE search_radical (
+  id SERIAL PRIMARY KEY,
+  literal CHAR(1) NOT NULL,
+  stroke_count INTEGER NOT NULL
+);
+CREATE INDEX index_search_radical_literal ON search_radical (literal);
+
 CREATE TABLE kanji_element (
-  id INTEGER PRIMARY KEY,
+  id SERIAL PRIMARY KEY,
   kanji_id INTEGER NOT NULL,
-  radical_id INTEGER NOT NULL,
+  search_radical_id INTEGER NOT NULL,
   foreign key (kanji_id) references kanji (id),
-  foreign key (radical_id) references radical (id)
+  foreign key (search_radical_id) references search_radical (id)
 );
 
 CREATE OR REPLACE FUNCTION is_kanji(IN inp text)

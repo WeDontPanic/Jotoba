@@ -39,7 +39,7 @@ table! {
     kanji_element (id) {
         id -> Int4,
         kanji_id -> Int4,
-        radical_id -> Int4,
+        search_radical_id -> Int4,
     }
 }
 
@@ -63,6 +63,14 @@ table! {
         stroke_count -> Int4,
         readings -> Array<Text>,
         translations -> Nullable<Array<Text>>,
+    }
+}
+
+table! {
+    search_radical (id) {
+        id -> Int4,
+        literal -> Bpchar,
+        stroke_count -> Int4,
     }
 }
 
@@ -112,7 +120,7 @@ table! {
 }
 
 joinable!(kanji_element -> kanji (kanji_id));
-joinable!(kanji_element -> radical (radical_id));
+joinable!(kanji_element -> search_radical (search_radical_id));
 joinable!(sentence_translation -> sentence (sentence_id));
 joinable!(sentence_vocabulary -> sentence (sentence_id));
 
@@ -122,6 +130,7 @@ allow_tables_to_appear_in_same_query!(
     kanji_element,
     name,
     radical,
+    search_radical,
     sense,
     sentence,
     sentence_translation,
