@@ -273,53 +273,14 @@
 
     /* -------- Radical Picker -------- */
 
-    .rad-results {
-        width: 99%;
-        padding-left: 5px;
-        padding-top: 10px;
-        max-height: 85px;
-        overflow-y: scroll;
-    }
-    
     .rad-picker {
-        border: 2px;
-        border-style: solid;
-        border-radius: 5px;
-        max-height: 105vw;
-        overflow-y: scroll;
         background-image: unset;
     }
     
     .rad-btn {
-        display: inline-block;
-        border-radius: 2px;
-        font-size: 24px;
-        text-align: center;
-        margin: 1px;
-        height: 36px;
         width: 11.9%;
-        padding: 2px 4px;
-        line-height: 1.4;
     }
-    
-    .rad-btn.picker {
-        background-color: none;
-    }
-    
-    .rad-btn.result {
-        background-color: var(--background);
-    }
-    
-    .rad-btn.num {
-        color: var(--secondaryTextColor);
-        background: none;
-        min-width: 32px;
-        line-height: 36px;
-        font-weight: bold;
-        font-size: 20px;
-        padding: 0 5px;
-    }
-
+  
     /* -------- Mobile only -------- */
 
     .jmp-btn {
