@@ -4,6 +4,11 @@ pub mod inflection;
 
 use itertools::Itertools;
 
+const RADICALS: &[char] = &[
+    '｜', 'ノ', '⺅', 'ハ', '⺉', 'マ', 'ユ', '⻌', '⺌', 'ヨ', '⺖', '⺘', '⺡', '⺨', '⺾', '⻏',
+    '⻖', '⺹', '⺣', '⺭', '⻂', '⺲',
+];
+
 pub trait JapaneseExt {
     /// Returns true if self is of type ct
     fn is_of_type(&self, ct: CharType) -> bool;
@@ -56,6 +61,8 @@ pub trait JapaneseExt {
 
     /// Returns true if self is a small hiragana letter
     fn is_small_kana(&self) -> bool;
+
+    fn is_radical(&self) -> bool;
 }
 
 impl JapaneseExt for char {
@@ -155,6 +162,10 @@ impl JapaneseExt for char {
     fn is_small_kana(&self) -> bool {
         self.is_small_katakana() || self.is_small_hiragana()
     }
+
+    fn is_radical(&self) -> bool {
+        self.is_kanji() || RADICALS.iter().any(|i| *i == *self)
+    }
 }
 
 impl JapaneseExt for str {
@@ -198,6 +209,10 @@ impl JapaneseExt for str {
 
     fn is_kanji(&self) -> bool {
         !self.chars().into_iter().any(|s| !s.is_kanji())
+    }
+
+    fn is_radical(&self) -> bool {
+        !self.chars().into_iter().any(|s| !s.is_radical())
     }
 
     fn has_kanji(&self) -> bool {
