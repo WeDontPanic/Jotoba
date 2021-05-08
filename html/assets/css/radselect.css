@@ -13,11 +13,14 @@
 .rad-picker {
     border: 2px;
     border-style: solid;
-    border-color: var(--searchTextColor);
     border-radius: 5px;
-    background-color: var(--overlay);
     max-height: 105vw;
     overflow-y: scroll;
+    border-color: var(--searchTextColor);
+    background-color: var(--overlay);
+    background-image: linear-gradient(180deg, var(--itemBG_075) 50%, transparent 50%);
+    background-repeat: repeat;
+    background-size: 100px 76px;
 }
 
 .rad-btn {
@@ -41,7 +44,7 @@
 }
 
 .rad-btn.num {
-    color: var(--searchTextColor);
+    color: var(--secondaryTextColor);
     background: none;
     min-width: 32px;
     line-height: 36px;
@@ -50,8 +53,12 @@
     padding: 0 5px;
 }
 
+.rad-btn.result.num {
+    color: var(--primaryTextColor);
+}
+
 .rad-btn.picker.num {
-    background-color: var(--itemBG_075);
+    background-color: var(--searchTextColor);
 } 
 
 .rad-btn:hover:not(.num) {

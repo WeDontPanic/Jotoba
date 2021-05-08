@@ -37,14 +37,14 @@ function loadRadicals() {
 
         // There are no radicals with 15 or 16 strokes
         if (i == 14) {
-            $('.rad-picker').append('<div class="rad-btn picker num noselect">'+17+'</div>');
+            $('.rad-picker').append('<span class="rad-btn picker num noselect">'+17+'</span>');
         } else {
-            $('.rad-picker').append('<div class="rad-btn picker num noselect">'+(i+1)+'</div>');
+            $('.rad-picker').append('<span class="rad-btn picker num noselect">'+(i+1)+'</span>');
         }
         
         // Add the radical
         for (let ri = 0; ri < radicals[i].length; ri++) {
-            $('.rad-picker').append('<div class="rad-btn picker noselect">'+radicals[i][ri]+'</div>');            
+            $('.rad-picker').append('<span class="rad-btn picker noselect">'+radicals[i][ri]+'</span>');            
         }
     }
 }
