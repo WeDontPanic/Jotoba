@@ -141,7 +141,7 @@
 		padding-right: 0px;
     }
 	
-	.tags {
+	.kanji-parent > .tags {
 		padding-bottom: 5px;
         text-align: center;
 	}

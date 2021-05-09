@@ -319,7 +319,7 @@
       <!-- Kanji Templates here -->
       @for i in result.items.iter() {
         @if let Item::Kanji(kanji) = i {
-          <div>
+          <div class="kanji-parent">
             <!-- Tags -->
             <div class="tags">
               @kanji.stroke_count strokes.
