@@ -2,7 +2,7 @@ use crate::parse::radicals;
 use crate::{models::radical as DbRadical, DbPool};
 
 /// Import radicals
-pub async fn import(db: &DbPool, path: String) {
+pub async fn import(db: &DbPool, path: &str) {
     println!("Clearing old radicals...");
     DbRadical::clear(db).await.unwrap();
     println!("Importing radicals...");

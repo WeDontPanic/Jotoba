@@ -11,7 +11,7 @@ use std::{
 };
 
 /// Imports jmnedict into database
-pub async fn import(db: &DbPool, path: String) {
+pub async fn import(db: &DbPool, path: &str) {
     println!("Clearing existing names");
     name::clear(db).await.unwrap();
 

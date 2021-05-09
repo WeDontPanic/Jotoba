@@ -11,8 +11,8 @@ pub struct PitchItem {
 }
 
 /// Parses a pitch info file and returns the amount of pitch items and an iteator over all items
-pub fn parse(file: String) -> Result<(usize, impl Iterator<Item = PitchItem>), Error> {
-    let mut fa = File::open(&file)?;
+pub fn parse(file: &str) -> Result<(usize, impl Iterator<Item = PitchItem>), Error> {
+    let mut fa = File::open(file)?;
     let bufr = BufReader::new(&fa);
     let count = bufr.lines().count();
 

@@ -3,7 +3,7 @@ use std::io::Write;
 use crate::{models::dict, parse::accents, DbPool};
 
 /// Import jlpt patche file
-pub async fn import(db: &DbPool, path: String) {
+pub async fn import(db: &DbPool, path: &str) {
     println!("Importing pitch accents...");
     let db = db.get().unwrap();
 

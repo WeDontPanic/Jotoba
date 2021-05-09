@@ -124,6 +124,7 @@ impl Kanji {
         dict::load_by_ids(db, ids).await
     }
 
+    // TODO return Result<Option<Radical>, Error> to handle non existing radicals properly
     pub async fn load_radical(&self, db: &DbPool) -> Result<Radical, Error> {
         Ok(radical::find_by_id(db, self.radical.unwrap()).await?)
     }

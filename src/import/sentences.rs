@@ -10,7 +10,7 @@ use itertools::Itertools;
 use serde_json::Value;
 
 /// Import sentences file
-pub async fn import(db: &DbPool, path: String) {
+pub async fn import(db: &DbPool, path: &str) {
     println!("Clearing old sentences");
     sentence::clear(db).await.unwrap();
 
