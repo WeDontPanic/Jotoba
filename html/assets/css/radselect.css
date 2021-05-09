@@ -35,6 +35,21 @@
     line-height: 1.4;
 }
 
+.rad-btn.picker.selected {
+    color: var(--primaryColor);
+    border: 1px solid var(--primaryColor);
+    background-color: var(--lineColor);
+    border-radius: 50%;
+}
+
+.rad-btn.picker.disabled {
+    color: var(--lineColor);
+}
+
+.rad-btn.picker.disabled:hover {
+    cursor: unset;
+}
+
 .rad-btn.picker {
     background-color: none;
 }

@@ -20,7 +20,6 @@ var radicals = [
     ["龠"]
  ];
 
-
 function toggleRadicalOverlay() {
     $('.overlay.speech').addClass('hidden');
 
@@ -32,29 +31,139 @@ function toggleRadicalOverlay() {
     }
 }
 
-function loadRadicals() {
+// Called by reset btn. Deselects all
+function resetRadPicker() {
+    $('.rad-btn.selected').each((i, e) => {
+        $(e).removeClass("selected");
+    });
+
+    $('.rad-btn.disabled').each((i, e) => {
+        $(e).removeClass("disabled");
+    });
+
+    $('.rad-results').html("");
+}
+
+function loadRadicals(disableByDefault) {
+    // Reset entries
+    $('.rad-picker').html("");
+
+    // Iterate all radicals and add them
     for (let i = 0; i < radicals.length; i++) {
 
         // There are no radicals with 15 or 16 strokes
         if (i == 14) {
-            $('.rad-picker').append('<span class="rad-btn picker num noselect">'+17+'</span>');
+            $('.rad-picker').append('<span class="rad-btn picker num">'+17+'</span>');
         } else {
-            $('.rad-picker').append('<span class="rad-btn picker num noselect">'+(i+1)+'</span>');
+            $('.rad-picker').append('<span class="rad-btn picker num">'+(i+1)+'</span>');
         }
         
         // Add the radical
         for (let ri = 0; ri < radicals[i].length; ri++) {
-            $('.rad-picker').append('<span class="rad-btn picker noselect">'+radicals[i][ri]+'</span>');            
+            let picker = "";
+            if (disableByDefault !== undefined && disableByDefault) {
+                picker = $('<span class="rad-btn picker disabled">'+radicals[i][ri]+'</span>');
+            } else {
+                picker = $('<span class="rad-btn picker">'+radicals[i][ri]+'</span>');
+            }
+            picker.on('click', (event) => handleRadicalSelect(event));
+            $('.rad-picker').append(picker);
         }
     }
 }
 
 loadRadicals();
 
-function loadRadicalResults() {
-
-    // <div class="rad-btn result num noselect">1</div>
-    // <div class="rad-btn result noselect">一</div>
-
+// Adds the selected Kanji to the search bar
+function handleKanjiSelect(event) {
+    $('#search').val($('#search').val() + event.target.innerHTML);
 }
 
+// Toggles Radicals on Input and loads the results
+function handleRadicalSelect(event) {
+    let target = $(event.target);
+
+    // Dont do anything if disabled
+    if (target.hasClass("disabled")) {
+        return;
+    }
+    
+    // Toggle the "selected" class
+    target.toggleClass('selected');
+
+    // Get possible Kanji / Radicals from selection
+    getRadicalInfo();
+}
+
+// Loads Kanji / Radical result from API into frontend
+function loadRadicalResults(info) {
+    // Reset entries
+    $('.rad-results').html("");
+
+    // Get and Iterate Kanji Keys
+    let kanjiKeys =  Object.keys(info.kanji)
+    for (let i = 0; i < kanjiKeys.length; i++) {
+
+        // Get the data
+        let key = kanjiKeys[i];
+        let possibleKanji = info.kanji[key];
+
+        // Create the stroke-count btn
+        $('.rad-results').append('<span class="rad-btn result num noselect">'+key+'</span>');
+
+        // Create the btn for each entry
+        for (let j = 0; j < possibleKanji.length; j++) {
+            let result = $('<span class="rad-btn result noselect">'+possibleKanji[j]+'</span>');
+            result.on('click', (event) => handleKanjiSelect(event));
+            $('.rad-results').append(result);
+        }
+    }
+
+    // Only activate possible radicals
+    let radicals = $('.rad-btn.picker:not(.num)').toArray();
+    for (let i = 0; i < radicals.length; i++) {
+        let rad = $(radicals[i]);
+        if (info.possible_radicals.includes(rad.html()) || rad.hasClass("selected")) {
+            rad.removeClass("disabled");
+        } else {
+            rad.addClass("disabled");
+        }
+    }
+}
+
+// Calls the API to get all kanji and radicals that are still possible
+function getRadicalInfo() {
+    // Create the JSON
+    let radicalJSON = {
+        "radicals": []
+    }
+
+    // Populate radicals within JSON with all selected radicals
+    let rads = $('.rad-btn.selected').toArray();
+    for (let i = 0; i < rads.length; i++) {
+        radicalJSON.radicals.push(rads[i].innerHTML);
+    }
+
+    // No Radicals selected
+    if (radicalJSON.radicals.length == 0) {
+        return;
+    }
+
+    // Send Request to backend
+    $.ajax({ 
+        type : "POST", 
+        url : "http://jojii.de:8080/api/kanji/by_radical", 
+        data: JSON.stringify(radicalJSON),
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        success : function(result) { 
+            // Load the results into frontend
+            loadRadicalResults(result);
+        }, 
+        error : function(result) { 
+           // Print Error
+           showMessage("error", "Could not reach Radical API.")
+        } 
+    }); 
+}
