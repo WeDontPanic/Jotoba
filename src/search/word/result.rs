@@ -30,6 +30,12 @@ pub struct WordResult {
     pub inflection_info: Option<InflectionInformation>,
 }
 
+impl WordResult {
+    pub fn has_word(&self) -> bool {
+        self.items.iter().any(|i| i.is_word())
+    }
+}
+
 #[derive(Debug, Clone, PartialEq)]
 pub struct InflectionInformation {
     pub lexeme: String,
@@ -40,6 +46,18 @@ pub struct InflectionInformation {
 pub enum Item {
     Word(Word),
     Kanji(Kanji),
+}
+
+impl Item {
+    /// Returns `true` if the item is [`Word`].
+    pub fn is_word(&self) -> bool {
+        matches!(self, Self::Word(..))
+    }
+
+    /// Returns `true` if the item is [`Kanji`].
+    pub fn is_kanji(&self) -> bool {
+        matches!(self, Self::Kanji(..))
+    }
 }
 
 impl From<Kanji> for Item {
