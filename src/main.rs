@@ -74,7 +74,7 @@ pub async fn main() {
 
     // Check for required data to be available
     if !has_required_data(&database).await.expect("fatal DB error") {
-        println!("jmdict or kanjidict entries missing. You need to import both!");
+        println!("Required data missing!");
         return;
     }
 

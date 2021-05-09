@@ -311,6 +311,12 @@ pub async fn exists(db: &DbPool) -> Result<bool, Error> {
     Ok(kanji.select(id).limit(1).execute_async(db).await? == 1)
 }
 
+/// Returns Ok(true) if at least one kanji element exists
+pub async fn element_exists(db: &DbPool) -> Result<bool, Error> {
+    use crate::schema::kanji_element::dsl::*;
+    Ok(kanji_element.select(id).limit(1).execute_async(db).await? == 1)
+}
+
 /// Find a kanji by its literal
 pub async fn find_by_literal(db: &DbPool, l: String) -> Result<Kanji, Error> {
     // Try to find literal in kanji cache
