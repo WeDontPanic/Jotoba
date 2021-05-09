@@ -5,9 +5,38 @@
   <div class="main-tab-select l">
     <h2 id="previousTabBtn" onclick="changeSearchType(0)" class="tab-btn">&larr; Words</h2>
   </div>
+
+  <!-- Only shown when results were found -->
   <div class="title-div">
     <h1>Names</h1>
   </div>
+
+  <!-- Only shown when no results were found -->
+  <div class="main-info d-flex flex-column">
+    <h3 class="noselect word-title">No results found</h3>
+    <br>
+    <div class="d-flex center">
+      <article style="height: 700px;">
+        <div class="small-12 medium-6 columns small-centered">
+            <p class="fat">Search Help</p>
+            <ul>
+               <li>Check your search for typos</li>
+               <li>Use more generic search terms</li>
+               <li>Your search request might not be included in our database yet</li>
+               <li>Your default search language might not fit your input</li>
+               <li>Try finding your search in a different category using <span class="highlight"> w / s / n / k </span></li>
+            </ul>
+
+            <p>
+               If you think your search should be contained in our database, submit an issue on <a class="clickable" href='https://github.com/WeDontPanic/Jotoba'>Github</a>.
+               <br>
+               Also check our <a class="clickable" href='https://trello.com/b/nmG0xgaW/jotoba'>Trello Board</a> since we might be working on it!
+            </p>
+        </div>
+      </article>
+   </div>
+ </div>
+ <!-- Only shown when no results were found -->
   <div class="main-tab-select r">
     <h2 id="nextTabBtn" onclick="changeSearchType(2)" class="tab-btn">Sentences &rarr;</h2>
   </div>

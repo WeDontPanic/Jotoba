@@ -64,6 +64,20 @@ $('.furigana-kanji-container > .furigana-preview').on("click", (event) => {
     copyToClipboard($(event.target).html().trim());
 });
 
+// Copies full Furigana to clipboard on dblclick
+$('.furigana-kanji-container > .furigana-preview').on("dblclick", (event) => {
+    $('.ajs-message.ajs-success.ajs-visible').last().remove();
+    $('.ajs-message.ajs-success.ajs-visible').last().html("<b>full</b> furigana copied to clipboard");
+
+    // Find all furigana
+    let parent = $(event.target.parentElement.parentElement);
+    let furi = "";
+    parent.find('.furigana-preview, .inline-kana-preview').each((i, element) => {
+        furi += element.innerHTML.trim();
+    });
+    copyToClipboard(furi);
+});
+
 // Copies translations to clipboard on double click
 $('.furigana-kanji-container > .kanji-preview').on("dblclick copy", (event) => {
 	event.preventDefault();

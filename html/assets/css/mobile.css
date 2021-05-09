@@ -25,7 +25,16 @@
     }
 
 	/* -------- Word Search -------- */
+    
+    .search-annotation {
+        width: 80%;
+        margin-left: 10%;
+    }
 	
+    .main-container {
+        width: 98vw;
+    }
+
     #content-container {
         -ms-flex-direction: column!important;
         flex-direction: column!important;
@@ -94,6 +103,7 @@
     .main-info > .d-flex.flex-row {
         align-self: center;
 		align-items: center;
+        margin-left: -10px;
     }
     
     .definition-wrapper.d-flex.flex-row {
@@ -117,6 +127,7 @@
 
     .kanji-entry.right {
         padding-left: 2vw;
+        padding-right: 2vw;
         width: 100%;
 	}
     
@@ -132,6 +143,7 @@
 	
 	.tags {
 		padding-bottom: 5px;
+        text-align: center;
 	}
 
     .list-entry > .tags, .kanji-entry.right, .tags.no-margin {
@@ -145,12 +157,24 @@
     .entry-min-height-2 {
         min-height: unset;
     }
+
+    /* ----------- Overlay ----------- */
+
+    .clickable.collocation {
+        width: 70%;
+        margin-left: 20%;
+    }
+
+    .table.conjugation {
+        margin-left: 0px;
+        width: 101%;
+    }
     
 	/* -------- Kanji Details -------- */
 	
 	.main-container > .d-flex {
 		flex-direction: column;
-        margin-left: 1rem;
+        /* margin-left: 1rem; */
 	}
 
 	.kanji-entry.left.detail {
@@ -247,7 +271,17 @@
         margin-left: -10px;
     }
 
-    /* Mobile only */
+    /* -------- Radical Picker -------- */
+
+    .rad-picker {
+        background-image: unset;
+    }
+    
+    .rad-btn {
+        width: 11.9%;
+    }
+  
+    /* -------- Mobile only -------- */
 
     .jmp-btn {
         display: none; 
@@ -265,12 +299,20 @@
 
     .kanji-jump {
         text-align: center;
-        margin-top: -25px;
         margin-bottom: 20px;
+    }
+
+    .kanji-jump.parent {
+        text-align: center;
+        width: 100%;
     }
 
     .word-title {
         display: none;
+    }
+
+    .info-h3 {
+        margin-bottom: 0px;
     }
 }
 

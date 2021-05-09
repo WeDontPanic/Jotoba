@@ -130,6 +130,10 @@ a:hover {
 .black {
     color: var(--primaryTextColor);
 }
+
+.fat {
+    font-weight: bold;
+}
   
 
 /* ----------------- Search Row ----------------- */
@@ -178,6 +182,7 @@ svg {
 }
 
 #searchDiv {
+    z-index: 1;
     margin-left: 15px;
     width: 100%;
     max-width: 1000px;
@@ -189,13 +194,15 @@ svg {
     justify-content: left;
 }
 
-.speech-overlay {
+.overlay {
+    z-index: -1;
+    margin-top: -1px;
     position: absolute;
     width: 100%;
     height: max-content;
-    border: 2px solid var(--itemBG);
+    border: 2px solid var(--searchBackground);
     border-top: none;
-    background-color: var(--overlay);
+    background-color: var(--searchBackground);
     box-shadow: 0px 8px 20px 0px rgb(0 0 0 / 25%);
 }
 
@@ -353,7 +360,7 @@ input[type="color"] {
 
 .search-inflection {
     align-items: center;
-    padding: 0.5rem;
+    padding: 0.5rem 1rem 0.5rem 1rem;
     border: 2px;
     border-style: solid;
     border-color: var(--searchTextColor);
@@ -378,6 +385,21 @@ input[type="color"] {
     padding-bottom: 0.1rem;
 }
 
+.word-tooltip {
+    position: absolute;
+    top: -5px;
+    right: 25px;
+    width: 20px;
+    height: 30px;
+    color: var(--tagColor);
+    font-weight: bold;
+    text-align: center;
+}
+
+.word-tooltip > span {
+    margin-bottom: -20px;
+}
+
 .kanji-entry {
     height: fit-content;
     padding-bottom: 10px;
@@ -400,6 +422,7 @@ input[type="color"] {
 }
 
 .kanji-entry.right {
+    position: relative;
     width: 100%;
 }
 
@@ -526,7 +549,6 @@ input[type="color"] {
     padding-top: 10px;
     padding-left: 10px;
 }
-
 
 .kanji-preview-left {
     width: 63%;
@@ -688,3 +710,54 @@ input[type="color"] {
 .pitch.b:not(.r) {
     padding-left: 3px;
 }
+
+/* Info Overlay */
+
+.table.conjugation {
+    width: 80%;
+    margin-left: 10%;
+}
+
+.collocation {
+    text-align: left;
+    width: 50%;
+    margin-left: 35%;
+}
+
+.table {
+    color: var(--primaryTextColor) !important;
+}
+
+thead > tr > th {
+    color: var(--secondaryTextColor) !important;
+    background-color: var(--bgPrimaryColor) !important;
+}
+
+table th {
+    border-color: var(--searchTextColor) !important;
+    border-bottom: 2px solid var(--lineColor) !important;
+    border-top: 1px solid var(--lineColor) !important;
+}
+
+td {
+    border-top: 2px solid var(--lineColor) !important;
+}
+
+table tr:last-child > td {
+    border-bottom: 2px solid var(--lineColor) !important;
+}
+
+
+
+/*
+th {
+    background-color: #343a40;
+    border-color: #454d55;
+    border-bottom: 2px solid #dee2e6;
+    border-top: 1px solid #dee2e6;
+}
+
+td {
+    border-top: 1px solid #dee2e6;
+}
+*/
