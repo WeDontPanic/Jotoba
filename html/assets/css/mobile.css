@@ -314,6 +314,11 @@
     .info-h3 {
         margin-bottom: 0px;
     }
+
+    /* Radical Picker */
+    .rad-result-preview {
+        display: none;
+    }
 }
 
 /* Mobile only */

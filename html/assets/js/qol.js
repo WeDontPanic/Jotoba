@@ -12,25 +12,30 @@ $(document).on("keypress", (event) => {
     if ($('#search').is(":focus")) return;
     
     switch (event.key) {
-        case '/':
+        case '/': // Focus search bar
             event.preventDefault();
             $('#search').focus();
             $('#search').select();
             break
-        case 'w':
+        case 'w': // Focus search bar
             changeSearchType("0");
             break;
-        case 'k':
+        case 'k': // Change to Word Tab
             changeSearchType("1");
             break;
-        case 's':
+        case 's': // Change to Sentence Tab
             changeSearchType("2");
             break;
-        case 'n':
+        case 'n': // Change to Names Tab
             changeSearchType("3");
             break;
-        case 'p':
+        case 'p': // Play first Audio on page
             $(".audioBtn").first().trigger("click");
+            break;
+        case "Enter": // Do a search while rad-picker is opened
+            if (!$(".overlay.radical").hasClass("hidden")) {
+               $(".btn-search").click();
+            }
             break;
         default:
             if (event.key > 0 && event.key < 10) {

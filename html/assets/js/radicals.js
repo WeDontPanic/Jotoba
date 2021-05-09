@@ -2,7 +2,8 @@
  *  Used to handle the radical search
 */
 
-var radicals = [
+const radHelpMsg = '<div class="rad-result-preview"> <span>This tool allows you to find Kanji by their core components (Radicals)</span> <br> <span>You can select Radicals below and add found Kanjis to the search bar</span> <br> <span>Press <span class="highlight">Enter</span> to start searching</span> </div>';
+const radicals = [
     ["一","｜","丶","ノ","乙","亅"], 
     ["二","亠","人","⺅","𠆢","儿","入","ハ","丷","冂","冖","冫","几","凵","刀","⺉","力","勹","匕","匚","十","卜","卩","厂","厶","又","マ","九","ユ","乃", "𠂉"],
     ["⻌","口","囗","土","士","夂","夕","大","女","子","宀","寸","小","⺌","尢","尸","屮","山","川","巛","工","已","巾","干","幺","广","廴","廾","弋","弓","ヨ","彑","彡","彳","⺖","⺘","⺡","⺨","⺾","⻏","⻖","也","亡","及","久"],
@@ -18,7 +19,7 @@ var radicals = [
     ["黽","鼎","鼓","鼠"],
     ["鼻","齊"],
     ["龠"]
- ];
+];
 
 function toggleRadicalOverlay() {
     $('.overlay.speech').addClass('hidden');
@@ -28,6 +29,13 @@ function toggleRadicalOverlay() {
 
     if (overlay.hasClass("hidden")) {
         recognition.stop();
+    }
+
+    // Reset on close
+    if (overlay.hasClass("hidden")) {
+        resetRadPicker()
+    } else {
+        $('.rad-results').html(radHelpMsg);
     }
 }
 
@@ -41,7 +49,7 @@ function resetRadPicker() {
         $(e).removeClass("disabled");
     });
 
-    $('.rad-results').html("");
+    $('.rad-results').html(radHelpMsg);
 }
 
 function loadRadicals(disableByDefault) {
@@ -102,6 +110,8 @@ function loadRadicalResults(info) {
 
     // Get and Iterate Kanji Keys
     let kanjiKeys =  Object.keys(info.kanji)
+
+    // Iterate all and add
     for (let i = 0; i < kanjiKeys.length; i++) {
 
         // Get the data
@@ -144,8 +154,11 @@ function getRadicalInfo() {
         radicalJSON.radicals.push(rads[i].innerHTML);
     }
 
-    // No Radicals selected
-    if (radicalJSON.radicals.length == 0) {
+    // No Radicals selected, Reset
+    if (radicalJSON.radicals.length == 0) { 
+        $('.rad-btn.disabled').each((i, e) => {
+            $(e).removeClass("disabled");
+        });
         return;
     }
 
