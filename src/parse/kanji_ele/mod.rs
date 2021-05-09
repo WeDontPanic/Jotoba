@@ -30,8 +30,8 @@ const MAPPINGS: &[(char, char)] = &[
 ];
 
 pub struct KanjiPart {
-    pub radical: char,
-    pub parts: Vec<char>,
+    pub kanji: char,
+    pub radicals: Vec<char>,
 }
 
 /// Parses a kanji element file
@@ -60,7 +60,10 @@ fn parse_item(line: &str) -> Option<KanjiPart> {
         .map(map_character)
         .collect();
 
-    Some(KanjiPart { radical, parts })
+    Some(KanjiPart {
+        kanji: radical,
+        radicals: parts,
+    })
 }
 
 /// Maps characters to the ones we need using [`MAPPINGS`]

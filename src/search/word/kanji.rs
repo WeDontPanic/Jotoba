@@ -96,7 +96,7 @@ pub(super) async fn alternative_reading_search(
     Search {
         db: search.db,
         query: &Query {
-            query: kanji::kun_literal_reading(&reading.reading),
+            query: kanji::kun_readings::literal_reading(&reading.reading),
             ..search.query.to_owned()
         },
     }

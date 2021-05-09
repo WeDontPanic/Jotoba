@@ -94,7 +94,7 @@ pub async fn main() {
         }
 
         if !options.kanjidict_path.is_empty() && (dict_exists || !options.jmdict_path.is_empty()) {
-            kanji::update_kun_links(&database)
+            kanji::kun_readings::update_links(&database)
                 .await
                 .expect("failed to update kun links");
         }
