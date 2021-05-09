@@ -20,6 +20,7 @@
       <link rel="stylesheet" type="text/css" href="assets/css/alerts.css">
       <link rel="stylesheet" type="text/css" href="assets/css/main.css">
       <link rel="stylesheet" type="text/css" href="assets/css/searchBar.css">
+      <link rel="stylesheet" type="text/css" href="assets/css/radselect.css">
       <link rel="stylesheet" type="text/css" href="assets/css/mobile.css">
 
       <script src="assets/js/lib/jquery.min.js"></script>
@@ -31,6 +32,7 @@
       <script defer src="assets/js/utils.js"></script>
 	   <script defer src="assets/js/qol.js"></script>
       <script defer src="assets/js/stt.js"></script>
+      <script defer src="assets/js/radicals.js"></script>
       <script defer src="assets/js/settings.js"></script>
    </head>
 
@@ -46,9 +48,9 @@
                </svg>
                <h4 class="noselect">Settings</h4>              
             </div>
-            <div class="btn-container">
+            <div class="btn-container" onclick="toggleRadicalOverlay()">
                <svg height="30" width="30">
-                  <path d="M11.986,13.132H2.599v1.653h14.053v-1.653H12.68c0.613-1.333,1.28-3.253,1.679-4.559c0.321-0.027,0.507-0.107,0.561-0.268   L12.866,7.72c-0.374,1.521-1.092,3.759-1.705,5.146L11.986,13.132L11.986,13.132z M5.026,8.306c0.561,1.387,1.041,3.228,1.172,4.4   l1.573-0.373c-0.159-1.174-0.666-2.987-1.28-4.347L5.026,8.306L5.026,8.306z M6.146,27.4V25.88h7.121v1.359h1.734v-9.974H4.44V27.4   H6.146L6.146,27.4z M13.266,24.279H6.145v-5.413h7.121V24.279z M10.573,5.719V3.105c0.347-0.052,0.507-0.186,0.533-0.373L8.838,2.6   v3.119H3.292v1.6H16.2v-1.6H10.573L10.573,5.719z M25.88,4.199h-8.187v23.174h1.729V5.908h5.311   c-0.907,2.159-2.053,4.667-3.36,7.306c2.909,2.667,4.214,4.534,4.214,6.267c0,2.453-1.279,2.533-3.066,2.533   c-0.506,0-1.063-0.022-1.647-0.08c0.346,0.508,0.584,1.281,0.61,1.762c0.4,0.027,0.826,0.027,1.229,0.027   c1.731,0,4.642,0,4.642-4.188c0-1.921-1.199-3.92-4.08-6.614c1.467-2.8,2.881-5.679,3.896-7.946   c0.106-0.053,0.214-0.133,0.239-0.267L26.23,4.12L25.885,4.2L25.88,4.199L25.88,4.199z"/>
+                  <path d="M11.986,13.132H2.599v1.653h14.053v-1.653H12.68c0.613-1.333,1.28-3.253,1.679-4.559c0.321-0.027,0.507-0.107,0.561-0.268   L12.866,7.72c-0.374,1.521-1.092,3.759-1.705,5.146L11.986,13.132L11.986,13.132z M5.026,8.306c0.561,1.387,1.041,3.228,1.172,4.4   l1.573-0.373c-0.159-1.174-0.666-2.987-1.28-4.347L5.026,8.306L5.026,8.306z M6.146,27.4V25.88h7.121v1.359h1.734v-9.974H4.44V27.4   H6.146L6.146,27.4z M13.266,24.279H6.145v-5.413h7.121V24.279z M10.573,5.719V3.105c0.347-0.052,0.507-0.186,0.533-0.373L8.838,2.6   v3.119H3.292v1.6H16.2v-1.6H10.573L10.573,5.719z M25.88,4.199h-8.187v23.174h1.729V5.908h5.311   c-0.907,2.159-2.053,4.667-3.36,7.306c2.909,2.667,4.214,4.534,4.214,6.267c0,2.453-1.279,2.533-3.066,2.533   c-0.506,0-1.063-0.022-1.647-0.08c0.346,0.508,0.584,1.281,0.61,1.762c0.4,0.027,0.826,0.027,1.229,0.027   c1.731,0,4.642,0,4.642-4.188c0-1.921-1.199-3.92-4.08-6.614c1.467-2.8,2.881-5.679,3.896-7.946   c0.106-0.053,0.214-0.133,0.239-0.267L26.23,4.12L25.885,4.2L25.88,4.199L25.88,4.199z"></path>
                </svg>
                <h4 class="noselect">Radicals</h4>
             </div>
@@ -97,7 +99,25 @@
                   <div>
                   </div>
                </div>
-                <!-- !!! Start of Speech Overlay !!! -->
+               <!-- Start of Radical Overlay -->
+               <div class="overlay radical noselect">
+                  <span class="x-button noselect" onclick="toggleRadicalOverlay()">x</span>
+                  
+                  <div class="d-flex flex-row wrap rad-results">
+                  </div>
+
+                  <br>
+
+                  <span class="clickable" onclick="resetRadPicker()">
+                     Reset
+                  </span>
+
+                  <div class="d-flex flex-row wrap rad-picker">
+                  </div>
+
+               </div>
+               <!-- End of Radical  Overlay -->
+                <!-- Start of Speech Overlay -->
                 <div class="speech-overlay hidden">
                   <span class="x-button noselect" onclick="toggleSpeakOverlay()">x</span>
                   <div class="d-flex flex-column">
@@ -119,11 +139,11 @@
                      </div>
                   </div>
                </div>
-               <!-- !!! End of Speech Overlay !!! -->
+               <!-- End of Speech Overlay -->
             </div>
          </div>
 
-         <!-- !!! Start of Settings Overlay !!! -->
+         <!-- Start of Settings Overlay -->
          <div class="modal fade" id="settingsModal">
             <div class="modal-dialog">
                <div class="modal-content">
@@ -258,7 +278,7 @@
                </div>
             </div>
          </div>
-         <!-- !!! End of Settings Overlay !!! -->
+         <!-- End of Settings Overlay -->
       </div>
 
       <!-- Main Body -->
