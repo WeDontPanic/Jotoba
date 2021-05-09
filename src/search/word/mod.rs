@@ -108,6 +108,10 @@ impl<'a> Search<'a> {
 
     #[cfg(feature = "tokenizer")]
     async fn get_query<'b>(&'b self) -> Result<(String, Option<WordItem<'static, 'b>>), Error> {
+        if !self.query.parse_japanese {
+            return Ok((self.query.query.clone(), None));
+        }
+
         let parser =
             InputTextParser::new(&self.db, &self.query.query, &crate::JA_NL_PARSER).await?;
 

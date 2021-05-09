@@ -48,6 +48,7 @@ pub struct Query {
     pub settings: UserSettings,
     pub page: usize,
     pub word_index: usize,
+    pub parse_japanese: bool,
 }
 
 /// Hashtag based search tags

@@ -1,6 +1,7 @@
+use itertools::Itertools;
 use serde::Deserialize;
 
-use crate::{japanese::JapaneseExt, utils};
+use crate::{japanese::JapaneseExt, parse::jmdict::part_of_speech::PosSimple, utils};
 
 use super::query::{Form, KanjiReading, Query, QueryLang, SearchTypeTag, Tag, UserSettings};
 
@@ -75,6 +76,8 @@ impl QueryParser {
             return None;
         }
 
+        let parse_japanese = self.need_jp_parsing();
+
         Some(Query {
             language: self.parse_language(&self.query),
             type_: self.parse_query_type(),
@@ -85,7 +88,19 @@ impl QueryParser {
             settings: self.user_settings,
             page: self.page,
             word_index: self.word_index,
+            parse_japanese,
         })
+    }
+
+    fn need_jp_parsing(&self) -> bool {
+        let mod_tags = self
+            .tags
+            .iter()
+            .filter(|i| i.is_search_type() && *i.as_search_type().unwrap() == SearchTypeTag::Word)
+            .collect_vec();
+
+        self.tags.is_empty()
+            || utils::same_elements(&mod_tags, &vec![&Tag::PartOfSpeech(PosSimple::Verb)])
     }
 
     /// Formats the query
