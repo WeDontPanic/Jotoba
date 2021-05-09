@@ -1,22 +1,30 @@
-use std::{io::Write, str::FromStr};
+use std::{
+    fs::File,
+    io::{BufReader, Seek, SeekFrom, Write},
+    str::FromStr,
+};
 
 use crate::DbPool;
 use crate::{models::sentence, parse::jmdict::languages::Language};
 use itertools::Itertools;
 use serde_json::Value;
 
-/// Import sentence patche file
+/// Import sentences file
 pub async fn import(db: &DbPool, path: String) {
     println!("Clearing old sentences");
     sentence::clear(db).await.unwrap();
-    let f = std::fs::File::open(&path).expect("Error reading sentences file!");
+
+    let mut f = File::open(&path).expect("Error reading sentences file!");
+
+    // Counting
     println!("Counting sentences...");
-    let json: Value = serde_json::from_reader(f).expect("invalid json data");
+    let json: Value = serde_json::from_reader(BufReader::new(&f)).expect("invalid json data");
     let len = json.get("sentences").unwrap().as_array().unwrap().len();
 
+    // Import
+    f.seek(SeekFrom::Start(0)).expect("seek failed");
     println!("Importing sentences...");
-    let f = std::fs::File::open(path).expect("Error reading sentences file!");
-    let json: Value = serde_json::from_reader(f).expect("invalid json data");
+    let json: Value = serde_json::from_reader(BufReader::new(f)).expect("invalid json data");
 
     // Import kanji patches
     if let Some(sentences) = json.get("sentences").and_then(|i| i.as_array()) {

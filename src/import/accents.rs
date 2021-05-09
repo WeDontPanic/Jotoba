@@ -7,11 +7,11 @@ pub async fn import(db: &DbPool, path: String) {
     println!("Importing pitch accents...");
     let db = db.get().unwrap();
 
-    accents::parse(path, |(kanji, kana, pitch), pos, len| {
-        dict::update_accents(&db, &kanji, &kana, &pitch).unwrap();
+    let (count, iter) = accents::parse(path).expect("Parse error");
 
-        print!("\rImporting pitch {}/{}", pos, len);
+    for (pos, pitch) in iter.enumerate() {
+        dict::update_accents(&db, pitch).unwrap();
+        print!("\rImporting pitch {}/{}", pos, count);
         std::io::stdout().flush().ok();
-    })
-    .unwrap();
+    }
 }

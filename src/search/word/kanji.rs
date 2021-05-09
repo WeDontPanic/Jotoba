@@ -10,8 +10,8 @@ use crate::{
         dict::Dict,
         kanji::{self, Kanji as DbKanji},
     },
-    search::{query::Query, search_order::SearchOrder, utils, SearchMode},
-    utils::to_option,
+    search::{query::Query, search_order::SearchOrder, SearchMode},
+    utils::{self, to_option},
 };
 use futures::future::try_join_all;
 use itertools::Itertools;

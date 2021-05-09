@@ -3,6 +3,8 @@ use std::{
     io::{BufRead, BufReader},
 };
 
+use crate::error::Error;
+
 #[derive(Debug, Clone, PartialEq)]
 pub struct SearchRadical {
     pub radical: char,
@@ -10,15 +12,15 @@ pub struct SearchRadical {
 }
 
 /// Parses a search radicals file
-pub fn parse(path: &str) -> impl Iterator<Item = SearchRadical> {
-    let file = File::open(path).unwrap();
+pub fn parse(path: &str) -> Result<impl Iterator<Item = SearchRadical>, Error> {
+    let file = File::open(path)?;
 
-    BufReader::new(file)
+    Ok(BufReader::new(file)
         .lines()
         .map(|i| i.unwrap())
         .filter(|i| !i.starts_with("#"))
         .filter_map(|i| parse_item(&i))
-        .flatten()
+        .flatten())
 }
 
 /// Parses a single line of pitch accent info and returns a result in form of

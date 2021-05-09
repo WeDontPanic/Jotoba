@@ -1,4 +1,5 @@
 #![allow(irrefutable_let_patterns)]
+#![allow(unused_imports)]
 
 #[macro_use]
 extern crate diesel;

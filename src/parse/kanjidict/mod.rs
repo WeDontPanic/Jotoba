@@ -149,7 +149,7 @@ where
     }
 }
 
-/// An dict entry. Represents one word, phrase or expression
+/// An kanji character. Represents one Kanji
 #[derive(Debug, Default, Clone)]
 pub struct Character {
     pub literal: char,

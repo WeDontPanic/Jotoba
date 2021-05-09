@@ -6,7 +6,7 @@ use serde::{Deserialize, Serialize};
 use tokio_diesel::AsyncRunQueryDsl;
 
 use super::error::{Origin, RestError};
-use crate::{cache::SharedCache, japanese::JapaneseExt, search::utils::remove_dups, DbPool};
+use crate::{cache::SharedCache, japanese::JapaneseExt, utils::remove_dups, DbPool};
 use async_std::sync::Mutex;
 use diesel::prelude::*;
 use diesel::sql_types::{Integer, Text};

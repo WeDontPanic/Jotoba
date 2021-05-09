@@ -1,7 +1,7 @@
 use crate::DbPool;
 use crate::{models::kanji, parse::kanji_ele};
 
-/// Import radicals
+/// Import kanji elements
 pub async fn import(db: &DbPool, path: String) {
     kanji::clear_kanji_elements(db).await.unwrap();
     println!("Importing kanji elements...");

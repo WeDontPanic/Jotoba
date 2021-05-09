@@ -8,7 +8,7 @@ pub async fn import(db: &DbPool, path: String) {
     println!("Importing search-radicals...");
     let db = db.get().unwrap();
 
-    for s_radical in search_radicals::parse(&path) {
+    for s_radical in search_radicals::parse(&path).expect("parsing error") {
         radical::insert_search_radical(&db, s_radical.into()).unwrap();
     }
 }

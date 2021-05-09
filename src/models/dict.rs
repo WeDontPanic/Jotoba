@@ -5,7 +5,10 @@ use crate::{
     error::Error,
     japanese::{self, JapaneseExt},
     parse::jmdict::Entry,
-    parse::jmdict::{information::Information, priority::Priority},
+    parse::{
+        accents::PitchItem,
+        jmdict::{information::Information, priority::Priority},
+    },
     utils, DbConnection, DbPool,
 };
 use diesel::sql_types::Integer;
@@ -79,15 +82,10 @@ impl Dict {
     }
 }
 
-pub fn update_accents(
-    db: &DbConnection,
-    acc_kanji: &str,
-    acc_kana: &str,
-    a: &[i32],
-) -> Result<(), Error> {
+pub fn update_accents(db: &DbConnection, pitch: PitchItem) -> Result<(), Error> {
     use crate::schema::dict::dsl::*;
 
-    let seq = find_jp_word(db, acc_kanji, acc_kana)?;
+    let seq = find_jp_word(db, &pitch.kanji, &pitch.kana)?;
 
     if seq.is_none() {
         return Ok(());
@@ -95,8 +93,8 @@ pub fn update_accents(
 
     diesel::update(dict)
         .filter(sequence.eq(&seq.unwrap().sequence))
-        .filter(reading.eq(acc_kana))
-        .set(accents.eq(a))
+        .filter(reading.eq(&pitch.kana))
+        .set(accents.eq(&pitch.pitch))
         .execute(db)?;
 
     Ok(())
