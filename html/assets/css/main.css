@@ -360,7 +360,7 @@ input[type="color"] {
 
 .search-inflection {
     align-items: center;
-    padding: 0.5rem;
+    padding: 0.5rem 1rem 0.5rem 1rem;
     border: 2px;
     border-style: solid;
     border-color: var(--searchTextColor);
