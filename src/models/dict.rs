@@ -57,9 +57,13 @@ impl Dict {
         utils::real_string_len(&self.reading)
     }
 
+    pub fn is_empty(&self) -> bool {
+        self.reading.is_empty()
+    }
+
     /// Retrieve the kanji items of the dict's kanji info
     pub async fn load_kanji_info(&self, db: &DbPool) -> Result<Vec<Kanji>, Error> {
-        if self.kanji_info.is_none() || self.kanji_info.as_ref().unwrap().len() == 0 {
+        if self.kanji_info.is_none() || self.kanji_info.as_ref().unwrap().is_empty() {
             return Ok(vec![]);
         }
         let ids = self.kanji_info.as_ref().unwrap();
@@ -203,10 +207,7 @@ pub(crate) async fn find_by_reading(
         // Don't break with error if its just a 'not found error'
         if let Err(err) = dict_res {
             match err {
-                AsyncError::Error(ref e) => match e {
-                    diesel::result::Error::NotFound => continue,
-                    _ => return Err(err.into()),
-                },
+                AsyncError::Error(diesel::result::Error::NotFound) => continue,
                 _ => return Err(err.into()),
             }
         }

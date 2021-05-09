@@ -98,8 +98,8 @@ pub(super) fn kanji_reading_search(word: &Word, search_order: &SearchOrder) -> u
         // Kun reading
         if *kana_reading == formatted_reading
             // Don't show direct readings if the kanji reading is a suffix/prefix
-            && !kanji_reading.reading.starts_with("-")
-            && !kanji_reading.reading.ends_with("-")
+            && !kanji_reading.reading.starts_with('-')
+            && !kanji_reading.reading.ends_with('-')
         {
             score += 20;
         }
@@ -142,12 +142,12 @@ pub fn calc_likenes(
     s_mode: SearchMode,
     ign_case: bool,
 ) -> u8 {
-    let n: usize = this.senses.iter().map(|i| i.glosses.iter().count()).sum();
+    let total_gloss_len: usize = this.senses.iter().map(|i| i.glosses.len()).sum();
     let pos = get_query_pos_in_gloss(search_order, this, s_mode, ign_case);
     if pos.is_none() {
         return 0;
     }
-    100 - calc_importance(pos.unwrap(), n) as u8
+    100 - calc_importance(pos.unwrap(), total_gloss_len) as u8
 }
 
 pub fn get_query_pos_in_gloss(

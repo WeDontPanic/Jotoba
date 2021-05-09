@@ -42,11 +42,7 @@ fn merge_results(results: Vec<Sentence>, user_lang: Language) -> Vec<Item> {
         .group_by(|i| i.id)
         .into_iter()
         .filter_map(|(_, i)| {
-            let sentence = i.into_iter().next();
-            if sentence.is_none() {
-                return None;
-            }
-            let mut sentence = sentence.unwrap();
+            let mut sentence = i.into_iter().next()?;
 
             if user_lang == Language::English {
                 sentence.eng = String::from("-");

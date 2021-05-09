@@ -103,7 +103,7 @@ impl<'a> WordSearch<'a> {
         }
 
         // always search by a language.
-        let lang = self.language.unwrap_or(Language::default());
+        let lang = self.language.unwrap_or_default();
 
         Self::load_words_by_seq(
             &self.db,
@@ -121,7 +121,7 @@ impl<'a> WordSearch<'a> {
         let seq_ids = self.get_sequence_ids_by_native().await?;
 
         // always search by a language.
-        let lang = self.language.unwrap_or(Language::default());
+        let lang = self.language.unwrap_or_default();
 
         Ok(Self::load_words_by_seq(
             &self.db,
@@ -147,7 +147,7 @@ impl<'a> WordSearch<'a> {
     /// Get search results of seq_ids
     pub async fn load_words_by_seq(
         db: &DbPool,
-        seq_ids: &Vec<i32>,
+        seq_ids: &[i32],
         lang: Language,
         include_english: bool,
         pos_filter: &Option<Vec<PosSimple>>,
@@ -231,7 +231,7 @@ impl<'a> WordSearch<'a> {
     /// Load all senses for the sequence ids
     async fn load_senses(
         db: &DbPool,
-        sequence_ids: &Vec<i32>,
+        sequence_ids: &[i32],
         lang: Language,
     ) -> Result<Vec<sense::Sense>, Error> {
         if sequence_ids.is_empty() {
@@ -259,7 +259,7 @@ impl<'a> WordSearch<'a> {
     }
 
     /// Load Dictionaries of all sequences
-    async fn load_dictionaries(db: &DbPool, sequence_ids: &Vec<i32>) -> Result<Vec<Dict>, Error> {
+    async fn load_dictionaries(db: &DbPool, sequence_ids: &[i32]) -> Result<Vec<Dict>, Error> {
         use crate::schema::dict as dict_schema;
         if sequence_ids.is_empty() {
             return Ok(vec![]);
@@ -412,7 +412,7 @@ pub fn merge_words_with_senses(
 }
 
 /// Returns true if a vec of senses has at least one Pos provided by the filter
-fn has_pos(senses: &Vec<Sense>, pos_filter: &Vec<PosSimple>) -> bool {
+fn has_pos(senses: &[Sense], pos_filter: &[PosSimple]) -> bool {
     for sense in senses.iter() {
         for p in sense.get_pos_simple() {
             if pos_filter.contains(&p) {
@@ -425,7 +425,7 @@ fn has_pos(senses: &Vec<Sense>, pos_filter: &Vec<PosSimple>) -> bool {
 }
 
 /// Return true if all 'misc' items are of the same value
-fn all_misc_same(senses: &Vec<Sense>) -> bool {
+fn all_misc_same(senses: &[Sense]) -> bool {
     if senses.is_empty() || senses[0].misc.is_none() {
         return false;
     }
@@ -443,7 +443,7 @@ fn all_misc_same(senses: &Vec<Sense>) -> bool {
 }
 
 /// Return true if all 'part_of_speech' items are of the same value
-fn pos_unionized(senses: &Vec<Sense>) -> Vec<PartOfSpeech> {
+fn pos_unionized(senses: &[Sense]) -> Vec<PartOfSpeech> {
     if senses.is_empty()
         || senses[0].glosses.is_empty()
         || senses[0].glosses[0].part_of_speech.is_empty()

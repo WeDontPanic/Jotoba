@@ -128,8 +128,8 @@ pub fn furigana_from_str(input: &str) -> Vec<SentencePart> {
 }
 
 /// Check wether the passed furigana pairs are representing the given kana text or not
-pub fn furigana_pairs_correct(pars: &Vec<SentencePart>, kana: &str) -> bool {
-    let s: String = pars.into_iter().map(|i| i.kana.clone()).collect();
+pub fn furigana_pairs_correct(pars: &[SentencePart], kana: &str) -> bool {
+    let s: String = pars.iter().map(|i| i.kana.clone()).collect();
 
     romaji::RomajiExt::to_hiragana(s.as_str()).replace("・", "")
         == romaji::RomajiExt::to_hiragana(kana).replace("・", "")
@@ -214,10 +214,7 @@ fn furi_algo(kanji: &str, kana: &str) -> Option<Vec<(String, String)>> {
 
         // If last part is kanji only take rest of kana reading
         if part_kana.is_empty() {
-            result.push((
-                part_kanji.into_iter().collect(),
-                curr_kana.into_iter().collect(),
-            ));
+            result.push((part_kanji.iter().collect(), curr_kana.iter().collect()));
             break;
         }
 
@@ -285,10 +282,8 @@ where
         if a.len() + b.len() != arr.len() {
             return false;
         }
-    } else {
-        if a.len() + b.len() > arr.len() {
-            return false;
-        }
+    } else if a.len() + b.len() > arr.len() {
+        return false;
     }
 
     for (pos, item) in a.iter().enumerate() {
@@ -308,7 +303,7 @@ where
 
 /// Helper method to collect all items in a
 /// Vec<char> into a newly allocated String
-fn char_arr_to_string(vec: &Vec<char>) -> String {
+fn char_arr_to_string(vec: &[char]) -> String {
     vec.iter().collect()
 }
 

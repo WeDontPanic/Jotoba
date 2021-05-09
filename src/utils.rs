@@ -19,7 +19,7 @@ where
 }
 
 /// Returns a vector of all items which are part of both vectors
-pub fn union_elements<'a, T>(v1: &'a Vec<T>, v2: &'a Vec<T>) -> Vec<&'a T>
+pub fn union_elements<'a, T>(v1: &'a [T], v2: &'a [T]) -> Vec<&'a T>
 where
     T: PartialEq,
 {

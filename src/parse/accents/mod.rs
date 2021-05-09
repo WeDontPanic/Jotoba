@@ -21,21 +21,19 @@ pub fn parse(file: String) -> Result<(usize, impl Iterator<Item = PitchItem>), E
 
     Ok((
         count,
-        bufr.lines()
-            .map(|i| i.unwrap())
-            .filter_map(|i| parse_item(i)),
+        bufr.lines().map(|i| i.unwrap()).filter_map(parse_item),
     ))
 }
 
 /// Parses a single line of pitch accent info
 pub fn parse_item(line: String) -> Option<PitchItem> {
-    let mut split = line.split("\t");
+    let mut split = line.split('\t');
     let kanji = split.next()?;
     let kana = split.next()?;
     let pitch = split.next()?;
 
     let pitch = pitch
-        .split(",")
+        .split(',')
         .into_iter()
         .map(|i| i.parse::<i32>().ok())
         .collect::<Option<Vec<i32>>>()?;

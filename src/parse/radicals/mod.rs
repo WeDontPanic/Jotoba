@@ -36,16 +36,16 @@ where
 
 /// Parses a single line of radical info
 pub fn parse_item(line: &str) -> Option<Radical> {
-    let mut split = line.split("\t");
+    let mut split = line.split('\t');
 
     let radical: char = split.next()?.chars().into_iter().next()?;
     let alternative: Option<char> = split.next()?.chars().into_iter().next();
     let id: i32 = split.next().and_then(|i| i.parse().ok())?;
     let stroke_count: i32 = split.next().and_then(|i| i.parse().ok())?;
-    let readings = split.next()?.split("・").collect::<Vec<_>>();
+    let readings = split.next()?.split('・').collect::<Vec<_>>();
     let translations = split
         .next()?
-        .split(",")
+        .split(',')
         .map(|i| i.trim())
         .collect::<Vec<_>>();
     let note = split

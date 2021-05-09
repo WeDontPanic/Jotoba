@@ -28,7 +28,7 @@ pub async fn import(db: &DbPool, path: String) {
 
     // Import kanji patches
     if let Some(sentences) = json.get("sentences").and_then(|i| i.as_array()) {
-        for (pos, sentence) in sentences.into_iter().enumerate() {
+        for (pos, sentence) in sentences.iter().enumerate() {
             if let Some(sentence_object) = sentence.as_object() {
                 let jp = sentence_object.get("jp").and_then(|i| i.as_str());
                 let translations = sentence_object.get("translated").and_then(|i| i.as_array());
@@ -43,7 +43,7 @@ pub async fn import(db: &DbPool, path: String) {
                     .to_owned();
                 let translations = translations
                     .unwrap()
-                    .into_iter()
+                    .iter()
                     .map(|i| {
                         let obj = i.as_object().unwrap();
                         let text = obj.get("text").and_then(|i| i.as_str()).unwrap().to_owned();

@@ -11,11 +11,17 @@ use crate::parse::jmdict::{languages::Language, part_of_speech::PosSimple};
 use super::query_parser::QueryType;
 
 /// In-cookie saved personalized settings
-#[derive(Debug, Clone, Copy, PartialEq)]
+#[derive(Debug, Clone, Copy)]
 pub struct UserSettings {
     pub user_lang: Language,
     pub show_english: bool,
     pub english_on_top: bool,
+}
+
+impl PartialEq for UserSettings {
+    fn eq(&self, other: &Self) -> bool {
+        self.user_lang == other.user_lang && self.show_english == other.show_english
+    }
 }
 
 impl Hash for UserSettings {
@@ -130,7 +136,7 @@ impl Default for QueryLang {
 
 impl Tag {
     // Parse a tag from a string
-    pub fn from_str(s: &str) -> Option<Tag> {
+    pub fn parse_from_str(s: &str) -> Option<Tag> {
         Some(if let Some(tag) = Self::parse_search_type(s) {
             tag
         } else {
@@ -219,13 +225,12 @@ impl Query {
     pub fn without_search_type_tags(&self) -> String {
         self.original_query
             .clone()
-            .split(" ")
+            .split(' ')
             .into_iter()
             .filter(|i| {
                 // Filter out all search type tags
-                (i.starts_with("#") && Tag::parse_search_type(i).is_none()) || !i.starts_with("#")
+                (i.starts_with('#') && Tag::parse_search_type(i).is_none()) || !i.starts_with('#')
             })
             .join(" ")
-            .to_owned()
     }
 }

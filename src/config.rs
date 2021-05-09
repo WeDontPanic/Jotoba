@@ -30,10 +30,7 @@ impl Default for ServerConfig {
 
 impl ServerConfig {
     pub(super) fn get_html_files(&self) -> &str {
-        self.html_files
-            .as_ref()
-            .map(|i| i.as_str())
-            .unwrap_or("html/assets")
+        self.html_files.as_deref().unwrap_or("html/assets")
     }
 }
 

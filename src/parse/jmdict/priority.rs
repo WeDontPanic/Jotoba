@@ -35,39 +35,24 @@ impl Into<String> for Priority {
 impl TryFrom<&str> for Priority {
     type Error = error::Error;
     fn try_from(value: &str) -> Result<Self, Self::Error> {
-        if value.starts_with("news") {
-            (value.len() > 4).then(|| 0).ok_or(Error::Undefined)?;
-
-            return Ok(Priority::News(value[4..5].parse()?));
+        if let Some(end) = value.strip_prefix("news") {
+            return Ok(Priority::News(end.parse()?));
         }
 
-        if value.starts_with("ichi") {
-            (value.len() > 4)
-                .then(|| 0)
-                .ok_or(error::Error::Undefined)?;
-
-            return Ok(Priority::Ichi(value[4..5].parse()?));
+        if let Some(end) = value.strip_prefix("ichi") {
+            return Ok(Priority::Ichi(end.parse()?));
         }
 
-        if value.starts_with("spec") {
-            (value.len() > 4)
-                .then(|| 0)
-                .ok_or(error::Error::Undefined)?;
-            return Ok(Priority::Spec(value[4..5].parse()?));
+        if let Some(end) = value.strip_prefix("spec") {
+            return Ok(Priority::Spec(end.parse()?));
         }
 
-        if value.starts_with("gai") {
-            (value.len() > 3)
-                .then(|| 0)
-                .ok_or(error::Error::Undefined)?;
-            return Ok(Priority::Gai(value[3..4].parse()?));
+        if let Some(end) = value.strip_prefix("gai") {
+            return Ok(Priority::Gai(end.parse()?));
         }
 
-        if value.starts_with("nf") {
-            (value.len() > 2)
-                .then(|| 0)
-                .ok_or(error::Error::Undefined)?;
-            return Ok(Priority::Nf(value[2..].parse()?));
+        if let Some(end) = value.strip_prefix("nf") {
+            return Ok(Priority::Nf(end.parse()?));
         }
 
         Err(Error::Undefined)
@@ -95,32 +80,46 @@ mod test {
     use std::convert::TryFrom;
 
     #[test]
-    fn test() {
+    fn test_priority_ichi() {
         let s = Priority::try_from("ichi1");
         assert!(s.is_ok());
         let s = s.unwrap();
         assert_eq!(s, Priority::Ichi(1));
         let p: String = s.into();
         assert_eq!(p, "ichi1");
+        let s = Priority::try_from("ichi");
+        assert!(s.is_err());
     }
 
     #[test]
-    fn test2() {
+    fn test_priority_nf() {
         let s = Priority::try_from("nf10");
         assert!(s.is_ok());
         let s = s.unwrap();
         assert_eq!(s, Priority::Nf(10));
         let p: String = s.into();
         assert_eq!(p, "nf10");
-    }
-
-    #[test]
-    fn test3() {
         let s = Priority::try_from("nf4");
         assert!(s.is_ok());
         let s = s.unwrap();
         assert_eq!(s, Priority::Nf(4));
         let p: String = s.into();
         assert_eq!(p, "nf4");
+
+        let s = Priority::try_from("nf");
+        assert!(s.is_err());
+    }
+
+    #[test]
+    fn test_priority_news() {
+        let s = Priority::try_from("news10");
+        assert!(s.is_ok());
+        let s = s.unwrap();
+        assert_eq!(s, Priority::News(10));
+        let p: String = s.into();
+        assert_eq!(p, "news10");
+
+        let s = Priority::try_from("news");
+        assert!(s.is_err());
     }
 }

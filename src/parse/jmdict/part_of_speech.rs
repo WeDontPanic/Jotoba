@@ -33,7 +33,7 @@ pub enum PosSimple {
     #[strum(serialize = "particle", serialize = "part")]
     Particle,
     #[strum(serialize = "sfx")]
-    SFX,
+    Sfx,
     #[strum(serialize = "verb", serialize = "v")]
     Verb,
     #[strum(serialize = "adjective", serialize = "adj")]
@@ -65,7 +65,7 @@ impl TryFrom<i32> for PosSimple {
             4 => Self::Prefix,
             5 => Self::Suffix,
             6 => Self::Particle,
-            7 => Self::SFX,
+            7 => Self::Sfx,
             8 => Self::Verb,
             9 => Self::Adjective,
             10 => Self::Counter,
@@ -90,7 +90,7 @@ impl Into<i32> for PosSimple {
             Self::Prefix => 4,
             Self::Suffix => 5,
             Self::Particle => 6,
-            Self::SFX => 7,
+            Self::Sfx => 7,
             Self::Verb => 8,
             Self::Adjective => 9,
             Self::Counter => 10,
@@ -122,7 +122,7 @@ impl From<PartOfSpeech> for PosSimple {
             PartOfSpeech::Suffix => PosSimple::Suffix,
             PartOfSpeech::Particle => PosSimple::Particle,
             PartOfSpeech::Unclassified => PosSimple::Unclassified,
-            PartOfSpeech::SFX => PosSimple::SFX,
+            PartOfSpeech::Sfx => PosSimple::Sfx,
             PartOfSpeech::Verb(_) | PartOfSpeech::AuxilaryVerb => PosSimple::Verb,
         }
     }
@@ -173,7 +173,7 @@ pub enum PartOfSpeech {
     Particle,
     Unclassified,
 
-    SFX,
+    Sfx,
 
     // Verb
     Verb(VerbType),
@@ -297,7 +297,7 @@ impl PartOfSpeech {
     pub fn humanized(&self) -> String {
         match *self {
             Self::Noun(noun_type) => noun_type.humanized(),
-            Self::SFX => "SoundFx".to_string(),
+            Self::Sfx => "SoundFx".to_string(),
             Self::Expr => "Expression".to_string(),
             Self::Counter => "Counter".to_string(),
             Self::Suffix => "Suffix".to_string(),
@@ -694,7 +694,7 @@ impl Into<String> for PartOfSpeech {
                 PartOfSpeech::AuxilaryAdj => "aux-adj",
                 PartOfSpeech::AuxilaryVerb => "aux-v",
                 PartOfSpeech::Prefix => "pref",
-                PartOfSpeech::SFX => "sfx",
+                PartOfSpeech::Sfx => "sfx",
                 _ => unreachable!(), // already checked above
             }
             .to_string(),
@@ -710,7 +710,7 @@ impl TryFrom<&str> for PartOfSpeech {
         Ok(match value {
             "n" => PartOfSpeech::Noun(NounType::Normal),
             "pn" => PartOfSpeech::Pronoun,
-            "sfx" => PartOfSpeech::SFX,
+            "sfx" => PartOfSpeech::Sfx,
             "adv" => PartOfSpeech::Adverb,
             "aux" => PartOfSpeech::Auxilary,
             "cop" => PartOfSpeech::Copula,

@@ -1,3 +1,5 @@
+use std::cmp::Ordering;
+
 use crate::{error::Error, japanese::inflection::Inflection, DbPool};
 use diesel::{dsl::exists, prelude::*};
 use igo_unidic::{ConjungationForm, Morpheme, Parser, ParticleType, VerbType, WordClass};
@@ -105,10 +107,7 @@ impl Inflection {
 }
 
 fn is_continous(morpheme: &Morpheme) -> bool {
-    match morpheme.conjungation.form {
-        ConjungationForm::Continuous => true,
-        _ => false,
-    }
+    matches!(morpheme.conjungation.form, ConjungationForm::Continuous)
 }
 
 impl<'dict, 'input> InputTextParser<'dict, 'input> {
@@ -140,7 +139,7 @@ impl<'dict, 'input> InputTextParser<'dict, 'input> {
             &self
                 .get_inflection_morphemes()
                 .iter()
-                .map(|i| i.clone().to_owned())
+                .map(|i| (*i).to_owned())
                 .collect::<Vec<_>>(),
             None,
         );
@@ -207,7 +206,7 @@ impl<'dict, 'input> InputTextParser<'dict, 'input> {
                 }
             }
 
-            curr_morphemes.push(morpheme.clone());
+            curr_morphemes.push(*morpheme);
         }
         morphemes.push(curr_morphemes);
         morphemes
@@ -286,7 +285,7 @@ impl<'dict, 'input> InputTextParser<'dict, 'input> {
             .filter_map(|i| {
                 Inflection::from_morpheme(
                     &i,
-                    main_morpheme.map(|i| Some(i)).unwrap_or_else(|| {
+                    main_morpheme.map(Some).unwrap_or_else(|| {
                         self.get_no_inflection_morphemes()
                             .get(0)
                             .map(|i| i.to_owned())
@@ -344,21 +343,18 @@ impl<'dict, 'input> InputTextParser<'dict, 'input> {
 }
 
 pub fn are_morphemes_inflection(morphemes: &[&Morpheme]) -> bool {
-    if morphemes.len() == 1 {
-        morphemes[0].lexeme.eq_any(&INFLECTION_LEXEMES)
-    } else if morphemes.len() > 1 {
-        !morphemes
+    match morphemes.len().cmp(&1) {
+        Ordering::Equal => morphemes[0].lexeme.eq_any(&INFLECTION_LEXEMES),
+        Ordering::Greater => !morphemes
             .iter()
             .map(|i| i.lexeme)
-            .any(|i| !i.eq_any(&INFLECTION_LEXEMES))
-    } else {
-        false
+            .any(|i| !i.eq_any(&INFLECTION_LEXEMES)),
+        _ => false,
     }
 }
 
 fn strip_input(input: &str) -> &str {
-    let input = input.trim();
-    input
+    input.trim()
 }
 
 pub trait MorphemeExt {
@@ -378,10 +374,13 @@ impl<'dict, 'input> MorphemeExt for Morpheme<'dict, 'input> {
             | WordClass::Suffix
             | WordClass::Noun(_) => return true,
             _ => match self.word_class {
-                WordClass::Verb(v) => match v {
-                    VerbType::Auxilary(_) => return false,
-                    _ => return true,
-                },
+                WordClass::Verb(v) => {
+                    if let VerbType::Auxilary(_) = v {
+                        return false;
+                    } else {
+                        return true;
+                    }
+                }
                 _ => (),
             },
         }
@@ -393,14 +392,10 @@ impl<'dict, 'input> MorphemeExt for Morpheme<'dict, 'input> {
     /// representing a part of an inflection
     fn is_inflection(&self) -> bool {
         match self.word_class {
-            WordClass::Verb(v) => match v {
-                VerbType::Auxilary(_) => true,
-                _ => false,
-            },
-            WordClass::Particle(p) => match p {
-                ParticleType::SentenceEnding | ParticleType::Conjungtion => true,
-                _ => false,
-            },
+            WordClass::Verb(VerbType::Auxilary(_)) => true,
+            WordClass::Particle(p) => {
+                matches!(p, ParticleType::SentenceEnding | ParticleType::Conjungtion)
+            }
             _ => false,
         }
     }

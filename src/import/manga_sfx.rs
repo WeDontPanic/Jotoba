@@ -30,9 +30,7 @@ pub async fn import(db: &DbPool, path: String) {
                 db,
                 seq,
                 sfx_item.to_owned(),
-                nr.into_iter()
-                    .map(|i| i.as_str().unwrap().to_owned())
-                    .collect(),
+                nr.iter().map(|i| i.as_str().unwrap().to_owned()).collect(),
             ))
         } else {
             None
@@ -79,7 +77,7 @@ async fn import_sfx(
                     language: Language::English,
                     g_type: None,
                 }],
-                part_of_speech: vec![PartOfSpeech::SFX],
+                part_of_speech: vec![PartOfSpeech::Sfx],
                 ..Default::default()
             })
             .collect::<Vec<_>>(),

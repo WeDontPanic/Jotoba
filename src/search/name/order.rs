@@ -53,13 +53,11 @@ impl<'a> ByNative<'a> {
             Ordering::Equal
         };
 
-        if order == Ordering::Equal {
-            if self.query.is_kana() {
-                if this.kanji.is_none() && other.kanji.is_some() {
-                    return Ordering::Less;
-                } else if this.kanji.is_some() && other.kanji.is_none() {
-                    return Ordering::Greater;
-                }
+        if order == Ordering::Equal && self.query.is_kana() {
+            if this.kanji.is_none() && other.kanji.is_some() {
+                return Ordering::Less;
+            } else if this.kanji.is_some() && other.kanji.is_none() {
+                return Ordering::Greater;
             }
         }
 

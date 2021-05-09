@@ -41,13 +41,13 @@ pub fn parse(path: &str) -> impl Iterator<Item = KanjiPart> {
     BufReader::new(file)
         .lines()
         .map(|i| i.unwrap())
-        .filter(|i| !i.starts_with("#"))
+        .filter(|i| !i.starts_with('#'))
         .filter_map(|i| parse_item(&i))
 }
 
 /// Parses a single Kanji with its elements (one line)
 fn parse_item(line: &str) -> Option<KanjiPart> {
-    let mut split = line.split(":");
+    let mut split = line.split(':');
 
     let radical: char = split.next()?.chars().next()?;
 

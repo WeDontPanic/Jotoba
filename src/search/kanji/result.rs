@@ -17,7 +17,7 @@ pub struct Item {
 }
 
 impl Item {
-    /// Convert a DbKanji to Self
+    /// Convert a DbKanji to Item
     ///
     /// Required because the kanji's reading-componds
     /// aren't loaded by default due it being an array
@@ -33,7 +33,7 @@ impl Item {
             .await?
             .into_iter()
             // Filter english items if user don't want to se them
-            .filter(|i| show_english || (!show_english && !i.senses.is_empty()))
+            .filter(|i| show_english || !i.senses.is_empty())
             .collect();
 
         let radical = k.load_radical(db).await?;
@@ -75,10 +75,10 @@ impl Item {
     pub fn get_animation_entries(&self) -> Vec<(String, String)> {
         if let Ok(content) = read_to_string(self.get_animation_path()) {
             content
-                .split("\n")
+                .split('\n')
                 .into_iter()
                 .map(|i| {
-                    let mut s = i.split(";");
+                    let mut s = i.split(';');
                     (s.next().unwrap().to_owned(), s.next().unwrap().to_owned())
                 })
                 .collect::<Vec<(String, String)>>()

@@ -8,7 +8,7 @@ use crate::{
     error::Error,
     parse::{kanji_ele::KanjiPart, kanjidict::Character},
     search::{query::KanjiReading, SearchMode},
-    utils::{self, to_option},
+    utils::{self, invert_ordering, to_option},
     DbPool,
 };
 
@@ -121,11 +121,8 @@ pub async fn insert_kanji_part(db: &DbPool, element: KanjiPart) -> Result<(), Er
     let kanji = match find_by_literal(db, element.radical.to_string()).await {
         Ok(v) => v,
         Err(err) => match err {
-            Error::DbError(ref db) => match db {
-                diesel::result::Error::NotFound => return Ok(()),
-                _ => return Err(err.into()),
-            },
-            _ => return Err(err.into()),
+            Error::DbError(diesel::result::Error::NotFound) => return Ok(()),
+            _ => return Err(err),
         },
     };
 
@@ -138,23 +135,21 @@ pub async fn insert_kanji_part(db: &DbPool, element: KanjiPart) -> Result<(), Er
     )
     .await?;
 
+    let new_kanji_elements = literals
+        .into_iter()
+        .map(|i| NewKanjiElement {
+            search_radical_id: i.id,
+            kanji_id: kanji.id,
+        })
+        .collect_vec();
+
     // Insert all search_radicals assigned to the kanji in kanji_elements table
-    insert_kanji_elements(
-        db,
-        &literals
-            .into_iter()
-            .map(|i| NewKanjiElement {
-                search_radical_id: i.id,
-                kanji_id: kanji.id,
-            })
-            .collect(),
-    )
-    .await?;
+    insert_kanji_elements(db, &new_kanji_elements).await?;
 
     Ok(())
 }
 
-async fn insert_kanji_elements(db: &DbPool, items: &Vec<NewKanjiElement>) -> Result<(), Error> {
+async fn insert_kanji_elements(db: &DbPool, items: &[NewKanjiElement]) -> Result<(), Error> {
     diesel::insert_into(kanji_element::table)
         .values(items)
         .execute_async(db)
@@ -263,7 +258,7 @@ impl Kanji {
         match r_type {
             ReadingType::Kunyomi => {
                 let r = if reading.contains('.') {
-                    let right = reading.split('.').skip(1).next().unwrap_or_default();
+                    let right = reading.split('.').nth(1).unwrap_or_default();
                     format!("{}{}", self.literal, right)
                 } else {
                     self.literal.to_string()
@@ -277,7 +272,7 @@ impl Kanji {
 
 /// Formats a kun/on reading to a kana entry
 pub fn format_reading(reading: &str) -> String {
-    reading.replace("-", "").replace(".", "").to_owned()
+    reading.replace('-', "").replace('.', "")
 }
 
 /// Update the jlpt information for a kanji by its literal
@@ -482,7 +477,7 @@ pub async fn update_kun_links(db: &DbPool) -> Result<(), Error> {
 
     for k in all_kuns.chunks(100).into_iter() {
         futures::future::try_join_all(
-            k.into_iter()
+            k.iter()
                 .map(|(k_id, dict_ids)| update_kun_link(db, *k_id, dict_ids)),
         )
         .await?;
@@ -522,7 +517,7 @@ pub fn get_kun_by_literal(
     // Get precached
     let cached = seq_ids
         .iter()
-        .filter_map(|i| cache.get(i).map(|j| j.clone()))
+        .filter_map(|i| cache.get(i).cloned())
         .collect_vec();
 
     let dicts: Vec<Dict> = dict
@@ -617,11 +612,7 @@ pub fn get_kun_by_literal(
             if a_jlpt.is_some() && b_jlpt.is_some() {
                 let a_jlpt = a_jlpt.unwrap();
                 let b_jlpt = b_jlpt.unwrap();
-                if a_jlpt > b_jlpt {
-                    return Ordering::Less;
-                } else if b_jlpt > a_jlpt {
-                    return Ordering::Greater;
-                }
+                return invert_ordering(a_jlpt.cmp(&b_jlpt));
             }
 
             Ordering::Equal
@@ -641,23 +632,18 @@ pub fn kun_literal_reading(kun: &str) -> String {
 }
 
 fn kun_matches_kanji(literal: &str, kun: &str, kana_reading: &str, kanji_reading: &str) -> bool {
-    let match_mode = {
-        if kun.starts_with('-') {
-            SearchMode::RightVariable
-        } else if kun.ends_with('-') {
-            SearchMode::LeftVariable
-        } else {
-            if kanji_reading.starts_with(&literal) {
-                SearchMode::LeftVariable
-            } else {
-                SearchMode::Exact
-            }
-        }
+    let match_mode = if kun.starts_with('-') {
+        SearchMode::RightVariable
+    } else if kun.ends_with('-') || kanji_reading.starts_with(&literal) {
+        SearchMode::LeftVariable
+    } else {
+        SearchMode::Exact
     };
+
     let mut kanji_out = kun.to_string().replace('-', "");
 
     if kun.contains('.') {
-        let kun_left = kun.split(".").next().unwrap();
+        let kun_left = kun.split('.').next().unwrap();
         kanji_out = kanji_out.replace(&format!("{}.", kun_left), literal);
     } else {
         kanji_out = literal.to_owned();

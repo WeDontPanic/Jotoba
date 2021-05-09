@@ -49,7 +49,7 @@ impl<K: Hash + Eq, V: Clone> SharedCache<K, V> {
         self.store.len()
     }
 
-    pub fn find_by_predicate<'a, P>(&'a self, mut predicate: P) -> Option<&'a V>
+    pub fn find_by_predicate<P>(&self, mut predicate: P) -> Option<&V>
     where
         P: FnMut(&&V) -> bool,
     {
@@ -63,7 +63,7 @@ impl<K: Hash + Eq, V: Clone> SharedCache<K, V> {
             .collect()
     }
 
-    pub fn filter_values<'a, P>(&'a self, mut predicate: P) -> Vec<V>
+    pub fn filter_values<P>(&self, mut predicate: P) -> Vec<V>
     where
         P: FnMut(&&V) -> bool,
     {
