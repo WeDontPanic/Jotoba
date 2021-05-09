@@ -60,10 +60,10 @@ pub async fn insert_sentence(
     furigana: String,
     translations: Vec<(String, Language)>,
 ) -> Result<(), Error> {
-    let sentence_id = insert_new_sentence(db, text.clone(), furigana, translations).await?;
+    let _sentence_id = insert_new_sentence(db, text.clone(), furigana, translations).await?;
 
     #[cfg(feature = "tokenizer")]
-    generate_dict_relations(db, sentence_id, text).await?;
+    generate_dict_relations(db, _sentence_id, text).await?;
 
     Ok(())
 }

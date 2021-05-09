@@ -5,7 +5,10 @@ use crate::{
     error::Error,
     japanese::{self, JapaneseExt},
     parse::jmdict::Entry,
-    parse::jmdict::{information::Information, priority::Priority},
+    parse::{
+        accents::PitchItem,
+        jmdict::{information::Information, priority::Priority},
+    },
     utils, DbConnection, DbPool,
 };
 use diesel::sql_types::Integer;
@@ -54,9 +57,13 @@ impl Dict {
         utils::real_string_len(&self.reading)
     }
 
+    pub fn is_empty(&self) -> bool {
+        self.reading.is_empty()
+    }
+
     /// Retrieve the kanji items of the dict's kanji info
     pub async fn load_kanji_info(&self, db: &DbPool) -> Result<Vec<Kanji>, Error> {
-        if self.kanji_info.is_none() || self.kanji_info.as_ref().unwrap().len() == 0 {
+        if self.kanji_info.is_none() || self.kanji_info.as_ref().unwrap().is_empty() {
             return Ok(vec![]);
         }
         let ids = self.kanji_info.as_ref().unwrap();
@@ -79,15 +86,10 @@ impl Dict {
     }
 }
 
-pub fn update_accents(
-    db: &DbConnection,
-    acc_kanji: &str,
-    acc_kana: &str,
-    a: &[i32],
-) -> Result<(), Error> {
+pub fn update_accents(db: &DbConnection, pitch: PitchItem) -> Result<(), Error> {
     use crate::schema::dict::dsl::*;
 
-    let seq = find_jp_word(db, acc_kanji, acc_kana)?;
+    let seq = find_jp_word(db, &pitch.kanji, &pitch.kana)?;
 
     if seq.is_none() {
         return Ok(());
@@ -95,8 +97,8 @@ pub fn update_accents(
 
     diesel::update(dict)
         .filter(sequence.eq(&seq.unwrap().sequence))
-        .filter(reading.eq(acc_kana))
-        .set(accents.eq(a))
+        .filter(reading.eq(&pitch.kana))
+        .set(accents.eq(&pitch.pitch))
         .execute(db)?;
 
     Ok(())
@@ -205,10 +207,7 @@ pub(crate) async fn find_by_reading(
         // Don't break with error if its just a 'not found error'
         if let Err(err) = dict_res {
             match err {
-                AsyncError::Error(ref e) => match e {
-                    diesel::result::Error::NotFound => continue,
-                    _ => return Err(err.into()),
-                },
+                AsyncError::Error(diesel::result::Error::NotFound) => continue,
                 _ => return Err(err.into()),
             }
         }

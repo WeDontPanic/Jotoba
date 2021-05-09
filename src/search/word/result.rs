@@ -162,7 +162,7 @@ impl Word {
 
     /// Returns the reading of a word
     pub fn get_reading(&self) -> &Dict {
-        return self.reading.get_reading();
+        self.reading.get_reading()
     }
 
     pub fn glosses_pretty(&self) -> String {
@@ -177,7 +177,7 @@ impl Word {
         }
     }
 
-    fn pretty_print_senses(senses: &Vec<Sense>) -> String {
+    fn pretty_print_senses(senses: &[Sense]) -> String {
         senses
             .iter()
             .map(|i| i.glosses.clone())
@@ -221,6 +221,7 @@ impl Word {
                 return true;
             }
         }
+
         false
     }
 
@@ -325,7 +326,9 @@ impl Reading {
 
     /// Returns the word-reading of a Reading object
     pub fn get_reading(&self) -> &Dict {
-        self.kanji.as_ref().unwrap_or(self.kana.as_ref().unwrap())
+        self.kanji
+            .as_ref()
+            .unwrap_or_else(|| self.kana.as_ref().unwrap())
     }
 
     /// Returns the jplt level of a word. None if
@@ -350,13 +353,13 @@ impl Sense {
     }
 
     pub fn get_xref(&self) -> Option<&str> {
-        self.xref.as_ref().and_then(|xref| xref.split("・").next())
+        self.xref.as_ref().and_then(|xref| xref.split('・').next())
     }
 
     pub fn get_antonym(&self) -> Option<&str> {
         self.antonym
             .as_ref()
-            .and_then(|antonym| antonym.split("・").next())
+            .and_then(|antonym| antonym.split('・').next())
     }
 
     pub fn get_infos(

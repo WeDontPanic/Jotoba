@@ -61,10 +61,13 @@ impl QueryParser {
     fn partition_tags_query(query: &str) -> (String, Vec<Tag>) {
         // TODO don't split by space to allow queries like: '<KANJI>#kanji'
         let (tags, query): (Vec<&str>, Vec<&str>) =
-            query.split(" ").partition(|i| i.starts_with("#"));
+            query.split(' ').partition(|i| i.starts_with('#'));
 
         let query = query.join(" ").trim().to_string();
-        let tags = tags.into_iter().filter_map(|i| Tag::from_str(i)).collect();
+        let tags = tags
+            .into_iter()
+            .filter_map(|i| Tag::parse_from_str(i))
+            .collect();
 
         (query, tags)
     }
@@ -100,7 +103,7 @@ impl QueryParser {
             .collect_vec();
 
         self.tags.is_empty()
-            || utils::same_elements(&mod_tags, &vec![&Tag::PartOfSpeech(PosSimple::Verb)])
+            || utils::same_elements(&mod_tags, &[&Tag::PartOfSpeech(PosSimple::Verb)])
     }
 
     /// Formats the query

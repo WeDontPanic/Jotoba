@@ -49,7 +49,7 @@ pub(self) struct Search<'a> {
 /// Search among all data based on the input query
 pub async fn search(db: &DbPool, query: &Query) -> Result<WordResult, Error> {
     let start = SystemTime::now();
-    let search = Search { query, db };
+    let search = Search { db, query };
 
     // Try to use cache
     if let Some(c_res) = search.get_cache().await {
@@ -290,7 +290,7 @@ impl<'a> Search<'a> {
             .lock()
             .await
             .cache_get(&self.query.get_hash())
-            .map(|i| i.clone())
+            .cloned()
     }
 
     async fn save_cache(&self, result: WordResult) {

@@ -114,7 +114,7 @@ impl JapaneseExt for char {
     }
 
     fn has_kana(&self) -> bool {
-        return self.is_kana();
+        self.is_kana()
     }
 
     fn has_kanji(&self) -> bool {
@@ -271,7 +271,7 @@ pub enum CharType {
 pub fn all_words_with_ct(inp: &str, ct: CharType) -> Vec<String> {
     let mut all: Vec<String> = Vec::new();
     let mut curr = String::new();
-    let mut iter = inp.chars().into_iter();
+    let mut iter = inp.chars();
     while let Some(c) = iter.next() {
         if c.is_of_type(ct) {
             curr.push(c);
@@ -285,7 +285,7 @@ pub fn all_words_with_ct(inp: &str, ct: CharType) -> Vec<String> {
         }
     }
     if !curr.is_empty() {
-        all.push(curr.clone());
+        all.push(curr);
     }
     all
 }

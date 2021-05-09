@@ -1,6 +1,6 @@
 use std::cmp::Ordering;
 
-use crate::{japanese::JapaneseExt, models::name::Name, search::utils::levenshtein_cmp};
+use crate::{japanese::JapaneseExt, models::name::Name};
 use levenshtein::levenshtein;
 
 /// Represents the ordering for name search
@@ -23,7 +23,7 @@ impl<'a> ByTranscription<'a> {
     fn native_words(&self, this: &Name, other: &Name) -> Ordering {
         let this_le = levenshtein(&this.transcription, self.query);
         let other_le = levenshtein(&other.transcription, self.query);
-        levenshtein_cmp(this_le, other_le)
+        this_le.cmp(&other_le)
     }
 }
 
@@ -53,13 +53,11 @@ impl<'a> ByNative<'a> {
             Ordering::Equal
         };
 
-        if order == Ordering::Equal {
-            if self.query.is_kana() {
-                if this.kanji.is_none() && other.kanji.is_some() {
-                    return Ordering::Less;
-                } else if this.kanji.is_some() && other.kanji.is_none() {
-                    return Ordering::Greater;
-                }
+        if order == Ordering::Equal && self.query.is_kana() {
+            if this.kanji.is_none() && other.kanji.is_some() {
+                return Ordering::Less;
+            } else if this.kanji.is_some() && other.kanji.is_none() {
+                return Ordering::Greater;
             }
         }
 
@@ -69,12 +67,12 @@ impl<'a> ByNative<'a> {
     fn kanji_check(&self, this: &Name, other: &Name) -> Ordering {
         let this_le = levenshtein(&this.kanji.as_ref().unwrap_or(&this.kana), self.query);
         let other_le = levenshtein(&other.kanji.as_ref().unwrap_or(&other.kana), self.query);
-        levenshtein_cmp(this_le, other_le)
+        this_le.cmp(&other_le)
     }
 
     fn kana_check(&self, this: &Name, other: &Name) -> Ordering {
         let this_le = levenshtein(&this.kana, self.query);
         let other_le = levenshtein(&other.kana, self.query);
-        levenshtein_cmp(this_le, other_le)
+        this_le.cmp(&other_le)
     }
 }

@@ -6,7 +6,7 @@ use serde::{Deserialize, Serialize};
 use tokio_diesel::AsyncRunQueryDsl;
 
 use super::error::{Origin, RestError};
-use crate::{cache::SharedCache, japanese::JapaneseExt, search::utils::remove_dups, DbPool};
+use crate::{cache::SharedCache, japanese::JapaneseExt, utils::remove_dups, DbPool};
 use async_std::sync::Mutex;
 use diesel::prelude::*;
 use diesel::sql_types::{Integer, Text};
@@ -142,7 +142,7 @@ pub fn validate_request(payload: &RadicalsRequest) -> Result<RadicalsRequest, Re
 
     // Sort radicals because we need to check them against cache. The same result should be
     // returned if the input radicals are the same but in a different order
-    actual_radicals.sort();
+    actual_radicals.sort_unstable();
 
     // Adjust request
     Ok(RadicalsRequest {
@@ -151,12 +151,12 @@ pub fn validate_request(payload: &RadicalsRequest) -> Result<RadicalsRequest, Re
 }
 
 /// Formats the kanji result and places each item into a hashmap with the stroke_count as key
-fn format_kanji(sql_result: &Vec<SqlFindResult>) -> HashMap<i32, Vec<char>> {
+fn format_kanji(sql_result: &[SqlFindResult]) -> HashMap<i32, Vec<char>> {
     let mut kanji_map = HashMap::new();
     for kanji in sql_result.iter() {
         kanji_map
             .entry(kanji.stroke_count)
-            .or_insert(vec![])
+            .or_insert_with(Vec::new)
             .push(kanji.literal.chars().next().unwrap())
     }
     kanji_map

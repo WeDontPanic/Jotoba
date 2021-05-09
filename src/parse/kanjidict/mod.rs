@@ -149,7 +149,7 @@ where
     }
 }
 
-/// An dict entry. Represents one word, phrase or expression
+/// An kanji character. Represents one Kanji
 #[derive(Debug, Default, Clone)]
 pub struct Character {
     pub literal: char,
@@ -177,7 +177,7 @@ impl Character {
                 // Its always only one char
                 self.literal = value.chars().into_iter().next().unwrap()
             }
-            Tag::JLPT => self.jlpt = Some(value.parse()?),
+            Tag::Jlpt => self.jlpt = Some(value.parse()?),
             Tag::Grade => self.grade = Some(value.parse()?),
             Tag::StrokeCount => self.stroke_count = value.parse()?,
             Tag::Variant => self.variant.push(value),
@@ -221,7 +221,7 @@ enum Tag {
     Grade,
     StrokeCount,
     Frequency,
-    JLPT,
+    Jlpt,
     DictNumber,
     DictRef,
     QueryCode,
@@ -301,7 +301,7 @@ impl Tag {
             "grade" => Tag::Grade,
             "stroke_count" => Tag::StrokeCount,
             "freq" => Tag::Frequency,
-            "jlpt" => Tag::JLPT,
+            "jlpt" => Tag::Jlpt,
             "dic_number" => Tag::DictNumber,
             "dic_ref" => Tag::DictRef,
             "query_code" => Tag::QueryCode,

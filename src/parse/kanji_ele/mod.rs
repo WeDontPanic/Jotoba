@@ -29,6 +29,11 @@ const MAPPINGS: &[(char, char)] = &[
     ('滴', '啇'),
 ];
 
+pub struct KanjiPart {
+    pub kanji: char,
+    pub radicals: Vec<char>,
+}
+
 /// Parses a kanji element file
 pub fn parse(path: &str) -> impl Iterator<Item = KanjiPart> {
     let file = File::open(path).unwrap();
@@ -36,20 +41,13 @@ pub fn parse(path: &str) -> impl Iterator<Item = KanjiPart> {
     BufReader::new(file)
         .lines()
         .map(|i| i.unwrap())
-        .filter(|i| !i.starts_with("#"))
+        .filter(|i| !i.starts_with('#'))
         .filter_map(|i| parse_item(&i))
 }
 
-#[derive(Debug, Clone, PartialEq)]
-pub struct KanjiPart {
-    pub radical: char,
-    pub parts: Vec<char>,
-}
-
-/// Parses a single line of pitch accent info and returns a result in form of
-/// Some((kanji, kana, [pitch])) or None if the line is invalid
+/// Parses a single Kanji with its elements (one line)
 fn parse_item(line: &str) -> Option<KanjiPart> {
-    let mut split = line.split(":");
+    let mut split = line.split(':');
 
     let radical: char = split.next()?.chars().next()?;
 
@@ -57,13 +55,18 @@ fn parse_item(line: &str) -> Option<KanjiPart> {
         .next()?
         .chars()
         .into_iter()
+        // Filter out spaces
         .filter(|i| *i != ' ')
         .map(map_character)
         .collect();
 
-    Some(KanjiPart { radical, parts })
+    Some(KanjiPart {
+        kanji: radical,
+        radicals: parts,
+    })
 }
 
+/// Maps characters to the ones we need using [`MAPPINGS`]
 fn map_character(inp: char) -> char {
     MAPPINGS
         .iter()

@@ -3,15 +3,15 @@ use std::io::Write;
 use crate::{models::dict, parse::accents, DbPool};
 
 /// Import jlpt patche file
-pub async fn import(db: &DbPool, path: String) {
+pub async fn import(db: &DbPool, path: &str) {
     println!("Importing pitch accents...");
     let db = db.get().unwrap();
 
-    accents::parse(path, |(kanji, kana, pitch), pos, len| {
-        dict::update_accents(&db, &kanji, &kana, &pitch).unwrap();
+    let (count, iter) = accents::parse(path).expect("Parse error");
 
-        print!("\rImporting pitch {}/{}", pos, len);
+    for (pos, pitch) in iter.enumerate() {
+        dict::update_accents(&db, pitch).unwrap();
+        print!("\rImporting pitch {}/{}", pos, count);
         std::io::stdout().flush().ok();
-    })
-    .unwrap();
+    }
 }

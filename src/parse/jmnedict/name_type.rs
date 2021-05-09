@@ -104,9 +104,9 @@ impl TryFrom<i32> for NameType {
     }
 }
 
-impl Into<i32> for NameType {
-    fn into(self) -> i32 {
-        match self {
+impl From<NameType> for i32 {
+    fn from(nt: NameType) -> i32 {
+        match nt {
             NameType::Company => 0,
             NameType::Female => 1,
             NameType::Male => 2,

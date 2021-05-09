@@ -13,8 +13,8 @@ use serde_json::Value;
 
 use futures::future::try_join_all;
 
-/// Import sfx items file
-pub async fn import(db: &DbPool, path: String) {
+/// Import manga sfx items file
+pub async fn import(db: &DbPool, path: &str) {
     println!("Importing sfx patches...");
     let f = std::fs::File::open(path).expect("Error reading jlpt patch file!");
     let json: Value = serde_json::from_reader(f).expect("invalid json data");
@@ -30,9 +30,7 @@ pub async fn import(db: &DbPool, path: String) {
                 db,
                 seq,
                 sfx_item.to_owned(),
-                nr.into_iter()
-                    .map(|i| i.as_str().unwrap().to_owned())
-                    .collect(),
+                nr.iter().map(|i| i.as_str().unwrap().to_owned()).collect(),
             ))
         } else {
             None
@@ -79,7 +77,7 @@ async fn import_sfx(
                     language: Language::English,
                     g_type: None,
                 }],
-                part_of_speech: vec![PartOfSpeech::SFX],
+                part_of_speech: vec![PartOfSpeech::Sfx],
                 ..Default::default()
             })
             .collect::<Vec<_>>(),

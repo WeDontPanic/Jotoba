@@ -1,5 +1,7 @@
+use crate::utils::option_order;
+
 use super::result::Item;
-use crate::search::utils::option_order;
+
 use std::cmp::Ordering;
 
 /// Order kanji results which were found

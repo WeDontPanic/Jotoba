@@ -156,9 +156,7 @@ where
                             &self.entity_mappings,
                         )?;
 
-                        match tag {
-                            _ => entry.apply_tag(tag, value)?,
-                        }
+                        entry.apply_tag(tag, value)?;
                     }
                 }
 

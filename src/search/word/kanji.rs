@@ -10,8 +10,8 @@ use crate::{
         dict::Dict,
         kanji::{self, Kanji as DbKanji},
     },
-    search::{query::Query, search_order::SearchOrder, utils, SearchMode},
-    utils::to_option,
+    search::{query::Query, search_order::SearchOrder, SearchMode},
+    utils::{self, to_option},
 };
 use futures::future::try_join_all;
 use itertools::Itertools;
@@ -19,8 +19,8 @@ use itertools::Itertools;
 const MAX_KANJI_INFO_ITEMS: usize = 5;
 
 /// Runs a kanji reading search
-pub(super) async fn by_reading<'a>(
-    search: &Search<'a>,
+pub(super) async fn by_reading(
+    search: &Search<'_>,
 ) -> Result<(Vec<Word>, Option<InflectionInformation>), Error> {
     let reading = search
         .query
@@ -86,8 +86,8 @@ pub(super) async fn by_reading<'a>(
 }
 
 /// Do a search without the kanji literal or reading
-pub(super) async fn alternative_reading_search<'a>(
-    search: &Search<'a>,
+pub(super) async fn alternative_reading_search(
+    search: &Search<'_>,
 ) -> Result<(Vec<Word>, Option<InflectionInformation>), Error> {
     println!("alternative search");
     let reading = search.query.form.as_kanji_reading().unwrap();
@@ -96,7 +96,7 @@ pub(super) async fn alternative_reading_search<'a>(
     Search {
         db: search.db,
         query: &Query {
-            query: kanji::kun_literal_reading(&reading.reading),
+            query: kanji::kun_readings::literal_reading(&reading.reading),
             ..search.query.to_owned()
         },
     }
@@ -105,9 +105,9 @@ pub(super) async fn alternative_reading_search<'a>(
 }
 
 /// load word assigned kanji
-pub(super) async fn load_word_kanji_info<'a>(
-    search: &Search<'a>,
-    words: &Vec<Word>,
+pub(super) async fn load_word_kanji_info(
+    search: &Search<'_>,
+    words: &[Word],
 ) -> Result<Vec<DbKanji>, Error> {
     let kanji_words = get_kanji_words(words);
     let retrieved_kanji = {
@@ -151,7 +151,7 @@ pub(super) async fn load_word_kanji_info<'a>(
 }
 
 /// Returns first 10 dicts of words which have a kanji
-fn get_kanji_words(words: &Vec<Word>) -> Vec<&Dict> {
+fn get_kanji_words(words: &[Word]) -> Vec<&Dict> {
     words
         .iter()
         // Filter only words with kanji readings

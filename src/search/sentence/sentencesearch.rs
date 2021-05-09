@@ -1,7 +1,5 @@
 use diesel::prelude::*;
-use diesel::{
-    EqAll, JoinOnDsl, QueryDsl,
-};
+use diesel::{EqAll, JoinOnDsl, QueryDsl};
 use itertools::Itertools;
 use tokio_diesel::AsyncRunQueryDsl;
 
@@ -144,7 +142,7 @@ fn merge_results(items: Vec<(Sentence, Translation)>, lang: Language) -> Vec<res
 
             let eng: String = (!english.is_empty())
                 .then(|| english[0].content.clone())
-                .unwrap_or(String::from("-"));
+                .unwrap_or_else(|| String::from('-'));
 
             Some(result::Sentence {
                 id: i,

@@ -1,45 +1,46 @@
 use crate::error::Error;
 use std::{
     fs::File,
-    io::{BufRead, BufReader},
+    io::{BufRead, BufReader, Seek, SeekFrom},
 };
 
-/// Parses a pitch info file
-pub fn parse<F>(file: String, mut f: F) -> Result<(), Error>
-where
-    F: FnMut((String, String, Vec<i32>), i32, usize),
-{
-    let fa = File::open(&file)?;
-    let bufr = BufReader::new(fa);
-    let count = bufr.lines().count();
-
-    let fb = File::open(&file)?;
-    let bufr = BufReader::new(fb);
-
-    let mut counter = 0;
-    for line in bufr.lines().map(|i| i.unwrap()) {
-        if let Some(d) = parse_item(line) {
-            f(d, counter, count);
-            counter += 1;
-        }
-    }
-
-    Ok(())
+pub struct PitchItem {
+    pub kanji: String,
+    pub kana: String,
+    pub pitch: Vec<i32>,
 }
 
-/// Parses a single line of pitch accent info and returns a result in form of
-/// Some((kaji, kana, [pitch])) or None if the line is invalid
-pub fn parse_item(line: String) -> Option<(String, String, Vec<i32>)> {
-    let mut split = line.split("\t");
+/// Parses a pitch info file and returns the amount of pitch items and an iteator over all items
+pub fn parse(file: &str) -> Result<(usize, impl Iterator<Item = PitchItem>), Error> {
+    let mut fa = File::open(file)?;
+    let bufr = BufReader::new(&fa);
+    let count = bufr.lines().count();
+
+    fa.seek(SeekFrom::Start(0))?;
+    let bufr = BufReader::new(fa);
+
+    Ok((
+        count,
+        bufr.lines().map(|i| i.unwrap()).filter_map(parse_item),
+    ))
+}
+
+/// Parses a single line of pitch accent info
+pub fn parse_item(line: String) -> Option<PitchItem> {
+    let mut split = line.split('\t');
     let kanji = split.next()?;
     let kana = split.next()?;
     let pitch = split.next()?;
 
     let pitch = pitch
-        .split(",")
+        .split(',')
         .into_iter()
         .map(|i| i.parse::<i32>().ok())
         .collect::<Option<Vec<i32>>>()?;
 
-    Some((kanji.to_owned(), kana.to_owned(), pitch))
+    Some(PitchItem {
+        pitch,
+        kanji: kanji.to_owned(),
+        kana: kana.to_owned(),
+    })
 }

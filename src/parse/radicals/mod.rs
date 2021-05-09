@@ -1,26 +1,12 @@
 pub mod search_radicals;
+
 use std::{
     fs::File,
     io::{BufRead, BufReader},
 };
 
-/// Parse a radicals file. Calls [`f`] for each radical in file with the parsed radical value
-pub fn parse<F>(path: &str, mut f: F)
-where
-    F: FnMut(Radical),
-{
-    let file = File::open(path).unwrap();
-    let bufr = BufReader::new(file);
+use crate::error::Error;
 
-    for line in bufr.lines().map(|i| i.unwrap()) {
-        let parsed = parse_item(&line);
-        if let Some(parsed) = parsed {
-            f(parsed);
-        }
-    }
-}
-
-#[derive(Debug, Clone, PartialEq)]
 pub struct Radical<'a> {
     pub id: i32,
     pub radical: char,
@@ -31,19 +17,35 @@ pub struct Radical<'a> {
     pub note: Option<&'a str>,
 }
 
-/// Parses a single line of pitch accent info and returns a result in form of
-/// Some((kanji, kana, [pitch])) or None if the line is invalid
+/// Parse a radicals file. Calls [`f`] for each radical in file with the parsed radical value
+pub fn parse<F>(path: &str, mut f: F) -> Result<(), Error>
+where
+    F: FnMut(Radical),
+{
+    let file = File::open(path)?;
+    let bufr = BufReader::new(file);
+
+    for line in bufr.lines().map(|i| i.unwrap()) {
+        if let Some(parsed) = parse_item(&line) {
+            f(parsed);
+        }
+    }
+
+    Ok(())
+}
+
+/// Parses a single line of radical info
 pub fn parse_item(line: &str) -> Option<Radical> {
-    let mut split = line.split("\t");
+    let mut split = line.split('\t');
 
     let radical: char = split.next()?.chars().into_iter().next()?;
     let alternative: Option<char> = split.next()?.chars().into_iter().next();
     let id: i32 = split.next().and_then(|i| i.parse().ok())?;
     let stroke_count: i32 = split.next().and_then(|i| i.parse().ok())?;
-    let readings = split.next()?.split("・").collect::<Vec<_>>();
+    let readings = split.next()?.split('・').collect::<Vec<_>>();
     let translations = split
         .next()?
-        .split(",")
+        .split(',')
         .map(|i| i.trim())
         .collect::<Vec<_>>();
     let note = split
