@@ -102,6 +102,11 @@ impl Form {
             None
         }
     }
+
+    /// Returns `true` if the form is [`KanjiReading`].
+    pub fn is_kanji_reading(&self) -> bool {
+        matches!(self, Self::KanjiReading(..))
+    }
 }
 
 /// A kanji-reading search
