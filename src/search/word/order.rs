@@ -57,10 +57,12 @@ pub(super) fn native_search_order(word: &Word, search_order: &SearchOrder) -> us
         if kana_reading.reading == *query_str && word.reading.kanji.is_none() {
             score += 20;
         }
+    } else if reading.reading.starts_with(query_str) {
+        score += 2;
     }
 
     if let Some(jlpt) = reading.jlpt_lvl {
-        score += jlpt as usize;
+        score += (jlpt * 2) as usize;
     }
 
     #[cfg(feature = "tokenizer")]

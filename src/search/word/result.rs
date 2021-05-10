@@ -26,6 +26,7 @@ use crate::{
 #[derive(Debug, Clone, PartialEq)]
 pub struct WordResult {
     pub items: Vec<Item>,
+    pub count: usize,
     pub contains_kanji: bool,
     pub inflection_info: Option<InflectionInformation>,
 }
