@@ -1,16 +1,10 @@
 use std::{cmp::Ordering, collections::HashMap};
 
-use super::{
-    super::super::schema::{kanji, kanji_element},
-    dict::{self, Dict},
-    radical::{self, Radical},
-};
+use super::dict::Dict;
 use crate::{
-    cache::SharedCache,
     error::Error,
-    parse::{kanji_ele::KanjiPart, kanjidict::Character},
-    search::{query::KanjiReading, SearchMode},
-    utils::{self, invert_ordering, to_option},
+    search::SearchMode,
+    utils::{self, invert_ordering},
     DbPool,
 };
 

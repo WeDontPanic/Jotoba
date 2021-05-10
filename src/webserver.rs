@@ -1,17 +1,11 @@
+#[cfg(feature = "tokenizer")]
 use std::path::Path;
 
 #[cfg(feature = "tokenizer")]
 use crate::{JA_NL_PARSER, NL_PARSER_PATH};
 
-use crate::{
-    config::Config,
-    models::{dict, kanji, sense},
-    web, DbPool,
-};
+use crate::{config::Config, web, DbPool};
 use actix_web::{middleware, web as actixweb, App, HttpServer};
-use argparse::{ArgumentParser, Print, Store, StoreTrue};
-use diesel::{r2d2::ConnectionManager, PgConnection};
-use r2d2::{Pool, PooledConnection};
 
 /// Start the webserver
 #[actix_web::main]
@@ -53,7 +47,6 @@ pub(super) async fn start(db: DbPool) -> std::io::Result<()> {
 
 #[cfg(feature = "tokenizer")]
 fn load_tokenizer() {
-    println!("Loading Japanese natural language parser");
     if !Path::new(NL_PARSER_PATH).exists() {
         panic!("No NL dict was found! Place the following folder in he binaries root dir: ./unidic-mecab");
     }

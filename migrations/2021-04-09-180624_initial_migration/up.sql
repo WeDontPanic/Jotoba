@@ -66,9 +66,9 @@ CREATE TABLE name (
   name_type INTEGER[],
   xref TEXT
 );
-CREATE INDEX index_kana_name ON name (kana text_pattern_ops);
-CREATE INDEX index_kanji_name ON name (kanji text_pattern_ops);
-CREATE INDEX index_transcription_name ON name (transcription);
+CREATE INDEX index_kana_name ON name using pgroonga (kana);
+CREATE INDEX index_kanji_name ON name using pgroonga (kanji);
+CREATE INDEX index_transcription_name ON name using pgroonga (transcription);
 
 CREATE TABLE sentence (
   id SERIAL PRIMARY KEY,

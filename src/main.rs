@@ -1,5 +1,4 @@
 #![allow(irrefutable_let_patterns)]
-#![allow(unused_imports)]
 
 #[macro_use]
 extern crate diesel;
@@ -23,12 +22,10 @@ mod webserver;
 
 use std::path::Path;
 
-use actix_web::{middleware, web as actixweb, App, HttpServer};
 use argparse::{ArgumentParser, Print, Store, StoreTrue};
-use config::Config;
 use diesel::{r2d2::ConnectionManager, PgConnection};
 use import::has_required_data;
-use models::{dict, kanji, sense};
+use models::{dict, kanji};
 use r2d2::{Pool, PooledConnection};
 
 #[cfg(feature = "tokenizer")]

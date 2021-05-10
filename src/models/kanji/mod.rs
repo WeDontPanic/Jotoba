@@ -11,12 +11,9 @@ use crate::{
     error::Error,
     parse::{kanji_ele::KanjiPart, kanjidict::Character},
     search::{query::KanjiReading, SearchMode},
-    utils::{self, invert_ordering, to_option},
+    utils::to_option,
     DbPool,
 };
-
-#[cfg(feature = "tokenizer")]
-use crate::JA_NL_PARSER;
 
 use async_std::sync::{Mutex, MutexGuard};
 use diesel::{
@@ -27,7 +24,6 @@ use futures::future::try_join_all;
 use itertools::Itertools;
 use once_cell::sync::Lazy;
 use romaji::RomajiExt;
-use std::{cmp::Ordering, collections::HashMap};
 use tokio_diesel::*;
 
 /// An in memory Cache for kanji items

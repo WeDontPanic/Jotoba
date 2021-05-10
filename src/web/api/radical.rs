@@ -9,7 +9,7 @@ use super::error::{Origin, RestError};
 use crate::{
     cache::SharedCache,
     japanese::JapaneseExt,
-    utils::{part_of, remove_dups, same_elements},
+    utils::{part_of, remove_dups},
     DbPool,
 };
 use async_std::sync::Mutex;
