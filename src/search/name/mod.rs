@@ -10,7 +10,7 @@ use crate::{
     japanese::JapaneseExt,
     models::name::Name,
     search::{name::namesearch::NameSearch, query::Query},
-    utils, DbPool,
+    DbPool,
 };
 
 use async_std::sync::Mutex;
@@ -45,11 +45,7 @@ pub async fn search(db: &DbPool, query: &Query) -> Result<Vec<Name>, Error> {
 
 /// Search by transcription
 async fn search_transcription(db: &DbPool, query: &Query) -> Result<Vec<Name>, Error> {
-    let mut search = NameSearch::new(&db, &query.query);
-
-    if utils::real_string_len(&query.query) < 4 {
-        search.with_limit(100);
-    }
+    let search = NameSearch::new(&db, &query.query);
 
     let mut items = search.search_transcription().await?;
 
@@ -66,11 +62,7 @@ async fn search_transcription(db: &DbPool, query: &Query) -> Result<Vec<Name>, E
 
 /// Search by japanese input
 async fn search_native(db: &DbPool, query: &Query) -> Result<Vec<Name>, Error> {
-    let mut search = NameSearch::new(&db, &query.query);
-
-    if utils::real_string_len(&query.query) < 4 {
-        search.with_limit(100);
-    }
+    let search = NameSearch::new(&db, &query.query);
 
     let mut items = search.search_native().await?;
 
@@ -87,11 +79,7 @@ async fn search_native(db: &DbPool, query: &Query) -> Result<Vec<Name>, Error> {
 
 /// Search by japanese input
 async fn search_kanji(db: &DbPool, query: &Query) -> Result<Vec<Name>, Error> {
-    let mut search = NameSearch::new(&db, &query.query);
-
-    if utils::real_string_len(&query.query) < 4 {
-        search.with_limit(100);
-    }
+    let search = NameSearch::new(&db, &query.query);
 
     let kanji = query.form.as_kanji_reading().unwrap();
 
