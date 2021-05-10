@@ -17,6 +17,9 @@ pub mod sentences;
 
 /// Returns true if DB has all required data
 pub async fn has_required_data(database: &DbPool) -> Result<bool, Error> {
+    #[cfg(debug_assertions)]
+    return Ok(true);
+
     let jmdict_exists = dict::exists(&database).await? && sense::exists(&database).await?;
     let jmnedict_exists = name::exists(&database).await?;
     let kanji_exists = kanji::exists(&database).await?;

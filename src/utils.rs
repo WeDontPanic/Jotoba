@@ -18,6 +18,24 @@ where
     true
 }
 
+/// Return true if both v1 is part of v2
+pub fn part_of<T>(v1: &[T], v2: &[T]) -> bool
+where
+    T: PartialEq,
+{
+    if v1.len() > v2.len() || v1.is_empty() {
+        return false;
+    }
+
+    for i in v1 {
+        if !v2.contains(&i) {
+            return false;
+        }
+    }
+
+    true
+}
+
 /// Returns a vector of all items which are part of both vectors
 pub fn union_elements<'a, T>(v1: &'a [T], v2: &'a [T]) -> Vec<&'a T>
 where

@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::{collections::HashMap, time::SystemTime};
 
 use actix_web::web::{self, Json};
 use itertools::Itertools;
@@ -6,7 +6,12 @@ use serde::{Deserialize, Serialize};
 use tokio_diesel::AsyncRunQueryDsl;
 
 use super::error::{Origin, RestError};
-use crate::{cache::SharedCache, japanese::JapaneseExt, utils::remove_dups, DbPool};
+use crate::{
+    cache::SharedCache,
+    japanese::JapaneseExt,
+    utils::{part_of, remove_dups, same_elements},
+    DbPool,
+};
 use async_std::sync::Mutex;
 use diesel::prelude::*;
 use diesel::sql_types::{Integer, Text};
@@ -46,7 +51,9 @@ pub async fn kanji_by_radicals(
     }
 
     // Kanji by search-radicals from DB
+    let start = SystemTime::now();
     let kanji = find_by_radicals(&pool, &payload.radicals).await?;
+    println!("{:?}", start.elapsed());
 
     // IDs of [`kanji`]
     let kanji_ids = kanji.iter().map(|i| i.id).collect_vec();
@@ -64,23 +71,50 @@ pub async fn kanji_by_radicals(
 
 /// Finds all kanji which are constructed used the passing radicals
 async fn find_by_radicals(db: &DbPool, radicals: &[char]) -> Result<Vec<SqlFindResult>, RestError> {
-    let mut rad_where: Vec<String> = vec![];
-
-    for radical in radicals {
-        rad_where.push(format!(" r.literal = '{}' ", radical));
+    if radicals.is_empty() {
+        return Ok(vec![]);
     }
 
-    let query = format!(
-        "SELECT id, literal, stroke_count FROM kanji WHERE kanji.id IN 
-            (SELECT k.kanji_id FROM kanji_element AS k 
-                JOIN search_radical AS r on r.id = k.search_radical_id 
-                WHERE {} GROUP BY k.kanji_id
-                HAVING COUNT(*) >= {}) order by stroke_count, grade",
-        rad_where.join("OR"),
-        radicals.len(),
-    );
+    let query = include_str!("../../../sql/kanji_by_radical.sql");
 
-    Ok(diesel::sql_query(query).get_results_async(db).await?)
+    // All kanji with the first radical
+    let kanji_ids: Vec<SqlKanjiLiteralResult> = diesel::sql_query(query)
+        .bind::<Text, _>(radicals[0].to_string())
+        .get_results_async(db)
+        .await?;
+
+    // Kanji ids which have all [`radicals`]
+    let kanji_ids = kanji_ids
+        .into_iter()
+        .group_by(|i| i.kanji_id)
+        .into_iter()
+        .filter_map(|(k_id, rads)| {
+            let rads = rads
+                .into_iter()
+                .map(|j| j.literal.chars().next().unwrap())
+                .collect_vec();
+
+            // Filter all kanji ids of kanji which have all radicals
+            part_of(radicals, &rads).then(|| k_id)
+        })
+        .collect_vec();
+
+    use crate::schema::kanji;
+
+    // Select all kanji by id ordered by stroke_count, grade
+    Ok(kanji::table
+        .select((kanji::id, kanji::literal, kanji::stroke_count))
+        .filter(kanji::id.eq_any(&kanji_ids))
+        .order((kanji::stroke_count, kanji::grade))
+        .get_results_async::<(i32, String, i32)>(db)
+        .await?
+        .into_iter()
+        .map(|i| SqlFindResult {
+            id: i.0,
+            literal: i.1,
+            stroke_count: i.2,
+        })
+        .collect_vec())
 }
 
 /// Returns a vec of all possible radicals
@@ -105,6 +139,14 @@ async fn posible_radicals(
         // Skip all already provided radicals
         .filter(|i| !radicals.contains(i))
         .collect())
+}
+
+#[derive(QueryableByName, Debug)]
+struct SqlKanjiLiteralResult {
+    #[sql_type = "Integer"]
+    pub kanji_id: i32,
+    #[sql_type = "Text"]
+    pub literal: String,
 }
 
 #[derive(QueryableByName, Debug)]

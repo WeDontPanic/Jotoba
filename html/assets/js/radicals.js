@@ -2,7 +2,7 @@
  *  Used to handle the radical search
 */
 
-const radHelpMsg = '<div class="rad-result-preview"> <span>This tool allows you to find Kanji by their core components (Radicals)</span> <br> <span>You can select Radicals below and add found Kanjis to the search bar</span> <br> <span>Press <span class="highlight">Enter</span> to start searching</span> </div>';
+const radHelpMsg = '<div class="rad-result-preview"> <span>This tool allows you to find Kanji by their core components (Radicals)</span> <br> <span>You can select Radicals below and add found Kanji to the search bar</span> <br> <span>Press <span class="highlight">Enter</span> to start searching</span> </div>';
 const radicals = [
     ["一","｜","丶","ノ","乙","亅"], 
     ["二","亠","人","⺅","𠆢","儿","入","ハ","丷","冂","冖","冫","几","凵","刀","⺉","力","勹","匕","匚","十","卜","卩","厂","厶","又","マ","九","ユ","乃", "𠂉"],
