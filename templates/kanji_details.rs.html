@@ -14,12 +14,27 @@
          <div class="kanji-preview-info">
            <div class="notes"><b>@k_item.kanji.stroke_count</b> strokes </div>
             <!--TODO-->
-            <div class="notes"><b>Radical:</b> @k_item.radical.literal 
+            <div class="notes"><b>Radical:</b>
+              <br>
+              <a class="clickable no-align" href="/search?type=1&search=@k_item.radical.literal">@k_item.get_radical()</a>
+              @if k_item.get_rad_len() > 7 {
+                <br>
+              }
               @if let Some(ref translations) = k_item.radical.translations {
                 (@translations.join(", "))
               }
             </div>
-            <!--<div class="notes"><b>Parts:</b>  [> !!! Parts hier. (z.b.: 人 冂) !!! <] </div>-->
+            @if let Some(ref parts) = k_item.parts {
+              <div class="notes"><b>@k_item.get_parts_title():</b>
+                <br>
+                @for (pos, part) in parts.iter().enumerate() {
+                  @if pos > 0 {
+                    <span class="tags no-margin fat">,</span>
+                  }
+                  <a class="clickable no-align" href="/search?type=1&search=@part">@part</a>
+                }
+              </div>
+            }
          </div>
       </div>
       <!-- Right side: Info -->

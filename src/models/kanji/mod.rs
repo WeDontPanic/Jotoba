@@ -9,6 +9,7 @@ use super::{
 use crate::{
     cache::SharedCache,
     error::Error,
+    models::radical::SearchRadical,
     parse::{kanji_ele::KanjiPart, kanjidict::Character},
     search::{query::KanjiReading, SearchMode},
     utils::to_option,
@@ -210,6 +211,20 @@ impl Kanji {
             }
             ReadingType::Onyomi => self.literal.clone(),
         }
+    }
+
+    /// Returns a Vec of the kanjis parts
+    pub async fn load_parts(&self, db: &DbPool) -> Result<Vec<String>, Error> {
+        use crate::schema::kanji_element::dsl::*;
+        use crate::schema::search_radical;
+
+        let res: Vec<(KanjiElement, SearchRadical)> = kanji_element
+            .inner_join(search_radical::table)
+            .filter(kanji_id.eq(self.id))
+            .get_results_async(db)
+            .await?;
+
+        Ok(res.into_iter().map(|i| i.1.literal).collect())
     }
 }
 

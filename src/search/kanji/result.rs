@@ -1,11 +1,14 @@
 use std::{fs::read_to_string, path::Path, vec};
 
+use futures::{future::try_join_all, try_join};
+
 use crate::{
     error::Error,
     models::{kanji::Kanji as DbKanji, radical::Radical},
     parse::jmdict::languages::Language,
     search::word::{result::Word, WordSearch},
-    utils, DbPool,
+    utils::{self, to_option},
+    DbPool,
 };
 
 #[derive(Debug, PartialEq, Clone)]
@@ -14,6 +17,7 @@ pub struct Item {
     pub kun_dicts: Option<Vec<Word>>,
     pub on_dicts: Option<Vec<Word>>,
     pub radical: Radical,
+    pub parts: Option<Vec<String>>,
 }
 
 impl Item {
@@ -29,20 +33,24 @@ impl Item {
     ) -> Result<Self, Error> {
         let kun_dicts = k.kun_dicts.clone().unwrap_or_default();
 
-        let loaded_kd = WordSearch::load_words_by_seq(db, &kun_dicts, lang, show_english, &None)
-            .await?
+        let (radical, parts, kun_words): (Radical, Vec<String>, Vec<Word>) = try_join!(
+            k.load_radical(db),
+            k.load_parts(db),
+            WordSearch::load_words_by_seq(db, &kun_dicts, lang, show_english, &None)
+        )?;
+
+        let loaded_kd = kun_words
             .into_iter()
             // Filter english items if user don't want to se them
             .filter(|i| show_english || !i.senses.is_empty())
             .collect();
-
-        let radical = k.load_radical(db).await?;
 
         Ok(Self {
             kanji: k,
             kun_dicts: utils::to_option(loaded_kd),
             on_dicts: None,
             radical,
+            parts: to_option(parts),
         })
     }
 }
@@ -103,5 +111,37 @@ impl Item {
         } else {
             None
         }
+    }
+
+    pub fn get_parts_title(&self) -> &'static str {
+        if self.parts.as_ref().map(|i| i.len()).unwrap_or_default() > 1 {
+            "Parts"
+        } else {
+            "Part"
+        }
+    }
+
+    pub fn get_radical(&self) -> String {
+        if let Some(ref alternative) = self.radical.alternative {
+            format!("{} ({})", self.radical.literal, alternative)
+        } else {
+            self.radical.literal.clone()
+        }
+    }
+
+    pub fn get_rad_len(&self) -> usize {
+        self.radical.literal.len()
+            + self
+                .radical
+                .alternative
+                .as_ref()
+                .map(|i| i.len())
+                .unwrap_or_default()
+            + self
+                .radical
+                .translations
+                .as_ref()
+                .map(|i| i.join(", ").len())
+                .unwrap_or_default()
     }
 }
