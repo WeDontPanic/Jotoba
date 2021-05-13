@@ -302,6 +302,11 @@ impl<'dict, 'input> InputTextParser<'dict, 'input> {
     /// Returns true if the input is a single word in form
     /// of an inflection of a word
     pub fn is_word_inflection(&self) -> bool {
+        // Check for being only one word
+        if self.word_count() > 1 {
+            return false;
+        }
+
         if let Some(m) = self.morphemes.get(0) {
             match m.conjungation.form {
                 ConjungationForm::Imperative
@@ -337,7 +342,10 @@ impl<'dict, 'input> InputTextParser<'dict, 'input> {
     pub fn word_count(&self) -> usize {
         self.morphemes
             .iter()
-            .filter(|morpheme| morpheme.is_word())
+            .filter(|morpheme| {
+                println!("{:?}: {}", morpheme, morpheme.is_word());
+                morpheme.is_word()
+            })
             .count()
     }
 }
@@ -365,6 +373,10 @@ pub trait MorphemeExt {
 impl<'dict, 'input> MorphemeExt for Morpheme<'dict, 'input> {
     /// Returns true if morpheme is a stand alone word
     fn is_word(&self) -> bool {
+        if self.is_inflection() {
+            return false;
+        }
+
         match self.word_class {
             WordClass::Adjective(_)
             | WordClass::Adverb
@@ -372,6 +384,8 @@ impl<'dict, 'input> MorphemeExt for Morpheme<'dict, 'input> {
             | WordClass::Prefix
             | WordClass::PreNoun
             | WordClass::Suffix
+            | WordClass::Symbol
+            | WordClass::Particle(_)
             | WordClass::Noun(_) => return true,
             _ => match self.word_class {
                 WordClass::Verb(v) => {

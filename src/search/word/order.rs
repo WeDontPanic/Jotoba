@@ -65,6 +65,16 @@ pub(super) fn native_search_order(word: &Word, search_order: &SearchOrder) -> us
         score += (jlpt * 2) as usize;
     }
 
+    // If alternative reading matches query exactly
+    if word
+        .reading
+        .alternative
+        .iter()
+        .any(|i| i.reading == *query_str)
+    {
+        score += 14;
+    }
+
     #[cfg(feature = "tokenizer")]
     if let Some(morpheme) = morpheme {
         let lexeme = morpheme.get_lexeme();
