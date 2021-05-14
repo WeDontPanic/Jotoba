@@ -137,10 +137,10 @@ pub(super) async fn load_word_kanji_info(
     // If first word with kanji reading has more
     // than MAX_KANJI_INFO_ITEMS kanji, display all of them only
     let limit = {
-        if !kanji_words.is_empty() && kanji_words[0].reading.kanji_count() > MAX_KANJI_INFO_ITEMS {
+        if !kanji_words.is_empty() && kanji_words[0].reading.kanji_count() > words.len() {
             kanji_words[0].reading.kanji_count()
         } else {
-            MAX_KANJI_INFO_ITEMS
+            words.len()
         }
     };
 
