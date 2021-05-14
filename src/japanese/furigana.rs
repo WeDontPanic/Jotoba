@@ -1,80 +1,54 @@
 use itertools::Itertools;
 use std::iter::Peekable;
 
-use super::{CharType, JapaneseExt};
+use super::JapaneseExt;
 
 /// Create SentenceParts out of an input sencence which has to be passed
 /// once written in kanji and once in kana characters
-pub fn furigana_pairs(kanji: &str, kana: &str) -> Option<Vec<SentencePart>> {
+/// Equal to [`furigana_checked`] but doesn't return an Option
+pub fn furigana(kanji: &str, kana: &str) -> Vec<SentencePart> {
+    furigana_checked(kanji, kana).unwrap_or_else(|| vec![default_pair(kanji, kana)])
+}
+
+/// Create SentenceParts out of an input sencence which has to be passed
+/// once written in kanji and once in kana characters
+pub fn furigana_checked(kanji: &str, kana: &str) -> Option<Vec<SentencePart>> {
     if !kana.is_kana() || !kanji.is_japanese() || kanji.is_empty() || kana.is_empty() {
         return None;
     }
     let kana = kana.replace("・", "").replace("、", "");
-    let kana = kana.as_str();
     let kanji = kanji.replace("・", "").replace("、", "");
-    let kanji = kanji.as_str();
 
-    //let mut kanji_readings = kanji_readings(kanji, kana).into_iter();
-    let kanji_readings = furi_algo(kanji, kana);
-    if kanji_readings.is_none() || !kanji.has_kana() {
-        return Some(vec![SentencePart {
-            kanji: Some(kanji.to_owned()),
-            kana: kana.to_owned(),
-        }]);
-    }
+    let mut furis = furi_algo(&kanji, &kana)?;
 
-    let mut kanji_readings = kanji_readings.unwrap().into_iter().map(|(_, kana)| kana);
-
-    let mut parts: Vec<SentencePart> = Vec::new();
-    let mut last_char_type: Option<CharType> = None;
-
-    let mut word_buf = String::new();
-
-    for curr_char in kanji.chars() {
-        let curr_char_type = curr_char.get_text_type();
-
-        if last_char_type.is_some() && last_char_type.unwrap() != curr_char_type {
-            // If char type changes
-            let part = SentencePart {
-                kana: {
-                    if last_char_type.unwrap() == CharType::Kana {
-                        word_buf.clone()
-                    } else {
-                        kanji_readings.next().unwrap_or_default()
-                    }
-                },
-                kanji: (last_char_type.unwrap() == CharType::Kanji
-                    || last_char_type.unwrap() == CharType::Other)
-                    .then(|| word_buf.clone()),
-            };
-            parts.push(part);
-            word_buf.clear();
-        }
-
-        word_buf.push(curr_char);
-
-        last_char_type = Some(curr_char_type);
-    }
-
-    parts.push(SentencePart {
-        kana: {
-            if last_char_type.unwrap() == CharType::Kana {
-                word_buf.clone()
+    let parts = super::text_parts(&kanji)
+        .map(|part| {
+            if part.has_kanji() {
+                Some(SentencePart {
+                    kanji: Some(part.to_owned()),
+                    kana: furis.next()??.1,
+                })
             } else {
-                kanji_readings.next().unwrap_or_default()
+                Some(SentencePart {
+                    kanji: None,
+                    kana: part.to_owned(),
+                })
             }
-        },
-        kanji: (last_char_type.unwrap() == CharType::Kanji
-            || last_char_type.unwrap() == CharType::Other)
-            .then(|| word_buf.clone()),
-    });
-    if !furigana_pairs_correct(&&parts, kana) {
-        return Some(vec![SentencePart {
-            kanji: Some(kanji.to_owned()),
-            kana: kana.to_owned(),
-        }]);
+        })
+        .collect::<Option<Vec<SentencePart>>>()?;
+
+    if !furigana_pairs_correct(&parts, &kana) {
+        None
+    } else {
+        Some(parts)
     }
-    Some(parts)
+}
+
+pub fn default_pair(kanji: &str, kana: &str) -> SentencePart {
+    SentencePart {
+        kana: kana.to_owned(),
+        kanji: (!kanji.is_empty()).then(|| kanji.to_owned()),
+    }
 }
 
 /// Generates sentence parts from stringy-furigana
@@ -191,17 +165,17 @@ impl SentencePart {
 }
 
 /// Generates all kanji readins from a kanji and kana string an returns them (kanji, kana)
-fn furi_algo(kanji: &str, kana: &str) -> Option<Vec<(String, String)>> {
-    let mut kanji_iter = kanji.chars().into_iter().peekable();
-    let kana = kana.chars().into_iter().collect::<Vec<_>>();
+fn furi_algo(kanji: &str, kana: &str) -> Option<impl Iterator<Item = Option<(String, String)>>> {
+    let kanji = kanji.chars().into_iter().collect_vec();
+    let mut kanji_iter = kanji.into_iter().peekable();
+    let kana = kana.chars().into_iter().collect_vec();
     let mut kana_pos = strip_until_kanji(&mut kanji_iter);
 
-    let mut result: Vec<(String, String)> = Vec::new();
-
     let mut curr_kanji = Vec::new();
-    loop {
+
+    Some(std::iter::from_fn(move || {
         if kana_pos >= kana.len() {
-            break;
+            return None;
         }
 
         // Kana from current position to end
@@ -214,8 +188,11 @@ fn furi_algo(kanji: &str, kana: &str) -> Option<Vec<(String, String)>> {
 
         // If last part is kanji only take rest of kana reading
         if part_kana.is_empty() {
-            result.push((part_kanji.iter().collect(), curr_kana.iter().collect()));
-            break;
+            kana_pos += part_kanji.len();
+            return Some(Some((
+                part_kanji.iter().collect(),
+                curr_kana.iter().collect(),
+            )));
         }
 
         // Current kanji buff
@@ -240,22 +217,19 @@ fn furi_algo(kanji: &str, kana: &str) -> Option<Vec<(String, String)>> {
 
         if !found {
             // Error
-            return None;
+            return Some(None);
         }
-
-        result.push((
-            char_arr_to_string(&part_kanji),
-            char_arr_to_string(&curr_kanji),
-        ));
-
         for _ in 0..(part_kana.len() + part_kanji.len()) {
             kanji_iter.next();
         }
 
         kana_pos += part_kana.len();
-    }
 
-    Some(result)
+        Some(Some((
+            char_arr_to_string(&part_kanji),
+            char_arr_to_string(&curr_kanji),
+        )))
+    }))
 }
 
 /// Returns true if there are kanji
@@ -341,4 +315,46 @@ where
         kanji_iter.next();
         i += 1;
     }
+}
+
+#[derive(Debug, Clone, PartialEq, Default)]
+pub struct SentencePartRef<'a> {
+    pub kana: &'a str,
+    pub kanji: Option<&'a str>,
+}
+
+pub fn furigana_from_str_iter<'a>(input: &'a str) -> impl Iterator<Item = SentencePartRef<'a>> {
+    let mut char_iter = input.char_indices().peekable();
+
+    std::iter::from_fn(move || {
+        let (pos, start) = char_iter.next()?;
+
+        if start == '[' {
+            // Current part is a furigana block
+            let to_splitter = char_iter.find(|i| i.1 == '|')?;
+            let to_end = char_iter.find(|i| i.1 == ']')?;
+
+            return Some(SentencePartRef {
+                kanji: Some(&input[pos + 1..to_splitter.0]),
+                kana: &input[to_splitter.0 + 1..to_end.0],
+            });
+        } else {
+            // Kana only
+            while let Some(&(p, b)) = char_iter.peek() {
+                // Peek up to the next furigana block
+                if b == '[' {
+                    return Some(SentencePartRef {
+                        kana: &input[pos..p],
+                        kanji: None,
+                    });
+                }
+                char_iter.next();
+            }
+        }
+
+        Some(SentencePartRef {
+            kanji: None,
+            kana: &input[pos..],
+        })
+    })
 }
