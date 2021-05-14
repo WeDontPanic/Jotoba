@@ -106,7 +106,9 @@ function handleRadicalSelect(event) {
 // Loads Kanji / Radical result from API into frontend
 function loadRadicalResults(info) {
     // Reset entries
-    $('.rad-results').html("");
+    //  $('.rad-results').html("");
+
+    var rrHtml = "";
 
     // Get and Iterate Kanji Keys
     let kanjiKeys =  Object.keys(info.kanji)
@@ -119,15 +121,22 @@ function loadRadicalResults(info) {
         let possibleKanji = info.kanji[key];
 
         // Create the stroke-count btn
-        $('.rad-results').append('<span class="rad-btn result num noselect">'+key+'</span>');
+        //$('.rad-results').append('<span class="rad-btn result num noselect">'+key+'</span>');
+        rrHtml += '<span class="rad-btn result num noselect">'+key+'</span>';
+
+        let kanjiBtns = "";
 
         // Create the btn for each entry
         for (let j = 0; j < possibleKanji.length; j++) {
-            let result = $('<span class="rad-btn result noselect">'+possibleKanji[j]+'</span>');
-            result.on('click', (event) => handleKanjiSelect(event));
-            $('.rad-results').append(result);
+            kanjiBtns += '<span class="rad-btn result noselect" onClick="handleKanjiSelect(event)">'+possibleKanji[j]+'</span>';
         }
+
+        //$('.rad-results').append(kanjiBtns);
+        rrHtml += kanjiBtns;
     }
+
+
+     $('.rad-results').html(rrHtml);
 
     // Only activate possible radicals
     let radicals = $('.rad-btn.picker:not(.num)').toArray();
@@ -139,6 +148,7 @@ function loadRadicalResults(info) {
             rad.addClass("disabled");
         }
     }
+
 }
 
 // Calls the API to get all kanji and radicals that are still possible
