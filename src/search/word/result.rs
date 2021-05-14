@@ -191,7 +191,7 @@ impl Word {
     /// Returns furigana reading-pairs of an Item
     pub fn get_furigana(&self) -> Option<Vec<SentencePart>> {
         if self.reading.kanji.is_some() && self.reading.kana.is_some() {
-            furigana::furigana_checked(
+            furigana::pairs_checked(
                 self.reading
                     .kanji
                     .as_ref()

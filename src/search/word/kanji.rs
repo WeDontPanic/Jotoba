@@ -1,6 +1,6 @@
 use super::{
     order,
-    result::{InflectionInformation, Word},
+    result::Word,
     ResultData, Search, WordSearch,
 };
 use crate::{

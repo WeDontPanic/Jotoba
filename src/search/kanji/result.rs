@@ -1,6 +1,6 @@
 use std::{fs::read_to_string, path::Path, vec};
 
-use futures::{future::try_join_all, try_join};
+use futures::try_join;
 
 use crate::{
     error::Error,
