@@ -49,9 +49,7 @@
 
 .rad-btn.picker.selected {
     color: var(--primaryColor);
-    border: 1px solid var(--primaryColor);
-    background-color: var(--lineColor);
-    border-radius: 50%;
+    border-bottom: 2px solid var(--primaryColor);
 }
 
 .rad-btn.picker.disabled {

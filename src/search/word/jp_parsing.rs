@@ -385,6 +385,7 @@ impl<'dict, 'input> MorphemeExt for Morpheme<'dict, 'input> {
             | WordClass::PreNoun
             | WordClass::Suffix
             | WordClass::Symbol
+            | WordClass::Conjungtion
             | WordClass::Particle(_)
             | WordClass::Noun(_) => return true,
             _ => match self.word_class {
