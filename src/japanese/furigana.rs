@@ -56,14 +56,14 @@ pub fn pairs_checked(kanji: &str, kana: &str) -> Option<Vec<SentencePart>> {
     let kana = kana.replace("・", "").replace("、", "");
     let kanji = kanji.replace("・", "").replace("、", "");
 
-    let mut furis = calc_kanji_readings(&kanji, &kana)?;
+    let mut furis = calc_kanji_readings(&kanji, &kana)?.into_iter();
 
     let parts = super::text_parts(&kanji)
         .map(|part| {
             if part.has_kanji() {
                 Some(SentencePart {
                     kanji: Some(part.to_owned()),
-                    kana: furis.next()??.1,
+                    kana: furis.next()?.1,
                 })
             } else {
                 Some(SentencePart {
@@ -74,11 +74,8 @@ pub fn pairs_checked(kanji: &str, kana: &str) -> Option<Vec<SentencePart>> {
         })
         .collect::<Option<Vec<SentencePart>>>()?;
 
-    if !check_pairs(&parts, &kana) {
-        None
-    } else {
-        Some(parts)
-    }
+    println!("{:?}", parts);
+    Some(parts)
 }
 
 /// Returns an iterator over all SentenceParts based on the furigana string
@@ -150,21 +147,18 @@ pub fn default_pair(kanji: &str, kana: &str) -> SentencePart {
     }
 }
 
-/// Generates all kanji readings from a kanji+kana text an returns an iterator over each reading
-fn calc_kanji_readings(
-    kanji: &str,
-    kana: &str,
-) -> Option<impl Iterator<Item = Option<(String, String)>>> {
-    let kanji = kanji.chars().into_iter().collect::<Vec<_>>();
-    let mut kanji_iter = kanji.into_iter().peekable();
+/// Generates all kanji readins from a kanji and kana string an returns them (kanji, kana)
+fn calc_kanji_readings(kanji: &str, kana: &str) -> Option<Vec<(String, String)>> {
+    let mut kanji_iter = kanji.chars().into_iter().peekable();
     let kana = kana.chars().into_iter().collect::<Vec<_>>();
     let mut kana_pos = strip_until_kanji(&mut kanji_iter);
 
-    let mut curr_kanji = Vec::new();
+    let mut result: Vec<(String, String)> = Vec::new();
 
-    Some(std::iter::from_fn(move || {
+    let mut curr_kanji = Vec::new();
+    loop {
         if kana_pos >= kana.len() {
-            return None;
+            break;
         }
 
         // Kana from current position to end
@@ -177,11 +171,8 @@ fn calc_kanji_readings(
 
         // If last part is kanji only take rest of kana reading
         if part_kana.is_empty() {
-            kana_pos += part_kanji.len();
-            return Some(Some((
-                part_kanji.iter().collect(),
-                curr_kana.iter().collect(),
-            )));
+            result.push((part_kanji.iter().collect(), curr_kana.iter().collect()));
+            break;
         }
 
         // Current kanji buff
@@ -206,19 +197,22 @@ fn calc_kanji_readings(
 
         if !found {
             // Error
-            return Some(None);
+            return None;
         }
+
+        result.push((
+            char_arr_to_string(&part_kanji),
+            char_arr_to_string(&curr_kanji),
+        ));
+
         for _ in 0..(part_kana.len() + part_kanji.len()) {
             kanji_iter.next();
         }
 
         kana_pos += part_kana.len();
+    }
 
-        Some(Some((
-            char_arr_to_string(&part_kanji),
-            char_arr_to_string(&curr_kanji),
-        )))
-    }))
+    Some(result)
 }
 
 /// Returns true if there are kanji elements within [`arr`] after the given offset
