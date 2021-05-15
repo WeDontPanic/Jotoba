@@ -28,7 +28,7 @@ pub struct Item {
 
 impl Sentence {
     pub fn furigana_pairs<'a>(&'a self) -> impl Iterator<Item = SentencePartRef<'a>> {
-        furigana::furigana_from_str_iter(&self.furigana)
+        furigana::from_str(&self.furigana)
     }
 
     pub fn get_english(&self) -> Option<&str> {

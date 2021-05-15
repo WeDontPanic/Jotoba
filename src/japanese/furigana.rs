@@ -80,10 +80,96 @@ pub fn pairs_checked(kanji: &str, kana: &str) -> Option<Vec<SentencePart>> {
     Some(parts)
 }
 
-/// Returns an iterator over all SentenceParts based on the furigana string
-pub fn furigana_from_str_iter<'a>(
-    furi_string: &'a str,
-) -> impl Iterator<Item = SentencePartRef<'a>> {
+/// Parses a furigana string into corresponding SentencePartRef's
+/// Expects the input to be valid and each kanji having its own furigana reading assigned
+/// In case not every kanji character has its own kana reading assigned, call [`from_str_compound`]
+/// instead
+pub fn from_str<'a>(input: &'a str) -> impl Iterator<Item = SentencePartRef<'a>> {
+    let mut char_iter = input.char_indices().multipeek();
+
+    let mut kanji_pos: Option<i8> = None;
+    std::iter::from_fn(move || {
+        let (mut pos, start) = char_iter.next()?;
+
+        if start == '[' {
+            kanji_pos = Some(-1);
+        }
+
+        if let Some(k_pos) = kanji_pos {
+            let (a_pos, start) = if k_pos == -1 {
+                kanji_pos = Some(0);
+                char_iter.next()?
+            } else {
+                (pos, start)
+            };
+            let k_pos = kanji_pos.unwrap();
+
+            if start == '|' {
+                kanji_pos = None;
+                while let Some(v) = char_iter.next() {
+                    if v.1 == ']' {
+                        pos = v.0 + v.1.len_utf8();
+                        break;
+                    }
+                }
+            } else {
+                kanji_pos = Some(k_pos + 1);
+
+                // Find the window of the kana reading for the current kanji
+                let mut pipe_counter = 0;
+                let kana_window = loop {
+                    let peeked = char_iter.peek()?;
+                    if peeked.1 != '|' {
+                        continue;
+                    }
+
+                    pipe_counter += 1;
+
+                    if pipe_counter <= k_pos {
+                        continue;
+                    }
+
+                    let start = peeked.0;
+                    let end = loop {
+                        let peeked = char_iter.peek()?;
+                        if peeked.1 == '|' || peeked.1 == ']' {
+                            break peeked.0;
+                        }
+                    };
+                    break (start + 1, end);
+                };
+                char_iter.reset_peek();
+
+                return Some(SentencePartRef {
+                    kanji: Some(&input[a_pos..a_pos + start.len_utf8()]),
+                    kana: &input[kana_window.0..kana_window.1],
+                });
+            }
+        }
+
+        // Kana only
+        while let Some(&(p, b)) = char_iter.peek() {
+            // Peek up to the next furigana block
+            if b == '[' {
+                return Some(SentencePartRef {
+                    kana: &input[pos..p],
+                    kanji: None,
+                });
+            }
+            char_iter.next();
+        }
+
+        // String could end with kana
+        Some(SentencePartRef {
+            kanji: None,
+            kana: &input[pos..],
+        })
+    })
+}
+
+/// Same as [`from_str`] but treats kanji as compounds, which means kanji don't need a separate
+/// kana reading assigned within the furigana window
+pub fn from_str_compound<'a>(furi_string: &'a str) -> impl Iterator<Item = SentencePartRef<'a>> {
     let mut char_iter = furi_string.char_indices().peekable();
 
     std::iter::from_fn(move || {
