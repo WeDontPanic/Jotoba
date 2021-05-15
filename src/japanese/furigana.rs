@@ -1,5 +1,6 @@
+use itertools::Itertools;
+
 use super::JapaneseExt;
-use std::iter::Peekable;
 
 /// Represents a single sentence part which either consisting of kana only or kanji and a kana reading
 /// assigned
@@ -56,6 +57,7 @@ pub fn pairs_checked(kanji: &str, kana: &str) -> Option<Vec<SentencePart>> {
     let kana = kana.replace("・", "").replace("、", "");
     let kanji = kanji.replace("・", "").replace("、", "");
 
+    println!("furis: {}, {}", kanji, kana);
     let mut furis = calc_kanji_readings(&kanji, &kana)?.into_iter();
 
     let parts = super::text_parts(&kanji)
@@ -149,9 +151,11 @@ pub fn default_pair(kanji: &str, kana: &str) -> SentencePart {
 
 /// Generates all kanji readins from a kanji and kana string an returns them (kanji, kana)
 fn calc_kanji_readings(kanji: &str, kana: &str) -> Option<Vec<(String, String)>> {
-    let mut kanji_iter = kanji.chars().into_iter().peekable();
-    let kana = kana.chars().into_iter().collect::<Vec<_>>();
-    let mut kana_pos = strip_until_kanji(&mut kanji_iter);
+    let kana = kana.chars().collect::<Vec<_>>();
+    let mut kana_pos = strip_until_kanji(kanji.chars());
+    let mut kanji_iter = kanji.chars().skip(kana_pos);
+
+    println!("kana pos: {}, kanji_iter: {:?}", kana_pos, kanji_iter);
 
     let mut result: Vec<(String, String)> = Vec::new();
 
@@ -164,7 +168,7 @@ fn calc_kanji_readings(kanji: &str, kana: &str) -> Option<Vec<(String, String)>>
         // Kana from current position to end
         let curr_kana = &kana[kana_pos..];
 
-        let kk = kanji_iter.clone().collect::<Vec<_>>();
+        let kk = kanji_iter.clone().collect_vec();
 
         // Get all chars until next kanji
         let (part_kana, part_kanji) = to_next_kanji(&mut kanji_iter);
@@ -215,7 +219,8 @@ fn calc_kanji_readings(kanji: &str, kana: &str) -> Option<Vec<(String, String)>>
     Some(result)
 }
 
-/// Returns true if there are kanji elements within [`arr`] after the given offset
+/// Returns true if there are kanji
+/// elements within arr after the given offset
 fn has_kanji_after<T>(arr: &[T], offset: usize) -> bool
 where
     T: JapaneseExt,
@@ -229,7 +234,7 @@ where
         .any(|i| i.is_kanji() || i.is_roman_letter())
 }
 
-/// Checks whether [`arr`] starts with a*b (concatted) or not
+/// Checks whether 'arr' starts with a*b or not
 fn starts_with<T>(arr: &[T], a: &[T], b: &[T], last: bool) -> bool
 where
     T: PartialEq + JapaneseExt,
@@ -263,40 +268,37 @@ fn char_arr_to_string(vec: &[char]) -> String {
     vec.iter().collect()
 }
 
-/// Returns all Kanji and kana elements until a new kanji(compound) or the end is reached
-fn to_next_kanji<T>(kanji_iter: &mut Peekable<T>) -> (Vec<char>, Vec<char>)
+/// Returns all Kanji and kana elements until a new kanji(compound) is reached
+fn to_next_kanji<T>(kanji_iter: &mut T) -> (Vec<char>, Vec<char>)
 where
     T: Iterator<Item = char> + Clone,
 {
     let mut kanji_iter = kanji_iter.clone();
     let kanji = kanji_iter
-        .by_ref()
-        .take_while(|i| i.is_kanji() || i.is_symbol() || i.is_roman_letter())
+        .take_while_ref(|i| i.is_kanji() || i.is_symbol() || i.is_roman_letter())
         .collect::<Vec<_>>();
     let kana = kanji_iter
-        .by_ref()
-        .take_while(|i| i.is_kana())
+        .take_while_ref(|i| i.is_kana())
         .collect::<Vec<_>>();
     (kana, kanji)
 }
 
 /// Truncates everything from a kanji_iterator until a kanji element has reached and returns the
 /// amount of trimmed characters
-fn strip_until_kanji<T>(kanji_iter: &mut Peekable<T>) -> usize
+fn strip_until_kanji<T>(mut kanji_iter: T) -> usize
 where
     T: Iterator<Item = char>,
 {
     let mut i = 0;
     loop {
         if kanji_iter
-            .peek()
+            .next()
             .map(|i| i.is_kanji() || i.is_symbol() || i.is_roman_letter())
             .unwrap_or(true)
         {
             break i;
         }
 
-        kanji_iter.next();
         i += 1;
     }
 }
