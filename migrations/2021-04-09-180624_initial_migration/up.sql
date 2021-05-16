@@ -9,7 +9,8 @@ CREATE TABLE dict (
   kanji_info INTEGER[],
   jlpt_lvl INTEGER,
   is_main BOOLEAN NOT NULL,
-  accents INTEGER[]
+  accents INTEGER[],
+  furigana TEXT
 );
 CREATE INDEX index_reading_dict on dict using pgroonga (reading);
 CREATE INDEX index_reading_dict_text_pattern_ops on dict (reading text_pattern_ops);
@@ -171,7 +172,7 @@ CREATE OR REPLACE FUNCTION ends_with_hiragana(IN inp text)
  STRICT;
 
 CREATE OR REPLACE FUNCTION get_kun_dicts(i integer)
-RETURNS table (id INTEGER, sequence INTEGER, reading TEXT, kanji boolean, no_kanji boolean, priorities TEXT[], information INTEGER[], kanji_info INTEGER[], jlpt_lvl INTEGER, is_main boolean, accent Integer[])  AS $$
+RETURNS table (id INTEGER, sequence INTEGER, reading TEXT, kanji boolean, no_kanji boolean, priorities TEXT[], information INTEGER[], kanji_info INTEGER[], jlpt_lvl INTEGER, is_main boolean, accent Integer[], furigana TEXT)  AS $$
   select * from dict where reading in ( SELECT literal || SUBSTRING(UNNEST(kunyomi) from POSITION('.' in  UNNEST(kunyomi))+1) from kanji where kanji.id = i)
 $$
 LANGUAGE sql stable;

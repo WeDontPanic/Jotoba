@@ -1,7 +1,10 @@
 use std::path::Path;
 
 use crate::{
-    japanese::accent::{AccentChar, Border},
+    japanese::{
+        accent::{AccentChar, Border},
+        furigana::SentencePartRef,
+    },
     models::kanji::Kanji,
     parse::jmdict::part_of_speech::PosSimple,
     search::query::Query,
@@ -189,7 +192,10 @@ impl Word {
     }
 
     /// Returns furigana reading-pairs of an Item
-    pub fn get_furigana(&self) -> Option<Vec<SentencePart>> {
+    pub fn get_furigana(&self) -> Option<Vec<SentencePartRef<'_>>> {
+        let furi = self.get_reading().furigana.as_ref()?;
+        Some(furigana::from_str(furi).collect_vec())
+        /*
         if self.reading.kanji.is_some() && self.reading.kana.is_some() {
             furigana::pairs_checked(
                 self.reading
@@ -206,6 +212,7 @@ impl Word {
         } else {
             None
         }
+        */
     }
 
     /// Return true if item has a certain reading

@@ -1,3 +1,5 @@
+pub mod generate;
+
 use std::str::CharIndices;
 
 use itertools::{Itertools, MultiPeek};
@@ -59,7 +61,6 @@ pub fn pairs_checked(kanji: &str, kana: &str) -> Option<Vec<SentencePart>> {
     let kana = kana.replace("・", "").replace("、", "");
     let kanji = kanji.replace("・", "").replace("、", "");
 
-    println!("furis: {}, {}", kanji, kana);
     let mut furis = calc_kanji_readings(&kanji, &kana)?.into_iter();
 
     let parts = super::text_parts(&kanji)
@@ -78,7 +79,6 @@ pub fn pairs_checked(kanji: &str, kana: &str) -> Option<Vec<SentencePart>> {
         })
         .collect::<Option<Vec<SentencePart>>>()?;
 
-    println!("{:?}", parts);
     Some(parts)
 }
 
@@ -252,8 +252,6 @@ fn calc_kanji_readings(kanji: &str, kana: &str) -> Option<Vec<(String, String)>>
     let kana = kana.chars().collect::<Vec<_>>();
     let mut kana_pos = strip_until_kanji(kanji.chars());
     let mut kanji_iter = kanji.chars().skip(kana_pos);
-
-    println!("kana pos: {}, kanji_iter: {:?}", kana_pos, kanji_iter);
 
     let mut result: Vec<(String, String)> = Vec::new();
 

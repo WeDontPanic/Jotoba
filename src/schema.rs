@@ -11,6 +11,7 @@ table! {
         jlpt_lvl -> Nullable<Int4>,
         is_main -> Bool,
         accents -> Nullable<Array<Int4>>,
+        furigana -> Nullable<Text>,
     }
 }
 
