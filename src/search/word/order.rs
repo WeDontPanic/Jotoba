@@ -4,6 +4,7 @@ use crate::{
     japanese::JapaneseExt,
     models::kanji,
     search::{search_order::SearchOrder, SearchMode},
+    utils,
 };
 
 use super::result::Word;
@@ -27,6 +28,18 @@ pub(super) fn foreign_search_order(word: &Word, search_order: &SearchOrder) -> u
 
     if !word.is_katakana_word() {
         score += 6;
+    }
+
+    if word
+        .senses
+        .iter()
+        .map(|i| &i.glosses)
+        .flatten()
+        .map(|i| utils::is_surrounded_by(&i.gloss, &search_order.query.query, '(', ')'))
+        .flatten()
+        .any(|i| !i)
+    {
+        score += 30;
     }
 
     score
