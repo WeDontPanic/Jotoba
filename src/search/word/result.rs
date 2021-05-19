@@ -77,13 +77,20 @@ impl From<Word> for Item {
 }
 
 /// A single word item
-#[derive(Debug, Clone, Default, PartialEq)]
+#[derive(Debug, Clone, Default)]
 pub struct Word {
     pub sequence: i32,
     pub priorities: Option<Vec<Priority>>,
     pub information: Option<Vec<Information>>,
     pub reading: Reading,
     pub senses: Vec<Sense>,
+}
+
+impl PartialEq for Word {
+    fn eq(&self, other: &Self) -> bool {
+        // At this state, the sequence is unique for each element
+        self.sequence == other.sequence
+    }
 }
 
 /// Various readins of a word

@@ -232,6 +232,7 @@ impl<'a> Search<'a> {
 
         // Sort the results based
         search_order.sort(&mut wordresults, order::native_search_order);
+        wordresults.dedup();
 
         let count = wordresults.len();
 
@@ -282,6 +283,7 @@ impl<'a> Search<'a> {
         // Sort the results based
         //GlossWordOrder::new(&self.query.query).sort(&mut wordresults);
         search_order.sort(&mut wordresults, order::foreign_search_order);
+        wordresults.dedup();
 
         let count = wordresults.len();
 

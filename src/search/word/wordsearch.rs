@@ -193,12 +193,10 @@ impl<'a> WordSearch<'a> {
             filter.push_str(format!(" AND (language = {} or language = 1)", lang).as_str());
         }
 
-        // Limit
+        // Add a limit
         if self.search.limit > 0 {
             filter.push_str(format!(" limit {}", self.search.limit).as_str());
         }
-
-        println!("query: {}", filter);
 
         let res: Vec<SearchItemsSql> = diesel::sql_query(&filter)
             .bind::<Text, _>(&self.search.query)
