@@ -2,7 +2,7 @@ use super::{
     super::{text_parts, JapaneseExt},
     calc_kanji_readings, from_str,
 };
-use crate::DbConnection;
+use crate::{utils::real_string_len, DbConnection};
 use diesel::prelude::*;
 use itertools::Itertools;
 
@@ -46,6 +46,17 @@ fn get_kanji(db: &DbConnection, l: &str) -> Option<(Option<Vec<String>>, Option<
 /// Takes a kanji(compound) and the assigned kana reading and returns (hopefully) a list of the
 /// provided kanji with the
 fn retrieve_readings(db: &DbConnection, kanji: &str, kana: &str) -> Option<Vec<(String, String)>> {
+    // If both have len of 2 the readings are obv
+    if real_string_len(kanji) == real_string_len(kana) && real_string_len(kanji) == 2 {
+        return Some(
+            kanji
+                .chars()
+                .zip(kana.chars())
+                .map(|(kanji, kana)| (kanji.to_string(), kana.to_string()))
+                .collect(),
+        );
+    }
+
     let kanji_items = kanji.chars().filter(|i| i.is_kanji()).collect_vec();
     if kanji_items.len() == 1 {
         return Some(vec![(kanji.to_owned(), kana.to_owned())]);
