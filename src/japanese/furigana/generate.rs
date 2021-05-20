@@ -1,10 +1,17 @@
+use std::sync::Mutex;
+
 use super::{
     super::{text_parts, JapaneseExt},
     calc_kanji_readings, from_str,
 };
-use crate::{utils::real_string_len, DbConnection};
+use crate::{cache::SharedCache, utils::real_string_len, DbConnection};
 use diesel::prelude::*;
 use itertools::Itertools;
+use once_cell::sync::Lazy;
+
+/// An in memory Cache for kanji items
+static KANJICACHE: Lazy<Mutex<SharedCache<String, (Option<Vec<String>>, Option<Vec<String>>)>>> =
+    Lazy::new(|| Mutex::new(SharedCache::with_capacity(10000)));
 
 /// Encodes furigana readings of a japanese word/sentence and returns it in form of a string which
 /// can be parsed later on
@@ -34,11 +41,18 @@ pub fn unchecked(db: &DbConnection, kanji: &str, kana: &str) -> Option<String> {
 fn get_kanji(db: &DbConnection, l: &str) -> Option<(Option<Vec<String>>, Option<Vec<String>>)> {
     use crate::schema::kanji::dsl::*;
 
+    let mut lock = KANJICACHE.lock().unwrap();
+    if let Some(cache) = lock.cache_get(&l.to_owned()) {
+        return Some(cache.to_owned());
+    }
+
     let readings: (Option<Vec<String>>, Option<Vec<String>>) = kanji
         .select((kunyomi, onyomi))
         .filter(literal.eq(l))
         .get_result(db)
         .ok()?;
+
+    lock.cache_set(l.to_owned(), readings.clone());
 
     Some(readings)
 }

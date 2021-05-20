@@ -1,6 +1,9 @@
 use std::cmp::Ordering;
 
-use super::{super::schema::dict, kanji::Kanji};
+use super::{
+    super::schema::dict,
+    kanji::{Kanji, KanjiResult},
+};
 use crate::{
     error::Error,
     japanese::{self, furigana, JapaneseExt},
@@ -64,7 +67,7 @@ impl Dict {
     }
 
     /// Retrieve the kanji items of the dict's kanji info
-    pub async fn load_kanji_info(&self, db: &DbPool) -> Result<Vec<Kanji>, Error> {
+    pub async fn load_kanji_info(&self, db: &DbPool) -> Result<Vec<KanjiResult>, Error> {
         if self.kanji_info.is_none() || self.kanji_info.as_ref().unwrap().is_empty() {
             return Ok(vec![]);
         }
@@ -73,7 +76,9 @@ impl Dict {
         // Load kanji from DB
         let mut items = super::kanji::load_by_ids(db, ids).await?;
         // Order items based on their occurence
-        items.sort_by(|a, b| utils::get_item_order(ids, &a.id, &b.id).unwrap_or(Ordering::Equal));
+        items.sort_by(|a, b| {
+            utils::get_item_order(ids, &a.kanji.id, &b.kanji.id).unwrap_or(Ordering::Equal)
+        });
 
         Ok(items)
     }

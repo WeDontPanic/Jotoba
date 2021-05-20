@@ -19,7 +19,6 @@ table! {
     kanji (id) {
         id -> Int4,
         literal -> Bpchar,
-        meaning -> Array<Text>,
         grade -> Nullable<Int4>,
         radical -> Nullable<Int4>,
         stroke_count -> Int4,
@@ -41,6 +40,14 @@ table! {
         id -> Int4,
         kanji_id -> Int4,
         search_radical_id -> Int4,
+    }
+}
+
+table! {
+    kanji_meaning (id) {
+        id -> Int4,
+        kanji_id -> Int4,
+        value -> Text,
     }
 }
 
@@ -122,6 +129,7 @@ table! {
 
 joinable!(kanji_element -> kanji (kanji_id));
 joinable!(kanji_element -> search_radical (search_radical_id));
+joinable!(kanji_meaning -> kanji (kanji_id));
 joinable!(sentence_translation -> sentence (sentence_id));
 joinable!(sentence_vocabulary -> sentence (sentence_id));
 
@@ -129,6 +137,7 @@ allow_tables_to_appear_in_same_query!(
     dict,
     kanji,
     kanji_element,
+    kanji_meaning,
     name,
     radical,
     search_radical,

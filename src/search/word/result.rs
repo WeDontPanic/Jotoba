@@ -5,7 +5,7 @@ use crate::{
         accent::{AccentChar, Border},
         furigana::SentencePartRef,
     },
-    models::kanji::Kanji,
+    models::kanji::{Kanji, KanjiResult},
     parse::jmdict::part_of_speech::PosSimple,
     search::query::Query,
 };
@@ -49,7 +49,7 @@ pub struct InflectionInformation {
 #[derive(Debug, Clone, PartialEq)]
 pub enum Item {
     Word(Word),
-    Kanji(Kanji),
+    Kanji(KanjiResult),
 }
 
 impl Item {
@@ -64,8 +64,8 @@ impl Item {
     }
 }
 
-impl From<Kanji> for Item {
-    fn from(k: Kanji) -> Self {
+impl From<KanjiResult> for Item {
+    fn from(k: KanjiResult) -> Self {
         Self::Kanji(k)
     }
 }

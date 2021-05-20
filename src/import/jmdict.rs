@@ -130,7 +130,7 @@ async fn get_dict_kanji(db: &DbPool, dicts: &mut Vec<NewDict>) {
             }
             let found_kanji = found_kanji.unwrap();
 
-            db_kanji.push(found_kanji.id);
+            db_kanji.push(found_kanji.kanji.id);
         }
 
         if !db_kanji.is_empty() {

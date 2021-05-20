@@ -1,14 +1,10 @@
-use super::{
-    order,
-    result::Word,
-    ResultData, Search, WordSearch,
-};
+use super::{order, result::Word, ResultData, Search, WordSearch};
 use crate::{
     error::Error,
     japanese::JapaneseExt,
     models::{
         dict::Dict,
-        kanji::{self, Kanji as DbKanji},
+        kanji::{self, KanjiResult},
     },
     search::{query::Query, search_order::SearchOrder, SearchMode},
     utils::{self, to_option},
@@ -28,8 +24,8 @@ pub(super) async fn by_reading(search: &Search<'_>) -> Result<ResultData, Error>
 
     let kanji = kanji::find_by_literal(&search.db, reading.literal.to_string()).await?;
 
-    let reading_type = kanji.get_reading_type(&reading.reading);
-    if !kanji.has_reading(&reading.reading) || reading_type.is_none() {
+    let reading_type = kanji.kanji.get_reading_type(&reading.reading);
+    if !kanji.kanji.has_reading(&reading.reading) || reading_type.is_none() {
         return alternative_reading_search(search).await;
     }
 
@@ -40,12 +36,14 @@ pub(super) async fn by_reading(search: &Search<'_>) -> Result<ResultData, Error>
     };
 
     let mut seq_ids = kanji
+        .kanji
         .find_readings(search.db, reading, reading_type.unwrap(), mode, true)
         .await?;
 
     // Do 2nd search if 1st didn't return enough
     if seq_ids.len() <= 2 {
         seq_ids = kanji
+            .kanji
             .find_readings(
                 search.db,
                 reading,
@@ -109,7 +107,7 @@ pub(super) async fn alternative_reading_search(search: &Search<'_>) -> Result<Re
 pub(super) async fn load_word_kanji_info(
     search: &Search<'_>,
     words: &[Word],
-) -> Result<Vec<DbKanji>, Error> {
+) -> Result<Vec<KanjiResult>, Error> {
     let kanji_words = get_kanji_words(words);
     let retrieved_kanji = {
         // Also show kanji even if no word was found

@@ -41,7 +41,6 @@ CREATE INDEX index_pos_simple_sense ON sense (pos_simplified);
 CREATE TABLE kanji (
   id SERIAL PRIMARY KEY,
   literal CHAR(1) NOT NULL,
-  meaning TEXT[] NOT NULL,
   grade INTEGER,
   radical INTEGER,
   stroke_count INTEGER NOT NULL,
@@ -57,6 +56,15 @@ CREATE TABLE kanji (
   kun_dicts INTEGER[]
 );
 CREATE INDEX index_literal_kanji ON kanji (literal);
+
+CREATE TABLE kanji_meaning(
+  id SERIAL PRIMARY KEY,
+  kanji_id INTEGER NOT NULL,
+  value TEXT NOT NULL,
+  foreign key (kanji_id) references kanji(id)
+);
+CREATE INDEX index_kanji_meaning_value on kanji_meaning using pgroonga (value);
+CREATE INDEX index_kanji_meaning_value_text_pattern_ops on kanji_meaning (value text_pattern_ops);
 
 CREATE TABLE name (
   id SERIAL PRIMARY KEY,
@@ -176,13 +184,6 @@ RETURNS table (id INTEGER, sequence INTEGER, reading TEXT, kanji boolean, no_kan
   select * from dict where reading in ( SELECT literal || SUBSTRING(UNNEST(kunyomi) from POSITION('.' in  UNNEST(kunyomi))+1) from kanji where kanji.id = i)
 $$
 LANGUAGE sql stable;
-
-CREATE OR REPLACE FUNCTION find_kanji_by_meaning(mea TEXT)
-  RETURNS setof "kanji" AS $$
-    select id, literal, meaning, grade, radical , stroke_count, frequency, jlpt, variant, onyomi, kunyomi, chinese, korean_r, korean_h, natori, kun_dicts
-  from (select *, unnest(meaning) m from kanji) x order by mea <-> m limit 4
-  $$
- LANGUAGE sql stable;
 
 CREATE OR REPLACE FUNCTION search_sentence_foreign(squery TEXT, off integer, lim integer, lang integer)
        RETURNS table (content text, furigana text, translation text,id integer, language integer, eng text) AS $$

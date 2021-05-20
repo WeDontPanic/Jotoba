@@ -18,7 +18,7 @@ use crate::{
     cache::SharedCache,
     error::Error,
     japanese::JapaneseExt,
-    models::kanji::Kanji as DbKanji,
+    models::kanji::KanjiResult,
     search::{
         query::{Query, QueryLang},
         search_order::SearchOrder,
@@ -297,7 +297,7 @@ impl<'a> Search<'a> {
         })
     }
 
-    fn merge_words_with_kanji(words: Vec<Word>, kanji: Vec<DbKanji>) -> Vec<Item> {
+    fn merge_words_with_kanji(words: Vec<Word>, kanji: Vec<KanjiResult>) -> Vec<Item> {
         kanji
             .into_iter()
             .map(|i| i.into())

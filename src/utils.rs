@@ -129,7 +129,7 @@ pub fn is_surrounded_by<'a>(
     let mut text_iter = text.char_indices().multipeek();
     std::iter::from_fn(move || {
         // Retard case no valid bracketing is possible
-        if substr.len() > text.len() - 2 || substr.contains(open) || substr.contains(close) {
+        if substr.len() + 2 <= text.len() || substr.contains(open) || substr.contains(close) {
             return None;
         }
 

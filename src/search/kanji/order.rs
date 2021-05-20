@@ -10,15 +10,15 @@ pub(crate) fn by_meaning(a: &Item, b: &Item) -> Ordering {
     let a = &a.kanji;
     let b = &b.kanji;
 
-    if let Some(o) = option_order(&a.grade, &b.grade) {
+    if let Some(o) = option_order(&a.kanji.grade, &b.kanji.grade) {
         return o;
     }
 
-    if let Some(o) = option_order(&a.frequency, &b.frequency) {
+    if let Some(o) = option_order(&a.kanji.frequency, &b.kanji.frequency) {
         return o;
     }
 
-    if let Some(o) = option_order(&a.jlpt, &b.jlpt) {
+    if let Some(o) = option_order(&a.kanji.jlpt, &b.kanji.jlpt) {
         return o;
     }
 
