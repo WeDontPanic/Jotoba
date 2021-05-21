@@ -61,7 +61,7 @@ fn get_kanji(db: &DbConnection, l: &str) -> Option<(Option<Vec<String>>, Option<
 /// provided kanji with the
 fn retrieve_readings(db: &DbConnection, kanji: &str, kana: &str) -> Option<Vec<(String, String)>> {
     // If both have len of 2 the readings are obv
-    if real_string_len(kanji) == real_string_len(kana) && real_string_len(kanji) == 2 {
+    if real_string_len(kanji) == real_string_len(kana) {
         return Some(
             kanji
                 .chars()
