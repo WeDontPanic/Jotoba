@@ -159,7 +159,7 @@ pub fn is_surrounded_by<'a>(
                 };
 
                 // On the first not matching character, continue loop and reset peek
-                if sub_char != text_char {
+                if sub_char.to_ascii_lowercase() != text_char.to_ascii_lowercase() {
                     text_iter.reset_peek();
                     continue 'b;
                 }

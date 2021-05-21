@@ -40,6 +40,8 @@ pub(super) fn foreign_search_order(word: &Word, search_order: &SearchOrder) -> u
         .any(|i| !i)
     {
         score += 30;
+    } else {
+        score = score - score.clamp(0, 10);
     }
 
     score
