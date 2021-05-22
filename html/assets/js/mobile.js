@@ -13,19 +13,23 @@ var kanjiDiv = document.getElementById("secondaryInfo");
 
 // Variables used in the following two functions
 var jmpBtnPointsTop = false;
-var kanjiPos = kanjiDiv.offsetTop; 
 
-// Window Scroll checks
-window.onscroll = function() {
-    if (getBrowserWidth() < 600 && (document.body.scrollTop > kanjiPos - 500 || document.documentElement.scrollTop > kanjiPos - 500)) {
-        jmpBtn.css("transform", "rotate(0deg)");
-        jmpBtnPointsTop = true;
-    } else {
-        jmpBtn.css("transform", "rotate(180deg)");
-        jmpBtnPointsTop = false;
+if (kanjiDiv !== null) {
+    // Prepare the Kanji jmp and its button
+    var kanjiPos = kanjiDiv.offsetTop; 
+    jmpBtn.removeClass("hidden");
+
+    // Window Scroll checks
+    window.onscroll = function() {
+        if (getBrowserWidth() < 600 && (document.body.scrollTop > kanjiPos - 500 || document.documentElement.scrollTop > kanjiPos - 500)) {
+            jmpBtn.css("transform", "rotate(0deg)");
+            jmpBtnPointsTop = true;
+        } else {
+            jmpBtn.css("transform", "rotate(180deg)");
+            jmpBtnPointsTop = false;
+        }
     }
 }
-
 // Jumps to the top or kanji part
 function jumpToTop() {
     if (jmpBtnPointsTop) {

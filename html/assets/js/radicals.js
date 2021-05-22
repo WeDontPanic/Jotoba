@@ -22,7 +22,7 @@ const radicals = [
 ];
 
 function toggleRadicalOverlay() {
-    $('.speech-overlay').addClass('hidden');
+    $('.overlay.speech').addClass('hidden');
 
     let overlay = $('.overlay.radical');
     overlay.toggleClass('hidden');

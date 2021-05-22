@@ -358,6 +358,11 @@
         min-height: 80px;
         max-height: 80px;
     }
+
+    .mobile-nav-btn:focus, .mobile-nav-inner-btn:focus {
+        outline: none;
+        box-shadow: 0 0 3pt 2pt var(--primaryColor);
+    }
 }
 
 /* Mobile only */

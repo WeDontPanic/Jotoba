@@ -36,7 +36,7 @@ function cookiesAccepted() {
 
 // Revokes the right to store user Cookies
 function revokeCookieAgreement() {
-    document.cookie = "";
+    Util.deleteCookies();
 
     $('.settingsBtn').each((i, e) => {
         e.dataset.target = "#cookiesModal";

@@ -136,3 +136,12 @@ Math.easeInOutQuad = function (t, b, c, d) {
     t--;
     return -c/2 * (t*(t-2) - 1) + b;
 };
+
+// Deletes all stored cookies
+Util.deleteCookies = function() {
+    var allCookies = document.cookie.split(';');
+                
+    for (var i = 0; i < allCookies.length; i++)
+        document.cookie = allCookies[i] + "=;expires="
+        + new Date(0).toUTCString();
+}
