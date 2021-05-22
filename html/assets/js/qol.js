@@ -150,14 +150,6 @@ function emptySearchInput() {
     $('#search').focus();
 }
 
-// Jumps to the top or kanji part (mobile only)
-function jumpToTop() {
-  (!window.requestAnimationFrame) ? window.scrollTo(0, 0) : Util.scrollTo(0, 400);
-}
-
-// The Jmp Buttons
-var topBtn = $("#jmp-btn-top");
-
 // Focus Search Bar on index page
 $(document).ready(() => {
     if (window.location.href.substring(0,window.location.href.length - 1) == window.location.origin) {
@@ -165,15 +157,6 @@ $(document).ready(() => {
         $('#search').select();
     }
 });
-
-// Window Scroll checks
-window.onscroll = function() {
-    if (getBrowserWidth() < 600 && (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20)) {
-        topBtn.css("display", "block");
-    } else {
-        topBtn.css("display", "none");
-    }
-  }
 
 // Iterate all audio Btns on the page (if any) and enable their audio feature
 $('.audioBtn').each((e, i) => {
