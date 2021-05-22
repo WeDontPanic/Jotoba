@@ -164,6 +164,10 @@ svg {
     fill: var(--searchTextColor);
 }
 
+.kanjisvg > path {
+    stroke: var(--primaryTextColor);
+}
+
 .d-flex.center {
     justify-content: center;
 }
