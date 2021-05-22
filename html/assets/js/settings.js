@@ -23,14 +23,14 @@ loadCookieData();
 // Opens the Settings Overlay and accepts cookie usage
 function cookiesAccepted() {
     Cookies.set("user_agreement", true);
-
-    setTimeout(function(){
-        let settingsBtns =  $('.settingsBtn')
+    let settingsBtns =  $('.settingsBtn')
         settingsBtns.each((i, e) => {
             e.dataset.target = "#settingsModal";
         });
 
-        settingsBtns[0].click();
+    setTimeout(function() {
+        if (!$('#settingsModal').hasClass("show")) 
+            settingsBtns[0].click();
     }, 1000);
 }
 
