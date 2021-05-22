@@ -178,6 +178,7 @@
 	}
 
 	.kanji-entry.left.detail {
+        width: 100%;
 		align-self: center;
 		padding-left: 0px;
 	}
@@ -193,7 +194,7 @@
 	
 	.kanji-preview-info {
 		padding-left: 0px;
-        text-align: center;
+        text-align: left;
 	}
 	
 	.kanji-entry.right.detail {
@@ -210,6 +211,25 @@
 		width: 100%;
 		text-align: center;
 	}	
+
+    .rad-parts-parent {
+        display: flex !important;
+        flex-direction: row !important;
+    }
+
+    .notes.stroke {
+        text-align: center;
+    }
+
+    .notes.rad {
+        width: 50%;
+    }
+
+    .notes.parts {
+        width: 50%;
+        padding-right: 20px;
+        text-align: right;
+    }
 	
 	.kanji-preview-left > .d-flex {
 		padding-left: 10px;

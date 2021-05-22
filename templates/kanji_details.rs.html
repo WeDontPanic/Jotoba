@@ -12,20 +12,21 @@
            @k_item.kanji.kanji.literal
          </span>
          <div class="kanji-preview-info">
-           <div class="notes"><b>@k_item.kanji.kanji.stroke_count</b> strokes </div>
+           <div class="notes stroke"><b>@k_item.kanji.kanji.stroke_count</b> strokes </div>
             <!--TODO-->
-            <div class="notes"><b>Radical:</b>
-              <br>
-              <a class="clickable no-align" href="/search?type=1&search=@k_item.radical.literal">@k_item.get_radical()</a>
-              @if k_item.get_rad_len() > 7 {
+            <div class="rad-parts-parent">
+              <div class="notes rad"><b>Radical:</b>
                 <br>
-              }
-              @if let Some(ref translations) = k_item.radical.translations {
-                (@translations.join(", "))
-              }
+                <a class="clickable no-align" href="/search?type=1&search=@k_item.radical.literal">@k_item.get_radical()</a>
+                @if k_item.get_rad_len() > 7 {
+                 <br>
+                }
+                @if let Some(ref translations) = k_item.radical.translations {
+                  (@translations.join(", "))
+                }
             </div>
             @if let Some(ref parts) = k_item.parts {
-              <div class="notes"><b>@k_item.get_parts_title():</b>
+              <div class="notes parts"><b>@k_item.get_parts_title():</b>
                 <br>
                 @for (pos, part) in parts.iter().enumerate() {
                   @if pos > 0 {
@@ -35,6 +36,7 @@
                 }
               </div>
             }
+            </div>
          </div>
       </div>
       <!-- Right side: Info -->
