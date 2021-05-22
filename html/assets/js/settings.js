@@ -31,7 +31,7 @@ function cookiesAccepted() {
     setTimeout(function() {
         if (!$('#settingsModal').hasClass("show")) 
             settingsBtns[0].click();
-    }, 1000);
+    }, 400);
 }
 
 // Revokes the right to store user Cookies
