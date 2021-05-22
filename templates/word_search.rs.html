@@ -67,7 +67,7 @@
                   @if spair.kanji.is_some() {
                      <div class="furigana-kanji-container">
                         <span class="furigana-preview noselect">
-                           @spair.as_furigana()
+                           @spair.kana
                         </span>
                         <span class="kanji-preview">
                            @spair.kanji.unwrap()
@@ -98,7 +98,7 @@
                       @if spair.kanji.is_some() {
                          <div class="furigana-kanji-container">
                             <span class="furigana-preview noselect">
-                               @spair.as_furigana()
+                               @spair.kana
                             </span>
                             <span class="kanji-preview">
                                @spair.kanji.unwrap()
@@ -316,47 +316,47 @@
           <div class="kanji-parent">
             <!-- Tags -->
             <div class="tags">
-              @kanji.stroke_count strokes.
-              @if let Some(jplt_lvl) = kanji.jlpt {
+              @kanji.kanji.stroke_count strokes.
+              @if let Some(jplt_lvl) = kanji.kanji.jlpt {
                 JLPT N@jplt_lvl.
               }
-              @if let Some(school_str) = kanji.school_str() {
+              @if let Some(school_str) = kanji.kanji.school_str() {
                 @school_str
               }
             </div>
 
             <!-- Kanji and translation -->
             <div class="kanji-entry left d-flex flex-row">
-              <a class="kanji-preview large black" href="/search?type=1&search=@kanji.literal">
-                @kanji.literal
+              <a class="kanji-preview large black" href="/search?type=1&search=@kanji.kanji.literal">
+                @kanji.kanji.literal
               </a>
               <div class="translation kanji">
-                @kanji.meaning.join(", ")
+                @kanji.meanings.join(", ")
               </div>
             </div>
 
             <!-- Kun readings -->
-            @if let Some(ref kun) = kanji.kunyomi {
+            @if let Some(ref kun) = kanji.kanji.kunyomi {
               <div class="tags no-margin">Kun</div>
               <div class="d-flex flex-row wrap noselect">
                 @for (pos, reading) in kun.iter().enumerate() {
                   @if pos > 0 {
                     <span class="tags no-margin fat right-padding-10">,</span>
                   }
-                  <a class="clickable no-align green" href="/search?type=0&search=@kanji.literal+@reading">@reading</a>
+                  <a class="clickable no-align green" href="/search?type=0&search=@kanji.kanji.literal+@reading">@reading</a>
                 }
               </div>
             }
 
             <!-- On readings -->
-            @if let Some(ref on) = kanji.onyomi {
+            @if let Some(ref on) = kanji.kanji.onyomi {
               <div class="tags no-margin">On</div>
               <div class="d-flex flex-row wrap noselect">
                 @for (pos, reading) in on.iter().enumerate() {
                   @if pos > 0 {
                     <span class="tags no-margin fat right-padding-10">,</span>
                   }
-                  <a class="clickable no-align green" href="/search?type=0&search=@kanji.literal+@reading">@reading</a>
+                  <a class="clickable no-align green" href="/search?type=0&search=@kanji.kanji.literal+@reading">@reading</a>
                 }
               </div>
             }

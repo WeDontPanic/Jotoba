@@ -1,4 +1,4 @@
-use diesel::{expression::AsExpression, sql_types::Text, Expression};
+use diesel::{expression::AsExpression, Expression};
 
 diesel_infix_operator!(TextSerach, "&@");
 
@@ -11,4 +11,8 @@ pub trait ExpressionMethods: Expression + Sized {
     }
 }
 
-impl<T: Expression<SqlType = Text>> ExpressionMethods for T {}
+impl<T: Expression> ExpressionMethods for T {}
+
+sql_function! {
+    fn length(a: diesel::sql_types::Text) -> diesel::sql_types::Integer;
+}

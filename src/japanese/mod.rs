@@ -3,6 +3,7 @@ pub mod furigana;
 pub mod inflection;
 
 use itertools::Itertools;
+use std::iter;
 
 const RADICALS: &[char] = &[
     '｜', 'ノ', '⺅', 'ハ', '⺉', 'マ', 'ユ', '⻌', '⺌', 'ヨ', '⺖', '⺘', '⺡', '⺨', '⺾', '⻏',
@@ -288,4 +289,21 @@ pub fn all_words_with_ct(inp: &str, ct: CharType) -> Vec<String> {
         all.push(curr);
     }
     all
+}
+
+/// Returns an iterator over all kanji / kana pairs
+pub fn text_parts<'a>(kanji: &'a str) -> impl Iterator<Item = &'a str> {
+    let mut kanji_indices = kanji.char_indices().peekable();
+
+    iter::from_fn(move || {
+        let (curr_c_pos, curr_char) = kanji_indices.next()?;
+        while let Some((pos, c)) = kanji_indices.peek() {
+            if curr_char.get_text_type() != c.get_text_type() {
+                return Some(&kanji[curr_c_pos..*pos]);
+            }
+            kanji_indices.next();
+        }
+
+        Some(&kanji[curr_c_pos..])
+    })
 }

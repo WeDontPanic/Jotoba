@@ -1,3 +1,4 @@
+mod namesearch;
 mod order;
 pub mod result;
 
@@ -8,26 +9,18 @@ use crate::{
     error::Error,
     japanese::JapaneseExt,
     models::name::Name,
-    search::{lower, query::Query, Search, SearchMode},
-    utils, DbPool,
+    search::{name::namesearch::NameSearch, query::Query},
+    DbPool,
 };
 
 use async_std::sync::Mutex;
 use once_cell::sync::Lazy;
-use tokio_diesel::*;
+
+use super::SearchMode;
 
 /// An in memory Cache for namesearch results
 static NAME_SEARCH_CACHE: Lazy<Mutex<SharedCache<String, Vec<Name>>>> =
     Lazy::new(|| Mutex::new(SharedCache::with_capacity(1000)));
-
-/// Defines the structure of a
-/// name based search
-#[derive(Clone)]
-pub struct NameSearch<'a> {
-    search: Search<'a>,
-    db: &'a DbPool,
-    limit: i64,
-}
 
 /// Search for names
 pub async fn search(db: &DbPool, query: &Query) -> Result<Vec<Name>, Error> {
@@ -37,7 +30,9 @@ pub async fn search(db: &DbPool, query: &Query) -> Result<Vec<Name>, Error> {
         return Ok(cached.clone());
     }
 
-    let res = if query.query.is_japanese() {
+    let res = if query.form.is_kanji_reading() {
+        search_kanji(db, &query).await?
+    } else if query.query.is_japanese() {
         search_native(db, &query).await?
     } else {
         search_transcription(db, &query).await?
@@ -50,12 +45,7 @@ pub async fn search(db: &DbPool, query: &Query) -> Result<Vec<Name>, Error> {
 
 /// Search by transcription
 async fn search_transcription(db: &DbPool, query: &Query) -> Result<Vec<Name>, Error> {
-    let mut search = NameSearch::new(&db, Search::new(&query.query, SearchMode::Variable));
-
-    if utils::real_string_len(&query.query) < 4 {
-        search.with_limit(100);
-        search.search.mode = SearchMode::Exact;
-    }
+    let search = NameSearch::new(&db, &query.query);
 
     let mut items = search.search_transcription().await?;
 
@@ -72,12 +62,7 @@ async fn search_transcription(db: &DbPool, query: &Query) -> Result<Vec<Name>, E
 
 /// Search by japanese input
 async fn search_native(db: &DbPool, query: &Query) -> Result<Vec<Name>, Error> {
-    let mut search = NameSearch::new(&db, Search::new(&query.query, SearchMode::Variable));
-
-    if utils::real_string_len(&query.query) < 4 {
-        search.with_limit(100);
-        search.search.mode = SearchMode::Exact;
-    }
+    let search = NameSearch::new(&db, &query.query);
 
     let mut items = search.search_native().await?;
 
@@ -92,90 +77,21 @@ async fn search_native(db: &DbPool, query: &Query) -> Result<Vec<Name>, Error> {
     Ok(items)
 }
 
-impl<'a> NameSearch<'a> {
-    pub fn new(db: &'a DbPool, search: Search<'a>) -> Self {
-        Self {
-            search,
-            db,
-            limit: 0,
-        }
-    }
+/// Search by japanese input
+async fn search_kanji(db: &DbPool, query: &Query) -> Result<Vec<Name>, Error> {
+    let search = NameSearch::new(&db, &query.query);
 
-    pub fn with_limit(&mut self, limit: i64) -> &mut Self {
-        self.limit = limit;
-        self
-    }
+    let kanji = query.form.as_kanji_reading().unwrap();
 
-    /// Search name by transcription
-    pub async fn search_transcription(&self) -> Result<Vec<Name>, Error> {
-        use crate::schema::name::dsl::*;
-        use diesel::prelude::*;
+    let mut items = search.kanji_search(kanji).await?;
 
-        let query = self.search.query;
-        let like_pred = self.search.mode.to_like(query);
+    let start = SystemTime::now();
+    // Sort the results based
+    order::ByKanji::new(&query.query, &kanji).sort(&mut items);
+    println!("order took: {:?}", start.elapsed());
 
-        Ok(name
-            .filter(transcription.like(&like_pred))
-            .get_results_async(&self.db)
-            .await?)
-    }
+    // Limit search to 10 results
+    items.truncate(10);
 
-    /// Search name by japanese
-    pub async fn search_native(&self) -> Result<Vec<Name>, Error> {
-        use crate::schema::name::dsl::*;
-        use diesel::prelude::*;
-
-        let query = self.search.query.clone().to_lowercase();
-        let like_pred = self.search.mode.to_like(&query);
-
-        if self.limit == 0 {
-            Ok(if query.is_kanji() {
-                // Only need to search in kana
-                name.filter(kanji.like(&like_pred))
-                    .get_results_async(&self.db)
-                    .await?
-            } else if query.is_kana() {
-                // Only need to search in kanji
-                name.filter(kana.like(&like_pred))
-                    .get_results_async(&self.db)
-                    .await?
-            } else if query.is_japanese() {
-                // Search in both, kana & kanji
-                name.filter(kanji.like(&like_pred).or(kana.like(&like_pred)))
-                    .get_results_async(&self.db)
-                    .await?
-            } else {
-                // Search in transcriptions
-                name.filter(lower(transcription).like(&like_pred))
-                    .get_results_async(&self.db)
-                    .await?
-            })
-        } else {
-            Ok(if query.is_kanji() {
-                // Only need to search in kana
-                name.filter(kanji.like(&like_pred))
-                    .limit(self.limit)
-                    .get_results_async(&self.db)
-                    .await?
-            } else if query.is_kana() {
-                // Only need to search in kanji
-                name.filter(kana.like(&like_pred))
-                    .limit(self.limit)
-                    .get_results_async(&self.db)
-                    .await?
-            } else if query.is_japanese() {
-                // Search in both, kana & kanji
-                name.filter(kanji.like(&like_pred).or(kana.like(&like_pred)))
-                    .limit(self.limit)
-                    .get_results_async(&self.db)
-                    .await?
-            } else {
-                // Search in transcriptions
-                name.filter(lower(transcription).like(&like_pred))
-                    .limit(self.limit)
-                    .get_results_async(&self.db)
-                    .await?
-            })
-        }
-    }
+    Ok(items)
 }

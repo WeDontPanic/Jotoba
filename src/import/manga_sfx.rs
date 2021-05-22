@@ -84,7 +84,8 @@ async fn import_sfx(
         sequence: seq as u64,
     };
 
-    let dicts = dict::new_dicts_from_entry(&entry);
+    let db_connection = db.get().unwrap();
+    let dicts = dict::new_dicts_from_entry(&db_connection, &entry);
     let senses = sense::new_from_entry(&entry);
 
     sense::insert_sense(&db, senses).await.unwrap();

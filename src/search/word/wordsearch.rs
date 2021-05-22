@@ -10,6 +10,7 @@ use crate::{
         priority::Priority,
     },
     search::{Search, SearchMode},
+    sql::ExpressionMethods,
     DbPool,
 };
 use diesel::sql_types::{Integer, Text};
@@ -17,6 +18,8 @@ use diesel::sql_types::{Integer, Text};
 use diesel::prelude::*;
 use itertools::Itertools;
 use tokio_diesel::*;
+
+const MAX_WORDS_TO_HANDLE: usize = 1000;
 
 /// Defines the structure of a
 /// word based search
@@ -177,7 +180,7 @@ impl<'a> WordSearch<'a> {
     async fn get_sequence_ids_by_glosses(&mut self) -> Result<Vec<i32>, Error> {
         // Since boxed queries don't work with tokio-diesel
         // this has to be done. If #20 gets resolved, change this !!
-        let mut filter = String::from("SELECT sequence from sense WHERE");
+        let mut filter = String::from("SELECT sequence, length(gloss) as len from sense WHERE");
 
         // TODO make operator adjustable
         filter.push_str(" gloss &@~ $1 ");
@@ -190,42 +193,46 @@ impl<'a> WordSearch<'a> {
             filter.push_str(format!(" AND (language = {} or language = 1)", lang).as_str());
         }
 
-        // Limit
+        // Add a limit
         if self.search.limit > 0 {
             filter.push_str(format!(" limit {}", self.search.limit).as_str());
         }
 
-        println!("query: {}", filter);
-        return Ok(diesel::sql_query(&filter)
+        let res: Vec<SearchItemsSql> = diesel::sql_query(&filter)
             .bind::<Text, _>(&self.search.query)
-            .get_results_async::<SenqenceSelect>(&self.db)
-            .await?
-            .into_iter()
-            .map(|i| i.sequence)
-            .collect());
+            .get_results_async(&self.db)
+            .await?;
+
+        Ok(SearchItemsSql::order(res))
     }
 
     /// Find the sequence ids of the results to load
     async fn get_sequence_ids_by_native(&mut self) -> Result<Vec<i32>, Error> {
-        /*
-        let query = dict
-            .select(sequence)
-            .filter(reading.like(self.search.mode.to_like(self.search.query.to_string())));
-        */
-        let mut filter = String::from("SELECT sequence from dict WHERE reading &@ $1");
+        use crate::schema::dict::dsl::*;
+        use crate::sql::length;
 
-        // Wait for tokio-diesel to support boxed queries #20
-        if self.search.limit > 0 {
-            filter.push_str(format!(" limit {} ", self.search.limit).as_str());
-        }
+        let res: Vec<(i32, i32)> = if self.search.limit > 0 {
+            dict.select((sequence, length(reading)))
+                .filter(reading.text_search(self.search.query))
+                .limit(self.search.limit as i64)
+                .get_results_async(&self.db)
+                .await?
+        } else {
+            dict.select((sequence, length(reading)))
+                .filter(reading.text_search(self.search.query))
+                .get_results_async(&self.db)
+                .await?
+        };
 
-        return Ok(diesel::sql_query(&filter)
-            .bind::<Text, _>(&self.search.query)
-            .get_results_async::<SenqenceSelect>(&self.db)
-            .await?
+        let res = res
             .into_iter()
-            .map(|i| i.sequence)
-            .collect());
+            .map(|i| SearchItemsSql {
+                sequence: i.0,
+                len: i.1,
+            })
+            .collect_vec();
+
+        Ok(SearchItemsSql::order(res))
     }
 
     /// Load all senses for the sequence ids
@@ -240,6 +247,7 @@ impl<'a> WordSearch<'a> {
 
         use crate::schema::sense as sense_schema;
         use diesel::dsl::sql;
+        use diesel::ExpressionMethods;
 
         let lang_i: i32 = lang.into();
         let language = {
@@ -261,6 +269,8 @@ impl<'a> WordSearch<'a> {
     /// Load Dictionaries of all sequences
     async fn load_dictionaries(db: &DbPool, sequence_ids: &[i32]) -> Result<Vec<Dict>, Error> {
         use crate::schema::dict as dict_schema;
+        use diesel::ExpressionMethods;
+
         if sequence_ids.is_empty() {
             return Ok(vec![]);
         }
@@ -280,25 +290,29 @@ impl<'a> WordSearch<'a> {
             // No language selected => default
             .unwrap_or(true)
     }
+}
 
-    /*
-    /// Returns a sql query to filter out certain PartOfSpeech's if provided
-    fn build_pos_filter(&self) -> Option<String> {
-        self.p_o_s_filter.as_ref().map(|pos| {
-            let mut filter = String::new();
-            filter.push_str("(");
-            for (i, p) in pos.iter().enumerate() {
-                if i > 0 {
-                    filter.push_str("AND");
-                }
-                let ipos: i32 = (*p).into();
-                filter.push_str(format!(" {}=ANY(pos_simplified) ", ipos).as_str());
-            }
+#[derive(QueryableByName)]
+struct SearchItemsSql {
+    #[sql_type = "Integer"]
+    sequence: i32,
+    #[sql_type = "Integer"]
+    len: i32,
+}
 
-            filter.push_str(")");
-            filter
-        })
-    }*/
+impl SearchItemsSql {
+    fn order(res: Vec<Self>) -> Vec<i32> {
+        let mut res = res;
+        if res.len() > MAX_WORDS_TO_HANDLE {
+            // We can sort by length here because only very short, usually single char searches
+            // will result in large amount of sequence ids and the limit is only required to not
+            // load too many words at once. The items will be ordered properly later on.
+            res.sort_by(|a, b| a.len.cmp(&b.len));
+            res.truncate(MAX_WORDS_TO_HANDLE);
+        }
+
+        res.into_iter().map(|i| i.sequence).collect_vec()
+    }
 }
 
 /// Convert dictionaries to Words

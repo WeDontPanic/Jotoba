@@ -1,6 +1,6 @@
 use crate::{
     error::Error,
-    models::{dict, kanji, name, sense},
+    models::{dict, kanji, name, radical, sense},
     DbPool, Options,
 };
 
@@ -17,17 +17,22 @@ pub mod sentences;
 
 /// Returns true if DB has all required data
 pub async fn has_required_data(database: &DbPool) -> Result<bool, Error> {
+    #[cfg(debug_assertions)]
+    return Ok(true);
+
     let jmdict_exists = dict::exists(&database).await? && sense::exists(&database).await?;
     let jmnedict_exists = name::exists(&database).await?;
     let kanji_exists = kanji::exists(&database).await?;
 
-    let radicals_exists = kanji::exists(&database).await?;
-    let search_radicals_exists = kanji::exists(&database).await?;
+    let radicals_exists = radical::exists(&database).await?;
+    let search_radicals_exists = radical::search_radical_exists(&database).await?;
+    let kanji_elements_exists = kanji::element_exists(&database).await?;
 
     Ok(jmdict_exists
         && jmnedict_exists
         && kanji_exists
         && radicals_exists
+        && kanji_elements_exists
         && search_radicals_exists)
 }
 

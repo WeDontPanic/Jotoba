@@ -9,17 +9,32 @@
       <!-- Left side: Kanji -->
       <div class="kanji-entry left detail d-flex flex-column">
          <span class="kanji-preview x-large">
-           @k_item.kanji.literal
+           @k_item.kanji.kanji.literal
          </span>
          <div class="kanji-preview-info">
-           <div class="notes"><b>@k_item.kanji.stroke_count</b> strokes </div>
+           <div class="notes"><b>@k_item.kanji.kanji.stroke_count</b> strokes </div>
             <!--TODO-->
-            <div class="notes"><b>Radical:</b> @k_item.radical.literal 
+            <div class="notes"><b>Radical:</b>
+              <br>
+              <a class="clickable no-align" href="/search?type=1&search=@k_item.radical.literal">@k_item.get_radical()</a>
+              @if k_item.get_rad_len() > 7 {
+                <br>
+              }
               @if let Some(ref translations) = k_item.radical.translations {
                 (@translations.join(", "))
               }
             </div>
-            <!--<div class="notes"><b>Parts:</b>  [> !!! Parts hier. (z.b.: 人 冂) !!! <] </div>-->
+            @if let Some(ref parts) = k_item.parts {
+              <div class="notes"><b>@k_item.get_parts_title():</b>
+                <br>
+                @for (pos, part) in parts.iter().enumerate() {
+                  @if pos > 0 {
+                    <span class="tags no-margin fat">,</span>
+                  }
+                  <a class="clickable no-align" href="/search?type=1&search=@part">@part</a>
+                }
+              </div>
+            }
          </div>
       </div>
       <!-- Right side: Info -->
@@ -29,57 +44,57 @@
             <!-- Inner Left Side -->
             <div class="kanji-preview-left">
                <div class="translation big">
-                   @k_item.kanji.meaning.join(", ")
+                   @k_item.kanji.meanings.join(", ")
                </div>
-                @if let Some(ref kun_readings) = k_item.kanji.kunyomi {
+                @if let Some(ref kun_readings) = k_item.kanji.kanji.kunyomi {
                  <div class="d-flex flex-row wrap">
                     <div class="tags no-margin fat right-padding-10 noselect">Kun:</div>
                       @for (pos, kun) in kun_readings.iter().enumerate() {
                         @if pos > 0 {
                           <div class="tags no-margin fat right-padding-10">,</div>
                         }
-                        <a class="clickable no-align fat" href="/search?type=0&search=@k_item.kanji.literal+@kun">@kun</a>
+                        <a class="clickable no-align fat" href="/search?type=0&search=@k_item.kanji.kanji.literal+@kun">@kun</a>
                       }
                  </div>
                 }
-                @if let Some(ref on_readings) = k_item.kanji.onyomi {
+                @if let Some(ref on_readings) = k_item.kanji.kanji.onyomi {
                  <div class="d-flex flex-row wrap">
                     <div class="tags no-margin fat right-padding-20 noselect">On:</div>
                       @for (pos, on) in on_readings.iter().enumerate() {
                         @if pos > 0 {
                           <div class="tags no-margin fat right-padding-10">,</div>
                         }
-                        <a class="clickable no-align fat" href="/search?type=0&search=@k_item.kanji.literal+@on">@on</a>
+                        <a class="clickable no-align fat" href="/search?type=0&search=@k_item.kanji.kanji.literal+@on">@on</a>
                       }
                  </div>
                }
             </div>
             <!-- Inner Right Side -->
             <div class="kanji-preview-right">
-                @if let Some(ref grade) = k_item.kanji.school_str() {
+                @if let Some(ref grade) = k_item.kanji.kanji.school_str() {
                  <div class="notes">@grade</div>
                 }
-                @if let Some(n_lvl) = k_item.kanji.jlpt {
+                @if let Some(n_lvl) = k_item.kanji.kanji.jlpt {
                  <div class="notes">JLPT level <b>N@n_lvl</b></div>
                 }
-                @if let Some(frequency) = k_item.kanji.frequency {
+                @if let Some(frequency) = k_item.kanji.kanji.frequency {
                  <div class="notes"><b>@frequency</b> of 2500 most used kanji in newspapers</div>
                 }
             </div>
         </div>
         <!-- Alternative Readings Part -->
         <div>
-          @if let Some(ref natori) = k_item.kanji.natori {
+          @if let Some(ref natori) = k_item.kanji.kanji.natori {
             <div class="notes d-flex flex-row wrap"><b class="right-padding-10">Japanese names:</b> 
               @for (pos, n) in natori.iter().enumerate() {
                 @if pos > 0 {
                   <div class="tags no-margin slim right-padding-10">,</div>
                 }
-                <a class="clickable no-align" href="/search?type=3&search=@k_item.kanji.literal+@n">@n</a>
+                <a class="clickable no-align" href="/search?type=3&search=@k_item.kanji.kanji.literal+@n">@n</a>
               }
             </div>
           }
-          @if let Some(ref chinese) = k_item.kanji.chinese {
+          @if let Some(ref chinese) = k_item.kanji.kanji.chinese {
             <div class="notes"><b>Chinese reading:</b> @chinese.join(", ")</div>
           }
           @if let Some(ref korean) = k_item.get_korean() {

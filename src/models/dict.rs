@@ -1,9 +1,12 @@
 use std::cmp::Ordering;
 
-use super::{super::schema::dict, kanji::Kanji};
+use super::{
+    super::schema::dict,
+    kanji::{Kanji, KanjiResult},
+};
 use crate::{
     error::Error,
-    japanese::{self, JapaneseExt},
+    japanese::{self, furigana, JapaneseExt},
     parse::jmdict::Entry,
     parse::{
         accents::PitchItem,
@@ -29,6 +32,7 @@ pub struct Dict {
     pub jlpt_lvl: Option<i32>,
     pub is_main: bool,
     pub accents: Option<Vec<i32>>,
+    pub furigana: Option<String>,
 }
 
 #[derive(Insertable, Clone, Debug, PartialEq)]
@@ -44,6 +48,7 @@ pub struct NewDict {
     pub jlpt_lvl: Option<i32>,
     pub is_main: bool,
     pub accents: Option<Vec<i32>>,
+    pub furigana: Option<String>,
 }
 
 impl PartialEq for Dict {
@@ -62,7 +67,7 @@ impl Dict {
     }
 
     /// Retrieve the kanji items of the dict's kanji info
-    pub async fn load_kanji_info(&self, db: &DbPool) -> Result<Vec<Kanji>, Error> {
+    pub async fn load_kanji_info(&self, db: &DbPool) -> Result<Vec<KanjiResult>, Error> {
         if self.kanji_info.is_none() || self.kanji_info.as_ref().unwrap().is_empty() {
             return Ok(vec![]);
         }
@@ -71,7 +76,9 @@ impl Dict {
         // Load kanji from DB
         let mut items = super::kanji::load_by_ids(db, ids).await?;
         // Order items based on their occurence
-        items.sort_by(|a, b| utils::get_item_order(ids, &a.id, &b.id).unwrap_or(Ordering::Equal));
+        items.sort_by(|a, b| {
+            utils::get_item_order(ids, &a.kanji.id, &b.kanji.id).unwrap_or(Ordering::Equal)
+        });
 
         Ok(items)
     }
@@ -145,10 +152,10 @@ pub async fn update_jlpt(db: &DbPool, l: &str, level: i32) -> Result<(), Error> 
 }
 
 /// Get all Database-dict structures from an entry
-pub fn new_dicts_from_entry(entry: &Entry) -> Vec<NewDict> {
+pub fn new_dicts_from_entry(db: &DbConnection, entry: &Entry) -> Vec<NewDict> {
     let mut found_main = false;
     let has_kanji = entry.elements.iter().any(|i| i.kanji);
-    entry
+    let mut dicts: Vec<NewDict> = entry
         .elements
         .iter()
         .map(|item| {
@@ -167,9 +174,23 @@ pub fn new_dicts_from_entry(entry: &Entry) -> Vec<NewDict> {
                 jlpt_lvl: None,
                 is_main,
                 accents: None,
+                furigana: None,
             }
         })
-        .collect()
+        .collect();
+
+    let kana = dicts
+        .iter()
+        .find(|i| i.reading.is_kana())
+        .map(|i| i.reading.clone());
+    if let Some(mut main) = dicts.iter_mut().find(|i| i.is_main && i.kanji) {
+        if let Some(kana) = kana {
+            let furigana = furigana::generate::checked(db, &main.reading, &kana);
+            main.furigana = Some(furigana);
+        }
+    }
+
+    dicts
 }
 
 pub async fn load_by_ids(db: &DbPool, ids: &[i32]) -> Result<Vec<Dict>, Error> {

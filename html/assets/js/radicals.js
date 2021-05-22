@@ -2,7 +2,7 @@
  *  Used to handle the radical search
 */
 
-const radHelpMsg = '<div class="rad-result-preview"> <span>This tool allows you to find Kanji by their core components (Radicals)</span> <br> <span>You can select Radicals below and add found Kanjis to the search bar</span> <br> <span>Press <span class="highlight">Enter</span> to start searching</span> </div>';
+const radHelpMsg = '<div class="rad-result-preview"> <span>This tool allows you to find Kanji by their core components (Radicals)</span> <br> <span>You can select Radicals below and add found Kanji to the search bar</span> <br> <span>Press <span class="highlight">Enter</span> to start searching</span> </div>';
 const radicals = [
     ["一","｜","丶","ノ","乙","亅"], 
     ["二","亠","人","⺅","𠆢","儿","入","ハ","丷","冂","冖","冫","几","凵","刀","⺉","力","勹","匕","匚","十","卜","卩","厂","厶","又","マ","九","ユ","乃", "𠂉"],
@@ -106,7 +106,9 @@ function handleRadicalSelect(event) {
 // Loads Kanji / Radical result from API into frontend
 function loadRadicalResults(info) {
     // Reset entries
-    $('.rad-results').html("");
+    //  $('.rad-results').html("");
+
+    var rrHtml = "";
 
     // Get and Iterate Kanji Keys
     let kanjiKeys =  Object.keys(info.kanji)
@@ -119,15 +121,22 @@ function loadRadicalResults(info) {
         let possibleKanji = info.kanji[key];
 
         // Create the stroke-count btn
-        $('.rad-results').append('<span class="rad-btn result num noselect">'+key+'</span>');
+        //$('.rad-results').append('<span class="rad-btn result num noselect">'+key+'</span>');
+        rrHtml += '<span class="rad-btn result num noselect">'+key+'</span>';
+
+        let kanjiBtns = "";
 
         // Create the btn for each entry
         for (let j = 0; j < possibleKanji.length; j++) {
-            let result = $('<span class="rad-btn result noselect">'+possibleKanji[j]+'</span>');
-            result.on('click', (event) => handleKanjiSelect(event));
-            $('.rad-results').append(result);
+            kanjiBtns += '<span class="rad-btn result noselect" onClick="handleKanjiSelect(event)">'+possibleKanji[j]+'</span>';
         }
+
+        //$('.rad-results').append(kanjiBtns);
+        rrHtml += kanjiBtns;
     }
+
+
+     $('.rad-results').html(rrHtml);
 
     // Only activate possible radicals
     let radicals = $('.rad-btn.picker:not(.num)').toArray();
@@ -139,6 +148,7 @@ function loadRadicalResults(info) {
             rad.addClass("disabled");
         }
     }
+
 }
 
 // Calls the API to get all kanji and radicals that are still possible

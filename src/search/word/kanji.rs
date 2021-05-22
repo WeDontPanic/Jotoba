@@ -1,14 +1,10 @@
-use super::{
-    order,
-    result::{InflectionInformation, Word},
-    Search, WordSearch,
-};
+use super::{order, result::Word, ResultData, Search, WordSearch};
 use crate::{
     error::Error,
     japanese::JapaneseExt,
     models::{
         dict::Dict,
-        kanji::{self, Kanji as DbKanji},
+        kanji::{self, KanjiResult},
     },
     search::{query::Query, search_order::SearchOrder, SearchMode},
     utils::{self, to_option},
@@ -19,9 +15,7 @@ use itertools::Itertools;
 const MAX_KANJI_INFO_ITEMS: usize = 5;
 
 /// Runs a kanji reading search
-pub(super) async fn by_reading(
-    search: &Search<'_>,
-) -> Result<(Vec<Word>, Option<InflectionInformation>), Error> {
+pub(super) async fn by_reading(search: &Search<'_>) -> Result<ResultData, Error> {
     let reading = search
         .query
         .form
@@ -30,8 +24,8 @@ pub(super) async fn by_reading(
 
     let kanji = kanji::find_by_literal(&search.db, reading.literal.to_string()).await?;
 
-    let reading_type = kanji.get_reading_type(&reading.reading);
-    if !kanji.has_reading(&reading.reading) || reading_type.is_none() {
+    let reading_type = kanji.kanji.get_reading_type(&reading.reading);
+    if !kanji.kanji.has_reading(&reading.reading) || reading_type.is_none() {
         return alternative_reading_search(search).await;
     }
 
@@ -42,12 +36,14 @@ pub(super) async fn by_reading(
     };
 
     let mut seq_ids = kanji
+        .kanji
         .find_readings(search.db, reading, reading_type.unwrap(), mode, true)
         .await?;
 
     // Do 2nd search if 1st didn't return enough
     if seq_ids.len() <= 2 {
         seq_ids = kanji
+            .kanji
             .find_readings(
                 search.db,
                 reading,
@@ -80,15 +76,18 @@ pub(super) async fn by_reading(
 
     search_order.sort(&mut w, order::kanji_reading_search);
 
+    let count = w.len();
     w.truncate(10);
 
-    Ok((w, None))
+    Ok(ResultData {
+        words: w,
+        count,
+        ..Default::default()
+    })
 }
 
 /// Do a search without the kanji literal or reading
-pub(super) async fn alternative_reading_search(
-    search: &Search<'_>,
-) -> Result<(Vec<Word>, Option<InflectionInformation>), Error> {
+pub(super) async fn alternative_reading_search(search: &Search<'_>) -> Result<ResultData, Error> {
     println!("alternative search");
     let reading = search.query.form.as_kanji_reading().unwrap();
 
@@ -108,7 +107,7 @@ pub(super) async fn alternative_reading_search(
 pub(super) async fn load_word_kanji_info(
     search: &Search<'_>,
     words: &[Word],
-) -> Result<Vec<DbKanji>, Error> {
+) -> Result<Vec<KanjiResult>, Error> {
     let kanji_words = get_kanji_words(words);
     let retrieved_kanji = {
         // Also show kanji even if no word was found
@@ -136,10 +135,10 @@ pub(super) async fn load_word_kanji_info(
     // If first word with kanji reading has more
     // than MAX_KANJI_INFO_ITEMS kanji, display all of them only
     let limit = {
-        if !kanji_words.is_empty() && kanji_words[0].reading.kanji_count() > MAX_KANJI_INFO_ITEMS {
+        if !kanji_words.is_empty() && kanji_words[0].reading.kanji_count() > words.len() {
             kanji_words[0].reading.kanji_count()
         } else {
-            MAX_KANJI_INFO_ITEMS
+            words.len()
         }
     };
 

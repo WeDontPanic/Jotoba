@@ -1,3 +1,4 @@
+use itertools::Itertools;
 use std::cmp::Ordering;
 
 /// Return true if both vectors have the same elments
@@ -6,6 +7,24 @@ where
     T: PartialEq,
 {
     if v1.len() != v2.len() {
+        return false;
+    }
+
+    for i in v1 {
+        if !v2.contains(&i) {
+            return false;
+        }
+    }
+
+    true
+}
+
+/// Return true if both v1 is part of v2
+pub fn part_of<T>(v1: &[T], v2: &[T]) -> bool
+where
+    T: PartialEq,
+{
+    if v1.len() > v2.len() || v1.is_empty() {
         return false;
     }
 
@@ -94,4 +113,68 @@ where
     }
 
     new
+}
+
+/// Returns an iterator over all occurences of [`substr`] within [`text`] of a bool whether it is
+/// surrounded by [`open`] and [`close`] or not
+pub fn is_surrounded_by<'a>(
+    text: &'a str,
+    substr: &'a str,
+    open: char,
+    close: char,
+) -> impl Iterator<Item = bool> + 'a {
+    // Counter for amount of nested brackets
+    let mut counter = 0;
+
+    let mut text_iter = text.char_indices().multipeek();
+    std::iter::from_fn(move || {
+        // Retard case no valid bracketing is possible
+        if substr.len() + 2 <= text.len() || substr.contains(open) || substr.contains(close) {
+            return None;
+        }
+
+        'b: while let Some((_, c)) = text_iter.next() {
+            if c == open {
+                counter += 1;
+                continue;
+            }
+
+            if c == close {
+                counter -= 1;
+                continue;
+            }
+
+            // Match each character of [`substr`] against the next appearing characters in [`text`] by
+            // peeking [`text_iter`] Aka string matching
+            for (pos, sub_char) in substr.chars().enumerate() {
+                let text_char = if pos == 0 {
+                    // Check first substr char against current char
+                    c
+                } else {
+                    // For later appearing characters, peek into the future
+                    match text_iter.peek().map(|i| i.1) {
+                        Some(c) => c,
+                        None => return None,
+                    }
+                };
+
+                // On the first not matching character, continue loop and reset peek
+                if sub_char.to_ascii_lowercase() != text_char.to_ascii_lowercase() {
+                    text_iter.reset_peek();
+                    continue 'b;
+                }
+            }
+
+            // Skip peeked items if maching substr was found
+            text_iter.reset_peek();
+            for _ in 0..substr.chars().count() - 1 {
+                text_iter.next();
+            }
+
+            // Only reaches this part if a matching substring was found
+            return Some(counter > 0);
+        }
+
+        None
+    })
 }

@@ -4,6 +4,7 @@ use crate::{
     japanese::JapaneseExt,
     models::kanji,
     search::{search_order::SearchOrder, SearchMode},
+    utils,
 };
 
 use super::result::Word;
@@ -27,6 +28,20 @@ pub(super) fn foreign_search_order(word: &Word, search_order: &SearchOrder) -> u
 
     if !word.is_katakana_word() {
         score += 6;
+    }
+
+    if word
+        .senses
+        .iter()
+        .map(|i| &i.glosses)
+        .flatten()
+        .map(|i| utils::is_surrounded_by(&i.gloss, &search_order.query.query, '(', ')'))
+        .flatten()
+        .any(|i| !i)
+    {
+        score += 30;
+    } else {
+        score = score - score.clamp(0, 10);
     }
 
     score
@@ -57,10 +72,22 @@ pub(super) fn native_search_order(word: &Word, search_order: &SearchOrder) -> us
         if kana_reading.reading == *query_str && word.reading.kanji.is_none() {
             score += 20;
         }
+    } else if reading.reading.starts_with(query_str) {
+        score += 2;
     }
 
     if let Some(jlpt) = reading.jlpt_lvl {
-        score += jlpt as usize;
+        score += (jlpt * 2) as usize;
+    }
+
+    // If alternative reading matches query exactly
+    if word
+        .reading
+        .alternative
+        .iter()
+        .any(|i| i.reading == *query_str)
+    {
+        score += 14;
     }
 
     #[cfg(feature = "tokenizer")]

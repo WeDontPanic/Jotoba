@@ -1,6 +1,6 @@
 use std::cmp::Ordering;
 
-use crate::{japanese::JapaneseExt, models::name::Name};
+use crate::{japanese::JapaneseExt, models::name::Name, search::query::KanjiReading};
 use levenshtein::levenshtein;
 
 /// Represents the ordering for name search
@@ -75,4 +75,72 @@ impl<'a> ByNative<'a> {
         let other_le = levenshtein(&other.kana, self.query);
         this_le.cmp(&other_le)
     }
+}
+
+/// Represents the ordering for name search
+/// result based on native search-input
+pub(crate) struct ByKanji<'a> {
+    query: &'a str,
+    kanji: &'a KanjiReading,
+}
+
+impl<'a> ByKanji<'a> {
+    pub(crate) fn new(query: &'a str, kanji: &'a KanjiReading) -> Self {
+        Self { query, kanji }
+    }
+
+    /// Sort native words results
+    pub(crate) fn sort(&self, vec: &mut Vec<Name>) {
+        vec.sort_by(|a, b| self.by_kanji(a, b))
+    }
+
+    /// Returns an Ordering variant based on the input items
+    fn by_kanji(&self, this: &Name, other: &Name) -> Ordering {
+        debug_assert!(this.kanji.is_some());
+        debug_assert!(other.kanji.is_some());
+
+        if self.exact(this) && !self.exact(other) {
+            return Ordering::Less;
+        } else if !self.exact(this) && self.exact(other) {
+            return Ordering::Greater;
+        }
+
+        if self.right_pos(this) && !self.right_pos(other) {
+            return Ordering::Less;
+        } else if !self.right_pos(this) && self.right_pos(other) {
+            return Ordering::Greater;
+        }
+
+        this.kanji
+            .as_ref()
+            .unwrap()
+            .cmp(other.kanji.as_ref().unwrap())
+    }
+
+    fn exact(&self, n: &Name) -> bool {
+        let kanji = str_to_char(n.kanji.as_ref().unwrap());
+        if kanji.is_none() {
+            return false;
+        }
+
+        kanji.unwrap() == self.kanji.literal && n.kana == self.kanji.reading
+    }
+
+    fn right_pos(&self, n: &Name) -> bool {
+        let kanji = n.kanji.as_ref().unwrap();
+
+        if kanji.ends_with(self.kanji.literal) {
+            return n.kana.ends_with(&self.kanji.reading);
+        }
+
+        if kanji.starts_with(self.kanji.literal) {
+            return n.kana.starts_with(&self.kanji.reading);
+        }
+
+        !n.kana.starts_with(&self.kanji.reading) && !n.kana.ends_with(&self.kanji.reading)
+    }
+}
+
+fn str_to_char(s: &str) -> Option<char> {
+    Some(s.chars().next()?)
 }

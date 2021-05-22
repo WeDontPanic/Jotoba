@@ -1,7 +1,7 @@
 use diesel::sql_types::{Integer, Text};
 
 use crate::{
-    japanese::{furigana, furigana::SentencePart},
+    japanese::{furigana, furigana::SentencePartRef},
     parse::jmdict::languages::Language,
 };
 
@@ -27,8 +27,8 @@ pub struct Item {
 }
 
 impl Sentence {
-    pub fn furigana_pairs(&self) -> Vec<SentencePart> {
-        furigana::format_pairs(furigana::furigana_from_str(&self.furigana))
+    pub fn furigana_pairs<'a>(&'a self) -> impl Iterator<Item = SentencePartRef<'a>> {
+        furigana::from_str(&self.furigana)
     }
 
     pub fn get_english(&self) -> Option<&str> {

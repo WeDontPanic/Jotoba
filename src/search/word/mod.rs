@@ -18,7 +18,7 @@ use crate::{
     cache::SharedCache,
     error::Error,
     japanese::JapaneseExt,
-    models::kanji::Kanji as DbKanji,
+    models::kanji::KanjiResult,
     search::{
         query::{Query, QueryLang},
         search_order::SearchOrder,
@@ -64,41 +64,49 @@ pub async fn search(db: &DbPool, query: &Query) -> Result<WordResult, Error> {
     Ok(results)
 }
 
+#[derive(Default)]
+pub(crate) struct ResultData {
+    pub(crate) words: Vec<Word>,
+    pub(crate) infl_info: Option<InflectionInformation>,
+    pub(crate) count: usize,
+}
+
 impl<'a> Search<'a> {
     /// Do the search
     async fn do_search(&self) -> Result<WordResult, Error> {
-        let (word_results, infl_info) = match self.query.form {
+        let search_result = match self.query.form {
             Form::KanjiReading(_) => kanji::by_reading(self).await?,
             _ => self.do_word_search().await?,
         };
 
         // Chain and map results into one result vector
-        let kanji_results = kanji::load_word_kanji_info(&self, &word_results).await?;
+        let kanji_results = kanji::load_word_kanji_info(&self, &search_result.words).await?;
         let kanji_items = kanji_results.len();
 
         return Ok(WordResult {
-            items: Self::merge_words_with_kanji(word_results, kanji_results),
+            items: Self::merge_words_with_kanji(search_result.words, kanji_results),
             contains_kanji: kanji_items > 0,
-            inflection_info: infl_info,
+            inflection_info: search_result.infl_info,
+            count: search_result.count,
         });
     }
 
     /// Search by a word
-    async fn do_word_search(&self) -> Result<(Vec<Word>, Option<InflectionInformation>), Error> {
+    async fn do_word_search(&self) -> Result<ResultData, Error> {
         // Perform searches asynchronously
-        let ((native_word_res, infl_info), gloss_word_res): (
-            (Vec<Word>, Option<InflectionInformation>),
-            Vec<Word>,
-        ) = futures::try_join!(self.native_results(), self.gloss_results())?;
+        let (native_word_res, gloss_word_res): (ResultData, ResultData) =
+            futures::try_join!(self.native_results(), self.gloss_results())?;
 
         // Chain native and word results into one vector
-        Ok((
-            native_word_res
+        Ok(ResultData {
+            words: native_word_res
+                .words
                 .into_iter()
-                .chain(gloss_word_res)
+                .chain(gloss_word_res.words)
                 .collect_vec(),
-            infl_info,
-        ))
+            infl_info: native_word_res.infl_info,
+            count: native_word_res.count + gloss_word_res.count,
+        })
     }
 
     #[cfg(not(feature = "tokenizer"))]
@@ -130,9 +138,9 @@ impl<'a> Search<'a> {
     }
 
     /// Perform a native word search
-    async fn native_results(&self) -> Result<(Vec<Word>, Option<InflectionInformation>), Error> {
+    async fn native_results(&self) -> Result<ResultData, Error> {
         if self.query.language != QueryLang::Japanese {
-            return Ok((vec![], None));
+            return Ok(ResultData::default());
         }
 
         #[cfg(feature = "tokenizer")]
@@ -224,19 +232,26 @@ impl<'a> Search<'a> {
 
         // Sort the results based
         search_order.sort(&mut wordresults, order::native_search_order);
+        wordresults.dedup();
+
+        let count = wordresults.len();
 
         // Limit search to 10 results
         wordresults.truncate(10);
 
-        Ok((wordresults, infl_info))
+        Ok(ResultData {
+            words: wordresults,
+            infl_info,
+            count,
+        })
     }
 
     /// Search gloss readings
-    async fn gloss_results(&self) -> Result<Vec<Word>, Error> {
+    async fn gloss_results(&self) -> Result<ResultData, Error> {
         if !(self.query.language == QueryLang::Foreign
             || self.query.language == QueryLang::Undetected)
         {
-            return Ok(vec![]);
+            return Ok(ResultData::default());
         }
 
         let mode = if real_string_len(&self.query.query) <= 2 {
@@ -268,14 +283,21 @@ impl<'a> Search<'a> {
         // Sort the results based
         //GlossWordOrder::new(&self.query.query).sort(&mut wordresults);
         search_order.sort(&mut wordresults, order::foreign_search_order);
+        wordresults.dedup();
+
+        let count = wordresults.len();
 
         // Limit search to 10 results
         wordresults.truncate(10);
 
-        Ok(wordresults)
+        Ok(ResultData {
+            words: wordresults,
+            count,
+            ..Default::default()
+        })
     }
 
-    fn merge_words_with_kanji(words: Vec<Word>, kanji: Vec<DbKanji>) -> Vec<Item> {
+    fn merge_words_with_kanji(words: Vec<Word>, kanji: Vec<KanjiResult>) -> Vec<Item> {
         kanji
             .into_iter()
             .map(|i| i.into())
