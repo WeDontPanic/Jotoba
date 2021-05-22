@@ -176,7 +176,7 @@ function getRadicalInfo() {
     // Send Request to backend
     $.ajax({ 
         type : "POST", 
-        url : "http://jojii.de:8080//api/kanji/by_radical", 
+        url : "/api/kanji/by_radical", 
         data: JSON.stringify(radicalJSON),
         headers: {
             'Content-Type': 'application/json'

@@ -20,6 +20,33 @@ let colorCodings = [
 // On load, get all the cookie's data
 loadCookieData();
 
+// Opens the Settings Overlay and accepts cookie usage
+function cookiesAccepted() {
+    setTimeout(function(){
+        Cookies.set("user_agreement", true);
+
+        let settingsBtns =  $('.settingsBtn')
+        settingsBtns.each((i, e) => {
+            e.dataset.target = "#settingsModal";
+        });
+
+        settingsBtns[0].click();
+    }, 1000);
+}
+
+// Revokes the right to store user Cookies
+function revokeCookieAgreement() {
+    document.cookie = "";
+
+    $('.settingsBtn').each((i, e) => {
+        e.dataset.target = "#cookiesModal";
+    });
+
+    $('#settingsModal').modal('hide');
+
+    showMessage("success", "Successfully deleted your cookie data.")
+}
+
 // Changes the color that the caller represents
 function onSettingsChange_Color(event) {
     // Find the input div
@@ -77,6 +104,9 @@ function onSettingsChange_AnimationSpeed(event) {
 
 // Load the cookie's data into important stuff
 function loadCookieData() {
+    // User agreement on using Cookies
+    let user_agreement = Cookies.get("user_agreement");
+
     // Load search language
     let default_lang = Cookies.get("default_lang");
 
@@ -86,6 +116,13 @@ function loadCookieData() {
 
     // Load display settings
     let anim_speed = Cookies.get("anim_speed");
+
+    // Adjust settings btn if user already accepted cookies
+    if (user_agreement !== undefined) {
+        $('.settingsBtn').each((i, e) => {
+            e.dataset.target = "#settingsModal";
+        });
+    }
 
     // Set Default_Lang 
     if (default_lang !== undefined)
