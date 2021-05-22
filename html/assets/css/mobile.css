@@ -297,6 +297,10 @@
         height: 50px;
     }
 
+    .jmp-btn > svg {
+        margin-top: -1px;
+    }
+
     .kanji-jump {
         text-align: center;
         margin-bottom: 20px;

@@ -155,6 +155,7 @@ function getRadicalInfo() {
     }
 
     // No Radicals selected, Reset
+    console.log(radicalJSON);
     if (radicalJSON.radicals.length == 0) { 
         $('.rad-btn.disabled').each((i, e) => {
             $(e).removeClass("disabled");
@@ -165,7 +166,7 @@ function getRadicalInfo() {
     // Send Request to backend
     $.ajax({ 
         type : "POST", 
-        url : "/api/kanji/by_radical", 
+        url : "http://jojii.de:8080//api/kanji/by_radical", 
         data: JSON.stringify(radicalJSON),
         headers: {
             'Content-Type': 'application/json'
