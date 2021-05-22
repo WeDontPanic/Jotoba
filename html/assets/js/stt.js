@@ -48,7 +48,7 @@ recognition.onresult = function(event) {
 function toggleSpeakOverlay() {
     $('.overlay.radical').addClass('hidden');
 
-    let overlay = $('.overlay.speech');
+    let overlay = $('.speech-overlay');
     overlay.toggleClass('hidden');
 
     if (overlay.hasClass("hidden")) {
