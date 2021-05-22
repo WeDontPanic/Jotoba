@@ -22,9 +22,9 @@ loadCookieData();
 
 // Opens the Settings Overlay and accepts cookie usage
 function cookiesAccepted() {
-    setTimeout(function(){
-        Cookies.set("user_agreement", true);
+    Cookies.set("user_agreement", true);
 
+    setTimeout(function(){
         let settingsBtns =  $('.settingsBtn')
         settingsBtns.each((i, e) => {
             e.dataset.target = "#settingsModal";
