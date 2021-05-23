@@ -91,3 +91,7 @@ hr {
 	height: 10px;
 	z-index: -10;
 }
+
+.git-logo {
+	fill: black;
+}
