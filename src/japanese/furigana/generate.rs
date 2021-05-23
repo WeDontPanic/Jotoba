@@ -4,14 +4,31 @@ use super::{
     super::{text_parts, JapaneseExt},
     calc_kanji_readings, from_str,
 };
-use crate::{cache::SharedCache, utils::real_string_len, DbConnection};
+use crate::{cache::SharedCache, utils::real_string_len, DbConnection, DbPool};
 use diesel::prelude::*;
 use itertools::Itertools;
 use once_cell::sync::Lazy;
+use tokio_diesel::AsyncRunQueryDsl;
 
 /// An in memory Cache for kanji items
 static KANJICACHE: Lazy<Mutex<SharedCache<String, (Option<Vec<String>>, Option<Vec<String>>)>>> =
     Lazy::new(|| Mutex::new(SharedCache::with_capacity(10000)));
+
+pub async fn load_kanji_cache(db: &DbPool) -> Result<(), crate::error::Error> {
+    use crate::schema::kanji::dsl::*;
+
+    let all_kanji: Vec<(String, Option<Vec<String>>, Option<Vec<String>>)> = kanji
+        .select((literal, kunyomi, onyomi))
+        .get_results_async(db)
+        .await?;
+
+    let mut kanji_cache = KANJICACHE.lock().unwrap();
+    for curr_kanji in all_kanji {
+        kanji_cache.cache_set(curr_kanji.0, (curr_kanji.1, curr_kanji.2));
+    }
+
+    Ok(())
+}
 
 /// Encodes furigana readings of a japanese word/sentence and returns it in form of a string which
 /// can be parsed later on

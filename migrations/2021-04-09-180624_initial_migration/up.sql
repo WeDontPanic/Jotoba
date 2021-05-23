@@ -53,7 +53,8 @@ CREATE TABLE kanji (
   korean_r TEXT[],
   korean_h TEXT[],
   natori TEXT[],
-  kun_dicts INTEGER[]
+  kun_dicts INTEGER[],
+  on_dicts INTEGER[]
 );
 CREATE INDEX index_literal_kanji ON kanji (literal);
 

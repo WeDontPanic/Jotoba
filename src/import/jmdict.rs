@@ -6,7 +6,7 @@ use std::{
 };
 
 use crate::{
-    japanese,
+    japanese::{self, furigana},
     models::{
         dict::{self, NewDict},
         sense::{self, NewSense},
@@ -34,6 +34,9 @@ pub async fn import(db: &DbPool, path: String) {
     let amount = jmdictParser::new(BufReader::new(File::open(path).unwrap()))
         .count()
         .unwrap();
+
+    println!("Initializing kanji cache");
+    furigana::generate::load_kanji_cache(&db).await.unwrap();
 
     let (sender, receiver): (SyncSender<Word>, Receiver<Word>) = sync_channel(1000);
     let t1 = std::thread::spawn(move || {

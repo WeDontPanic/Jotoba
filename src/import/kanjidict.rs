@@ -14,6 +14,7 @@ use itertools::Itertools;
 /// Imports kanji dict into database
 pub async fn import(db: &DbPool, path: String) {
     println!("Clearing existing kanji");
+    kanji::meaning::clear_meanings(db).await.unwrap();
     kanji::clear_kanji_elements(db).await.unwrap();
     kanji::clear_kanji(db).await.unwrap();
 

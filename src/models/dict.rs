@@ -176,6 +176,7 @@ pub fn new_dicts_from_entry(db: &DbConnection, entry: &Entry) -> Vec<NewDict> {
         })
         .collect();
 
+    // Generate furigana if necessary
     let kana = dicts
         .iter()
         .find(|i| i.reading.is_kana())

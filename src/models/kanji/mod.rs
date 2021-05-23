@@ -1,6 +1,5 @@
-pub mod kun_readings;
+pub mod gen_readings;
 pub mod meaning;
-pub mod on_readings;
 
 use super::{
     super::schema::{kanji, kanji_element},
@@ -56,6 +55,7 @@ pub struct Kanji {
     pub korean_h: Option<Vec<String>>,
     pub natori: Option<Vec<String>>,
     pub kun_dicts: Option<Vec<i32>>,
+    pub on_dicts: Option<Vec<i32>>,
 }
 
 #[derive(Insertable, Clone, Debug, PartialEq, Default)]
@@ -75,6 +75,7 @@ pub struct NewKanji {
     pub korean_h: Option<Vec<String>>,
     pub natori: Option<Vec<String>>,
     pub kun_dicts: Option<Vec<i32>>,
+    pub on_dicts: Option<Vec<i32>>,
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -114,6 +115,7 @@ impl From<Character> for NewKanji {
             korean_h: to_option(k.korean_hangul),
             natori: to_option(k.natori),
             kun_dicts: None,
+            on_dicts: None,
             radical: k.radical,
         }
     }
@@ -191,36 +193,19 @@ impl Kanji {
         mode: SearchMode,
         only_main_readins: bool,
     ) -> Result<Vec<i32>, Error> {
-        let query = include_str!("../../../sql/words_with_kanji_readings.sql");
-
-        let lit_sql_hg = mode.to_like(format_reading(&reading.reading).to_hiragana());
-        let lit_sql_kk = mode.to_like(format_reading(&reading.reading).to_katakana());
-        let lit_reading = mode.to_like(self.format_reading(&reading.reading, r_type));
-
-        let res = diesel::sql_query(query)
-            .bind::<Text, _>(&lit_sql_hg)
-            .bind::<Text, _>(&lit_sql_kk)
-            .bind::<Text, _>(&lit_reading)
-            .bind::<Bool, _>(only_main_readins)
-            .get_results_async::<Dict>(db)
-            .await?;
-
-        Ok(res.into_iter().map(|i| i.sequence).collect())
+        find_readings_by_liteal(
+            &self.literal,
+            db,
+            reading.to_owned(),
+            r_type,
+            mode,
+            only_main_readins,
+        )
+        .await
     }
 
     pub fn format_reading(&self, reading: &str, r_type: ReadingType) -> String {
-        match r_type {
-            ReadingType::Kunyomi => {
-                let r = if reading.contains('.') {
-                    let right = reading.split('.').nth(1).unwrap_or_default();
-                    format!("{}{}", self.literal, right)
-                } else {
-                    self.literal.to_string()
-                };
-                r.replace("-", "")
-            }
-            ReadingType::Onyomi => self.literal.clone(),
-        }
+        format_reading_with_literal(&self.literal, reading, r_type)
     }
 
     /// Returns a Vec of the kanjis parts
@@ -236,6 +221,51 @@ impl Kanji {
 
         Ok(res.into_iter().map(|i| i.1.literal).collect())
     }
+}
+
+pub fn format_reading_with_literal(literal: &str, reading: &str, r_type: ReadingType) -> String {
+    match r_type {
+        ReadingType::Kunyomi => {
+            let r = if reading.contains('.') {
+                let right = reading.split('.').nth(1).unwrap_or_default();
+                format!("{}{}", literal, right)
+            } else {
+                literal.to_string()
+            };
+            r.replace("-", "")
+        }
+        ReadingType::Onyomi => literal.to_string(),
+    }
+}
+
+/// Find sequence ids of dict entries containing the kanji and the passed reading
+pub async fn find_readings_by_liteal(
+    literal: &str,
+    db: &DbPool,
+    reading: KanjiReading,
+    r_type: ReadingType,
+    mode: SearchMode,
+    only_main_readins: bool,
+) -> Result<Vec<i32>, Error> {
+    let query = include_str!("../../../sql/words_with_kanji_readings.sql");
+
+    let lit_sql_hg = mode.to_like(format_reading(&reading.reading).to_hiragana());
+    let lit_sql_kk = mode.to_like(format_reading(&reading.reading).to_katakana());
+    let lit_reading = mode.to_like(format_reading_with_literal(
+        literal,
+        &reading.reading,
+        r_type,
+    ));
+
+    let res = diesel::sql_query(query)
+        .bind::<Text, _>(&lit_sql_hg)
+        .bind::<Text, _>(&lit_sql_kk)
+        .bind::<Text, _>(&lit_reading)
+        .bind::<Bool, _>(only_main_readins)
+        .get_results_async::<Dict>(db)
+        .await?;
+
+    Ok(res.into_iter().map(|i| i.sequence).collect())
 }
 
 pub async fn insert_kanji_part(db: &DbPool, element: KanjiPart) -> Result<(), Error> {

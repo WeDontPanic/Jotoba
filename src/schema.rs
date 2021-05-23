@@ -32,6 +32,7 @@ table! {
         korean_h -> Nullable<Array<Text>>,
         natori -> Nullable<Array<Text>>,
         kun_dicts -> Nullable<Array<Int4>>,
+        on_dicts -> Nullable<Array<Int4>>,
     }
 }
 

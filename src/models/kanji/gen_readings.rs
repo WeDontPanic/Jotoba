@@ -1,9 +1,14 @@
-use std::{cmp::Ordering, collections::HashMap};
+use std::{
+    cmp::Ordering,
+    collections::HashMap,
+    io::{stdout, Write},
+};
 
 use super::dict::Dict;
 use crate::{
     error::Error,
-    search::SearchMode,
+    models::kanji::{find_readings_by_liteal, ReadingType},
+    search::{query::KanjiReading, SearchMode},
     utils::{self, invert_ordering},
     DbPool,
 };
@@ -12,14 +17,15 @@ use crate::{
 use crate::JA_NL_PARSER;
 
 use diesel::prelude::*;
+use futures::future::try_join_all;
 use itertools::Itertools;
 use tokio_diesel::*;
 
-/// Update kun reading links
+/// Update kun/on reading compounds
 pub async fn update_links(db: &DbPool) -> Result<(), Error> {
     use crate::schema::kanji::dsl::*;
 
-    clear_kun_links(db).await?;
+    clear_links(db).await?;
 
     let all_kanji: Vec<(i32, String, Option<Vec<String>>, Option<Vec<String>>)> = kanji
         .select((id, literal, kunyomi, onyomi))
@@ -27,7 +33,7 @@ pub async fn update_links(db: &DbPool) -> Result<(), Error> {
         .await?;
 
     let mut dict_cache: HashMap<i32, Dict> = HashMap::new();
-    print!("Updating kun readings... 0%");
+    print!("Generating kun readings... 0%");
 
     let all_kuns = all_kanji
         .iter()
@@ -36,53 +42,104 @@ pub async fn update_links(db: &DbPool) -> Result<(), Error> {
                 .then(|| (i.0, &i.1, i.2.as_ref().unwrap(), &i.3))
         })
         .enumerate()
-        .filter_map(|(pos, (kid, klit, kuns, _))| {
+        .filter_map(|(pos, (kanji_id, kanji_literal, kun_readings, _))| {
             // For every kanji in DB
             print!(
-                "\rUpdating kun readings... {}%",
+                "\rGenerating kun readings... {}%",
                 pos * 100 / all_kanji.len()
             );
             utils::to_option(
-                get_by_literal(db, klit.clone(), &kuns, &mut dict_cache).unwrap_or_default(),
+                find_kun_readings(db, kanji_literal.clone(), &kun_readings, &mut dict_cache)
+                    .unwrap_or_default(),
             )
-            .map(|r| (kid, r))
+            .map(|r| (kanji_id, r))
         })
         .collect::<Vec<(i32, Vec<_>)>>();
 
     println!();
 
+    let mut kun_insert_counter = 0;
     for k in all_kuns.chunks(100).into_iter() {
+        print!(
+            "\rInserting kun readings: {}/{}",
+            kun_insert_counter,
+            all_kuns.len()
+        );
+        stdout().flush().ok();
+
         futures::future::try_join_all(
             k.iter()
-                .map(|(k_id, dict_ids)| update_link(db, *k_id, dict_ids)),
+                .map(|(k_id, dict_ids)| update_kun_link(db, *k_id, dict_ids)),
         )
         .await?;
+        kun_insert_counter += k.len();
     }
 
-    Ok(())
-}
+    print!("\nUpdating on readings: 0/{}", all_kanji.len());
+    stdout().flush().ok();
 
-pub fn len(kun: &str) -> usize {
-    utils::real_string_len(&super::format_reading(kun))
-}
+    let mut on_counter = 0;
+    for kanji_on_chunk in all_kanji
+        .iter()
+        .filter_map(|i| {
+            (i.3.is_some() && !i.3.as_ref().unwrap().is_empty())
+                .then(|| (i.0, &i.1, i.3.as_ref().unwrap()))
+        })
+        .chunks(50)
+        .into_iter()
+    {
+        print!("\rUpdating on readings: {}/{}", on_counter, all_kanji.len());
+        stdout().flush().ok();
 
-pub fn literal_reading(kun: &str) -> String {
-    kun.replace('-', "").split('.').next().unwrap().to_string()
-}
-
-async fn update_link(db: &DbPool, kanji_id: i32, dict_ids: &[i32]) -> Result<(), Error> {
-    use crate::schema::kanji::dsl::*;
-    diesel::update(kanji)
-        .filter(id.eq(kanji_id))
-        .set(kun_dicts.eq(dict_ids))
-        .execute_async(db)
+        try_join_all(
+            kanji_on_chunk
+                .into_iter()
+                .map(|(kanji_id, kanji_literal, on_readings)| {
+                    find_on_readings(db, kanji_id, kanji_literal.clone(), &on_readings)
+                }),
+        )
         .await?;
+
+        on_counter += 50;
+    }
+
+    println!();
     Ok(())
 }
 
-/// Returns all kun reading compounds for a kanji
-/// given by its literal
-fn get_by_literal(
+/// Returns all kun reading compounds for a kanji given by its literal
+async fn find_on_readings(
+    db: &DbPool,
+    id: i32,
+    literal: String,
+    ons: &[String], // All kanji on readings
+) -> Result<(), Error> {
+    let ons = try_join_all(ons.iter().map(|on| {
+        find_readings_by_liteal(
+            &literal,
+            db,
+            KanjiReading::new(&literal, on),
+            ReadingType::Onyomi,
+            SearchMode::Exact,
+            true,
+        )
+    }))
+    .await?
+    .into_iter()
+    .flatten()
+    .collect_vec();
+
+    if ons.is_empty() {
+        return Ok(());
+    }
+
+    update_on_link(db, id, &ons.into_iter().take(9).collect_vec()).await?;
+
+    Ok(())
+}
+
+/// Returns all kun reading compounds for a kanji given by its literal
+fn find_kun_readings(
     db: &DbPool,
     literal: String,
     kun: &[String], // All kanji kun readings
@@ -209,6 +266,34 @@ fn order_kuns(a: &Dict, b: &Dict, clean_kuns: &Vec<String>) -> Ordering {
     Ordering::Equal
 }
 
+pub fn len(kun: &str) -> usize {
+    utils::real_string_len(&super::format_reading(kun))
+}
+
+pub fn literal_reading(kun: &str) -> String {
+    kun.replace('-', "").split('.').next().unwrap().to_string()
+}
+
+async fn update_on_link(db: &DbPool, kanji_id: i32, dict_ids: &[i32]) -> Result<(), Error> {
+    use crate::schema::kanji::dsl::*;
+    diesel::update(kanji)
+        .filter(id.eq(kanji_id))
+        .set(on_dicts.eq(dict_ids))
+        .execute_async(db)
+        .await?;
+    Ok(())
+}
+
+async fn update_kun_link(db: &DbPool, kanji_id: i32, dict_ids: &[i32]) -> Result<(), Error> {
+    use crate::schema::kanji::dsl::*;
+    diesel::update(kanji)
+        .filter(id.eq(kanji_id))
+        .set(kun_dicts.eq(dict_ids))
+        .execute_async(db)
+        .await?;
+    Ok(())
+}
+
 fn matches_kanji(literal: &str, kun: &str, kana_reading: &str, kanji_reading: &str) -> bool {
     let match_mode = if kun.starts_with('-') {
         SearchMode::RightVariable
@@ -232,12 +317,12 @@ fn matches_kanji(literal: &str, kun: &str, kana_reading: &str, kanji_reading: &s
 }
 
 /// Clear existinig kun links
-async fn clear_kun_links(db: &DbPool) -> Result<(), Error> {
+async fn clear_links(db: &DbPool) -> Result<(), Error> {
     use crate::schema::kanji::dsl::*;
 
-    let empty: Vec<i32> = Vec::new();
+    let empty: Option<Vec<i32>> = None;
     diesel::update(kanji)
-        .set(kun_dicts.eq(&empty))
+        .set((kun_dicts.eq(&empty), on_dicts.eq(&empty)))
         .execute_async(&db)
         .await?;
 

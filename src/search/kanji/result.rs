@@ -32,11 +32,13 @@ impl Item {
         show_english: bool,
     ) -> Result<Self, Error> {
         let kun_dicts = k.kanji.kun_dicts.clone().unwrap_or_default();
+        let on_dicts = k.kanji.on_dicts.clone().unwrap_or_default();
 
-        let (radical, parts, kun_words): (Radical, Vec<String>, Vec<Word>) = try_join!(
+        let (radical, parts, kun_words, on_words): (Radical, Vec<String>, Vec<Word>, Vec<Word>) = try_join!(
             k.kanji.load_radical(db),
             k.kanji.load_parts(db),
-            WordSearch::load_words_by_seq(db, &kun_dicts, lang, show_english, &None)
+            WordSearch::load_words_by_seq(db, &kun_dicts, lang, show_english, &None),
+            WordSearch::load_words_by_seq(db, &on_dicts, lang, show_english, &None)
         )?;
 
         let loaded_kd = kun_words
@@ -45,10 +47,16 @@ impl Item {
             .filter(|i| show_english || !i.senses.is_empty())
             .collect();
 
+        let loaded_ond = on_words
+            .into_iter()
+            // Filter english items if user don't want to se them
+            .filter(|i| show_english || !i.senses.is_empty())
+            .collect();
+
         Ok(Self {
             kanji: k,
             kun_dicts: utils::to_option(loaded_kd),
-            on_dicts: None,
+            on_dicts: utils::to_option(loaded_ond),
             radical,
             parts: to_option(parts),
         })

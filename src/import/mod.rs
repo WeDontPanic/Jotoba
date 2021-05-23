@@ -109,9 +109,8 @@ pub async fn import(database: &DbPool, options: &Options) {
 }
 
 /// Updates Kun and On readings for kanji
-async fn update_kanji_readings(database: &DbPool) -> Result<(), Error> {
-    kanji::kun_readings::update_links(&database).await?;
-    // TODO add ON readings
+pub async fn update_kanji_readings(database: &DbPool) -> Result<(), Error> {
+    kanji::gen_readings::update_links(&database).await?;
     Ok(())
 }
 

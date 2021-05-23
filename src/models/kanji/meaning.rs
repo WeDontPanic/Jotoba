@@ -41,3 +41,10 @@ pub async fn find(db: &DbPool, meaning: &str) -> Result<Vec<KanjiResult>, Error>
 
     Ok(super::load_by_ids(db, &kanji_ids).await?)
 }
+
+/// Clear all kanji meanings
+pub async fn clear_meanings(db: &DbPool) -> Result<(), Error> {
+    use crate::schema::kanji_meaning::dsl::*;
+    diesel::delete(kanji_meaning).execute_async(db).await?;
+    Ok(())
+}
