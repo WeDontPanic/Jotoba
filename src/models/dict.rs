@@ -1,9 +1,6 @@
 use std::cmp::Ordering;
 
-use super::{
-    super::schema::dict,
-    kanji::{Kanji, KanjiResult},
-};
+use super::{super::schema::dict, kanji::KanjiResult};
 use crate::{
     error::Error,
     japanese::{self, furigana, JapaneseExt},

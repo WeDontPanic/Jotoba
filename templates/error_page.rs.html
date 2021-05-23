@@ -1,3 +1,6 @@
+@use crate::web::web_error::InfoText;
+@(status_code: u16, info: InfoText)
+
 <html lang="en"><head>
     <title>Jotoba</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -7,11 +10,12 @@
   </head>
   <body>
     <div class="err-parent d-flex flex-column">
-        <h1 class="err-code">{error code here}</h1>
+        <h1 class="err-code">@status_code</h1>
         <hr>
-        <div class="txt-primary">THE PAGE</div> <!-- Alt: SORRY /// class="txt-primary small" makes it a bit smaller --> 
-        <div class="txt-secondary">WAS NOT FOUND</div> <!-- Alt: TRY AGAIN LATER -->
-        <a class="back-btn" href="jotoba.de">Go back</a>
+        <div class="txt-primary small">@info.primary</div>
+        <div class="txt-secondary">@info.secondary</div>
+        <br>
+        <a class="back-btn" href="/">Go back</a>
     </div>
   </body>
 </html>

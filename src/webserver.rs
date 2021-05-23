@@ -31,6 +31,7 @@ pub(super) async fn start(db: DbPool) -> std::io::Result<()> {
             .route("/index.html", actixweb::get().to(web::index::index))
             .route("/", actixweb::get().to(web::index::index))
             .route("/search", actixweb::get().to(web::search::search))
+            .default_service(actix_web::Route::new().to(web::web_error::not_found))
             .route(
                 "/api/kanji/by_radical",
                 actixweb::post().to(web::api::radical::kanji_by_radicals),

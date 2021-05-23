@@ -6,7 +6,7 @@ use result::Item;
 use crate::{
     error::Error,
     japanese::JapaneseExt,
-    models::kanji::{self, Kanji, KanjiResult},
+    models::kanji::{self, KanjiResult},
     utils, DbPool,
 };
 

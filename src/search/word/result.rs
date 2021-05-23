@@ -5,7 +5,7 @@ use crate::{
         accent::{AccentChar, Border},
         furigana::SentencePartRef,
     },
-    models::kanji::{Kanji, KanjiResult},
+    models::kanji::KanjiResult,
     parse::jmdict::part_of_speech::PosSimple,
     search::query::Query,
 };
@@ -18,7 +18,6 @@ use crate::{
 use itertools::Itertools;
 
 use crate::{
-    japanese::furigana::SentencePart,
     models::{dict::Dict, sense::Sense as DbSenseEntry},
     parse::jmdict::{
         dialect::Dialect, field::Field, gtype::GType, information::Information, misc::Misc,

@@ -13,6 +13,8 @@ use crate::{
     templates, DbPool,
 };
 
+use super::web_error;
+
 #[derive(Deserialize, Debug)]
 pub struct QueryStruct {
     #[serde(rename = "search")]
@@ -50,7 +52,7 @@ pub async fn search(
     pool: web::Data<DbPool>,
     query_data: web::Query<QueryStruct>,
     request: HttpRequest,
-) -> Result<HttpResponse, actix_web::Error> {
+) -> Result<HttpResponse, web_error::Error> {
     let query_data = query_data.adjust();
 
     let q_parser = QueryParser::new(
@@ -83,9 +85,9 @@ pub async fn search(
 async fn sentence_search(
     pool: &web::Data<DbPool>,
     query: Query,
-) -> Result<HttpResponse, actix_web::Error> {
+) -> Result<HttpResponse, web_error::Error> {
     let start = SystemTime::now();
-    let result = search::sentence::search(&pool, &query).await.unwrap();
+    let result = search::sentence::search(&pool, &query).await?;
     println!("sentence searh took: {:?}", start.elapsed());
 
     Ok(HttpResponse::Ok().body(render!(
@@ -103,12 +105,10 @@ async fn sentence_search(
 async fn kanji_search(
     pool: &web::Data<DbPool>,
     query: Query,
-) -> Result<HttpResponse, actix_web::Error> {
+) -> Result<HttpResponse, web_error::Error> {
     let start = std::time::SystemTime::now();
 
-    let kanji = search::kanji::search(&pool, &query)
-        .await
-        .unwrap_or_default();
+    let kanji = search::kanji::search(&pool, &query).await?;
 
     println!("kanji loading took: {:?}", start.elapsed().unwrap());
 
@@ -135,10 +135,10 @@ async fn kanji_search(
 async fn name_search(
     pool: &web::Data<DbPool>,
     query: Query,
-) -> Result<HttpResponse, actix_web::Error> {
+) -> Result<HttpResponse, web_error::Error> {
     let start = std::time::SystemTime::now();
 
-    let names = crate::search::name::search(&pool, &query).await.unwrap();
+    let names = crate::search::name::search(&pool, &query).await?;
 
     println!("name search took {:?}", start.elapsed());
     Ok(HttpResponse::Ok().body(render!(
@@ -156,9 +156,9 @@ async fn name_search(
 async fn word_search(
     pool: &web::Data<DbPool>,
     query: Query,
-) -> Result<HttpResponse, actix_web::Error> {
+) -> Result<HttpResponse, web_error::Error> {
     // Perform a search
-    let result = search::word::search(&pool, &query).await.unwrap();
+    let result = search::word::search(&pool, &query).await?;
 
     Ok(HttpResponse::Ok().body(render!(
         templates::base,

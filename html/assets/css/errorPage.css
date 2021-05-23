@@ -30,6 +30,7 @@ body {
 	letter-spacing: 12px;
 	font-size: 4em;
 	line-height: 80%;
+    text-transform: uppercase;
 }
 
 .txt-primary.small {
@@ -37,6 +38,7 @@ body {
 	font-size: 3em;
 	line-height: 80%;
     padding-bottom: 5px;
+    text-transform: uppercase;
 }
 
 .txt-secondary {
@@ -44,6 +46,7 @@ body {
 	display: block;
 	position: relative;
 	font-size: 20px;
+    text-transform: uppercase;
 }
 
 .back-btn {
