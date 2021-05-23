@@ -1,6 +1,6 @@
 body {
-	background: #33cc99;
-	color: #fff;
+	background: #f2f1f0;
+	color: #222222;
 	font-family: 'Open Sans', sans-serif;
 	max-height: 700px;
 	overflow: hidden;
@@ -30,6 +30,7 @@ body {
 	letter-spacing: 12px;
 	font-size: 4em;
 	line-height: 80%;
+    padding-bottom: 5px;
     text-transform: uppercase;
 }
 
@@ -37,7 +38,6 @@ body {
     letter-spacing: 8px;
 	font-size: 3em;
 	line-height: 80%;
-    padding-bottom: 5px;
     text-transform: uppercase;
 }
 
@@ -47,10 +47,11 @@ body {
 	position: relative;
 	font-size: 20px;
     text-transform: uppercase;
+    padding-bottom: 5px;
 }
 
 .back-btn {
-	background-color: rgb( 255, 255, 255);
+	background-color: #50c058;
 	position: relative;
 	display: inline-block;
 	width: 358px;
@@ -58,20 +59,32 @@ body {
 	z-index: 5;
 	font-size: 25px;
 	margin: 0 auto;
-	color: #33cc99;
+	color: white;
 	text-decoration: none;
 }
 
-.back-btn:hover {
+.issue-btn {
+	position: relative;
+	display: inline-block;
+	width: 308px;
+	padding: 5px;
+	z-index: 5;
+	font-size: 25px;
+	margin: 0 auto;
+	color: white;
+	text-decoration: none;
+}
+
+a:hover {
     text-decoration: none;
-    color: #33cc99;
+    color: white;
 }
 
 hr {
 	padding: 0;
 	border: none;
-	border-top: 5px solid #fff;
-	color: #fff;
+	border-top: 5px solid #50c058;
+	color: #50c058;
 	text-align: center;
 	margin: 0px auto;
 	width: 420px;
