@@ -354,9 +354,12 @@ input[type="color"] {
     padding-left: 10px;
 }
 
-.center-element {
+footer {
     margin: auto;
     width: 50%;
+    padding-top: 50px;
+    padding-bottom: 15px;
+    font-size: large;
 }
 
 .center-text {
@@ -364,7 +367,32 @@ input[type="color"] {
 }
 
 .footer-hr {
-    border-top: 3px solid var(--primaryColor);
+    border-top: 2px solid var(--primaryColor);
+    padding-bottom: 10px;
+}
+
+.footer-hr:before {
+    content: '';
+    border-radius: 100%;
+    position: absolute;
+    height: 20px;
+    width: 120px;
+    background: var(--background);
+    left: calc(50% - 50px);
+    margin: -10px;
+    box-shadow: inherit
+}
+
+.footer-hr:after {
+    content: '';
+    border-radius: 100%;
+    position: absolute;
+    height: 20px;
+    width: 20px;
+    background: var(--bgPrimaryColor);
+    left: 50%;
+    margin: -10px;
+    box-shadow: inherit
 }
 
 
