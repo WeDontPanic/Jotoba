@@ -354,12 +354,18 @@ input[type="color"] {
     padding-left: 10px;
 }
 
+article {
+    padding-left: 10px;
+}
+
 footer {
     margin: auto;
     width: 50%;
     padding-top: 50px;
     padding-bottom: 15px;
-    font-size: large;
+    max-width: 1150px;
+    width: 100%;
+    height: max-content;
 }
 
 .center-text {
