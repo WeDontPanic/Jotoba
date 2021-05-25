@@ -1,12 +1,9 @@
-@use crate::search::sentence::result::Item as SentenceItem;
-@use crate::search::word::result::WordResult;
-@use crate::search::kanji::result::Item as kanjiItem;
-@use crate::search::{query::Query, query_parser::QueryType};
-@use crate::models::name::Name;
-@use crate::web::utils::*;
-@use super::{index_html, word_search_html, kanji_details, name_search, sentence_search};
+@use super::{index_html, word_search_html, kanji_details, name_search, sentence_search, about_html};
+@use crate::web::{BaseData, ResultData, Site};
+@use crate::search::query_parser::QueryType;
 
-@(search_query: Option<&Query>, word_search_result: Option<WordResult>, kanji_info_search_result: Option<Vec<kanjiItem>>, name_search_result: Option<Vec<Name>>, sentence_results: Option<Vec<SentenceItem>>)
+@(data: BaseData)
+
 <!DOCTYPE html>
 <html lang="en">
    <head>
@@ -70,16 +67,16 @@
                         <div class="input-field first-wrap">
                            <div class="input-select">
                               <select data-trigger="" name="type" onchange="changeSearchType(this.value)">
-                                 <option value="0" @sel_str(&search_query, QueryType::Words) >Words</option>
-                                 <option value="1" @sel_str(&search_query, QueryType::Kanji) >Kanji</option>
-                                 <option value="2" @sel_str(&search_query, QueryType::Sentences) >Sentences</option>
-                                 <option value="3" @sel_str(&search_query, QueryType::Names) >Names</option>
+                                 <option value="0" @data.sel_str(QueryType::Words) >Words</option>
+                                 <option value="1" @data.sel_str(QueryType::Kanji) >Kanji</option>
+                                 <option value="2" @data.sel_str(QueryType::Sentences) >Sentences</option>
+                                 <option value="3" @data.sel_str(QueryType::Names) >Names</option>
                               </select>
                            </div>
                         </div>
                         <div class="input-field second-wrap">
                            <div class="input-group">
-                              <input id="search" name="search" type="text" value="@get_query_str(&search_query)" placeholder="Search..." tabindex="1" lang="ja" autocapitalize="off" autocomplete="off" data-autoload="false" data-effective-keyword=""/>
+                              <input id="search" name="search" type="text" value="@data.get_query_str()" placeholder="Search..." tabindex="1" lang="ja" autocapitalize="off" autocomplete="off" data-autoload="false" data-effective-keyword=""/>
                               <button id="emptyInput" type="button" class="btn bg-transparent" onclick="emptySearchInput()">
                                  <svg height="10" width="10" viewBox="0 0 503.021 503.021" style="margin-top: -5px">
                                     <path d="M491.613,75.643l-64.235-64.235c-15.202-15.202-39.854-15.202-55.056,0L251.507,132.222L130.686,11.407c-15.202-15.202-39.853-15.202-55.055,0L11.401,75.643c-15.202,15.202-15.202,39.854,0,55.056l120.821,120.815L11.401,372.328c-15.202,15.202-15.202,39.854,0,55.056l64.235,64.229c15.202,15.202,39.854,15.202,55.056,0l120.815-120.814l120.822,120.814c15.202,15.202,39.854,15.202,55.056,0l64.235-64.229c15.202-15.202,15.202-39.854,0-55.056L370.793,251.514l120.82-120.815C506.815,115.49,506.815,90.845,491.613,75.643z">
@@ -324,24 +321,31 @@
           <div class="main-container">
             <br>
 
-            @if let Some(results) = word_search_result {
-              @:word_search_html(search_query.as_ref().unwrap(), results)
-            } else {
-              @if let Some(kanji_info) = kanji_info_search_result {
-                @:kanji_details(kanji_info)
-              }else {
-                @if let Some(name_results) = name_search_result {
-                  @:name_search(name_results)
-                }else {
-                  @if let Some(sentences) = sentence_results {
-                    @:sentence_search(sentences)
-                  }else{
-                    @:index_html()
+            @match data.site {
+              Site::SearchResult(search_result) => {
+                @match search_result.result {
+                  ResultData::Word(result) => {
+                    @:word_search_html(&search_result.query, result)
+                  }
+                  ResultData::KanjiInfo(result) => {
+                    @:kanji_details(result)
+                  }
+                  ResultData::Name(result) => {
+                    @:name_search(result)
+                  }
+                  ResultData::Sentence(result) => {
+                    @:sentence_search(result)
                   }
                 }
               }
+              Site::Index => {
+                @:index_html()
+              }
+              Site::About => {
+                @:about_html()
+              }
             }
-            
+
           </div>
         </div>
       </div>

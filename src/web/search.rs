@@ -10,7 +10,9 @@ use crate::{
         query::{Query, UserSettings},
         query_parser::{QueryParser, QueryType},
     },
-    templates, DbPool,
+    templates,
+    web::BaseData,
+    DbPool,
 };
 
 use super::web_error;
@@ -72,6 +74,7 @@ pub async fn search(
 
     // Perform the requested type of search and render
     // the appropriate template
+    // TODO refactor to return a site to display instead of the http response
     match query.type_ {
         QueryType::Kanji => kanji_search(&pool, query).await,
         QueryType::Sentences => sentence_search(&pool, query).await,
@@ -90,14 +93,8 @@ async fn sentence_search(
     let result = search::sentence::search(&pool, &query).await?;
     println!("sentence searh took: {:?}", start.elapsed());
 
-    Ok(HttpResponse::Ok().body(render!(
-        templates::base,
-        Some(&query),
-        None,
-        None,
-        None,
-        Some(result),
-    )))
+    let template_data = BaseData::new_sentence_search(&query, result);
+    Ok(HttpResponse::Ok().body(render!(templates::base, template_data,)))
 }
 
 /// Perform a kanji search and
@@ -120,14 +117,8 @@ async fn kanji_search(
             .finish());
     }
 
-    Ok(HttpResponse::Ok().body(render!(
-        templates::base,
-        Some(&query),
-        None,
-        Some(kanji),
-        None,
-        None,
-    )))
+    let template_data = BaseData::new_kanji_search(&query, kanji);
+    Ok(HttpResponse::Ok().body(render!(templates::base, template_data)))
 }
 
 /// Perform a name search and
@@ -141,14 +132,10 @@ async fn name_search(
     let names = crate::search::name::search(&pool, &query).await?;
 
     println!("name search took {:?}", start.elapsed());
-    Ok(HttpResponse::Ok().body(render!(
-        templates::base,
-        Some(&query),
-        None,
-        None,
-        Some(names),
-        None,
-    )))
+
+    let template_data = BaseData::new_name_search(&query, names);
+
+    Ok(HttpResponse::Ok().body(render!(templates::base, template_data)))
 }
 
 /// Perform a word search and
@@ -160,14 +147,8 @@ async fn word_search(
     // Perform a search
     let result = search::word::search(&pool, &query).await?;
 
-    Ok(HttpResponse::Ok().body(render!(
-        templates::base,
-        Some(&query),
-        Some(result),
-        None,
-        None,
-        None,
-    )))
+    let template_data = BaseData::new_word_search(&query, result);
+    Ok(HttpResponse::Ok().body(render!(templates::base, template_data)))
 }
 
 fn redirect_home() -> HttpResponse {
