@@ -90,6 +90,11 @@ h4 {
     cursor: pointer;
 }
 
+.clickable.title {
+    font-size: 22px;
+    font-weight: bold;
+}
+
 .clickable.fat {
     font-size: 20px;
 }
@@ -293,7 +298,7 @@ input[type="color"] {
 .main-container {
    /*  background-color: red; */
     width: 1150px;
-    height: 100px;
+    height: max-content;
 }
 
 .title-div {
@@ -334,8 +339,6 @@ input[type="color"] {
     cursor: pointer;
 }
 
-/* Jisho Informations */
-
 .main-info {
     /* background-color: red; */
     width: 100%;
@@ -350,6 +353,20 @@ input[type="color"] {
     padding-bottom: 10px;
     padding-left: 10px;
 }
+
+.center-element {
+    margin: auto;
+    width: 50%;
+}
+
+.center-text {
+    text-align: center;
+}
+
+.footer-hr {
+    border-top: 3px solid var(--primaryColor);
+}
+
 
 /* -----------------  Templates ----------------- */
 
