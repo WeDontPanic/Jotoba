@@ -367,7 +367,7 @@ footer {
 }
 
 .footer-hr {
-    border-top: 2px solid var(--primaryColor);
+    border-top: 1px solid var(--primaryColor);
     padding-bottom: 10px;
 }
 
@@ -387,11 +387,11 @@ footer {
     content: '';
     border-radius: 100%;
     position: absolute;
-    height: 20px;
-    width: 20px;
+    height: 10px;
+    width: 10px;
     background: var(--bgPrimaryColor);
     left: 50%;
-    margin: -10px;
+    margin: -5px;
     box-shadow: inherit
 }
 
