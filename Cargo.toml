@@ -38,6 +38,9 @@ thiserror = "1.0.25"
 [build-dependencies]
 ructe = "0.13.2"
 
+[dev-dependencies]
+tokio-test = "0.4.2"
+
 [features]
 tokenizer = [ "igo-unidic" ]
 default = [ "tokenizer" ]
