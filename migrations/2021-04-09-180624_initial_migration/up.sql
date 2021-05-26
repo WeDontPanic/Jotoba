@@ -83,9 +83,16 @@ CREATE INDEX index_transcription_name ON name using pgroonga (transcription);
 CREATE TABLE sentence (
   id SERIAL PRIMARY KEY,
   content TEXT NOT NULL,
+  kana TEXT NOT NULL,
   furigana TEXT NOT NULL
 );
-CREATE INDEX index_sentence_content ON sentence using pgroonga (content) WITH (tokenizer='TokenMecab');
+CREATE INDEX index_sentence_content_pgroonga ON sentence using pgroonga (content) WITH (tokenizer='TokenMecab');
+CREATE INDEX index_sentence_content_pattern_ops on sentence (content text_pattern_ops);
+CREATE INDEX index_sentence_content ON sentence (content);
+
+CREATE INDEX index_sentence_kana_pgroonga ON sentence using pgroonga (kana) WITH (tokenizer='TokenMecab');
+CREATE INDEX index_sentence_kana ON sentence (kana);
+CREATE INDEX index_sentence_kana_pattern_ops on sentence (kana text_pattern_ops);
 
 CREATE TABLE sentence_translation (
   id SERIAL PRIMARY KEY,

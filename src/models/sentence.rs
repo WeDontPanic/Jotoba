@@ -1,6 +1,7 @@
 use itertools::Itertools;
 use tokio_diesel::AsyncRunQueryDsl;
 
+use crate::japanese;
 use crate::schema::{sentence, sentence_translation, sentence_vocabulary};
 use crate::{error::Error, parse::jmdict::languages::Language, DbPool};
 
@@ -11,6 +12,7 @@ use super::dict;
 pub struct Sentence {
     pub id: i32,
     pub content: String,
+    pub kana: String,
     pub furigana: String,
 }
 
@@ -18,6 +20,7 @@ pub struct Sentence {
 #[table_name = "sentence"]
 pub struct NewSentence {
     pub content: String,
+    pub kana: String,
     pub furigana: String,
 }
 
@@ -107,9 +110,14 @@ async fn insert_new_sentence(
     furigana: String,
     translations: Vec<(String, Language)>,
 ) -> Result<i32, Error> {
+    let kana = japanese::furigana::from_str(&furigana)
+        .map(|i| i.kana)
+        .join("");
+
     let new_sentence = NewSentence {
         content: text,
         furigana,
+        kana,
     };
 
     let sid: i32 = diesel::insert_into(sentence::table)

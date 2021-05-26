@@ -1,6 +1,7 @@
 use diesel::prelude::*;
 use diesel::{EqAll, JoinOnDsl, QueryDsl};
 use itertools::Itertools;
+use romaji::RomajiExt;
 use tokio_diesel::AsyncRunQueryDsl;
 
 use super::result;
@@ -51,17 +52,31 @@ impl<'a> SentenceSearch<'a> {
         use crate::schema::sentence_translation;
         use crate::sql::ExpressionMethods;
 
-        let res: Vec<(Sentence, Translation)> = sentence
-            .inner_join(sentence_translation::table)
-            .filter(
-                sentence_translation::language
-                    .eq_all(self.target_lang)
-                    .or(sentence_translation::language.eq_all(Language::English)),
-            )
-            .filter(content.text_search(self.query))
-            .offset(self.offset as i64)
-            .load_async(self.db)
-            .await?;
+        let res = if self.query.is_kana() {
+            sentence
+                .inner_join(sentence_translation::table)
+                .filter(
+                    sentence_translation::language
+                        .eq_all(self.target_lang)
+                        .or(sentence_translation::language.eq_all(Language::English)),
+                )
+                .filter(kana.text_search(self.query))
+                .offset(self.offset as i64)
+                .load_async::<(Sentence, Translation)>(self.db)
+                .await?
+        } else {
+            sentence
+                .inner_join(sentence_translation::table)
+                .filter(
+                    sentence_translation::language
+                        .eq_all(self.target_lang)
+                        .or(sentence_translation::language.eq_all(Language::English)),
+                )
+                .filter(content.text_search(self.query))
+                .offset(self.offset as i64)
+                .load_async::<(Sentence, Translation)>(self.db)
+                .await?
+        };
 
         let mut res = merge_results(res, self.target_lang);
         res.sort_by(|a, b| a.content.len().cmp(&b.content.len()));

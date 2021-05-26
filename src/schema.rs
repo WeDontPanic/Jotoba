@@ -106,6 +106,7 @@ table! {
     sentence (id) {
         id -> Int4,
         content -> Text,
+        kana -> Text,
         furigana -> Text,
     }
 }
