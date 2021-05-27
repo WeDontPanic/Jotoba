@@ -3,6 +3,7 @@
 /html/assets/audio
 /target
 out
+*.old
 .env
 resources*
 ipadic/
