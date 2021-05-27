@@ -298,6 +298,7 @@ mod test {
         "びっくり",
     ];
 
+    /*
     #[test]
     fn gen_furigana_checked() {
         let db = get_db().get().unwrap();
@@ -306,4 +307,5 @@ mod test {
             assert_eq!(res, ITEM_RESULTS[pos]);
         }
     }
+    */
 }
