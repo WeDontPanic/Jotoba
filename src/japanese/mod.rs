@@ -1,6 +1,7 @@
 pub mod accent;
 pub mod furigana;
 pub mod inflection;
+pub mod radicals;
 
 use itertools::Itertools;
 use std::iter;

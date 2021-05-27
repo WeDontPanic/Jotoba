@@ -1,4 +1,4 @@
-@use super::{index_html, word_search_html, kanji_details, name_search, sentence_search, about_html};
+@use super::{index_html, word_search_html, kanji_details, name_search, sentence_search, about_html, radpicker_html};
 @use crate::web::{BaseData, ResultData, Site};
 @use crate::search::query_parser::QueryType;
 
@@ -111,6 +111,7 @@
                   </span>
 
                   <div class="d-flex flex-row wrap rad-picker">
+                    @:radpicker_html()
                   </div>
 
                </div>

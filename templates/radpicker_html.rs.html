@@ -1,0 +1,10 @@
+@use crate::japanese::radicals::RADICALS;
+
+@()
+
+@for (stroke_count, radicals) in RADICALS.iter() {
+    <span class="rad-btn picker num">@stroke_count</span>
+    @for radical in radicals.iter() {
+      <span class="rad-btn picker" onClick="handleRadicalSelect(event)">@radical</span>
+    } 
+}

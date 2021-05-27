@@ -52,36 +52,6 @@ function resetRadPicker() {
     $('.rad-results').html(radHelpMsg);
 }
 
-function loadRadicals(disableByDefault) {
-    // Reset entries
-    $('.rad-picker').html("");
-
-    // Iterate all radicals and add them
-    for (let i = 0; i < radicals.length; i++) {
-
-        // There are no radicals with 15 or 16 strokes
-        if (i == 14) {
-            $('.rad-picker').append('<span class="rad-btn picker num">'+17+'</span>');
-        } else {
-            $('.rad-picker').append('<span class="rad-btn picker num">'+(i+1)+'</span>');
-        }
-        
-        // Add the radical
-        for (let ri = 0; ri < radicals[i].length; ri++) {
-            let picker = "";
-            if (disableByDefault !== undefined && disableByDefault) {
-                picker = $('<span class="rad-btn picker disabled">'+radicals[i][ri]+'</span>');
-            } else {
-                picker = $('<span class="rad-btn picker">'+radicals[i][ri]+'</span>');
-            }
-            picker.on('click', (event) => handleRadicalSelect(event));
-            $('.rad-picker').append(picker);
-        }
-    }
-}
-
-loadRadicals();
-
 // Adds the selected Kanji to the search bar
 function handleKanjiSelect(event) {
     $('#search').val($('#search').val() + event.target.innerHTML);
