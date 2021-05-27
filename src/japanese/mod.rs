@@ -64,6 +64,8 @@ pub trait JapaneseExt {
     fn is_small_kana(&self) -> bool;
 
     fn is_radical(&self) -> bool;
+
+    fn is_particle(&self) -> bool;
 }
 
 impl JapaneseExt for char {
@@ -167,6 +169,13 @@ impl JapaneseExt for char {
     fn is_radical(&self) -> bool {
         self.is_kanji() || RADICALS.iter().any(|i| *i == *self)
     }
+
+    fn is_particle(&self) -> bool {
+        matches!(
+            self,
+            'を' | 'の' | 'に' | 'と' | 'が' | 'か' | 'は' | 'も' | 'で' | 'へ' | 'や'
+        )
+    }
 }
 
 impl JapaneseExt for str {
@@ -258,6 +267,10 @@ impl JapaneseExt for str {
 
     fn is_small_kana(&self) -> bool {
         self.is_small_katakana() || self.is_small_hiragana()
+    }
+
+    fn is_particle(&self) -> bool {
+        !self.chars().into_iter().any(|s| !s.is_particle())
     }
 }
 

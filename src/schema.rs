@@ -12,6 +12,7 @@ table! {
         is_main -> Bool,
         accents -> Nullable<Array<Int4>>,
         furigana -> Nullable<Text>,
+        collocations -> Nullable<Array<Int4>>,
     }
 }
 
