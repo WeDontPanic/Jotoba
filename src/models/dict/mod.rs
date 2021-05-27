@@ -6,6 +6,7 @@ use super::{super::schema::dict, kanji::KanjiResult};
 use crate::{
     error::Error,
     japanese::{self, furigana, JapaneseExt},
+    models::sense,
     parse::jmdict::Entry,
     parse::{
         accents::PitchItem,
@@ -95,6 +96,7 @@ impl Dict {
         })
     }
 
+    /// Loads all collocations of a dict entry
     pub async fn load_collocation(
         &self,
         db: &DbPool,
@@ -102,12 +104,13 @@ impl Dict {
     ) -> Result<(i32, Vec<(String, String)>), Error> {
         use crate::schema::dict::dsl::*;
 
-        if self.collocations.is_none() {
+        if self.collocations.is_none() || self.collocations.as_ref().unwrap().len() == 0 {
             return Ok((self.sequence, vec![]));
         }
 
         let cc = self.collocations.as_ref().unwrap();
 
+        // Load collocation readings
         let readings: Vec<(i32, String)> = dict
             .select((sequence, reading))
             .filter(kanji.eq_all(true))
@@ -116,17 +119,21 @@ impl Dict {
             .get_results_async(db)
             .await?;
 
-        /*
-        try_join_all(readings.into_iter().map(|(seq, jp_reading)|{
-            //
-            use crate::schema::sense;
-            sense::table.select()
-        })).await?;
-        */
+        // Load senses to [`readings`]
+        let senses = try_join_all(
+            readings
+                .iter()
+                .map(|(seq, _)| sense::short_glosses(db, *seq, language)),
+        )
+        .await?;
 
-        let res = readings
+        // Merge both
+        let res = senses
             .into_iter()
-            .map(|i| (i.1, String::new()))
+            .map(|senses| {
+                let (_, rd) = readings.iter().find(|i| i.0 == senses.0).unwrap();
+                (rd.to_owned(), senses.1.join(", "))
+            })
             .collect_vec();
 
         Ok((self.sequence, res))

@@ -81,12 +81,15 @@ impl<'a> Search<'a> {
 
         // Load collocations
         let mut words = search_result.words;
-        WordSearch::load_collocations(self.db, &mut words, self.query.settings.user_lang).await?;
 
-        // Chain and map results into one result vector
-        let kanji_results = kanji::load_word_kanji_info(&self, &words).await?;
+        let words_cloned = words.clone();
+
+        let (kanji_results, _): (Vec<KanjiResult>, _) = futures::try_join!(
+            kanji::load_word_kanji_info(&self, &words_cloned),
+            WordSearch::load_collocations(self.db, &mut words, self.query.settings.user_lang)
+        )?;
+
         let kanji_items = kanji_results.len();
-
         return Ok(WordResult {
             items: Self::merge_words_with_kanji(words, kanji_results),
             contains_kanji: kanji_items > 0,

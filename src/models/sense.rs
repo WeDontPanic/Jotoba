@@ -118,6 +118,29 @@ pub async fn insert_sense(db: &DbPool, senses: Vec<NewSense>) -> Result<(), Erro
     Ok(())
 }
 
+pub async fn short_glosses(
+    db: &DbPool,
+    seq: i32,
+    lang: Language,
+) -> Result<(i32, Vec<String>), Error> {
+    use crate::schema::sense::dsl::*;
+
+    let res: Vec<String> = sense
+        .select(gloss)
+        .filter(sequence.eq(seq))
+        .filter(
+            language
+                .eq_all(lang)
+                .or(language.eq_all(Language::default())),
+        )
+        .order_by((language.desc(), id.asc()))
+        .limit(5)
+        .get_results_async(db)
+        .await?;
+
+    Ok((seq, res))
+}
+
 /// Clear all sense entries
 pub async fn clear_senses(db: &DbPool) -> Result<(), Error> {
     use crate::schema::sense::dsl::*;
