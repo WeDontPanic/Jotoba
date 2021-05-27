@@ -8,7 +8,7 @@ use crate::{config::Config, web, DbPool};
 use actix_web::{
     dev::ServiceRequest,
     dev::{Service, ServiceResponse, Transform},
-    http::header::{HeaderValue, CACHE_CONTROL, EXPIRES},
+    http::header::{HeaderValue, CACHE_CONTROL},
     middleware, web as actixweb, App, Error, HttpServer,
 };
 use futures::{

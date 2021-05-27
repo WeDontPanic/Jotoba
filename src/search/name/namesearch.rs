@@ -61,10 +61,8 @@ impl<'a> NameSearch<'a> {
     }
 
     /// Search name by japanese
-    pub async fn search_native(&self) -> Result<Vec<Name>, Error> {
+    pub async fn search_native(&self, query: &str) -> Result<Vec<Name>, Error> {
         use crate::schema::name::dsl::*;
-
-        let query = &self.search.query;
 
         if self.limit == 0 {
             Ok(if query.is_kanji() {

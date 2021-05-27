@@ -64,7 +64,7 @@ async fn search_transcription(db: &DbPool, query: &Query) -> Result<Vec<Name>, E
 async fn search_native(db: &DbPool, query: &Query) -> Result<Vec<Name>, Error> {
     let search = NameSearch::new(&db, &query.query);
 
-    let mut items = search.search_native().await?;
+    let mut items = search.search_native(&query.query).await?;
 
     let start = SystemTime::now();
     // Sort the results based

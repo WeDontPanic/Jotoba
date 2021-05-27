@@ -102,7 +102,7 @@ impl<'a> Search<'a> {
     async fn do_word_search(&self) -> Result<ResultData, Error> {
         // Perform searches asynchronously
         let (native_word_res, gloss_word_res): (ResultData, ResultData) =
-            futures::try_join!(self.native_results(), self.gloss_results())?;
+            futures::try_join!(self.native_results(&self.query.query), self.gloss_results())?;
 
         // Chain native and word results into one vector
         Ok(ResultData {
@@ -117,22 +117,24 @@ impl<'a> Search<'a> {
     }
 
     #[cfg(not(feature = "tokenizer"))]
-    fn get_query(&self) -> String {
-        self.query.query.clone()
+    fn get_query(&self, query_str: &str) -> String {
+        query_str.to_owned()
     }
 
     #[cfg(feature = "tokenizer")]
-    async fn get_query<'b>(&'b self) -> Result<(String, Option<WordItem<'static, 'b>>), Error> {
+    async fn get_query<'b>(
+        &'b self,
+        query_str: &'b str,
+    ) -> Result<(String, Option<WordItem<'static, 'b>>), Error> {
         if !self.query.parse_japanese {
-            return Ok((self.query.query.clone(), None));
+            return Ok((query_str.to_owned(), None));
         }
 
-        let parser =
-            InputTextParser::new(&self.db, &self.query.query, &crate::JA_NL_PARSER).await?;
+        let parser = InputTextParser::new(&self.db, query_str, &crate::JA_NL_PARSER).await?;
 
         if let Some(parsed) = parser.parse() {
             if parsed.items.is_empty() {
-                return Ok((self.query.query.clone(), None));
+                return Ok((query_str.to_owned(), None));
             }
 
             println!("parsed: {:#?}", parsed);
@@ -140,21 +142,21 @@ impl<'a> Search<'a> {
             let res = parsed.items[index].clone();
             Ok((res.get_lexeme().to_string(), Some(res)))
         } else {
-            Ok((self.query.query.clone(), None))
+            Ok((query_str.to_owned(), None))
         }
     }
 
     /// Perform a native word search
-    async fn native_results(&self) -> Result<ResultData, Error> {
-        if self.query.language != QueryLang::Japanese {
+    async fn native_results(&self, query_str: &str) -> Result<ResultData, Error> {
+        if self.query.language != QueryLang::Japanese && !query_str.is_japanese() {
             return Ok(ResultData::default());
         }
 
         #[cfg(feature = "tokenizer")]
-        let (query, morpheme) = self.get_query().await?;
+        let (query, morpheme) = self.get_query(query_str).await?;
 
         #[cfg(not(feature = "tokenizer"))]
-        let query = self.get_query();
+        let query = self.get_query(query_str);
 
         let query_modified = query != self.query.query;
 
@@ -267,7 +269,6 @@ impl<'a> Search<'a> {
             SearchMode::Variable
         };
 
-        // TODO don't make exact search
         let mut word_search = WordSearch::new(self.db, &self.query.query);
         word_search
             .with_language(self.query.settings.user_lang)
@@ -280,6 +281,11 @@ impl<'a> Search<'a> {
         }
 
         let mut wordresults = word_search.search_by_glosses().await?;
+
+        // Do romaji search if no results were found
+        if wordresults.is_empty() {
+            return Ok(self.native_results(&self.query.query.to_hiragana()).await?);
+        }
 
         #[cfg(feature = "tokenizer")]
         let search_order = SearchOrder::new(self.query, &None);
