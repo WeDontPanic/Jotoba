@@ -120,6 +120,10 @@ h4 {
     padding-right: 10px;
 }
 
+.right-padding-20 {
+    padding-right: 20px;
+}
+
 .d-flex.wrap {
     flex-wrap: wrap;
 }
@@ -163,6 +167,10 @@ a:hover {
 
 svg {
     fill: var(--searchTextColor);
+}
+
+.kanjisvg > path {
+    stroke: var(--primaryTextColor);
 }
 
 .d-flex.center {
@@ -455,8 +463,18 @@ footer {
     align-items: center;
  }
 
+.kanji-entry.left.detail {
+    width: 155px;
+    padding-left: 25px
+}
+
 .kanji-entry.right {
     position: relative;
+    width: 100%;
+}
+
+.kanji-entry.right.detail {
+    padding-left: 35px;
     width: 100%;
 }
 
@@ -473,10 +491,22 @@ footer {
 
 .kanji-preview.large:hover {
     text-decoration: none;
+} 
+
+.kanji-preview.x-large {
+    font-size: 100px;
 }
 
 .kanji-preview.small {
     font-size: x-large;
+}
+
+.kanji-preview-info {
+    padding-left: 5px;
+}
+
+.kanji-preview-right {
+    max-width: 350px;
 }
 
 .inline-kana-preview {
@@ -526,6 +556,13 @@ footer {
     color: var(--primaryTextColor);
 }
 
+.tags.slim {
+    font-size: 20px;
+    font-weight: 400;
+    color: var(--primaryTextColor);
+    margin-top: -5px !important;
+}
+
 .tags.no-margin {
     margin-top: 0px;
 }
@@ -546,12 +583,30 @@ footer {
     font-size: 19px;
 }
 
+.translation.big {
+    font-size: 25px;
+}
+
 .translation.kanji {
     padding-top: 10px;
     padding-left: 10px;
 }
 
+.kanji-preview-left {
+    width: 63%;
+    padding-right: 10%;
+}
+
 /* ---------------------- Stroke Order / Kanji Page Unique Stuff --------------------- */
+.stroke-container {
+    max-width: 80vw;
+    overflow-x: auto;
+}
+
+.animation-container {
+    padding-left: 30%;
+    padding-top: 10px;
+}
 
 .kanji-entry > d-flex.flex-row {
     flex-flow: row wrap;
@@ -562,11 +617,38 @@ footer {
     word-spacing: 10px;
 }
 
+.kun-reading {
+    padding-left: 10px;
+    width: 120%;
+}
+
+.draw2 {
+    stroke-dasharray: 1000;
+    stroke-dashoffset: 1000;
+    animation: dash2 10s linear forwards;
+}
+
+.kanjisvg:hover {
+    cursor: pointer;
+}
+
 @keyframes dash2 {
     to { stroke-dashoffset: 0;}
 }
 
 /* --- Slider adjustments --- */
+
+.slider-parent {
+    padding-top: 30px;
+    padding-right: 20px;
+    width: 150px;
+}
+
+.slider-output {
+    font-size: 13px;
+    padding-top: 10px;
+    color: var(--primaryColor);
+}
   
 /* The slider itself */
 .slider {
