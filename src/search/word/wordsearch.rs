@@ -2,10 +2,7 @@ use super::result::{Reading, Sense, Word};
 
 use crate::{
     error::Error,
-    models::{
-        dict::{self, Dict},
-        sense,
-    },
+    models::{dict::Dict, sense},
     parse::jmdict::{
         information::Information,
         languages::Language,
@@ -195,7 +192,7 @@ impl<'a> WordSearch<'a> {
         if self.is_default_language() || !self.english_glosses {
             filter.push_str(format!(" AND language = {}", lang).as_str());
         } else {
-            filter.push_str(format!(" AND (language = {} or language = 1)", lang).as_str());
+            filter.push_str(format!(" AND (language = {} or language = 0)", lang).as_str());
         }
 
         // Add a limit
@@ -259,7 +256,7 @@ impl<'a> WordSearch<'a> {
             if lang == Language::default() {
                 format!(" language = {}", lang_i)
             } else {
-                format!(" (language = {} or language = 1)", lang_i)
+                format!(" (language = {} or language = 0)", lang_i)
             }
         };
 
