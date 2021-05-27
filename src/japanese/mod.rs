@@ -5,6 +5,8 @@ pub mod inflection;
 use itertools::Itertools;
 use std::iter;
 
+use crate::utils;
+
 const RADICALS: &[char] = &[
     '｜', 'ノ', '⺅', 'ハ', '⺉', 'マ', 'ユ', '⻌', '⺌', 'ヨ', '⺖', '⺘', '⺡', '⺨', '⺾', '⻏',
     '⻖', '⺹', '⺣', '⺭', '⻂', '⺲',
@@ -319,4 +321,43 @@ pub fn text_parts<'a>(kanji: &'a str) -> impl Iterator<Item = &'a str> {
 
         Some(&kanji[curr_c_pos..])
     })
+}
+
+/// Returns an iterator over kanji occurences having the reading [`reading`]
+pub fn has_reading<'a>(
+    furigana: &'a str,
+    kanji_literal: char,
+    reading: &'a str,
+) -> impl Iterator<Item = bool> + 'a {
+    furigana::from_str(furigana)
+        .filter_map(move |i| i.kanji.and_then(|k| k.contains(kanji_literal).then(|| i)))
+        .map(move |i| match_reading(i.kanji.unwrap(), i.kana, kanji_literal, reading))
+}
+
+/// Returns true if [`k_literal`] has the reading [`reading`] within a (possible) compound and its
+/// kana mapping
+fn match_reading(comp: &str, comp_reading: &str, k_literal: char, reading: &str) -> bool {
+    if utils::char_eq_str(k_literal, comp) {
+        return comp_reading == reading;
+    }
+
+    let compound_len = comp.chars().count();
+    let reading_len = reading.chars().count();
+    let comp_reading_len = comp_reading.chars().count();
+    if compound_len - 1 > comp_reading_len - reading_len {
+        // Kanji mapping is impossible. [`reading`] needs more kanji syllables which are available for
+        // the given kanji.
+        return false;
+    }
+
+    if comp.ends_with(k_literal) {
+        return comp_reading.ends_with(reading);
+    }
+
+    if comp.starts_with(k_literal) {
+        return comp_reading.starts_with(reading);
+    }
+
+    // Impossible to check against other cases
+    false
 }
