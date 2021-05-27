@@ -63,6 +63,7 @@ pub async fn import(database: &DbPool, options: &Options) {
 
     // Import kanji elements
     if !options.elements_path.is_empty() {
+        // TODO Check if search radicals exists
         kanji_elements::import(&database, &options.elements_path).await;
     }
 
@@ -76,9 +77,7 @@ pub async fn import(database: &DbPool, options: &Options) {
     if (!options.kanjidict_path.is_empty() && (jmdict_exists || imported_dicts))
         || (imported_dicts && (!options.kanjidict_path.is_empty() || kanji_exists))
     {
-        update_kanji_readings(database)
-            .await
-            .expect("Fatal DB error");
+        update_dict_links(database).await.expect("Fatal DB error");
     }
 
     // From here on we're depending on JMDict elements
@@ -109,8 +108,9 @@ pub async fn import(database: &DbPool, options: &Options) {
 }
 
 /// Updates Kun and On readings for kanji
-pub async fn update_kanji_readings(database: &DbPool) -> Result<(), Error> {
+pub async fn update_dict_links(database: &DbPool) -> Result<(), Error> {
     kanji::gen_readings::update_links(&database).await?;
+    dict::collocations::generate(&database).await?;
     Ok(())
 }
 
