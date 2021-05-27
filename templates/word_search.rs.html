@@ -139,7 +139,7 @@
                 <!-- Right side: Info -->
 
                 <!-- !!! Tooltip -->
-                <div class="word-tooltip d-flex flex-column noselect" data-toggle="modal" data-target="#ENTER_OVERLAY_ID_HERE">
+                <div class="word-tooltip d-flex flex-column noselect" data-toggle="modal" data-target="#kek@word.sequence">
                   <span>.</span>
                   <span>.</span>
                   <span>.</span>
@@ -208,7 +208,7 @@
 
               <!-- !!! START OF INFO OVERLAY -->
               <!-- Word Info Overlay -->
-              <div class="modal fade" id="#ENTER_OVERLAY_ID_HERE">
+              <div class="modal fade" id="kek@word.sequence">
                 <div class="modal-dialog  modal-lg">
                   <div class="modal-content">
        
@@ -218,12 +218,15 @@
        
                       <!-- Word collocations -->
        
-                      <h3 class="info-h3">Word collocations</h3>
-       
-                      <div class="d-flex flex-column wrap">
-                         <a class="clickable collocation" href='https://jotoba.de/search?type=0&search=%E4%B8%96%E9%96%93%E3%81%AE%E5%8F%A3'>世間の口 - what people say</a>
-                         <a class="clickable collocation" href='https://jotoba.de/search?type=0&search=%E4%B8%96%E9%96%93%E3%81%AE%E7%9B%AE'>世間の目 - spotlight</a>
-                      </div>
+                      @if let Some(ref collocations) = word.collocations {
+                        <h3 class="info-h3">Word collocations</h3>
+         
+                        <div class="d-flex flex-column wrap">
+                        @for collocation in collocations {
+                           <a class="clickable collocation" href='https://jotoba.de/search?type=0&search=@collocation.0'>@collocation.0 - @collocation.1</a>
+                        }
+                        </div>
+                      }
        
                       <!-- Br Only used when both are present -->
                       <br>

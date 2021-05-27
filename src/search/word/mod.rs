@@ -79,12 +79,16 @@ impl<'a> Search<'a> {
             _ => self.do_word_search().await?,
         };
 
+        // Load collocations
+        let mut words = search_result.words;
+        WordSearch::load_collocations(self.db, &mut words, self.query.settings.user_lang).await?;
+
         // Chain and map results into one result vector
-        let kanji_results = kanji::load_word_kanji_info(&self, &search_result.words).await?;
+        let kanji_results = kanji::load_word_kanji_info(&self, &words).await?;
         let kanji_items = kanji_results.len();
 
         return Ok(WordResult {
-            items: Self::merge_words_with_kanji(search_result.words, kanji_results),
+            items: Self::merge_words_with_kanji(words, kanji_results),
             contains_kanji: kanji_items > 0,
             inflection_info: search_result.infl_info,
             count: search_result.count,

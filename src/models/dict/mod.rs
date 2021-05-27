@@ -9,12 +9,14 @@ use crate::{
     parse::jmdict::Entry,
     parse::{
         accents::PitchItem,
-        jmdict::{information::Information, priority::Priority},
+        jmdict::{information::Information, languages::Language, priority::Priority},
     },
     utils, DbConnection, DbPool,
 };
 use diesel::sql_types::Integer;
 use diesel::{prelude::*, sql_types::Text};
+use futures::future::try_join_all;
+use itertools::Itertools;
 use tokio_diesel::*;
 
 #[derive(Queryable, QueryableByName, Clone, Debug, Default)]
@@ -91,6 +93,43 @@ impl Dict {
             }
             japanese::accent::calc_pitch(&self.reading, accents[0])
         })
+    }
+
+    pub async fn load_collocation(
+        &self,
+        db: &DbPool,
+        language: Language,
+    ) -> Result<(i32, Vec<(String, String)>), Error> {
+        use crate::schema::dict::dsl::*;
+
+        if self.collocations.is_none() {
+            return Ok((self.sequence, vec![]));
+        }
+
+        let cc = self.collocations.as_ref().unwrap();
+
+        let readings: Vec<(i32, String)> = dict
+            .select((sequence, reading))
+            .filter(kanji.eq_all(true))
+            .filter(sequence.eq_any(cc))
+            .filter(is_main.eq_all(true))
+            .get_results_async(db)
+            .await?;
+
+        /*
+        try_join_all(readings.into_iter().map(|(seq, jp_reading)|{
+            //
+            use crate::schema::sense;
+            sense::table.select()
+        })).await?;
+        */
+
+        let res = readings
+            .into_iter()
+            .map(|i| (i.1, String::new()))
+            .collect_vec();
+
+        Ok((self.sequence, res))
     }
 }
 

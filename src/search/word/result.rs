@@ -83,6 +83,7 @@ pub struct Word {
     pub information: Option<Vec<Information>>,
     pub reading: Reading,
     pub senses: Vec<Sense>,
+    pub collocations: Option<Vec<(String, String)>>,
 }
 
 impl PartialEq for Word {

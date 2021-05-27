@@ -16,10 +16,10 @@ use crate::error;
 )]
 #[sql_type = "Integer"]
 pub enum Language {
-    #[strum(serialize = "ger", serialize = "de-DE")]
-    German,
     #[strum(serialize = "eng", serialize = "en-US")]
     English,
+    #[strum(serialize = "ger", serialize = "de-DE")]
+    German,
     #[strum(serialize = "rus", serialize = "ru")]
     Russain,
     #[strum(serialize = "spa", serialize = "es-ES")]
@@ -60,8 +60,8 @@ impl TryFrom<i32> for Language {
     type Error = error::Error;
     fn try_from(i: i32) -> Result<Self, Self::Error> {
         Ok(match i {
-            0 => Self::German,
-            1 => Self::English,
+            0 => Self::English,
+            1 => Self::German,
             2 => Self::Russain,
             3 => Self::Spanish,
             4 => Self::Swedish,
@@ -77,8 +77,8 @@ impl TryFrom<i32> for Language {
 impl Into<i32> for Language {
     fn into(self) -> i32 {
         match self {
-            Self::German => 0,
-            Self::English => 1,
+            Self::English => 0,
+            Self::German => 1,
             Self::Russain => 2,
             Self::Spanish => 3,
             Self::Swedish => 4,

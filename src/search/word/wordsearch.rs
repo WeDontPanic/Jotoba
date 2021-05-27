@@ -2,7 +2,10 @@ use super::result::{Reading, Sense, Word};
 
 use crate::{
     error::Error,
-    models::{dict::Dict, sense},
+    models::{
+        dict::{self, Dict},
+        sense,
+    },
     parse::jmdict::{
         information::Information,
         languages::Language,
@@ -11,11 +14,13 @@ use crate::{
     },
     search::{Search, SearchMode},
     sql::ExpressionMethods,
+    utils::to_option,
     DbPool,
 };
 use diesel::sql_types::{Integer, Text};
 
 use diesel::prelude::*;
+use futures::future::try_join_all;
 use itertools::Itertools;
 use tokio_diesel::*;
 
@@ -264,6 +269,33 @@ impl<'a> WordSearch<'a> {
             .order(sense_schema::id)
             .get_results_async(db)
             .await?)
+    }
+
+    /// Loads the collocations for all words
+    pub async fn load_collocations(
+        db: &DbPool,
+        words: &mut Vec<Word>,
+        language: Language,
+    ) -> Result<(), Error> {
+        let collocations = try_join_all(
+            words
+                .iter()
+                .map(|i| i.get_reading().load_collocation(db, language)),
+        )
+        .await?;
+
+        for collocation in collocations {
+            let seq = collocation.0;
+            let collocations = collocation.1;
+
+            words
+                .iter_mut()
+                .find(|i| i.sequence == seq)
+                .unwrap()
+                .collocations = to_option(collocations);
+        }
+
+        Ok(())
     }
 
     /// Load Dictionaries of a single sequence id
