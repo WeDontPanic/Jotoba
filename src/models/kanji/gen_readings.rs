@@ -1,14 +1,14 @@
 use std::{
     cmp::Ordering,
-    collections::HashMap,
     io::{stdout, Write},
 };
 
 use super::dict::Dict;
 use crate::{
     error::Error,
-    models::kanji::{find_readings_by_liteal, ReadingType},
-    search::{query::KanjiReading, SearchMode},
+    japanese::JapaneseExt,
+    models::kanji::ReadingType,
+    search::SearchMode,
     utils::{self, invert_ordering},
     DbPool,
 };
@@ -21,6 +21,8 @@ use futures::future::try_join_all;
 use itertools::Itertools;
 use tokio_diesel::*;
 
+type KanjiWReading = (i32, String, Vec<String>);
+
 /// Update kun/on reading compounds
 pub async fn update_links(db: &DbPool) -> Result<(), Error> {
     use crate::schema::kanji::dsl::*;
@@ -32,190 +34,184 @@ pub async fn update_links(db: &DbPool) -> Result<(), Error> {
         .get_results_async(db)
         .await?;
 
-    let mut dict_cache: HashMap<i32, Dict> = HashMap::new();
-    print!("Generating kun readings... 0%");
-
     let all_kuns = all_kanji
         .iter()
         .filter_map(|i| {
             (i.2.is_some() && !i.2.as_ref().unwrap().is_empty())
-                .then(|| (i.0, &i.1, i.2.as_ref().unwrap(), &i.3))
+                .then(|| (i.0, i.1.to_owned(), i.2.as_ref().unwrap().to_owned()))
         })
-        .enumerate()
-        .filter_map(|(pos, (kanji_id, kanji_literal, kun_readings, _))| {
-            // For every kanji in DB
-            print!(
-                "\rGenerating kun readings... {}%",
-                pos * 100 / all_kanji.len()
-            );
-            utils::to_option(
-                find_kun_readings(db, kanji_literal.clone(), &kun_readings, &mut dict_cache)
-                    .unwrap_or_default(),
-            )
-            .map(|r| (kanji_id, r))
-        })
-        .collect::<Vec<(i32, Vec<_>)>>();
+        .collect::<Vec<KanjiWReading>>();
 
-    println!();
+    gen_reading(db, all_kuns, ReadingType::Kunyomi).await?;
 
-    let mut kun_insert_counter = 0;
-    for k in all_kuns.chunks(100).into_iter() {
-        print!(
-            "\rInserting kun readings: {}/{}",
-            kun_insert_counter,
-            all_kuns.len()
-        );
-        stdout().flush().ok();
-
-        futures::future::try_join_all(
-            k.iter()
-                .map(|(k_id, dict_ids)| update_kun_link(db, *k_id, dict_ids)),
-        )
-        .await?;
-        kun_insert_counter += k.len();
-    }
-
-    print!("\nUpdating on readings: 0/{}", all_kanji.len());
-    stdout().flush().ok();
-
-    let mut on_counter = 0;
-    for kanji_on_chunk in all_kanji
+    let all_ons = all_kanji
         .iter()
         .filter_map(|i| {
             (i.3.is_some() && !i.3.as_ref().unwrap().is_empty())
-                .then(|| (i.0, &i.1, i.3.as_ref().unwrap()))
+                .then(|| (i.0, i.1.to_owned(), i.3.as_ref().unwrap().to_owned()))
         })
-        .chunks(50)
-        .into_iter()
-    {
-        print!("\rUpdating on readings: {}/{}", on_counter, all_kanji.len());
+        .collect::<Vec<KanjiWReading>>();
+
+    gen_reading(db, all_ons, ReadingType::Onyomi).await?;
+
+    Ok(())
+}
+
+// Generate and store readingcompounds of kanji
+async fn gen_reading(
+    db: &DbPool,
+    kanji: Vec<KanjiWReading>,
+    reading_type: ReadingType,
+) -> Result<(), Error> {
+    let mut counter = 0;
+
+    for kanji_item_chunk in kanji.chunks(100).into_iter() {
+        print!(
+            "\r Generating {:?} {}%",
+            reading_type,
+            counter * 100 / kanji.len()
+        );
         stdout().flush().ok();
 
-        try_join_all(
-            kanji_on_chunk
+        let curr_item_count = kanji_item_chunk.len();
+
+        let res: Vec<(i32, Vec<i32>)> = try_join_all(
+            kanji_item_chunk
                 .into_iter()
-                .map(|(kanji_id, kanji_literal, on_readings)| {
-                    find_on_readings(db, kanji_id, kanji_literal.clone(), &on_readings)
-                }),
+                .map(|chunk| find_readings(db, chunk.1.clone(), &chunk.2, reading_type, chunk.0)),
         )
         .await?;
 
-        on_counter += 50;
+        futures::future::try_join_all(
+            res.iter()
+                .map(|(k_id, dict_ids)| update_link(db, reading_type, *k_id, dict_ids)),
+        )
+        .await?;
+
+        counter += curr_item_count;
     }
 
     println!();
-    Ok(())
-}
-
-/// Returns all kun reading compounds for a kanji given by its literal
-async fn find_on_readings(
-    db: &DbPool,
-    id: i32,
-    literal: String,
-    ons: &[String], // All kanji on readings
-) -> Result<(), Error> {
-    let ons = try_join_all(ons.iter().map(|on| {
-        find_readings_by_liteal(
-            &literal,
-            db,
-            KanjiReading::new(&literal, on),
-            ReadingType::Onyomi,
-            SearchMode::Exact,
-            true,
-        )
-    }))
-    .await?
-    .into_iter()
-    .flatten()
-    .collect_vec();
-
-    if ons.is_empty() {
-        return Ok(());
-    }
-
-    update_on_link(db, id, &ons.into_iter().take(9).collect_vec()).await?;
 
     Ok(())
 }
 
 /// Returns all kun reading compounds for a kanji given by its literal
-fn find_kun_readings(
+async fn find_readings(
     db: &DbPool,
     literal: String,
-    kun: &[String], // All kanji kun readings
-    cache: &mut HashMap<i32, Dict>,
-) -> Result<Vec<i32>, Error> {
-    let db = db.get().unwrap();
+    readings: &[String], // All kanji kun readings
+    reading_type: ReadingType,
+    kid: i32,
+) -> Result<(i32, Vec<i32>), Error> {
     use crate::schema::dict::dsl::*;
+
+    let formatter = match reading_type {
+        ReadingType::Kunyomi => format!("{}%", literal),
+        ReadingType::Onyomi => format!("%{}%", literal),
+    };
 
     // Find all Dict-seq_ids starting with the literal
     let seq_ids: Vec<i32> = dict
         .select(sequence)
-        .filter(reading.like(format!("{}%", literal)))
+        .filter(reading.like(formatter))
         .filter(kanji.eq(true))
-        .get_results(&db)?;
-
-    // Get precached
-    let cached = seq_ids
-        .iter()
-        .filter_map(|i| cache.get(i).cloned())
-        .collect_vec();
+        .get_results_async(&db)
+        .await?;
 
     let dicts: Vec<Dict> = dict
-        .filter(
-            sequence.eq_any(
-                seq_ids
-                    .iter()
-                    .filter(|i| !cache.contains_key(i))
-                    .collect_vec(),
-            ),
-        )
+        .filter(sequence.eq_any(seq_ids))
         .order_by(id)
-        .get_results(&db)?;
-
-    // add to cache
-    for d in dicts.iter() {
-        cache.insert(d.sequence, d.clone());
-    }
-
-    // Concat results + cached
-    let dicts = dicts.into_iter().chain(cached).collect_vec();
+        .get_results_async(&db)
+        .await?;
 
     // result vec
-    let mut kuns: Vec<Dict> = Vec::new();
+    let mut compound_dicts: Vec<Dict> = Vec::new();
 
     // Iterate over all dicts containing the literal
     for (_, val) in dicts.iter().group_by(|i| i.sequence).into_iter() {
         let (kanji_r, kana_r): (Vec<Dict>, Vec<Dict>) =
             val.into_iter().cloned().partition(|i| i.kanji);
+
         if kanji_r.is_empty() {
             continue;
         }
+
         // kana reading of curr dict
         let dict_kana = kana_r[0].clone();
         // kanji reading of curr dict
         let dict_kanji = kanji_r[0].clone();
 
-        for ku in kun.iter() {
-            if matches_kanji(&literal, ku, &dict_kana.reading, &dict_kanji.reading)
-                && len(ku) <= dict_kana.len()
+        for curr_reading in readings.iter() {
+            if matches_kanji(
+                &literal,
+                reading_type,
+                curr_reading,
+                &dict_kana.reading,
+                &dict_kanji.reading,
+            ) && len(curr_reading) <= dict_kana.len()
             {
-                kuns.push(dict_kanji);
+                compound_dicts.push(dict_kanji);
                 break;
             }
         }
     }
 
-    let clean_kuns = kun.iter().map(|i| literal_reading(i)).collect_vec();
-    if kuns.len() > 10 {
-        kuns.sort_by(|a, b| order_kuns(a, b, &clean_kuns));
-        kuns.truncate(10);
+    match reading_type {
+        ReadingType::Kunyomi => {
+            let clean_kuns = readings.iter().map(|i| literal_reading(i)).collect_vec();
+            compound_dicts.sort_by(|a, b| order_kun(a, b, &clean_kuns))
+        }
+        ReadingType::Onyomi => compound_dicts.sort_by(|a, b| order_on(a, b, &literal)),
     }
+    compound_dicts.truncate(10);
 
-    Ok(kuns.iter().map(|i| i.sequence).collect())
+    Ok((kid, compound_dicts.iter().map(|i| i.sequence).collect()))
 }
 
-fn order_kuns(a: &Dict, b: &Dict, clean_kuns: &Vec<String>) -> Ordering {
+// TODO implement a better order algo
+fn order_on(a: &Dict, b: &Dict, literal: &str) -> Ordering {
+    if a.reading.contains(literal) && !b.reading.contains(literal) {
+        return Ordering::Less;
+    } else if b.reading.contains(literal) && !a.reading.contains(literal) {
+        return Ordering::Greater;
+    }
+
+    let a_sw = a.reading.starts_with(literal);
+    let b_sw = b.reading.starts_with(literal);
+
+    if a.is_main && !b.is_main {
+        return Ordering::Less;
+    } else if b.is_main && !a.is_main {
+        return Ordering::Greater;
+    }
+
+    if a.reading.len() < b.reading.len() {
+        return Ordering::Less;
+    } else if a.reading.len() > b.reading.len() {
+        return Ordering::Greater;
+    }
+
+    if a_sw && !b_sw {
+        return Ordering::Less;
+    } else if b_sw && !a_sw {
+        return Ordering::Greater;
+    }
+
+    let a_prio = a.priorities.as_ref().map(|i| i.len()).unwrap_or_default();
+    let b_prio = b.priorities.as_ref().map(|i| i.len()).unwrap_or_default();
+
+    if a_prio > b_prio && a_prio > 0 {
+        return Ordering::Less;
+    } else if b_prio > a_prio && b_prio > 0 {
+        return Ordering::Greater;
+    }
+
+    Ordering::Equal
+}
+
+// TODO implement a better order algo
+fn order_kun(a: &Dict, b: &Dict, clean_kuns: &Vec<String>) -> Ordering {
     let a_kunr = clean_kuns.contains(&a.reading);
     let b_kunr = clean_kuns.contains(&b.reading);
 
@@ -226,6 +222,12 @@ fn order_kuns(a: &Dict, b: &Dict, clean_kuns: &Vec<String>) -> Ordering {
     } else if a_kunr && !b_kunr {
         return Ordering::Less;
     } else if !a_kunr && b_kunr {
+        return Ordering::Greater;
+    }
+
+    if a.is_main && !b.is_main {
+        return Ordering::Less;
+    } else if b.is_main && !a.is_main {
         return Ordering::Greater;
     }
 
@@ -274,46 +276,81 @@ pub fn literal_reading(kun: &str) -> String {
     kun.replace('-', "").split('.').next().unwrap().to_string()
 }
 
-async fn update_on_link(db: &DbPool, kanji_id: i32, dict_ids: &[i32]) -> Result<(), Error> {
+async fn update_link(
+    db: &DbPool,
+    reading_type: ReadingType,
+    kanji_id: i32,
+    dict_ids: &[i32],
+) -> Result<(), Error> {
     use crate::schema::kanji::dsl::*;
-    diesel::update(kanji)
-        .filter(id.eq(kanji_id))
-        .set(on_dicts.eq(dict_ids))
-        .execute_async(db)
-        .await?;
+
+    if dict_ids.is_empty() {
+        return Ok(());
+    }
+
+    if reading_type == ReadingType::Onyomi {
+        diesel::update(kanji)
+            .filter(id.eq(kanji_id))
+            .set(on_dicts.eq(dict_ids))
+            .execute_async(db)
+            .await?;
+    } else if reading_type == ReadingType::Kunyomi {
+        diesel::update(kanji)
+            .filter(id.eq(kanji_id))
+            .set(kun_dicts.eq(dict_ids))
+            .execute_async(db)
+            .await?;
+    }
     Ok(())
 }
 
-async fn update_kun_link(db: &DbPool, kanji_id: i32, dict_ids: &[i32]) -> Result<(), Error> {
-    use crate::schema::kanji::dsl::*;
-    diesel::update(kanji)
-        .filter(id.eq(kanji_id))
-        .set(kun_dicts.eq(dict_ids))
-        .execute_async(db)
-        .await?;
-    Ok(())
+fn matches_kanji(
+    literal: &str,
+    reading_type: ReadingType,
+    reading: &str,
+    kana_reading: &str,
+    kanji_reading: &str,
+) -> bool {
+    match reading_type {
+        ReadingType::Kunyomi => matches_kun(literal, reading, kana_reading, kanji_reading),
+        ReadingType::Onyomi => matches_on(literal, reading, kana_reading, kanji_reading),
+    }
 }
 
-fn matches_kanji(literal: &str, kun: &str, kana_reading: &str, kanji_reading: &str) -> bool {
-    let match_mode = if kun.starts_with('-') {
+fn matches_kun(literal: &str, reading: &str, kana_reading: &str, kanji_reading: &str) -> bool {
+    let match_mode = if reading.starts_with('-') {
         SearchMode::RightVariable
-    } else if kun.ends_with('-') || kanji_reading.starts_with(&literal) {
+    } else if reading.ends_with('-') || kanji_reading.starts_with(&literal) {
         SearchMode::LeftVariable
     } else {
         SearchMode::Exact
     };
 
-    let mut kanji_out = kun.to_string().replace('-', "");
+    let mut kanji_out = reading.to_string().replace('-', "");
 
-    if kun.contains('.') {
-        let kun_left = kun.split('.').next().unwrap();
+    if reading.contains('.') {
+        let kun_left = reading.split('.').next().unwrap();
         kanji_out = kanji_out.replace(&format!("{}.", kun_left), literal);
     } else {
         kanji_out = literal.to_owned();
     }
 
-    let kanji_out = kanji_out.replace(literal, &literal_reading(kun));
+    let kanji_out = kanji_out.replace(literal, &literal_reading(reading));
     match_mode.str_eq(kana_reading, kanji_out.as_str(), false)
+}
+
+fn matches_on(literal: &str, reading: &str, kana_reading: &str, kanji_reading: &str) -> bool {
+    let reading = reading.to_hiragana();
+    let kana_reading = kana_reading.to_hiragana();
+    if kanji_reading.starts_with(literal) {
+        kana_reading.starts_with(&reading)
+    } else if kanji_reading.ends_with(literal) {
+        kana_reading.ends_with(&reading)
+    } else {
+        kana_reading.contains(&reading)
+            && !kana_reading.starts_with(&reading)
+            && !kana_reading.ends_with(&reading)
+    }
 }
 
 /// Clear existinig kun links

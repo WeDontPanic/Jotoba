@@ -10,7 +10,8 @@ CREATE TABLE dict (
   jlpt_lvl INTEGER,
   is_main BOOLEAN NOT NULL,
   accents INTEGER[],
-  furigana TEXT
+  furigana TEXT,
+  collocations INTEGER[]
 );
 CREATE INDEX index_reading_dict on dict using pgroonga (reading);
 CREATE INDEX index_reading_dict_text_pattern_ops on dict (reading text_pattern_ops);
@@ -83,9 +84,16 @@ CREATE INDEX index_transcription_name ON name using pgroonga (transcription);
 CREATE TABLE sentence (
   id SERIAL PRIMARY KEY,
   content TEXT NOT NULL,
+  kana TEXT NOT NULL,
   furigana TEXT NOT NULL
 );
-CREATE INDEX index_sentence_content ON sentence using pgroonga (content) WITH (tokenizer='TokenMecab');
+CREATE INDEX index_sentence_content_pgroonga ON sentence using pgroonga (content) WITH (tokenizer='TokenMecab');
+CREATE INDEX index_sentence_content_pattern_ops on sentence (content text_pattern_ops);
+CREATE INDEX index_sentence_content ON sentence (content);
+
+CREATE INDEX index_sentence_kana_pgroonga ON sentence using pgroonga (kana) WITH (tokenizer='TokenMecab');
+CREATE INDEX index_sentence_kana ON sentence (kana);
+CREATE INDEX index_sentence_kana_pattern_ops on sentence (kana text_pattern_ops);
 
 CREATE TABLE sentence_translation (
   id SERIAL PRIMARY KEY,
@@ -181,7 +189,7 @@ CREATE OR REPLACE FUNCTION ends_with_hiragana(IN inp text)
  STRICT;
 
 CREATE OR REPLACE FUNCTION get_kun_dicts(i integer)
-RETURNS table (id INTEGER, sequence INTEGER, reading TEXT, kanji boolean, no_kanji boolean, priorities TEXT[], information INTEGER[], kanji_info INTEGER[], jlpt_lvl INTEGER, is_main boolean, accent Integer[], furigana TEXT)  AS $$
+RETURNS table (id INTEGER, sequence INTEGER, reading TEXT, kanji boolean, no_kanji boolean, priorities TEXT[], information INTEGER[], kanji_info INTEGER[], jlpt_lvl INTEGER, is_main boolean, accent Integer[], furigana TEXT, collocations INTEGER[])  AS $$
   select * from dict where reading in ( SELECT literal || SUBSTRING(UNNEST(kunyomi) from POSITION('.' in  UNNEST(kunyomi))+1) from kanji where kanji.id = i)
 $$
 LANGUAGE sql stable;

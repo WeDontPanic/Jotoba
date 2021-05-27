@@ -178,3 +178,9 @@ pub fn is_surrounded_by<'a>(
         None
     })
 }
+
+pub fn char_eq_str(c: char, s: &str) -> bool {
+    let mut chars = s.chars();
+    let is = chars.next().map(|i| i == c).unwrap_or_default();
+    is && chars.next().is_none()
+}

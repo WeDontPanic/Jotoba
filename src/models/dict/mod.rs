@@ -1,3 +1,5 @@
+pub mod collocations;
+
 use std::cmp::Ordering;
 
 use super::{super::schema::dict, kanji::KanjiResult};
@@ -30,6 +32,7 @@ pub struct Dict {
     pub is_main: bool,
     pub accents: Option<Vec<i32>>,
     pub furigana: Option<String>,
+    pub collocations: Option<Vec<i32>>,
 }
 
 #[derive(Insertable, Clone, Debug, PartialEq)]
@@ -46,6 +49,7 @@ pub struct NewDict {
     pub is_main: bool,
     pub accents: Option<Vec<i32>>,
     pub furigana: Option<String>,
+    pub collocations: Option<Vec<i32>>,
 }
 
 impl PartialEq for Dict {
@@ -109,7 +113,7 @@ pub fn update_accents(db: &DbConnection, pitch: PitchItem) -> Result<(), Error> 
 }
 
 pub fn find_jp_word(db: &DbConnection, kanji: &str, kana: &str) -> Result<Option<Sequence>, Error> {
-    let query = include_str!("../../sql/find_jp_word.sql");
+    let query = include_str!("../../../sql/find_jp_word.sql");
     let sequence = diesel::sql_query(query)
         .bind::<Text, _>(kanji)
         .bind::<Text, _>(kana)
@@ -172,6 +176,7 @@ pub fn new_dicts_from_entry(db: &DbConnection, entry: &Entry) -> Vec<NewDict> {
                 is_main,
                 accents: None,
                 furigana: None,
+                collocations: None,
             }
         })
         .collect();
