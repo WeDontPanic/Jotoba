@@ -32,8 +32,9 @@ igo-unidic = { git = "https://github.com/JojiiOfficial/igo-unidic", optional = t
 toml = "0.5.8"
 thiserror = "1.0.25"
 languages-rs = { git = "https://github.com/daschdev/languages-rs", branch = "v0.2.0", features = ["with-toml"] }
-parse = { path = "../parse" }
 async-std = "1.9.0"
+parse = { path = "../parse" }
+japanese = { path = "../japanese" }
 
 [build-dependencies]
 ructe = "0.13.2"

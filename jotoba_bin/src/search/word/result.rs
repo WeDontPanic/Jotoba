@@ -1,12 +1,12 @@
 use std::path::Path;
 
-use crate::{
-    japanese::{
-        accent::{AccentChar, Border},
-        furigana::SentencePartRef,
-    },
-    models::kanji::KanjiResult,
-    search::query::Query,
+use crate::{models::kanji::KanjiResult, search::query::Query};
+
+use japanese::{
+    accent::{AccentChar, Border},
+    furigana::{self, SentencePartRef},
+    inflection::Inflection,
+    JapaneseExt,
 };
 use parse::jmdict::{
     dialect::Dialect,
@@ -19,10 +19,7 @@ use parse::jmdict::{
     priority::Priority,
 };
 
-use crate::{
-    japanese::{furigana, inflection::Inflection, JapaneseExt},
-    utils::to_option,
-};
+use crate::utils::to_option;
 use itertools::Itertools;
 
 use crate::models::{dict::Dict, sense::Sense as DbSenseEntry};

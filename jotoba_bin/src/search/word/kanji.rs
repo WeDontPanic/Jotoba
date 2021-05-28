@@ -1,7 +1,6 @@
 use super::{order, result::Word, ResultData, Search, WordSearch};
 use crate::{
     error::Error,
-    japanese::JapaneseExt,
     models::{
         dict::Dict,
         kanji::{self, KanjiResult},
@@ -11,6 +10,7 @@ use crate::{
 };
 use futures::future::try_join_all;
 use itertools::Itertools;
+use japanese::JapaneseExt;
 
 const MAX_KANJI_INFO_ITEMS: usize = 5;
 

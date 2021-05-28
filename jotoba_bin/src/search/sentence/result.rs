@@ -1,6 +1,6 @@
 use diesel::sql_types::{Integer, Text};
 
-use crate::japanese::{furigana, furigana::SentencePartRef};
+use japanese::{furigana, furigana::SentencePartRef};
 use parse::jmdict::languages::Language;
 
 #[derive(Debug, PartialEq, Clone, QueryableByName)]

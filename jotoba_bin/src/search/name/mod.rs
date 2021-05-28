@@ -7,11 +7,11 @@ use std::time::SystemTime;
 use crate::{
     cache::SharedCache,
     error::Error,
-    japanese::JapaneseExt,
     models::name::Name,
     search::{name::namesearch::NameSearch, query::Query},
     DbPool,
 };
+use japanese::JapaneseExt;
 
 use async_std::sync::Mutex;
 use once_cell::sync::Lazy;

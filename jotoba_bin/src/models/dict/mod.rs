@@ -5,7 +5,6 @@ use std::cmp::Ordering;
 use super::{super::schema::dict, kanji::KanjiResult};
 use crate::{
     error::Error,
-    japanese::{self, furigana, JapaneseExt},
     models::{kanji::KANJICACHE, sense},
     utils, DbConnection, DbPool,
 };
@@ -13,6 +12,7 @@ use diesel::sql_types::Integer;
 use diesel::{prelude::*, sql_types::Text};
 use futures::future::try_join_all;
 use itertools::Itertools;
+use japanese::{self, furigana, JapaneseExt};
 use parse::{
     accents::PitchItem,
     jmdict::{information::Information, languages::Language, priority::Priority, Entry},

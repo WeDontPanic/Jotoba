@@ -17,7 +17,6 @@ use std::time::SystemTime;
 use crate::{
     cache::SharedCache,
     error::Error,
-    japanese::JapaneseExt,
     models::kanji::KanjiResult,
     search::{
         query::{Query, QueryLang},
@@ -27,6 +26,7 @@ use crate::{
     utils::real_string_len,
     DbPool,
 };
+use japanese::JapaneseExt;
 
 #[cfg(feature = "tokenizer")]
 use self::jp_parsing::InputTextParser;

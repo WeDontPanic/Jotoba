@@ -8,13 +8,13 @@ use tokio_diesel::AsyncRunQueryDsl;
 use super::error::{Origin, RestError};
 use crate::{
     cache::SharedCache,
-    japanese::JapaneseExt,
     utils::{part_of, remove_dups},
     DbPool,
 };
 use async_std::sync::Mutex;
 use diesel::prelude::*;
 use diesel::sql_types::{Integer, Text};
+use japanese::JapaneseExt;
 use once_cell::sync::Lazy;
 
 /// Max radicals to allow per request

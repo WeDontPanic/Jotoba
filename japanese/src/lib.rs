@@ -2,11 +2,10 @@ pub mod accent;
 pub mod furigana;
 pub mod inflection;
 pub mod radicals;
+mod utils;
 
 use itertools::Itertools;
 use std::iter;
-
-use crate::utils;
 
 const RADICALS: &[char] = &[
     '｜', 'ノ', '⺅', 'ハ', '⺉', 'マ', 'ユ', '⻌', '⺌', 'ヨ', '⺖', '⺘', '⺡', '⺨', '⺾', '⻏',

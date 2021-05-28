@@ -1,12 +1,12 @@
 use super::SearchMode;
 use crate::{
     error::Error,
-    japanese::JapaneseExt,
     models::name::Name,
     search::{query::KanjiReading, Search},
     sql::ExpressionMethods,
     DbPool,
 };
+use japanese::JapaneseExt;
 
 use diesel::prelude::*;
 use tokio_diesel::*;

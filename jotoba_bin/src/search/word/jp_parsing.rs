@@ -1,8 +1,9 @@
 use std::cmp::Ordering;
 
-use crate::{error::Error, japanese::inflection::Inflection, DbPool};
+use crate::{error::Error, DbPool};
 use diesel::{dsl::exists, prelude::*};
 use igo_unidic::{ConjungationForm, Morpheme, Parser, ParticleType, VerbType, WordClass};
+use japanese::inflection::Inflection;
 use tokio_diesel::AsyncRunQueryDsl;
 
 /// Potentially lexemes of inflections

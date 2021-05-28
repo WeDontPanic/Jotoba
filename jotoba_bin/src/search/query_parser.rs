@@ -1,7 +1,8 @@
 use itertools::Itertools;
 use serde::Deserialize;
 
-use crate::{japanese::JapaneseExt, utils};
+use crate::utils;
+use japanese::JapaneseExt;
 use parse::jmdict::part_of_speech::PosSimple;
 
 use super::query::{Form, KanjiReading, Query, QueryLang, SearchTypeTag, Tag, UserSettings};

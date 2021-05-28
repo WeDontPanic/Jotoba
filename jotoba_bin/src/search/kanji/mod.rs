@@ -5,10 +5,10 @@ use result::Item;
 
 use crate::{
     error::Error,
-    japanese::JapaneseExt,
     models::kanji::{self, KanjiResult},
     utils, DbPool,
 };
+use japanese::JapaneseExt;
 
 use super::query::Query;
 use futures::future::try_join_all;

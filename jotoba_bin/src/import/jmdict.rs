@@ -6,7 +6,6 @@ use std::{
 };
 
 use crate::{
-    japanese::{self, furigana},
     models::{
         dict::{self, NewDict},
         kanji,
@@ -15,6 +14,7 @@ use crate::{
     DbPool,
 };
 use itertools::Itertools;
+use japanese;
 use parse::{jmdict::Parser as jmdictParser, parser::Parse};
 
 struct Word {

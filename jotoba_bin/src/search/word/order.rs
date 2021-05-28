@@ -1,11 +1,11 @@
 use levenshtein::levenshtein;
 
 use crate::{
-    japanese::JapaneseExt,
     models::kanji,
     search::{search_order::SearchOrder, SearchMode},
     utils,
 };
+use japanese::JapaneseExt;
 
 use super::result::Word;
 

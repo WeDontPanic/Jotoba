@@ -1,9 +1,9 @@
 use itertools::Itertools;
 use tokio_diesel::AsyncRunQueryDsl;
 
-use crate::japanese;
 use crate::schema::{sentence, sentence_translation, sentence_vocabulary};
 use crate::{error::Error, DbPool};
+use japanese;
 use parse::jmdict::languages::Language;
 
 use super::dict;

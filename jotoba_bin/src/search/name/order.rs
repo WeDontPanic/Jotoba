@@ -1,6 +1,7 @@
 use std::cmp::Ordering;
 
-use crate::{japanese::JapaneseExt, models::name::Name, search::query::KanjiReading};
+use crate::{models::name::Name, search::query::KanjiReading};
+use japanese::JapaneseExt;
 use levenshtein::levenshtein;
 
 /// Represents the ordering for name search
