@@ -18,6 +18,7 @@ let colorCodings = [
 /* ------------------------------------------------------------------- */
 
 // On load, get all the cookie's data
+parseSchemeCode("1A1A1C252527C3083F9407416Fi32ZZZOR6Fi32");
 loadCookieData();
 
 // Opens the Settings Overlay and accepts cookie usage
@@ -49,15 +50,29 @@ function revokeCookieAgreement() {
 
 // Changes the color that the caller represents
 function onSettingsChange_Color(event) {
-    let code = createSchemeCode()
-    setSpecialColorVars();
+    // Find the input div
+    let input = $(event.target.parentElement).children('input');
+    let id = input.attr("id");
+    let cssName = "--" + id.split("_value")[0];
+    let color = input[0].value;
 
+    // Reset if clicked
+    if (event.target.classList.contains("clickable")) {
+        document.documentElement.style.removeProperty(cssName);
+        $(input[0]).val(getCssValue(cssName));
+    } else { // Set the selected color if not
+        document.documentElement.style.setProperty(cssName, color);
+    }
+
+    setSpecialColorVars();
+    
+    let code = createSchemeCode()
     Cookies.set('scheme_code', code);
 }
 
 // Returns the value of the given CSS-Variable's name
 function getCssValue(cssName) {
-    return  getComputedStyle(document.documentElement).getPropertyValue(cssName).trim();
+    return getComputedStyle(document.documentElement).getPropertyValue(cssName).trim();
 }
 
 // Changes the Default Language to search for
@@ -144,7 +159,6 @@ function loadCookieData() {
 
 // Loads all colors form the given array
 function setColorFromArray(array) {
-
     // Iterate all entries
     colorIdentifiers.forEach((id, index) => {
         // Get the cookie's data
@@ -158,7 +172,6 @@ function setColorFromArray(array) {
 
         // Set Property and Cookie
         document.documentElement.style.setProperty(cssName, color);
-        Cookies.set(id, color);
     });
 
     setSpecialColorVars();
@@ -177,7 +190,7 @@ function setSpecialColorVars() {
 }
 
 // Calculates a code from all identifiers
-function createSchemeCode() {
+function createSchemeCode(showCode) {
     let colorCode = "";
 
     let currentNum = -1;
@@ -216,12 +229,13 @@ function createSchemeCode() {
         }
     });
 
-    $("#scheme_input").val(colorCode);
+    if (showCode) {
+       $("#scheme_input").val(colorCode);
+    }
     return colorCode;
 }
 
 function parseSchemeCode(colorCode) {
-
     // Get color code
     if (colorCode === undefined) {
         colorCode = $("#scheme_input").val();
@@ -262,6 +276,7 @@ function parseSchemeCode(colorCode) {
     }
 
     setColorFromArray(parsedHex);
+    Cookies.set('scheme_code', colorCode);
 }
 
 // Returns the Kanji's default speed
