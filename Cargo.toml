@@ -3,6 +3,5 @@
 members = [
   "jotoba_bin",
   "parse",
-  "frontend",
   "japanese",
 ]

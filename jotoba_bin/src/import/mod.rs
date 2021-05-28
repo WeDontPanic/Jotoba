@@ -1,7 +1,7 @@
 use crate::{
     error::Error,
     models::{dict, kanji, name, radical, sense},
-    DbConnection, DbPool, Options,
+    DbPool, Options,
 };
 
 pub mod accents;

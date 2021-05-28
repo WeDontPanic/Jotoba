@@ -74,37 +74,38 @@ pub struct ParseResult<'dict, 'input> {
     pub items: Vec<WordItem<'dict, 'input>>,
 }
 
-impl Inflection {
-    fn from_conjungation(conj: &ConjungationForm) -> Option<Self> {
-        Some(match conj {
-            ConjungationForm::Plain => Inflection::Present,
-            ConjungationForm::Imperative => Inflection::Imperative,
-            ConjungationForm::Negative => Inflection::Negative,
-            ConjungationForm::Conditional => Inflection::Potential,
-            _ => return None,
-        })
-    }
+fn inflection_from_conjungation(conj: &ConjungationForm) -> Option<Inflection> {
+    Some(match conj {
+        ConjungationForm::Plain => Inflection::Present,
+        ConjungationForm::Imperative => Inflection::Imperative,
+        ConjungationForm::Negative => Inflection::Negative,
+        ConjungationForm::Conditional => Inflection::Potential,
+        _ => return None,
+    })
+}
 
-    fn from_morpheme(morpheme: &Morpheme, main_morpheme: Option<&Morpheme>) -> Option<Self> {
-        if let Some(mm) = main_morpheme {
-            if morpheme.lexeme == "だ" && !is_continous(mm) {
-                return None;
-            }
+fn inflection_from_morpheme(
+    morpheme: &Morpheme,
+    main_morpheme: Option<&Morpheme>,
+) -> Option<Inflection> {
+    if let Some(mm) = main_morpheme {
+        if morpheme.lexeme == "だ" && !is_continous(mm) {
+            return None;
         }
-
-        Some(match morpheme.lexeme {
-            "ない" | "ぬ" => Self::Negative,
-            "ます" | "です" => Self::Polite,
-            "て" => Self::TeForm,
-            "だ" | "た" => Self::Past,
-            "れる" => Self::Passive,
-            "せる" => Self::Causative,
-            "られる" => Self::CausativePassive,
-            "たい" => Self::Tai,
-            "" => Self::Negative,
-            _ => return None,
-        })
     }
+
+    Some(match morpheme.lexeme {
+        "ない" | "ぬ" => Inflection::Negative,
+        "ます" | "です" => Inflection::Polite,
+        "て" => Inflection::TeForm,
+        "だ" | "た" => Inflection::Past,
+        "れる" => Inflection::Passive,
+        "せる" => Inflection::Causative,
+        "られる" => Inflection::CausativePassive,
+        "たい" => Inflection::Tai,
+        "" => Inflection::Negative,
+        _ => return None,
+    })
 }
 
 fn is_continous(morpheme: &Morpheme) -> bool {
@@ -272,7 +273,7 @@ impl<'dict, 'input> InputTextParser<'dict, 'input> {
                     ConjungationForm::Imperative
                     | ConjungationForm::Negative
                     | ConjungationForm::Conditional => {
-                        return Inflection::from_conjungation(&m.conjungation.form)
+                        return inflection_from_conjungation(&m.conjungation.form)
                             .map(|i| vec![i])
                             .unwrap_or_default()
                     }
@@ -284,7 +285,7 @@ impl<'dict, 'input> InputTextParser<'dict, 'input> {
         let mut inflections: Vec<Inflection> = morphemes
             .iter()
             .filter_map(|i| {
-                Inflection::from_morpheme(
+                inflection_from_morpheme(
                     &i,
                     main_morpheme.map(Some).unwrap_or_else(|| {
                         self.get_no_inflection_morphemes()

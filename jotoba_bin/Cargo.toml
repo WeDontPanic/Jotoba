@@ -26,7 +26,7 @@ serde = "1.0.126"
 serde_json = "1.0.64"
 strum = { version = "0.20.0", features = ["derive"] }
 strum_macros = "0.20.1"
-tokio = { version = "1.6.0", features = ["macros","rt-multi-thread","sync"] }
+tokio = { version = "1.6.1", features = ["macros","rt-multi-thread","sync"] }
 tokio-diesel = {git = "https://github.com/mehcode/tokio-diesel" }
 igo-unidic = { git = "https://github.com/JojiiOfficial/igo-unidic", optional = true}
 toml = "0.5.8"

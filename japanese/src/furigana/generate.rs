@@ -228,12 +228,14 @@ fn format_readings(r: Vec<String>) -> Vec<String> {
 
 #[cfg(test)]
 mod test {
+    /*
     use super::*;
     use crate::{db, DbPool};
 
     fn get_db() -> DbPool {
         db::connect()
     }
+    */
 
     const INPUT: &[(&'static str, &'static str)] = &[
         ("考える", "かんがえる"),

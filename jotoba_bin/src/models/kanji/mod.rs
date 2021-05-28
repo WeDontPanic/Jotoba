@@ -462,23 +462,6 @@ pub async fn load_by_ids(db: &DbPool, ids: &[i32]) -> Result<Vec<KanjiResult>, E
 }
 
 /// Retrieve kanji by ids from DB
-async fn retrieve_by_ids(db: &DbPool, ids: &[i32]) -> Result<Vec<KanjiResult>, Error> {
-    if ids.is_empty() {
-        return Ok(vec![]);
-    }
-    use crate::schema::kanji::dsl::*;
-    use crate::schema::kanji_meaning;
-
-    Ok(format_results(
-        kanji
-            .inner_join(kanji_meaning::table)
-            .filter(id.eq_any(ids))
-            .get_results_async::<(Kanji, Meaning)>(db)
-            .await?,
-    ))
-}
-
-/// Retrieve kanji by ids from DB
 async fn retrieve_by_ids_with_meanings(
     db: &DbPool,
     ids: &[i32],
