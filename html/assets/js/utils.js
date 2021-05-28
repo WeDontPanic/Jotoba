@@ -6,7 +6,7 @@
 function Util () {};
 
 // Displays the given message of type "succes", "error" or "info"
-function showMessage(type, message) {
+Util.showMessage = function(type, message) {
     switch (type) {
         case "success":
             alertify.success(message);
@@ -20,7 +20,7 @@ function showMessage(type, message) {
 }
 
 // Copies the given string to clipboard
-function copyToClipboard(text) {
+Util.copyToClipboard = function(text) {
     const el = document.createElement('textarea');
     el.value = text;
     el.setAttribute('readonly', '');
@@ -33,7 +33,7 @@ function copyToClipboard(text) {
 }
 
 // Convert a single 0-F to 0-15
-function hex2num_single(hex) {
+Util.hex2num_single = function(hex) {
     if (hex < 10)
         return hex;
     switch(hex.toUpperCase()) {
@@ -53,7 +53,7 @@ function hex2num_single(hex) {
 }
 
 // Convert a single 0-15 to 0-F
-function num2hex_single(num) {
+Util.num2hex_single = function(num) {
     if (num < 10)
         return num;
     switch(num) {
@@ -73,7 +73,7 @@ function num2hex_single(num) {
 }
 
 // Converts a hex value to rgb
-function hexToRgb(hex) {
+Util.hexToRgb = function(hex) {
     var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
     return result ? {
         r: parseInt(result[1], 16),
@@ -83,7 +83,7 @@ function hexToRgb(hex) {
 }
 
 // Returns the browsers true width
-function getBrowserWidth() {
+Util.getBrowserWidth = function() {
     return Math.max(
       document.body.scrollWidth,
       document.documentElement.scrollWidth,
@@ -95,7 +95,7 @@ function getBrowserWidth() {
   
 
 // Removes any current drag selection (not supported on IE)
-function deleteSelection() {
+Util.deleteSelection = function() {
     if (window.getSelection) {
         var selection = window.getSelection();
         selection.empty();
@@ -129,14 +129,6 @@ Util.scrollTo = function (final, duration) {
     window.requestAnimationFrame(animateScroll);
 };
   
-// Used for animation curves
-Math.easeInOutQuad = function (t, b, c, d) {
-    t /= d/2;
-    if (t < 1) return c/2*t*t + b;
-    t--;
-    return -c/2 * (t*(t-2) - 1) + b;
-};
-
 // Deletes all stored cookies
 Util.deleteCookies = function() {
     var allCookies = document.cookie.split(';');
@@ -145,3 +137,11 @@ Util.deleteCookies = function() {
         document.cookie = allCookies[i] + "=;expires="
         + new Date(0).toUTCString();
 }
+
+// Used for animation curves
+Math.easeInOutQuad = function (t, b, c, d) {
+    t /= d/2;
+    if (t < 1) return c/2*t*t + b;
+    t--;
+    return -c/2 * (t*(t-2) - 1) + b;
+};

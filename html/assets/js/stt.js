@@ -21,13 +21,13 @@ recognition.onerror  = function(event) {
     console.log(event.error);
     switch(event.error) {
         case "not-allowed":
-            showMessage("error", "Need permissions to perform speech recognition!");
+            Util.showMessage("error", "Need permissions to perform speech recognition!");
             break;
         case "aborted":
         case "no-speech":
             break;
         default:
-            showMessage("error", "Your browser does not support speech recognition!");
+            Util.showMessage("error", "Your browser does not support speech recognition!");
     }
     $('#currentlyListening').html("No");
 }

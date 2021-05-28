@@ -75,9 +75,6 @@ function handleRadicalSelect(event) {
 
 // Loads Kanji / Radical result from API into frontend
 function loadRadicalResults(info) {
-    // Reset entries
-    //  $('.rad-results').html("");
-
     var rrHtml = "";
 
     // Get and Iterate Kanji Keys
@@ -157,7 +154,7 @@ function getRadicalInfo() {
         }, 
         error : function(result) { 
            // Print Error
-           showMessage("error", "Could not reach Radical API.")
+           Util.showMessage("error", "Could not reach Radical API.")
         } 
     }); 
 }

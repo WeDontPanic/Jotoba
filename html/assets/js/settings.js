@@ -18,7 +18,6 @@ let colorCodings = [
 /* ------------------------------------------------------------------- */
 
 // On load, get all the cookie's data
-console.log(document.cookie)
 loadCookieData();
 
 // Opens the Settings Overlay and accepts cookie usage
@@ -45,7 +44,7 @@ function revokeCookieAgreement() {
 
     $('#settingsModal').modal('hide');
 
-    showMessage("success", "Successfully deleted your cookie data.")
+    Util.showMessage("success", "Successfully deleted your cookie data.")
 }
 
 // Changes the color that the caller represents
@@ -201,11 +200,11 @@ function setColorFromArray(array) {
 // Sets variables with (e.g.) lower opacity
 function setSpecialColorVars() {
     let hexVal_itemBg = getComputedStyle(document.documentElement).getPropertyValue("--itemBG").trim();
-    let rgbVal_itemBg = hexToRgb(hexVal_itemBg);
+    let rgbVal_itemBg = Util.hexToRgb(hexVal_itemBg);
     document.documentElement.style.setProperty("--itemBG_075", "rgba("+rgbVal_itemBg.r+","+rgbVal_itemBg.g+","+rgbVal_itemBg.b+",0.75)");
 
     let hexVal_lineColor = getComputedStyle(document.documentElement).getPropertyValue("--primaryTextColor").trim();
-    let rgbVal_lineColor = hexToRgb(hexVal_lineColor);
+    let rgbVal_lineColor = Util.hexToRgb(hexVal_lineColor);
     document.documentElement.style.setProperty("--lineColor", "rgba("+rgbVal_lineColor.r+","+rgbVal_lineColor.g+","+rgbVal_lineColor.b+",0.1)");
 
 }
@@ -222,7 +221,7 @@ function createSchemeCode() {
         let color = $('#'+id).val().substring(1);
         for (var i = 0; i < color.length; i++) {
             
-            let num = hex2num_single(color.charAt(i))
+            let num = Util.hex2num_single(color.charAt(i))
             // Count appearance time
             if (currentNum == num) {
                 count++;
@@ -278,13 +277,13 @@ function parseSchemeCode(colorCode) {
 
         // Code Error
         if (arrayIndex === -1) {
-            showMessage("error", "Please enter a valid code. (Index = -1)");
+            Util.showMessage("error", "Please enter a valid code. (Index = -1)");
             return;
         }
 
         // Add Hex
         for (var j = 0; j <= entryIndex; j++) {
-            allHex += num2hex_single(arrayIndex);
+            allHex += Util.num2hex_single(arrayIndex);
         }
     }
 

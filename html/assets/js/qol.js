@@ -68,8 +68,8 @@ $(document).on("keydown", (event) => {
 
 // Copies Furigana to clipboard on click
 $('.furigana-kanji-container > .furigana-preview').on("click", (event) => {
-    showMessage("success", "furigana copied to clipboard.");
-    copyToClipboard($(event.target).html().trim());
+    Util.showMessage("success", "furigana copied to clipboard.");
+    Util.copyToClipboard($(event.target).html().trim());
 });
 
 // Copies full Furigana to clipboard on dblclick
@@ -83,20 +83,20 @@ $('.furigana-kanji-container > .furigana-preview').on("dblclick", (event) => {
     parent.find('.furigana-preview, .inline-kana-preview').each((i, element) => {
         furi += element.innerHTML.trim();
     });
-    copyToClipboard(furi);
+    Util.copyToClipboard(furi);
 });
 
 // Copies translations to clipboard on double click
 $('.furigana-kanji-container > .kanji-preview').on("dblclick copy", (event) => {
 	event.preventDefault();
-    deleteSelection();
+    Util.deleteSelection();
     copyTranslationAndShowMessage(event.target.parentElement.parentElement);
 });
 
 // Copies translations to clipboard on double click
 $('.inline-kana-preview').on("dblclick copy", (event) => {
 	event.preventDefault();
-    deleteSelection();
+    Util.deleteSelection();
     copyTranslationAndShowMessage(event.target.parentElement);
 });
 
@@ -127,12 +127,12 @@ function copyTranslationAndShowMessage(textParent) {
             }
         } 
     });
-    copyToClipboard(fullTranslation);
+    Util.copyToClipboard(fullTranslation);
 	
 	if (onlyKanji) {
-		showMessage("success", "kanji copied to clipboard.");
+		Util.showMessage("success", "kanji copied to clipboard.");
 	} else {
-		showMessage("success", "meaning copied to clipboard.");
+		Util.showMessage("success", "meaning copied to clipboard.");
 	}
 }
 
@@ -163,7 +163,6 @@ $(document).ready(() => {
 
 // Iterate all audio Btns on the page (if any) and enable their audio feature
 $('.audioBtn').each((e, i) => {
-
     let audioParent = $(i);
 
     audioParent.click((e) => {

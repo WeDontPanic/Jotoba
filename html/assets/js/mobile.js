@@ -7,29 +7,52 @@ function toggleMobileNav() {
     $('.mobile-nav').toggleClass('hidden');
 }
 
-// The Jmp Btn and Kanji elements
-var jmpBtn = $("#jmp-btn");
-var kanjiDiv = document.getElementById("secondaryInfo"); 
+// On Start, check if mobile view is enabled. If yes, activate the btn
+if (Util.getBrowserWidth() <= 600) {
+    prepareMobilePageBtn();
+} else {
+    $(window).on('resize', function() {
+        console.log("called");
+        if ($(this).width() <= 600) {
+            $(window).off('resize');
+            prepareMobilePageBtn();
+        }
+    });
+}
 
-// Variables used in the following two functions
-var jmpBtnPointsTop = false;
+// Variables used in mobiles' easy-use btn
+var jmpBtn;
+var kanjiDiv;
+var jmpBtnPointsTop;
 
-if (kanjiDiv !== null) {
-    // Prepare the Kanji jmp and its button
-    var kanjiPos = kanjiDiv.offsetTop; 
-    jmpBtn.removeClass("hidden");
+// Prepares the easy-use Btn for mobile devices
+function prepareMobilePageBtn() {
+    // The Jmp Btn and Kanji elements
+    jmpBtn = $("#jmp-btn");
+    kanjiDiv = document.getElementById("secondaryInfo"); 
 
-    // Window Scroll checks
-    window.onscroll = function() {
-        if (getBrowserWidth() < 600 && (document.body.scrollTop > kanjiPos - 500 || document.documentElement.scrollTop > kanjiPos - 500)) {
-            jmpBtn.css("transform", "rotate(0deg)");
-            jmpBtnPointsTop = true;
-        } else {
-            jmpBtn.css("transform", "rotate(180deg)");
-            jmpBtnPointsTop = false;
+    // Variables used in the following two functions
+    jmpBtnPointsTop = false;
+
+    if (kanjiDiv !== null) {
+        // Prepare the Kanji jmp and its button
+        var kanjiPos = kanjiDiv.offsetTop; 
+        jmpBtn.removeClass("hidden");
+
+        // Window Scroll checks
+        window.onscroll = function() {
+            if (Util.getBrowserWidth() < 600 && (document.body.scrollTop > kanjiPos - 500 || document.documentElement.scrollTop > kanjiPos - 500)) {
+                jmpBtn.css("transform", "rotate(0deg)");
+                jmpBtnPointsTop = true;
+            } else {
+                jmpBtn.css("transform", "rotate(180deg)");
+                jmpBtnPointsTop = false;
+            }
         }
     }
 }
+
+
 // Jumps to the top or kanji part
 function jumpToTop() {
     if (jmpBtnPointsTop) {
