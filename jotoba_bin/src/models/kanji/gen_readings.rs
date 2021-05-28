@@ -4,9 +4,10 @@ use std::{
 };
 
 use super::dict::Dict;
+use super::ReadingType;
+
 use crate::{
     error::Error,
-    models::kanji::ReadingType,
     search::SearchMode,
     utils::{self, invert_ordering},
     DbPool,

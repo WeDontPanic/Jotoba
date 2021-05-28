@@ -2,12 +2,12 @@ pub mod collocations;
 
 use std::cmp::Ordering;
 
-use super::{super::schema::dict, kanji::KanjiResult};
-use crate::{
-    error::Error,
-    models::{kanji::KANJICACHE, sense},
-    utils, DbConnection, DbPool,
+use super::{
+    super::schema::dict,
+    kanji::{KanjiResult, KANJICACHE},
+    sense,
 };
+use crate::{error::Error, utils, DbConnection, DbPool};
 use diesel::sql_types::Integer;
 use diesel::{prelude::*, sql_types::Text};
 use futures::future::try_join_all;
@@ -371,4 +371,15 @@ pub async fn min_sequence(db: &DbPool) -> Result<i32, Error> {
         .await?;
 
     Ok(res.unwrap_or(0))
+}
+
+/// Load Dictionaries of a single sequence id
+pub async fn load_dictionary(db: &DbPool, sequence_id: i32) -> Result<Vec<Dict>, Error> {
+    use crate::schema::dict as dict_schema;
+
+    Ok(dict_schema::table
+        .filter(dict_schema::sequence.eq_all(sequence_id))
+        .order_by(dict_schema::id)
+        .get_results_async(&db)
+        .await?)
 }

@@ -295,17 +295,6 @@ impl<'a> WordSearch<'a> {
         Ok(())
     }
 
-    /// Load Dictionaries of a single sequence id
-    pub async fn load_dictionary(db: &DbPool, sequence_id: i32) -> Result<Vec<Dict>, Error> {
-        use crate::schema::dict as dict_schema;
-
-        Ok(dict_schema::table
-            .filter(dict_schema::sequence.eq_all(sequence_id))
-            .order_by(dict_schema::id)
-            .get_results_async(&db)
-            .await?)
-    }
-
     /// Load Dictionaries of all sequences
     pub async fn load_dictionaries(db: &DbPool, sequence_ids: &[i32]) -> Result<Vec<Dict>, Error> {
         use crate::schema::dict as dict_schema;

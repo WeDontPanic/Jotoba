@@ -10,7 +10,6 @@ mod config;
 mod db;
 pub mod error;
 mod import;
-//pub mod japanese;
 pub mod models;
 pub mod schema;
 pub mod search;

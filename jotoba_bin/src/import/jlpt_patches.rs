@@ -1,4 +1,4 @@
-use crate::{dict, kanji, DbPool};
+use crate::{models::dict, models::kanji, DbPool};
 use serde_json::Value;
 
 use futures::future::try_join_all;

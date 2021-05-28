@@ -1,6 +1,6 @@
 use std::io::{stdout, Write};
 
-use crate::{error::Error, search::word::WordSearch, sql::ExpressionMethods, DbPool};
+use crate::{error::Error, sql::ExpressionMethods, DbPool};
 
 use diesel::prelude::*;
 use futures::future::try_join_all;
@@ -70,7 +70,7 @@ async fn generate_dict(db: &DbPool, dict: &GenDict) -> Result<(), Error> {
     let collocations = try_join_all(
         collocations
             .into_iter()
-            .map(|d| WordSearch::load_dictionary(db, d)),
+            .map(|d| super::load_dictionary(db, d)),
     )
     .await?
     .into_iter()
