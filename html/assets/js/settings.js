@@ -22,7 +22,7 @@ loadCookieData();
 
 // Opens the Settings Overlay and accepts cookie usage
 function cookiesAccepted() {
-    Cookies.set("user_agreement", true, {path: '/'});
+    Cookies.set("user_agreement", true);
     let settingsBtns =  $('.settingsBtn')
         settingsBtns.each((i, e) => {
             e.dataset.target = "#settingsModal";
@@ -49,23 +49,10 @@ function revokeCookieAgreement() {
 
 // Changes the color that the caller represents
 function onSettingsChange_Color(event) {
-    // Find the input div
-    let input = $(event.target.parentElement).children('input');
-    let id = input.attr("id");
-    let cssName = "--" + id.split("_value")[0];
-    let color = input[0].value;
-
-    // Reset if clicked
-    if (event.target.classList.contains("clickable")) {
-        document.documentElement.style.removeProperty(cssName);
-        $(input[0]).val(getCssValue(cssName));
-        Cookies.set(id, getComputedStyle(document.documentElement).getPropertyValue(cssName).trim(), {path: '/'});
-    } else { // Set the selected color if not
-        document.documentElement.style.setProperty(cssName, color);
-        Cookies.set(id, color, {path: '/'});
-    }
-    
+    let code = createSchemeCode()
     setSpecialColorVars();
+
+    Cookies.set('scheme_code', code);
 }
 
 // Returns the value of the given CSS-Variable's name
@@ -75,7 +62,7 @@ function getCssValue(cssName) {
 
 // Changes the Default Language to search for
 function onSettingsChange_DefaultLanguage(event) {
-    Cookies.set('default_lang', event.target.value, {path: '/'});
+    Cookies.set('default_lang', event.target.value);
     if (window.location.href.includes("/search")) {
         location.reload();
     }
@@ -83,7 +70,7 @@ function onSettingsChange_DefaultLanguage(event) {
 
 // Changes whether english results should be shown
 function onSettingsChange_ShowEnglish(event) {
-    Cookies.set('show_english', event.target.checked, {path: '/'});
+    Cookies.set('show_english', event.target.checked);
     if (!event.target.checked)
         $('#show_eng_on_top_settings_parent').addClass("hidden");
     else
@@ -93,13 +80,13 @@ function onSettingsChange_ShowEnglish(event) {
 
 // Changes whether english results should be shown on top
 function onSettingsChange_ShowEnglishOnTop(event) {
-    Cookies.set('show_english_on_top', event.target.checked, {path: '/'});
+    Cookies.set('show_english_on_top', event.target.checked);
 }
 
 // Sets the default kanji animation speed
 function onSettingsChange_AnimationSpeed(event) {
     $('#show_anim_speed_settings_slider').html(event.target.value);
-    Cookies.set('anim_speed', event.target.value, {path: '/'});
+    Cookies.set('anim_speed', event.target.value);
 }
 
 // Load the cookie's data into important stuff
@@ -147,27 +134,12 @@ function loadCookieData() {
     $('#show_anim_speed_settings_slider').html(anim_speed);
 
     // Load all Color Data
-    setColorFromCookie();
-}
+    let scheme_code = Cookies.get("scheme_code");
 
-// Loads all colors form the cookie from a given array of identifiers
-function setColorFromCookie() {
-
-    // Iterate all entries
-    colorIdentifiers.forEach(id => {
-        // Get the cookie's data
-        let color = Cookies.get(id);
-        let cssName = "--" + id.split("_value")[0]
-
-        // Set all the Color informations
-        if (color === undefined)
-            color = getCssValue(cssName);
-        $('#'+id).val(color);
-
-        document.documentElement.style.setProperty(cssName, color);
-    });
-
-    setSpecialColorVars();
+    if (scheme_code !== undefined) {
+        parseSchemeCode(scheme_code)
+        setSpecialColorVars();
+    }
 }
 
 // Loads all colors form the given array
@@ -186,7 +158,7 @@ function setColorFromArray(array) {
 
         // Set Property and Cookie
         document.documentElement.style.setProperty(cssName, color);
-        Cookies.set(id, color, {path: '/'});
+        Cookies.set(id, color);
     });
 
     setSpecialColorVars();
@@ -245,6 +217,7 @@ function createSchemeCode() {
     });
 
     $("#scheme_input").val(colorCode);
+    return colorCode;
 }
 
 function parseSchemeCode(colorCode) {
