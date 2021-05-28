@@ -6,15 +6,15 @@ use serde::{Deserialize, Serialize};
 use tokio_diesel::AsyncRunQueryDsl;
 
 use super::error::{Origin, RestError};
-use crate::{
-    cache::SharedCache,
-    utils::{part_of, remove_dups},
-    DbPool,
-};
+use crate::utils::{part_of, remove_dups};
 use async_std::sync::Mutex;
-use diesel::prelude::*;
-use diesel::sql_types::{Integer, Text};
+use cache::SharedCache;
+use diesel::{
+    prelude::*,
+    sql_types::{Integer, Text},
+};
 use japanese::JapaneseExt;
+use models::DbPool;
 use once_cell::sync::Lazy;
 
 /// Max radicals to allow per request
@@ -99,7 +99,7 @@ async fn find_by_radicals(db: &DbPool, radicals: &[char]) -> Result<Vec<SqlFindR
         })
         .collect_vec();
 
-    use crate::schema::kanji;
+    use models::schema::kanji;
 
     // Select all kanji by id ordered by stroke_count, grade
     Ok(kanji::table
@@ -123,8 +123,8 @@ async fn posible_radicals(
     kanji_ids: &[i32],
     radicals: &[char],
 ) -> Result<Vec<char>, RestError> {
-    use crate::schema::kanji_element;
-    use crate::schema::search_radical::dsl::*;
+    use models::schema::kanji_element;
+    use models::schema::search_radical::dsl::*;
 
     Ok(search_radical
         .select(literal)

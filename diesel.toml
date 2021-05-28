@@ -2,4 +2,4 @@
 # see diesel.rs/guides/configuring-diesel-cli
 
 [print_schema]
-file = "jotoba_bin/src/schema.rs"
+file = "models/src/schema.rs"

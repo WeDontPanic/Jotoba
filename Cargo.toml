@@ -4,4 +4,8 @@ members = [
   "jotoba_bin",
   "parse",
   "japanese",
+  "models",
+  "cache",
+  "search",
+  "error",
 ]

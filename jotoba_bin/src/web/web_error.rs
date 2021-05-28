@@ -18,8 +18,8 @@ pub struct InfoText {
 }
 
 // Treat all crate::error::Error as Internal error
-impl From<crate::error::Error> for Error {
-    fn from(err: crate::error::Error) -> Self {
+impl From<error::Error> for Error {
+    fn from(err: error::Error) -> Self {
         println!("err: {:?}", err);
         Self::Internal
     }

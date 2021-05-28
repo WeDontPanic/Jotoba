@@ -4,9 +4,8 @@ use std::{
     str::FromStr,
 };
 
-use crate::models::sentence;
-use crate::DbPool;
 use itertools::Itertools;
+use models::{sentence, DbPool};
 use parse::jmdict::languages::Language;
 use serde_json::Value;
 

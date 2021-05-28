@@ -5,14 +5,9 @@ extern crate diesel;
 
 include!(concat!(env!("OUT_DIR"), "/templates.rs"));
 
-pub mod cache;
 mod config;
 mod db;
-pub mod error;
 mod import;
-pub mod models;
-pub mod schema;
-pub mod search;
 pub mod sql;
 pub mod utils;
 mod web;
@@ -21,24 +16,7 @@ mod webserver;
 use std::path::Path;
 
 use argparse::{ArgumentParser, Print, Store, StoreTrue};
-use diesel::{r2d2::ConnectionManager, PgConnection};
 use import::has_required_data;
-use models::{dict, kanji};
-use r2d2::{Pool, PooledConnection};
-
-#[cfg(feature = "tokenizer")]
-use once_cell::sync::Lazy;
-
-pub type DbConnection = PooledConnection<ConnectionManager<PgConnection>>;
-pub type DbPool = Pool<ConnectionManager<PgConnection>>;
-
-#[cfg(feature = "tokenizer")]
-const NL_PARSER_PATH: &str = "./unidic-mecab";
-
-/// A global natural language parser
-#[cfg(feature = "tokenizer")]
-static JA_NL_PARSER: once_cell::sync::Lazy<igo_unidic::Parser> =
-    Lazy::new(|| igo_unidic::Parser::new(NL_PARSER_PATH).unwrap());
 
 #[derive(Default)]
 pub struct Options {

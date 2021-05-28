@@ -1,6 +1,8 @@
-use crate::{models::name, DbPool};
 use itertools::Itertools;
-use name::NewName;
+use models::{
+    name::{self, NewName},
+    DbPool,
+};
 use parse::{jmnedict::Parser as jmnedictParser, parser::Parse};
 use std::{
     fs::File,
@@ -26,7 +28,7 @@ pub async fn import(db: &DbPool, path: &str) {
         parser
             .parse(|entry, i| {
                 if i % 100 == 0 {
-                    print!("\rImporting jmnedict... {}", i * 100 / amount);
+                    print!("\rImporting jmnedict... {}%", i * 100 / amount);
                     std::io::stdout().flush().ok();
                 }
 

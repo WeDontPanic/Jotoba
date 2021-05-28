@@ -1,6 +1,6 @@
 use std::io::Write;
 
-use crate::{models::dict, DbPool};
+use models::{dict, DbPool};
 use parse::accents;
 
 /// Import jlpt patche file

@@ -2,9 +2,9 @@
 use std::path::Path;
 
 #[cfg(feature = "tokenizer")]
-use crate::{JA_NL_PARSER, NL_PARSER_PATH};
+use search::{JA_NL_PARSER, NL_PARSER_PATH};
 
-use crate::{config::Config, web, DbPool};
+use crate::{config::Config, web};
 use actix_web::{
     dev::ServiceRequest,
     dev::{Service, ServiceResponse, Transform},
@@ -15,6 +15,7 @@ use futures::{
     future::{ok, Ready},
     Future,
 };
+use models::DbPool;
 use std::pin::Pin;
 use std::task::{Context, Poll};
 
@@ -41,7 +42,7 @@ pub(super) async fn start(db: DbPool) -> std::io::Result<()> {
             // Static files
             .route("/index.html", actixweb::get().to(web::index::index))
             .route("/", actixweb::get().to(web::index::index))
-            .route("/search", actixweb::get().to(web::search::search))
+            .route("/search", actixweb::get().to(web::search_ep::search))
             .route("/about", actixweb::get().to(web::about::about))
             .default_service(actix_web::Route::new().to(web::web_error::not_found))
             .route(

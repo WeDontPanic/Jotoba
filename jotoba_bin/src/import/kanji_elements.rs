@@ -1,5 +1,4 @@
-use crate::models::kanji;
-use crate::DbPool;
+use models::{kanji, DbPool};
 use parse::kanji_ele;
 
 /// Import kanji elements

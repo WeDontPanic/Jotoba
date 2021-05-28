@@ -1,5 +1,5 @@
-use crate::models::name::Name;
-use crate::search::query::Query;
+use models::name::Name;
+use search::query::Query;
 
 #[macro_use]
 
@@ -8,12 +8,11 @@ mod actix_ructe;
 pub mod about;
 pub mod api;
 pub mod index;
-pub mod search;
+pub mod search_ep;
 pub mod web_error;
 
-use crate::search::query_parser::QueryType;
-use crate::search::word::result::WordResult;
-use crate::search::{kanji::result::Item as KanjiItem, sentence::result::Item as SentenceItem};
+use search::{kanji::result::Item as KanjiItem, sentence::result::Item as SentenceItem};
+use search::{query_parser::QueryType, word::result::WordResult};
 
 /// Data for the base template
 pub struct BaseData<'a> {

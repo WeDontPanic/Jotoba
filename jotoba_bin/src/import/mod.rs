@@ -1,8 +1,6 @@
-use crate::{
-    error::Error,
-    models::{dict, kanji, name, radical, sense},
-    DbPool, Options,
-};
+use crate::Options;
+use error::Error;
+use models::{dict, kanji, name, radical, sense, DbPool};
 
 pub mod accents;
 pub mod jlpt_patches;

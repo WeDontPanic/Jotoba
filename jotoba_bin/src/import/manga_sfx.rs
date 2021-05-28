@@ -1,13 +1,9 @@
-use crate::{
-    dict,
-    models::sense,
-    search::{word::WordSearch, SearchMode},
-    DbPool,
-};
 use diesel::result;
+use models::{dict, search_mode::SearchMode, sense, DbPool};
 use parse::jmdict::{
     languages::Language, part_of_speech::PartOfSpeech, Entry, EntryElement, EntrySense, GlossValue,
 };
+use search::word::WordSearch;
 use serde_json::Value;
 
 use futures::future::try_join_all;

@@ -35,6 +35,10 @@ languages-rs = { git = "https://github.com/daschdev/languages-rs", branch = "v0.
 async-std = "1.9.0"
 parse = { path = "../parse" }
 japanese = { path = "../japanese" }
+models = { path = "../models" }
+cache = { path = "../cache" }
+search = { path = "../search" }
+error = { path = "../error" }
 
 [build-dependencies]
 ructe = "0.13.2"

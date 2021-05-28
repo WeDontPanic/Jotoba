@@ -1,4 +1,4 @@
-@use crate::search::kanji::result::Item;
+@use search::kanji::result::Item;
 @(kanji: Vec<Item>)
 <!-- Inner Main Body -->
 @for (kpos, k_item) in kanji.iter().enumerate() {

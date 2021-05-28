@@ -5,8 +5,8 @@ use std::{
     sync::mpsc::{sync_channel, Receiver, SyncSender},
 };
 
-use crate::{models::kanji, DbPool};
 use itertools::Itertools;
+use models::{kanji, DbPool};
 use parse::{
     kanjidict::{Character, Parser as kanjidictParser},
     parser::Parse,
@@ -31,7 +31,7 @@ pub async fn import(db: &DbPool, path: String) {
         parser
             .parse(|entry, i| {
                 if i % 100 == 0 {
-                    print!("\rImporting kanjidict... {}", i * 100 / amount);
+                    print!("\rImporting kanjidict... {}%", i * 100 / amount);
                     std::io::stdout().flush().ok();
                 }
 

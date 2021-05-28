@@ -5,16 +5,14 @@ use std::{
     sync::mpsc::{sync_channel, Receiver, SyncSender},
 };
 
-use crate::{
-    models::{
-        dict::{self, NewDict},
-        kanji,
-        sense::{self, NewSense},
-    },
-    DbPool,
-};
 use itertools::Itertools;
 use japanese;
+use models::{
+    dict::{self, NewDict},
+    kanji,
+    sense::{self, NewSense},
+    DbPool,
+};
 use parse::{jmdict::Parser as jmdictParser, parser::Parse};
 
 struct Word {
@@ -44,7 +42,7 @@ pub async fn import(db: &DbPool, path: String) {
         parser
             .parse(|entry, i| {
                 if i % 100 == 0 {
-                    print!("\rImporting jmdict... {}", i * 100 / amount);
+                    print!("\rImporting jmdict... {}%", i * 100 / amount);
                     std::io::stdout().flush().ok();
                 }
 
@@ -128,7 +126,7 @@ async fn get_dict_kanji(db: &DbPool, dicts: &mut Vec<NewDict>) {
             .flatten()
             .collect_vec()
         {
-            let found_kanji = crate::models::kanji::find_by_literal(&db, kanji.clone()).await;
+            let found_kanji = models::kanji::find_by_literal(&db, kanji.clone()).await;
             if found_kanji.is_err() {
                 continue;
             }

@@ -621,6 +621,10 @@ dependencies = [
 ]
 
 [[package]]
+name = "cache"
+version = "0.1.0"
+
+[[package]]
 name = "cache-padded"
 version = "1.1.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -826,6 +830,16 @@ dependencies = [
  "log",
  "regex",
  "termcolor",
+]
+
+[[package]]
+name = "error"
+version = "0.1.0"
+dependencies = [
+ "diesel",
+ "r2d2",
+ "strum",
+ "tokio-diesel",
 ]
 
 [[package]]
@@ -1261,20 +1275,24 @@ dependencies = [
  "actix-web",
  "argparse",
  "async-std",
+ "cache",
  "diesel",
  "dotenv",
  "env_logger",
+ "error",
  "futures",
  "igo-unidic",
  "itertools",
  "japanese",
  "languages-rs",
  "levenshtein",
+ "models",
  "once_cell",
  "parse",
  "r2d2",
  "romaji",
  "ructe",
+ "search",
  "serde",
  "serde_json",
  "strum",
@@ -1517,6 +1535,32 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b9f1c5b025cda876f66ef43a113f91ebc9f4ccef34843000e0adf6ebbab84e21"
 dependencies = [
  "winapi 0.3.9",
+]
+
+[[package]]
+name = "models"
+version = "0.1.0"
+dependencies = [
+ "async-std",
+ "cache",
+ "diesel",
+ "dotenv",
+ "env_logger",
+ "error",
+ "futures",
+ "igo-unidic",
+ "itertools",
+ "japanese",
+ "languages-rs",
+ "once_cell",
+ "parse",
+ "r2d2",
+ "romaji",
+ "strum",
+ "strum_macros",
+ "thiserror",
+ "tokio 1.6.1",
+ "tokio-diesel",
 ]
 
 [[package]]
@@ -2006,6 +2050,28 @@ name = "scopeguard"
 version = "1.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d29ab0c6d3fc0ee92fe66e2d99f700eab17a8d57d1c1d3b748380fb20baa78cd"
+
+[[package]]
+name = "search"
+version = "0.1.0"
+dependencies = [
+ "async-std",
+ "cache",
+ "diesel",
+ "error",
+ "futures",
+ "igo-unidic",
+ "itertools",
+ "japanese",
+ "levenshtein",
+ "models",
+ "once_cell",
+ "parse",
+ "r2d2",
+ "romaji",
+ "serde",
+ "tokio-diesel",
+]
 
 [[package]]
 name = "semver"

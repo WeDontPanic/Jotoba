@@ -1,4 +1,4 @@
-use crate::{models::radical as DbRadical, DbPool};
+use models::{radical as DbRadical, DbPool};
 use parse::radicals;
 
 /// Import radicals

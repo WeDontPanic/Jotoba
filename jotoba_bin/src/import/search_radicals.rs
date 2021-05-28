@@ -1,4 +1,4 @@
-use crate::{models::radical, DbPool};
+use models::{radical, DbPool};
 use parse::radicals::search_radicals;
 
 /// Import search radicals
