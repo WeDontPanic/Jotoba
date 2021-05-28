@@ -22,7 +22,7 @@ loadCookieData();
 
 // Opens the Settings Overlay and accepts cookie usage
 function cookiesAccepted() {
-    Cookies.set("user_agreement", true);
+    Cookies.set("user_agreement", true, {path: '/'});
     let settingsBtns =  $('.settingsBtn')
         settingsBtns.each((i, e) => {
             e.dataset.target = "#settingsModal";
@@ -59,10 +59,10 @@ function onSettingsChange_Color(event) {
     if (event.target.classList.contains("clickable")) {
         document.documentElement.style.removeProperty(cssName);
         $(input[0]).val(getCssValue(cssName));
-        Cookies.set(id, getComputedStyle(document.documentElement).getPropertyValue(cssName).trim());
+        Cookies.set(id, getComputedStyle(document.documentElement).getPropertyValue(cssName).trim(), {path: '/'});
     } else { // Set the selected color if not
         document.documentElement.style.setProperty(cssName, color);
-        Cookies.set(id, color);
+        Cookies.set(id, color, {path: '/'});
     }
     
     setSpecialColorVars();
@@ -75,7 +75,7 @@ function getCssValue(cssName) {
 
 // Changes the Default Language to search for
 function onSettingsChange_DefaultLanguage(event) {
-    Cookies.set('default_lang', event.target.value);
+    Cookies.set('default_lang', event.target.value, {path: '/'});
     if (window.location.href.includes("/search")) {
         location.reload();
     }
@@ -83,7 +83,7 @@ function onSettingsChange_DefaultLanguage(event) {
 
 // Changes whether english results should be shown
 function onSettingsChange_ShowEnglish(event) {
-    Cookies.set('show_english', event.target.checked);
+    Cookies.set('show_english', event.target.checked, {path: '/'});
     if (!event.target.checked)
         $('#show_eng_on_top_settings_parent').addClass("hidden");
     else
@@ -93,17 +93,18 @@ function onSettingsChange_ShowEnglish(event) {
 
 // Changes whether english results should be shown on top
 function onSettingsChange_ShowEnglishOnTop(event) {
-    Cookies.set('show_english_on_top', event.target.checked);
+    Cookies.set('show_english_on_top', event.target.checked, {path: '/'});
 }
 
 // Sets the default kanji animation speed
 function onSettingsChange_AnimationSpeed(event) {
     $('#show_anim_speed_settings_slider').html(event.target.value);
-    Cookies.set('anim_speed', event.target.value);
+    Cookies.set('anim_speed', event.target.value, {path: '/'});
 }
 
 // Load the cookie's data into important stuff
 function loadCookieData() {
+
     // User agreement on using Cookies
     let user_agreement = Cookies.get("user_agreement");
 
@@ -185,7 +186,7 @@ function setColorFromArray(array) {
 
         // Set Property and Cookie
         document.documentElement.style.setProperty(cssName, color);
-        Cookies.set(id, color);
+        Cookies.set(id, color, {path: '/'});
     });
 
     setSpecialColorVars();
