@@ -1,44 +1,7 @@
-[package]
-name = "jotoba"
-version = "0.1.0"
-authors = ["jojii <jojii@gmx.net>"]
-edition = "2018"
-license = "GPLv3"
-build = "src/build.rs"
+[workspace]
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
-
-[dependencies]
-actix-files = "0.5.0"
-actix-web = "3.3.2"
-argparse = "0.2.2"
-async-std = "1.9.0"
-diesel = { version = "1.4.6", features = ["postgres","r2d2"] }
-dotenv = "0.15.0"
-env_logger = "0.8.3"
-futures = "0.3.15"
-itertools = "0.10.0"
-levenshtein = "1.0.5"
-once_cell = "1.7.2"
-quick-xml = "0.22.0"
-r2d2 = "0.8.9"
-regex = "1.5.4"
-romaji = "0.1.1"
-ructe = "0.13.2"
-serde = "1.0.126"
-serde_json = "1.0.64"
-strum = { version = "0.20.0", features = ["derive"] }
-strum_macros = "0.20.1"
-tokio = { version = "1.6.0", features = ["macros","rt-multi-thread","sync"] }
-tokio-diesel = {git = "https://github.com/mehcode/tokio-diesel" }
-igo-unidic = { git = "https://github.com/JojiiOfficial/igo-unidic", optional = true}
-toml = "0.5.8"
-thiserror = "1.0.25"
-languages-rs = { git = "https://github.com/daschdev/languages-rs", branch = "v0.2.0", features = ["with-toml"] }
-
-[build-dependencies]
-ructe = "0.13.2"
-
-[features]
-tokenizer = [ "igo-unidic" ]
-default = [ "tokenizer" ]
+members = [
+  "jotoba_bin",
+  "parse",
+  "frontend",
+]

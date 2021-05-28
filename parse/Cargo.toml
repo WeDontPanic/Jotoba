@@ -1,0 +1,14 @@
+[package]
+name = "parse"
+version = "0.1.0"
+authors = ["jojii <jojii@gmx.net>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+quick-xml = "0.22.0"
+diesel = { version = "1.4.6", features = ["postgres","r2d2"] }
+strum = { version = "0.20.0", features = ["derive"] }
+strum_macros = "0.20.1"
+regex = "1.5.4"
