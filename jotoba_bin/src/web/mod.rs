@@ -9,7 +9,6 @@ pub mod about;
 pub mod api;
 pub mod index;
 pub mod search;
-pub mod utils;
 pub mod web_error;
 
 use crate::search::query_parser::QueryType;

@@ -880,6 +880,9 @@ dependencies = [
 [[package]]
 name = "frontend"
 version = "0.1.0"
+dependencies = [
+ "ructe",
+]
 
 [[package]]
 name = "fuchsia-zircon"

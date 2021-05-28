@@ -34,7 +34,7 @@ use romaji::RomajiExt;
 use tokio_diesel::*;
 
 /// An in memory Cache for kanji items
-static KANJICACHE_C: Lazy<Mutex<SharedCache<i32, KanjiResult>>> =
+static KANJI_RESULT_CACHE: Lazy<Mutex<SharedCache<i32, KanjiResult>>> =
     Lazy::new(|| Mutex::new(SharedCache::with_capacity(10000)));
 
 #[derive(Queryable, QueryableByName, Clone, Debug, Default, PartialEq)]
@@ -387,7 +387,7 @@ pub async fn element_exists(db: &DbPool) -> Result<bool, Error> {
 /// Find a kanji by its literal
 pub async fn find_by_literal(db: &DbPool, l: String) -> Result<KanjiResult, Error> {
     // Try to find literal in kanji cache
-    let mut k_cache: MutexGuard<SharedCache<i32, KanjiResult>> = KANJICACHE_C.lock().await;
+    let mut k_cache: MutexGuard<SharedCache<i32, KanjiResult>> = KANJI_RESULT_CACHE.lock().await;
     if let Some(k) = k_cache.find_by_predicate(|i| i.kanji.literal == l) {
         return Ok(k.clone());
     }
@@ -407,7 +407,7 @@ pub async fn find_by_literals(db: &DbPool, l: &[String]) -> Result<Vec<KanjiResu
     }
 
     // Try to find literal in kanji cache
-    let mut k_cache: MutexGuard<SharedCache<i32, KanjiResult>> = KANJICACHE_C.lock().await;
+    let mut k_cache: MutexGuard<SharedCache<i32, KanjiResult>> = KANJI_RESULT_CACHE.lock().await;
 
     // Get cached kanji
     let cached_kanji = k_cache.filter_values(|i| l.contains(&i.kanji.literal));
@@ -436,7 +436,7 @@ pub async fn load_by_ids(db: &DbPool, ids: &[i32]) -> Result<Vec<KanjiResult>, E
         return Ok(vec![]);
     }
     // Lock cache
-    let mut k_cache: MutexGuard<SharedCache<i32, KanjiResult>> = KANJICACHE_C.lock().await;
+    let mut k_cache: MutexGuard<SharedCache<i32, KanjiResult>> = KANJI_RESULT_CACHE.lock().await;
 
     // Get cached kanji
     let cached_kanji = k_cache.get_values(&ids);
@@ -549,4 +549,25 @@ fn format_results(res: Vec<(Kanji, Meaning)>) -> Vec<KanjiResult> {
             }
         })
         .collect_vec()
+}
+
+/// An in memory Cache for kanji items
+pub static KANJICACHE: Lazy<
+    std::sync::Mutex<SharedCache<String, (Option<Vec<String>>, Option<Vec<String>>)>>,
+> = Lazy::new(|| std::sync::Mutex::new(SharedCache::with_capacity(10000)));
+
+pub async fn load_kanji_cache(db: &DbPool) -> Result<(), crate::error::Error> {
+    use crate::schema::kanji::dsl::*;
+
+    let all_kanji: Vec<(String, Option<Vec<String>>, Option<Vec<String>>)> = kanji
+        .select((literal, kunyomi, onyomi))
+        .get_results_async(db)
+        .await?;
+
+    let mut kanji_cache = KANJICACHE.lock().unwrap();
+    for curr_kanji in all_kanji {
+        kanji_cache.cache_set(curr_kanji.0, (curr_kanji.1, curr_kanji.2));
+    }
+
+    Ok(())
 }

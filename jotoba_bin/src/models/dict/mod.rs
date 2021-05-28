@@ -6,7 +6,7 @@ use super::{super::schema::dict, kanji::KanjiResult};
 use crate::{
     error::Error,
     japanese::{self, furigana, JapaneseExt},
-    models::sense,
+    models::{kanji::KANJICACHE, sense},
     utils, DbConnection, DbPool,
 };
 use diesel::sql_types::Integer;
@@ -233,12 +233,32 @@ pub fn new_dicts_from_entry(db: &DbConnection, entry: &Entry) -> Vec<NewDict> {
         .map(|i| i.reading.clone());
     if let Some(mut main) = dicts.iter_mut().find(|i| i.is_main && i.kanji) {
         if let Some(kana) = kana {
-            let furigana = furigana::generate::checked(db, &main.reading, &kana);
+            let furigana =
+                furigana::generate::checked(|l: String| get_kanji(db, &l), &main.reading, &kana);
             main.furigana = Some(furigana);
         }
     }
 
     dicts
+}
+
+fn get_kanji(db: &DbConnection, l: &str) -> Option<(Option<Vec<String>>, Option<Vec<String>>)> {
+    use crate::schema::kanji::dsl::*;
+
+    let mut lock = KANJICACHE.lock().unwrap();
+    if let Some(cache) = lock.cache_get(&l.to_owned()) {
+        return Some(cache.to_owned());
+    }
+
+    let readings: (Option<Vec<String>>, Option<Vec<String>>) = kanji
+        .select((kunyomi, onyomi))
+        .filter(literal.eq(l))
+        .get_result(db)
+        .ok()?;
+
+    lock.cache_set(l.to_owned(), readings.clone());
+
+    Some(readings)
 }
 
 pub async fn load_by_ids(db: &DbPool, ids: &[i32]) -> Result<Vec<Dict>, Error> {

@@ -1,39 +1,23 @@
-use std::sync::Mutex;
-
 use super::{
     super::{text_parts, JapaneseExt},
     calc_kanji_readings, from_str,
 };
-use crate::{cache::SharedCache, utils::real_string_len, DbConnection, DbPool};
-use diesel::prelude::*;
+use crate::utils::real_string_len;
 use itertools::Itertools;
-use once_cell::sync::Lazy;
-use tokio_diesel::AsyncRunQueryDsl;
 
-/// An in memory Cache for kanji items
-static KANJICACHE: Lazy<Mutex<SharedCache<String, (Option<Vec<String>>, Option<Vec<String>>)>>> =
-    Lazy::new(|| Mutex::new(SharedCache::with_capacity(10000)));
-
-pub async fn load_kanji_cache(db: &DbPool) -> Result<(), crate::error::Error> {
-    use crate::schema::kanji::dsl::*;
-
-    let all_kanji: Vec<(String, Option<Vec<String>>, Option<Vec<String>>)> = kanji
-        .select((literal, kunyomi, onyomi))
-        .get_results_async(db)
-        .await?;
-
-    let mut kanji_cache = KANJICACHE.lock().unwrap();
-    for curr_kanji in all_kanji {
-        kanji_cache.cache_set(curr_kanji.0, (curr_kanji.1, curr_kanji.2));
-    }
-
-    Ok(())
+pub trait RetrieveKanji:
+    FnMut(String) -> Option<(Option<Vec<String>>, Option<Vec<String>>)>
+{
+}
+impl<T: FnMut(String) -> Option<(Option<Vec<String>>, Option<Vec<String>>)> + ?Sized> RetrieveKanji
+    for T
+{
 }
 
 /// Encodes furigana readings of a japanese word/sentence and returns it in form of a string which
 /// can be parsed later on
-pub fn checked(db: &DbConnection, kanji: &str, kana: &str) -> String {
-    unchecked(db, kanji, kana)
+pub fn checked<R: RetrieveKanji>(retrieve: R, kanji: &str, kana: &str) -> String {
+    unchecked(retrieve, kanji, kana)
         .and_then(|furi| {
             let furi_parsed = from_str(&furi).map(|i| i.kana).join("");
             (furi_parsed.to_hiragana() == kana.to_hiragana()).then(|| furi)
@@ -42,11 +26,11 @@ pub fn checked(db: &DbConnection, kanji: &str, kana: &str) -> String {
 }
 
 /// Generate a furigana string. Returns None on error
-pub fn unchecked(db: &DbConnection, kanji: &str, kana: &str) -> Option<String> {
+pub fn unchecked<R: RetrieveKanji>(mut retrieve: R, kanji: &str, kana: &str) -> Option<String> {
     let furis = calc_kanji_readings(kanji, kana)?;
     Some(
         furigana_to_str(
-            |ji, na| retrieve_readings(db, ji, na),
+            |ji, na| retrieve_readings(&mut retrieve, ji, na),
             kanji,
             furis.into_iter(),
         )
@@ -54,29 +38,13 @@ pub fn unchecked(db: &DbConnection, kanji: &str, kana: &str) -> Option<String> {
     )
 }
 
-/// Returns the readings of a kanji by its literal
-fn get_kanji(db: &DbConnection, l: &str) -> Option<(Option<Vec<String>>, Option<Vec<String>>)> {
-    use crate::schema::kanji::dsl::*;
-
-    let mut lock = KANJICACHE.lock().unwrap();
-    if let Some(cache) = lock.cache_get(&l.to_owned()) {
-        return Some(cache.to_owned());
-    }
-
-    let readings: (Option<Vec<String>>, Option<Vec<String>>) = kanji
-        .select((kunyomi, onyomi))
-        .filter(literal.eq(l))
-        .get_result(db)
-        .ok()?;
-
-    lock.cache_set(l.to_owned(), readings.clone());
-
-    Some(readings)
-}
-
 /// Takes a kanji(compound) and the assigned kana reading and returns (hopefully) a list of the
 /// provided kanji with the
-fn retrieve_readings(db: &DbConnection, kanji: &str, kana: &str) -> Option<Vec<(String, String)>> {
+fn retrieve_readings<R: RetrieveKanji>(
+    retrieve: &mut R,
+    kanji: &str,
+    kana: &str,
+) -> Option<Vec<(String, String)>> {
     // If both have len of 2 the readings are obv
     if real_string_len(kanji) == real_string_len(kana) {
         return Some(
@@ -99,7 +67,7 @@ fn retrieve_readings(db: &DbConnection, kanji: &str, kana: &str) -> Option<Vec<(
     let kanji_readings = kanji_items
         .iter()
         .map(|i| {
-            let (kun, on) = get_kanji(db, &i.to_string())?;
+            let (kun, on) = retrieve(i.to_string())?;
             let kun = kun.map(|i| format_readings(i)).unwrap_or_default();
             let on = on.map(|i| format_readings(i)).unwrap_or_default();
             let mut readings = kun.into_iter().chain(on).collect_vec();
