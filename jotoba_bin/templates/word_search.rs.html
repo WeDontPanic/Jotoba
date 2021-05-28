@@ -138,13 +138,12 @@
               <div class="entry-min-height-@word.get_word_tag_count()">
                 <!-- Right side: Info -->
 
-                <!-- !!! Tooltip -->
-                <div class="word-tooltip d-flex flex-column noselect" data-toggle="modal" data-target="#kek@word.sequence">
+                <!-- Tooltip -->
+                <div class="word-tooltip d-flex flex-column noselect" onclick="openInfoMenu(this, '#conj@word.sequence', '#coll@word.sequence')">
                   <span>.</span>
                   <span>.</span>
                   <span>.</span>
                 </div>
-                <!-- !!! Tooltip-->
 
                 @for (spos, senses_compound) in word.get_senses_orderd(&query).iter().enumerate() {
                   @for (pos, sense) in senses_compound.iter().enumerate() {
@@ -206,31 +205,40 @@
                 }
               </div>
 
-              <!-- !!! START OF INFO OVERLAY -->
-              <!-- Word Info Overlay -->
-              <div class="modal fade" id="kek@word.sequence">
+              <!-- !!! START OF COLLOCATION OVERLAY !!! -->
+              @if let Some(ref collocations) = word.collocations {
+                <div class="modal fade" id="coll@word.sequence" style="display: none;" aria-hidden="true">
+                  <div class="modal-dialog  modal-lg">
+                    <div class="modal-content">
+                      <!-- Modal Body -->
+                      <div class="modal-body">
+                        <button type="button" class="close" data-dismiss="modal">×</button>
+                        <br>
+                        <!-- Verb conjugation table -->
+                        <h3 class="info-h3">Collocations</h3>
+                        <table class="table collocation">
+                          <tbody>
+                            @for collocation in collocations {
+                              <tr>
+                                  <th scope="row"><a class="clickable no-align green" href="/search?type=0&amp;search=@collocation.0">@collocation.0</a></th>
+                                  <td>@collocation.1</td>
+                              </tr>
+                            }
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              }
+
+              <!-- !!! START OF CONJUGATION OVERLAY TODO ONLY DO THIS IF POSSIBLE !!! -->
+              <div class="modal fade" id="conj@word.sequence">
                 <div class="modal-dialog  modal-lg">
                   <div class="modal-content">
-       
                    <!-- Modal Body -->
                    <div class="modal-body">
                       <button type="button" class="close" data-dismiss="modal">×</button>
-       
-                      <!-- Word collocations -->
-       
-                      @if let Some(ref collocations) = word.collocations {
-                        <h3 class="info-h3">Word collocations</h3>
-         
-                        <div class="d-flex flex-column wrap">
-                        @for collocation in collocations {
-                           <a class="clickable collocation" href='https://jotoba.de/search?type=0&search=@collocation.0'>@collocation.0 - @collocation.1</a>
-                        }
-                        </div>
-                      }
-       
-                      <!-- Br Only used when both are present -->
-                      <br>
-       
                       <!-- Verb conjugation table -->
        
                       <h3 class="info-h3">Godan verb with ku ending</h3>
@@ -367,3 +375,9 @@
       }
     </div>
   </div>
+
+  <!-- !!! Menu Overlay !!! -->
+  <div id="info-dropdown" class="d-flex flex-column noselect">
+    <span id="conjugationBtn" class="info-entry" data-toggle="modal">Show Conjugations</span>
+    <span id="collocationBtn" class="info-entry" data-toggle="modal">Show Collocations</span>
+ </div>
