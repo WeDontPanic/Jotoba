@@ -28,6 +28,30 @@ pub async fn has_required_data(database: &DbPool) -> Result<bool, Error> {
     let search_radicals_exists = radical::search_radical_exists(&database).await?;
     let kanji_elements_exists = kanji::element_exists(&database).await?;
 
+    if !jmdict_exists {
+        println!("Jmdict missing");
+    }
+
+    if !jmnedict_exists {
+        println!("Jmnedict missing");
+    }
+
+    if !kanji_exists {
+        println!("Kanji missing");
+    }
+
+    if !radicals_exists {
+        println!("Radicals missing");
+    }
+
+    if !search_radicals_exists {
+        println!("Search radicals missing");
+    }
+
+    if !kanji_elements_exists {
+        println!("Kradfile missing");
+    }
+
     Ok(jmdict_exists
         && jmnedict_exists
         && kanji_exists
