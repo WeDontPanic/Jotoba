@@ -1,5 +1,6 @@
 # Jotoba
-A free online, selfhostable, multilang japanese dictionary.
+A free online, selfhostable, multilang japanese dictionary.<br>
+Public instance: [jotoba.de](https://jotoba.de)<br>
 
 # Main Team
 <table>
@@ -36,7 +37,7 @@ A free online, selfhostable, multilang japanese dictionary.
 - Kanji stroke animations
 
 # Installation
-1. [Setup a postgres DB](#Postgres_Installation)
+1. [Setup a postgres DB](#postgres-installation)
 2. Customize and run `echo DATABASE_URL=postgres://username:password@localhost/jotoba > .env` 
 4. Compile it: `cargo build --release` (The binary will be located in ./target/release/jotoba)
 5. Import kanji and jmdict: <br>
@@ -53,7 +54,7 @@ CREATE DATABASE jotoba with owner jotoba
      TEMPLATE template0;
 ```
 
-2. Install [Pgroonga](#postgres-installation)
+2. Install [Pgroonga](https://pgroonga.github.io/install/debian.html#install-on-bullseye)
 2. Install groonga-tokenizer-mecab
 2. Run `CREATE EXTENSION pg_trgm;`
 3. Run `CREATE EXTENSION pgroonga;`
