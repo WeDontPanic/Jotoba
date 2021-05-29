@@ -26,13 +26,13 @@ toml = "0.5.8"
 thiserror = "1.0.25"
 languages-rs = { git = "https://github.com/daschdev/languages-rs", branch = "v0.2.0", features = ["with-toml"] }
 async-std = "1.9.0"
-parse = { path = "../parse" }
-japanese = { path = "../japanese" }
-models = { path = "../models" }
-cache = { path = "../cache" }
-search = { path = "../search" }
-error = { path = "../error" }
-utils = { path = "../utils" }
+parse = { path = "../lib/parse" }
+japanese = { path = "../lib/japanese" }
+models = { path = "../lib/models" }
+cache = { path = "../lib/cache" }
+search = { path = "../lib/search" }
+error = { path = "../lib/error" }
+utils = { path = "../lib/utils" }
 
 [build-dependencies]
 ructe = "0.13.2"
