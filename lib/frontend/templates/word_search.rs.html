@@ -143,28 +143,28 @@
               <div class="entry-min-height-@word.get_word_tag_count()">
                 <!-- Right side: Info -->
 
+                <!-- Tooltip -->
+                <div id="m@word.sequence" class="word-tooltip d-flex flex-column noselect">
+                  <span>.</span>
+                  <span>.</span>
+                  <span>.</span>
+                </div>
+
+                <ul id="info-dropdown" class="mdl-menu mdl-menu--bottom-right mdl-js-menu mdl-js-ripple-effect" for="m@word.sequence">
+                  @*@if word.conjugations.is_some() {
+                    <li id="conjugationBtn" class="info-entry" data-toggle="modal" data-target="conj@word.sequence" class="mdl-menu__item">Show Conjugations</li>
+                  } else {
+                    <li disabled id="conjugationBtn" class="info-entry" class="mdl-menu__item">Show Conjugations</li>
+                  }*@
+                  <li disabled class="mdl-menu__item" style="height: 10px;"><hr style="margin: 0px; margin-top: 5px;"></li>
+                  @if word.collocations.is_some() {
+                    <li id="collocationBtn" class="info-entry" data-toggle="modal" data-target="coll@word.sequence" class="mdl-menu__item">Show Collocations</li>
+                  } else {
+                    <li disabled id="collocationBtn" class="info-entry" class="mdl-menu__item">Show Collocations</li>
+                  }
+                </ul>
+
                 @for (spos, senses_compound) in word.get_senses_orderd(&query).iter().enumerate() { 
-                  <!-- Tooltip -->
-                  <div id="m@word.sequence" class="word-tooltip d-flex flex-column noselect">
-                    <span>.</span>
-                    <span>.</span>
-                    <span>.</span>
-                  </div>
-
-                  <ul id="info-dropdown" class="mdl-menu mdl-menu--bottom-right mdl-js-menu mdl-js-ripple-effect" for="m@word.sequence">
-                    @if let Some(ref conjugations) = word.conjugations {
-                      <li id="conjugationBtn" class="info-entry" data-toggle="modal" data-target="conj@word.sequence" class="mdl-menu__item">Show Conjugations</li>
-                    } else {
-                      <li disabled id="conjugationBtn" class="info-entry" class="mdl-menu__item">Show Conjugations</li>
-                    }
-                    <li disabled class="mdl-menu__item" style="height: 10px;"><hr style="margin: 0px; margin-top: 5px;"></li>
-                    @if let Some(ref collocations) = word.collocations {
-                      <li id="collocationBtn" class="info-entry" data-toggle="modal" data-target="coll@word.sequence" class="mdl-menu__item">Show Collocations</li>
-                    } else {
-                      <li disabled id="collocationBtn" class="info-entry" class="mdl-menu__item">Show Collocations</li>
-                    }
-                  </ul>
-
                   @for (pos, sense) in senses_compound.iter().enumerate() {
                     @if !sense.glosses.is_empty() {
                       <!-- Sense entry -->
