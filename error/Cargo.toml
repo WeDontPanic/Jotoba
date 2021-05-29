@@ -7,7 +7,7 @@ edition = "2018"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-diesel = "1.4.6"
+diesel = { version = "1.4.6", features = ["postgres","r2d2"] }
 r2d2 = "0.8.9"
 strum = "0.20.0"
 tokio-diesel = {git = "https://github.com/mehcode/tokio-diesel" }

@@ -7,14 +7,14 @@ edition = "2018"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+utils = { path = "../utils" }
+error = { path = "../error" }
 itertools = "0.10.0"
 romaji = "0.1.1"
 strum = "0.20.0"
 strum_macros = "0.20.1"
 once_cell = "1.7.2"
 igo-unidic = { git = "https://github.com/JojiiOfficial/igo-unidic", optional = true}
-utils = { path = "../utils" }
-error = { path = "../error" }
 
 [features]
 default = []

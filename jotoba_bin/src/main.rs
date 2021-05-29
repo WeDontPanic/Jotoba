@@ -6,7 +6,6 @@ extern crate diesel;
 include!(concat!(env!("OUT_DIR"), "/templates.rs"));
 
 mod config;
-mod db;
 mod import;
 mod web;
 mod webserver;
@@ -35,7 +34,7 @@ pub struct Options {
 #[tokio::main]
 pub async fn main() {
     let options = parse_args();
-    let database = db::connect();
+    let database = models::connect();
 
     // Run import process on --import/-i
     if options.import {
