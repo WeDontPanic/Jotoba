@@ -1,0 +1,25 @@
+[package]
+name = "frontend"
+version = "0.1.0"
+authors = ["jojii <jojii@gmx.net>"]
+edition = "2018"
+build = "src/build.rs"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+parse = { path = "../parse" }
+japanese = { path = "../japanese" }
+models = { path = "../models" }
+cache = { path = "../cache" }
+search = { path = "../search" }
+error = { path = "../error" }
+utils = { path = "../utils" }
+
+actix-web = "3.3.2"
+ructe = "0.13.2"
+serde = "1.0.126"
+
+
+[build-dependencies]
+ructe = "0.13.2"

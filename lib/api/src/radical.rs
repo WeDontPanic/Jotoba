@@ -5,13 +5,13 @@ use itertools::Itertools;
 use serde::{Deserialize, Serialize};
 use tokio_diesel::AsyncRunQueryDsl;
 
-use super::error::{Origin, RestError};
 use async_std::sync::Mutex;
 use cache::SharedCache;
 use diesel::{
     prelude::*,
     sql_types::{Integer, Text},
 };
+use error::api_error::{Origin, RestError};
 use japanese::JapaneseExt;
 use models::DbPool;
 use once_cell::sync::Lazy;
@@ -75,7 +75,7 @@ async fn find_by_radicals(db: &DbPool, radicals: &[char]) -> Result<Vec<SqlFindR
         return Ok(vec![]);
     }
 
-    let query = include_str!("../../../sql/kanji_by_radical.sql");
+    let query = include_str!("../sql/kanji_by_radical.sql");
 
     // All kanji with the first radical
     let kanji_ids: Vec<SqlKanjiLiteralResult> = diesel::sql_query(query)

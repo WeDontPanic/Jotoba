@@ -4,7 +4,7 @@ use std::path::Path;
 #[cfg(feature = "tokenizer")]
 use japanese::jp_parsing::{JA_NL_PARSER, NL_PARSER_PATH};
 
-use crate::{config::Config, web};
+use crate::config::Config;
 use actix_web::{
     dev::ServiceRequest,
     dev::{Service, ServiceResponse, Transform},
@@ -40,14 +40,14 @@ pub(super) async fn start(db: DbPool) -> std::io::Result<()> {
             .wrap(middleware::Logger::default())
             .wrap(middleware::Compress::default())
             // Static files
-            .route("/index.html", actixweb::get().to(web::index::index))
-            .route("/", actixweb::get().to(web::index::index))
-            .route("/search", actixweb::get().to(web::search_ep::search))
-            .route("/about", actixweb::get().to(web::about::about))
-            .default_service(actix_web::Route::new().to(web::web_error::not_found))
+            .route("/index.html", actixweb::get().to(frontend::index::index))
+            .route("/", actixweb::get().to(frontend::index::index))
+            .route("/search", actixweb::get().to(frontend::search_ep::search))
+            .route("/about", actixweb::get().to(frontend::about::about))
+            .default_service(actix_web::Route::new().to(frontend::web_error::not_found))
             .route(
                 "/api/kanji/by_radical",
-                actixweb::post().to(web::api::radical::kanji_by_radicals),
+                actixweb::post().to(api::radical::kanji_by_radicals),
             )
             .service(actixweb::scope("/assets").wrap(MyCacheInterceptor).service(
                 actix_files::Files::new("", config_clone.server.get_html_files()),

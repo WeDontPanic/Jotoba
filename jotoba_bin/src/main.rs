@@ -1,13 +1,7 @@
 #![allow(irrefutable_let_patterns)]
 
-#[macro_use]
-extern crate diesel;
-
-include!(concat!(env!("OUT_DIR"), "/templates.rs"));
-
 mod config;
 mod import;
-mod web;
 mod webserver;
 
 use std::path::Path;

@@ -3,7 +3,7 @@ use std::str::FromStr;
 use actix_web::{web, HttpMessage, HttpRequest, HttpResponse};
 use serde::Deserialize;
 
-use crate::{templates, web::BaseData};
+use crate::{templates, BaseData};
 use models::DbPool;
 use parse::jmdict::languages::Language;
 use search::{

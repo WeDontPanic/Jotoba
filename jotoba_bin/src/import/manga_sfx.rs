@@ -1,4 +1,3 @@
-use diesel::result;
 use models::{dict, search_mode::SearchMode, sense, DbPool};
 use parse::jmdict::{
     languages::Language, part_of_speech::PartOfSpeech, Entry, EntryElement, EntrySense, GlossValue,
@@ -41,7 +40,7 @@ async fn import_sfx(
     seq: i32,
     jp: String,
     translations: Vec<String>,
-) -> Result<(), result::Error> {
+) -> Result<(), error::Error> {
     // TODO also search for katakana (or hiragana) version to prevent cross-kana duplicates
     let native = WordSearch::new(db, &jp)
         .with_mode(SearchMode::Exact)
@@ -83,10 +82,10 @@ async fn import_sfx(
     let dicts = dict::new_dicts_from_entry(&db_connection, &entry);
     let senses = sense::new_from_entry(&entry);
 
-    sense::insert_sense(&db, senses).await.unwrap();
+    sense::insert_sense(&db, senses).await?;
 
     if native.is_empty() {
-        dict::insert_dicts(db, dicts).await.unwrap();
+        dict::insert_dicts(db, dicts).await?;
     }
 
     Ok(())

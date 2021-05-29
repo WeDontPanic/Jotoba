@@ -1,0 +1,405 @@
+@use super::{index_html, word_search_html, kanji_details, name_search, sentence_search, about_html, radpicker_html};
+@use crate::{BaseData, ResultData, Site};
+@use search::query_parser::QueryType;
+
+@(data: BaseData)
+
+<!DOCTYPE html>
+<html lang="en">
+   <head>
+      <title>Jotoba</title>
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <meta http-equiv="Content-type" content="text/html; charset=utf-8">
+
+      <link rel="stylesheet" type="text/css" href="assets/css/lib/bootstrap.min.css">
+
+      <link rel="preload" href="assets/css/lib/alertify.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+      <noscript><link rel="stylesheet" href="assets/css/lib/alertify.min.css"></noscript>
+      <link rel="preload" href="assets/css/lib/alertifyThemes/bootstrap.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+      <noscript><link rel="stylesheet" href="assets/css/lib/alertifyThemes/bootstrap.min.css"></noscript>
+      <link rel="preload" href="assets/css/alerts.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+      <noscript><link rel="stylesheet" href="assets/css/alerts.css"></noscript>
+
+      <link rel="stylesheet" type="text/css" href="assets/css/main.css">
+      <link rel="stylesheet" type="text/css" href="assets/css/searchBar.css">
+
+      <link rel="preload" href="assets/css/radselect.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+      <noscript><link rel="stylesheet" href="assets/css/radselect.css"></noscript>
+
+      <link rel="stylesheet" type="text/css" href="assets/css/mobile.css">
+
+      <script src="assets/js/lib/jquery.min.js"></script>
+      <script async defer src="assets/js/lib/bootstrap.min.js"></script>
+      <script async defer src="assets/js/lib/choices.js"></script>
+      <script async defer src="assets/js/lib/alertify.min.js"></script>
+      <script defer src ="assets/js/lib/js-cookie-2.2.1.min.js"></script>
+
+      <script defer src="assets/js/utils.js"></script>
+	   <script async defer src="assets/js/qol.js"></script>
+      <script async defer src="assets/js/stt.js"></script>
+      <script async defer src="assets/js/radicals.js"></script>
+      <script async defer src="assets/js/mobile.js"></script>
+      <script defer src="assets/js/settings.js"></script>
+   </head>
+
+   <body>
+      <!-- Search Row -->
+      <div id="search-row" class="wrap-row">
+         <div class="d-flex center">
+
+            <!-- Left Buttons -->
+            <div class="btn-container settingsBtn" data-toggle="modal" data-target="#cookiesModal">
+               <svg id="settingsSvg" height="30" width="30" viewBox="0 0 100 100">
+                  <path d="m50.011 0c-2.8839 0-5.7139 0.25936-8.4642 0.7281l-1.3424 14.221c-2.8444 0.79287-5.5365 1.9015-8.0546 3.322l-10.99-9.0785c-4.6419 3.286-8.7054 7.3259-11.991 11.968l9.1012 10.99c-1.4188 2.5151-2.552 5.214-3.3447 8.0546l-14.197 1.35c-0.46893 2.75-0.728 5.58-0.728 8.49 0 2.8897 0.25747 5.7085 0.7281 8.4641l14.198 1.3425c0.79274 2.8406 1.926 5.5395 3.3447 8.0546l-9.0785 10.99c3.2796 4.6294 7.3161 8.6885 11.945 11.968l11.013-9.1013c2.5197 1.4217 5.2082 2.5515 8.0546 3.3447l1.3424 14.221c2.7503 0.4688 5.5803 0.7054 8.4642 0.7054 2.8838 0 5.6911-0.2366 8.4414-0.7054l1.3424-14.221c2.8465-0.7932 5.5349-1.923 8.0546-3.3447l11.013 9.1013c4.6293-3.2797 8.6658-7.3388 11.945-11.968l-9.0785-10.99c1.4188-2.5151 2.552-5.214 3.3447-8.0546l14.198-1.3425c0.47063-2.7556 0.7281-5.5744 0.7281-8.4641 0-2.8848-0.25907-5.7131-0.7281-8.4642l-14.198-1.3424c-0.79274-2.8406-1.926-5.5395-3.3447-8.0546l9.1012-10.99c-3.2855-4.6423-7.349-8.6821-11.991-11.968l-10.99 9.0785c-2.5181-1.4205-5.2102-2.5291-8.0546-3.322l-1.3424-14.221c-2.7503-0.46874-5.5576-0.7281-8.4414-0.7281zm0 30.967c10.516 0 19.022 8.528 19.022 19.044s-8.5053 19.044-19.022 19.044c-10.516 0-19.044-8.528-19.044-19.044s8.528-19.044 19.044-19.044z"></path>
+               </svg>
+               <h4 class="noselect">Settings</h4>              
+            </div>
+            <div class="btn-container" onclick="toggleRadicalOverlay()">
+               <svg height="30" width="30">
+                  <path d="M11.986,13.132H2.599v1.653h14.053v-1.653H12.68c0.613-1.333,1.28-3.253,1.679-4.559c0.321-0.027,0.507-0.107,0.561-0.268   L12.866,7.72c-0.374,1.521-1.092,3.759-1.705,5.146L11.986,13.132L11.986,13.132z M5.026,8.306c0.561,1.387,1.041,3.228,1.172,4.4   l1.573-0.373c-0.159-1.174-0.666-2.987-1.28-4.347L5.026,8.306L5.026,8.306z M6.146,27.4V25.88h7.121v1.359h1.734v-9.974H4.44V27.4   H6.146L6.146,27.4z M13.266,24.279H6.145v-5.413h7.121V24.279z M10.573,5.719V3.105c0.347-0.052,0.507-0.186,0.533-0.373L8.838,2.6   v3.119H3.292v1.6H16.2v-1.6H10.573L10.573,5.719z M25.88,4.199h-8.187v23.174h1.729V5.908h5.311   c-0.907,2.159-2.053,4.667-3.36,7.306c2.909,2.667,4.214,4.534,4.214,6.267c0,2.453-1.279,2.533-3.066,2.533   c-0.506,0-1.063-0.022-1.647-0.08c0.346,0.508,0.584,1.281,0.61,1.762c0.4,0.027,0.826,0.027,1.229,0.027   c1.731,0,4.642,0,4.642-4.188c0-1.921-1.199-3.92-4.08-6.614c1.467-2.8,2.881-5.679,3.896-7.946   c0.106-0.053,0.214-0.133,0.239-0.267L26.23,4.12L25.885,4.2L25.88,4.199L25.88,4.199z"></path>
+               </svg>
+               <h4 class="noselect">Radicals</h4>
+            </div>
+            <div class="btn-container" onclick='toggleSpeakOverlay()'>
+               <svg height="30" width="30">
+                  <path d="M15.93,24.714v3.091c3.09,0.168,5.483,1.19,5.483,2.146c0,0.023-12.679,0.023-12.679,0c0-0.919,2.213-1.91,5.139-2.133   v-3.115c-3.734-0.535-6.616-3.717-6.616-7.602v-1.541h1.027v1.541c0,3.688,2.992,6.682,6.681,6.683h0.005   c3.691-0.001,6.743-2.991,6.743-6.683v-1.541h1.029v1.541C22.743,21.031,19.729,24.236,15.93,24.714L15.93,24.714z M14.965,22.693   c-3.122,0-5.654-2.532-5.654-5.654v-1.477h11.373v1.477C20.684,20.161,18.087,22.693,14.965,22.693z M9.312,5.685   c0-3.121,2.531-5.653,5.654-5.653s5.718,2.532,5.718,5.653v8.849H9.312V5.685z"></path>
+               </svg>
+               <h4 class="noselect">Voice</h4>
+            </div>
+
+            <!-- Search Bar -->
+            <div id="searchDiv">
+               <div class="searchDivInner">
+                  <form method="GET" action="/search">
+                     <div class="inner-form">
+                        <div class="input-field first-wrap">
+                           <div class="input-select">
+                              <select data-trigger="" name="type" onchange="changeSearchType(this.value)">
+                                 <option value="0" @data.sel_str(QueryType::Words) >Words</option>
+                                 <option value="1" @data.sel_str(QueryType::Kanji) >Kanji</option>
+                                 <option value="2" @data.sel_str(QueryType::Sentences) >Sentences</option>
+                                 <option value="3" @data.sel_str(QueryType::Names) >Names</option>
+                              </select>
+                           </div>
+                        </div>
+                        <div class="input-field second-wrap">
+                           <div class="input-group">
+                              <input id="search" name="search" type="text" value="@data.get_query_str()" placeholder="Search..." tabindex="1" lang="ja" autocapitalize="off" autocomplete="off" data-autoload="false" data-effective-keyword=""/>
+                              <button id="emptyInput" type="button" class="btn bg-transparent" onclick="emptySearchInput()">
+                                 <svg height="10" width="10" viewBox="0 0 503.021 503.021" style="margin-top: -5px">
+                                    <path d="M491.613,75.643l-64.235-64.235c-15.202-15.202-39.854-15.202-55.056,0L251.507,132.222L130.686,11.407c-15.202-15.202-39.853-15.202-55.055,0L11.401,75.643c-15.202,15.202-15.202,39.854,0,55.056l120.821,120.815L11.401,372.328c-15.202,15.202-15.202,39.854,0,55.056l64.235,64.229c15.202,15.202,39.854,15.202,55.056,0l120.815-120.814l120.822,120.814c15.202,15.202,39.854,15.202,55.056,0l64.235-64.229c15.202-15.202,15.202-39.854,0-55.056L370.793,251.514l120.82-120.815C506.815,115.49,506.815,90.845,491.613,75.643z">
+                                    </path>
+                                 </svg>
+                              </button>
+                          </div>
+                        </div>
+                        <div class="input-field third-wrap">
+                           <button class="btn-search" type="submit">
+                              <svg class="svg-inline--fa fa-search fa-w-16" aria-hidden="true" data-prefix="fas" data-icon="search" role="img" viewBox="0 0 512 512">
+                                 <path fill="white" d="M505 442.7L405.3 343c-4.5-4.5-10.6-7-17-7H372c27.6-35.3 44-79.7 44-128C416 93.1 322.9 0 208 0S0 93.1 0 208s93.1 208 208 208c48.3 0 92.7-16.4 128-44v16.3c0 6.4 2.5 12.5 7 17l99.7 99.7c9.4 9.4 24.6 9.4 33.9 0l28.3-28.3c9.4-9.4 9.4-24.6.1-34zM208 336c-70.7 0-128-57.2-128-128 0-70.7 57.2-128 128-128 70.7 0 128 57.2 128 128 0 70.7-57.2 128-128 128z"></path>
+                              </svg>
+                           </button>
+                        </div>
+                     </div>
+                  </form>
+                  <div>
+                  </div>
+               </div>
+               <!-- Start of Radical Overlay -->
+               <div class="overlay radical noselect hidden">
+                  <span class="x-button noselect" onclick="toggleRadicalOverlay()">x</span>
+                  
+                  <div class="d-flex flex-row wrap rad-results">
+                  </div>
+
+                  <br>
+
+                  <span class="clickable" onclick="resetRadPicker()">
+                     Reset
+                  </span>
+
+                  <div class="d-flex flex-row wrap rad-picker">
+                    @:radpicker_html()
+                  </div>
+
+               </div>
+               <!-- End of Radical  Overlay -->
+                <!-- Start of Speech Overlay -->
+                <div class="overlay speech hidden">
+                  <span class="x-button noselect" onclick="toggleSpeakOverlay()">x</span>
+                  <div class="d-flex flex-column">
+                     <span>Current language: <b id="currentSpeechLang">English</b></span>
+                     <span>Currently listening: <b id="currentlyListening">No</b></span>
+                     <br>
+                     <span>To change your language, select one of the following:</span>
+                     <div class="d-flex flex-row wrap">
+                        <span class="clickable right-padding-10" onclick='setRecognitionLang("jap")'>Japanese</span>
+                        <span class="clickable right-padding-10" onclick='setRecognitionLang("ger")'>German</span>
+                        <span class="clickable right-padding-10" onclick='setRecognitionLang("eng")'>English</span>
+                        <span class="clickable right-padding-10" onclick='setRecognitionLang("rus")'>Russian</span>
+                        <span class="clickable right-padding-10" onclick='setRecognitionLang("spa")'>Spanish</span>
+                        <span class="clickable right-padding-10" onclick='setRecognitionLang("swe")'>Swedish</span>
+                        <span class="clickable right-padding-10" onclick='setRecognitionLang("fre")'>French</span>
+                        <span class="clickable right-padding-10" onclick='setRecognitionLang("dut")'>Dutch</span>
+                        <span class="clickable right-padding-10" onclick='setRecognitionLang("hun")'>Hungarian</span>
+                        <span class="clickable right-padding-10" onclick='setRecognitionLang("svl")'>Slovenian</span>
+                     </div>
+                  </div>
+               </div>
+               <!-- End of Speech Overlay -->
+            </div>
+         </div>
+
+         <!-- Start of Settings Overlay -->
+         <div class="modal fade" id="settingsModal">
+            <div class="modal-dialog">
+               <div class="modal-content">
+              
+                  <!-- Modal Header -->
+                  <div class="modal-header">
+                     <h3 class="modal-title">Settings</h4>
+                     <button type="button" class="close" data-dismiss="modal">&times;</button>
+                  </div>
+                
+                  <!-- Modal body -->
+                  <div class="modal-body">
+                     <span class="inner-title">Default search language</span>
+                     <br>
+                     <select id="default_lang_settings" class="choices no-margin" onchange="onSettingsChange_DefaultLanguage(event)">
+                        <option value="de-DE">German</option>
+                        <option value="en-US">English</option>
+                        <option value="ru">Russian</option>
+                        <option value="es-ES">Spanish</option>
+                        <option value="sv-SE">Swedish</option>
+                        <option value="fr-FR">French</option>
+                        <option value="nl-NL">Dutch</option>
+                        <option value="hu">Hungarian</option>
+                        <option value="sl-SI">Slovenian</option>
+                     </select>
+                     <span class="tags">Results will try to match the selected language</span>
+                     <br>
+                     <br>
+                     <span class="inner-title">Result settings</span>
+                     <br>
+                     <span>Always show english results:</span>  
+                     <input id="show_eng_settings" type="checkbox" checked onchange="onSettingsChange_ShowEnglish(event)">
+                     <br>
+                     <div id="show_eng_on_top_settings_parent">
+                        <span>Show english results on top:</span> 
+                        <input id="show_eng_on_top_settings" type="checkbox" onchange="onSettingsChange_ShowEnglishOnTop(event)">
+                     </div>
+                     <br>
+                     <span class="inner-title">Display settings</span>
+                     <br>
+                     <span>Default kanji animation speed:</span>
+                     <div class="slidecontainer">
+                        <input id="show_anim_speed_settings" type="range" min="0.05" max="2" value="1" step="0.05" class="slider speedSlider" oninput="onSettingsChange_AnimationSpeed(event)">
+                        <span id="show_anim_speed_settings_slider">1.0</span>
+                     </div>
+                     <br>
+                     <span class="inner-title">Select color scheme</span>
+                     <div class="d-flex flex-column top-padding-05-rem">
+                        <div class="d-flex flex-row">
+                           <span class="colorLbl">Use theme:</span>  
+                           <span onclick='parseSchemeCode("F2F1F0F3F3Fj4A83C50C058909DC0sZZORD3D3D3");' class="clickable" style="padding-right: 0.5em;">Light</span>
+                           <span onclick='parseSchemeCode("2023241F212362CF6A2A863038k63D3CFC9E8E6E3181A1b2ACA29D94o313531");' class="clickable">Dark</span>
+                        </div>
+                        <hr class="hr-settings"/>
+                        <div class="d-flex flex-row">
+                           <span class="colorLbl">background:</span>
+                           <input id="background_value" type="color" value="#f2f1f0"  onchange='onSettingsChange_Color(event)'/>
+                           <span onclick='onSettingsChange_Color(event)' class="clickable">reset</span>
+                        </div>
+                        <div class="d-flex flex-row">
+                           <span class="colorLbl">overlay:</span>
+                           <input id="overlay_value" type="color" value="#f3f3f3" onchange='onSettingsChange_Color(event)'/>
+                           <span onclick='onSettingsChange_Color(event)' class="clickable">reset</span>
+                        </div>
+                        <hr class="hr-settings"/>
+                        <div class="d-flex flex-row">
+                           <span class="colorLbl">primary:</span>
+                           <input id="primaryColor_value" type="color" value="#34a83c" onchange='onSettingsChange_Color(event)'/>
+                           <span onclick='onSettingsChange_Color(event)' class="clickable">reset</span>
+                        </div>
+                        <div class="d-flex flex-row"> 
+                           <span class="colorLbl">primHover:</span>
+                           <input id="bgPrimaryColor_value" type="color" value="#50c058" onchange='onSettingsChange_Color(event)'/>
+                           <span onclick='onSettingsChange_Color(event)' class="clickable">reset</span>
+                        </div>
+                        <div class="d-flex flex-row"> 
+                           <span class="colorLbl">secondary:</span>
+                           <input id="secondaryColor_value" type="color" value="#909dc0" onchange='onSettingsChange_Color(event)'/>
+                           <span onclick='onSettingsChange_Color(event)' class="clickable">reset</span>
+                        </div>
+                        <hr class="hr-settings"/>
+                        <div class="d-flex flex-row"> 
+                           <span class="colorLbl">text:</span>
+                           <input id="primaryTextColor_value" type="color" value="#909dc0" onchange='onSettingsChange_Color(event)'/>
+                           <span onclick='onSettingsChange_Color(event)' class="clickable">reset</span>
+                        </div>
+                        <div class="d-flex flex-row"> 
+                           <span class="colorLbl">overlayText:</span>
+                           <input id="secondaryTextColor_value" type="color" value="#909dc0" onchange='onSettingsChange_Color(event)'/>
+                           <span onclick='onSettingsChange_Color(event)' class="clickable">reset</span>
+                        </div>
+                        <hr class="hr-settings"/>
+                        <div class="d-flex flex-row">
+                           <span class="colorLbl">searchBG:</span>
+                           <input id="searchBackground_value" type="color" value="#909dc0" onchange='onSettingsChange_Color(event)'/>
+                           <span onclick='onSettingsChange_Color(event)' class="clickable">reset</span>
+                        </div>
+                        <div class="d-flex flex-row">
+                           <span class="colorLbl">searchText:</span>
+                           <input id="searchTextColor_value" type="color" value="#909dc0" onchange='onSettingsChange_Color(event)'/>
+                           <span onclick='onSettingsChange_Color(event)' class="clickable">reset</span>
+                        </div>
+                        <hr class="hr-settings"/>
+                        <div class="d-flex flex-row">
+                           <span class="colorLbl">tags:</span>
+                           <input id="tagColor_value" type="color" value="#909dc0" onchange='onSettingsChange_Color(event)'/>
+                           <span onclick='onSettingsChange_Color(event)' class="clickable">reset</span>
+                        </div>
+                        <div class="d-flex flex-row"> 
+                           <span class="colorLbl">itemBG:</span>
+                           <input id="itemBG_value" type="color" value="#909dc0" onchange='onSettingsChange_Color(event)'/>
+                           <span onclick='onSettingsChange_Color(event)' class="clickable">reset</span>
+                        </div>
+                        <br>
+                        <div>
+                           <span class="colorLbl">scheme code:</span>
+                           <input id="scheme_input" class="form-control small" id="bg_col_settings_hex">
+                           <span onclick='parseSchemeCode()' class="clickable ">apply</span>
+                           <vl class="vl-settings"></vl>
+                           <span onclick='createSchemeCode(true)' class="clickable ">create</span>
+                        </div>
+                        <span class="tags">Using the code you can share color schemes</span>
+                     </div>
+                     <br>
+                     <span class="inner-title">Cookie management</span>
+                     <br>
+                     <span>Click <span onclick='revokeCookieAgreement()' class="clickable">here</span> to revoke your Cookies agreement</span>
+                     <br>
+                  </div>
+                
+                  <!-- Modal footer -->
+                  <div class="modal-footer">
+                     <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                  </div>
+                
+               </div>
+            </div>
+         </div>
+         <!-- End of Settings Overlay -->
+      </div>
+
+      <!-- Start of Cookies Overlay -->
+      <div class="modal fade" id="cookiesModal">
+         <div class="modal-dialog">
+            <div class="modal-content">
+           
+               <!-- Modal Header -->
+               <div class="modal-header">
+                  <h3 class="modal-title"></h4>
+                  <button type="button" class="close" data-dismiss="modal">&times;</button>
+               </div>
+             
+               <!-- Modal body -->
+               <div class="modal-body">
+                  <article>
+                     <div class="small-12 medium-6 columns small-centered">
+                        <p>To use this feature you have to accept to the use of cookies.</p>
+                        <p>Your data will <b>only</b> be used for your personal website settings.</p>
+                     </div>
+                  </article>
+               </div>
+             
+               <!-- Modal footer -->
+               <div class="modal-footer">
+                  <button type="button" class="btn btn-success" data-dismiss="modal" onclick="cookiesAccepted()">Accept</button>
+                  <button type="button" class="btn btn-danger" data-dismiss="modal">Decline</button>
+               </div>
+             
+            </div>
+         </div>
+      </div>
+     <!-- End of Cookies Overlay -->
+
+      <!-- Main Body -->
+      <div id="page-container"> 
+        <div class="d-flex center">
+          <div class="main-container">
+            <br>
+
+            @match data.site {
+              Site::SearchResult(search_result) => {
+                @match search_result.result {
+                  ResultData::Word(result) => {
+                    @:word_search_html(&search_result.query, result)
+                  }
+                  ResultData::KanjiInfo(result) => {
+                    @:kanji_details(result)
+                  }
+                  ResultData::Name(result) => {
+                    @:name_search(result)
+                  }
+                  ResultData::Sentence(result) => {
+                    @:sentence_search(result)
+                  }
+                }
+              }
+              Site::Index => {
+                @:index_html()
+              }
+              Site::About => {
+                @:about_html()
+              }
+            }
+
+          </div>
+        </div>
+      </div>
+
+      <!-- Mobile Menu -->
+      <div class="mobile-nav d-flex flex-column-reverse hidden">
+         <!-- Settings -->
+         <button class="mobile-nav-inner-btn" data-toggle="modal" data-target="#cookiesModal" onclick="toggleMobileNav()">
+            <svg height="26px" width="26px" viewBox="0 0 100 100">
+               <path d="m50.011 0c-2.8839 0-5.7139 0.25936-8.4642 0.7281l-1.3424 14.221c-2.8444 0.79287-5.5365 1.9015-8.0546 3.322l-10.99-9.0785c-4.6419 3.286-8.7054 7.3259-11.991 11.968l9.1012 10.99c-1.4188 2.5151-2.552 5.214-3.3447 8.0546l-14.197 1.35c-0.46893 2.75-0.728 5.58-0.728 8.49 0 2.8897 0.25747 5.7085 0.7281 8.4641l14.198 1.3425c0.79274 2.8406 1.926 5.5395 3.3447 8.0546l-9.0785 10.99c3.2796 4.6294 7.3161 8.6885 11.945 11.968l11.013-9.1013c2.5197 1.4217 5.2082 2.5515 8.0546 3.3447l1.3424 14.221c2.7503 0.4688 5.5803 0.7054 8.4642 0.7054 2.8838 0 5.6911-0.2366 8.4414-0.7054l1.3424-14.221c2.8465-0.7932 5.5349-1.923 8.0546-3.3447l11.013 9.1013c4.6293-3.2797 8.6658-7.3388 11.945-11.968l-9.0785-10.99c1.4188-2.5151 2.552-5.214 3.3447-8.0546l14.198-1.3425c0.47063-2.7556 0.7281-5.5744 0.7281-8.4641 0-2.8848-0.25907-5.7131-0.7281-8.4642l-14.198-1.3424c-0.79274-2.8406-1.926-5.5395-3.3447-8.0546l9.1012-10.99c-3.2855-4.6423-7.349-8.6821-11.991-11.968l-10.99 9.0785c-2.5181-1.4205-5.2102-2.5291-8.0546-3.322l-1.3424-14.221c-2.7503-0.46874-5.5576-0.7281-8.4414-0.7281zm0 30.967c10.516 0 19.022 8.528 19.022 19.044s-8.5053 19.044-19.022 19.044c-10.516 0-19.044-8.528-19.044-19.044s8.528-19.044 19.044-19.044z"></path>
+            </svg>
+         </button>
+         <!-- Radical Input -->
+         <button class="mobile-nav-inner-btn" onclick="toggleRadicalOverlay(); toggleMobileNav();">
+            <svg height="30px" width="30px">
+               <path d="M11.986,13.132H2.599v1.653h14.053v-1.653H12.68c0.613-1.333,1.28-3.253,1.679-4.559c0.321-0.027,0.507-0.107,0.561-0.268   L12.866,7.72c-0.374,1.521-1.092,3.759-1.705,5.146L11.986,13.132L11.986,13.132z M5.026,8.306c0.561,1.387,1.041,3.228,1.172,4.4   l1.573-0.373c-0.159-1.174-0.666-2.987-1.28-4.347L5.026,8.306L5.026,8.306z M6.146,27.4V25.88h7.121v1.359h1.734v-9.974H4.44V27.4   H6.146L6.146,27.4z M13.266,24.279H6.145v-5.413h7.121V24.279z M10.573,5.719V3.105c0.347-0.052,0.507-0.186,0.533-0.373L8.838,2.6   v3.119H3.292v1.6H16.2v-1.6H10.573L10.573,5.719z M25.88,4.199h-8.187v23.174h1.729V5.908h5.311   c-0.907,2.159-2.053,4.667-3.36,7.306c2.909,2.667,4.214,4.534,4.214,6.267c0,2.453-1.279,2.533-3.066,2.533   c-0.506,0-1.063-0.022-1.647-0.08c0.346,0.508,0.584,1.281,0.61,1.762c0.4,0.027,0.826,0.027,1.229,0.027   c1.731,0,4.642,0,4.642-4.188c0-1.921-1.199-3.92-4.08-6.614c1.467-2.8,2.881-5.679,3.896-7.946   c0.106-0.053,0.214-0.133,0.239-0.267L26.23,4.12L25.885,4.2L25.88,4.199L25.88,4.199z"></path>
+            </svg>
+         </button>
+         <!-- Speech Input -->
+         <button class="mobile-nav-inner-btn" onclick="toggleSpeakOverlay(); toggleMobileNav();">
+            <svg height="30px" width="30px">
+               <path d="M15.93,24.714v3.091c3.09,0.168,5.483,1.19,5.483,2.146c0,0.023-12.679,0.023-12.679,0c0-0.919,2.213-1.91,5.139-2.133   v-3.115c-3.734-0.535-6.616-3.717-6.616-7.602v-1.541h1.027v1.541c0,3.688,2.992,6.682,6.681,6.683h0.005   c3.691-0.001,6.743-2.991,6.743-6.683v-1.541h1.029v1.541C22.743,21.031,19.729,24.236,15.93,24.714L15.93,24.714z M14.965,22.693   c-3.122,0-5.654-2.532-5.654-5.654v-1.477h11.373v1.477C20.684,20.161,18.087,22.693,14.965,22.693z M9.312,5.685   c0-3.121,2.531-5.653,5.654-5.653s5.718,2.532,5.718,5.653v8.849H9.312V5.685z"></path>
+            </svg>
+         </button>
+         <!-- Jump Up / Down -->
+         <button onclick="jumpToTop()" id="jmp-btn" class="mobile-nav-inner-btn hidden">
+            <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="26px" height="26px" viewBox="0 0 16 16" xml:space="preserve">
+               <polygon points="8,2.8 16,10.7 13.6,13.1 8.1,7.6 2.5,13.2 0,10.7 "></polygon>
+            </svg>
+         </button>
+      </div>
+      <!-- Shows / Hides the buttons above -->
+      <button onclick="toggleMobileNav()" class="mobile-nav-btn">
+         <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" height="28px" width="28px" viewBox="0 0 32 32" xml:space="preserve"><path d="M4,10h24c1.104,0,2-0.896,2-2s-0.896-2-2-2H4C2.896,6,2,6.896,2,8S2.896,10,4,10z M28,14H4c-1.104,0-2,0.896-2,2  s0.896,2,2,2h24c1.104,0,2-0.896,2-2S29.104,14,28,14z M28,22H4c-1.104,0-2,0.896-2,2s0.896,2,2,2h24c1.104,0,2-0.896,2-2  S29.104,22,28,22z"/></svg>
+      </button> 
+
+      <!-- Footer -->
+      <footer>
+         <div class="center-text">
+            <hr class="footer-hr">
+            <span>
+               Jotoba wouldn't be able to exist without the help of many open-source data sources. <br> Check out the <a class="clickable no-align green" href="/about">About Page</a> for a list of all contributors in this project.
+            </span>
+         </div>
+      </footer>
+
+   </body>
+</html>

@@ -1,3 +1,5 @@
+pub mod api_error;
+
 use std::{fmt::Display, num::ParseIntError, string::FromUtf8Error};
 
 use diesel::result::Error as DbError;
@@ -80,4 +82,3 @@ impl Display for Error {
 }
 
 impl std::error::Error for Error {}
-

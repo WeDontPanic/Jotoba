@@ -1,3 +1,5 @@
+include!(concat!(env!("OUT_DIR"), "/templates.rs"));
+
 use models::name::Name;
 use search::query::Query;
 

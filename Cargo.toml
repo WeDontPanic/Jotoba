@@ -9,6 +9,6 @@ members = [
   "lib/search",
   "lib/error",
   "lib/utils",
-#  "lib/frontend",
-#  "lib/api",
+  "lib/frontend",
+  "lib/api",
 ]

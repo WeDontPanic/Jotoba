@@ -303,6 +303,25 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "28b2cd92db5cbd74e8e5028f7e27dd7aa3090e89e4f2a197cc7c8dfb69c7063b"
 
 [[package]]
+name = "api"
+version = "0.1.0"
+dependencies = [
+ "actix-web",
+ "async-std",
+ "cache",
+ "diesel",
+ "error",
+ "itertools",
+ "japanese",
+ "models",
+ "once_cell",
+ "serde",
+ "tokio 1.6.1",
+ "tokio-diesel",
+ "utils",
+]
+
+[[package]]
 name = "argparse"
 version = "0.2.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -836,9 +855,12 @@ dependencies = [
 name = "error"
 version = "0.1.0"
 dependencies = [
+ "actix-web",
  "diesel",
  "r2d2",
+ "serde",
  "strum",
+ "thiserror",
  "tokio-diesel",
 ]
 
@@ -889,6 +911,22 @@ checksum = "5fc25a87fa4fd2094bffb06925852034d90a17f0d1e05197d4956d3555752191"
 dependencies = [
  "matches",
  "percent-encoding",
+]
+
+[[package]]
+name = "frontend"
+version = "0.1.0"
+dependencies = [
+ "actix-web",
+ "cache",
+ "error",
+ "japanese",
+ "models",
+ "parse",
+ "ructe",
+ "search",
+ "serde",
+ "utils",
 ]
 
 [[package]]
@@ -1277,12 +1315,13 @@ version = "0.1.0"
 dependencies = [
  "actix-files",
  "actix-web",
+ "api",
  "argparse",
  "async-std",
  "cache",
- "diesel",
  "env_logger",
  "error",
+ "frontend",
  "futures",
  "itertools",
  "japanese",
@@ -1294,9 +1333,7 @@ dependencies = [
  "search",
  "serde",
  "serde_json",
- "thiserror",
  "tokio 1.6.1",
- "tokio-diesel",
  "toml",
  "utils",
 ]
