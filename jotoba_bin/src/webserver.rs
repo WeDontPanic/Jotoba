@@ -1,23 +1,15 @@
 #[cfg(feature = "tokenizer")]
 use std::path::Path;
+use std::time::Duration;
 
 #[cfg(feature = "tokenizer")]
 use japanese::jp_parsing::{JA_NL_PARSER, NL_PARSER_PATH};
 
 use crate::config::Config;
-use actix_web::{
-    dev::ServiceRequest,
-    dev::{Service, ServiceResponse, Transform},
-    http::header::{HeaderValue, CACHE_CONTROL},
-    middleware, web as actixweb, App, Error, HttpServer,
-};
-use futures::{
-    future::{ok, Ready},
-    Future,
-};
+use actix_web::{middleware, web as actixweb, App, HttpServer};
 use models::DbPool;
-use std::pin::Pin;
-use std::task::{Context, Poll};
+
+use super::cache_control::CacheInterceptor;
 
 /// Start the webserver
 #[actix_web::main]
@@ -49,9 +41,14 @@ pub(super) async fn start(db: DbPool) -> std::io::Result<()> {
                 "/api/kanji/by_radical",
                 actixweb::post().to(api::radical::kanji_by_radicals),
             )
-            .service(actixweb::scope("/assets").wrap(MyCacheInterceptor).service(
-                actix_files::Files::new("", config_clone.server.get_html_files()),
-            ))
+            .service(
+                actixweb::scope("/assets")
+                    .wrap(CacheInterceptor(Duration::from_secs(604800)))
+                    .service(actix_files::Files::new(
+                        "",
+                        config_clone.server.get_html_files(),
+                    )),
+            )
     })
     .bind(&config.server.listen_address)?
     .run()
@@ -67,56 +64,4 @@ fn load_tokenizer() {
     // Force parser to parse something to
     // prevent 1. search after launch taking up several seconds
     JA_NL_PARSER.parse("");
-}
-
-struct MyCacheInterceptor;
-
-impl<S, B> Transform<S> for MyCacheInterceptor
-where
-    S: Service<Request = ServiceRequest, Response = ServiceResponse<B>, Error = Error>,
-    S::Future: 'static,
-    B: 'static,
-{
-    type Request = ServiceRequest;
-    type Response = ServiceResponse<B>;
-    type Error = Error;
-    type InitError = ();
-    type Transform = MyCacheInterceptorMiddleware<S>;
-    type Future = Ready<Result<Self::Transform, Self::InitError>>;
-
-    fn new_transform(&self, service: S) -> Self::Future {
-        ok(MyCacheInterceptorMiddleware { service })
-    }
-}
-
-pub struct MyCacheInterceptorMiddleware<S> {
-    service: S,
-}
-
-impl<S, B> Service for MyCacheInterceptorMiddleware<S>
-where
-    S: Service<Request = ServiceRequest, Response = ServiceResponse<B>, Error = Error>,
-    S::Future: 'static,
-    B: 'static,
-{
-    type Request = ServiceRequest;
-    type Response = ServiceResponse<B>;
-    type Error = Error;
-    type Future = Pin<Box<dyn Future<Output = Result<Self::Response, Self::Error>>>>;
-
-    fn poll_ready(&mut self, cx: &mut Context<'_>) -> Poll<Result<(), Self::Error>> {
-        self.service.poll_ready(cx)
-    }
-
-    fn call(&mut self, req: ServiceRequest) -> Self::Future {
-        let fut = self.service.call(req);
-
-        Box::pin(async move {
-            let mut res = fut.await?;
-            let headers = res.headers_mut();
-            // 1 Week should be enough
-            headers.append(CACHE_CONTROL, HeaderValue::from_static("max-age=604800"));
-            return Ok(res);
-        })
-    }
 }

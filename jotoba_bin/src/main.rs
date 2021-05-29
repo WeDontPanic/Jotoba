@@ -1,5 +1,6 @@
 #![allow(irrefutable_let_patterns)]
 
+mod cache_control;
 mod config;
 mod webserver;
 
