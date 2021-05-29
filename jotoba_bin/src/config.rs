@@ -1,11 +1,10 @@
 #![allow(dead_code)]
 use serde::{Deserialize, Serialize};
 
-use async_std::io::prelude::*;
-use async_std::path::PathBuf;
 use async_std::{
     fs::{self, File},
-    path::Path,
+    io::prelude::*,
+    path::{Path, PathBuf},
 };
 
 #[derive(Debug, Serialize, Deserialize, Default, Clone)]

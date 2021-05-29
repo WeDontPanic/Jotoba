@@ -1,9 +1,16 @@
 use argparse::{ArgumentParser, Print, Store, StoreTrue};
 use import::Options as ImportOptions;
 
+/// Command line arguments
 #[derive(Default)]
 pub struct Options {
+    /// Start the server
+    pub start: bool,
+
+    // Import files
     pub import: bool,
+    /// Whether to import or not
+    // Import paths
     pub jmdict_path: String,
     pub kanjidict_path: String,
     pub jlpt_paches_path: String,
@@ -14,7 +21,6 @@ pub struct Options {
     pub radicals_path: String,
     pub elements_path: String,
     pub search_radicals_path: String,
-    pub start: bool,
 }
 
 impl Into<ImportOptions> for &Options {

@@ -1,22 +1,26 @@
+mod cache_control;
+
 #[cfg(feature = "tokenizer")]
 use std::path::Path;
-use std::time::Duration;
 
 #[cfg(feature = "tokenizer")]
 use japanese::jp_parsing::{JA_NL_PARSER, NL_PARSER_PATH};
 
 use crate::config::Config;
 use actix_web::{middleware, web as actixweb, App, HttpServer};
+use cache_control::CacheInterceptor;
 use models::DbPool;
+use std::time::Duration;
 
-use super::cache_control::CacheInterceptor;
+/// How long frontend assets are going to be cached by the clients. Currently 1 week
+const ASSET_CACHE_MAX_AGE: u64 = 604800;
 
 /// Start the webserver
 #[actix_web::main]
 pub(super) async fn start(db: DbPool) -> std::io::Result<()> {
-    env_logger::init_from_env(env_logger::Env::new().default_filter_or("debug"));
-
     let config = Config::new().await.expect("config failed");
+
+    setup_logger();
 
     #[cfg(feature = "tokenizer")]
     load_tokenizer();
@@ -27,7 +31,6 @@ pub(super) async fn start(db: DbPool) -> std::io::Result<()> {
             // Data
             .data(db.clone())
             .data(config_clone.clone())
-            .app_data(db.clone())
             // Middlewares
             .wrap(middleware::Logger::default())
             .wrap(middleware::Compress::default())
@@ -37,13 +40,15 @@ pub(super) async fn start(db: DbPool) -> std::io::Result<()> {
             .route("/search", actixweb::get().to(frontend::search_ep::search))
             .route("/about", actixweb::get().to(frontend::about::about))
             .default_service(actix_web::Route::new().to(frontend::web_error::not_found))
+            // API
             .route(
                 "/api/kanji/by_radical",
                 actixweb::post().to(api::radical::kanji_by_radicals),
             )
+            // Static files
             .service(
                 actixweb::scope("/assets")
-                    .wrap(CacheInterceptor(Duration::from_secs(604800)))
+                    .wrap(CacheInterceptor(Duration::from_secs(ASSET_CACHE_MAX_AGE)))
                     .service(actix_files::Files::new(
                         "",
                         config_clone.server.get_html_files(),
@@ -53,6 +58,10 @@ pub(super) async fn start(db: DbPool) -> std::io::Result<()> {
     .bind(&config.server.listen_address)?
     .run()
     .await
+}
+
+fn setup_logger() {
+    env_logger::init_from_env(env_logger::Env::new().default_filter_or("debug"));
 }
 
 #[cfg(feature = "tokenizer")]

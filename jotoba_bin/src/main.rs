@@ -1,11 +1,10 @@
 #![allow(irrefutable_let_patterns)]
 
-mod cache_control;
 mod cli;
 mod config;
 mod webserver;
 
-use import::{has_required_data, Options as ImportOptions};
+use import::has_required_data;
 
 #[tokio::main]
 pub async fn main() {
@@ -14,8 +13,7 @@ pub async fn main() {
 
     // Run import process on --import/-i
     if options.import {
-        let import_options: ImportOptions = (&options).into();
-        import::import(&database, &import_options).await;
+        import::import(&database, &(&options).into()).await;
         return;
     }
 

@@ -8,9 +8,13 @@ use futures::{
     future::{ok, Ready},
     Future,
 };
-use std::task::{Context, Poll};
-use std::{pin::Pin, time::Duration};
+use std::{
+    pin::Pin,
+    task::{Context, Poll},
+    time::Duration,
+};
 
+/// Custom middle ware to set the response `CACHE_CONTROL` header to the passed Duration
 pub struct CacheInterceptor(pub Duration);
 
 impl<S, B> Transform<S> for CacheInterceptor
