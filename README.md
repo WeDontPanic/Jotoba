@@ -1,6 +1,22 @@
 # Jotoba
 A free online, selfhostable, multilang japanese dictionary.
 
+# Main Team
+<table>
+     <tr>
+          <td><a href="https://github.com/JojiiOfficial">JojiiOfficial</a></td>
+          <td><a href="https://github.com/Yukaru-san">Yukaru</a></td>
+     </tr>
+     <tr style="content-align: center">
+          <td><a href="https://github.com/JojiiOfficial"><img src="https://avatars.githubusercontent.com/u/15957865?v=4" width="100" height="100"></a></td>
+          <td><a href="https://github.com/Yukaru-san"><img src="https://avatars.githubusercontent.com/u/57414313?v=4" width="100" height="100"></a></td>
+     </tr>
+     <tr>
+          <td>Backend dev</td>
+          <td>Frontend dev</td>
+     </tr>
+</table>
+
 # Requirements
 - [Jmdict.xml](https://www.edrdg.org/wiki/index.php/JMdict-EDICT_Dictionary_Project)
 - [Kanjidict2](https://www.edrdg.org/wiki/index.php/KANJIDIC_Project)
