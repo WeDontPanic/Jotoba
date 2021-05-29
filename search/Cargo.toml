@@ -12,6 +12,7 @@ japanese = { path = "../japanese" }
 models = { path = "../models" }
 cache = { path = "../cache" }
 error = { path = "../error" }
+utils = { path = "../utils" }
 serde = "1.0.126"
 itertools = "0.10.0"
 diesel = "1.4.6"

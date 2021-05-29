@@ -39,6 +39,7 @@ models = { path = "../models" }
 cache = { path = "../cache" }
 search = { path = "../search" }
 error = { path = "../error" }
+utils = { path = "../utils" }
 
 [build-dependencies]
 ructe = "0.13.2"

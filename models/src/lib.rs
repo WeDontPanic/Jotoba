@@ -13,7 +13,6 @@ pub mod search_mode;
 pub mod sense;
 pub mod sentence;
 pub mod sql;
-mod utils;
 
 pub type DbConnection = PooledConnection<ConnectionManager<PgConnection>>;
 pub type DbPool = Pool<ConnectionManager<PgConnection>>;

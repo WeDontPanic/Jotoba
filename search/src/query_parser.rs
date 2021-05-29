@@ -1,7 +1,6 @@
 use itertools::Itertools;
 use serde::Deserialize;
 
-use crate::utils;
 use japanese::JapaneseExt;
 use parse::jmdict::part_of_speech::PosSimple;
 

@@ -12,7 +12,6 @@ use super::{
 use crate::{
     schema::{kanji, kanji_element},
     search_mode::SearchMode,
-    utils::to_option,
     DbPool,
 };
 use cache::SharedCache;
@@ -21,6 +20,7 @@ use parse::{
     kanji_ele::KanjiPart,
     kanjidict::{self, Character},
 };
+use utils::to_option;
 
 use async_std::sync::{Mutex, MutexGuard};
 use diesel::{

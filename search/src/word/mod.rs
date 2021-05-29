@@ -18,12 +18,12 @@ use super::{
     query::{Query, QueryLang},
     search_order::SearchOrder,
 };
-use crate::utils::real_string_len;
 use cache::SharedCache;
 use error::Error;
 use japanese::JapaneseExt;
 use models::search_mode::SearchMode;
 use models::{kanji::KanjiResult, DbPool};
+use utils::real_string_len;
 
 #[cfg(feature = "tokenizer")]
 use self::jp_parsing::InputTextParser;

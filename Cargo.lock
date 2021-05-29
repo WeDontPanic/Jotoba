@@ -1265,6 +1265,7 @@ dependencies = [
  "romaji",
  "strum",
  "strum_macros",
+ "utils",
 ]
 
 [[package]]
@@ -1301,6 +1302,7 @@ dependencies = [
  "tokio 1.6.1",
  "tokio-diesel",
  "toml",
+ "utils",
 ]
 
 [[package]]
@@ -1561,6 +1563,7 @@ dependencies = [
  "thiserror",
  "tokio 1.6.1",
  "tokio-diesel",
+ "utils",
 ]
 
 [[package]]
@@ -2071,6 +2074,7 @@ dependencies = [
  "romaji",
  "serde",
  "tokio-diesel",
+ "utils",
 ]
 
 [[package]]
@@ -2635,9 +2639,9 @@ dependencies = [
 
 [[package]]
 name = "unicode-normalization"
-version = "0.1.17"
+version = "0.1.18"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "07fbfce1c8a97d547e8b5334978438d9d6ec8c20e38f56d4a4374d181493eaef"
+checksum = "33717dca7ac877f497014e10d73f3acf948c342bee31b5ca7892faf94ccc6b49"
 dependencies = [
  "tinyvec",
 ]
@@ -2664,6 +2668,13 @@ dependencies = [
  "idna",
  "matches",
  "percent-encoding",
+]
+
+[[package]]
+name = "utils"
+version = "0.1.0"
+dependencies = [
+ "itertools",
 ]
 
 [[package]]

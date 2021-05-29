@@ -22,7 +22,6 @@ pub mod query;
 pub mod query_parser;
 pub mod search_order;
 pub mod sentence;
-mod utils;
 pub mod word;
 
 /// Predefines data, required for

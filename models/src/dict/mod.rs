@@ -6,9 +6,11 @@ use super::{
     kanji::{KanjiResult, KANJICACHE},
     sense,
 };
-use crate::{schema::dict, utils, DbConnection, DbPool};
-use diesel::sql_types::Integer;
-use diesel::{prelude::*, sql_types::Text};
+use crate::{schema::dict, DbConnection, DbPool};
+use diesel::{
+    prelude::*,
+    sql_types::{Integer, Text},
+};
 use error::Error;
 use futures::future::try_join_all;
 use itertools::Itertools;

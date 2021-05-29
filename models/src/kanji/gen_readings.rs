@@ -6,13 +6,10 @@ use std::{
 use super::dict::Dict;
 use super::ReadingType;
 
-use crate::{
-    search_mode::SearchMode,
-    utils::{self, invert_ordering},
-    DbPool,
-};
+use crate::{search_mode::SearchMode, DbPool};
 use error::Error;
 use japanese::JapaneseExt;
+use utils::{self, invert_ordering};
 
 #[cfg(feature = "tokenizer")]
 use crate::JA_NL_PARSER;

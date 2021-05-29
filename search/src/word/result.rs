@@ -19,8 +19,8 @@ use parse::jmdict::{
     priority::Priority,
 };
 
-use crate::utils::to_option;
 use itertools::Itertools;
+use utils::to_option;
 
 use models::{dict::Dict, kanji::KanjiResult, sense::Sense as DbSenseEntry};
 

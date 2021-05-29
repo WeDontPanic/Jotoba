@@ -1,6 +1,5 @@
 use crate::{
     schema::{radical, search_radical},
-    utils::to_option,
     DbConnection, DbPool,
 };
 use diesel::prelude::*;
@@ -8,6 +7,7 @@ use error::Error;
 use itertools::Itertools;
 use parse::radicals::{self, search_radicals};
 use tokio_diesel::*;
+use utils::to_option;
 
 #[derive(Queryable, QueryableByName, Clone, Debug, Default, PartialEq)]
 #[table_name = "radical"]

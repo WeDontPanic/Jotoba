@@ -8,8 +8,6 @@ include!(concat!(env!("OUT_DIR"), "/templates.rs"));
 mod config;
 mod db;
 mod import;
-pub mod sql;
-pub mod utils;
 mod web;
 mod webserver;
 

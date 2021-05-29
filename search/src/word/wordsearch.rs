@@ -1,7 +1,6 @@
 use super::result::{Reading, Sense, Word};
 
 use super::super::{Search, SearchMode};
-use crate::utils::to_option;
 use diesel::sql_types::{Integer, Text};
 use error::Error;
 use models::sql::ExpressionMethods;
@@ -12,6 +11,7 @@ use parse::jmdict::{
     part_of_speech::{PartOfSpeech, PosSimple},
     priority::Priority,
 };
+use utils::to_option;
 
 use diesel::prelude::*;
 use futures::future::try_join_all;
@@ -495,7 +495,7 @@ fn pos_unionized(senses: &[Sense]) -> Vec<PartOfSpeech> {
     let mut pos = sense_iter.next().unwrap().glosses[0].part_of_speech.clone();
 
     for i in sense_iter {
-        pos = crate::utils::union_elements(&pos, &i.glosses[0].part_of_speech)
+        pos = utils::union_elements(&pos, &i.glosses[0].part_of_speech)
             .into_iter()
             .cloned()
             .collect_vec();

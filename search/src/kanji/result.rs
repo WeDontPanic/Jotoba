@@ -3,10 +3,10 @@ use std::{fs::read_to_string, path::Path, vec};
 use futures::try_join;
 
 use super::super::word::{result::Word, WordSearch};
-use crate::utils::{self, to_option};
 use error::Error;
 use models::{kanji::KanjiResult, radical::Radical, DbPool};
 use parse::jmdict::languages::Language;
+use utils::{self, to_option};
 
 #[derive(Debug, PartialEq, Clone)]
 pub struct Item {

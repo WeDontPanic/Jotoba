@@ -1,10 +1,10 @@
+use japanese::JapaneseExt;
 use levenshtein::levenshtein;
 
 use super::{super::search_order::SearchOrder, result::Word};
-use crate::utils;
-use japanese::JapaneseExt;
 use models::kanji;
 use models::search_mode::SearchMode;
+use utils;
 
 pub(super) fn foreign_search_order(word: &Word, search_order: &SearchOrder) -> usize {
     let mut score = 0;

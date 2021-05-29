@@ -8,4 +8,5 @@ members = [
   "cache",
   "search",
   "error",
+  "utils",
 ]

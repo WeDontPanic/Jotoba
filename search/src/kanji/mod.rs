@@ -3,7 +3,6 @@ pub mod result;
 
 use result::Item;
 
-use crate::utils;
 use error::Error;
 use japanese::JapaneseExt;
 use models::{

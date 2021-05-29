@@ -1,5 +1,3 @@
-use crate::utils;
-
 use super::query::Query;
 
 #[cfg(feature = "tokenizer")]

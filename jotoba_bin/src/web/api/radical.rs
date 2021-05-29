@@ -6,7 +6,6 @@ use serde::{Deserialize, Serialize};
 use tokio_diesel::AsyncRunQueryDsl;
 
 use super::error::{Origin, RestError};
-use crate::utils::{part_of, remove_dups};
 use async_std::sync::Mutex;
 use cache::SharedCache;
 use diesel::{
@@ -16,6 +15,7 @@ use diesel::{
 use japanese::JapaneseExt;
 use models::DbPool;
 use once_cell::sync::Lazy;
+use utils::{part_of, remove_dups};
 
 /// Max radicals to allow per request
 const MAX_REQUEST_RADICALS: usize = 12;

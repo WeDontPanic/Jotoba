@@ -4,7 +4,6 @@ use super::{
     result::Word,
     ResultData, Search, WordSearch,
 };
-use crate::utils::{self, to_option};
 use error::Error;
 use futures::future::try_join_all;
 use itertools::Itertools;
@@ -13,6 +12,7 @@ use models::{
     dict::Dict,
     kanji::{self, KanjiResult},
 };
+use utils::{self, to_option};
 
 const MAX_KANJI_INFO_ITEMS: usize = 5;
 
