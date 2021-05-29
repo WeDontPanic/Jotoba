@@ -1242,6 +1242,24 @@ dependencies = [
 ]
 
 [[package]]
+name = "import"
+version = "0.1.0"
+dependencies = [
+ "async-std",
+ "cache",
+ "error",
+ "futures",
+ "itertools",
+ "japanese",
+ "models",
+ "parse",
+ "search",
+ "serde",
+ "serde_json",
+ "utils",
+]
+
+[[package]]
 name = "indexmap"
 version = "1.6.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1324,14 +1342,12 @@ dependencies = [
  "error",
  "frontend",
  "futures",
- "itertools",
+ "import",
  "japanese",
  "models",
- "once_cell",
  "parse",
  "search",
  "serde",
- "serde_json",
  "tokio 1.6.1",
  "toml",
  "utils",

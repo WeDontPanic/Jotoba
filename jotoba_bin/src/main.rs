@@ -1,29 +1,10 @@
 #![allow(irrefutable_let_patterns)]
 
 mod config;
-mod import;
 mod webserver;
 
-use std::path::Path;
-
 use argparse::{ArgumentParser, Print, Store, StoreTrue};
-use import::has_required_data;
-
-#[derive(Default)]
-pub struct Options {
-    import: bool,
-    jmdict_path: String,
-    kanjidict_path: String,
-    jlpt_paches_path: String,
-    manga_sfx_path: String,
-    jmnedict_path: String,
-    sentences_path: String,
-    accents_path: String,
-    radicals_path: String,
-    elements_path: String,
-    search_radicals_path: String,
-    start: bool,
-}
+use import::{has_required_data, Options as ImportOptions};
 
 #[tokio::main]
 pub async fn main() {
@@ -32,7 +13,8 @@ pub async fn main() {
 
     // Run import process on --import/-i
     if options.import {
-        import::import(&database, &options).await;
+        let import_options: ImportOptions = (&options).into();
+        import::import(&database, &import_options).await;
         return;
     }
 
@@ -52,40 +34,36 @@ pub async fn main() {
     println!("Nothing to do");
 }
 
-impl Options {
-    pub fn get_import_paths(&self) -> Vec<&String> {
-        vec![
-            &self.jmdict_path,
-            &self.kanjidict_path,
-            &self.jlpt_paches_path,
-            &self.manga_sfx_path,
-            &self.jmnedict_path,
-            &self.sentences_path,
-            &self.accents_path,
-            &self.radicals_path,
-            &self.elements_path,
-            &self.search_radicals_path,
-        ]
-        .into_iter()
-        .filter(|i| !i.is_empty())
-        .collect()
-    }
+#[derive(Default)]
+struct Options {
+    import: bool,
+    jmdict_path: String,
+    kanjidict_path: String,
+    jlpt_paches_path: String,
+    manga_sfx_path: String,
+    jmnedict_path: String,
+    sentences_path: String,
+    accents_path: String,
+    radicals_path: String,
+    elements_path: String,
+    search_radicals_path: String,
+    start: bool,
+}
 
-    pub fn has_import_data(&self) -> bool {
-        !self.get_import_paths().is_empty()
-    }
-
-    pub fn paths_exists(&self) -> bool {
-        let paths = self.get_import_paths().into_iter().map(|i| Path::new(i));
-
-        for path in paths {
-            if !path.exists() {
-                println!("Path '{}' not found", path.display());
-                return false;
-            }
+impl Into<ImportOptions> for &Options {
+    fn into(self) -> import::Options {
+        import::Options {
+            search_radicals_path: self.search_radicals_path.clone(),
+            elements_path: self.elements_path.clone(),
+            radicals_path: self.radicals_path.clone(),
+            accents_path: self.accents_path.clone(),
+            kanjidict_path: self.kanjidict_path.clone(),
+            jmdict_path: self.jmdict_path.clone(),
+            jmnedict_path: self.jmnedict_path.clone(),
+            sentences_path: self.sentences_path.clone(),
+            jlpt_paches_path: self.jlpt_paches_path.clone(),
+            manga_sfx_path: self.manga_sfx_path.clone(),
         }
-
-        true
     }
 }
 

@@ -1,0 +1,21 @@
+[package]
+name = "import"
+version = "0.1.0"
+authors = ["jojii <jojii@gmx.net>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+parse = { path = "../parse" }
+japanese = { path = "../japanese" }
+models = { path = "../models" }
+cache = { path = "../cache" }
+error = { path = "../error" }
+utils = { path = "../utils" }
+search = { path = "../search" }
+itertools = "0.10.0"
+serde = "1.0.126"
+serde_json = "1.0.64"
+futures = "0.3.15"
+async-std = "1.9.0"

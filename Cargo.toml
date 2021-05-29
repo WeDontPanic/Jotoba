@@ -11,4 +11,5 @@ members = [
   "lib/utils",
   "lib/frontend",
   "lib/api",
+  "lib/import",
 ]
