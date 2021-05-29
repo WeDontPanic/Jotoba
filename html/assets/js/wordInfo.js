@@ -34,3 +34,7 @@ function openInfoMenu(caller, conjugationOverlayId, collocationOverlayId) {
         $('#collocationBtn')[0].dataset.target = collocationOverlayId;
     }
 }
+
+function closeInfoOverlay() {
+    $('#info-dropdown').addClass("hidden");
+}
