@@ -2,7 +2,7 @@
 use std::path::Path;
 
 #[cfg(feature = "tokenizer")]
-use search::{JA_NL_PARSER, NL_PARSER_PATH};
+use japanese::jp_parsing::{JA_NL_PARSER, NL_PARSER_PATH};
 
 use crate::{config::Config, web};
 use actix_web::{

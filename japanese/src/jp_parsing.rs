@@ -1,11 +1,16 @@
 use std::cmp::Ordering;
 
-use diesel::{dsl::exists, prelude::*};
+use crate::inflection::Inflection;
 use error::Error;
 use igo_unidic::{ConjungationForm, Morpheme, Parser, ParticleType, VerbType, WordClass};
-use japanese::inflection::Inflection;
-use models::DbPool;
-use tokio_diesel::AsyncRunQueryDsl;
+use once_cell::sync::Lazy;
+
+/// The path of the unidict-mecab dictionary
+pub const NL_PARSER_PATH: &str = "./unidic-mecab";
+
+/// A global natural language parser
+pub static JA_NL_PARSER: once_cell::sync::Lazy<igo_unidic::Parser> =
+    Lazy::new(|| igo_unidic::Parser::new(NL_PARSER_PATH).unwrap());
 
 /// Potentially lexemes of inflections
 pub const INFLECTION_LEXEMES: [&str; 13] = [
@@ -23,13 +28,6 @@ pub const INFLECTION_LEXEMES: [&str; 13] = [
     "で",       // some shit lol
     "たい",    // Tai form
 ];
-
-async fn db_contains_word(db: &DbPool, word: &str) -> Result<bool, Error> {
-    use models::schema::dict::dsl::*;
-    Ok(diesel::select(exists(dict.filter(reading.eq(word))))
-        .get_result_async(db)
-        .await?)
-}
 
 pub struct InputTextParser<'dict, 'input> {
     morphemes: Vec<Morpheme<'dict, 'input>>,
@@ -115,13 +113,12 @@ fn is_continous(morpheme: &Morpheme) -> bool {
 
 impl<'dict, 'input> InputTextParser<'dict, 'input> {
     /// Creates a new jp text input parser
-    pub async fn new(
-        db: &DbPool,
+    pub fn new(
         input: &'input str,
         parser: &'dict Parser,
+        in_db: bool,
     ) -> Result<InputTextParser<'dict, 'input>, Error> {
         let input = strip_input(input);
-        let in_db = db_contains_word(db, &input).await?;
 
         Ok(InputTextParser {
             morphemes: parser.parse(input),
@@ -146,11 +143,6 @@ impl<'dict, 'input> InputTextParser<'dict, 'input> {
                 .collect::<Vec<_>>(),
             None,
         );
-
-        println!("sentence: {}", self.is_sentence());
-        println!("in db: {}", self.in_db);
-        println!("inflecions: {:#?}", inflections);
-        println!("word inflection: {:}", self.is_word_inflection());
 
         if self.is_sentence() && !self.in_db {
             self.parse_sentence()
@@ -345,10 +337,7 @@ impl<'dict, 'input> InputTextParser<'dict, 'input> {
     pub fn word_count(&self) -> usize {
         self.morphemes
             .iter()
-            .filter(|morpheme| {
-                println!("{:?}: {}", morpheme, morpheme.is_word());
-                morpheme.is_word()
-            })
+            .filter(|morpheme| morpheme.is_word())
             .count()
     }
 }

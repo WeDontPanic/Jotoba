@@ -11,9 +11,6 @@ use error::Error;
 use japanese::JapaneseExt;
 use utils::{self, invert_ordering};
 
-#[cfg(feature = "tokenizer")]
-use crate::JA_NL_PARSER;
-
 use diesel::prelude::*;
 use futures::future::try_join_all;
 use itertools::Itertools;
@@ -229,6 +226,7 @@ fn order_kun(a: &Dict, b: &Dict, clean_kuns: &Vec<String>) -> Ordering {
         return Ordering::Greater;
     }
 
+    /*
     #[cfg(feature = "tokenizer")]
     let a_parsed = JA_NL_PARSER.parse(&a.reading).len();
     #[cfg(feature = "tokenizer")]
@@ -239,6 +237,7 @@ fn order_kun(a: &Dict, b: &Dict, clean_kuns: &Vec<String>) -> Ordering {
     } else if a_parsed > 1 && b_parsed == 0 {
         return Ordering::Greater;
     }
+    */
 
     let a_prio = a.priorities.as_ref().map(|i| i.len()).unwrap_or_default();
     let b_prio = b.priorities.as_ref().map(|i| i.len()).unwrap_or_default();

@@ -5,17 +5,6 @@ extern crate diesel;
 
 use models::search_mode::SearchMode;
 
-#[cfg(feature = "tokenizer")]
-use once_cell::sync::Lazy;
-
-#[cfg(feature = "tokenizer")]
-pub const NL_PARSER_PATH: &str = "./unidic-mecab";
-
-/// A global natural language parser
-#[cfg(feature = "tokenizer")]
-pub static JA_NL_PARSER: once_cell::sync::Lazy<igo_unidic::Parser> =
-    Lazy::new(|| igo_unidic::Parser::new(NL_PARSER_PATH).unwrap());
-
 pub mod kanji;
 pub mod name;
 pub mod query;

@@ -78,7 +78,7 @@ pub async fn insert_sentence(
 /// Generates the relations between sentences and its words from [`dict`]
 #[cfg(feature = "tokenizer")]
 async fn generate_dict_relations(db: &DbPool, sentence_id: i32, text: String) -> Result<(), Error> {
-    let lexemes = crate::JA_NL_PARSER
+    let lexemes = japanese::jp_parsing::JA_NL_PARSER
         .parse(&text)
         .into_iter()
         .collect::<Vec<_>>();

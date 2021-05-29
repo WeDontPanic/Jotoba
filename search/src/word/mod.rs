@@ -1,6 +1,3 @@
-#[cfg(feature = "tokenizer")]
-pub mod jp_parsing;
-
 mod kanji;
 mod order;
 pub mod result;
@@ -26,9 +23,9 @@ use models::{kanji::KanjiResult, DbPool};
 use utils::real_string_len;
 
 #[cfg(feature = "tokenizer")]
-use self::jp_parsing::InputTextParser;
+use japanese::jp_parsing::InputTextParser;
 #[cfg(feature = "tokenizer")]
-use jp_parsing::WordItem;
+use japanese::jp_parsing::WordItem;
 
 use self::result::{InflectionInformation, WordResult};
 
@@ -127,7 +124,8 @@ impl<'a> Search<'a> {
             return Ok((query_str.to_owned(), None));
         }
 
-        let parser = InputTextParser::new(&self.db, query_str, &crate::JA_NL_PARSER).await?;
+        let in_db = models::dict::reading_exists(&self.db, query_str).await?;
+        let parser = InputTextParser::new(query_str, &japanese::jp_parsing::JA_NL_PARSER, in_db)?;
 
         if let Some(parsed) = parser.parse() {
             if parsed.items.is_empty() {

@@ -28,3 +28,7 @@ error = { path = "../error" }
 utils = { path = "../utils" }
 futures = "0.3.15"
 async-std = "1.9.0"
+
+[features]
+default = []
+tokenizer = [ "igo-unidic" ]

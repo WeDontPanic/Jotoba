@@ -27,4 +27,4 @@ romaji = "0.1.1"
 
 [features]
 tokenizer = [ "igo-unidic" ]
-default = [ "tokenizer" ]
+default = []

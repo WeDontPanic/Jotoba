@@ -1,7 +1,7 @@
 use super::query::Query;
 
 #[cfg(feature = "tokenizer")]
-use super::word::jp_parsing::WordItem;
+use japanese::jp_parsing::WordItem;
 
 #[cfg(feature = "tokenizer")]
 #[derive(Debug, Clone, Copy, PartialEq)]

@@ -332,6 +332,15 @@ pub(crate) async fn find_by_reading(
     Ok(result)
 }
 
+/// Returns true if the database contains at least one dict entry with the passed reading
+pub async fn reading_exists(db: &DbPool, r: &str) -> Result<bool, Error> {
+    use crate::schema::dict::dsl::*;
+    use diesel::dsl::exists;
+    Ok(diesel::select(exists(dict.filter(reading.eq(r))))
+        .get_result_async(db)
+        .await?)
+}
+
 /// Returns Ok(true) if at least one dict exists in the Db
 pub async fn exists(db: &DbPool) -> Result<bool, Error> {
     use crate::schema::dict::dsl::*;
