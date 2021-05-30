@@ -13,7 +13,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"PO-Revision-Date: 2021-05-30 18:56+0200\n"
+"PO-Revision-Date: 2021-05-30 19:06+0200\n"
 "Last-Translator:  <jojii@gmx.net>\n"
 "Language-Team: English\n"
 "Language: en\n"
@@ -176,6 +176,24 @@ msgstr ""
 ### Index
 
 msgid "is a multilingual Japanese dictionary."
+msgstr ""
+
+msgid "It is easy to find translations for words or kanji, see example sentences and the way names can be written."
+msgstr ""
+
+msgid "Here are some examples on how to use this page"
+msgstr ""
+
+msgid "Quickly change the search type by pressing"
+msgstr ""
+
+msgid "You can specify your search by typing"
+msgstr ""
+
+msgid "You can find verbs that are conjugated"
+msgstr ""
+
+msgid "You can search multiple kanji at once"
 msgstr ""
 
 ## Word results
