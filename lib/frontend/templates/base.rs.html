@@ -330,7 +330,7 @@
           <div class="main-container">
             <br>
 
-            @match data.site {
+            @match data.site.clone() {
               Site::SearchResult(search_result) => {
                 @match search_result.result {
                   ResultData::Word(result) => {
@@ -340,10 +340,10 @@
                     @:kanji_details(result)
                   }
                   ResultData::Name(result) => {
-                    @:name_search(result)
+                    @:name_search(&data, result)
                   }
                   ResultData::Sentence(result) => {
-                    @:sentence_search(result)
+                    @:sentence_search(&data, result)
                   }
                 }
               }

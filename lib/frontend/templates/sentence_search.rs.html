@@ -1,21 +1,22 @@
 @use search::sentence::result::Item;
 @use super::search_help;
-@(sentences: Vec<Item>)
+@use crate::BaseData;
+@(data: &BaseData, sentences: Vec<Item>)
 
 <!-- Inner Top Row -->
 <div class="d-flex center no-drag">
   <div class="main-tab-select l">
-    <h2 id="previousTabBtn" onclick="changeSearchType(3)" class="tab-btn">&larr; Names</h2>
+    <h2 id="previousTabBtn" onclick="changeSearchType(3)" class="tab-btn">&larr; @data.gettext("Names")</h2>
   </div>
 
   @if !sentences.is_empty() {
       <div class="title-div">
-        <h1>Sentences</h1>
+        <h1>@data.gettext("Sentences")</h1>
       </div>
   }
 
   <div class="main-tab-select r">
-    <h2 id="nextTabBtn" onclick="changeSearchType(0)" class="tab-btn">Words &rarr;</h2>
+    <h2 id="nextTabBtn" onclick="changeSearchType(0)" class="tab-btn">@data.gettext("Words") &rarr;</h2>
   </div>
 </div>
 <br>

@@ -1,23 +1,24 @@
 @use models::name::Name;
 @use super::search_help;
+@use crate::BaseData;
 
-@(names: Vec<Name>)
+@(data: &BaseData, names: Vec<Name>)
 
 <!-- Inner Top Row -->
 <div class="d-flex center no-drag">
   <div class="main-tab-select l">
-    <h2 id="previousTabBtn" onclick="changeSearchType(0)" class="tab-btn">&larr; Words</h2>
+    <h2 id="previousTabBtn" onclick="changeSearchType(0)" class="tab-btn">&larr; @data.gettext("Words")</h2>
   </div>
 
   <!-- Only shown when results were found -->
   @if !names.is_empty() {
     <div class="title-div">
-      <h1>Names</h1>
+      <h1>@data.gettext("Names")</h1>
     </div>
   }
 
   <div class="main-tab-select r">
-    <h2 id="nextTabBtn" onclick="changeSearchType(2)" class="tab-btn">Sentences &rarr;</h2>
+    <h2 id="nextTabBtn" onclick="changeSearchType(2)" class="tab-btn">@data.gettext("Sentences") &rarr;</h2>
   </div>
 </div>
 <br>
@@ -47,21 +48,21 @@
          </div>
          <div class="d-flex flex-row">
             <div class="row-tag-entry">
-               <div class="tags">Full name</div>
+               <div class="tags">@data.gettext("Full name")</div>
                <div class="notes">@name.transcription</div>
             </div>
 
             @if name.name_type.is_some() {
               @if let Some(gender) = name.get_gender() {
                 <div class="row-tag-entry">
-                  <div class="tags">Sex</div>
+                  <div class="tags">@data.gettext("Sex")</div>
                    <div class="notes">@gender</div>
                 </div>
               } 
 
               @if name.has_non_gender_tags() {
                 <div class="row-tag-entry">
-                  <div class="tags">Name origin</div>
+                  <div class="tags">@data.gettext("Name origin")</div>
                    <div class="notes">@name.get_types_humanized()</div>
                 </div>
               }
