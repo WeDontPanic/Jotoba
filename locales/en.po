@@ -13,7 +13,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"PO-Revision-Date: 2021-05-30 19:06+0200\n"
+"PO-Revision-Date: 2021-05-30 19:19+0200\n"
 "Last-Translator:  <jojii@gmx.net>\n"
 "Language-Team: English\n"
 "Language: en\n"
@@ -194,6 +194,32 @@ msgid "You can find verbs that are conjugated"
 msgstr ""
 
 msgid "You can search multiple kanji at once"
+msgstr ""
+
+msgid "is open source."
+msgstr ""
+
+msgid "Check out our"
+msgstr ""
+
+msgid "Check out the"
+msgstr ""
+
+msgid "if you want to contribute or host Jotoba yourself."
+msgstr ""
+
+msgid "aswell if you are interested in upcoming features and what we are currently working on"
+msgstr ""
+
+msgctxt "index"
+msgid "or"
+msgstr ""
+
+msgctxt "index"
+msgid "Press"
+msgstr ""
+
+msgid "to instantly focus the search bar"
 msgstr ""
 
 ## Word results
