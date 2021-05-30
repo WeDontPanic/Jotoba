@@ -206,67 +206,67 @@
                         </div>
                         <hr class="hr-settings"/>
                         <div class="d-flex flex-row">
-                           <span class="colorLbl">background:</span>
+                           <span class="colorLbl">@data.gettext("background"):</span>
                            <input id="background_value" type="color" value="#f2f1f0"  onchange='onSettingsChange_Color(event)'/>
                            <span onclick='onSettingsChange_Color(event)' class="clickable">@data.gettext("reset")</span>
                         </div>
                         <div class="d-flex flex-row">
-                           <span class="colorLbl">overlay:</span>
+                           <span class="colorLbl">@data.gettext("overlay"):</span>
                            <input id="overlay_value" type="color" value="#f3f3f3" onchange='onSettingsChange_Color(event)'/>
                            <span onclick='onSettingsChange_Color(event)' class="clickable">@data.gettext("reset")</span>
                         </div>
                         <hr class="hr-settings"/>
                         <div class="d-flex flex-row">
-                           <span class="colorLbl">primary:</span>
+                           <span class="colorLbl">@data.gettext("primary"):</span>
                            <input id="primaryColor_value" type="color" value="#34a83c" onchange='onSettingsChange_Color(event)'/>
                            <span onclick='onSettingsChange_Color(event)' class="clickable">@data.gettext("reset")</span>
                         </div>
                         <div class="d-flex flex-row"> 
-                           <span class="colorLbl">primHover:</span>
+                           <span class="colorLbl">@data.gettext("primHover"):</span>
                            <input id="bgPrimaryColor_value" type="color" value="#50c058" onchange='onSettingsChange_Color(event)'/>
                            <span onclick='onSettingsChange_Color(event)' class="clickable">@data.gettext("reset")</span>
                         </div>
                         <div class="d-flex flex-row"> 
-                           <span class="colorLbl">secondary:</span>
+                           <span class="colorLbl">@data.gettext("secondary"):</span>
                            <input id="secondaryColor_value" type="color" value="#909dc0" onchange='onSettingsChange_Color(event)'/>
                            <span onclick='onSettingsChange_Color(event)' class="clickable">@data.gettext("reset")</span>
                         </div>
                         <hr class="hr-settings"/>
                         <div class="d-flex flex-row"> 
-                           <span class="colorLbl">text:</span>
+                           <span class="colorLbl">@data.gettext("text"):</span>
                            <input id="primaryTextColor_value" type="color" value="#909dc0" onchange='onSettingsChange_Color(event)'/>
                            <span onclick='onSettingsChange_Color(event)' class="clickable">@data.gettext("reset")</span>
                         </div>
                         <div class="d-flex flex-row"> 
-                           <span class="colorLbl">overlayText:</span>
+                           <span class="colorLbl">@data.gettext("overlayText"):</span>
                            <input id="secondaryTextColor_value" type="color" value="#909dc0" onchange='onSettingsChange_Color(event)'/>
                            <span onclick='onSettingsChange_Color(event)' class="clickable">@data.gettext("reset")</span>
                         </div>
                         <hr class="hr-settings"/>
                         <div class="d-flex flex-row">
-                           <span class="colorLbl">searchBG:</span>
+                           <span class="colorLbl">@data.gettext("searchBG"):</span>
                            <input id="searchBackground_value" type="color" value="#909dc0" onchange='onSettingsChange_Color(event)'/>
                            <span onclick='onSettingsChange_Color(event)' class="clickable">@data.gettext("reset")</span>
                         </div>
                         <div class="d-flex flex-row">
-                           <span class="colorLbl">searchText:</span>
+                           <span class="colorLbl">@data.gettext("searchText"):</span>
                            <input id="searchTextColor_value" type="color" value="#909dc0" onchange='onSettingsChange_Color(event)'/>
                            <span onclick='onSettingsChange_Color(event)' class="clickable">@data.gettext("reset")</span>
                         </div>
                         <hr class="hr-settings"/>
                         <div class="d-flex flex-row">
-                           <span class="colorLbl">tags:</span>
+                           <span class="colorLbl">@data.gettext("tags"):</span>
                            <input id="tagColor_value" type="color" value="#909dc0" onchange='onSettingsChange_Color(event)'/>
                            <span onclick='onSettingsChange_Color(event)' class="clickable">@data.gettext("reset")</span>
                         </div>
                         <div class="d-flex flex-row"> 
-                           <span class="colorLbl">itemBG:</span>
+                           <span class="colorLbl">@data.gettext("itemBG"):</span>
                            <input id="itemBG_value" type="color" value="#909dc0" onchange='onSettingsChange_Color(event)'/>
                            <span onclick='onSettingsChange_Color(event)' class="clickable">@data.gettext("reset")</span>
                         </div>
                         <br>
                         <div>
-                           <span class="colorLbl">scheme code:</span>
+                           <span class="colorLbl">@data.gettext("scheme code"):</span>
                            <input id="scheme_input" class="form-control small" id="bg_col_settings_hex">
                            <span onclick='parseSchemeCode()' class="clickable ">@data.gettext("apply")</span>
                            <vl class="vl-settings"></vl>
@@ -396,7 +396,7 @@
          <div class="center-text">
             <hr class="footer-hr">
             <span>
-               Jotoba wouldn't be able to exist without the help of many open-source data sources. <br> Check out the <a class="clickable no-align green" href="/about">About Page</a> for a list of all contributors in this project.
+               @data.gettext("Jotoba wouldn't be able to exist without the help of many open-source data sources"). <br> @data.gettext("Check out the") <a class="clickable no-align green" href="/about">About Page</a> @data.gettext("for a list of all contributors in this project.")
             </span>
          </div>
       </footer>

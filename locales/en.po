@@ -13,7 +13,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"PO-Revision-Date: 2021-05-30 19:19+0200\n"
+"PO-Revision-Date: 2021-05-30 19:31+0200\n"
 "Last-Translator:  <jojii@gmx.net>\n"
 "Language-Team: English\n"
 "Language: en\n"
@@ -152,6 +152,42 @@ msgstr ""
 msgid "Dark"
 msgstr ""
 
+msgid "background"
+msgstr ""
+
+msgid "overlay"
+msgstr ""
+
+msgid "primary"
+msgstr ""
+
+msgid "primHover"
+msgstr ""
+
+msgid "secondary"
+msgstr ""
+
+msgid "text"
+msgstr ""
+
+msgid "overlayText"
+msgstr ""
+
+msgid "searchBG"
+msgstr ""
+
+msgid "searchText"
+msgstr ""
+
+msgid "tags"
+msgstr ""
+
+msgid "itemBG"
+msgstr ""
+
+msgid "scheme code"
+msgstr ""
+
 msgid "Using the code you can share color schemes"
 msgstr ""
 
@@ -171,6 +207,10 @@ msgstr ""
 
 # Suffix of Cookie revoke text
 msgid "to revoke your Cookies agreement"
+msgstr ""
+
+# Footer
+msgid "Jotoba wouldn't be able to exist without the help of many open-source data sources"
 msgstr ""
 
 ### Index
@@ -209,6 +249,9 @@ msgid "if you want to contribute or host Jotoba yourself."
 msgstr ""
 
 msgid "aswell if you are interested in upcoming features and what we are currently working on"
+msgstr ""
+
+msgid "for a list of all contributors in this project."
 msgstr ""
 
 msgctxt "index"
