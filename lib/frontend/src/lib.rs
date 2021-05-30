@@ -1,10 +1,15 @@
 include!(concat!(env!("OUT_DIR"), "/templates.rs"));
 
+use std::fmt::Display;
+
+use localization::language::Language;
+use localization::traits::Translatable;
+use localization::traits::TranslatablePlural;
+use localization::TranslationDict;
 use models::name::Name;
 use search::query::Query;
 
 #[macro_use]
-
 mod actix_ructe;
 
 pub mod about;
@@ -12,23 +17,26 @@ pub mod index;
 pub mod search_ep;
 pub mod web_error;
 
+use search::query::UserSettings;
 use search::{kanji::result::Item as KanjiItem, sentence::result::Item as SentenceItem};
 use search::{query_parser::QueryType, word::result::WordResult};
 
 /// Data for the base template
 pub struct BaseData<'a> {
     pub site: Site<'a>,
+    pub dict: &'a TranslationDict,
+    pub user_settings: UserSettings,
 }
 
-#[derive(Clone)]
 /// The site to display
+#[derive(Clone)]
 pub enum Site<'a> {
     SearchResult(SearchResult<'a>),
     Index,
     About,
 }
 
-/// Result data of a search
+/// Search result data. Required by individual templates to render the result items
 #[derive(Clone)]
 pub struct SearchResult<'a> {
     pub query: &'a Query,
@@ -45,24 +53,58 @@ pub enum ResultData {
 }
 
 impl<'a> BaseData<'a> {
-    pub fn new(site: Site<'a>) -> Self {
-        Self { site }
+    pub fn new(site: Site<'a>, dict: &'a TranslationDict, user_settings: UserSettings) -> Self {
+        Self {
+            site,
+            dict,
+            user_settings,
+        }
     }
 
-    pub fn new_word_search(query: &'a Query, result: WordResult) -> Self {
-        Self::new_search_result(query, ResultData::Word(result))
+    pub fn new_word_search(
+        query: &'a Query,
+        result: WordResult,
+        locale_dict: &'a TranslationDict,
+        user_settings: UserSettings,
+    ) -> Self {
+        Self::new_search_result(query, ResultData::Word(result), locale_dict, user_settings)
     }
 
-    pub fn new_kanji_search(query: &'a Query, result: Vec<KanjiItem>) -> Self {
-        Self::new_search_result(query, ResultData::KanjiInfo(result))
+    pub fn new_kanji_search(
+        query: &'a Query,
+        result: Vec<KanjiItem>,
+        locale_dict: &'a TranslationDict,
+        user_settings: UserSettings,
+    ) -> Self {
+        Self::new_search_result(
+            query,
+            ResultData::KanjiInfo(result),
+            locale_dict,
+            user_settings,
+        )
     }
 
-    pub fn new_name_search(query: &'a Query, result: Vec<Name>) -> Self {
-        Self::new_search_result(query, ResultData::Name(result))
+    pub fn new_name_search(
+        query: &'a Query,
+        result: Vec<Name>,
+        locale_dict: &'a TranslationDict,
+        user_settings: UserSettings,
+    ) -> Self {
+        Self::new_search_result(query, ResultData::Name(result), locale_dict, user_settings)
     }
 
-    pub fn new_sentence_search(query: &'a Query, result: Vec<SentenceItem>) -> Self {
-        Self::new_search_result(query, ResultData::Sentence(result))
+    pub fn new_sentence_search(
+        query: &'a Query,
+        result: Vec<SentenceItem>,
+        locale_dict: &'a TranslationDict,
+        user_settings: UserSettings,
+    ) -> Self {
+        Self::new_search_result(
+            query,
+            ResultData::Sentence(result),
+            locale_dict,
+            user_settings,
+        )
     }
 
     /// Gets an owned String of the query
@@ -90,8 +132,78 @@ impl<'a> BaseData<'a> {
         }
     }
 
-    fn new_search_result(query: &'a Query, result: ResultData) -> Self {
+    fn new_search_result(
+        query: &'a Query,
+        result: ResultData,
+        locale_dict: &'a TranslationDict,
+        user_settings: UserSettings,
+    ) -> Self {
         let search_result = SearchResult { result, query };
-        Self::new(Site::SearchResult(search_result))
+        Self::new(
+            Site::SearchResult(search_result),
+            locale_dict,
+            user_settings,
+        )
+    }
+}
+
+/// Translation helper
+impl<'a> BaseData<'a> {
+    fn get_lang(&self) -> Language {
+        // TODO actually use users language
+        match self.user_settings.user_lang {
+            parse::jmdict::languages::Language::German => Language::German,
+            _ => Language::English,
+        }
+    }
+
+    pub fn gettext<T: Translatable>(&self, t: T) -> &'a str {
+        t.gettext(&self.dict, Some(self.get_lang()))
+    }
+
+    pub fn pgettext<T: Translatable>(&self, t: T, context: &'a str) -> &'a str {
+        t.pgettext(&self.dict, context, Some(self.get_lang()))
+    }
+
+    pub fn ngettext<T: TranslatablePlural>(&self, t: T, n: u64) -> &'a str {
+        t.ngettext(&self.dict, n, Some(self.get_lang()))
+    }
+
+    pub fn pngettext<T: TranslatablePlural>(&self, t: T, context: &'a str, n: u64) -> &'a str {
+        t.npgettext(&self.dict, context, n, Some(self.get_lang()))
+    }
+
+    // Format functions
+
+    pub fn gettext_fmt<T: Translatable, V: Display + Sized>(&self, t: T, values: &[V]) -> String {
+        t.gettext_fmt(&self.dict, values, Some(self.get_lang()))
+    }
+
+    pub fn pgettext_fmt<T: Translatable, V: Display + Sized>(
+        &self,
+        t: T,
+        context: &'a str,
+        values: &[V],
+    ) -> String {
+        t.pgettext_fmt(&self.dict, context, values, Some(self.get_lang()))
+    }
+
+    pub fn ngettext_fmt<T: TranslatablePlural, V: Display + Sized>(
+        &self,
+        t: T,
+        n: u64,
+        values: &[V],
+    ) -> String {
+        t.ngettext_fmt(&self.dict, n, values, Some(self.get_lang()))
+    }
+
+    pub fn pngettext_fmt<T: TranslatablePlural, V: Display + Sized>(
+        &self,
+        t: T,
+        context: &'a str,
+        n: u64,
+        values: &[V],
+    ) -> String {
+        t.npgettext_fmt(&self.dict, context, n, values, Some(self.get_lang()))
     }
 }

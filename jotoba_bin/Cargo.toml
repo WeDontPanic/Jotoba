@@ -27,6 +27,8 @@ utils = { path = "../lib/utils" }
 api = { path = "../lib/api" }
 frontend = { path = "../lib/frontend" }
 import = { path = "../lib/import" }
+localization = { path = "../lib/localization" }
+log = "0.4.14"
 
 [features]
 tokenizer = [ "search/tokenizer", "models/tokenizer", "japanese/tokenizer" ]

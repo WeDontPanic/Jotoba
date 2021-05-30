@@ -5,12 +5,13 @@ use std::path::Path;
 
 #[cfg(feature = "tokenizer")]
 use japanese::jp_parsing::{JA_NL_PARSER, NL_PARSER_PATH};
+use localization::TranslationDict;
 
 use crate::config::Config;
 use actix_web::{middleware, web as actixweb, App, HttpServer};
 use cache_control::CacheInterceptor;
 use models::DbPool;
-use std::time::Duration;
+use std::{sync::Arc, time::Duration};
 
 /// How long frontend assets are going to be cached by the clients. Currently 1 week
 const ASSET_CACHE_MAX_AGE: u64 = 604800;
@@ -25,12 +26,21 @@ pub(super) async fn start(db: DbPool) -> std::io::Result<()> {
     #[cfg(feature = "tokenizer")]
     load_tokenizer();
 
+    let locale_dict = TranslationDict::new(
+        config.server.get_locale_path(),
+        localization::language::Language::English,
+    )
+    .expect("Failed to load localization files");
+
+    let locale_dict_arc = Arc::new(locale_dict);
+
     let config_clone = config.clone();
     HttpServer::new(move || {
         App::new()
             // Data
             .data(db.clone())
             .data(config_clone.clone())
+            .data(locale_dict_arc.clone())
             // Middlewares
             .wrap(middleware::Logger::default())
             .wrap(middleware::Compress::default())

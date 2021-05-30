@@ -31,6 +31,10 @@ impl ServerConfig {
     pub(super) fn get_html_files(&self) -> &str {
         self.html_files.as_deref().unwrap_or("html/assets")
     }
+
+    pub(super) fn get_locale_path(&self) -> &str {
+        "./locales"
+    }
 }
 
 impl Config {

@@ -4,12 +4,26 @@ use std::{
     str::FromStr,
 };
 
-use itertools::Itertools;
+use super::query_parser::QueryType;
 
+use itertools::Itertools;
+use models::kanji::reading::KanjiReading;
 use parse::jmdict::{languages::Language, part_of_speech::PosSimple};
 
-use super::query_parser::QueryType;
-use models::kanji::reading::KanjiReading;
+/// A single user provided query in a parsed format
+#[derive(Debug, Clone, PartialEq, Default, Hash)]
+pub struct Query {
+    pub original_query: String,
+    pub query: String,
+    pub type_: QueryType,
+    pub tags: Vec<Tag>,
+    pub form: Form,
+    pub language: QueryLang,
+    pub settings: UserSettings,
+    pub page: usize,
+    pub word_index: usize,
+    pub parse_japanese: bool,
+}
 
 /// In-cookie saved personalized settings
 #[derive(Debug, Clone, Copy)]
@@ -42,20 +56,11 @@ impl Default for UserSettings {
     }
 }
 
-/// A single user provided query in a
-/// parsed format
-#[derive(Debug, Clone, PartialEq, Default, Hash)]
-pub struct Query {
-    pub original_query: String,
-    pub query: String,
-    pub type_: QueryType,
-    pub tags: Vec<Tag>,
-    pub form: Form,
-    pub language: QueryLang,
-    pub settings: UserSettings,
-    pub page: usize,
-    pub word_index: usize,
-    pub parse_japanese: bool,
+/// Hashtag based search tags
+#[derive(Debug, Clone, Copy, PartialEq, Hash)]
+pub enum Tag {
+    SearchType(SearchTypeTag),
+    PartOfSpeech(PosSimple),
 }
 
 /// Hashtag based search tags
@@ -65,13 +70,6 @@ pub enum SearchTypeTag {
     Sentence,
     Name,
     Word,
-}
-
-/// Hashtag based search tags
-#[derive(Debug, Clone, Copy, PartialEq, Hash)]
-pub enum Tag {
-    SearchType(SearchTypeTag),
-    PartOfSpeech(PosSimple),
 }
 
 /// The language of the query

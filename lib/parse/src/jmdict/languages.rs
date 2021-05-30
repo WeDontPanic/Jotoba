@@ -12,7 +12,7 @@ use strum_macros::{AsRefStr, Display, EnumString};
 use crate::error;
 
 #[derive(
-    AsExpression, FromSqlRow, Debug, PartialEq, Clone, Copy, AsRefStr, EnumString, Display, Hash,
+    AsExpression, FromSqlRow, Debug, PartialEq, Clone, Copy, AsRefStr, EnumString, Display, Hash, Eq,
 )]
 #[sql_type = "Integer"]
 pub enum Language {

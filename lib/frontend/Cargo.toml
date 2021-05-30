@@ -15,10 +15,12 @@ cache = { path = "../cache" }
 search = { path = "../search" }
 error = { path = "../error" }
 utils = { path = "../utils" }
-languages-rs = { git = "https://github.com/daschdev/languages-rs", branch = "v0.2.0", features = ["with-toml"] }
+localization = { path = "../localization" }
 actix-web = "3.3.2"
 ructe = "0.13.2"
 serde = "1.0.126"
+gettext = "0.4.0"
+dyn-fmt = "0.3.0"
 
 [build-dependencies]
 ructe = "0.13.2"

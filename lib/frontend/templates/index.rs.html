@@ -1,8 +1,9 @@
-@()
+@use crate::BaseData;
+@(data: &BaseData)
 <div class="d-flex center">
    <article style="height: 700px;">
       <div class="small-12 medium-6 columns small-centered">
-          <p>Jotoba is a multilingual Japanese dictionary.</p>
+          <p>@data.gettext("Jotoba") @data.gettext("is a multilingual Japanese dictionary")</p>
           <p>It is easy to find translations for words or kanji, see<br>example sentences and the way names can be written.</p>
           <p>Here are some examples on how to use this page:</p>
           <ul>

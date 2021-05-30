@@ -1,6 +1,7 @@
-use std::str::FromStr;
+use std::{str::FromStr, sync::Arc};
 
 use actix_web::{web, HttpMessage, HttpRequest, HttpResponse};
+use localization::TranslationDict;
 use serde::Deserialize;
 
 use crate::{templates, BaseData};
@@ -27,7 +28,7 @@ pub struct QueryStruct {
 }
 
 impl QueryStruct {
-    /// Adjusts the search query trim and map empty search queries to Option::None
+    /// Adjusts the search query trim and map empty search queries to Option::None.
     /// Ensures `search_type` is always 'Some()'
     fn adjust(&self) -> Self {
         let search_query = self
@@ -45,11 +46,11 @@ impl QueryStruct {
     }
 
     /// Returns a [`QueryParser`] of the query
-    fn as_query_parser(&self, request: &HttpRequest) -> QueryParser {
+    fn as_query_parser(&self, user_settings: UserSettings) -> QueryParser {
         QueryParser::new(
             self.query.clone().unwrap_or_default(),
             self.search_type.unwrap_or_default(),
-            parse_settings(&request),
+            user_settings,
             self.page.unwrap_or_default(),
             self.word_index.unwrap_or_default(),
         )
@@ -60,25 +61,24 @@ impl QueryStruct {
 pub async fn search(
     pool: web::Data<DbPool>,
     query_data: web::Query<QueryStruct>,
+    locale_dict: web::Data<Arc<TranslationDict>>,
     request: HttpRequest,
 ) -> Result<HttpResponse, web_error::Error> {
     let query_data = query_data.adjust();
 
-    let q_parser = query_data.as_query_parser(&request);
+    let settings = parse_settings(&request);
 
-    let query = match q_parser.parse() {
+    let query = match query_data.as_query_parser(settings).parse() {
         Some(k) => k,
         None => return Ok(redirect_home()),
     };
 
-    println!("{:#?}", query);
-
     // Perform the requested type of search and return base-data to display
     let site_data = match query.type_ {
-        QueryType::Kanji => kanji_search(&pool, &query).await,
-        QueryType::Sentences => sentence_search(&pool, &query).await,
-        QueryType::Names => name_search(&pool, &query).await,
-        QueryType::Words => word_search(&pool, &query).await,
+        QueryType::Kanji => kanji_search(&pool, &locale_dict, settings, &query).await,
+        QueryType::Sentences => sentence_search(&pool, &locale_dict, settings, &query).await,
+        QueryType::Names => name_search(&pool, &locale_dict, settings, &query).await,
+        QueryType::Words => word_search(&pool, &locale_dict, settings, &query).await,
     }?;
 
     Ok(HttpResponse::Ok().body(render!(templates::base, site_data)))
@@ -87,37 +87,65 @@ pub async fn search(
 /// Perform a sentence search
 async fn sentence_search<'a>(
     pool: &web::Data<DbPool>,
+    locale_dict: &'a TranslationDict,
+    user_settings: UserSettings,
     query: &'a Query,
 ) -> Result<BaseData<'a>, web_error::Error> {
     let result = search::sentence::search(&pool, &query).await?;
-    Ok(BaseData::new_sentence_search(&query, result))
+    Ok(BaseData::new_sentence_search(
+        &query,
+        result,
+        locale_dict,
+        user_settings,
+    ))
 }
 
 /// Perform a kanji search
 async fn kanji_search<'a>(
     pool: &web::Data<DbPool>,
+    locale_dict: &'a TranslationDict,
+    user_settings: UserSettings,
     query: &'a Query,
 ) -> Result<BaseData<'a>, web_error::Error> {
     let kanji = search::kanji::search(&pool, &query).await?;
-    Ok(BaseData::new_kanji_search(&query, kanji))
+    Ok(BaseData::new_kanji_search(
+        &query,
+        kanji,
+        locale_dict,
+        user_settings,
+    ))
 }
 
 /// Perform a name search
 async fn name_search<'a>(
     pool: &web::Data<DbPool>,
+    locale_dict: &'a TranslationDict,
+    user_settings: UserSettings,
     query: &'a Query,
 ) -> Result<BaseData<'a>, web_error::Error> {
     let names = search::name::search(&pool, &query).await?;
-    Ok(BaseData::new_name_search(&query, names))
+    Ok(BaseData::new_name_search(
+        &query,
+        names,
+        locale_dict,
+        user_settings,
+    ))
 }
 
 /// Perform a word search
 async fn word_search<'a>(
     pool: &web::Data<DbPool>,
+    locale_dict: &'a TranslationDict,
+    user_settings: UserSettings,
     query: &'a Query,
 ) -> Result<BaseData<'a>, web_error::Error> {
     let result = search::word::search(&pool, &query).await?;
-    Ok(BaseData::new_word_search(&query, result))
+    Ok(BaseData::new_word_search(
+        &query,
+        result,
+        locale_dict,
+        user_settings,
+    ))
 }
 
 fn redirect_home() -> HttpResponse {
@@ -126,7 +154,7 @@ fn redirect_home() -> HttpResponse {
         .finish()
 }
 
-fn parse_settings(request: &HttpRequest) -> UserSettings {
+pub(crate) fn parse_settings(request: &HttpRequest) -> UserSettings {
     let show_english = request
         .cookie("show_english")
         .and_then(|i| i.value().parse().ok())
