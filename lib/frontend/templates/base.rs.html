@@ -337,7 +337,7 @@
                     @:word_search_html(&search_result.query, result)
                   }
                   ResultData::KanjiInfo(result) => {
-                    @:kanji_details(result)
+                    @:kanji_details(&data, result)
                   }
                   ResultData::Name(result) => {
                     @:name_search(&data, result)

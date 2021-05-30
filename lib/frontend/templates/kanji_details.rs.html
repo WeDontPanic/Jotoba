@@ -1,5 +1,8 @@
 @use search::kanji::result::Item;
-@(kanji: Vec<Item>)
+@use crate::BaseData;
+
+@(data: &BaseData, kanji: Vec<Item>)
+
 <!-- Inner Main Body -->
 @for (kpos, k_item) in kanji.iter().enumerate() {
   @if kpos > 0 {
@@ -12,10 +15,10 @@
            @k_item.kanji.kanji.literal
          </span>
          <div class="kanji-preview-info">
-           <div class="notes stroke"><b>@k_item.kanji.kanji.stroke_count</b> strokes </div>
+           <div class="notes stroke"><b>@k_item.kanji.kanji.stroke_count</b> @data.gettext("strokes") </div>
             <!--TODO-->
             <div class="rad-parts-parent">
-              <div class="notes rad"><b>Radical:</b>
+              <div class="notes rad"><b>@data.gettext("Radical"):</b>
                 <br>
                 <a class="clickable no-align" href="/search?type=1&search=@k_item.radical.literal">@k_item.get_radical()</a>
                 @if k_item.get_rad_len() > 7 {
@@ -50,7 +53,7 @@
                </div>
                 @if let Some(ref kun_readings) = k_item.kanji.kanji.kunyomi {
                  <div class="d-flex flex-row wrap">
-                    <div class="tags no-margin fat right-padding-10 noselect">Kun:</div>
+                    <div class="tags no-margin fat right-padding-10 noselect">@data.gettext("Kun"):</div>
                       @for (pos, kun) in kun_readings.iter().enumerate() {
                         @if pos > 0 {
                           <div class="tags no-margin fat right-padding-10">,</div>
@@ -61,7 +64,7 @@
                 }
                 @if let Some(ref on_readings) = k_item.kanji.kanji.onyomi {
                  <div class="d-flex flex-row wrap">
-                    <div class="tags no-margin fat right-padding-20 noselect">On:</div>
+                    <div class="tags no-margin fat right-padding-20 noselect">@data.gettext("On"):</div>
                       @for (pos, on) in on_readings.iter().enumerate() {
                         @if pos > 0 {
                           <div class="tags no-margin fat right-padding-10">,</div>
@@ -77,17 +80,17 @@
                  <div class="notes">@grade</div>
                 }
                 @if let Some(n_lvl) = k_item.kanji.kanji.jlpt {
-                 <div class="notes">JLPT level <b>N@n_lvl</b></div>
+                 <div class="notes">@data.gettext("JLPT level") <b>N@n_lvl</b></div>
                 }
                 @if let Some(frequency) = k_item.kanji.kanji.frequency {
-                 <div class="notes"><b>@frequency</b> of 2500 most used kanji in newspapers</div>
+                 <div class="notes"><b>@frequency</b> @data.gettext("of 2500 most used kanji in newspapers")</div>
                 }
             </div>
         </div>
         <!-- Alternative Readings Part -->
         <div>
           @if let Some(ref natori) = k_item.kanji.kanji.natori {
-            <div class="notes d-flex flex-row wrap"><b class="right-padding-10">Japanese names:</b> 
+            <div class="notes d-flex flex-row wrap"><b class="right-padding-10">@data.gettext("Japanese names"):</b> 
               @for (pos, n) in natori.iter().enumerate() {
                 @if pos > 0 {
                   <div class="tags no-margin slim right-padding-10">,</div>
@@ -97,10 +100,10 @@
             </div>
           }
           @if let Some(ref chinese) = k_item.kanji.kanji.chinese {
-            <div class="notes"><b>Chinese reading:</b> @chinese.join(", ")</div>
+            <div class="notes"><b>@data.gettext("Chinese reading"):</b> @chinese.join(", ")</div>
           }
           @if let Some(ref korean) = k_item.get_korean() {
-            <div class="notes"><b>Korean reading:</b>&nbsp;&nbsp; @korean.join(", ")</div>
+            <div class="notes"><b>@data.gettext("Korean reading"):</b>&nbsp;&nbsp; @korean.join(", ")</div>
           }
         </div>
 
@@ -117,7 +120,7 @@
                  <div class="slidecontainer">
                     <input type="range" min="0.05" max="2" value="1" step="0.05" class="slider speedSlider">
                  </div>
-                 <span class="slider-output noselect currentAnimationSpeed">Animation speed: 1</span>
+                 <span class="slider-output noselect currentAnimationSpeed">@data.gettext_fmt("Animation speed: {}", &[1])</span>
               </div>
               <div class="kanjisvgParent">
                 <svg class="kanjisvg" width="109px" height="109px">
@@ -136,7 +139,7 @@
             @if let Some(ref ons) = k_item.on_dicts {
               <div class="on-reading">
                  <h3 class="noselect">
-                    On reading compounds
+                    @data.gettext("On reading compounds")
                  </h3>
                  <div class="d-flex flex-column">
                    @for on in ons.iter() {
@@ -153,7 +156,7 @@
             @if let Some(ref kuns) = k_item.kun_dicts {
               <div class="kun-reading">
                 <h3 class="noselect">
-                   Kun reading compounds
+                   @data.gettext("Kun reading compounds")
                 </h3>
                 <div class="d-flex flex-column">
                   @for kun in kuns.iter() {

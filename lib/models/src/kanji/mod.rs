@@ -138,6 +138,7 @@ impl Kanji {
         Ok(radical::find_by_id(db, self.radical.unwrap()).await?)
     }
 
+    // TODO replace with gettext string
     /// Print kanji grade pretty for frontend
     pub fn school_str(&self) -> Option<String> {
         self.grade.map(|grade| format!("Taught in {} grade", grade))
