@@ -2,6 +2,11 @@
 @use search::query::Query;
 @use super::search_help;
 @(query: &Query, result: WordResult)
+
+  <!-- CSS and JS only used on this page -->
+  <link rel="stylesheet" type="text/css" href="assets/css/lib/material.min.css">
+  <script src="assets/js/lib/material.min.js"></script>
+
   <!-- Inner Top Row -->
   <div class="d-flex center no-drag">
     <div class="main-tab-select l">
@@ -139,13 +144,27 @@
                 <!-- Right side: Info -->
 
                 <!-- Tooltip -->
-                <div class="word-tooltip d-flex flex-column noselect" onclick="openInfoMenu(this, '#conj@word.sequence', '#coll@word.sequence')">
+                <div id="m@word.sequence" class="word-tooltip d-flex flex-column noselect">
                   <span>.</span>
                   <span>.</span>
                   <span>.</span>
                 </div>
 
-                @for (spos, senses_compound) in word.get_senses_orderd(&query).iter().enumerate() {
+                <ul id="info-dropdown" class="mdl-menu mdl-menu--bottom-right mdl-js-menu mdl-js-ripple-effect" for="m@word.sequence">
+                  @*@if word.conjugations.is_some() {
+                    <li id="conjugationBtn" class="info-entry" data-toggle="modal" data-target="conj@word.sequence" class="mdl-menu__item">Show Conjugations</li>
+                  } else {
+                    <li disabled id="conjugationBtn" class="info-entry" class="mdl-menu__item">Show Conjugations</li>
+                  }*@
+                  <li disabled class="mdl-menu__item" style="height: 10px;"><hr style="margin: 0px; margin-top: 5px;"></li>
+                  @if word.collocations.is_some() {
+                    <li id="collocationBtn" class="info-entry" data-toggle="modal" data-target="coll@word.sequence" class="mdl-menu__item">Show Collocations</li>
+                  } else {
+                    <li disabled id="collocationBtn" class="info-entry" class="mdl-menu__item">Show Collocations</li>
+                  }
+                </ul>
+
+                @for (spos, senses_compound) in word.get_senses_orderd(&query).iter().enumerate() { 
                   @for (pos, sense) in senses_compound.iter().enumerate() {
                     @if !sense.glosses.is_empty() {
                       <!-- Sense entry -->
@@ -375,11 +394,3 @@
       }
     </div>
   </div>
-
-  <!-- !!! Menu Overlay !!! -->
-  <div id="info-dropdown" class="d-flex flex-column noselect">
-    <span id="conjugationBtn" class="info-entry" data-toggle="modal" onclick="closeInfoOverlay()">Show Conjugations</span>
-    <span id="collocationBtn" class="info-entry" data-toggle="modal" onclick="closeInfoOverlay()">Show Collocations</span>
- </div>
-
- <script async="" defer="" src="assets/js/wordInfo.js"></script>
