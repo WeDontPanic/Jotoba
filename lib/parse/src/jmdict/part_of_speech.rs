@@ -179,6 +179,32 @@ pub enum PartOfSpeech {
     Verb(VerbType),
 }
 
+impl PartOfSpeech {
+    /// Returns true if [`self`] is a godan PartOfSpeech variant
+    pub fn is_godan(&self) -> bool {
+        if let PartOfSpeech::Verb(v) = self {
+            match v {
+                VerbType::Godan(_) => true,
+                _ => false,
+            }
+        } else {
+            false
+        }
+    }
+
+    /// Returns true if [`self`] is an ichdan PartOfSpeech variant
+    pub fn is_ichidan(&self) -> bool {
+        if let PartOfSpeech::Verb(v) = self {
+            match v {
+                VerbType::Ichidan => true,
+                _ => false,
+            }
+        } else {
+            false
+        }
+    }
+}
+
 impl ToSql<Text, Pg> for PartOfSpeech {
     fn to_sql<W: Write>(&self, out: &mut Output<W, Pg>) -> serialize::Result {
         let s: String = (*self).into();

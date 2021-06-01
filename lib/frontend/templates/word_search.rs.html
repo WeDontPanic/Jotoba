@@ -151,14 +151,14 @@
                 </div>
 
                 <ul id="info-dropdown" class="mdl-menu mdl-menu--bottom-right mdl-js-menu mdl-js-ripple-effect" for="m@word.sequence">
-                  @*@if word.conjugations.is_some() {
-                    <li id="conjugationBtn" class="info-entry" data-toggle="modal" data-target="conj@word.sequence" class="mdl-menu__item">Show Conjugations</li>
+                  @if word.get_inflections().is_some() {
+                    <li id="conjugationBtn" class="info-entry" data-toggle="modal" data-target="#conj@word.sequence" class="mdl-menu__item">Show Conjugations</li>
                   } else {
                     <li disabled id="conjugationBtn" class="info-entry" class="mdl-menu__item">Show Conjugations</li>
-                  }*@
+                  }
                   <li disabled class="mdl-menu__item" style="height: 10px;"><hr style="margin: 0px; margin-top: 5px;"></li>
                   @if word.collocations.is_some() {
-                    <li id="collocationBtn" class="info-entry" data-toggle="modal" data-target="coll@word.sequence" class="mdl-menu__item">Show Collocations</li>
+                    <li id="collocationBtn" class="info-entry" data-toggle="modal" data-target="#coll@word.sequence" class="mdl-menu__item">Show Collocations</li>
                   } else {
                     <li disabled id="collocationBtn" class="info-entry" class="mdl-menu__item">Show Collocations</li>
                   }
@@ -251,7 +251,7 @@
                 </div>
               }
 
-              <!-- !!! START OF CONJUGATION OVERLAY TODO ONLY DO THIS IF POSSIBLE !!! -->
+              @if let Some(inflections) = word.get_inflections() {
               <div class="modal fade" id="conj@word.sequence">
                 <div class="modal-dialog  modal-lg">
                   <div class="modal-content">
@@ -273,29 +273,35 @@
                          <tbody>
                             <tr>
                                <th scope="row">Present</th>
-                               <td>聞く</td>
-                               <td>聞かない</td>
+                               <td>@inflections.present.positive</td>
+                               <td>@inflections.present.negative</td>
                             </tr>
+
                             <tr>
                                <th scope="row">Present, polite</th>
-                               <td>聞きます</td>
-                               <td>聞きません</td>
+                               <td>@inflections.present_polite.positive</td>
+                               <td>@inflections.present_polite.negative</td>
                             </tr>
+
                             <tr>
                                <th scope="row">Past</th>
-                               <td>聞いた</td>
-                               <td>聞かなかった</td>
+                               <td>@inflections.past.positive</td>
+                               <td>@inflections.past.negative</td>
                             </tr>
+
                             <tr>
                                <th scope="row">Past, polite</th>
-                               <td>聞いた</td>
-                               <td>聞かなかった</td>
+                               <td>@inflections.past_polite.positive</td>
+                               <td>@inflections.past_polite.negative</td>
                             </tr>
+
                             <tr>
                                <th scope="row">Te-form</th>
-                               <td>聞いた</td>
-                               <td>聞かなかった</td>
+                               <td>@inflections.te_form.positive</td>
+                               <td>@inflections.te_form.negative</td>
                             </tr>
+
+                           <!--
                             <tr>
                                <th scope="row">Potential</th>
                                <td>聞いた</td>
@@ -321,12 +327,14 @@
                                <td>聞いた</td>
                                <td>聞かなかった</td>
                             </tr>
+                           -->
                          </tbody>
                        </table>
                       </div>
                    </div>
                 </div>
              </div>
+              }
              <!-- !!! END OF INFO OVERLAY -->
               <hr class="res-separator" />
             </div>

@@ -8,6 +8,7 @@ use japanese::{
     inflection::Inflection,
     JapaneseExt,
 };
+use jp_inflections::{Verb, VerbType, WordForm};
 use parse::jmdict::{
     dialect::Dialect,
     field::Field,
@@ -330,6 +331,84 @@ impl Word {
                 .collect_vec(),
         )
     }
+
+    fn get_pos(&self) -> impl Iterator<Item = &PartOfSpeech> {
+        self.senses
+            .iter()
+            .map(|i| i.glosses[0].part_of_speech.iter())
+            .flatten()
+    }
+
+    /// Returns a jp_inflections::Verb if [`self`] is a verb
+    fn get_jp_verb(&self) -> Option<Verb> {
+        let verb_type = if self.get_pos().any(|i| i.is_ichidan()) {
+            VerbType::Ichidan
+        } else if self.get_pos().any(|i| i.is_godan()) {
+            VerbType::Godan
+        } else {
+            return None;
+        };
+
+        let verb = Verb::new(
+            jp_inflections::Word::new(
+                self.reading.kana.as_ref().map(|i| &i.reading).unwrap(),
+                self.reading.kanji.as_ref().map(|i| &i.reading),
+            ),
+            verb_type,
+        );
+
+        // Check if [`verb`] really is a valid verb in dictionary form
+        verb.word.is_verb().then(|| verb)
+    }
+
+    /// Returns an [`Inflections`] value if [`self`] is a valid verb
+    pub fn get_inflections(&self) -> Option<Inflections> {
+        let verb = self.get_jp_verb()?;
+
+        let build = || -> Result<Inflections, jp_inflections::error::Error> {
+            Ok(Inflections {
+                present: InflectionPair {
+                    positive: verb.dictionary(WordForm::Short)?.get_reading(),
+                    negative: verb.negative(WordForm::Short)?.get_reading(),
+                },
+                present_polite: InflectionPair {
+                    positive: verb.dictionary(WordForm::Long)?.get_reading(),
+                    negative: verb.negative(WordForm::Long)?.get_reading(),
+                },
+
+                past: InflectionPair {
+                    positive: verb.past(WordForm::Short)?.get_reading(),
+                    negative: verb.negative_past(WordForm::Short)?.get_reading(),
+                },
+                past_polite: InflectionPair {
+                    positive: verb.past(WordForm::Long)?.get_reading(),
+                    negative: verb.negative_past(WordForm::Long)?.get_reading(),
+                },
+                te_form: InflectionPair {
+                    positive: verb.te_form()?.get_reading(),
+                    negative: verb.negative_te_form()?.get_reading(),
+                },
+            })
+        }()
+        .ok()?;
+
+        Some(build)
+    }
+}
+
+pub struct Inflections {
+    pub present: InflectionPair,
+    pub present_polite: InflectionPair,
+
+    pub past: InflectionPair,
+    pub past_polite: InflectionPair,
+
+    pub te_form: InflectionPair,
+}
+
+pub struct InflectionPair {
+    pub positive: String,
+    pub negative: String,
 }
 
 impl Reading {
