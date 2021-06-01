@@ -9,7 +9,7 @@ pub use wordsearch::WordSearch;
 use async_std::sync::Mutex;
 use itertools::Itertools;
 use once_cell::sync::Lazy;
-use std::time::SystemTime;
+use std::time::{Duration, SystemTime};
 
 use super::{
     query::{Query, QueryLang},

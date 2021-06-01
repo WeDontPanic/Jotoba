@@ -1433,7 +1433,8 @@ dependencies = [
 [[package]]
 name = "jp_inflections"
 version = "0.1.0"
-source = "git+https://github.com/JojiiOfficial/Japanese_Inflections#9ad7eabae1bff5e24661f449a0d83f7c94b89f6f"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "b0944859a3345beedbfa0aef0456b92dee0d60e5a6f2d1776fcf8176de595251"
 
 [[package]]
 name = "js-sys"
