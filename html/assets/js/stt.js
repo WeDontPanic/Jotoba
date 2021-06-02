@@ -2,50 +2,66 @@
  * This JS-File implements the Speech to Text functionality for text inpu
  */
 
-var SpeechRecognition = SpeechRecognition || webkitSpeechRecognition;
-var recognition = new SpeechRecognition();
+var SpeechRecognition, recognition;
 
-// Settings
-recognition.lang = 'en-US';
-recognition.continuous = false;
-recognition.interimResults = false;
-recognition.maxAlternatives = 1;
+try {
+    SpeechRecognition = SpeechRecognition || webkitSpeechRecognition;
+    recognition = new SpeechRecognition();
+} catch (e) {}
 
-// On recognition start
-recognition.onstart = function() {
-    $('#currentlyListening').html("Yes");
-};
+if (recognition !== undefined) {
+    console.log("ok");
+    recognitionSetup();
+}
 
-// On recognition error
-recognition.onerror  = function(event) { 
-    console.log(event.error);
-    switch(event.error) {
-        case "not-allowed":
-            Util.showMessage("error", "Need permissions to perform speech recognition!");
-            break;
-        case "aborted":
-        case "no-speech":
-            break;
-        default:
-            Util.showMessage("error", "Your browser does not support speech recognition!");
+// Handles the initial setup of the recognition lib 
+function recognitionSetup() {
+    recognition.lang = 'en-US';
+    recognition.continuous = false;
+    recognition.interimResults = false;
+    recognition.maxAlternatives = 1;
+    
+    // On recognition start
+    recognition.onstart = function() {
+        $('#currentlyListening').html("Yes");
+    };
+    
+    // On recognition error
+    recognition.onerror  = function(event) { 
+        console.log(event.error);
+        switch(event.error) {
+            case "not-allowed":
+                Util.showMessage("error", "Need permissions to perform speech recognition!");
+                break;
+            case "aborted":
+            case "no-speech":
+                break;
+            default:
+                Util.showMessage("error", "Your browser does not support speech recognition!");
+        }
+        $('#currentlyListening').html("No");
     }
-    $('#currentlyListening').html("No");
+    
+    // On speech end
+    recognition.onspeechend = function() {
+        recognition.stop();
+        $('#currentlyListening').html("No");
+    }
+    
+    // On recognition result
+    recognition.onresult = function(event) {
+        let transcript = event.results[0][0].transcript;
+        $('#search').val(transcript);
+    };
 }
-
-// On speech end
-recognition.onspeechend = function() {
-    recognition.stop();
-    $('#currentlyListening').html("No");
-}
-
-// On recognition result
-recognition.onresult = function(event) {
-    let transcript = event.results[0][0].transcript;
-    $('#search').val(transcript);
-};
 
 // Toggles the overlay on and off
 function toggleSpeakOverlay() {
+    if (recognition == undefined) {
+        Util.showMessage("error", "This feature is not supported in your browser.");
+        return;
+    }
+
     $('.overlay.radical').addClass('hidden');
 
     let overlay = $('.overlay.speech');
