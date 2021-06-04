@@ -150,9 +150,7 @@
                 <ul id="info-dropdown" class="mdl-menu mdl-menu--bottom-right mdl-js-menu mdl-js-ripple-effect" for="m@word.sequence">
                   @if word.get_inflections().is_some() {
                     <li id="conjugationBtn" class="info-entry noselect" data-toggle="modal" data-target="#conj@word.sequence" class="mdl-menu__item">@data.gettext("Show Conjugations")</li>
-                    @if word.collocations.is_some() {
-                      <li disabled class="mdl-menu__item" style="height: 10px;"><hr style="margin: 0px; margin-top: 5px;"></li>
-                    }
+                    <li disabled class="mdl-menu__item" style="height: 10px;"><hr style="margin: 0px; margin-top: 5px;"></li>
                   }
                   
                   @if let Some(ref collocations) = word.collocations {
