@@ -473,6 +473,10 @@ footer {
     margin-bottom: -20px;
 }
 
+.mdl-menu__container {
+    margin-right: 10px;
+}
+
 .kanji-entry {
     height: fit-content;
     padding-bottom: 10px;
