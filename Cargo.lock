@@ -984,7 +984,6 @@ dependencies = [
  "cache",
  "dyn-fmt",
  "error",
- "gettext",
  "japanese",
  "localization",
  "models",
@@ -1793,6 +1792,7 @@ name = "parse"
 version = "0.1.0"
 dependencies = [
  "diesel",
+ "localization",
  "quick-xml",
  "regex",
  "strum",

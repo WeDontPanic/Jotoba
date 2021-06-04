@@ -9,6 +9,12 @@ impl Translatable for &'static str {
     }
 }
 
+impl TranslatablePlural for &'static str {
+    fn get_plural_id(&self) -> &'static str {
+        self
+    }
+}
+
 /// This trait allows any objects after implementation to be translated (in singular) using `dict`
 pub trait Translatable {
     /// Has to return a unique MsgID which has to represent a msgid within the po file(s)

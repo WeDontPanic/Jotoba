@@ -19,7 +19,6 @@ localization = { path = "../localization" }
 actix-web = "3.3.2"
 ructe = "0.13.2"
 serde = "1.0.126"
-gettext = "0.4.0"
 dyn-fmt = "0.3.0"
 
 [build-dependencies]

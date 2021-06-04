@@ -12,3 +12,4 @@ diesel = { version = "1.4.6", features = ["postgres","r2d2"] }
 strum = { version = "0.21.0", features = ["derive"] }
 strum_macros = "0.21.1"
 regex = "1.5.4"
+localization = { path = "../localization" }

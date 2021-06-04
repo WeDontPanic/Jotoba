@@ -1,4 +1,4 @@
-use std::{io::Write, str::FromStr};
+use std::{fmt::Display, io::Write, str::FromStr};
 
 use diesel::{
     deserialize,
@@ -8,6 +8,7 @@ use diesel::{
     types::{FromSql, ToSql},
 };
 
+use localization::{language::Language, traits::Translatable, TranslationDict};
 use strum_macros::{AsRefStr, EnumString};
 
 #[derive(AsExpression, FromSqlRow, Debug, PartialEq, Clone, Copy, AsRefStr, EnumString)]
@@ -37,6 +38,12 @@ pub enum Dialect {
     Tsugaru,
 }
 
+impl Display for Dialect {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{:?}", self)
+    }
+}
+
 impl Into<&'static str> for Dialect {
     fn into(self) -> &'static str {
         match self {
@@ -55,10 +62,18 @@ impl Into<&'static str> for Dialect {
     }
 }
 
-impl ToString for Dialect {
-    fn to_string(&self) -> String {
-        let s: &str = (*self).into();
-        format!("{} dialect", s)
+impl Translatable for Dialect {
+    fn get_id(&self) -> &'static str {
+        "{} dialect"
+    }
+
+    fn gettext_fmt<'a, T: Display + Sized>(
+        &self,
+        dict: &'a TranslationDict,
+        _values: &[T],
+        language: Option<Language>,
+    ) -> String {
+        dict.gettext_fmt(self.get_id(), &[self], language)
     }
 }
 

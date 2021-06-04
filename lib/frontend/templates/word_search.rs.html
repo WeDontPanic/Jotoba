@@ -1,18 +1,20 @@
 @use search::word::result::{Item, WordResult};
 @use search::query::Query;
 @use super::search_help;
-@(query: &Query, result: WordResult)
+@use crate::BaseData;
+
+@(data: &BaseData, query: &Query, result: WordResult)
 
   <!-- Inner Top Row -->
   <div class="d-flex center no-drag">
     <div class="main-tab-select l">
-      <h2 id="previousTabBtn" onclick="changeSearchType(2)" class="tab-btn">&larr; Sentences</h2>
+      <h2 id="previousTabBtn" onclick="changeSearchType(2)" class="tab-btn">&larr; @data.gettext("Sentences")</h2>
     </div>
     <div class="title-div">
       <h1>Words and kanji</h1>
     </div>
     <div class="main-tab-select r">
-      <h2 id="nextTabBtn" onclick="changeSearchType(3)" class="tab-btn">Names &rarr;</h2>
+      <h2 id="nextTabBtn" onclick="changeSearchType(3)" class="tab-btn">@data.gettext("Names") &rarr;</h2>
     </div>
   </div>
 
@@ -30,10 +32,9 @@
     <div class="search-annotation">
       <div class="search-inflection">
         <span>
-          @query.query could be an inflection of <a class="clickable no-align green" href="/search?type=0&search=@inflection.lexeme">@inflection.lexeme</a>, with these forms:
+          @data.gettext_fmt("{} could be an inflection of", &[&query.query])<a class="clickable no-align green" href="/search?type=0&search=@inflection.lexeme">@inflection.lexeme</a>@data.gettext(", with these forms:")
           <br>
           @for form in inflection.forms.iter() {
-            <!--Masu-form. It is the polite form of the verb.-->
             @form.as_ref()
             <br>
           }
@@ -49,7 +50,7 @@
     <div class="main-info d-flex flex-column">
 
       @if result.has_word() {
-        <h3 class="noselect word-title">Words</h3>
+        <h3 class="noselect word-title">@data.gettext("Words")</h3>
       } else {
         @:search_help("words")
       }
@@ -118,16 +119,16 @@
 
               @if word.is_common() {
                 <div class="word-frequency common">
-                  common word
+                  @data.gettext("common word")
                 </div>
               }
               @if let Some(lvl) =  word.reading.get_jplt_lvl() {
                 <div class="word-frequency">
-                  JLPT n@lvl
+                  @data.gettext("JLPT") n@lvl
                 </div>
               }
               @if let Some(audio) = word.audio_file() {
-                <span class="clickable audioBtn">Play audio
+                <span class="clickable audioBtn">@data.gettext("Play audio")
                   <audio preload="none">
                     <source src="assets/audio/@audio" type="audio/ogg">
                   </audio>
@@ -148,15 +149,15 @@
 
                 <ul id="info-dropdown" class="mdl-menu mdl-menu--bottom-right mdl-js-menu mdl-js-ripple-effect" for="m@word.sequence">
                   @if word.get_inflections().is_some() {
-                    <li id="conjugationBtn" class="info-entry" data-toggle="modal" data-target="#conj@word.sequence" class="mdl-menu__item">Show Conjugations</li>
+                    <li id="conjugationBtn" class="info-entry" data-toggle="modal" data-target="#conj@word.sequence" class="mdl-menu__item">@data.gettext("Show Conjugations")</li>
                   } else {
-                    <li disabled id="conjugationBtn" class="info-entry" class="mdl-menu__item">Show Conjugations</li>
+                    <li disabled id="conjugationBtn" class="info-entry" class="mdl-menu__item">@data.gettext("Show Conjugations")</li>
                   }
                   <li disabled class="mdl-menu__item" style="height: 10px;"><hr style="margin: 0px; margin-top: 5px;"></li>
-                  @if word.collocations.is_some() {
-                    <li id="collocationBtn" class="info-entry" data-toggle="modal" data-target="#coll@word.sequence" class="mdl-menu__item">Show Collocations</li>
+                  @if let Some(ref collocations) = word.collocations {
+                    <li id="collocationBtn" class="info-entry" data-toggle="modal" data-target="#coll@word.sequence" class="mdl-menu__item">@data.ngettext("Show Collocations", collocations.len() as u64)</li>
                   } else {
-                    <li disabled id="collocationBtn" class="info-entry" class="mdl-menu__item">Show Collocations</li>
+                    <li disabled id="collocationBtn" class="info-entry" class="mdl-menu__item">@data.gettext("Show Collocations")</li>
                   }
                 </ul>
 
@@ -182,16 +183,16 @@
                               @info
                             }
                             @if let Some(ref dialect) = dialect {
-                              @dialect
+                              @data.gettext_fmt(*dialect, &[*dialect])
                             }
                             @if let Some(ref antonym) = antonym {
-                              Antonym of <a class="clickable no-align green" href="/search?type=0&search=@antonym">@antonym</a>
+                              @data.gettext("Antonym of") <a class="clickable no-align green" href="/search?type=0&search=@antonym">@antonym</a>
                             }
                             @if let Some(ref xref) = xref {
                               @if antonym.is_some() || dialect.is_some() {
                                 .
                               }
-                              See also <a class="clickable no-align green" href="/search?type=0&search=@xref">@xref</a>
+                              @data.gettext("See also") <a class="clickable no-align green" href="/search?type=0&search=@xref">@xref</a>
                             }
                           </div>
                         }
@@ -205,7 +206,7 @@
                 }
               
                 @if let Some(accents) = word.get_accents() {
-                  <div class="tags">Pitch accent</div>
+                  <div class="tags">@data.gettext("Pitch accent")</div>
                   <div class="pitch">
                     @for accent in accents {
                       <span class="pitch @accent.get_classes()">@accent.c</span>
@@ -215,7 +216,7 @@
 
                 <!-- Additional Informations -->
                 @if !word.reading.alternative.is_empty() {
-                  <div class="tags">Other forms</div>
+                  <div class="tags">@data.gettext("Other forms")</div>
                   <div class="notes">@word.alt_readings_beautified()</div>
                 }
               </div>
@@ -230,7 +231,7 @@
                         <button type="button" class="close" data-dismiss="modal">×</button>
                         <br>
                         <!-- Verb conjugation table -->
-                        <h3 class="info-h3">Collocations</h3>
+                        <h3 class="info-h3">@data.gettext("Collocations")</h3>
                         <table class="table collocation">
                           <tbody>
                             @for collocation in collocations {
@@ -256,61 +257,62 @@
                       <button type="button" class="close" data-dismiss="modal">×</button>
                       <!-- Verb conjugation table -->
        
-                      <h3 class="info-h3">Godan verb with ku ending</h3>
+                      <!-- TODO -->
+                      <!--<h3 class="info-h3">Godan verb with ku ending</h3>-->
        
                       <table class="table conjugation">
                          <thead>
                            <tr>
                              <th scope="col"></th>
-                             <th scope="col">Affirmative</th>
-                             <th scope="col">Negative</th>
+                             <th scope="col">@data.gettext("Affirmative")</th>
+                             <th scope="col">@data.gettext("Negative")</th>
                            </tr>
                          </thead>
                          <tbody>
                             <tr>
-                               <th scope="row">Present</th>
+                               <th scope="row">@data.gettext("Present")</th>
                                <td>@inflections.present.positive</td>
                                <td>@inflections.present.negative</td>
                             </tr>
 
                             <tr>
-                               <th scope="row">Present, polite</th>
+                               <th scope="row">@data.gettext("Present, polite")</th>
                                <td>@inflections.present_polite.positive</td>
                                <td>@inflections.present_polite.negative</td>
                             </tr>
 
                             <tr>
-                               <th scope="row">Past</th>
+                               <th scope="row">@data.gettext("Past")</th>
                                <td>@inflections.past.positive</td>
                                <td>@inflections.past.negative</td>
                             </tr>
 
                             <tr>
-                               <th scope="row">Past, polite</th>
+                               <th scope="row">@data.gettext("Past, polite")</th>
                                <td>@inflections.past_polite.positive</td>
                                <td>@inflections.past_polite.negative</td>
                             </tr>
 
                             <tr>
-                               <th scope="row">Te-form</th>
+                               <th scope="row">@data.gettext("Te-form")</th>
                                <td>@inflections.te_form.positive</td>
                                <td>@inflections.te_form.negative</td>
                             </tr>
 
                             <tr>
-                               <th scope="row">Potential</th>
+                               <th scope="row">@data.gettext("Potential")</th>
                                <td>@inflections.potential.positive</td>
                                <td>@inflections.potential.negative</td>
                             </tr>
 
                             <tr>
-                               <th scope="row">Passive</th>
+                               <th scope="row">@data.gettext("Passive")</th>
                                <td>@inflections.passive.positive</td>
                                <td>@inflections.passive.negative</td>
                             </tr>
 
                             <tr>
-                               <th scope="row">Causative</th>
+                               <th scope="row">@data.gettext("Causative")</th>
                                <td>@inflections.causative.positive</td>
                                <td>@inflections.causative.negative</td>
                             </tr>
@@ -343,14 +345,14 @@
       
     </div>
     <div id="secondaryInfo" class="secondary-info @if !result.contains_kanji { hidden }">
-      <h3 class="noselect">Kanji</h3>
+      <h3 class="noselect">@data.gettext("Kanji")</h3>
       <!-- Kanji Templates here -->
       @for i in result.items.iter() {
         @if let Item::Kanji(kanji) = i {
           <div class="kanji-parent">
             <!-- Tags -->
             <div class="tags">
-              @kanji.kanji.stroke_count strokes.
+              @kanji.kanji.stroke_count @data.gettext("strokes").
               @if let Some(jplt_lvl) = kanji.kanji.jlpt {
                 JLPT N@jplt_lvl.
               }
@@ -371,7 +373,7 @@
 
             <!-- Kun readings -->
             @if let Some(ref kun) = kanji.kanji.kunyomi {
-              <div class="tags no-margin">Kun</div>
+              <div class="tags no-margin">@data.gettext("Kun")</div>
               <div class="d-flex flex-row wrap noselect">
                 @for (pos, reading) in kun.iter().enumerate() {
                   @if pos > 0 {
@@ -384,7 +386,7 @@
 
             <!-- On readings -->
             @if let Some(ref on) = kanji.kanji.onyomi {
-              <div class="tags no-margin">On</div>
+              <div class="tags no-margin">@data.gettext("On")</div>
               <div class="d-flex flex-row wrap noselect">
                 @for (pos, reading) in on.iter().enumerate() {
                   @if pos > 0 {

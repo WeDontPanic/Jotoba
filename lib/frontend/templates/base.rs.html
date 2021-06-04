@@ -336,7 +336,7 @@
               Site::SearchResult(search_result) => {
                 @match search_result.result {
                   ResultData::Word(result) => {
-                    @:word_search_html(&search_result.query, result)
+                    @:word_search_html(&data, &search_result.query, result)
                   }
                   ResultData::KanjiInfo(result) => {
                     @:kanji_details(&data, result)

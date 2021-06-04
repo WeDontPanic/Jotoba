@@ -473,11 +473,11 @@ impl Sense {
 
     pub fn get_infos(
         &self,
-    ) -> Option<(Option<String>, Option<&str>, Option<&str>, Option<String>)> {
+    ) -> Option<(Option<String>, Option<&str>, Option<&str>, Option<Dialect>)> {
         let info_str = self.get_information_string();
         let xref = self.get_xref();
         let antonym = self.get_antonym();
-        let dialect = self.dialect.map(|i| i.to_string());
+        let dialect = self.dialect;
 
         if xref.is_none() && info_str.is_none() && antonym.is_none() {
             None

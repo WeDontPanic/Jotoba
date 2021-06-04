@@ -13,7 +13,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"PO-Revision-Date: 2021-05-30 19:48+0200\n"
+"PO-Revision-Date: 2021-06-04 22:13+0200\n"
 "Last-Translator:  <jojii@gmx.net>\n"
 "Language-Team: English\n"
 "Language: en\n"
@@ -300,3 +300,77 @@ msgid "Japanese names"
 msgstr ""
 
 ## Word results
+msgid "{} could be an inflection of"
+msgstr ""
+
+msgid ", with these forms:"
+msgstr ""
+
+msgid "Show Conjugations"
+msgstr ""
+
+msgid "Show Collocation"
+msgid_plural "Show Collocations"
+msgstr[0] "Show Collocation"
+
+msgid "Collocations"
+msgstr ""
+
+msgid "Conjugations"
+msgstr ""
+
+msgid "Antonym of"
+msgstr ""
+
+msgid "See also"
+msgstr ""
+
+msgid "Pitch accent"
+msgstr ""
+
+msgid "Other forms"
+msgstr ""
+
+msgid "Affirmative"
+msgstr ""
+
+msgid "Negative"
+msgstr ""
+
+msgid "Present"
+msgstr ""
+
+msgid "Present, polite"
+msgstr ""
+
+msgid "Past"
+msgstr ""
+
+msgid "Past, polite"
+msgstr ""
+
+msgid "Te-form"
+msgstr ""
+
+msgid "Potential"
+msgstr ""
+
+msgid "Passive"
+msgstr ""
+
+msgid "Causative"
+msgstr ""
+
+msgid "Play audio"
+msgstr ""
+
+msgid "common word"
+msgstr ""
+
+msgid "JLPT"
+msgstr ""
+
+## Jmdict
+
+msgid "{} dialect"
+msgstr ""
