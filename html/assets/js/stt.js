@@ -1,5 +1,5 @@
 /**
- * This JS-File implements the Speech to Text functionality for text inpu
+ * This JS-File implements the Speech to Text functionality for text input
  */
 
 var SpeechRecognition, recognition;
@@ -7,12 +7,9 @@ var SpeechRecognition, recognition;
 try {
     SpeechRecognition = SpeechRecognition || webkitSpeechRecognition;
     recognition = new SpeechRecognition();
-} catch (e) {}
 
-if (recognition !== undefined) {
-    console.log("ok");
     recognitionSetup();
-}
+} catch (e) {}
 
 // Handles the initial setup of the recognition lib 
 function recognitionSetup() {
@@ -68,6 +65,7 @@ function toggleSpeakOverlay() {
     overlay.toggleClass('hidden');
 
     if (overlay.hasClass("hidden")) {
+        recognition.abort();
         recognition.stop();
     }
 }
