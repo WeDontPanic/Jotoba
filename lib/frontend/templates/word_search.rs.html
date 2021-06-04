@@ -177,7 +177,7 @@
                             @sense.get_glosses()
                           </div>
                         </div>
-                        @if let Some((info, xref, antonym, dialect)) = sense.get_infos() {
+                        @if let Some((info, xref, antonym, dialect)) = sense.get_infos(&data.dict, data.get_lang()) {
                           <div class="tags no-margin">
                             @if let Some(ref info) = info {
                               @info

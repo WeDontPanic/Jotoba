@@ -9,6 +9,7 @@ use japanese::{
     JapaneseExt,
 };
 use jp_inflections::{Verb, VerbType, WordForm};
+use localization::{language::Language as locLanguage, traits::Translatable, TranslationDict};
 use parse::jmdict::{
     dialect::Dialect,
     field::Field,
@@ -453,14 +454,6 @@ impl Sense {
         self.glosses.iter().map(|i| i.gloss.clone()).join("; ")
     }
 
-    // Get a senses misc entries
-    pub fn get_misc(&self) -> Option<String> {
-        self.misc.map(|i| {
-            let s: String = i.into();
-            s
-        })
-    }
-
     pub fn get_xref(&self) -> Option<&str> {
         self.xref.as_ref().and_then(|xref| xref.split('・').next())
     }
@@ -473,8 +466,10 @@ impl Sense {
 
     pub fn get_infos(
         &self,
+        dict: &TranslationDict,
+        language: locLanguage,
     ) -> Option<(Option<String>, Option<&str>, Option<&str>, Option<Dialect>)> {
-        let info_str = self.get_information_string();
+        let info_str = self.get_information_string(dict, language);
         let xref = self.get_xref();
         let antonym = self.get_antonym();
         let dialect = self.dialect;
@@ -487,9 +482,14 @@ impl Sense {
     }
 
     /// Return human readable information about a gloss
-    pub fn get_information_string(&self) -> Option<String> {
+    pub fn get_information_string(
+        &self,
+        dict: &TranslationDict,
+        language: locLanguage,
+    ) -> Option<String> {
         let arr: [Option<String>; 3] = [
-            map_to_str(&self.misc),
+            self.misc
+                .map(|i| i.gettext(dict, Some(language)).to_owned()),
             map_to_str(&self.field),
             self.information.clone(),
         ];

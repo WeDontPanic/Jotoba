@@ -8,7 +8,7 @@ use diesel::{
     types::{FromSql, ToSql},
 };
 
-use localization::{language::Language, traits::Translatable, TranslationDict};
+use localization::traits::Translatable;
 use strum_macros::{AsRefStr, EnumString};
 
 #[derive(AsExpression, FromSqlRow, Debug, PartialEq, Clone, Copy, AsRefStr, EnumString)]
@@ -65,15 +65,6 @@ impl Into<&'static str> for Dialect {
 impl Translatable for Dialect {
     fn get_id(&self) -> &'static str {
         "{} dialect"
-    }
-
-    fn gettext_fmt<'a, T: Display + Sized>(
-        &self,
-        dict: &'a TranslationDict,
-        _values: &[T],
-        language: Option<Language>,
-    ) -> String {
-        dict.gettext_fmt(self.get_id(), &[self], language)
     }
 }
 

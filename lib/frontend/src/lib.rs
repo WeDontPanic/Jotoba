@@ -149,7 +149,7 @@ impl<'a> BaseData<'a> {
 
 /// Translation helper
 impl<'a> BaseData<'a> {
-    fn get_lang(&self) -> Language {
+    pub fn get_lang(&self) -> Language {
         // TODO actually use users language
         match self.user_settings.user_lang {
             parse::jmdict::languages::Language::German => Language::German,

@@ -8,6 +8,7 @@ use diesel::{
     types::{FromSql, ToSql},
 };
 
+use localization::traits::Translatable;
 use strum_macros::{AsRefStr, EnumString};
 
 #[derive(AsExpression, FromSqlRow, Debug, PartialEq, Clone, Copy, AsRefStr, EnumString)]
@@ -119,8 +120,8 @@ pub enum Misc {
     Yojijukugo,
 }
 
-impl Into<&'static str> for Misc {
-    fn into(self) -> &'static str {
+impl Translatable for Misc {
+    fn get_id(&self) -> &'static str {
         match self {
             Misc::Abbreviation => "Abbreviation",
             Misc::Archaism => "Anarchism",
@@ -175,19 +176,6 @@ impl Into<&'static str> for Misc {
             Misc::RudeOrXRatedTerm => "Rude/x-rated term",
             Misc::Yojijukugo => "Yojijukugo",
         }
-    }
-}
-
-impl Into<String> for Misc {
-    fn into(self) -> String {
-        self.to_string()
-    }
-}
-
-impl ToString for Misc {
-    fn to_string(&self) -> String {
-        let s: &str = (*self).into();
-        s.to_string()
     }
 }
 

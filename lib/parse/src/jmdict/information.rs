@@ -8,6 +8,7 @@ use diesel::{
     types::{FromSql, ToSql},
 };
 
+use localization::traits::Translatable;
 use strum_macros::{AsRefStr, EnumString};
 
 use crate::error;
@@ -33,25 +34,18 @@ pub enum Information {
     UsuallyKana,
 }
 
-impl Into<&'static str> for Information {
-    fn into(self) -> &'static str {
+impl Translatable for Information {
+    fn get_id(&self) -> &'static str {
         match self {
-            Information::Ateji => "Ateji",
+            Information::Ateji => "ateji",
             Information::IrregularKana => "irregular kana",
             Information::IrregularKanji => "irregular kanji",
             Information::IrregularOkurigana => "irregular okurigana",
-            Information::OutdatedKanji => "outdated kana",
+            Information::OutdatedKanji => "outdated kanji",
             Information::OutdatedKana => "outdated kana",
             Information::Gikun => "gikun",
             Information::UsuallyKana => "usually written in kana",
         }
-    }
-}
-
-impl ToString for Information {
-    fn to_string(&self) -> String {
-        let s: &'static str = (*self).into();
-        s.to_string()
     }
 }
 

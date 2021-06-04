@@ -24,7 +24,6 @@ use utils::to_option;
 
 use async_std::sync::{Mutex, MutexGuard};
 use diesel::{
-    pg::Pg,
     prelude::*,
     sql_types::{Bool, Text},
 };

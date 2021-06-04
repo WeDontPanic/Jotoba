@@ -13,6 +13,7 @@ models = { path = "../models" }
 cache = { path = "../cache" }
 error = { path = "../error" }
 utils = { path = "../utils" }
+localization = { path = "../localization" }
 serde = "1.0.126"
 itertools = "0.10.0"
 diesel = { version = "1.4.6", features = ["postgres","r2d2"] }

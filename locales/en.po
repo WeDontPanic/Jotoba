@@ -13,7 +13,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"PO-Revision-Date: 2021-06-04 22:13+0200\n"
+"PO-Revision-Date: 2021-06-04 22:49+0200\n"
 "Last-Translator:  <jojii@gmx.net>\n"
 "Language-Team: English\n"
 "Language: en\n"
@@ -303,7 +303,7 @@ msgstr ""
 msgid "{} could be an inflection of"
 msgstr ""
 
-msgid ", with these forms:"
+msgid " with these forms:"
 msgstr ""
 
 msgid "Show Conjugations"
@@ -372,5 +372,189 @@ msgstr ""
 
 ## Jmdict
 
+# Dialect(s)
 msgid "{} dialect"
+msgstr ""
+
+# Information
+msgid "ateji"
+msgstr ""
+
+msgid "irregular kana"
+msgstr ""
+
+msgid "irregular kanji"
+msgstr ""
+
+msgid "irregular okurigana"
+msgstr ""
+
+msgid "outdated kana"
+msgstr ""
+
+msgid "outdated kanji"
+msgstr ""
+
+msgid "gikun"
+msgstr ""
+
+msgid "usually written in kana"
+msgstr ""
+
+# Misc
+
+msgid "Abbreviation"
+msgstr ""
+
+msgid "Anarchism"
+msgstr ""
+
+msgid "Character"
+msgstr ""
+
+msgid "Childrens language"
+msgstr ""
+
+msgid "Colloquialism"
+msgstr ""
+
+msgid "Company name"
+msgstr ""
+
+msgid "Creature"
+msgstr ""
+
+msgid "Dated term"
+msgstr ""
+
+msgid "Deity"
+msgstr ""
+
+msgid "Derogatory"
+msgstr ""
+
+msgid "Event"
+msgstr ""
+
+msgid "Familiar language"
+msgstr ""
+
+msgid "Female term/language"
+msgstr ""
+
+msgid "Fiction"
+msgstr ""
+
+msgid "Given name"
+msgstr ""
+
+msgid "Historical term"
+msgstr ""
+
+msgid "Honorific language"
+msgstr ""
+
+msgid "Humble language"
+msgstr ""
+
+msgid "Idiomatic expression"
+msgstr ""
+
+msgid "Jocular humorous term"
+msgstr ""
+
+msgid "Legend"
+msgstr ""
+
+msgid "Literary/formal term"
+msgstr ""
+
+msgid "Manga slang"
+msgstr ""
+
+msgid "Male term/language"
+msgstr ""
+
+msgid "Mythology"
+msgstr ""
+
+msgid "Internet slang"
+msgstr ""
+
+msgid "Object"
+msgstr ""
+
+msgid "Obsolete term"
+msgstr ""
+
+msgid "Obscure term"
+msgstr ""
+
+msgid "Onomatopoetic or mimetic word"
+msgstr ""
+
+msgid "Organization name"
+msgstr ""
+
+msgid "Other"
+msgstr ""
+
+msgid "Person name"
+msgstr ""
+
+msgid "Place name"
+msgstr ""
+
+msgid "Poetical term"
+msgstr ""
+
+msgid "Polite language"
+msgstr ""
+
+msgid "Product name"
+msgstr ""
+
+msgid "Proverb"
+msgstr ""
+
+msgid "Qutation"
+msgstr ""
+
+msgid "Rare"
+msgstr ""
+
+msgid "Religion"
+msgstr ""
+
+msgid "Sensitive"
+msgstr ""
+
+msgid "Service"
+msgstr ""
+
+msgid "Slang"
+msgstr ""
+
+msgid "Railway station"
+msgstr ""
+
+msgid "Family or surname"
+msgstr ""
+
+msgid "Usually written in kana"
+msgstr ""
+
+msgid "Unclassified name"
+msgstr ""
+
+msgid "Vulgar expression/word"
+msgstr ""
+
+msgid "Artwork"
+msgstr ""
+
+msgid "Rude/x-rated term"
+msgstr ""
+
+msgid "Yojijukugo"
 msgstr ""
