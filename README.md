@@ -4,15 +4,15 @@ Public instance: [jotoba.de](https://jotoba.de)<br>
 
 # Main Team
 <table>
-     <tr>
+     <tr align="center">
           <td><a href="https://github.com/JojiiOfficial">JojiiOfficial</a></td>
           <td><a href="https://github.com/Yukaru-san">Yukaru</a></td>
      </tr>
-     <tr style="content-align: center">
+     <tr align="center">
           <td><a href="https://github.com/JojiiOfficial"><img src="https://avatars.githubusercontent.com/u/15957865?v=4" width="100" height="100"></a></td>
           <td><a href="https://github.com/Yukaru-san"><img src="https://avatars.githubusercontent.com/u/57414313?v=4" width="100" height="100"></a></td>
      </tr>
-     <tr>
+     <tr align="center">
           <td>Backend dev</td>
           <td>Frontend dev</td>
      </tr>
