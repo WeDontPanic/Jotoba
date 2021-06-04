@@ -90,7 +90,6 @@ pub(super) async fn by_reading(search: &Search<'_>) -> Result<ResultData, Error>
 
 /// Do a search without the kanji literal or reading
 pub(super) async fn alternative_reading_search(search: &Search<'_>) -> Result<ResultData, Error> {
-    println!("alternative search");
     let reading = search.query.form.as_kanji_reading().unwrap();
 
     // Modify search query
