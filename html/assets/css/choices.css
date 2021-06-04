@@ -1,0 +1,370 @@
+/*
+    Used by the search bar only. So much css for a damn text field..
+*/
+
+.choices {
+  position: relative;
+  margin-bottom: 24px;
+  font-size: 16px;
+}
+
+.choices:focus {
+  outline: none;
+}
+
+.choices:last-child {
+  margin-bottom: 0;
+}
+
+.choices[data-type*="select-one"] {
+  cursor: pointer;
+}
+
+.choices[data-type*="select-one"] .choices__inner {
+  padding-bottom: 7.5px;
+}
+
+.choices[data-type*="select-one"]:after {
+  content: "";
+  height: 0;
+  width: 0;
+  border-style: solid;
+  border-width: 5px;
+  border-color: var(--tagColor) transparent transparent transparent;
+  position: absolute;
+  right: 30px;
+  top: 50%;
+  margin-top: -2.5px;
+  pointer-events: none;
+}
+
+.choices[data-type*="select-one"].is-open:after {
+  border-color: transparent transparent var(--tagColor) transparent !important;
+  margin-top: -7.5px;
+}
+
+.choices__inner {
+  display: inline-block;
+  vertical-align: top;
+  width: 100%;
+  padding: 7.5px 7.5px 3.75px;
+  border-radius: 2.5px;
+  font-size: 14px;
+  min-height: 44px;
+  overflow: hidden;
+}
+
+.is-open .choices__inner {
+  border-radius: 2.5px 2.5px 0 0;
+}
+
+.choices__list {
+  margin: 0;
+  padding-left: 0;
+  list-style: none;
+}
+
+.choices__list--single {
+  display: inline-block;
+  padding: 4px 16px 4px 4px;
+  width: 100%;
+}
+
+.choices__list--single .choices__item {
+  width: 100%;
+}
+
+.choices__list--dropdown {
+  display: none;
+  z-index: 1;
+  position: absolute;
+  width: 100%;
+  background-color: var(--searchBackground);
+  border: 1px solid var(--searchBackground);
+  top: 100%;
+  margin-top: -1px;
+  border-bottom-left-radius: 2.5px;
+  border-bottom-right-radius: 2.5px;
+  overflow: hidden;
+  word-break: break-all;
+}
+
+.choices__list--dropdown.is-active {
+  display: block;
+}
+
+.choices__list--dropdown .choices__list {
+  position: relative;
+  max-height: 300px;
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+  will-change: scroll-position;
+}
+
+.choices__list--dropdown .choices__item {
+  position: relative;
+  padding: 10px;
+  font-size: 14px;
+}
+
+@media (min-width: 640px) {
+  .choices__list--dropdown .choices__item--selectable {
+    padding-right: 100px;
+  }
+  .choices__list--dropdown .choices__item--selectable:after {
+    content: attr(data-select-text);
+    font-size: 12px;
+    opacity: 0;
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+}
+
+.choices__item {
+  cursor: default;
+}
+
+.choices__item--selectable {
+  cursor: pointer;
+}
+
+.choices__input {
+  display: inline-block;
+  vertical-align: baseline;
+  font-size: 14px;
+  margin-bottom: 5px;
+  border: 0;
+  border-radius: 0;
+  max-width: 100%;
+  padding: 4px 0 4px 2px;
+}
+
+.choices__input:focus {
+  outline: 0;
+}
+
+.choices__button:focus {
+  outline: none;
+}
+
+/* ----------------- Settings specific changes -------------- */
+
+.modal-body .choices {
+  margin-bottom: 0px;
+}
+
+.modal-body .choices__inner {
+  width: fit-content;
+}
+
+.modal-body .choices__list.choices__list--single {
+  box-shadow: 0px 1px 2px 0px var(--lineColor);
+  border: 1px solid var(--lineColor);
+  padding-right: 20px;
+}
+
+.modal-body .choices:after {
+  right: unset;
+  margin-left: -24px;
+}
+
+.modal-body .choices__list.choices__list--dropdown {
+  width: max-content;
+  border: 0;
+  margin-top: 2px;
+  border-radius: 4px;
+  box-shadow: 0px 8px 20px 0px var(--lineColor);
+}
+
+.modal-body .choices__list--dropdown .choices__item {
+  padding: 6px 17px 10px 10px;
+}
+
+@media (min-width: 640px) {
+  .modal-body .choices__list--dropdown .choices__item--selectable {
+    padding-right: 10px;
+  }
+
+  .modal-body .choices ::-webkit-scrollbar {
+    width: 10px;
+  }
+    
+  .modal-body .choices ::-webkit-scrollbar-track {
+    background: var(--lineColor);
+  }
+    
+  .modal-body .choices ::-webkit-scrollbar-thumb {
+    background: var(--itemBG_075);
+  }
+
+  .search-lang-txt {
+    position: absolute;
+    margin-top: -30px;
+    right: 8rem;
+  }
+}
+
+/* ----------------- Search Bar specific changes -------------- */
+
+.searchDivInner form .inner-form {
+  background: var(--searchBackground);
+  display: -ms-flexbox;
+  display: flex;
+  width: 100%;
+  -ms-flex-pack: justify;
+      justify-content: space-between;
+  -ms-flex-align: center;
+      align-items: center;
+  box-shadow: 0px 8px 20px 0px var(--lineColor);
+  border-radius: 3px;
+}
+
+.searchDivInner form .inner-form .input-field {
+  height: 68px;
+}
+
+.searchDivInner form .inner-form .input-field input {
+  height: 100%;
+  background: transparent;
+  border: 0;
+  display: block;
+  width: 100%;
+  padding: 10px 32px;
+  font-size: 16px;
+  color: var(--searchTextColor);
+}
+
+.searchDivInner form .inner-form .input-field input.placeholder {
+  color: var(--tagColor);
+  font-size: 16px;
+}
+
+.searchDivInner form .inner-form .input-field input:-moz-placeholder {
+  color: var(--tagColor);
+  font-size: 16px;
+}
+
+.searchDivInner form .inner-form .input-field input::-webkit-input-placeholder {
+  color: var(--tagColor);
+  font-size: 16px;
+}
+
+.searchDivInner form .inner-form .input-field.first-wrap {
+  width: 200px;
+  border-right: 1px solid var(--lineColor);
+}
+
+.searchDivInner form .inner-form .input-field.first-wrap .choices__inner {
+  background: transparent;
+  border-radius: 0;
+  border: 0;
+  height: 100%;
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-align: center;
+  align-items: center;
+  padding: 10px 30px;
+}
+
+.searchDivInner form .inner-form .input-field.first-wrap .choices__inner .choices__list.choices__list--single {
+  display: -ms-flexbox;
+  display: flex;
+  padding: 0;
+  -ms-flex-align: center;
+  align-items: center;
+  height: 100%;
+}
+
+.searchDivInner form .inner-form .input-field.first-wrap .choices__inner .choices__item.choices__item--selectable.choices__placeholder {
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-align: center;
+  align-items: center;
+  height: 100%;
+  opacity: 1;
+  color: var(--tagColor);
+}
+
+.searchDivInner form .inner-form .input-field.first-wrap .choices__inner .choices__list--single .choices__item {
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-align: center;
+  align-items: center;
+  height: 100%;
+  color: var(--searchTextColor);
+}
+
+.searchDivInner form .inner-form .input-field input:hover, .searchDivInner form .inner-form .input-field input:focus {
+  box-shadow: none;
+  outline: 0;
+}
+
+.searchDivInner form .inner-form .input-field.first-wrap .choices__list.choices__list--dropdown {
+  border: 0;
+  margin-top: 2px;
+  border-radius: 4px;
+  box-shadow: 0px 8px 20px 0px var(--lineColor);
+}
+
+.searchDivInner form .inner-form .input-field.first-wrap .choices__list.choices__list--dropdown .choices__item--selectable {
+  padding-right: 0;
+}
+
+.searchDivInner form .inner-form .input-field.first-wrap .choices__list--dropdown .choices__item--selectable.is-highlighted {
+  color: var(--primaryColor);
+}
+
+.searchDivInner form .inner-form .input-field.first-wrap .choices__list--dropdown .choices__item {
+  color: var(--searchTextColor);
+  min-height: 24px;
+}
+
+.searchDivInner form .inner-form .input-field.second-wrap {
+  -ms-flex-positive: 1;
+      flex-grow: 1;
+}
+
+.searchDivInner form .inner-form .input-field.third-wrap {
+  width: 74px;
+}
+
+.searchDivInner form .inner-form .input-field.third-wrap .btn-search {
+  height: 100%;
+  width: 100%;
+  white-space: nowrap;
+  border: 0;
+  cursor: pointer;
+  background: var(--bgPrimaryColor);
+  transition: all .2s ease-out, color .2s ease-out;
+}
+
+.searchDivInner form .inner-form .input-field.third-wrap .btn-search svg {
+  width: 16px;
+}
+
+.searchDivInner form .inner-form .input-field.third-wrap .btn-search:hover {
+  background: var(--primaryColor);
+}
+
+.searchDivInner form .inner-form .input-field.third-wrap .btn-search:focus {
+  outline: 0;
+  box-shadow: none;
+}
+
+.searchDivInner form .inner-form .input-field .input-select {
+  height: 100%;
+}
+
+.searchDivInner form .inner-form .input-field .input-select .choices {
+  height: 100%;
+}
+
+.searchDivInner form .inner-form .input-field {
+  height: 50px;
+}
+
+.btn-search > svg > path {
+  fill: var(--secondaryTextColor);
+}
