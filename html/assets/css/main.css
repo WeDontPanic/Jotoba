@@ -128,6 +128,14 @@ h4 {
     flex-wrap: wrap;
 }
 
+.no-highlight {
+    color: var(--primaryTextColor);
+}
+
+.no-highlight:hover {
+    text-decoration: none;
+}
+
 a:hover {
     color: unset;
 }
@@ -409,6 +417,7 @@ footer {
     padding-right: 5px;
     font-size: 18px;
     line-height: 1.4;
+    cursor: pointer;
 }
 /*
 .info-entry:not(:last-child) {
@@ -467,6 +476,7 @@ footer {
     color: var(--tagColor);
     font-weight: bold;
     text-align: center;
+    cursor: pointer;
 }
 
 .word-tooltip > span {
