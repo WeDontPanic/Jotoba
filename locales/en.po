@@ -13,7 +13,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"PO-Revision-Date: 2021-06-04 22:49+0200\n"
+"PO-Revision-Date: 2021-06-04 23:22+0200\n"
 "Last-Translator:  <jojii@gmx.net>\n"
 "Language-Team: English\n"
 "Language: en\n"
@@ -368,6 +368,9 @@ msgid "common word"
 msgstr ""
 
 msgid "JLPT"
+msgstr ""
+
+msgid "Sentence search"
 msgstr ""
 
 ## Jmdict
