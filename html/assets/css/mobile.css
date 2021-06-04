@@ -91,6 +91,10 @@
         height: max-content;
         width: 100%;
     }
+
+    .mdl-menu__container {
+        margin-right: 15px;
+    }
 	
 	.main-info > .d-flex.center {
 		-ms-flex-direction: column!important;
