@@ -388,6 +388,18 @@ impl Word {
                     positive: verb.te_form()?.get_reading(),
                     negative: verb.negative_te_form()?.get_reading(),
                 },
+                potential: InflectionPair {
+                    positive: verb.potential(WordForm::Short)?.get_reading(),
+                    negative: verb.negative_potential(WordForm::Short)?.get_reading(),
+                },
+                passive: InflectionPair {
+                    positive: verb.passive()?.get_reading(),
+                    negative: verb.negative_passive()?.get_reading(),
+                },
+                causative: InflectionPair {
+                    positive: verb.causative()?.get_reading(),
+                    negative: verb.negative_causative()?.get_reading(),
+                },
             })
         }()
         .ok()?;
@@ -404,6 +416,10 @@ pub struct Inflections {
     pub past_polite: InflectionPair,
 
     pub te_form: InflectionPair,
+
+    pub potential: InflectionPair,
+    pub passive: InflectionPair,
+    pub causative: InflectionPair,
 }
 
 pub struct InflectionPair {
