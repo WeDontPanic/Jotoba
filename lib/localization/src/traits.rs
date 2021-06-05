@@ -59,6 +59,11 @@ pub trait Translatable {
     ) -> String {
         dict.pgettext_fmt(context, self.get_id(), values, language)
     }
+
+    /// Like gettext but returns an owned string
+    fn gettext_custom(&self, dict: &TranslationDict, language: Option<Language>) -> String {
+        dict.gettext(self.get_id(), language).to_owned()
+    }
 }
 
 /// This trait allows any objects after implementation to be translated (in plural) using `dict`

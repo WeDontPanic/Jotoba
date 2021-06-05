@@ -13,7 +13,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"PO-Revision-Date: 2021-06-04 23:22+0200\n"
+"PO-Revision-Date: 2021-06-05 18:03+0200\n"
 "Last-Translator:  <jojii@gmx.net>\n"
 "Language-Team: English\n"
 "Language: en\n"
@@ -561,3 +561,216 @@ msgstr ""
 
 msgid "Yojijukugo"
 msgstr ""
+
+# Fields
+
+msgid "{} term"
+msgstr ""
+
+msgid "Agriculture"
+msgstr ""
+
+msgid "Anatomy"
+msgstr ""
+
+msgid "Archeology"
+msgstr ""
+
+msgid "Architecture"
+msgstr ""
+
+msgid "Art aesthetics"
+msgstr ""
+
+msgid "Astronomy"
+msgstr ""
+
+msgid "Audio/visual"
+msgstr ""
+
+msgid "Aviation"
+msgstr ""
+
+msgid "Baseball"
+msgstr ""
+
+msgid "Biochemistry"
+msgstr ""
+
+msgid "Biology"
+msgstr ""
+
+msgid "Botany"
+msgstr ""
+
+msgid "Buddhism"
+msgstr ""
+
+msgid "Business"
+msgstr ""
+
+msgid "Chemistry"
+msgstr ""
+
+msgid "Christianity"
+msgstr ""
+
+msgid "Computing"
+msgstr ""
+
+msgid "Crystallography"
+msgstr ""
+
+msgid "Ecology"
+msgstr ""
+
+msgid "Economics"
+msgstr ""
+
+msgid "Electricity"
+msgstr ""
+
+msgid "Electronics"
+msgstr ""
+
+msgid "Embryology"
+msgstr ""
+
+msgid "Engineering"
+msgstr ""
+
+msgid "Entomology"
+msgstr ""
+
+msgid "Finance"
+msgstr ""
+
+msgid "Fishing"
+msgstr ""
+
+msgid "FoodCooking"
+msgstr ""
+
+msgid "Gardening"
+msgstr ""
+
+msgid "Genetics"
+msgstr ""
+
+msgid "Geography"
+msgstr ""
+
+msgid "Geology"
+msgstr ""
+
+msgid "Geometry"
+msgstr ""
+
+msgid "Go (game)"
+msgstr ""
+
+msgid "Golf"
+msgstr ""
+
+msgid "Grammar"
+msgstr ""
+
+msgid "Greek mythology"
+msgstr ""
+
+msgid "Hanafuda"
+msgstr ""
+
+msgid "Horseracing"
+msgstr ""
+
+msgid "Law"
+msgstr ""
+
+msgid "Linguistics"
+msgstr ""
+
+msgid "Logic"
+msgstr ""
+
+msgid "Martial arts"
+msgstr ""
+
+msgid "Mahjong"
+msgstr ""
+
+msgid "Mathematics"
+msgstr ""
+
+msgid "MechanicalEngineering"
+msgstr ""
+
+msgid "Medicine"
+msgstr ""
+
+msgid "Climate/weather"
+msgstr ""
+
+msgid "Military"
+msgstr ""
+
+msgid "Music"
+msgstr ""
+
+msgid "Ornithology"
+msgstr ""
+
+msgid "Paleontology"
+msgstr ""
+
+msgid "Pathology"
+msgstr ""
+
+msgid "Pharmacy"
+msgstr ""
+
+msgid "Philosophy"
+msgstr ""
+
+msgid "Photography"
+msgstr ""
+
+msgid "Physics"
+msgstr ""
+
+msgid "Physiology"
+msgstr ""
+
+msgid "Printing"
+msgstr ""
+
+msgid "Psychology/psychiatry"
+msgstr ""
+
+msgid "Shinto"
+msgstr ""
+
+msgid "Shogi"
+msgstr ""
+
+msgid "Sports"
+msgstr ""
+
+msgid "Statistics"
+msgstr ""
+
+msgid "Sumo"
+msgstr ""
+
+msgid "Telecommunications"
+msgstr ""
+
+msgid "Trademark"
+msgstr ""
+
+msgid "Videogame"
+msgstr ""
+
+msgid "Zoology"
+msgstr ""
+

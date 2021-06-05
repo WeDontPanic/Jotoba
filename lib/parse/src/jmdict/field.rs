@@ -8,6 +8,7 @@ use diesel::{
     types::{FromSql, ToSql},
 };
 
+use localization::{language::Language, traits::Translatable, TranslationDict};
 use strum_macros::{AsRefStr, EnumString};
 
 #[derive(AsExpression, FromSqlRow, Debug, PartialEq, Clone, Copy, AsRefStr, EnumString)]
@@ -153,10 +154,84 @@ pub enum Field {
     Zoology,
 }
 
-impl Into<String> for Field {
-    fn into(self) -> String {
-        // TODO proper to-string
-        format!("{:?}", self)
+impl Translatable for Field {
+    fn get_id(&self) -> &'static str {
+        match self {
+            Field::Agriculture => "Agriculture",
+            Field::Anatomy => "Anatomy",
+            Field::Archeology => "Archeology",
+            Field::Architecture => "Architecture",
+            Field::ArtAesthetics => "Art aesthetics",
+            Field::Astronomy => "Astronomy",
+            Field::AudioVisual => "Audio/visual",
+            Field::Aviation => "Aviation",
+            Field::Baseball => "Baseball",
+            Field::Biochemistry => "Biochemistry",
+            Field::Biology => "Biology",
+            Field::Botany => "Botany",
+            Field::Buddhism => "Buddhism",
+            Field::Business => "Business",
+            Field::Chemistry => "Chemistry",
+            Field::Christianity => "Christianity",
+            Field::Computing => "Computing",
+            Field::Crystallography => "Crystallography",
+            Field::Ecology => "Ecology",
+            Field::Economics => "Economics",
+            Field::Electricity => "Electricity",
+            Field::Electronics => "Electronics",
+            Field::Embryology => "Embryology",
+            Field::Engineering => "Engineering",
+            Field::Entomology => "Entomology",
+            Field::Finance => "Finance",
+            Field::Fishing => "Fishing",
+            Field::FoodCooking => "FoodCooking",
+            Field::Gardening => "Gardening",
+            Field::Genetics => "Genetics",
+            Field::Geography => "Geography",
+            Field::Geology => "Geology",
+            Field::Geometry => "Geometry",
+            Field::GoGame => "Go (game)",
+            Field::Golf => "Golf",
+            Field::Grammar => "Grammar",
+            Field::GreekMythology => "Greek mythology",
+            Field::Hanafuda => "Hanafuda",
+            Field::Horseracing => "Horseracing",
+            Field::Law => "Law",
+            Field::Linguistics => "Linguistics",
+            Field::Logic => "Logic",
+            Field::MartialArts => "Martial arts",
+            Field::Mahjong => "Mahjong",
+            Field::Mathematics => "Mathematics",
+            Field::MechanicalEngineering => "MechanicalEngineering",
+            Field::Medicine => "Medicine",
+            Field::ClimateWeather => "Climate/weather",
+            Field::Military => "Military",
+            Field::Music => "Music",
+            Field::Ornithology => "Ornithology",
+            Field::Paleontology => "Paleontology",
+            Field::Pathology => "Pathology",
+            Field::Pharmacy => "Pharmacy",
+            Field::Philosophy => "Philosophy",
+            Field::Photography => "Photography",
+            Field::Physics => "Physics",
+            Field::Physiology => "Physiology",
+            Field::Printing => "Printing",
+            Field::PsychologyPsychiatry => "Psychology/psychiatry",
+            Field::Shinto => "Shinto",
+            Field::Shogi => "Shogi",
+            Field::Sports => "Sports",
+            Field::Statistics => "Statistics",
+            Field::Sumo => "Sumo",
+            Field::Telecommunications => "Telecommunications",
+            Field::Trademark => "Trademark",
+            Field::Videogame => "Videogame",
+            Field::Zoology => "Zoology",
+        }
+    }
+
+    // Translate to eg "Zoology term"
+    fn gettext_custom(&self, dict: &TranslationDict, language: Option<Language>) -> String {
+        dict.gettext_fmt("{} term", &[self.gettext(&dict, language)], language)
     }
 }
 

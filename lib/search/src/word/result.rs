@@ -490,7 +490,7 @@ impl Sense {
         let arr: [Option<String>; 3] = [
             self.misc
                 .map(|i| i.gettext(dict, Some(language)).to_owned()),
-            map_to_str(&self.field),
+            self.field.map(|i| i.gettext_custom(dict, Some(language))),
             self.information.clone(),
         ];
 
