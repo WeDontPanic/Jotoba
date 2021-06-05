@@ -277,9 +277,16 @@ fn calc_kanji_readings(kanji: &str, kana: &str) -> Option<Vec<(String, String)>>
 
         // Current kanji buff
         curr_kanji.clear();
+        let mut counter = 0;
         let found = loop {
             curr_kanji.push(kana[kana_pos]);
             kana_pos += 1;
+
+            // Require at least as much kana characters as kanji characters
+            if counter < part_kanji.len() {
+                counter += 1;
+                continue;
+            }
 
             if starts_with(
                 &curr_kana,
@@ -293,6 +300,7 @@ fn calc_kanji_readings(kanji: &str, kana: &str) -> Option<Vec<(String, String)>>
             if curr_kanji.len() >= curr_kana.len() || kana_pos >= kana.len() {
                 break false;
             }
+            counter += 1;
         };
 
         if !found {
