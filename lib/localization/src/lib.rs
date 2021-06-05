@@ -58,8 +58,8 @@ impl TranslationDict {
         }
 
         Ok(TranslationDict {
-            default_lang,
             catalogs,
+            default_lang,
         })
     }
 

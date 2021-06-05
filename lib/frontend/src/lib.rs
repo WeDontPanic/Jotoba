@@ -138,7 +138,7 @@ impl<'a> BaseData<'a> {
         locale_dict: &'a TranslationDict,
         user_settings: UserSettings,
     ) -> Self {
-        let search_result = SearchResult { result, query };
+        let search_result = SearchResult { query, result };
         Self::new(
             Site::SearchResult(search_result),
             locale_dict,

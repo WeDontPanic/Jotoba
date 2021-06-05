@@ -61,7 +61,7 @@ where
     fn call(&mut self, req: ServiceRequest) -> Self::Future {
         let fut = self.service.call(req);
 
-        let duration = self.duration.clone();
+        let duration = self.duration;
         Box::pin(async move {
             let mut res = fut.await?;
             let headers = res.headers_mut();
@@ -70,7 +70,7 @@ where
                 CACHE_CONTROL,
                 HeaderValue::from_str(&format!("max-age={}", duration.as_secs())).unwrap(),
             );
-            return Ok(res);
+            Ok(res)
         })
     }
 }

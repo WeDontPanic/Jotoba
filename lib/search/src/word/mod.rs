@@ -279,7 +279,7 @@ impl<'a> Search<'a> {
 
         // Do romaji search if no results were found
         if wordresults.is_empty() {
-            return Ok(self.native_results(&self.query.query.to_hiragana()).await?);
+            return self.native_results(&self.query.query.to_hiragana()).await;
         }
 
         #[cfg(feature = "tokenizer")]

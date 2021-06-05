@@ -105,7 +105,7 @@ impl Dict {
     ) -> Result<(i32, Vec<(String, String)>), Error> {
         use crate::schema::dict::dsl::*;
 
-        if self.collocations.is_none() || self.collocations.as_ref().unwrap().len() == 0 {
+        if self.collocations.is_none() || self.collocations.as_ref().unwrap().is_empty() {
             return Ok((self.sequence, vec![]));
         }
 

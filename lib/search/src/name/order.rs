@@ -143,5 +143,5 @@ impl<'a> ByKanji<'a> {
 }
 
 fn str_to_char(s: &str) -> Option<char> {
-    Some(s.chars().next()?)
+    s.chars().next()
 }
