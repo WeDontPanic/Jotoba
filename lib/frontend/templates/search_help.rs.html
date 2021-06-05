@@ -1,22 +1,24 @@
-@(title: &str)
-<h3 class="noselect word-title">No @title found</h3>
+@use crate::BaseData;
+@(data: &BaseData, title: &str)
+
+<h3 class="noselect word-title">@data.gettext_fmt("No {} found", &[title])</h3>
 <br>
 <div class="d-flex center">
   <article style="height: 700px;">
     <div class="small-12 medium-6 columns small-centered">
-        <p class="fat">Search Help</p>
+        <p class="fat">@data.gettext("Search Help")</p>
         <ul>
-           <li>Your default search language might not fit your input</li>
-           <li>Check your search for typos</li>
-           <li>Use more generic search terms</li>
-           <li>Try finding your search in a different category using <span class="highlight"> w / s / n / k </span></li>
-           <li>Your search request might not be included in our database yet</li>
+           <li>@data.gettext("Your default search language might not fit your input")</li>
+           <li>@data.gettext("Check your search for typos")</li>
+           <li>@data.gettext("Use more generic search terms")</li>
+           <li>@data.gettext("Try finding your search in a different category using ")<span class="highlight"> w / s / n / k </span></li>
+           <li>@data.gettext("Your search request might not be included in our database yet")</li>
         </ul>
 
         <p>
-           If you think your search should be contained in our database, submit an issue on <a class="clickable" href='https://github.com/WeDontPanic/Jotoba'>Github</a>.
+           @data.gettext("If you think your search should be contained in our database, submit an issue on") <a class="clickable" href='https://github.com/WeDontPanic/Jotoba'>Github</a>.
            <br>
-           Also check our <a class="clickable" href='https://trello.com/b/nmG0xgaW/jotoba'>Trello Board</a> since we might be working on it!
+           @data.gettext("Also check our") <a class="clickable" href='https://trello.com/b/nmG0xgaW/jotoba'>Trello Board</a> @data.gettext("since we might be working on it!")
         </p>
     </div>
   </article>

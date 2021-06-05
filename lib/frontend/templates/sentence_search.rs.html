@@ -26,7 +26,7 @@
   <div class="main-info d-flex flex-column">
 
     @if sentences.is_empty() {
-      @:search_help("sentences")
+      @:search_help(&data, data.gettext("sentences"))
     }
 
     <!-- !!! Start of Sentence Template  !!! -->

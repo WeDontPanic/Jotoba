@@ -13,7 +13,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"PO-Revision-Date: 2021-06-05 19:48+0200\n"
+"PO-Revision-Date: 2021-06-05 20:05+0200\n"
 "Last-Translator:  <jojii@gmx.net>\n"
 "Language-Team: English\n"
 "Language: en\n"
@@ -265,7 +265,7 @@ msgstr ""
 msgid "to instantly focus the search bar"
 msgstr ""
 
-## Name results
+## Name search
 msgid "Full name"
 msgstr ""
 
@@ -371,6 +371,16 @@ msgid "JLPT"
 msgstr ""
 
 msgid "Sentence search"
+msgstr ""
+
+# "no words found"
+msgid "words"
+msgstr ""
+
+## Sentence search
+
+# "No sentences found"
+msgid "sentences"
 msgstr ""
 
 ## Jmdict
@@ -936,4 +946,40 @@ msgid "Unknown"
 msgstr ""
 
 msgid "Art work"
+msgstr ""
+
+# "No names found"
+msgid "names"
+msgstr ""
+
+## Search help
+msgid "Search Help"
+msgstr ""
+
+msgid "No {} found"
+msgstr ""
+
+msgid "Your default search language might not fit your input"
+msgstr ""
+
+msgid "Check your search for typos"
+msgstr ""
+
+msgid "Use more generic search terms"
+msgstr ""
+
+msgid "Try finding your search in a different category using "
+msgstr ""
+
+msgid "Your search request might not be included in our database yet"
+msgstr ""
+
+msgid "If you think your search should be contained in our database, submit an issue on"
+msgstr ""
+
+# Also check our Trello board since we might be working on it
+msgid "Also check our"
+msgstr ""
+
+msgid "since we might be working on it!"
 msgstr ""
