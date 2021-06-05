@@ -220,9 +220,12 @@ where
                                 sense.glosses.push(closs);
                             }
                             Tag::Pos => {
-                                let pos = PartOfSpeech::try_from(value.as_str())?;
-                                if !sense.part_of_speech.contains(&pos) {
-                                    sense.part_of_speech.push(pos)
+                                // We don't need all part_of_speech variants so we handle only
+                                // supported ones here
+                                if let Ok(pos) = PartOfSpeech::try_from(value.as_str()) {
+                                    if !sense.part_of_speech.contains(&pos) {
+                                        sense.part_of_speech.push(pos)
+                                    }
                                 }
                             }
                             Tag::Misc => sense.misc = Some(Misc::from_str(&value)?),

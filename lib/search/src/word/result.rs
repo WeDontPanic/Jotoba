@@ -511,11 +511,11 @@ impl Sense {
     }
 
     // Get a senses tags prettified
-    pub fn get_parts_of_speech(&self) -> String {
+    pub fn get_parts_of_speech(&self, dict: &TranslationDict, language: locLanguage) -> String {
         self.glosses[0]
             .part_of_speech
             .iter()
-            .map(|i| i.humanized())
+            .map(|i| i.gettext_custom(dict, Some(language)))
             .join(", ")
     }
 

@@ -166,7 +166,7 @@
                       <!-- Sense entry -->
                       <div class="list-entry">
                         <div class="tags">
-                          @sense.get_parts_of_speech()
+                          @sense.get_parts_of_speech(&data.dict, data.get_lang())
                         </div>
                         <div class="definition-wrapper d-flex flex-row">
                           <div class="entry-count">

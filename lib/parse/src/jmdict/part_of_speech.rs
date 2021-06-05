@@ -11,6 +11,7 @@ use diesel::{
     sql_types::{Integer, Text},
     types::{FromSql, ToSql},
 };
+use localization::{language::Language, traits::Translatable, TranslationDict};
 
 use crate::error;
 use strum_macros::EnumString;
@@ -46,8 +47,6 @@ pub enum PosSimple {
     Interjection,
     #[strum(serialize = "pronoun", serialize = "pron")]
     Pronoun,
-    #[strum(serialize = "copula", serialize = "cop")]
-    Copula,
     #[strum(serialize = "nummeric", serialize = "nr")]
     Nummeric,
     #[strum(serialize = "unclassified", serialize = "unc")]
@@ -72,7 +71,6 @@ impl TryFrom<i32> for PosSimple {
             11 => Self::Expr,
             12 => Self::Interjection,
             13 => Self::Pronoun,
-            14 => Self::Copula,
             15 => Self::Nummeric,
             16 => Self::Unclassified,
             _ => return Err(error::Error::ParseError),
@@ -97,7 +95,6 @@ impl Into<i32> for PosSimple {
             Self::Expr => 11,
             Self::Interjection => 12,
             Self::Pronoun => 13,
-            Self::Copula => 14,
             Self::Nummeric => 15,
             Self::Unclassified => 16,
         }
@@ -111,7 +108,6 @@ impl From<PartOfSpeech> for PosSimple {
             PartOfSpeech::Adverb | PartOfSpeech::AdverbTo => PosSimple::Adverb,
             PartOfSpeech::Auxilary => PosSimple::Auxilary,
             PartOfSpeech::Conjungation => PosSimple::Conjungation,
-            PartOfSpeech::Copula => PosSimple::Copula,
             PartOfSpeech::Counter => PosSimple::Counter,
             PartOfSpeech::Expr => PosSimple::Expr,
             PartOfSpeech::Interjection => PosSimple::Interjection,
@@ -159,7 +155,6 @@ pub enum PartOfSpeech {
 
     // Other
     Conjungation,
-    Copula,
     Counter,
     Expr,
     Interjection,
@@ -238,9 +233,10 @@ pub enum VerbType {
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum AdjectiveType {
     PreNounVerb,
+    /// I Adjective
     Keiyoushi,
+    /// I Adjective conjugated like いい
     KeiyoushiYoiIi,
-    KAri,
     Ku,
     Na,
     Nari,
@@ -254,7 +250,6 @@ pub enum AdjectiveType {
 pub enum NounType {
     Normal,
     Adverbial,
-    Proper,
     Prefix,
     Suffix,
     Temporal,
@@ -319,42 +314,111 @@ pub enum GodanVerbEnding {
     IkuYuku,
 }
 
-impl PartOfSpeech {
-    pub fn humanized(&self) -> String {
-        match *self {
-            Self::Noun(noun_type) => noun_type.humanized(),
-            Self::Sfx => "SoundFx".to_string(),
-            Self::Expr => "Expression".to_string(),
-            Self::Counter => "Counter".to_string(),
-            Self::Suffix => "Suffix".to_string(),
-            Self::Prefix => "Prefix".to_string(),
-            Self::Particle => "Particle".to_string(),
-            Self::Interjection => "Interjection".to_string(),
-            Self::Pronoun => "Pronoun".to_string(),
-            Self::Auxilary => "Auxilary".to_string(),
-            Self::Adjective(adj) => adj.humanized(),
-            Self::Nummeric => "Nummeric".to_string(),
-            Self::AdverbTo => "Adverb-To".to_string(),
-            Self::Adverb => "Adverb".to_string(),
-            Self::Verb(verb) => verb.humanized(),
-            _ => (*self).into(),
+impl Translatable for PartOfSpeech {
+    fn get_id(&self) -> &'static str {
+        match self {
+            PartOfSpeech::Noun(noun_type) => noun_type.get_id(),
+            PartOfSpeech::Sfx => "SoundFx",
+            PartOfSpeech::Expr => "Expression",
+            PartOfSpeech::Counter => "Counter",
+            PartOfSpeech::Suffix => "Suffix",
+            PartOfSpeech::Prefix => "Prefix",
+            PartOfSpeech::Particle => "Particle",
+            PartOfSpeech::Interjection => "Interjection",
+            PartOfSpeech::Pronoun => "Pronoun",
+            PartOfSpeech::Auxilary => "Auxilary",
+            PartOfSpeech::Adjective(adj) => adj.get_id(),
+            PartOfSpeech::Nummeric => "Nummeric",
+            PartOfSpeech::AdverbTo => "Adverb-To",
+            PartOfSpeech::Adverb => "Adverb",
+            PartOfSpeech::Verb(verb) => verb.get_id(),
+            PartOfSpeech::AuxilaryAdj => "Auxilary adjective",
+            PartOfSpeech::AuxilaryVerb => "Auxilary Verb",
+            PartOfSpeech::Conjungation => "Conjugation",
+            PartOfSpeech::Unclassified => "Unclassified",
+        }
+    }
+
+    fn gettext_custom(&self, dict: &TranslationDict, language: Option<Language>) -> String {
+        match self {
+            PartOfSpeech::Verb(verb) => verb.gettext_custom(dict, language),
+            _ => self.gettext(dict, language).to_owned(),
         }
     }
 }
 
-impl VerbType {
-    fn humanized(&self) -> String {
+impl Translatable for AdjectiveType {
+    fn get_id(&self) -> &'static str {
+        match self {
+            AdjectiveType::PreNounVerb => "Noun or verb describing a noun",
+            AdjectiveType::Keiyoushi => "I adjective",
+            AdjectiveType::KeiyoushiYoiIi => "I adjective (conjugated like いい)",
+            AdjectiveType::Ku => "Ku adjective",
+            AdjectiveType::Na => "Na adjective",
+            AdjectiveType::Nari => "Formal form of na adjective",
+            AdjectiveType::No => "No adjective",
+            AdjectiveType::PreNoun => "Pre noun adjective",
+            AdjectiveType::Shiku => "Shiku adjective",
+            AdjectiveType::Taru => "Taru adjective",
+        }
+    }
+}
+
+impl Translatable for NounType {
+    fn get_id(&self) -> &'static str {
+        match self {
+            NounType::Normal => "Noun",
+            NounType::Adverbial => "Noun adverbial",
+            NounType::Prefix => "Prefix (noun)",
+            NounType::Suffix => "Suffix (noun)",
+            NounType::Temporal => "Temporal noun",
+        }
+    }
+}
+
+impl Translatable for VerbType {
+    fn get_id(&self) -> &'static str {
         match *self {
-            VerbType::Irregular(irreg) => irreg.humanize(),
-            VerbType::Unspecified => "Unspecified verb".to_string(),
-            VerbType::Intransitive => "Intransitive verb".to_string(),
-            VerbType::Transitive => "Transitive verb".to_string(),
-            VerbType::Ichidan => "Ichidan verb".to_string(),
-            VerbType::IchidanZuru => "Ichidan zuru verb".to_string(),
-            VerbType::IchidanKureru => "Ichidan kureru verb".to_string(),
-            VerbType::Kuru => "Kuru verb".to_string(),
-            // TODO do other
-            _ => format!("{:?}", self),
+            VerbType::Unspecified => "Unspecified verb",
+            VerbType::Intransitive => "Intransitive verb",
+            VerbType::Transitive => "Transitive verb",
+            VerbType::Ichidan => "Ichidan verb",
+            VerbType::IchidanZuru => "Ichidan zuru verb",
+            VerbType::IchidanKureru => "Ichidan kureru verb",
+            VerbType::Kuru => "Kuru verb",
+            VerbType::Irregular(irregular) => irregular.get_id(),
+            _ => "Godan verb",
+        }
+    }
+
+    fn gettext_custom(&self, dict: &TranslationDict, language: Option<Language>) -> String {
+        match self {
+            VerbType::Irregular(i) => i.gettext_custom(dict, language),
+            _ => self.gettext(dict, language).to_owned(),
+        }
+    }
+}
+
+impl Translatable for IrregularVerb {
+    fn get_id(&self) -> &'static str {
+        match self {
+            IrregularVerb::Nu | IrregularVerb::Ru | IrregularVerb::Su => {
+                "Irregular verb with {} ending"
+            }
+            IrregularVerb::NounOrAuxSuru => "Noun taking suru",
+            IrregularVerb::Suru => "Suru verb",
+            IrregularVerb::SuruSpecial => "Suru special",
+        }
+    }
+
+    fn gettext_custom(&self, dict: &TranslationDict, language: Option<Language>) -> String {
+        match self {
+            IrregularVerb::Nu => self.gettext_fmt(dict, &["nu"], language),
+            IrregularVerb::Ru => self.gettext_fmt(dict, &["ru"], language),
+            IrregularVerb::Su => self.gettext_fmt(dict, &["su"], language),
+            IrregularVerb::NounOrAuxSuru | IrregularVerb::Suru | IrregularVerb::SuruSpecial => {
+                self.gettext(dict, language).to_owned()
+            }
         }
     }
 }
@@ -600,7 +664,6 @@ impl Into<String> for NounType {
         match self {
             NounType::Normal => "n",
             NounType::Adverbial => "n-adv",
-            NounType::Proper => "n-pr",
             NounType::Prefix => "n-pref",
             NounType::Suffix => "n-suf",
             NounType::Temporal => "n-t",
@@ -614,7 +677,6 @@ impl NounType {
         match *self {
             NounType::Normal => "Noun",
             NounType::Adverbial => "Noun adverbial",
-            NounType::Proper => "Noun (proper)",
             NounType::Prefix => "Noun (prefix)",
             NounType::Suffix => "Noun (suffix)",
             NounType::Temporal => "Temporal noun",
@@ -630,7 +692,6 @@ impl TryFrom<&str> for NounType {
     fn try_from(value: &str) -> Result<Self, Self::Error> {
         Ok(match &value[2..] {
             "adv" => NounType::Adverbial,
-            "pr" => NounType::Proper,
             "pref" => NounType::Prefix,
             "suf" => NounType::Suffix,
             "t" => NounType::Temporal,
@@ -658,7 +719,6 @@ impl Into<String> for AdjectiveType {
             AdjectiveType::PreNounVerb => "adj-f",
             AdjectiveType::Keiyoushi => "adj-i",
             AdjectiveType::KeiyoushiYoiIi => "adj-ix",
-            AdjectiveType::KAri => "adj-kari",
             AdjectiveType::Ku => "adj-ku",
             AdjectiveType::Na => "adj-na",
             AdjectiveType::Nari => "adj-nari",
@@ -680,7 +740,6 @@ impl TryFrom<&str> for AdjectiveType {
             "f" => AdjectiveType::PreNounVerb,
             "i" => AdjectiveType::Keiyoushi,
             "ix" => AdjectiveType::KeiyoushiYoiIi,
-            "kari" => AdjectiveType::KAri,
             "ku" => AdjectiveType::Ku,
             "na" => AdjectiveType::Na,
             "nari" => AdjectiveType::Nari,
@@ -707,7 +766,6 @@ impl Into<String> for PartOfSpeech {
                 PartOfSpeech::Pronoun => "pn",
                 PartOfSpeech::Adverb => "adv",
                 PartOfSpeech::Auxilary => "aux",
-                PartOfSpeech::Copula => "cop",
                 PartOfSpeech::Counter => "ctr",
                 PartOfSpeech::Conjungation => "conj",
                 PartOfSpeech::Expr => "exp",
@@ -739,7 +797,6 @@ impl TryFrom<&str> for PartOfSpeech {
             "sfx" => PartOfSpeech::Sfx,
             "adv" => PartOfSpeech::Adverb,
             "aux" => PartOfSpeech::Auxilary,
-            "cop" => PartOfSpeech::Copula,
             "ctr" => PartOfSpeech::Counter,
             "exp" => PartOfSpeech::Expr,
             "int" => PartOfSpeech::Interjection,

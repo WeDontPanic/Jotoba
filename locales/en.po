@@ -13,7 +13,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"PO-Revision-Date: 2021-06-05 18:03+0200\n"
+"PO-Revision-Date: 2021-06-05 19:30+0200\n"
 "Last-Translator:  <jojii@gmx.net>\n"
 "Language-Team: English\n"
 "Language: en\n"
@@ -774,3 +774,132 @@ msgstr ""
 msgid "Zoology"
 msgstr ""
 
+# Part of speech
+msgid "Godan verb"
+msgstr ""
+
+msgid "Irregular verb with {} ending"
+msgstr ""
+
+msgid "SoundFx"
+msgstr ""
+
+msgid "Expression"
+msgstr ""
+
+msgid "Counter"
+msgstr ""
+
+msgid "Suffix"
+msgstr ""
+
+msgid "Prefix"
+msgstr ""
+
+msgid "Particle"
+msgstr ""
+
+msgid "Interjection"
+msgstr ""
+
+msgid "Pronoun"
+msgstr ""
+
+msgid "Auxilary"
+msgstr ""
+
+msgid "Nummeric"
+msgstr ""
+
+msgid "Adverb-To"
+msgstr ""
+
+msgid "Adverb"
+msgstr ""
+
+msgid "Auxilary adjective"
+msgstr ""
+
+msgid "Auxilary Verb"
+msgstr ""
+
+msgid "Conjugation"
+msgstr ""
+
+msgid "Unclassified"
+msgstr ""
+
+msgid "Noun or verb describing a noun"
+msgstr ""
+
+msgid "I adjective"
+msgstr ""
+
+msgid "I adjective (conjugated like いい)"
+msgstr ""
+
+msgid "Ku adjective"
+msgstr ""
+
+msgid "Na adjective"
+msgstr ""
+
+msgid "Formal form of na adjective"
+msgstr ""
+
+msgid "No adjective"
+msgstr ""
+
+msgid "Pre noun adjective"
+msgstr ""
+
+msgid "Shiku adjective"
+msgstr ""
+
+msgid "Taru adjective"
+msgstr ""
+
+msgid "Noun"
+msgstr ""
+
+msgid "Noun adverbial"
+msgstr ""
+
+msgid "Prefix (noun)"
+msgstr ""
+
+msgid "Suffix (noun)"
+msgstr ""
+
+msgid "Temporal noun"
+msgstr ""
+
+msgid "Unspecified verb"
+msgstr ""
+
+msgid "Intransitive verb"
+msgstr ""
+
+msgid "Transitive verb"
+msgstr ""
+
+msgid "Ichidan verb"
+msgstr ""
+
+msgid "Ichidan zuru verb"
+msgstr ""
+
+msgid "Ichidan kureru verb"
+msgstr ""
+
+msgid "Kuru verb"
+msgstr ""
+
+msgid "Noun taking suru"
+msgstr ""
+
+msgid "Suru verb"
+msgstr ""
+
+msgid "Suru special"
+msgstr ""
