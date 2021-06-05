@@ -13,7 +13,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"PO-Revision-Date: 2021-06-05 19:30+0200\n"
+"PO-Revision-Date: 2021-06-05 19:48+0200\n"
 "Last-Translator:  <jojii@gmx.net>\n"
 "Language-Team: English\n"
 "Language: en\n"
@@ -902,4 +902,38 @@ msgid "Suru verb"
 msgstr ""
 
 msgid "Suru special"
+msgstr ""
+
+## Name search
+msgid "Company"
+msgstr ""
+
+msgid "Female"
+msgstr ""
+
+msgid "Male"
+msgstr ""
+
+msgid "Organization"
+msgstr ""
+
+msgid "Persons name"
+msgstr ""
+
+msgid "Place"
+msgstr ""
+
+msgid "Product"
+msgstr ""
+
+msgid "(Railway)Station"
+msgstr ""
+
+msgid "Surname"
+msgstr ""
+
+msgid "Unknown"
+msgstr ""
+
+msgid "Art work"
 msgstr ""

@@ -8,6 +8,7 @@ use diesel::{
     sql_types::Integer,
     types::{FromSql, ToSql},
 };
+use localization::traits::Translatable;
 use strum_macros::{AsRefStr, EnumString};
 
 #[derive(AsExpression, FromSqlRow, Debug, PartialEq, Clone, Copy, AsRefStr, EnumString)]
@@ -39,8 +40,8 @@ pub enum NameType {
     Work,
 }
 
-impl NameType {
-    pub fn humanized(self) -> String {
+impl Translatable for NameType {
+    fn get_id(&self) -> &'static str {
         match self {
             NameType::Company => "Company",
             NameType::Female => "Female",
@@ -55,17 +56,12 @@ impl NameType {
             NameType::Unclassified => "Unknown",
             NameType::Work => "Art work",
         }
-        .to_string()
-    }
-
-    pub fn is_gender(&self) -> bool {
-        matches!(self, Self::Female | Self::Male)
     }
 }
 
-impl Display for NameType {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{}", self.humanized())
+impl NameType {
+    pub fn is_gender(&self) -> bool {
+        matches!(self, Self::Female | Self::Male)
     }
 }
 

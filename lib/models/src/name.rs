@@ -1,7 +1,6 @@
 use crate::{schema::name, DbPool};
 use diesel::prelude::*;
 use error::Error;
-use itertools::Itertools;
 use parse::jmnedict::{name_type::NameType, NameEntry};
 use tokio_diesel::*;
 
@@ -28,20 +27,6 @@ pub struct NewName {
 }
 
 impl Name {
-    /// Returns the Name's types in an human readable way
-    pub fn get_types_humanized(&self) -> String {
-        if let Some(ref n_types) = self.name_type {
-            n_types
-                .iter()
-                // Don't display gendered types here. We need to
-                // display genederd  tags in onether div within the template
-                .filter_map(|i| (!i.is_gender()).then(|| i.humanized()))
-                .join(", ")
-        } else {
-            String::from("")
-        }
-    }
-
     /// Return true if name is gendered
     pub fn is_gendered(&self) -> bool {
         self.name_type

@@ -161,6 +161,10 @@ impl<'a> BaseData<'a> {
         t.gettext(&self.dict, Some(self.get_lang()))
     }
 
+    pub fn gettext_custom<T: Translatable>(&self, t: T) -> String {
+        t.gettext_custom(&self.dict, Some(self.get_lang()))
+    }
+
     pub fn pgettext<T: Translatable>(&self, t: T, context: &'a str) -> &'a str {
         t.pgettext(&self.dict, context, Some(self.get_lang()))
     }

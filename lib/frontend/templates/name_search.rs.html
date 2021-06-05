@@ -1,5 +1,6 @@
 @use models::name::Name;
 @use super::search_help;
+@use search::name::result::get_types_humanized;
 @use crate::BaseData;
 
 @(data: &BaseData, names: Vec<Name>)
@@ -56,14 +57,14 @@
               @if let Some(gender) = name.get_gender() {
                 <div class="row-tag-entry">
                   <div class="tags">@data.gettext("Sex")</div>
-                   <div class="notes">@gender</div>
+                   <div class="notes">@data.gettext(gender)</div>
                 </div>
               } 
 
               @if name.has_non_gender_tags() {
                 <div class="row-tag-entry">
                   <div class="tags">@data.gettext("Name origin")</div>
-                   <div class="notes">@name.get_types_humanized()</div>
+                   <div class="notes">@get_types_humanized(name, data.dict, data.get_lang())</div>
                 </div>
               }
             }

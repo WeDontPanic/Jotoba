@@ -182,7 +182,7 @@
                               @info
                             }
                             @if let Some(ref dialect) = dialect {
-                              @data.gettext_fmt(*dialect, &[*dialect])
+                              @data.gettext_custom(*dialect)
                             }
                             @if let Some(ref antonym) = antonym {
                               @data.gettext("Antonym of") <a class="clickable no-align green" href="/search?type=0&search=@antonym">@antonym</a>
