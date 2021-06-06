@@ -47,7 +47,7 @@ pub(super) async fn start(db: DbPool) -> std::io::Result<()> {
 
     let config_clone = config.clone();
     HttpServer::new(move || {
-        App::new()
+        let app = App::new()
             // Data
             .data(db.clone())
             .data(config_clone.clone())
@@ -74,7 +74,12 @@ pub(super) async fn start(db: DbPool) -> std::io::Result<()> {
                         "",
                         config_clone.server.get_html_files(),
                     )),
-            )
+            );
+
+        #[cfg(feature = "sentry_error")]
+        let app = app.wrap(sentry_actix::Sentry::new());
+
+        app
     })
     .bind(&config.server.listen_address)?
     .run()
