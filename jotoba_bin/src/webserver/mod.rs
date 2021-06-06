@@ -43,7 +43,9 @@ pub(super) async fn start(db: DbPool) -> std::io::Result<()> {
                 ..Default::default()
             },
         )));
+        std::env::set_var("RUST_BACKTRACE", "1");
     }
+
 
     let config_clone = config.clone();
     HttpServer::new(move || {

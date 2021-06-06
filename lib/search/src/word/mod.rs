@@ -9,7 +9,6 @@ pub use wordsearch::WordSearch;
 use async_std::sync::Mutex;
 use itertools::Itertools;
 use once_cell::sync::Lazy;
-use std::time::SystemTime;
 
 use super::{
     query::{Query, QueryLang},
@@ -42,7 +41,6 @@ pub(self) struct Search<'a> {
 
 /// Search among all data based on the input query
 pub async fn search(db: &DbPool, query: &Query) -> Result<WordResult, Error> {
-    let start = SystemTime::now();
     let search = Search { db, query };
 
     // Try to use cache
@@ -53,7 +51,6 @@ pub async fn search(db: &DbPool, query: &Query) -> Result<WordResult, Error> {
     // Perform the search
     let results = search.do_search().await?;
 
-    println!("search took {:?}", start.elapsed());
     search.save_cache(results.clone()).await;
     Ok(results)
 }
@@ -181,6 +178,7 @@ impl<'a> Search<'a> {
         // Perform the word search
         let mut wordresults = if real_string_len(&query) == 1 && query.is_kana() {
             // Search for exact matches only if query.len() <= 2
+
             let res = word_search
                 .with_mode(SearchMode::Exact)
                 .with_language(self.query.settings.user_lang)

@@ -1,7 +1,12 @@
-use std::{str::FromStr, sync::Arc};
+use std::{
+    str::FromStr,
+    sync::Arc,
+    time::{Duration, SystemTime},
+};
 
 use actix_web::{web, HttpMessage, HttpRequest, HttpResponse};
 use localization::TranslationDict;
+use log::warn;
 use serde::Deserialize;
 
 use crate::{templates, BaseData};
@@ -73,6 +78,7 @@ pub async fn search(
         None => return Ok(redirect_home()),
     };
 
+    let start = SystemTime::now();
     // Perform the requested type of search and return base-data to display
     let site_data = match query.type_ {
         QueryType::Kanji => kanji_search(&pool, &locale_dict, settings, &query).await,
@@ -80,8 +86,33 @@ pub async fn search(
         QueryType::Names => name_search(&pool, &locale_dict, settings, &query).await,
         QueryType::Words => word_search(&pool, &locale_dict, settings, &query).await,
     }?;
+    let search_duration = start.elapsed();
+
+    // Log search duration if too long and available
+    if let Ok(search_duration) = search_duration {
+        if search_too_long(search_duration) {
+            log_duration(query.type_, search_duration);
+        }
+    }
 
     Ok(HttpResponse::Ok().body(render!(templates::base, site_data)))
+}
+
+fn search_too_long(duration: Duration) -> bool {
+    duration.as_secs() >= 4
+}
+
+#[cfg(not(feature = "sentry_error"))]
+fn log_duration(search_type: QueryType, duration: Duration) {
+    warn!("Search took: {:?}", duration);
+}
+
+#[cfg(feature = "sentry_error")]
+fn log_duration(search_type: QueryType, duration: Duration) {
+    sentry::capture_message(
+        format!("{:?}-search took: {:?}", search_type, duration).as_str(),
+        sentry::Level::Warning,
+    );
 }
 
 /// Perform a sentence search
