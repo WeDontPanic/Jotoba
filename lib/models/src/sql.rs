@@ -24,3 +24,9 @@ impl<T: Expression> ExpressionMethods for T {}
 sql_function! {
     fn length(a: diesel::sql_types::Text) -> diesel::sql_types::Integer;
 }
+
+pub mod Nullable {
+    sql_function! {
+        fn length(a: diesel::sql_types::Nullable<diesel::sql_types::Text>) -> diesel::sql_types::Integer;
+    }
+}

@@ -1,5 +1,8 @@
 use actix_web::{http::StatusCode, HttpResponse, ResponseError};
 
+#[cfg(not(feature = "sentry_error"))]
+use log::error;
+
 use crate::templates;
 
 #[derive(Debug)]
@@ -25,6 +28,9 @@ impl From<error::Error> for Error {
     fn from(err: error::Error) -> Self {
         #[cfg(feature = "sentry_error")]
         sentry::capture_error(&err);
+
+        #[cfg(not(feature = "sentry_error"))]
+        error!("{}", err);
 
         Self::Internal
     }
