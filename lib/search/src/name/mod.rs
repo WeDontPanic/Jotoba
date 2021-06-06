@@ -2,8 +2,6 @@ mod namesearch;
 mod order;
 pub mod result;
 
-use std::time::SystemTime;
-
 use super::{name::namesearch::NameSearch, query::Query};
 use cache::SharedCache;
 use error::Error;
@@ -46,10 +44,8 @@ async fn search_transcription(db: &DbPool, query: &Query) -> Result<Vec<Name>, E
 
     let mut items = search.search_transcription().await?;
 
-    let start = SystemTime::now();
     // Sort the results based
     order::ByTranscription::new(&query.query).sort(&mut items);
-    println!("order took: {:?}", start.elapsed());
 
     // Limit search to 10 results
     items.truncate(10);
@@ -63,10 +59,8 @@ async fn search_native(db: &DbPool, query: &Query) -> Result<Vec<Name>, Error> {
 
     let mut items = search.search_native(&query.query).await?;
 
-    let start = SystemTime::now();
     // Sort the results based
     order::ByNative::new(&query.query).sort(&mut items);
-    println!("order took: {:?}", start.elapsed());
 
     // Limit search to 10 results
     items.truncate(10);
@@ -82,10 +76,8 @@ async fn search_kanji(db: &DbPool, query: &Query) -> Result<Vec<Name>, Error> {
 
     let mut items = search.kanji_search(kanji).await?;
 
-    let start = SystemTime::now();
     // Sort the results based
     order::ByKanji::new(&query.query, &kanji).sort(&mut items);
-    println!("order took: {:?}", start.elapsed());
 
     // Limit search to 10 results
     items.truncate(10);

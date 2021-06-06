@@ -182,7 +182,7 @@ impl<'a> WordSearch<'a> {
         let mut filter = String::from("SELECT sequence, length(gloss) as len from sense WHERE");
 
         // TODO make operator adjustable
-        filter.push_str(" gloss &@~ $1 ");
+        filter.push_str(" gloss &@ $1 ");
 
         // Language filter
         let lang: i32 = self.language.unwrap_or_default().into();
@@ -210,17 +210,24 @@ impl<'a> WordSearch<'a> {
         use models::schema::dict::dsl::*;
         use models::sql::length;
 
-        let res: Vec<(i32, i32)> = if self.search.limit > 0 {
-            dict.select((sequence, length(reading)))
-                .filter(reading.text_search(self.search.query))
-                .limit(self.search.limit as i64)
-                .get_results_async(&self.db)
-                .await?
-        } else {
-            dict.select((sequence, length(reading)))
-                .filter(reading.text_search(self.search.query))
-                .get_results_async(&self.db)
-                .await?
+        let res: Vec<(i32, i32)> = {
+            if self.search.limit > 0 {
+                dict.select((sequence, length(reading)))
+                    .filter(reading.text_search(self.search.query))
+                    .limit(self.search.limit as i64)
+                    .get_results_async(&self.db)
+                    .await?
+            } else if self.search.mode != SearchMode::Exact {
+                dict.select((sequence, length(reading)))
+                    .filter(reading.text_search(self.search.query))
+                    .get_results_async(&self.db)
+                    .await?
+            } else {
+                dict.select((sequence, length(reading)))
+                    .filter(reading.eq_all(self.search.query))
+                    .get_results_async(&self.db)
+                    .await?
+            }
         };
 
         let res = res

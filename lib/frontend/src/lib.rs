@@ -7,6 +7,7 @@ use localization::traits::Translatable;
 use localization::traits::TranslatablePlural;
 use localization::TranslationDict;
 use models::name::Name;
+use parse::jmdict;
 use search::query::Query;
 
 #[macro_use]
@@ -150,10 +151,16 @@ impl<'a> BaseData<'a> {
 /// Translation helper
 impl<'a> BaseData<'a> {
     pub fn get_lang(&self) -> Language {
-        // TODO actually use users language
         match self.user_settings.user_lang {
-            parse::jmdict::languages::Language::German => Language::German,
-            _ => Language::English,
+            jmdict::languages::Language::German => Language::German,
+            jmdict::languages::Language::English => Language::English,
+            jmdict::languages::Language::Russain => Language::Russain,
+            jmdict::languages::Language::Spanish => Language::Spanish,
+            jmdict::languages::Language::Swedish => Language::Swedish,
+            jmdict::languages::Language::French => Language::French,
+            jmdict::languages::Language::Dutch => Language::Dutch,
+            jmdict::languages::Language::Hungarian => Language::Hungarian,
+            jmdict::languages::Language::Slovenian => Language::Slovenian,
         }
     }
 

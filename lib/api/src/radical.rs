@@ -1,4 +1,4 @@
-use std::{collections::HashMap, time::SystemTime};
+use std::collections::HashMap;
 
 use actix_web::web::{self, Json};
 use itertools::Itertools;
@@ -51,9 +51,7 @@ pub async fn kanji_by_radicals(
     }
 
     // Kanji by search-radicals from DB
-    let start = SystemTime::now();
     let kanji = find_by_radicals(&pool, &payload.radicals).await?;
-    println!("{:?}", start.elapsed());
 
     // IDs of [`kanji`]
     let kanji_ids = kanji.iter().map(|i| i.id).collect_vec();
