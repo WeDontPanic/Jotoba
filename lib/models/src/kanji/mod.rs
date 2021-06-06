@@ -272,7 +272,7 @@ pub async fn find_readings_by_liteal(
 pub async fn insert_kanji_part(db: &DbPool, element: KanjiPart) -> Result<(), Error> {
     // Find kanji
     let kanji = match find_by_literal(db, element.kanji.to_string()).await {
-        Ok(v) => v,
+        Ok(v) => v.ok_or(Error::NotFound)?,
         Err(err) => match err {
             Error::DbError(diesel::result::Error::NotFound) => return Ok(()),
             _ => return Err(err),
@@ -386,19 +386,33 @@ pub async fn element_exists(db: &DbPool) -> Result<bool, Error> {
 }
 
 /// Find a kanji by its literal
-pub async fn find_by_literal(db: &DbPool, l: String) -> Result<KanjiResult, Error> {
+pub async fn find_by_literal(db: &DbPool, l: String) -> Result<Option<KanjiResult>, Error> {
     // Try to find literal in kanji cache
     let mut k_cache: MutexGuard<SharedCache<i32, KanjiResult>> = KANJI_RESULT_CACHE.lock().await;
     if let Some(k) = k_cache.find_by_predicate(|i| i.kanji.literal == l) {
-        return Ok(k.clone());
+        return Ok(Some(k.clone()));
     }
 
-    let db_kanji = load_by_literal(db, &l).await?;
+    let db_kanji_res = load_by_literal(db, &l).await.map_err(|i| match i {
+        Error::DbError(db) => match db {
+            diesel::result::Error::NotFound => Error::NotFound,
+            _ => Error::DbError(db),
+        },
+        _ => i,
+    });
+
+    let db_kanji = match db_kanji_res {
+        Ok(val) => val,
+        Err(err) => match err {
+            Error::NotFound => return Ok(None),
+            _ => return Err(err),
+        },
+    };
 
     // Add to cache for future usage
     k_cache.cache_set(db_kanji.kanji.id, db_kanji.clone());
 
-    Ok(db_kanji)
+    Ok(Some(db_kanji))
 }
 
 /// Find a kanji by its literal

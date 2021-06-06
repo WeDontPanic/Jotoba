@@ -1,4 +1,8 @@
 #![allow(dead_code)]
+
+#[cfg(not(feature = "sentry_error"))]
+use log::warn;
+
 use serde::{Deserialize, Serialize};
 
 use async_std::{
@@ -10,12 +14,18 @@ use async_std::{
 #[derive(Debug, Serialize, Deserialize, Default, Clone)]
 pub struct Config {
     pub server: ServerConfig,
+    pub sentry: Option<SentryConfig>,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct ServerConfig {
     pub html_files: Option<String>,
     pub listen_address: String,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct SentryConfig {
+    pub dsn: String,
 }
 
 impl Default for ServerConfig {
@@ -60,6 +70,14 @@ impl Config {
 
             toml::from_str(&conf_data).map_err(|e| e.to_string())?
         };
+
+        // Warn if sentry is configured but feature not enabled
+        #[cfg(not(feature = "sentry_error"))]
+        if let Some(ref sentry) = config.sentry {
+            if !sentry.dsn.is_empty() {
+                warn!("Sentry configured but not available. Build with \"sentry_error\" feature");
+            }
+        }
 
         Ok(config)
     }

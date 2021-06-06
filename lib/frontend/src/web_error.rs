@@ -23,7 +23,9 @@ pub struct InfoText {
 // Treat all crate::error::Error as Internal error
 impl From<error::Error> for Error {
     fn from(err: error::Error) -> Self {
-        println!("err: {:?}", err);
+        #[cfg(feature = "sentry_error")]
+        sentry::capture_error(&err);
+
         Self::Internal
     }
 }

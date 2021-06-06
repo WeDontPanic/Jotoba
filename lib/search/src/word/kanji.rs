@@ -25,6 +25,10 @@ pub(super) async fn by_reading(search: &Search<'_>) -> Result<ResultData, Error>
         .ok_or(Error::Undefined)?;
 
     let kanji = kanji::find_by_literal(&search.db, reading.literal.to_string()).await?;
+    if !kanji.is_none() {
+        return alternative_reading_search(search).await;
+    }
+    let kanji = kanji.unwrap();
 
     let reading_type = kanji.kanji.get_reading_type(&reading.reading);
     if !kanji.kanji.has_reading(&reading.reading) || reading_type.is_none() {
@@ -130,6 +134,9 @@ pub(super) async fn load_word_kanji_info(
                     .then(|| models::kanji::find_by_literal(&search.db, i.to_string()))
             }))
             .await?
+            .into_iter()
+            .filter_map(|i| i)
+            .collect_vec()
         }
     };
 

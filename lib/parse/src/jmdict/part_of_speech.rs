@@ -481,19 +481,6 @@ impl TryFrom<&str> for VerbType {
     }
 }
 
-impl IrregularVerb {
-    fn humanize(&self) -> String {
-        match *self {
-            IrregularVerb::Nu => "Nu verb",
-            IrregularVerb::Ru => "Ru verb",
-            IrregularVerb::Suru | IrregularVerb::NounOrAuxSuru => "Suru verb",
-            IrregularVerb::SuruSpecial => "Suru verb (special class)",
-            IrregularVerb::Su => "Su verb",
-        }
-        .to_string()
-    }
-}
-
 impl TryFrom<&str> for IrregularVerb {
     type Error = error::Error;
     fn try_from(value: &str) -> Result<Self, Self::Error> {
@@ -672,19 +659,6 @@ impl Into<String> for NounType {
     }
 }
 
-impl NounType {
-    fn humanized(&self) -> String {
-        match *self {
-            NounType::Normal => "Noun",
-            NounType::Adverbial => "Noun adverbial",
-            NounType::Prefix => "Noun (prefix)",
-            NounType::Suffix => "Noun (suffix)",
-            NounType::Temporal => "Temporal noun",
-        }
-        .to_string()
-    }
-}
-
 /// Implement TryFrom for NounType
 impl TryFrom<&str> for NounType {
     type Error = error::Error;
@@ -697,19 +671,6 @@ impl TryFrom<&str> for NounType {
             "t" => NounType::Temporal,
             _ => return Err(error::Error::Undefined),
         })
-    }
-}
-
-impl AdjectiveType {
-    fn humanized(&self) -> String {
-        match *self {
-            Self::Na => "Na adjective".to_string(),
-            Self::No => "No adjective".to_string(),
-            Self::PreNounVerb => "Prenoun adjective".to_string(),
-            Self::Keiyoushi => "I adjective".to_string(),
-            // TODO implement properly
-            _ => format!("{:?}", *self),
-        }
     }
 }
 

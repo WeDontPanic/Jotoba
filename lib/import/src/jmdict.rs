@@ -126,8 +126,12 @@ async fn get_dict_kanji(db: &DbPool, dicts: &mut Vec<NewDict>) {
             .flatten()
             .collect_vec()
         {
-            let found_kanji = models::kanji::find_by_literal(&db, kanji.clone()).await;
-            if found_kanji.is_err() {
+            let found_kanji = models::kanji::find_by_literal(&db, kanji.clone())
+                .await
+                .ok()
+                .and_then(|i| i);
+
+            if found_kanji.is_none() {
                 continue;
             }
             let found_kanji = found_kanji.unwrap();

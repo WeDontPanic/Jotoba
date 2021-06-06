@@ -11,7 +11,7 @@ use crate::config::Config;
 use actix_web::{middleware, web as actixweb, App, HttpServer};
 use cache_control::CacheInterceptor;
 use models::DbPool;
-use std::{sync::Arc, time::Duration};
+use std::{mem::ManuallyDrop, sync::Arc, time::Duration};
 
 /// How long frontend assets are going to be cached by the clients. Currently 1 week
 const ASSET_CACHE_MAX_AGE: u64 = 604800;
@@ -19,9 +19,9 @@ const ASSET_CACHE_MAX_AGE: u64 = 604800;
 /// Start the webserver
 #[actix_web::main]
 pub(super) async fn start(db: DbPool) -> std::io::Result<()> {
-    let config = Config::new().await.expect("config failed");
-
     setup_logger();
+
+    let config = Config::new().await.expect("config failed");
 
     #[cfg(feature = "tokenizer")]
     load_tokenizer();
@@ -33,6 +33,17 @@ pub(super) async fn start(db: DbPool) -> std::io::Result<()> {
     .expect("Failed to load localization files");
 
     let locale_dict_arc = Arc::new(locale_dict);
+
+    #[cfg(feature = "sentry_error")]
+    if let Some(ref sentry_config) = config.sentry {
+        let _guard = ManuallyDrop::new(sentry::init((
+            sentry_config.dsn.as_str(),
+            sentry::ClientOptions {
+                release: sentry::release_name!(),
+                ..Default::default()
+            },
+        )));
+    }
 
     let config_clone = config.clone();
     HttpServer::new(move || {
