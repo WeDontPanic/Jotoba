@@ -94,7 +94,7 @@ msgstr ""
 msgid "German"
 msgstr ""
 
-msgid "Russain"
+msgid "Russian"
 msgstr ""
 
 msgid "Spanish"

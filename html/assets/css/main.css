@@ -325,7 +325,7 @@ input[type="color"] {
 
 .main-tab-select {
     padding-top: 25px;
-    width: 21vw;
+    width: 100%;
 }
 
 .main-tab-select.l {
