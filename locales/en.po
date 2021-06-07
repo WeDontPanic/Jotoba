@@ -13,7 +13,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"PO-Revision-Date: 2021-06-07 23:28+0200\n"
+"PO-Revision-Date: 2021-06-07 23:43+0200\n"
 "Last-Translator:  <jojii@gmx.net>\n"
 "Language-Team: English\n"
 "Language: en\n"
@@ -245,9 +245,6 @@ msgstr ""
 msgid "Check out the"
 msgstr ""
 
-msgid "if you want to contribute or host Jotoba yourself."
-msgstr ""
-
 msgid "aswell if you are interested in upcoming features and what we are currently working on"
 msgstr ""
 
@@ -401,9 +398,6 @@ msgstr ""
 msgid "if you want to contribute or host Jotoba yourself."
 msgstr ""
 
-msgid "Check out our"
-msgstr ""
-
 msgid "Trello Board"
 msgstr ""
 
@@ -466,9 +460,6 @@ msgid "The data about Sound Effects is graciously provided by Chris Kincaid and 
 msgstr ""
 
 # Source
-msgid "Sentences"
-msgstr ""
-
 msgid "Sentences are provided by Tatoeba under the Creative Commons CC 1.0 and 2.0 licences. "
 msgstr ""
 
