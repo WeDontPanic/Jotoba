@@ -383,6 +383,144 @@ msgstr ""
 msgid "sentences"
 msgstr ""
 
+## About page
+
+# Title 1
+msgid "About"
+msgstr ""
+
+msgid "Jotoba is a multilingual Japanese dictionary. It is easy to find translations for words or kanji, see<br>example sentences and the way names can be written."
+msgstr ""
+
+msgid "Jotoba is open source. Check out our"
+msgstr ""
+
+msgid "Github page"
+msgstr ""
+
+msgid "if you want to contribute or host Jotoba yourself."
+msgstr ""
+
+msgid "Check out our"
+msgstr ""
+
+msgid "Trello Board"
+msgstr ""
+
+msgid "aswell if you are interested in upcoming features and what we are currently working on!"
+msgstr ""
+
+# Title 2
+msgid "Data Sources and Inspiration"
+msgstr ""
+
+msgid "Of course this project wouldn't have been possible without the help of some great data sources."
+msgstr ""
+
+msgid "Many thanks to every one of them for providing such a variety of data people can use to learn the japanese language."
+msgstr ""
+
+# Source
+msgid "Jisho"
+msgstr ""
+
+msgid "Jisho, created by Kim Ahlström, Miwa Ahlström and Andrew Plummer is a pretty and powerful english-japanese dictionary."
+msgstr ""
+
+msgid "We took inspiration in their work and design to improve on their concept and offer it to a wider variety of people."
+msgstr ""
+
+# Source
+msgid "Words & Kanji"
+msgstr ""
+
+msgid "Words and Kanji are publicly provided by EDRDG (Electronic Dictionary Research and Development Group)."
+msgstr ""
+
+msgid "Visit their page to find out more about how this data came to be."
+msgstr ""
+
+# Source
+msgid "Audio Files"
+msgstr ""
+
+msgid "The audio files were graciously made public by"
+msgstr ""
+
+msgid "WaniKani"
+msgstr ""
+
+msgid "and"
+msgstr ""
+
+msgid "Tofugo"
+msgstr ""
+
+msgid "and uploaded to Github under the CC-BY-4.0 licence."
+msgstr ""
+
+msgid "Manga Sound Effects"
+msgstr ""
+
+msgid "The data about Sound Effects is graciously provided by Chris Kincaid and is used as additional data in the word search."
+msgstr ""
+
+# Source
+msgid "Sentences"
+msgstr ""
+
+msgid "Sentences are provided by Tatoeba under the Creative Commons CC 1.0 and 2.0 licences. "
+msgstr ""
+
+# Source
+msgid "Kanji Animations"
+msgstr ""
+
+msgid "The raw data used for kanji animations is publicly provided by KanjiVG, a project by Ulrich Apel."
+msgstr ""
+
+msgid "The conversion into images and animated SVG is done by a ruby script which was made by"
+msgstr ""
+
+msgid "Kimtaro"
+msgstr ""
+
+msgid "and altered by"
+msgstr ""
+
+msgid "Yukáru"
+msgstr ""
+
+# Source
+msgid "JLPT Data"
+msgstr ""
+
+msgid "Data about JLPT proficiencies are by provided by Jonathan Waller."
+msgstr ""
+
+msgid "There is also some non-free data available on his website, so check it out if you are interested."
+msgstr ""
+
+# Source
+msgid "Word tokenization"
+msgstr ""
+
+msgid "Word tokenization is done using a project from Hideki Yamane and used for Japanese morphological analysis implementations."
+msgstr ""
+
+#Source
+msgid "Pitch Accents and Radicals"
+msgstr ""
+
+msgid "Data about Pitch Accents and Radicals used in specific Kanji we use Kanjium."
+msgstr ""
+
+msgid "On the project's Github Page you can find lots of data about Kanji."
+msgstr ""
+
+msgid "Additional to Kanjium, RADKFILE by Jin Breen is used to link Radicals to Kanji."
+msgstr ""
+
 ## Jmdict
 
 # Dialect(s)
