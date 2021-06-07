@@ -1,6 +1,6 @@
 use std::cmp::Ordering;
 
-use crate::inflection::Inflection;
+use crate::inflection::{Inflection, SentencePart};
 use error::Error;
 use igo_unidic::{ConjungationForm, Morpheme, Parser, ParticleType, VerbType, WordClass};
 use once_cell::sync::Lazy;
@@ -64,6 +64,16 @@ impl<'dict, 'input> WordItem<'dict, 'input> {
             self.surface
         } else {
             self.lexeme
+        }
+    }
+
+    /// Converts a [`WordItem`] into a sentence part
+    pub fn into_sentence_part(self, pos: i32) -> SentencePart {
+        SentencePart {
+            text: self.get_lexeme().to_owned(),
+            pos,
+            info: self.word_class.map(|i| format!("{:?}", i)),
+            furigana: None,
         }
     }
 }

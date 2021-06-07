@@ -16,7 +16,7 @@ use super::{
 };
 use cache::SharedCache;
 use error::Error;
-use japanese::JapaneseExt;
+use japanese::{inflection::SentencePart, jp_parsing::ParseResult, JapaneseExt};
 use models::search_mode::SearchMode;
 use models::{kanji::KanjiResult, DbPool};
 use utils::real_string_len;
@@ -60,6 +60,8 @@ pub(crate) struct ResultData {
     pub(crate) words: Vec<Word>,
     pub(crate) infl_info: Option<InflectionInformation>,
     pub(crate) count: usize,
+    pub(crate) sentence_index: i32,
+    pub(crate) sentence_parts: Option<Vec<SentencePart>>,
 }
 
 impl<'a> Search<'a> {
@@ -86,6 +88,8 @@ impl<'a> Search<'a> {
             contains_kanji: kanji_items > 0,
             inflection_info: search_result.infl_info,
             count: search_result.count,
+            sentence_parts: search_result.sentence_parts,
+            sentence_index: search_result.sentence_index,
         });
     }
 
@@ -104,21 +108,30 @@ impl<'a> Search<'a> {
                 .collect_vec(),
             infl_info: native_word_res.infl_info,
             count: native_word_res.count + gloss_word_res.count,
+            sentence_parts: native_word_res.sentence_parts,
+            sentence_index: self.query.word_index as i32,
         })
     }
 
     #[cfg(not(feature = "tokenizer"))]
-    fn get_query(&self, query_str: &str) -> String {
-        query_str.to_owned()
+    fn get_query(&self, query_str: &str) -> (String, Option<Vec<SentencePart>>) {
+        (query_str.to_owned(), None)
     }
 
     #[cfg(feature = "tokenizer")]
     async fn get_query<'b>(
         &'b self,
         query_str: &'b str,
-    ) -> Result<(String, Option<WordItem<'static, 'b>>), Error> {
+    ) -> Result<
+        (
+            String,
+            Option<WordItem<'static, 'b>>,
+            Option<Vec<SentencePart>>,
+        ),
+        Error,
+    > {
         if !self.query.parse_japanese {
-            return Ok((query_str.to_owned(), None));
+            return Ok((query_str.to_owned(), None, None));
         }
 
         let in_db = models::dict::reading_exists(&self.db, query_str).await?;
@@ -126,16 +139,46 @@ impl<'a> Search<'a> {
 
         if let Some(parsed) = parser.parse() {
             if parsed.items.is_empty() {
-                return Ok((query_str.to_owned(), None));
+                return Ok((query_str.to_owned(), None, None));
             }
 
-            println!("parsed: {:#?}", parsed);
             let index = self.query.word_index.clamp(0, parsed.items.len() - 1);
             let res = parsed.items[index].clone();
-            Ok((res.get_lexeme().to_string(), Some(res)))
+            let sentence = Self::format_setence_parts(self, parsed).await;
+            Ok((res.get_lexeme().to_string(), Some(res), sentence))
         } else {
-            Ok((query_str.to_owned(), None))
+            Ok((query_str.to_owned(), None, None))
         }
+    }
+
+    #[cfg(feature = "tokenizer")]
+    async fn format_setence_parts(
+        &self,
+        parsed: ParseResult<'static, 'a>,
+    ) -> Option<Vec<SentencePart>> {
+        if parsed.items.len() == 1 {
+            return None;
+        }
+
+        // Lexemes from `parsed` converted to sentence parts
+        let mut sentence_parts = parsed
+            .items
+            .into_iter()
+            .enumerate()
+            .map(|(pos, i)| i.into_sentence_part(pos as i32))
+            .collect_vec();
+
+        // Request furigana for each kanji containing part
+        for part in sentence_parts.iter_mut() {
+            if part.text.has_kanji() {
+                part.furigana = models::dict::furigana_by_reading(self.db, &part.text)
+                    .await
+                    .ok()
+                    .and_then(|i| i);
+            }
+        }
+
+        Some(sentence_parts)
     }
 
     /// Perform a native word search
@@ -145,10 +188,10 @@ impl<'a> Search<'a> {
         }
 
         #[cfg(feature = "tokenizer")]
-        let (query, morpheme) = self.get_query(query_str).await?;
+        let (query, morpheme, sentence) = self.get_query(query_str).await?;
 
         #[cfg(not(feature = "tokenizer"))]
-        let query = self.get_query(query_str);
+        let (query, sentence) = self.get_query(query_str);
 
         let query_modified = query != self.query.query;
 
@@ -245,6 +288,8 @@ impl<'a> Search<'a> {
             words: wordresults,
             infl_info,
             count,
+            sentence_parts: sentence,
+            sentence_index: self.query.word_index as i32,
         })
     }
 
