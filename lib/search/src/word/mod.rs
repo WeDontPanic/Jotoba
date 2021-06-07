@@ -82,6 +82,8 @@ impl<'a> Search<'a> {
             WordSearch::load_collocations(self.db, &mut words, self.query.settings.user_lang)
         )?;
 
+        println!("{:#?}", search_result.sentence_parts);
+
         let kanji_items = kanji_results.len();
         return Ok(WordResult {
             items: Self::merge_words_with_kanji(words, kanji_results),

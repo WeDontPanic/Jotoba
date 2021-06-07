@@ -18,7 +18,7 @@ pub enum Inflection {
 #[derive(Clone, Debug, PartialEq)]
 pub struct SentencePart {
     pub text: String,
-    pub info: Option<String>,
+    pub info: Option<&'static str>,
     pub furigana: Option<String>,
     pub pos: i32,
 }

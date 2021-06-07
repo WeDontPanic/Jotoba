@@ -72,9 +72,28 @@ impl<'dict, 'input> WordItem<'dict, 'input> {
         SentencePart {
             text: self.get_lexeme().to_owned(),
             pos,
-            info: self.word_class.map(|i| format!("{:?}", i)),
+            info: self.word_class_to_str(),
             furigana: None,
         }
+    }
+
+    /// returns msgid for the current word_class or None if no word_class is set
+    fn word_class_to_str(&self) -> Option<&'static str> {
+        Some(match self.word_class? {
+            WordClass::Particle(_) => "Particle",
+            WordClass::Verb(_) => "Verb",
+            WordClass::Adjective(_) => "Adjective",
+            WordClass::Adverb => "Adverb",
+            WordClass::Noun(_) => "Noun",
+            WordClass::Pronoun => "Pronoun",
+            WordClass::Interjection => "Interjection",
+            WordClass::Symbol => "Symbol",
+            WordClass::Conjungtion => "Conjungtion",
+            WordClass::Suffix => "Suffix",
+            WordClass::Prefix => "Prefix",
+            WordClass::PreNoun => "Pre-noun",
+            WordClass::Space => "Space",
+        })
     }
 }
 
