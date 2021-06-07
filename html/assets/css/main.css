@@ -474,6 +474,9 @@ footer {
 
 .sentence-part:hover {
     text-decoration: unset;
+    text-shadow: -1px -1px var(--primaryTextColor);
+    color: var(--primaryTextColor) !important;
+    /* TODO Choose --primaryColor as alternative? */    
 }
 
 .entry-min-height-1 {
