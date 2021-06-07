@@ -13,7 +13,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"PO-Revision-Date: 2021-06-05 20:05+0200\n"
+"PO-Revision-Date: 2021-06-07 23:28+0200\n"
 "Last-Translator:  <jojii@gmx.net>\n"
 "Language-Team: English\n"
 "Language: en\n"
@@ -94,7 +94,7 @@ msgstr ""
 msgid "German"
 msgstr ""
 
-msgid "Russain"
+msgid "Russian"
 msgstr ""
 
 msgid "Spanish"
@@ -950,6 +950,9 @@ msgstr ""
 msgid "Interjection"
 msgstr ""
 
+msgid "Symbol"
+msgstr ""
+
 msgid "Pronoun"
 msgstr ""
 
@@ -965,10 +968,16 @@ msgstr ""
 msgid "Adverb"
 msgstr ""
 
+msgid "Adjective"
+msgstr ""
+
 msgid "Auxilary adjective"
 msgstr ""
 
 msgid "Auxilary Verb"
+msgstr ""
+
+msgid "Verb"
 msgstr ""
 
 msgid "Conjugation"
@@ -1050,6 +1059,13 @@ msgid "Suru verb"
 msgstr ""
 
 msgid "Suru special"
+msgstr ""
+
+msgid "Pre-noun"
+msgstr ""
+
+# this thingy -> " "
+msgid "Space"
 msgstr ""
 
 ## Name search
