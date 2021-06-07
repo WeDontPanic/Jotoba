@@ -111,7 +111,7 @@ function onSettingsChange_AnimationSpeed(event) {
 function loadCookieData() {
 
     // User agreement on using Cookies
-    let user_agreement = Cookies.get("user_agreement");
+    let user_agreement = true; //Cookies.get("user_agreement");
 
     // Load search language
     let default_lang = Cookies.get("default_lang");
