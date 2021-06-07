@@ -46,7 +46,6 @@ pub(super) async fn start(db: DbPool) -> std::io::Result<()> {
         std::env::set_var("RUST_BACKTRACE", "1");
     }
 
-
     let config_clone = config.clone();
     HttpServer::new(move || {
         let app = App::new()
@@ -67,6 +66,10 @@ pub(super) async fn start(db: DbPool) -> std::io::Result<()> {
             .route(
                 "/api/kanji/by_radical",
                 actixweb::post().to(api::radical::kanji_by_radicals),
+            )
+            .route(
+                "/api/suggestion",
+                actixweb::post().to(api::search_suggestion::suggestion),
             )
             // Static files
             .service(
