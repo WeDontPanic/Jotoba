@@ -291,6 +291,10 @@ input[type="color"] {
     margin-right: 0.25rem;
 }
 
+.mdl-tooltip {
+    font-size: 12px;
+}
+
 /* ----------------- Main Page container ----------------- */
 
 .page-container {
@@ -449,6 +453,27 @@ footer {
     border-radius: 5px;
     width: fit-content;
     color: var(--primaryTextColor);
+}
+
+.sentence-reader {
+    max-width: 1000px;
+    max-height: 190px;
+    overflow-y: auto;
+}
+
+.sentence-part {
+    color: var(--primaryTextColor) !important;
+    border-bottom: 1px solid var(--lineColor);
+    margin-right: 15px;
+    cursor: pointer;
+}
+
+.sentence-part.selected {
+    border-bottom: 1px solid var(--primaryColor);
+}
+
+.sentence-part:hover {
+    text-decoration: unset;
 }
 
 .entry-min-height-1 {

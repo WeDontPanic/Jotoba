@@ -18,18 +18,10 @@
     </div>
   </div>
 
-  <!-- TODO Shown if no results were found and an alternative is displayed -->
-  <!--<div class="search-annotation">-->
-    <!--<span>-->
-      <!--No results found.-->
-    <!--</span>-->
-    <!--<span>-->
-      <!--Showing results for xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx-->
-    <!--</span>-->
-  <!--</div>-->
-
   @if let Some(ref inflection) = result.inflection_info {
     <div class="search-annotation">
+
+      <!-- Search Inflections -->
       <div class="search-inflection">
         <span>
           @data.gettext_fmt("{} could be an inflection of", &[&query.query])<a class="clickable no-align green" href="/search?type=0&search=@inflection.lexeme">@inflection.lexeme</a>@data.gettext(", with these forms:")
@@ -40,8 +32,28 @@
           }
         </span>
       </div>
-    </div>
 
+      <!-- Sentence Info -->
+      <div class="d-flex flex-row wrap sentence-reader">
+        <a id="p1" href="/link" class="inline-kana-preview sentence-part selected">せかい</a>
+        <a id="p2" href="/link" class="inline-kana-preview sentence-part">の</a>
+        <a id="p3" href="/link" class="furigana-kanji-container sentence-part">
+          <span class="furigana-preview noselect">
+            た
+          </span>
+          <span class="kanji-preview">
+            食
+          </span>
+        </a>
+        <a id="p4" href="/link" class="inline-kana-preview sentence-part">べる</a>
+      </div>
+
+      <!-- Sentence Tooltips -->
+      <div class="mdl-tooltip" for="p1">
+        some text
+      </div>
+
+    </div>
     <br>
   }
    
