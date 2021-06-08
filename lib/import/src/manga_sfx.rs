@@ -45,9 +45,9 @@ async fn import_sfx(
     let native = WordSearch::new(db, &jp)
         .with_mode(SearchMode::Exact)
         .with_kana_only(true)
-        .search_native()
+        .search_native(|_|())
         .await
-        .unwrap();
+        .unwrap().0;
 
     let seq = {
         if native.is_empty() {

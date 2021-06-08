@@ -5,7 +5,7 @@ use super::super::query::Query;
 use japanese::{
     accent::{AccentChar, Border},
     furigana::{self, SentencePartRef},
-    inflection::Inflection,
+    inflection::{Inflection, SentencePart},
     JapaneseExt,
 };
 use jp_inflections::{Verb, VerbType, WordForm};
@@ -32,6 +32,8 @@ pub struct WordResult {
     pub count: usize,
     pub contains_kanji: bool,
     pub inflection_info: Option<InflectionInformation>,
+    pub sentence_parts: Option<Vec<SentencePart>>,
+    pub sentence_index: i32,
 }
 
 impl WordResult {
@@ -537,4 +539,12 @@ where
         let s: String = (*i).into();
         s
     })
+}
+
+pub fn selected(curr: i32, selected: i32) -> &'static str {
+    if curr == selected {
+        "selected"
+    } else {
+        ""
+    }
 }

@@ -1,3 +1,5 @@
+use crate::search_order::SearchOrder;
+
 use super::result::{Reading, Sense, Word};
 
 use super::super::{Search, SearchMode};
@@ -107,35 +109,45 @@ impl<'a> WordSearch<'a> {
         // always search by a language.
         let lang = self.language.unwrap_or_default();
 
-        Self::load_words_by_seq(
-            &self.db,
-            &seq_ids,
-            lang,
-            self.english_glosses,
-            &self.p_o_s_filter,
-        )
-        .await
-    }
-
-    /// Searches by native
-    pub async fn search_native(&mut self) -> Result<Vec<Word>, Error> {
-        // Load sequence ids to display
-        let seq_ids = self.get_sequence_ids_by_native().await?;
-
-        // always search by a language.
-        let lang = self.language.unwrap_or_default();
-
         Ok(Self::load_words_by_seq(
             &self.db,
             &seq_ids,
             lang,
             self.english_glosses,
             &self.p_o_s_filter,
+            |_| (),
         )
         .await?
-        .into_iter()
-        .filter(|i| self.post_search_check(&i))
-        .collect_vec())
+        .0)
+    }
+
+    /// Searches by native
+    pub async fn search_native<F>(&mut self, ordering: F) -> Result<(Vec<Word>, usize), Error>
+    where
+        F: Fn(&mut Vec<Word>),
+    {
+        // Load sequence ids to display
+        let seq_ids = self.get_sequence_ids_by_native().await?;
+
+        // always search by a language.
+        let lang = self.language.unwrap_or_default();
+
+        let (words, original_len) = Self::load_words_by_seq(
+            &self.db,
+            &seq_ids,
+            lang,
+            self.english_glosses,
+            &self.p_o_s_filter,
+            ordering,
+        )
+        .await?;
+
+        let merged = words
+            .into_iter()
+            .filter(|i| self.post_search_check(&i))
+            .collect_vec();
+
+        Ok((merged, original_len))
     }
 
     fn post_search_check(&self, item: &Word) -> bool {
@@ -147,31 +159,46 @@ impl<'a> WordSearch<'a> {
     }
 
     /// Get search results of seq_ids
-    pub async fn load_words_by_seq(
+    pub async fn load_words_by_seq<F>(
         db: &DbPool,
         seq_ids: &[i32],
         lang: Language,
         include_english: bool,
         pos_filter: &Option<Vec<PosSimple>>,
-    ) -> Result<Vec<Word>, Error> {
+        ordering: F,
+    ) -> Result<(Vec<Word>, usize), Error>
+    where
+        F: Fn(&mut Vec<Word>),
+    {
         if seq_ids.is_empty() {
-            return Ok(vec![]);
+            return Ok((vec![], 0));
         }
 
+        let dicts: Vec<Dict> = Self::load_dictionaries(&db, &seq_ids).await?;
+        let mut word_items = convert_dicts_to_words(dicts);
+        let original_len = word_items.len();
+        ordering(&mut word_items);
+
+        let required_sequences: Vec<i32> = word_items.iter().map(|i| i.sequence).collect_vec();
+        let senses: Vec<sense::Sense> = Self::load_senses(&db, &required_sequences, lang).await?;
+
+        /*
         // Request Redings and Senses in parallel
         let (dicts, senses): (Vec<Dict>, Vec<sense::Sense>) = futures::try_join!(
             Self::load_dictionaries(&db, &seq_ids),
             Self::load_senses(&db, &seq_ids, lang)
         )?;
-
-        let word_items = convert_dicts_to_words(dicts);
+        */
 
         //Self::load_readings(&db, &seq_ids),
-        Ok(merge_words_with_senses(
-            word_items,
-            senses,
-            include_english || lang == Language::default(),
-            pos_filter,
+        Ok((
+            merge_words_with_senses(
+                word_items,
+                senses,
+                include_english || lang == Language::default(),
+                pos_filter,
+            ),
+            original_len,
         ))
     }
 

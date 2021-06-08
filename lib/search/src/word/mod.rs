@@ -16,13 +16,15 @@ use super::{
 };
 use cache::SharedCache;
 use error::Error;
-use japanese::JapaneseExt;
+use japanese::{inflection::SentencePart, JapaneseExt};
 use models::search_mode::SearchMode;
 use models::{kanji::KanjiResult, DbPool};
 use utils::real_string_len;
 
 #[cfg(feature = "tokenizer")]
 use japanese::jp_parsing::InputTextParser;
+#[cfg(feature = "tokenizer")]
+use japanese::jp_parsing::ParseResult;
 #[cfg(feature = "tokenizer")]
 use japanese::jp_parsing::WordItem;
 
@@ -60,6 +62,8 @@ pub(crate) struct ResultData {
     pub(crate) words: Vec<Word>,
     pub(crate) infl_info: Option<InflectionInformation>,
     pub(crate) count: usize,
+    pub(crate) sentence_index: i32,
+    pub(crate) sentence_parts: Option<Vec<SentencePart>>,
 }
 
 impl<'a> Search<'a> {
@@ -86,6 +90,8 @@ impl<'a> Search<'a> {
             contains_kanji: kanji_items > 0,
             inflection_info: search_result.infl_info,
             count: search_result.count,
+            sentence_parts: search_result.sentence_parts,
+            sentence_index: search_result.sentence_index,
         });
     }
 
@@ -104,21 +110,30 @@ impl<'a> Search<'a> {
                 .collect_vec(),
             infl_info: native_word_res.infl_info,
             count: native_word_res.count + gloss_word_res.count,
+            sentence_parts: native_word_res.sentence_parts,
+            sentence_index: self.query.word_index as i32,
         })
     }
 
     #[cfg(not(feature = "tokenizer"))]
-    fn get_query(&self, query_str: &str) -> String {
-        query_str.to_owned()
+    fn get_query(&self, query_str: &str) -> (String, Option<Vec<SentencePart>>) {
+        (query_str.to_owned(), None)
     }
 
     #[cfg(feature = "tokenizer")]
     async fn get_query<'b>(
         &'b self,
         query_str: &'b str,
-    ) -> Result<(String, Option<WordItem<'static, 'b>>), Error> {
+    ) -> Result<
+        (
+            String,
+            Option<WordItem<'static, 'b>>,
+            Option<Vec<SentencePart>>,
+        ),
+        Error,
+    > {
         if !self.query.parse_japanese {
-            return Ok((query_str.to_owned(), None));
+            return Ok((query_str.to_owned(), None, None));
         }
 
         let in_db = models::dict::reading_exists(&self.db, query_str).await?;
@@ -126,16 +141,46 @@ impl<'a> Search<'a> {
 
         if let Some(parsed) = parser.parse() {
             if parsed.items.is_empty() {
-                return Ok((query_str.to_owned(), None));
+                return Ok((query_str.to_owned(), None, None));
             }
 
-            println!("parsed: {:#?}", parsed);
             let index = self.query.word_index.clamp(0, parsed.items.len() - 1);
             let res = parsed.items[index].clone();
-            Ok((res.get_lexeme().to_string(), Some(res)))
+            let sentence = Self::format_setence_parts(self, parsed).await;
+            Ok((res.get_lexeme().to_string(), Some(res), sentence))
         } else {
-            Ok((query_str.to_owned(), None))
+            Ok((query_str.to_owned(), None, None))
         }
+    }
+
+    #[cfg(feature = "tokenizer")]
+    async fn format_setence_parts(
+        &self,
+        parsed: ParseResult<'static, 'a>,
+    ) -> Option<Vec<SentencePart>> {
+        if parsed.items.len() == 1 {
+            return None;
+        }
+
+        // Lexemes from `parsed` converted to sentence parts
+        let mut sentence_parts = parsed
+            .items
+            .into_iter()
+            .enumerate()
+            .map(|(pos, i)| i.into_sentence_part(pos as i32))
+            .collect_vec();
+
+        // Request furigana for each kanji containing part
+        for part in sentence_parts.iter_mut() {
+            if part.text.has_kanji() {
+                part.furigana = models::dict::furigana_by_reading(self.db, &part.text)
+                    .await
+                    .ok()
+                    .and_then(|i| i);
+            }
+        }
+
+        Some(sentence_parts)
     }
 
     /// Perform a native word search
@@ -145,10 +190,13 @@ impl<'a> Search<'a> {
         }
 
         #[cfg(feature = "tokenizer")]
-        let (query, morpheme) = self.get_query(query_str).await?;
+        let (query, morpheme, sentence) = self.get_query(query_str).await?;
 
         #[cfg(not(feature = "tokenizer"))]
-        let query = self.get_query(query_str);
+        let (query, sentence) = self.get_query(query_str);
+
+        #[cfg(not(feature = "tokenizer"))]
+        let morpheme = true;
 
         let query_modified = query != self.query.query;
 
@@ -176,20 +224,20 @@ impl<'a> Search<'a> {
         }
 
         // Perform the word search
-        let mut wordresults = if real_string_len(&query) == 1 && query.is_kana() {
+        let (wordresults, original_len) = if real_string_len(&query) == 1 && query.is_kana() {
             // Search for exact matches only if query.len() <= 2
 
             let res = word_search
                 .with_mode(SearchMode::Exact)
                 .with_language(self.query.settings.user_lang)
-                .search_native()
+                .search_native(|s| self.ma_f(s, morpheme.clone()))
                 .await?;
 
-            let r = if res.is_empty() {
+            let r = if res.0.is_empty() {
                 // Do another search if no exact result was found
                 word_search
                     .with_mode(SearchMode::RightVariable)
-                    .search_native()
+                    .search_native(|s| self.ma_f(s, morpheme.clone()))
                     .await?
             } else {
                 res
@@ -199,52 +247,57 @@ impl<'a> Search<'a> {
                 let origi_res = word_search
                     .with_query(&self.query.query)
                     .with_mode(SearchMode::Exact)
-                    .search_native()
+                    .search_native(|s| self.ma_f(s, morpheme.clone()))
                     .await?;
-                r.into_iter().chain(origi_res).collect()
+
+                (
+                    r.0.into_iter().chain(origi_res.0).collect(),
+                    r.1 + origi_res.1,
+                )
             } else {
                 r
             }
         } else {
             let results = word_search
                 .with_mode(SearchMode::RightVariable)
-                .search_native()
+                .search_native(|s| self.ma_f(s, morpheme.clone()))
                 .await?;
 
-            // if query was modified search for the
-            // original term too
-            if query_modified {
+            // if query was modified search for the original term too
+            let mut results = if query_modified {
                 let origi_res = word_search
                     .with_query(&self.query.query)
                     .with_mode(SearchMode::Exact)
-                    .search_native()
+                    .search_native(|s| self.ma_f(s, morpheme.clone()))
                     .await?;
 
-                results.into_iter().chain(origi_res).collect()
+                (
+                    results.0.into_iter().chain(origi_res.0).collect(),
+                    results.1 + origi_res.1,
+                )
             } else {
                 results
-            }
+            };
+
+            #[cfg(feature = "tokenizer")]
+            let search_order = SearchOrder::new(self.query, &morpheme);
+
+            #[cfg(not(feature = "tokenizer"))]
+            let search_order = SearchOrder::new(self.query);
+
+            // Sort the results based
+            search_order.sort(&mut results.0, order::native_search_order);
+            results.0.dedup();
+
+            results
         };
-
-        #[cfg(feature = "tokenizer")]
-        let search_order = SearchOrder::new(self.query, &morpheme);
-
-        #[cfg(not(feature = "tokenizer"))]
-        let search_order = SearchOrder::new(self.query);
-
-        // Sort the results based
-        search_order.sort(&mut wordresults, order::native_search_order);
-        wordresults.dedup();
-
-        let count = wordresults.len();
-
-        // Limit search to 10 results
-        wordresults.truncate(10);
 
         Ok(ResultData {
             words: wordresults,
             infl_info,
-            count,
+            count: original_len,
+            sentence_parts: sentence,
+            sentence_index: self.query.word_index as i32,
         })
     }
 
@@ -326,5 +379,31 @@ impl<'a> Search<'a> {
             .lock()
             .await
             .cache_set(self.query.get_hash(), result);
+    }
+
+    #[cfg(feature = "tokenizer")]
+    fn ma_f(&self, w: &mut Vec<Word>, morpheme: Option<WordItem>) {
+        #[cfg(feature = "tokenizer")]
+        let search_order = SearchOrder::new(self.query, &morpheme);
+
+        // Sort the results based
+        search_order.sort(w, order::native_search_order);
+        w.dedup();
+
+        // Limit search to 10 results
+        w.truncate(10);
+    }
+
+    #[cfg(not(feature = "tokenizer"))]
+    fn ma_f(&self, w: &mut Vec<Word>, morpheme: bool) {
+        #[cfg(not(feature = "tokenizer"))]
+        let search_order = SearchOrder::new(self.query);
+
+        // Sort the results based
+        search_order.sort(w, order::native_search_order);
+        w.dedup();
+
+        // Limit search to 10 results
+        w.truncate(10);
     }
 }

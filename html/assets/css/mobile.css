@@ -26,9 +26,18 @@
 
 	/* -------- Word Search -------- */
     
+    .overlay.suggestion {
+        width: 50.5%;
+        margin-left: 33%;
+    }
+
     .search-annotation {
         width: 80%;
         margin-left: 10%;
+    }
+
+    #shadow-text {
+        padding: 15px 10px;
     }
 	
     .main-container {

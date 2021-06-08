@@ -65,12 +65,13 @@ pub(super) async fn by_reading(search: &Search<'_>) -> Result<ResultData, Error>
         return alternative_reading_search(search).await;
     }
 
-    let mut w = WordSearch::load_words_by_seq(
+    let (mut w, _) = WordSearch::load_words_by_seq(
         search.db,
         &seq_ids,
         search.query.settings.user_lang,
         search.query.settings.show_english,
         &to_option(search.query.get_part_of_speech_tags()),
+        |_| (),
     )
     .await?;
 

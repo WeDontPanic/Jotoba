@@ -34,9 +34,9 @@ impl Item {
         let (radical, parts): (Radical, Vec<String>) =
             try_join!(k.kanji.load_radical(db), k.kanji.load_parts(db),)?;
 
-        let (kun_words, on_words): (Vec<Word>, Vec<Word>) = try_join!(
-            WordSearch::load_words_by_seq(db, &kun_dicts, lang, show_english, &None),
-            WordSearch::load_words_by_seq(db, &on_dicts, lang, show_english, &None)
+        let ((kun_words, _), (on_words, _)): ((Vec<Word>, _), (Vec<Word>, _)) = try_join!(
+            WordSearch::load_words_by_seq(db, &kun_dicts, lang, show_english, &None, |_| ()),
+            WordSearch::load_words_by_seq(db, &on_dicts, lang, show_english, &None, |_| ())
         )?;
 
         let loaded_kd = kun_words
@@ -119,6 +119,7 @@ impl Item {
         }
     }
 
+    // TODO translate this one
     pub fn get_parts_title(&self) -> &'static str {
         if self.parts.as_ref().map(|i| i.len()).unwrap_or_default() > 1 {
             "Parts"

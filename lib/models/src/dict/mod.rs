@@ -394,3 +394,33 @@ pub async fn load_dictionary(db: &DbPool, sequence_id: i32) -> Result<Vec<Dict>,
         .get_results_async(&db)
         .await?)
 }
+
+/// Returns furigana string for a word which contains at least one kanji. If [`r`] exists multiple
+/// times in the database Ok(None) gets returned
+pub async fn furigana_by_reading(db: &DbPool, r: &str) -> Result<Option<String>, Error> {
+    use crate::schema::dict::dsl::*;
+
+    let mut furi: Vec<Option<String>> = dict
+        .select(furigana)
+        .filter(kanji)
+        .filter(reading.eq_all(r))
+        .filter(is_main)
+        .get_results_async(db)
+        .await?;
+
+    // If nothing was found search for non main readings too!
+    if furi.is_empty() {
+        furi = dict
+            .select(furigana)
+            .filter(kanji)
+            .filter(reading.eq_all(r))
+            .get_results_async(db)
+            .await?;
+    }
+
+    if furi.len() > 1 {
+        return Ok(None);
+    }
+
+    Ok(furi[0].to_owned())
+}

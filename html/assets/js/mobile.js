@@ -12,7 +12,6 @@ if (Util.getBrowserWidth() <= 600) {
     prepareMobilePageBtn();
 } else {
     $(window).on('resize', function() {
-        console.log("called");
         if ($(this).width() <= 600) {
             $(window).off('resize');
             prepareMobilePageBtn();
