@@ -6,6 +6,7 @@ use std::path::Path;
 #[cfg(feature = "tokenizer")]
 use japanese::jp_parsing::{JA_NL_PARSER, NL_PARSER_PATH};
 use localization::TranslationDict;
+use tokio_postgres::Client;
 
 use crate::config::Config;
 use actix_web::{middleware, web as actixweb, App, HttpServer};
@@ -18,7 +19,7 @@ const ASSET_CACHE_MAX_AGE: u64 = 604800;
 
 /// Start the webserver
 #[actix_web::main]
-pub(super) async fn start(db: DbPool) -> std::io::Result<()> {
+pub(super) async fn start(db: DbPool, async_postgres: Client) -> std::io::Result<()> {
     setup_logger();
 
     let config = Config::new().await.expect("config failed");
@@ -33,6 +34,7 @@ pub(super) async fn start(db: DbPool) -> std::io::Result<()> {
     .expect("Failed to load localization files");
 
     let locale_dict_arc = Arc::new(locale_dict);
+    let async_pg_arc = Arc::new(async_postgres);
 
     #[cfg(feature = "sentry_error")]
     if let Some(ref sentry_config) = config.sentry {
@@ -52,6 +54,7 @@ pub(super) async fn start(db: DbPool) -> std::io::Result<()> {
             // Data
             .data(db.clone())
             .data(config_clone.clone())
+            .data(async_pg_arc.clone())
             .data(locale_dict_arc.clone())
             // Middlewares
             .wrap(middleware::Logger::default())

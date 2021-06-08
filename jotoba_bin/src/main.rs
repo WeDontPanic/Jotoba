@@ -4,12 +4,17 @@ mod cli;
 mod config;
 mod webserver;
 
+use std::env;
+
 use import::has_required_data;
+use tokio_postgres::NoTls;
 
 #[tokio::main]
 pub async fn main() {
     let options = cli::parse();
     let database = models::connect();
+
+    let connection_str = env::var("DATABASE_URL").expect("DATABASE_URL must be set");
 
     // Run import process on --import/-i
     if options.import {
@@ -25,7 +30,15 @@ pub async fn main() {
 
     // Start the werbserver on --stat/-s
     if options.start {
-        webserver::start(database).expect("webserver failed");
+        let (async_postgres, connection) = tokio_postgres::connect(&connection_str, NoTls)
+            .await
+            .expect("Couldn't connect to postgres");
+        tokio::spawn(async move {
+            if let Err(e) = connection.await {
+                eprintln!("connection error: {}", e);
+            }
+        });
+        webserver::start(database, async_postgres).expect("webserver failed");
         return;
     }
 

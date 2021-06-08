@@ -33,6 +33,9 @@ pub enum RestError {
     #[error("Internal server error")]
     Internal,
 
+    #[error("Timeout exceeded")]
+    Timeout,
+
     #[error("missing {0:?}")]
     Missing(Origin),
 }
@@ -80,6 +83,13 @@ impl ResponseError for RestError {
 
 impl From<AsyncError> for RestError {
     fn from(e: AsyncError) -> Self {
+        println!("{:?}", e);
+        Self::Internal
+    }
+}
+
+impl From<tokio_postgres::Error> for RestError {
+    fn from(e: tokio_postgres::Error) -> Self {
         println!("{:?}", e);
         Self::Internal
     }

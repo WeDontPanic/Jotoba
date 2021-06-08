@@ -314,13 +314,16 @@ dependencies = [
  "cache",
  "diesel",
  "error",
+ "futures",
  "itertools",
  "japanese",
  "models",
  "once_cell",
+ "search",
  "serde",
  "tokio 1.6.1",
  "tokio-diesel",
+ "tokio-postgres",
  "utils",
 ]
 
@@ -824,9 +827,9 @@ dependencies = [
 
 [[package]]
 name = "diesel"
-version = "1.4.6"
+version = "1.4.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "047bfc4d5c3bd2ef6ca6f981941046113524b9a9f9a7cbdfdd7ff40f58e6f542"
+checksum = "bba51ca66f57261fd17cadf8b73e4775cc307d0521d855de3f5de91a8f074e0e"
 dependencies = [
  "bitflags",
  "byteorder",
@@ -989,6 +992,7 @@ dependencies = [
  "strum",
  "thiserror",
  "tokio-diesel",
+ "tokio-postgres",
 ]
 
 [[package]]
@@ -1414,9 +1418,9 @@ checksum = "9a3a5bfb195931eeb336b2a7b4d761daec841b97f947d34394601737a7bba5e4"
 
 [[package]]
 name = "hyper"
-version = "0.14.8"
+version = "0.14.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d3f71a7eea53a3f8257a7b4795373ff886397178cd634430ea94e12d7fe4fe34"
+checksum = "07d6baa1b441335f3ce5098ac421fb6547c46dda735ca1bc6d0153c838f9dd83"
 dependencies = [
  "bytes 1.0.1",
  "futures-channel",
@@ -1428,7 +1432,7 @@ dependencies = [
  "httparse",
  "httpdate 1.0.1",
  "itoa",
- "pin-project 1.0.7",
+ "pin-project-lite 0.2.6",
  "socket2 0.4.0",
  "tokio 1.6.1",
  "tower-service",
@@ -1599,6 +1603,7 @@ dependencies = [
  "sentry-actix",
  "serde",
  "tokio 1.6.1",
+ "tokio-postgres",
  "toml",
  "utils",
 ]
@@ -2541,9 +2546,9 @@ dependencies = [
 
 [[package]]
 name = "security-framework"
-version = "2.3.0"
+version = "2.3.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b239a3d5db51252f6f48f42172c65317f37202f4a21021bf5f9d40a408f4592c"
+checksum = "23a2ac85147a3a11d77ecf1bc7166ec0b92febfa4461c37944e180f319ece467"
 dependencies = [
  "bitflags",
  "core-foundation",
