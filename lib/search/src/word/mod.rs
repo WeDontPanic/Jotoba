@@ -16,13 +16,15 @@ use super::{
 };
 use cache::SharedCache;
 use error::Error;
-use japanese::{inflection::SentencePart, jp_parsing::ParseResult, JapaneseExt};
+use japanese::{inflection::SentencePart, JapaneseExt};
 use models::search_mode::SearchMode;
 use models::{kanji::KanjiResult, DbPool};
 use utils::real_string_len;
 
 #[cfg(feature = "tokenizer")]
 use japanese::jp_parsing::InputTextParser;
+#[cfg(feature = "tokenizer")]
+use japanese::jp_parsing::ParseResult;
 #[cfg(feature = "tokenizer")]
 use japanese::jp_parsing::WordItem;
 
@@ -81,8 +83,6 @@ impl<'a> Search<'a> {
             kanji::load_word_kanji_info(&self, &words_cloned),
             WordSearch::load_collocations(self.db, &mut words, self.query.settings.user_lang)
         )?;
-
-        println!("{:#?}", search_result.sentence_parts);
 
         let kanji_items = kanji_results.len();
         return Ok(WordResult {
@@ -195,6 +195,9 @@ impl<'a> Search<'a> {
         #[cfg(not(feature = "tokenizer"))]
         let (query, sentence) = self.get_query(query_str);
 
+        #[cfg(not(feature = "tokenizer"))]
+        let morpheme = true;
+
         let query_modified = query != self.query.query;
 
         #[cfg(feature = "tokenizer")]
@@ -221,20 +224,20 @@ impl<'a> Search<'a> {
         }
 
         // Perform the word search
-        let mut wordresults = if real_string_len(&query) == 1 && query.is_kana() {
+        let (wordresults, original_len) = if real_string_len(&query) == 1 && query.is_kana() {
             // Search for exact matches only if query.len() <= 2
 
             let res = word_search
                 .with_mode(SearchMode::Exact)
                 .with_language(self.query.settings.user_lang)
-                .search_native()
+                .search_native(|s| self.ma_f(s, morpheme.clone()))
                 .await?;
 
-            let r = if res.is_empty() {
+            let r = if res.0.is_empty() {
                 // Do another search if no exact result was found
                 word_search
                     .with_mode(SearchMode::RightVariable)
-                    .search_native()
+                    .search_native(|s| self.ma_f(s, morpheme.clone()))
                     .await?
             } else {
                 res
@@ -244,52 +247,55 @@ impl<'a> Search<'a> {
                 let origi_res = word_search
                     .with_query(&self.query.query)
                     .with_mode(SearchMode::Exact)
-                    .search_native()
+                    .search_native(|s| self.ma_f(s, morpheme.clone()))
                     .await?;
-                r.into_iter().chain(origi_res).collect()
+
+                (
+                    r.0.into_iter().chain(origi_res.0).collect(),
+                    r.1 + origi_res.1,
+                )
             } else {
                 r
             }
         } else {
             let results = word_search
                 .with_mode(SearchMode::RightVariable)
-                .search_native()
+                .search_native(|s| self.ma_f(s, morpheme.clone()))
                 .await?;
 
-            // if query was modified search for the
-            // original term too
-            if query_modified {
+            // if query was modified search for the original term too
+            let mut results = if query_modified {
                 let origi_res = word_search
                     .with_query(&self.query.query)
                     .with_mode(SearchMode::Exact)
-                    .search_native()
+                    .search_native(|s| self.ma_f(s, morpheme.clone()))
                     .await?;
 
-                results.into_iter().chain(origi_res).collect()
+                (
+                    results.0.into_iter().chain(origi_res.0).collect(),
+                    results.1 + origi_res.1,
+                )
             } else {
                 results
-            }
+            };
+
+            #[cfg(feature = "tokenizer")]
+            let search_order = SearchOrder::new(self.query, &morpheme);
+
+            #[cfg(not(feature = "tokenizer"))]
+            let search_order = SearchOrder::new(self.query);
+
+            // Sort the results based
+            search_order.sort(&mut results.0, order::native_search_order);
+            results.0.dedup();
+
+            results
         };
-
-        #[cfg(feature = "tokenizer")]
-        let search_order = SearchOrder::new(self.query, &morpheme);
-
-        #[cfg(not(feature = "tokenizer"))]
-        let search_order = SearchOrder::new(self.query);
-
-        // Sort the results based
-        search_order.sort(&mut wordresults, order::native_search_order);
-        wordresults.dedup();
-
-        let count = wordresults.len();
-
-        // Limit search to 10 results
-        wordresults.truncate(10);
 
         Ok(ResultData {
             words: wordresults,
             infl_info,
-            count,
+            count: original_len,
             sentence_parts: sentence,
             sentence_index: self.query.word_index as i32,
         })
@@ -373,5 +379,31 @@ impl<'a> Search<'a> {
             .lock()
             .await
             .cache_set(self.query.get_hash(), result);
+    }
+
+    #[cfg(feature = "tokenizer")]
+    fn ma_f(&self, w: &mut Vec<Word>, morpheme: Option<WordItem>) {
+        #[cfg(feature = "tokenizer")]
+        let search_order = SearchOrder::new(self.query, &morpheme);
+
+        // Sort the results based
+        search_order.sort(w, order::native_search_order);
+        w.dedup();
+
+        // Limit search to 10 results
+        w.truncate(10);
+    }
+
+    #[cfg(not(feature = "tokenizer"))]
+    fn ma_f(&self, w: &mut Vec<Word>, morpheme: bool) {
+        #[cfg(not(feature = "tokenizer"))]
+        let search_order = SearchOrder::new(self.query);
+
+        // Sort the results based
+        search_order.sort(w, order::native_search_order);
+        w.dedup();
+
+        // Limit search to 10 results
+        w.truncate(10);
     }
 }
