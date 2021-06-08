@@ -34,6 +34,10 @@ kanjis.click(function(e) {
 
 // Tell every slider their kanji and text field
 sliders.each(function() {
+    if (this.id === "show_anim_speed_settings") {
+        return;
+    }
+
     this.textField = $(this).parent().parent().find('span')[0];
     this.kanjisvg = $(this).parent().parent().parent().children('.kanjisvgParent').children()[0];
 });
