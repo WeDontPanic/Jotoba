@@ -175,10 +175,6 @@ function removeSuggestions() {
 
 // Calls the API to get input suggestions
 function getApiData() { // TODO - activate
-
-    loadApiData();
-    return;
-
     // Create the JSON
     let inputJSON = {
         "input": input.value
@@ -204,9 +200,6 @@ function getApiData() { // TODO - activate
 
 // Loads data called from the API into the frontend
 function loadApiData(result) {
-
-    result = {"suggestions":[{"kana":"にほんご","kanji":"日本語"},{"kana":"にほんごかんきょう","kanji":"日本語環境"},{"kana":"にほんごきょうほん","kanji":"日本語教本"},{"kana":"にほんごがくしゃ","kanji":"日本語学者"},{"kana":"にほんごがっこう","kanji":"日本語学校"},{"kana":"にほんごきょういく","kanji":"日本語教育"},{"kana":"にほんごがく","kanji":"日本語学"},{"kana":"にほんごじまく","kanji":"日本語字幕"},{"kana":"にほんごぞく","kanji":"日本語族"},{"kana":"にほんごか","kanji":"日本語化"}]}
-    
     // Remove current suggestions
     removeSuggestions();
 

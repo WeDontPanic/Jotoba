@@ -15,7 +15,7 @@ pub struct SuggestionRequest {
 /// Response struct for suggestion endpoint
 #[derive(Clone, Debug, Serialize, Default)]
 pub struct SuggestionResponse {
-    pub suggesstions: Vec<WordPair>,
+    pub suggestions: Vec<WordPair>,
 }
 
 /// a Word with kana and kanji if available
@@ -48,7 +48,7 @@ pub async fn suggestion(
     println!("suggestion took: {:?}", start.elapsed());
 
     Ok(Json(SuggestionResponse {
-        suggesstions: result,
+        suggestions: result,
     }))
 }
 
