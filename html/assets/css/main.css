@@ -233,6 +233,58 @@ svg {
     cursor: pointer;
 }
 
+/* ----------------- Search Suggestion ----------------- */
+
+#search::selection {
+    color: var(--primaryTextColor);
+    background-color: var(--secondaryColor);
+}
+
+.overlay.suggestion {
+    border: unset;
+    width: 72.5%;
+    margin-left: 20%;
+}
+
+.search-suggestion {
+    padding-left: 30px;
+    padding-bottom: 5px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.search-suggestion:first-child {
+    padding-top: 5px;
+}
+
+.search-suggestion.selected, .search-suggestion:hover {
+    background: var(--lineColor);
+    font-weight: bold;
+}
+
+.secondary-suggestion {
+    color: var(--tagColor);
+    position: absolute;
+    font-size: 14px;
+    padding-left: 10px;
+    margin-top: 1px;
+}
+
+#shadow-text {
+    position: absolute;
+    pointer-events: none;
+    height: 100%;
+    background: transparent;
+    border: 0;
+    display: block;
+    width: 100%;
+    padding: 13px 32px;
+    font-size: 16px;
+    color: var(--searchTextColor);
+    z-index: 4;
+    opacity: 0.4;
+}
+
 /* ----------------- Overlays ----------------- */
 .modal-header {
     border-bottom-color: var(--lineColor);

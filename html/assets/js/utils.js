@@ -138,6 +138,20 @@ Util.deleteCookies = function() {
         + new Date(0).toUTCString();
 }
 
+// Checks if a given element is overflown
+Util.checkOverflow = function checkOverflow(el) {
+   var curOverflow = el.style.overflow;
+
+   if (!curOverflow || curOverflow === "visible")
+      el.style.overflow = "hidden";
+
+   var isOverflowing = el.clientWidth < el.scrollWidth || el.clientHeight < el.scrollHeight;
+
+   el.style.overflow = curOverflow;
+
+   return isOverflowing;
+}
+
 // Used for animation curves
 Math.easeInOutQuad = function (t, b, c, d) {
     t /= d/2;
