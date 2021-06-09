@@ -87,7 +87,7 @@
                         </div>
                         <div class="input-field second-wrap">
                            <div class="input-group">
-                              <input id="search" name="search" type="text" value="@data.get_query_str()" placeholder="@data.gettext("Search...")" tabindex="1" lang="ja" autocapitalize="off" autocomplete="off" data-autoload="false" data-effective-keyword=""/>
+                              <input id="search" name="search" type="text" value="@data.get_query_str()" placeholder='@data.gettext("Search...")' tabindex="1" lang="ja" autocapitalize="off" autocomplete="off" data-autoload="false" data-effective-keyword=""/>
                               <span id="shadow-text"></span>
                               <button id="emptyInput" type="button" class="btn bg-transparent" onclick="emptySearchInput()">
                                  <svg height="10" width="10" viewBox="0 0 503.021 503.021" style="margin-top: -5px">
@@ -120,6 +120,13 @@
                   <span class="x-button noselect" onclick="toggleRadicalOverlay()">x</span>
                   
                   <div class="d-flex flex-row wrap rad-results">
+                     <div class="rad-result-preview"> 
+                        <span>@data.gettext("This tool allows you to find Kanji by their core components (Radicals)")</span>
+                        <br>
+                        <span>@data.gettext("You can select Radicals below and add found Kanji to the search bar")</span>
+                        <br>
+                        <span>@data.gettext("Press") <span class="highlight">@data.gettext("Enter")</span> @data.gettext("to start searching")</span>
+                     </div>
                   </div>
 
                   <br>

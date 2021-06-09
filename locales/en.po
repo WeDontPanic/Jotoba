@@ -38,6 +38,21 @@ msgstr ""
 msgid "Voice"
 msgstr ""
 
+# Rad Help Msg
+msgid "This tool allows you to find Kanji by their core components (Radicals)"
+msgstr ""
+
+msgid "You can select Radicals below and add found Kanji to the search bar"
+msgstr ""
+
+msgid "Enter"
+msgstr ""
+
+msgid "to start searching"
+msgstr ""
+
+# Rad Btns
+
 msgid "Reset"
 msgstr ""
 

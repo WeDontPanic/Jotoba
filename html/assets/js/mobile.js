@@ -10,6 +10,8 @@ function toggleMobileNav() {
 // On Start, check if mobile view is enabled. If yes, activate the btn
 if (Util.getBrowserWidth() <= 600) {
     prepareMobilePageBtn();
+
+    scrollSentenceReaderIntoView();
 } else {
     $(window).on('resize', function() {
         if ($(this).width() <= 600) {
@@ -17,6 +19,21 @@ if (Util.getBrowserWidth() <= 600) {
             prepareMobilePageBtn();
         }
     });
+}
+
+// Scrolls the sentence reader onto the selected element on mobile
+function scrollSentenceReaderIntoView() {
+    // Wait for document to be completly ready
+    let docWait = window.setInterval(() => {
+        if (document.readyState == "complete") {
+            let selected = $(".sentence-part.selected")[0];
+            console.log(selected);
+            if (selected !== undefined) {
+                $(".sentence-reader")[0].scrollLeft = selected.offsetLeft - 50;
+            }
+            window.clearTimeout(docWait);
+        }
+    }, 10);
 }
 
 // Variables used in mobiles' easy-use btn
@@ -50,7 +67,6 @@ function prepareMobilePageBtn() {
         }
     }
 }
-
 
 // Jumps to the top or kanji part
 function jumpToTop() {
