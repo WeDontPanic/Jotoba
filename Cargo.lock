@@ -312,6 +312,7 @@ dependencies = [
  "actix-web",
  "async-std",
  "cache",
+ "config",
  "diesel",
  "error",
  "futures",
@@ -711,6 +712,17 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "30ed07550be01594c6026cff2a1d7fe9c8f683caa798e12b68694ac9e88286a3"
 dependencies = [
  "cache-padded",
+]
+
+[[package]]
+name = "config"
+version = "0.1.0"
+dependencies = [
+ "async-std",
+ "log",
+ "serde",
+ "serde_derive",
+ "toml",
 ]
 
 [[package]]
@@ -1591,6 +1603,7 @@ dependencies = [
  "argparse",
  "async-std",
  "cache",
+ "config",
  "env_logger",
  "error",
  "frontend",

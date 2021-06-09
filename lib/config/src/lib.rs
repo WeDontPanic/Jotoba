@@ -15,6 +15,7 @@ use async_std::{
 pub struct Config {
     pub server: ServerConfig,
     pub sentry: Option<SentryConfig>,
+    pub search: Option<SearchConfig>,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -28,6 +29,21 @@ pub struct SentryConfig {
     pub dsn: String,
 }
 
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct SearchConfig {
+    pub suggestion_timeout: Option<u64>,
+}
+
+impl Config {
+    /// Returns the configured suggestion timeout or its default value if not set
+    pub fn get_suggestion_timeout(&self) -> u64 {
+        self.search
+            .as_ref()
+            .and_then(|i| i.suggestion_timeout)
+            .unwrap_or(100)
+    }
+}
+
 impl Default for ServerConfig {
     fn default() -> Self {
         Self {
@@ -38,11 +54,11 @@ impl Default for ServerConfig {
 }
 
 impl ServerConfig {
-    pub(super) fn get_html_files(&self) -> &str {
+    pub fn get_html_files(&self) -> &str {
         self.html_files.as_deref().unwrap_or("html/assets")
     }
 
-    pub(super) fn get_locale_path(&self) -> &str {
+    pub fn get_locale_path(&self) -> &str {
         "./locales"
     }
 }

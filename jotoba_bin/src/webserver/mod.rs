@@ -8,7 +8,7 @@ use japanese::jp_parsing::{JA_NL_PARSER, NL_PARSER_PATH};
 use localization::TranslationDict;
 use tokio_postgres::Client;
 
-use crate::config::Config;
+use config::Config;
 use actix_web::{middleware, web as actixweb, App, HttpServer};
 use cache_control::CacheInterceptor;
 use models::DbPool;

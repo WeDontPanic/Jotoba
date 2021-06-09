@@ -27,6 +27,7 @@ utils = { path = "../lib/utils" }
 api = { path = "../lib/api" }
 frontend = { path = "../lib/frontend" }
 import = { path = "../lib/import" }
+config = { path = "../lib/config" }
 localization = { path = "../lib/localization" }
 log = "0.4.14"
 sentry-actix = { version = "0.22.0", optional = true }

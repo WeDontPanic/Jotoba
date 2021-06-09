@@ -10,6 +10,7 @@ use actix_web::{
     rt::time::timeout,
     web::{self, Json},
 };
+use config::Config;
 use error::api_error::RestError;
 use parse::jmdict::languages::Language;
 use query_parser::QueryType;
@@ -43,15 +44,13 @@ pub struct WordPair {
     pub secondary: Option<String>,
 }
 
-/// The duration of how long a suggestion process should run until it gets cancelled
-const SUGGESTION_TIMEOUT: u64 = 100;
-
 /// Max results to show
 const MAX_RESULTS: i64 = 10;
 
 /// Get search suggestions
 pub async fn suggestion(
     pool: web::Data<Arc<Client>>,
+    config: web::Data<Config>,
     payload: Json<SuggestionRequest>,
 ) -> Result<Json<SuggestionResponse>, actix_web::Error> {
     let query_len = real_string_len(&payload.input);
@@ -88,7 +87,7 @@ pub async fn suggestion(
     .ok_or(RestError::BadRequest)?;
 
     let result = timeout(
-        Duration::from_millis(SUGGESTION_TIMEOUT),
+        Duration::from_millis(config.get_suggestion_timeout()),
         get_suggestion(&pool, query),
     )
     .await

@@ -1,7 +1,6 @@
 #![allow(irrefutable_let_patterns)]
 
 mod cli;
-mod config;
 mod webserver;
 
 use std::env;
