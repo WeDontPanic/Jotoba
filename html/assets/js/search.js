@@ -26,10 +26,17 @@ $(document).on("keydown", (event) => {
             event.preventDefault();
             changeSuggestionIndex(1);
             break;
-        case "Enter": // Do a search while rad-picker is opened or set current suggestion
+        case "Tab": // Append current suggestion
             if (currentSuggestion != -1) {
                 activateSelection();
                 event.preventDefault();
+            } 
+            break;
+        case "Enter": // Start the search
+            if (currentSuggestion != -1) {
+                event.preventDefault();
+                activateSelection();
+                document.getElementsByClassName("btn-search")[0].click();
             } 
             break;
     }
@@ -274,7 +281,7 @@ function loadApiData(result) {
 
         // Add to Page
         container.innerHTML += 
-        ' <div class="search-suggestion" onclick="activateSelection(this);"> ' +
+        ' <div class="search-suggestion" onclick="activateSelection(this); document.getElementsByClassName("btn-search")[0].click();"> ' +
         '   <span class="primary-suggestion">'+kanji+'</span> ' +
         '   <span class="secondary-suggestion">'+kana+'</span> ' +
         ' </div> ';        
