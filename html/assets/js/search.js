@@ -55,13 +55,8 @@ input.addEventListener("focus", e => {
     callApiAndSetShadowText();
     container.classList.remove("hidden");
 });
-input.addEventListener("blur", e => {
-    if (!document.activateElement != container)
-        container.classList.add("hidden");
-});
-container.addEventListener("blur", e => {
-    if (!document.activateElement != input)
-        container.classList.add("hidden");
+document.getElementById("content-container").addEventListener("click", e => {
+    container.classList.add("hidden");
 });
 
 // Check on resize if shadow text would overflow the search bar and show / hide it
