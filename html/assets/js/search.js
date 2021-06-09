@@ -19,9 +19,11 @@ $(document).on("keydown", (event) => {
     // Switch the key code for potential changes
     switch (event.key) {
         case 'ArrowUp': // Use suggestion above current
+            event.preventDefault();
             changeSuggestionIndex(-1);
             break;
         case 'ArrowDown': // Use suggestion beneath current
+            event.preventDefault();
             changeSuggestionIndex(1);
             break;
         case "Enter": // Do a search while rad-picker is opened or set current suggestion
@@ -35,42 +37,55 @@ $(document).on("keydown", (event) => {
 
 // Event whenever the user types into the search bar
 input.addEventListener("input", e => {
+    callApiAndSetShadowText();
+});
+
+// Always check if shadow text can still be displayed or needs to be hidden
+setInterval(() => {
+    setShadowText();
+}, 400);
+
+window.addEventListener("resize", e => {
     setShadowText();
 });
 
+// Function to be called by input events. Updates the API data and shadow txt
+function callApiAndSetShadowText() {
+    // Load new API data
+    getApiData();
+
+    // Set shadow text
+    setShadowText();
+}
+
 // Sets the shadow's text whenever possible
 function setShadowText() {
-    // Only add help after typing at least 3 chars
-    if (input.value.length < 3 || Util.checkOverflow(input)) {
-        getApiData();
+    // If input is overflown, dont show text
+    if (Util.checkOverflow(shadowText) && shadowText.innerHTML != "") {
         shadowText.innerHTML = "";
         return
     }
 
+    // Make invisible temporarily
+    shadowText.style.opacity = 0;
+
     // Check how much of suggestion is typed already
-    let currentSubstr = "";
-    let hasTyped = false;
-    for (let i = currentSuggestion.length; i > 0; i--) {
-
-        currentSubstr = currentSuggestion.substring(0, i);
-        let index = input.value.lastIndexOf(currentSubstr)
-
-        if (index == -1) {
-            continue;
-        }
-
-        if (index + currentSubstr.length === input.value.length) {
-            hasTyped = true;
-            break;
-        }
-    }
+    let currentSubstr = getCurrentSubstring();
 
     // Add missing suggestion to shadow text
-    if (hasTyped) {
+    if (currentSubstr.length > 0) {
         shadowText.innerHTML = input.value + currentSuggestion.substring(currentSubstr.length);
     } else {
         shadowText.innerHTML = "";
     }   
+
+    // If it would overflow with new text, don't show
+    if (Util.checkOverflow(shadowText)) {
+        shadowText.innerHTML = "";
+    }
+
+    // Make visible again
+    shadowText.style.opacity = 0.4;
 }
 
 // Returns the primary [0], secondary [1] suggestion and the parent [2]
@@ -112,11 +127,12 @@ function changeSuggestionIndex(direction) {
 
     // Mark the suggestion's row
     suggestion[2].classList.add("selected");
-    console.log("class added");
     if (oldSuggestion != undefined) {
         oldSuggestion[2].classList.remove("selected");
-        console.log("class removed");
     }
+
+    // Update shadow text
+    setShadowText();
 }
 
 // Adds the currently selected suggestion to the search input
@@ -131,17 +147,55 @@ function activateSelection(element) {
         suggestion[0] = element.querySelector(".primary-suggestion");
         suggestion[1] = element.querySelector(".secondary-suggestion");
 
-        if (suggestion[1] != undefined) {
+        if (suggestion[1].innerHTML.length > 0) {
             currentSuggestion = suggestion[1].innerHTML.substring(1, suggestion[1].innerHTML.length - 1);
-            console.log(currentSuggestion);
+        }  else {
+            currentSuggestion = suggestion[0].innerHTML;
         }
     }
 
     // Check how many chars of the suggestion the user already typed
-    let currentSubstr = "";
-    for (let i = currentSuggestion.length; i > 0; i--) {
+    let currentSubstr = getCurrentSubstring();
 
-        currentSubstr = currentSuggestion.substring(0, i);
+    // No Kanji used -> Insert rest of text
+    if (suggestion[1].innerHTML.length == 0) {
+        if (currentSubstr.length > 0) {
+            input.value += currentSuggestion.substring(currentSubstr.length);
+        } else {
+            input.value += currentSuggestion;
+        }
+    }
+    
+    // If it uses Kanji, the furigana user-input has to be deleted before inserting the rest
+    else {
+        let typedFuri = getCurrentSubstring();
+        let typedKanji = getCurrentSubstring(suggestion[0].innerHTML);
+
+        // User typed Furi, remove typed characters and insert Kanji
+        if (typedFuri.length > 0) {
+            input.value = input.value.substring(0, input.value.length - "にほ".length) + suggestion[0].innerHTML;
+        }
+
+        // User typed Kanji, insert rest of Kanji
+        else {
+            input.value += suggestion[0].innerHTML.substring(typedKanji.length);
+        }
+    }
+}
+
+// Returns the substring of what the user already typed for the current suggestion
+// If target is not empty, the substring of target will be searched instead
+function getCurrentSubstring(target) {
+    let currentSubstr = "";
+    let foundSubstr = false;
+
+    if (target === undefined) {
+        target = currentSuggestion;
+    }
+
+    for (let i = target.length; i > 0; i--) {
+
+        currentSubstr = target.substring(0, i);
         let index = input.value.lastIndexOf(currentSubstr)
 
         if (index == -1) {
@@ -149,19 +203,12 @@ function activateSelection(element) {
         }
 
         if (index + currentSubstr.length === input.value.length) {
+            foundSubstr = true;
             break;
         }
     }
 
-    // No Kanji used -> Insert rest of text
-    if (suggestion[1].innerHTML.length == 0) {
-        input.value += currentSuggestion.substring(currentSubstr.length);
-    }
-    
-    // If it uses Kanji, the furigana user-input has to be deleted before inserting the rest
-    else {
-        input.value = input.value.substring(input.value.length - currentSubstr.length) + suggestion[0].innerHTML;
-    }
+    return foundSubstr ? currentSubstr : "";
 }
 
 // Removes all current suggestions including shadowText
@@ -174,7 +221,8 @@ function removeSuggestions() {
 }
 
 // Calls the API to get input suggestions
-function getApiData() { // TODO - activate
+function getApiData() {
+
     // Create the JSON
     let inputJSON = {
         "input": input.value
@@ -200,6 +248,9 @@ function getApiData() { // TODO - activate
 
 // Loads data called from the API into the frontend
 function loadApiData(result) {
+
+    // result = {"suggestions":[{"kana":"にほんご","kanji":"日本語"},{"kana":"にほんごかんきょう"},{"kana":"にほんごきょうほん","kanji":"日本語教本"},{"kana":"にほんごがくしゃ","kanji":"日本語学者"},{"kana":"にほんごがっこう","kanji":"日本語学校"},{"kana":"にほんごきょういく","kanji":"日本語教育"},{"kana":"にほんごがく","kanji":"日本語学"},{"kana":"にほんごじまく","kanji":"日本語字幕"},{"kana":"にほんごぞく","kanji":"日本語族"},{"kana":"にほんごか","kanji":"日本語化"}]};
+
     // Remove current suggestions
     removeSuggestions();
 
