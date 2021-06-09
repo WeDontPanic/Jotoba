@@ -11,7 +11,7 @@ const container = document.getElementById("suggestion-container");
 var currentSuggestion = "";
 var currentSuggestionIndex = -1;
 var availableSuggestions = 0;
-var oldInput = "";
+var focusIsCached = false;
 
 // Key Events focussing on the search
 $(document).on("keydown", (event) => {
@@ -48,19 +48,21 @@ $(document).on("keydown", (event) => {
 
 // Event whenever the user types into the search bar
 input.addEventListener("input", e => {
-    if (oldInput != input.value) {
         callApiAndSetShadowText();
-    }
-
-    oldInput = input.value;
 });
 
 // Check if input was focussed / not focussed to show / hide overlay 長い
 input.addEventListener("focus", e => {
-    callApiAndSetShadowText();
+    if (!focusIsCached) {
+        callApiAndSetShadowText();
+    }
     container.classList.remove("hidden");
+    focusIsCached = false;
 });
 document.getElementById("page-container").addEventListener("click", e => {
+    if (input.value.length > 0) {
+        focusIsCached = true;
+    }
     container.classList.add("hidden");
 });
 
