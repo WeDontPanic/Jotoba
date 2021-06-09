@@ -49,9 +49,10 @@ input.addEventListener("input", e => {
 
 // Check if input was focussed / not focussed to show / hide overlay
 input.addEventListener("focus", e => {
+    callApiAndSetShadowText();
     container.classList.remove("hidden");
 });
-input.addEventListener("blur", e => {
+document.body.addEventListener("focus", e => {
     container.classList.add("hidden");
 });
 
