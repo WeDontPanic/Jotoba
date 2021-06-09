@@ -55,7 +55,7 @@ input.addEventListener("focus", e => {
     callApiAndSetShadowText();
     container.classList.remove("hidden");
 });
-document.getElementById("content-container").addEventListener("click", e => {
+document.getElementById("page-container").addEventListener("click", e => {
     container.classList.add("hidden");
 });
 
@@ -197,8 +197,19 @@ function activateSelection(element) {
         }
 
         // User typed Kanji, insert rest of Kanji
-        else {
+        else if (typedKanji.length > 0) {
             input.value += suggestion[0].innerHTML.substring(typedKanji.length);
+        }
+
+        // Some Kanji that doesnt fit into this algorythm
+        else {
+            let inputSplit = input.value.split(" ");
+            if (inputSplit.length > 1) {
+                input.value = inputSplit[inputSplit.length - 2] + " " + suggestion[0].innerHTML;
+            }
+            else {
+                input.value = suggestion[0].innerHTML;
+            }
         }
 
         shadowText.innerHTML = "";
