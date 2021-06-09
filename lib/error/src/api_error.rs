@@ -54,6 +54,7 @@ impl RestError {
             Self::NotFound => "NotFound".to_string(),
             Self::BadRequest => "BadRequest".to_string(),
             Self::Internal => "InternalError".to_string(),
+            Self::Timeout => "Timeout".to_string(),
             _ => "InternalError".to_string(),
         }
     }
@@ -66,6 +67,7 @@ impl ResponseError for RestError {
             Self::NotFound => StatusCode::NOT_FOUND,
             Self::BadRequest => StatusCode::BAD_REQUEST,
             Self::Internal => StatusCode::INTERNAL_SERVER_ERROR,
+            Self::Timeout => StatusCode::REQUEST_TIMEOUT,
             _ => StatusCode::INTERNAL_SERVER_ERROR,
         }
     }

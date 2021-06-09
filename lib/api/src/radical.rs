@@ -167,11 +167,7 @@ pub fn validate_request(payload: &RadicalsRequest) -> Result<RadicalsRequest, Re
         .copied()
         .collect::<Vec<_>>();
 
-    if radicals.is_empty() {
-        return Err(RestError::Missing(Origin::Radicals));
-    }
-
-    if radicals.len() > MAX_REQUEST_RADICALS {
+    if radicals.is_empty() || radicals.len() > MAX_REQUEST_RADICALS {
         return Err(RestError::BadRequest);
     }
 
