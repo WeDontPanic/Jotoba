@@ -3,6 +3,7 @@
  */
 
 // Elements used
+const searchRow = document.querySelector("#search-row");
 const input = document.querySelector("#search");
 const shadowText = document.getElementById("shadow-text");
 const container = document.getElementById("suggestion-container");
@@ -59,13 +60,14 @@ input.addEventListener("focus", e => {
     container.classList.remove("hidden");
     keepSuggestions = false;
 });
-document.getElementById("page-container").addEventListener("click", e => {
-    if (input.value.length > 0) {
+document.addEventListener("click", e => {
+    
+    // When clicking anything but the search bar or dropdown
+    if (!Util.isChildOf(searchRow, e.target)) {
+        container.classList.add("hidden");
         keepSuggestions = true;
     }
-    container.classList.add("hidden");
 });
-
 // Check on resize if shadow text would overflow the search bar and show / hide it
 window.addEventListener("resize", e => {
     setShadowText();
@@ -167,7 +169,6 @@ function activateSelection(element) {
 
     // Get newly selected suggestion
     let suggestion = getSuggestion(currentSuggestionIndex);
-    keepSuggestions = true;
 
     // If element is given as parameter directly
     if (element !== undefined) {

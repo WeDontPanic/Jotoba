@@ -152,6 +152,18 @@ Util.checkOverflow = function checkOverflow(el) {
    return isOverflowing;
 }
 
+// Checks if child is contained in parent
+Util.isChildOf = function (parent, child) {
+    var node = child.parentNode;
+    while (node != null) {
+        if (node == parent) {
+            return true;
+        }
+        node = node.parentNode;
+    }
+    return false;
+}
+
 // Used for animation curves
 Math.easeInOutQuad = function (t, b, c, d) {
     t /= d/2;
