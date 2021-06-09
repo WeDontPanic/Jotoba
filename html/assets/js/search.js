@@ -40,11 +40,7 @@ input.addEventListener("input", e => {
     callApiAndSetShadowText();
 });
 
-// Always check if shadow text can still be displayed or needs to be hidden
-setInterval(() => {
-    setShadowText();
-}, 400);
-
+// Check on resize if shadow text would overflow the search bar and show / hide it
 window.addEventListener("resize", e => {
     setShadowText();
 });
@@ -222,7 +218,6 @@ function removeSuggestions() {
 
 // Calls the API to get input suggestions
 function getApiData() {
-
     // Create the JSON
     let inputJSON = {
         "input": input.value
@@ -249,7 +244,7 @@ function getApiData() {
 // Loads data called from the API into the frontend
 function loadApiData(result) {
 
-    // result = {"suggestions":[{"kana":"にほんご","kanji":"日本語"},{"kana":"にほんごかんきょう"},{"kana":"にほんごきょうほん","kanji":"日本語教本"},{"kana":"にほんごがくしゃ","kanji":"日本語学者"},{"kana":"にほんごがっこう","kanji":"日本語学校"},{"kana":"にほんごきょういく","kanji":"日本語教育"},{"kana":"にほんごがく","kanji":"日本語学"},{"kana":"にほんごじまく","kanji":"日本語字幕"},{"kana":"にほんごぞく","kanji":"日本語族"},{"kana":"にほんごか","kanji":"日本語化"}]};
+    //result = {"suggestions":[{"kana":"にほんご","kanji":"日本語"},{"kana":"にほんごかんきょう"},{"kana":"にほんごきょうほん","kanji":"日本語教本"},{"kana":"にほんごがくしゃ","kanji":"日本語学者"},{"kana":"にほんごがっこう","kanji":"日本語学校"},{"kana":"にほんごきょういく","kanji":"日本語教育"},{"kana":"にほんごがく","kanji":"日本語学"},{"kana":"にほんごじまく","kanji":"日本語字幕"},{"kana":"にほんごぞく","kanji":"日本語族"},{"kana":"にほんごか","kanji":"日本語化"}]};
 
     // Remove current suggestions
     removeSuggestions();
