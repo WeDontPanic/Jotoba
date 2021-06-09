@@ -38,6 +38,9 @@ $(document).on("keydown", (event) => {
                 activateSelection();
                 document.getElementsByClassName("btn-search")[0].click();
             } 
+            if (shadowText.innerHTML.length == 0) {
+                document.getElementsByClassName("btn-search")[0].click();
+            }
             break;
     }
 });
@@ -47,13 +50,18 @@ input.addEventListener("input", e => {
     callApiAndSetShadowText();
 });
 
-// Check if input was focussed / not focussed to show / hide overlay
+// Check if input was focussed / not focussed to show / hide overlay 長い
 input.addEventListener("focus", e => {
     callApiAndSetShadowText();
     container.classList.remove("hidden");
 });
-document.body.addEventListener("focus", e => {
-    container.classList.add("hidden");
+input.addEventListener("blur", e => {
+    if (!document.activateElement != container)
+        container.classList.add("hidden");
+});
+container.addEventListener("blur", e => {
+    if (!document.activateElement != input)
+        container.classList.add("hidden");
 });
 
 // Check on resize if shadow text would overflow the search bar and show / hide it
