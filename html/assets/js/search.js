@@ -18,11 +18,11 @@ $(document).on("keydown", (event) => {
 
     // Switch the key code for potential changes
     switch (event.key) {
-        case 'ArrowUp': // Use suggestion above current
+        case "ArrowUp": // Use suggestion above current
             event.preventDefault();
             changeSuggestionIndex(-1);
             break;
-        case 'ArrowDown': // Use suggestion beneath current
+        case "ArrowDown": // Use suggestion beneath current
             event.preventDefault();
             changeSuggestionIndex(1);
             break;
@@ -55,7 +55,12 @@ window.addEventListener("resize", e => {
 // Function to be called by input events. Updates the API data and shadow txt
 function callApiAndSetShadowText() {
     // Load new API data
-    getApiData();
+    let inputSplit = input.value.split(" ");
+    if (inputSplit[inputSplit.length - 1]) {
+        getApiData();
+    } else {
+        removeSuggestions();
+    }
 
     // Set shadow text
     setShadowText();
@@ -226,8 +231,9 @@ function removeSuggestions() {
 // Calls the API to get input suggestions
 function getApiData() {
     // Create the JSON
+    let inputSplit = input.value.split(" ");
     let inputJSON = {
-        "input": input.value
+        "input": inputSplit[inputSplit.length-1]
     }
 
     // Send Request to backend
@@ -243,7 +249,8 @@ function getApiData() {
             loadApiData(result);
         }, 
         error : function(result) { 
-            // Ignore
+            // Error = reset everything
+            removeSuggestions();
         } 
     }); 
 }
