@@ -320,6 +320,7 @@ dependencies = [
  "levenshtein",
  "models",
  "once_cell",
+ "parse",
  "romaji",
  "search",
  "serde",

@@ -13,6 +13,7 @@ cache = { path = "../cache" }
 error = { path = "../error" }
 search = { path = "../search" }
 utils = { path = "../utils" }
+parse = { path = "../parse" }
 diesel = { version = "1.4.7", features = ["postgres","r2d2"] }
 actix-web = "3.3.2"
 async-std = "1.9.0"

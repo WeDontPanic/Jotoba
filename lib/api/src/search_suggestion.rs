@@ -1,5 +1,6 @@
 use std::{
     cmp::Ordering,
+    convert::TryFrom,
     sync::Arc,
     time::{Duration, SystemTime},
 };
@@ -10,6 +11,7 @@ use actix_web::{
     web::{self, Json},
 };
 use error::api_error::RestError;
+use parse::jmdict::languages::Language;
 use query_parser::QueryType;
 use search::{
     query::{Query, QueryLang, UserSettings},
@@ -23,6 +25,8 @@ use utils::real_string_len;
 #[derive(Clone, Debug, Deserialize, PartialEq)]
 pub struct SuggestionRequest {
     pub input: String,
+    #[serde(default)]
+    pub lang: i32,
 }
 
 /// Response struct for suggestion endpoint
@@ -41,6 +45,9 @@ pub struct WordPair {
 
 /// The duration of how long a suggestion process should run until it gets cancelled
 const SUGGESTION_TIMEOUT: u64 = 100;
+
+/// Max results to show
+const MAX_RESULTS: i64 = 10;
 
 /// Get search suggestions
 pub async fn suggestion(
@@ -70,7 +77,10 @@ pub async fn suggestion(
     let query = query_parser::QueryParser::new(
         query_str.to_owned(),
         QueryType::Words,
-        UserSettings::default(),
+        UserSettings {
+            user_lang: Language::try_from(payload.lang).unwrap_or_default(),
+            ..UserSettings::default()
+        },
         0,
         0,
     )
@@ -111,7 +121,7 @@ async fn get_suggestion_by_query(
     let mut word_pairs = match query.language {
         QueryLang::Japanese => japanese::suggestions(&pool, &query.query).await?,
         QueryLang::Foreign | QueryLang::Undetected => {
-            foreign::suggestions(&pool, &query.query).await?
+            foreign::suggestions(&pool, &query, &query.query).await?
         }
     };
 
@@ -154,10 +164,13 @@ mod japanese {
         client: &Client,
         query_str: &str,
     ) -> Result<Vec<WordPair>, RestError> {
-        let seq_query = "SELECT sequence FROM dict WHERE reading LIKE $1 ORDER BY jlpt_lvl DESC NULLS LAST, ARRAY_LENGTH(priorities,1) DESC NULLS LAST LIMIT 10";
+        let seq_query = "SELECT sequence FROM dict WHERE reading LIKE $1 ORDER BY jlpt_lvl DESC NULLS LAST, ARRAY_LENGTH(priorities,1) DESC NULLS LAST, LENGTH(reading) LIMIT $2";
 
         let rows = client
-            .query(seq_query, &[&format!("{}%", query_str).as_str()])
+            .query(
+                seq_query,
+                &[&format!("{}%", query_str).as_str(), &MAX_RESULTS],
+            )
             .await?;
 
         let mut sequences: Vec<i32> = rows.into_iter().map(|i| i.get(0)).collect();
@@ -199,12 +212,24 @@ mod foreign {
     use super::*;
 
     /// Get suggestions for foreign search input
-    pub async fn suggestions(client: &Client, query_str: &str) -> Result<Vec<WordPair>, RestError> {
-        let seq_query = "SELECT sense.sequence, sense.gloss FROM sense WHERE gloss like $1 AND (language = 1 OR Language = 0) ORDER BY LENGTH(gloss) limit 50";
+    pub async fn suggestions(
+        client: &Client,
+        query: &Query,
+        query_str: &str,
+    ) -> Result<Vec<WordPair>, RestError> {
+        let lang_str = match query.settings.user_lang {
+            Language::English => "language = 0".to_owned(),
+            _ => {
+                let lang: i32 = query.settings.user_lang.into();
+                format!("language = 0 or language = {}", lang)
+            }
+        };
+        let seq_query = format!("SELECT sense.sequence, sense.gloss FROM sense WHERE gloss ilike $1 AND ({}) ORDER BY LENGTH(gloss) limit 50", lang_str);
+
         //let seq_query = "SELECT sense.sequence, sense.gloss FROM sense JOIN dict ON (dict.sequence = sense.sequence) WHERE gloss &@ $1 AND (language = 1 OR Language = 0) ORDER BY ARRAY_LENGTH(priorities, 1) DESC NULLS LAST LIMIT 50";
 
         let rows = client
-            .query(seq_query, &[&format!("{}%", query_str)])
+            .query(seq_query.as_str(), &[&format!("{}%", query_str)])
             .await?;
 
         let mut words: Vec<String> = rows.into_iter().map(|i| i.get(1)).collect();
