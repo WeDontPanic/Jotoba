@@ -12,6 +12,7 @@ var currentSuggestion = "";
 var currentSuggestionIndex = -1;
 var availableSuggestions = 0;
 var focusIsCached = false;
+var ignoreInputEvents = false;
 
 // Key Events focussing on the search
 $(document).on("keydown", (event) => {
@@ -48,7 +49,9 @@ $(document).on("keydown", (event) => {
 
 // Event whenever the user types into the search bar
 input.addEventListener("input", e => {
-        callApiAndSetShadowText();
+        if (!ignoreInputEvents) {
+            callApiAndSetShadowText();
+        }
 });
 
 // Check if input was focussed / not focussed to show / hide overlay 長い
@@ -168,6 +171,9 @@ function activateSelection(element) {
     // Get newly selected suggestion
     let suggestion = getSuggestion(currentSuggestionIndex);
 
+    // Disable API calls on changes made during the insertions
+    ignoreInputEvents = true;
+
     // If element is given as parameter directly
     if (element !== undefined) {
         suggestion = element;
@@ -222,6 +228,9 @@ function activateSelection(element) {
 
     // Reset dropdown
     removeSuggestions();
+
+    // Allow API calls again
+    ignoreInputEvents = false;
 }
 
 // Returns the substring of what the user already typed for the current suggestion
