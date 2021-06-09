@@ -11,6 +11,7 @@ const container = document.getElementById("suggestion-container");
 var currentSuggestion = "";
 var currentSuggestionIndex = -1;
 var availableSuggestions = 0;
+var oldInput = "";
 
 // Key Events focussing on the search
 $(document).on("keydown", (event) => {
@@ -47,7 +48,11 @@ $(document).on("keydown", (event) => {
 
 // Event whenever the user types into the search bar
 input.addEventListener("input", e => {
-    callApiAndSetShadowText();
+    if (oldInput != input.value) {
+        callApiAndSetShadowText();
+    }
+
+    oldInput = input.value;
 });
 
 // Check if input was focussed / not focussed to show / hide overlay 長い
