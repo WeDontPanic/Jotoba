@@ -47,6 +47,14 @@ input.addEventListener("input", e => {
     callApiAndSetShadowText();
 });
 
+// Check if input was focussed / not focussed to show / hide overlay
+input.addEventListener("focus", e => {
+    container.classList.remove("hidden");
+});
+input.addEventListener("blur", e => {
+    container.classList.add("hidden");
+});
+
 // Check on resize if shadow text would overflow the search bar and show / hide it
 window.addEventListener("resize", e => {
     setShadowText();
@@ -181,13 +189,15 @@ function activateSelection(element) {
 
         // User typed Furi, remove typed characters and insert Kanji
         if (typedFuri.length > 0) {
-            input.value = input.value.substring(0, input.value.length - "にほ".length) + suggestion[0].innerHTML;
+            input.value = input.value.substring(0, input.value.length - typedFuri.length) + suggestion[0].innerHTML;
         }
 
         // User typed Kanji, insert rest of Kanji
         else {
             input.value += suggestion[0].innerHTML.substring(typedKanji.length);
         }
+
+        shadowText.innerHTML = "";
     }
 }
 
