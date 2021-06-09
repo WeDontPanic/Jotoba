@@ -10,7 +10,7 @@
 
   `POST`
   
-*  **URL Params**
+* **Data Params**
 
    **Required:**
  
@@ -20,14 +20,13 @@
  
    `lang=[integer]` // The language set by the user. Default is english. Words will always match english
 
-* **Data Params**
-
-  ```
-  {
-    "input": "まち",
-    "lang": 0,
-  }
-  ```
+   **Exmple:**
+   ```
+   {
+     "input": "まち",
+     "lang": 0,
+   }
+   ```
 
 * **Success Response:**
 
@@ -52,10 +51,9 @@
 * **Sample Call:**
 
   ```
-  curl -XPOST \
-          127.0.0.1:8080/api/suggestion\
-          -H "Content-Type: application/json" \
-          --data '{"input": "まち"}'
+  curl -XPOST https://jotoba.de/api/suggestion \
+       -H "Content-Type: application/json" \
+       --data '{"input": "まち"}'
   ```
 
 * **Notes:**
