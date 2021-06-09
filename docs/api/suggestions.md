@@ -46,7 +46,7 @@
   OR
 
   * **Code:** 408 TIMEOUT <br />
-    **Content:** `{ "code" : 408, "error": "Timeout", "message": "Query timed out" }`
+    **Content:** `{ "code" : 408, "error": "Timeout", "message": "Timeout exceeded" }`
 
 * **Sample Call:**
 
