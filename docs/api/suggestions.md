@@ -1,6 +1,6 @@
-**Title**
+**Suggestion endpoint**
 ----
-  Fetch word suggestions for an input word
+  Fetch word suggestions for a search query
 
 * **URL**
 
@@ -14,25 +14,25 @@
 
    **Required:**
  
-   `input=[string]`
+   `input=[string]` // Represents the input query to generate the 
 
    **Optional:**
  
-   `lang=[integer]`
+   `lang=[integer]` // The language set by the user. Default is english. Words will always match english
 
 * **Data Params**
 
-  ```json
+  ```
   {
-    input: "まち",
-    lang: 0,
+    "input": "まち",
+    "lang": 0,
   }
   ```
 
 * **Success Response:**
 
   * **Code:** 200 <br />
-    **Content:** `{ "suggestions":[ {"primary":"まち","secondary":"町"}, {"primary":"まちがえる","secondary":"間違える"} ] }`
+    **Content:** `{ "suggestions":[ {"primary":"まち","secondary":"町"} ] }`
  
 * **Error Response:**
 
@@ -60,4 +60,4 @@
 
 * **Notes:**
 
-  Each server has a set timeout for how long search suggestion queries are alowed to run until they time out. This may vary from instance to instance.
+  Each server has a set timeout for how long search suggestion queries are alowed to run until they time out. This may vary from instance to instance. Default is set to 100ms
