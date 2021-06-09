@@ -15,9 +15,7 @@
    **Exmple:**
    
   ```
-  {
-    "radicals": [ "山", "一", "冂" , "干"],
-  }
+  { "radicals": [ "山", "一", "冂" , "干"] }
   ```
 
 * **Success Response:**
