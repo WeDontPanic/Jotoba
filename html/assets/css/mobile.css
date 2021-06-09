@@ -27,8 +27,8 @@
 	/* -------- Word Search -------- */
     
     .overlay.suggestion {
-        width: 50.5%;
-        margin-left: 33%;
+        width: 100%;
+        margin-left: 0%;
     }
 
     .search-annotation {
@@ -37,12 +37,30 @@
     }
 
     #shadow-text {
-        padding: 15px 10px;
+        padding: 0px;
+        margin: 15px 11px;
     }
 	
     .main-container {
         width: 98vw;
     }
+
+    .sentence-reader {
+        overflow-x: scroll;
+        max-width: 90vw;
+        padding-top: 20px;
+        flex-wrap: unset !important;
+    }
+
+    .sentence-reader::-webkit-scrollbar {
+        width: 0px;
+    }
+
+    .sentence-part {
+        min-width: max-content;
+        margin-right: 20px;
+    }
+    
 
     #content-container {
         -ms-flex-direction: column!important;

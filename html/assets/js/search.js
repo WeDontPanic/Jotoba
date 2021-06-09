@@ -7,6 +7,7 @@ const searchRow = document.querySelector("#search-row");
 const input = document.querySelector("#search");
 const shadowText = document.getElementById("shadow-text");
 const container = document.getElementById("suggestion-container");
+const kanjiRegEx = '([一-龯|々|𥝱|𩺊])';
 
 // Global variables used
 var currentSuggestion = "";
@@ -35,16 +36,6 @@ $(document).on("keydown", (event) => {
                 event.preventDefault();
             } 
             break;
-        case "Enter": // Start the search
-            if (currentSuggestion != -1) {
-                event.preventDefault();
-                activateSelection();
-                document.getElementsByClassName("btn-search")[0].click();
-            } 
-            if (shadowText.innerHTML.length == 0) {
-                document.getElementsByClassName("btn-search")[0].click();
-            }
-            break;
     }
 });
 
@@ -72,6 +63,7 @@ document.addEventListener("click", e => {
         keepSuggestions = true;
     }
 });
+
 // Check on resize if shadow text would overflow the search bar and show / hide it
 window.addEventListener("resize", e => {
     setShadowText();
@@ -80,8 +72,8 @@ window.addEventListener("resize", e => {
 // Function to be called by input events. Updates the API data and shadow txt
 function callApiAndSetShadowText() {
     // Load new API data
-    let inputSplit = input.value.split(" ");
-    if (inputSplit[inputSplit.length - 1]) {
+    let lastWord = getLastInputWord();
+    if (lastWord.length > 0) {
         getApiData();
     } else {
         removeSuggestions();
@@ -151,8 +143,8 @@ function changeSuggestionIndex(direction) {
     let oldSuggestion = (oldIndex == -1 ? undefined : getSuggestion(oldIndex));
     let suggestion = getSuggestion(currentSuggestionIndex);
 
-    // Add Furigana. If Kanji are used, select the secondary suggestion
-    if (suggestion[1].innerHTML.length > 0) {
+    // Add Furigana. If Kanji are used, select the secondary suggestion. If user types kanji, show him kanji instead
+    if (suggestion[1].innerHTML.length > 0 && getLastInputWord().match(kanjiRegEx) === null) {
         currentSuggestion = suggestion[1].innerHTML.substring(1, suggestion[1].innerHTML.length - 1);
     } else {
         currentSuggestion = suggestion[0].innerHTML;
@@ -174,60 +166,23 @@ function activateSelection(element) {
     // Get newly selected suggestion
     let suggestion = getSuggestion(currentSuggestionIndex);
 
-    // If element is given as parameter directly
+    // If element is given as parameter directly, use its the suggestion instead
     if (element !== undefined) {
-        suggestion = element;
-        suggestion[0] = element.querySelector(".primary-suggestion");
-        suggestion[1] = element.querySelector(".secondary-suggestion");
-
-        if (suggestion[1].innerHTML.length > 0) {
-            currentSuggestion = suggestion[1].innerHTML.substring(1, suggestion[1].innerHTML.length - 1);
-        }  else {
-            currentSuggestion = suggestion[0].innerHTML;
-        }
+        suggestion[0].innerHTML = element.querySelector(".primary-suggestion").innerHTML;
     }
 
-    // Check how many chars of the suggestion the user already typed
-    let currentSubstr = getCurrentSubstring();
-
-    // No Kanji used -> Insert rest of text
-    if (suggestion[1].innerHTML.length == 0) {
-        if (currentSubstr.length > 0) {
-            input.value += currentSuggestion.substring(currentSubstr.length);
-        } else {
-            input.value += currentSuggestion;
-        }
-    }
-    
-    // If it uses Kanji, the furigana user-input has to be deleted before inserting the rest
-    else {
-        let typedFuri = getCurrentSubstring();
-        let typedKanji = getCurrentSubstring(suggestion[0].innerHTML);
-
-        // User typed Furi, remove typed characters and insert Kanji
-        if (typedFuri.length > 0) {
-            input.value = input.value.substring(0, input.value.length - typedFuri.length) + suggestion[0].innerHTML;
-        }
-
-        // User typed Kanji, insert rest of Kanji
-        else if (typedKanji.length > 0) {
-            input.value += suggestion[0].innerHTML.substring(typedKanji.length);
-        }
-
-        // Some Kanji that doesnt fit into this algorythm
-        else {
-            let inputSplit = input.value.split(" ");
-            if (inputSplit.length > 1) {
-                input.value = inputSplit[inputSplit.length - 2] + " " + suggestion[0].innerHTML;
-            }
-            else {
-                input.value = suggestion[0].innerHTML;
-            }
-        }
-    }
+    // Remove last text from string and append new word
+    input.value = input.value.substring(0, input.value.lastIndexOf(" "));
+    input.value = suggestion[0].innerHTML;   
 
     // Reset dropdown
     removeSuggestions();
+}
+
+// Splits the input by " " and returns the last result
+function getLastInputWord() {
+    let inputSplit = input.value.split(" ");
+    return inputSplit[inputSplit.length-1];
 }
 
 // Returns the substring of what the user already typed for the current suggestion
@@ -270,9 +225,10 @@ function removeSuggestions() {
 // Calls the API to get input suggestions
 function getApiData() {
     // Create the JSON
-    let inputSplit = input.value.split(" ");
+    let lang = Cookies.get("default_lang");
     let inputJSON = {
-        "input": inputSplit[inputSplit.length-1]
+        "input": getLastInputWord(),
+        "lang": lang === undefined ? "en-US" : lang
     }
 
     // Send Request to backend
@@ -297,8 +253,6 @@ function getApiData() {
 // Loads data called from the API into the frontend
 function loadApiData(result) {
 
-    //result = {"suggestions":[{"kana":"にほんご","kanji":"日本語"},{"kana":"にほんごかんきょう"},{"kana":"にほんごきょうほん","kanji":"日本語教本"},{"kana":"にほんごがくしゃ","kanji":"日本語学者"},{"kana":"にほんごがっこう","kanji":"日本語学校"},{"kana":"にほんごきょういく","kanji":"日本語教育"},{"kana":"にほんごがく","kanji":"日本語学"},{"kana":"にほんごじまく","kanji":"日本語字幕"},{"kana":"にほんごぞく","kanji":"日本語族"},{"kana":"にほんごか","kanji":"日本語化"}]};
-
     // Remove current suggestions
     removeSuggestions();
 
@@ -313,23 +267,25 @@ function loadApiData(result) {
     // Add suggestions
     for (let i = 0; i < availableSuggestions; i++) {
 
-        // Get Kana and Kanji
-        let kana = result.suggestions[i].primary;
-        let kanji = result.suggestions[i].secondary;
+        // Result variables
+        let primaryResult = "";
+        let secondaryResult = "";
 
-        // Add Brackets or remove if undefined
-        if (kanji === undefined) {
-            kanji = kana;
-            kana = "";
-        } else {
-            kana = "(" + kana + ")";
+        // Only one result
+        if (result.suggestions[i].secondary === undefined) {
+            primaryResult = result.suggestions[i].primary;
+        }
+        // Two results, kanji needs to be in the first position here
+        else {
+            primaryResult = result.suggestions[i].secondary;
+            secondaryResult = "(" + result.suggestions[i].primary + ")";
         }
 
         // Add to Page
         container.innerHTML += 
         ' <div class="search-suggestion" onclick="onSuggestionClick(this);"> ' +
-        '   <span class="primary-suggestion">'+kanji+'</span> ' +
-        '   <span class="secondary-suggestion">'+kana+'</span> ' +
+        '   <span class="primary-suggestion">'+primaryResult+'</span> ' +
+        '   <span class="secondary-suggestion">'+secondaryResult+'</span> ' +
         ' </div> ';        
     }
 
