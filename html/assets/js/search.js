@@ -211,9 +211,10 @@ function activateSelection(element) {
                 input.value = suggestion[0].innerHTML;
             }
         }
-
-        shadowText.innerHTML = "";
     }
+
+    // Reset dropdown
+    removeSuggestions();
 }
 
 // Returns the substring of what the user already typed for the current suggestion
