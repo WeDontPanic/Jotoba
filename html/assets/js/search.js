@@ -314,8 +314,8 @@ function loadApiData(result) {
     for (let i = 0; i < availableSuggestions; i++) {
 
         // Get Kana and Kanji
-        let kana = result.suggestions[i].kana;
-        let kanji = result.suggestions[i].kanji;
+        let kana = result.suggestions[i].primary;
+        let kanji = result.suggestions[i].secondary;
 
         // Add Brackets or remove if undefined
         if (kanji === undefined) {

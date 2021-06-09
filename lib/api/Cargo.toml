@@ -23,3 +23,5 @@ tokio-diesel = {git = "https://github.com/mehcode/tokio-diesel" }
 serde = "1.0.126"
 tokio-postgres = "0.7.2"
 futures = "0.3.15"
+romaji = "0.1.1"
+levenshtein = "1.0.5"
