@@ -288,7 +288,7 @@ function loadApiData(result) {
 
         // Add to Page
         container.innerHTML += 
-        ' <div class="search-suggestion" onclick="activateSelection(this); document.getElementsByClassName("btn-search")[0].click();"> ' +
+        ' <div class="search-suggestion" onclick="onSuggestionClick(this);"> ' +
         '   <span class="primary-suggestion">'+kanji+'</span> ' +
         '   <span class="secondary-suggestion">'+kana+'</span> ' +
         ' </div> ';        
@@ -296,4 +296,11 @@ function loadApiData(result) {
 
     // Activate first suggestion
     changeSuggestionIndex(1);
+}
+
+// Handles clicks on the suggestion dropdown
+function onSuggestionClick(element) {
+    console.log(element);
+    activateSelection(element);
+    document.getElementsByClassName("btn-search")[0].click()
 }
