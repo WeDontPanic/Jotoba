@@ -3,12 +3,15 @@ mod order;
 pub mod result;
 mod wordsearch;
 
+use parse::jmdict::part_of_speech::PosSimple;
 use result::{Item, Word};
 pub use wordsearch::WordSearch;
 
 use async_std::sync::Mutex;
 use itertools::Itertools;
 use once_cell::sync::Lazy;
+
+use crate::query::Tag;
 
 use super::{
     query::{Query, QueryLang},
@@ -21,14 +24,10 @@ use models::search_mode::SearchMode;
 use models::{kanji::KanjiResult, DbPool};
 use utils::real_string_len;
 
-#[cfg(feature = "tokenizer")]
-use japanese::jp_parsing::InputTextParser;
-#[cfg(feature = "tokenizer")]
-use japanese::jp_parsing::ParseResult;
-#[cfg(feature = "tokenizer")]
-use japanese::jp_parsing::WordItem;
-
 use self::result::{InflectionInformation, WordResult};
+
+#[cfg(feature = "tokenizer")]
+use japanese::jp_parsing::{igo_unidic::WordClass, InputTextParser, ParseResult, WordItem};
 
 use super::query::Form;
 
@@ -147,6 +146,7 @@ impl<'a> Search<'a> {
             let index = self.query.word_index.clamp(0, parsed.items.len() - 1);
             let res = parsed.items[index].clone();
             let sentence = Self::format_setence_parts(self, parsed).await;
+
             Ok((res.get_lexeme().to_string(), Some(res), sentence))
         } else {
             Ok((query_str.to_owned(), None, None))
@@ -183,6 +183,47 @@ impl<'a> Search<'a> {
         Some(sentence_parts)
     }
 
+    /// Returns a vec of all PartOfSpeech to filter  
+    fn get_pos_filter_from_query(&self) -> Vec<PosSimple> {
+        self.query
+            .tags
+            .iter()
+            .filter_map(|i| match i {
+                Tag::PartOfSpeech(i) => Some(*i),
+                _ => None,
+            })
+            .collect_vec()
+    }
+
+    #[cfg(feature = "tokenizer")]
+    fn get_pos_filter(
+        &self,
+        sentence: &Option<Vec<SentencePart>>,
+        morpheme: &Option<WordItem>,
+    ) -> Vec<PosSimple> {
+        if let Some(ref sentence) = sentence {
+            if let Some(ref morpheme) = morpheme {
+                if !sentence.is_empty() {
+                    if let Some(ref wc) = morpheme.word_class {
+                        if let Some(pos) = word_class_to_pos_s(wc) {
+                            return vec![pos];
+                        }
+                    }
+                }
+
+                // We don't want to allow tags in sentence reader
+                return vec![];
+            }
+        }
+
+        self.get_pos_filter_from_query()
+    }
+
+    #[cfg(not(feature = "tokenizer"))]
+    fn get_pos_filter(&self) -> Vec<PosSimple> {
+        self.get_pos_filter_from_query()
+    }
+
     /// Perform a native word search
     async fn native_results(&self, query_str: &str) -> Result<ResultData, Error> {
         if self.query.language != QueryLang::Japanese && !query_str.is_japanese() {
@@ -197,6 +238,12 @@ impl<'a> Search<'a> {
 
         #[cfg(not(feature = "tokenizer"))]
         let morpheme = true;
+
+        #[cfg(feature = "tokenizer")]
+        let pos_filter_tags = self.get_pos_filter(&sentence, &morpheme);
+
+        #[cfg(not(feature = "tokenizer"))]
+        let pos_filter_tags = self.get_pos_filter();
 
         let query_modified = query != self.query.query;
 
@@ -219,8 +266,8 @@ impl<'a> Search<'a> {
             .with_language(self.query.settings.user_lang)
             .with_english_glosses(self.query.settings.show_english);
 
-        if self.query.has_part_of_speech_tags() {
-            word_search.with_pos_filter(&self.query.get_part_of_speech_tags());
+        if !pos_filter_tags.is_empty() {
+            word_search.with_pos_filter(&pos_filter_tags);
         }
 
         // Perform the word search
@@ -406,4 +453,20 @@ impl<'a> Search<'a> {
         // Limit search to 10 results
         w.truncate(10);
     }
+}
+
+#[cfg(feature = "tokenizer")]
+fn word_class_to_pos_s(class: &WordClass) -> Option<PosSimple> {
+    Some(match class {
+        WordClass::Particle(_) => PosSimple::Particle,
+        WordClass::Verb(_) => PosSimple::Verb,
+        WordClass::Adjective(_) => PosSimple::Adjective,
+        WordClass::Adverb => PosSimple::Adverb,
+        WordClass::Noun(_) => PosSimple::Noun,
+        WordClass::Pronoun => PosSimple::Pronoun,
+        WordClass::Interjection => PosSimple::Interjection,
+        WordClass::Suffix => PosSimple::Suffix,
+        WordClass::Prefix => PosSimple::Prefix,
+        _ => return None,
+    })
 }

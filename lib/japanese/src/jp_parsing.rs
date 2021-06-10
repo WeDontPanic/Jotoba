@@ -5,6 +5,8 @@ use error::Error;
 use igo_unidic::{ConjungationForm, Morpheme, Parser, ParticleType, VerbType, WordClass};
 use once_cell::sync::Lazy;
 
+pub use igo_unidic;
+
 /// The path of the unidict-mecab dictionary
 pub const NL_PARSER_PATH: &str = "./unidic-mecab";
 
