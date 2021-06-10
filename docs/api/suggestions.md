@@ -18,7 +18,7 @@
 
    **Optional:**
  
-   `lang=[string]` // The language set by the user. Default is english. Words will always match english
+   `lang=[string]` // The language set by the user. Default is english. Words will always match english<br>
                    // en-US, de-DE, es-ES ,fr-FR ,nl-NL ,sv-SE ,ru ,hu ,sl-SI
 
    **Exmple:**
