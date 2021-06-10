@@ -31,15 +31,15 @@ $(document).on("keydown", (event) => {
             changeSuggestionIndex(1);
             break;
         case "Tab": // Append current suggestion
-            if (currentSuggestionIndex > 0) {
+            if (currentSuggestionIndex > -1) {
                 activateSelection();
-                event.preventDefault();
             } else {
                 changeSuggestionIndex(1);
             }
+            event.preventDefault();
             break;
         case "Enter": // Start the search
-            if (currentSuggestionIndex > 0 ) {
+            if (currentSuggestionIndex > -1) {
                 event.preventDefault();
                 activateSelection();
                 document.getElementsByClassName("btn-search")[0].click();
@@ -176,19 +176,23 @@ function changeSuggestionIndex(direction) {
 }
 
 // Adds the currently selected suggestion to the search input
-function  activateSelection(element) {
+function activateSelection(element) {
 
-    // Get newly selected suggestion
-    let suggestion = getSuggestion(currentSuggestionIndex);
+    // The primary suggestion to use
+    let suggestion = "";
 
     // If element is given as parameter directly, use its the suggestion instead
     if (element !== undefined) {
-        suggestion[0].innerHTML = element.querySelector(".primary-suggestion").innerHTML;
+        suggestion = element.querySelector(".primary-suggestion").innerHTML;
+    } 
+    // Else, find the suggestion by searching for the current index
+    else {
+        suggestion = getSuggestion(currentSuggestionIndex)[0].innerHTML;
     }
 
     // Remove last text from string and append new word
     input.value = input.value.substring(0, input.value.lastIndexOf(" "));
-    input.value += suggestion[0].innerHTML;   
+    input.value += suggestion;   
 
     // Reset dropdown
     removeSuggestions();
