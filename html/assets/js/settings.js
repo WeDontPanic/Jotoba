@@ -133,9 +133,10 @@ function loadCookieData() {
     // Set Default_Lang 
     if (default_lang !== undefined)
         $('#default_lang_settings').val(default_lang);
-    else 
-        $('#default_lang_settings').val(navigator.language);
-
+    else {
+        $('#default_lang_settings').val(navigator.language || navigator.userLanguage || "en-US");
+    }
+       
     // Set English results
     if (show_english === "false") {
         $('#show_eng_settings').prop('checked', false);
