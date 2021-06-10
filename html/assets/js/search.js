@@ -31,13 +31,15 @@ $(document).on("keydown", (event) => {
             changeSuggestionIndex(1);
             break;
         case "Tab": // Append current suggestion
-            if (currentSuggestion != -1) {
+            if (currentSuggestionIndex > 0) {
                 activateSelection();
                 event.preventDefault();
-            } 
+            } else {
+                changeSuggestionIndex(1);
+            }
             break;
         case "Enter": // Start the search
-            if (currentSuggestionIndex != -1) {
+            if (currentSuggestionIndex > 0 ) {
                 event.preventDefault();
                 activateSelection();
                 document.getElementsByClassName("btn-search")[0].click();
@@ -186,7 +188,7 @@ function  activateSelection(element) {
 
     // Remove last text from string and append new word
     input.value = input.value.substring(0, input.value.lastIndexOf(" "));
-    input.value = suggestion[0].innerHTML;   
+    input.value += suggestion[0].innerHTML;   
 
     // Reset dropdown
     removeSuggestions();
@@ -309,7 +311,6 @@ function loadApiData(result) {
 
 // Handles clicks on the suggestion dropdown
 function onSuggestionClick(element) {
-    console.log(element);
     activateSelection(element);
     document.getElementsByClassName("btn-search")[0].click()
 }

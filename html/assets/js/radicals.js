@@ -63,6 +63,9 @@ function handleRadicalSelect(event) {
     if (target.hasClass("disabled")) {
         return;
     }
+
+    // Make results visible again if they were hidden
+    $('.rad-results').removeClass("hidden");
     
     // Toggle the "selected" class
     target.toggleClass('selected');
@@ -86,7 +89,6 @@ function loadRadicalResults(info) {
         let possibleKanji = info.kanji[key];
 
         // Create the stroke-count btn
-        //$('.rad-results').append('<span class="rad-btn result num noselect">'+key+'</span>');
         rrHtml += '<span class="rad-btn result num noselect">'+key+'</span>';
 
         let kanjiBtns = "";
@@ -130,7 +132,6 @@ function getRadicalInfo() {
     }
 
     // No Radicals selected, Reset
-    console.log(radicalJSON);
     if (radicalJSON.radicals.length == 0) { 
         $('.rad-btn.disabled').each((i, e) => {
             $(e).removeClass("disabled");
