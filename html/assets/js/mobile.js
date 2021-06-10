@@ -29,7 +29,7 @@ function scrollSentenceReaderIntoView() {
             let selected = $(".sentence-part.selected")[0];
             console.log(selected);
             if (selected !== undefined) {
-                $(".sentence-reader")[0].scrollLeft = selected.offsetLeft - 50;
+                $(".sentence-reader")[0].scrollLeft = selected.offsetLeft - 150;
             }
             window.clearTimeout(docWait);
         }
