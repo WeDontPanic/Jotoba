@@ -164,6 +164,16 @@ Util.isChildOf = function (parent, child) {
     return false;
 }
 
+// Runs callback fn on document ready
+Util.awaitDocumentReady = function(callback) {
+    let readyWait = window.setInterval(() => {
+        if (document.readyState == "complete") {
+            callback();
+            window.clearTimeout(readyWait);
+        }
+    }, 10);
+}
+
 // Used for animation curves
 Math.easeInOutQuad = function (t, b, c, d) {
     t /= d/2;

@@ -171,3 +171,9 @@ $('.audioBtn').each((e, i) => {
     });
 
 });
+
+// Initialize things that need to have the page loaded completly first
+var lang_settings;
+Util.awaitDocumentReady(() => {
+    lang_settings = new Choices("#default_lang_settings",{searchEnabled:!1,itemSelectText:"",shouldSort:!1});
+});
