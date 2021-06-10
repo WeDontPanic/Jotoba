@@ -190,9 +190,17 @@ function activateSelection(element) {
         suggestion = getSuggestion(currentSuggestionIndex)[0].innerHTML;
     }
 
+    // Fix some weird characters
+    suggestion = suggestion.replace("&amp;", "&");
+
     // Remove last text from string and append new word
     input.value = input.value.substring(0, input.value.lastIndexOf(" "));
-    input.value += suggestion;   
+    if (input.value.length == 0) {
+        input.value += suggestion;   
+    } else {
+        input.value += " " + suggestion;   
+    }
+    
 
     // Reset dropdown
     removeSuggestions();
