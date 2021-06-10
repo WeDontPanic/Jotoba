@@ -418,7 +418,7 @@ pub async fn furigana_by_reading(db: &DbPool, r: &str) -> Result<Option<String>,
             .await?;
     }
 
-    if furi.len() > 1 {
+    if furi.len() != 1 {
         return Ok(None);
     }
 
