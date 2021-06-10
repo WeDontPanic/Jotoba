@@ -279,6 +279,9 @@ fn calc_kanji_readings(kanji: &str, kana: &str) -> Option<Vec<(String, String)>>
         curr_kanji.clear();
         let mut counter = 0;
         let found = loop {
+            if kana_pos >= kana.len() {
+                break false;
+            }
             curr_kanji.push(kana[kana_pos]);
             kana_pos += 1;
 
