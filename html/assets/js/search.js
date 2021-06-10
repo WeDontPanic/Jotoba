@@ -237,8 +237,6 @@ function removeSuggestions() {
 
 // Calls the API to get input suggestions
 function getApiData() {
-    loadApiData();
-    return;
 
     // Create the JSON
     let lang = Cookies.get("default_lang");
@@ -268,51 +266,6 @@ function getApiData() {
 
 // Loads data called from the API into the frontend
 function loadApiData(result) {
-
-    result = {
-        "suggestions": [
-          {
-            "primary": "まち",
-            "secondary": "町"
-          },
-          {
-            "primary": "まちがえる",
-            "secondary": "間違える"
-          },
-          {
-            "primary": "まちがい",
-            "secondary": "間違い"
-          },
-          {
-            "primary": "ちょうだい",
-            "secondary": "町代"
-          },
-          {
-            "primary": "まちかど",
-            "secondary": "街角"
-          },
-          {
-            "primary": "まちあわせる",
-            "secondary": "待ち合わせる"
-          },
-          {
-            "primary": "まちあいしつ",
-            "secondary": "待合室"
-          },
-          {
-            "primary": "まちがう",
-            "secondary": "間違う"
-          },
-          {
-            "primary": "まちあわせ",
-            "secondary": "待ち合わせ"
-          },
-          {
-            "primary": "まちのぞむ",
-            "secondary": "待ち望む"
-          }
-        ]
-      }
 
     // Remove current suggestions
     removeSuggestions();

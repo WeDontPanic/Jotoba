@@ -374,11 +374,14 @@ input[type="color"] {
 
 .main-tab-select.l {
     padding-right: 10px;
+    display: flex;
+    justify-content: flex-start;
 }
 
 .main-tab-select.r {
     padding-left: 10px;
-    text-align: right;
+    display: flex;
+    justify-content: flex-end;
 }
 
 .main-tab-select h2 {
@@ -389,6 +392,7 @@ input[type="color"] {
 
 .tab-btn {
     cursor: pointer;
+    width: max-content;
 }
 
 .main-info {

@@ -106,7 +106,7 @@
     }
     
     .btn-container, .main-tab-select {
-        display: none;
+        display: none !important;
     }
     
     .title-div {
