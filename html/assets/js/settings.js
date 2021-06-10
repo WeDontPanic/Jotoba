@@ -134,7 +134,12 @@ function loadCookieData() {
     if (default_lang !== undefined)
         $('#default_lang_settings').val(default_lang);
     else {
-        $('#default_lang_settings').val(navigator.language || navigator.userLanguage || "en-US");
+        let userLang = navigator.language || navigator.userLanguage || "en-US";
+        if (!isSupportedSearchLang(userLang)) {
+            userLang = "en-US";
+        }
+
+        $('#default_lang_settings').val(userLang);
     }
        
     // Set English results
@@ -305,6 +310,24 @@ function getDefaultAnimSpeed() {
     }
 
     return speed;
+}
+
+// Checks if a given language code is supported as a search lang
+function isSupportedSearchLang(code) {
+    switch (code) {
+        case "en-US":
+        case "de-DE":
+        case "es-ES":
+        case "fr-FR":
+        case "nl-NL":
+        case "sv-SE":
+        case "ru":
+        case "hu":
+        case "sl-SI":
+            return true;
+        default:
+            return false;
+    }
 }
 
 // Set all sliders (if any) to their default value
