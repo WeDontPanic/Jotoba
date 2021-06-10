@@ -36,6 +36,15 @@ $(document).on("keydown", (event) => {
                 event.preventDefault();
             } 
             break;
+        case "Enter": // Start the search
+            if (currentSuggestionIndex != -1) {
+                event.preventDefault();
+                activateSelection();
+                document.getElementsByClassName("btn-search")[0].click();
+            } else {
+                document.getElementsByClassName("btn-search")[0].click();
+            }
+            break;
     }
 });
 
@@ -130,28 +139,32 @@ function changeSuggestionIndex(direction) {
     let oldIndex = currentSuggestionIndex;
 
     // Scroll up or down
-    if (currentSuggestionIndex + direction < 0) {
+    if (currentSuggestionIndex + direction < -1) {
         currentSuggestionIndex = availableSuggestions - 1;
     } 
     else if (currentSuggestionIndex + direction == availableSuggestions) {
-        currentSuggestionIndex = 0;
+        currentSuggestionIndex = -1;
     } else {
         currentSuggestionIndex += direction;
     }
 
     // Get newly selected suggestion
-    let oldSuggestion = (oldIndex == -1 ? undefined : getSuggestion(oldIndex));
-    let suggestion = getSuggestion(currentSuggestionIndex);
+    if (currentSuggestionIndex != -1) {
+        let suggestion = getSuggestion(currentSuggestionIndex);
+    
+        // Add Furigana. If Kanji are used, select the secondary suggestion. If user types kanji, show him kanji instead
+        if (suggestion[1].innerHTML.length > 0 && getLastInputWord().match(kanjiRegEx) === null) {
+            currentSuggestion = suggestion[1].innerHTML.substring(1, suggestion[1].innerHTML.length - 1);
+        } else {
+            currentSuggestion = suggestion[0].innerHTML;
+        }
 
-    // Add Furigana. If Kanji are used, select the secondary suggestion. If user types kanji, show him kanji instead
-    if (suggestion[1].innerHTML.length > 0 && getLastInputWord().match(kanjiRegEx) === null) {
-        currentSuggestion = suggestion[1].innerHTML.substring(1, suggestion[1].innerHTML.length - 1);
-    } else {
-        currentSuggestion = suggestion[0].innerHTML;
+        // Mark the suggestion's row
+        suggestion[2].classList.add("selected");
     }
-
-    // Mark the suggestion's row
-    suggestion[2].classList.add("selected");
+   
+    // Remove mark on old row
+    let oldSuggestion = (oldIndex == -1 ? undefined : getSuggestion(oldIndex));
     if (oldSuggestion != undefined) {
         oldSuggestion[2].classList.remove("selected");
     }
@@ -161,7 +174,7 @@ function changeSuggestionIndex(direction) {
 }
 
 // Adds the currently selected suggestion to the search input
-function activateSelection(element) {
+function  activateSelection(element) {
 
     // Get newly selected suggestion
     let suggestion = getSuggestion(currentSuggestionIndex);
@@ -218,12 +231,15 @@ function removeSuggestions() {
     shadowText.innerHTML = "";
     container.innerHTML = "";
     currentSuggestion = "";
-    currentSuggestionIndex = -1;
+    currentSuggestionIndex = -2;
     availableSuggestions = 0;
 }
 
 // Calls the API to get input suggestions
 function getApiData() {
+    loadApiData();
+    return;
+
     // Create the JSON
     let lang = Cookies.get("default_lang");
     let inputJSON = {
@@ -252,6 +268,51 @@ function getApiData() {
 
 // Loads data called from the API into the frontend
 function loadApiData(result) {
+
+    result = {
+        "suggestions": [
+          {
+            "primary": "まち",
+            "secondary": "町"
+          },
+          {
+            "primary": "まちがえる",
+            "secondary": "間違える"
+          },
+          {
+            "primary": "まちがい",
+            "secondary": "間違い"
+          },
+          {
+            "primary": "ちょうだい",
+            "secondary": "町代"
+          },
+          {
+            "primary": "まちかど",
+            "secondary": "街角"
+          },
+          {
+            "primary": "まちあわせる",
+            "secondary": "待ち合わせる"
+          },
+          {
+            "primary": "まちあいしつ",
+            "secondary": "待合室"
+          },
+          {
+            "primary": "まちがう",
+            "secondary": "間違う"
+          },
+          {
+            "primary": "まちあわせ",
+            "secondary": "待ち合わせ"
+          },
+          {
+            "primary": "まちのぞむ",
+            "secondary": "待ち望む"
+          }
+        ]
+      }
 
     // Remove current suggestions
     removeSuggestions();

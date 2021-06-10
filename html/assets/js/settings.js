@@ -134,12 +134,14 @@ function loadCookieData() {
     if (default_lang !== undefined)
         $('#default_lang_settings').val(default_lang);
     else {
+        // Find user language and set it as soon as the doc is ready
         let userLang = navigator.language || navigator.userLanguage || "en-US";
         if (!isSupportedSearchLang(userLang)) {
             userLang = "en-US";
         }
-
-        $('#default_lang_settings').val(userLang);
+        Util.awaitDocumentReady(() => {
+            lang_settings.setChoiceByValue(userLang);
+        });   
     }
        
     // Set English results
