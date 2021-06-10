@@ -1,6 +1,6 @@
 use std::{
     cmp::Ordering,
-    convert::TryFrom,
+    str::FromStr,
     sync::Arc,
     time::{Duration, SystemTime},
 };
@@ -27,7 +27,7 @@ use utils::real_string_len;
 pub struct SuggestionRequest {
     pub input: String,
     #[serde(default)]
-    pub lang: i32,
+    pub lang: String,
 }
 
 /// Response struct for suggestion endpoint
@@ -77,7 +77,7 @@ pub async fn suggestion(
         query_str.to_owned(),
         QueryType::Words,
         UserSettings {
-            user_lang: Language::try_from(payload.lang).unwrap_or_default(),
+            user_lang: Language::from_str(&payload.lang).unwrap_or_default(),
             ..UserSettings::default()
         },
         0,
