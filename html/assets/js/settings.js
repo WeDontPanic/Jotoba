@@ -132,13 +132,18 @@ function loadCookieData() {
 
     // Set Default_Lang 
     let userLang = default_lang || navigator.language || navigator.userLanguage || "en-US";
+    console.log(userLang);
     if (!isSupportedSearchLang(userLang)) {
          userLang = "en-US";
     }
     // Activate by finding the correct 
     document.querySelectorAll(".choices__item--choice").forEach((e) => {
         if (e.dataset.value == userLang) {
-            e.click();
+            let langTxt = e.innerHTML;
+            let choicesInner = e.parentElement.parentElement.parentElement.children[0].children;
+            
+            choicesInner[0].children[0].innerHTML = e.innerHTML;
+            choicesInner[1].children[0].innerHTML = e.innerHTML;
         }
     });
        
