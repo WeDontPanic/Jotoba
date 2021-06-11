@@ -16,6 +16,10 @@
   margin-bottom: 0;
 }
 
+.choices__item--choice:hover {
+  color: var(--primaryColor) !important;
+}
+
 .choices[data-type*="select-one"] {
   cursor: pointer;
 }
@@ -105,6 +109,10 @@
   position: relative;
   padding: 10px;
   font-size: 14px;
+}
+
+.choices__item:hover {
+  color: var(_)
 }
 
 @media (min-width: 640px) {
@@ -310,10 +318,6 @@
 
 .searchDivInner form .inner-form .input-field.first-wrap .choices__list.choices__list--dropdown .choices__item--selectable {
   padding-right: 0;
-}
-
-.searchDivInner form .inner-form .input-field.first-wrap .choices__list--dropdown .choices__item--selectable.is-highlighted {
-  color: var(--primaryColor);
 }
 
 .searchDivInner form .inner-form .input-field.first-wrap .choices__list--dropdown .choices__item {

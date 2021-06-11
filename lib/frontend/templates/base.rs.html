@@ -7,35 +7,33 @@
 <!DOCTYPE html>
 <html lang="en">
    <head>
+      <!-- Meta Info -->
       <title>@data.gettext("Jotoba")</title>
       <meta name="viewport" content="width=device-width, initial-scale=1">
       <meta http-equiv="Content-type" content="text/html; charset=utf-8">
-
+      <!-- External Stylesheets -->
       <link rel="stylesheet" type="text/css" href="assets/css/lib/bootstrap.min.css">
       <link rel="stylesheet" type="text/css" href="assets/css/lib/material.min.css">
-
       <link rel="preload" href="assets/css/lib/alertify.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
-      <noscript><link rel="stylesheet" href="assets/css/lib/alertify.min.css"></noscript>
+         <noscript><link rel="stylesheet" href="assets/css/lib/alertify.min.css"></noscript>
       <link rel="preload" href="assets/css/lib/alertifyThemes/bootstrap.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
-      <noscript><link rel="stylesheet" href="assets/css/lib/alertifyThemes/bootstrap.min.css"></noscript>
+         <noscript><link rel="stylesheet" href="assets/css/lib/alertifyThemes/bootstrap.min.css"></noscript>
+      <!-- Internal Stylesheets -->
       <link rel="preload" href="assets/css/alerts.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
-      <noscript><link rel="stylesheet" href="assets/css/alerts.css"></noscript>
-
+         <noscript><link rel="stylesheet" href="assets/css/alerts.css"></noscript>
       <link rel="stylesheet" type="text/css" href="assets/css/main.css">
       <link rel="stylesheet" type="text/css" href="assets/css/choices.css">
-
       <link rel="preload" href="assets/css/radselect.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
-      <noscript><link rel="stylesheet" href="assets/css/radselect.css"></noscript>
-
+        <noscript><link rel="stylesheet" href="assets/css/radselect.css"></noscript>
       <link rel="stylesheet" type="text/css" href="assets/css/mobile.css">
-
+      <!-- External JS -->
       <script src="assets/js/lib/jquery.min.js"></script>
       <script async defer src="assets/js/lib/bootstrap.min.js"></script>
       <script asnyc defer src="assets/js/lib/material.min.js"></script>
-      <script defer src="assets/js/lib/choices.js"></script>
       <script async defer src="assets/js/lib/alertify.min.js"></script>
       <script defer src ="assets/js/lib/js-cookie-2.2.1.min.js"></script>
-
+      <script async defer src="assets/js/lib/jotobaChoices.js"></script>
+      <!-- Internal JS -->
       <script src="assets/js/utils.js"></script>
 	   <script async defer src="assets/js/qol.js"></script> 
       <script defer src="assets/js/search.js"></script>
@@ -77,12 +75,24 @@
                      <div class="inner-form">
                         <div class="input-field first-wrap">
                            <div class="input-select">
-                              <select data-trigger="" name="type" onchange="changeSearchType(this.value)">
-                                 <option value="0" @data.sel_str(QueryType::Words) >@data.gettext("Words")</option>
-                                 <option value="1" @data.sel_str(QueryType::Kanji) >@data.gettext("Kanji")</option>
-                                 <option value="2" @data.sel_str(QueryType::Sentences) >@data.gettext("Sentences")</option>
-                                 <option value="3" @data.sel_str(QueryType::Names) >@data.gettext("Names")</option>
-                              </select>
+                              <div class="choices noselect" data-type="select-one" tabindex="1">
+                                 <div class="choices__inner">
+                                    <select data-trigger="" name="type" data-onchange="changeSearchType" class="hidden">
+                                       <option value="0">@data.gettext("ENTER_IDENTIFIER_HERE")</option>
+                                    </select>
+                                    <div class="choices__list choices__list--single">
+                                       <div class="choices__item choices__item--selectable">@data.gettext("ENTER_IDENTFIER_HERE")</div>
+                                    </div>
+                                 </div>
+                                 <div class="choices__list choices__list--dropdown">
+                                    <div class="choices__list">
+                                       <div data-value="0" class="choices__item choices__item--choice choices__item--selectable">@data.gettext("Words")</div>
+                                       <div data-value="1" class="choices__item choices__item--choice choices__item--selectable">@data.gettext("Kanji")</div>
+                                       <div data-value="2" class="choices__item choices__item--choice choices__item--selectable">@data.gettext("Sentences")</div>
+                                       <div data-value="3" class="choices__item choices__item--choice choices__item--selectable">@data.gettext("Names")</div>
+                                    </div>
+                                 </div>
+                              </div>
                            </div>
                         </div>
                         <div class="input-field second-wrap">
@@ -182,17 +192,29 @@
                   <div class="modal-body">
                      <span class="inner-title">@data.gettext("Default search language")</span>
                      <br>
-                     <select id="default_lang_settings" class="choices no-margin" onchange="onSettingsChange_DefaultLanguage(event)">
-                        <option value="en-US">@data.gettext("English")</option>
-                        <option value="de-DE">@data.gettext("German")</option>
-                        <option value="es-ES">@data.gettext("Spanish")</option>
-                        <option value="fr-FR">@data.gettext("French")</option>
-                        <option value="nl-NL">@data.gettext("Dutch")</option>
-                        <option value="sv-SE">@data.gettext("Swedish")</option>
-                        <option value="ru">@data.gettext("Russian")</option>
-                        <option value="hu">@data.gettext("Hungarian")</option>
-                        <option value="sl-SI">@data.gettext("Slovenian")</option>
-                     </select>
+                     <div class="choices noselect" data-type="select-one" tabindex="1">
+                        <div class="choices__inner">
+                           <select data-trigger="" name="type" data-onchange="onSettingsChange_DefaultLanguage" class="hidden">
+                              <option value="0">English</option>
+                           </select>
+                           <div class="choices__list choices__list--single">
+                              <div class="choices__item choices__item--selectable">English</div>
+                           </div>
+                        </div>
+                        <div class="choices__list choices__list--dropdown">
+                           <div class="choices__list">
+                              <div data-value="en-US" class="choices__item choices__item--choice choices__item--selectable">English</div>
+                              <div data-value="de-DE" class="choices__item choices__item--choice choices__item--selectable">German</div>
+                              <div data-value="es-ES" class="choices__item choices__item--choice choices__item--selectable">Spanish</div>
+                              <div data-value="fr-FR" class="choices__item choices__item--choice choices__item--selectable">French</div>
+                              <div data-value="nl-NL" class="choices__item choices__item--choice choices__item--selectable">Dutch</div>
+                              <div data-value="sv-SE" class="choices__item choices__item--choice choices__item--selectable">Swedish</div>
+                              <div data-value="ru" class="choices__item choices__item--choice choices__item--selectable">Russian</div>
+                              <div data-value="hu" class="choices__item choices__item--choice choices__item--selectable">Hungarian</div>
+                              <div data-value="sl-SI" class="choices__item choices__item--choice choices__item--selectable">Slovenian</div>
+                           </div>
+                        </div>
+                     </div>
                      <span class="tags search-lang-txt">@data.gettext("Results will try to match the selected language")</span>
                      <br class="desktop-br">
                      <br>
