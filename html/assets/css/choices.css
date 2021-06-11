@@ -111,10 +111,6 @@
   font-size: 14px;
 }
 
-.choices__item:hover {
-  color: var(_)
-}
-
 @media (min-width: 640px) {
   .choices__list--dropdown .choices__item--selectable {
     padding-right: 100px;
