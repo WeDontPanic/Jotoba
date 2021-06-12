@@ -21,6 +21,7 @@ var currentSuggestionIndex = -1;
 var availableSuggestions = 0;
 var keepSuggestions = false;
 var oldInputValue = "";
+var lastRequest = undefined;
 
 // Key Events focussing on the search
 $(document).on("keydown", (event) => {
@@ -288,8 +289,13 @@ function getApiData() {
         "lang": lang === undefined ? "en-US" : lang
     }
 
+    // Abort any requests sent earlier
+    if (lastRequest !== undefined) {
+        lastRequest.abort();
+    }
+
     // Send Request to backend
-    $.ajax({ 
+    lastRequest = $.ajax({ 
         type : "POST", 
         url : "/api/suggestion", 
         data: JSON.stringify(inputJSON),
@@ -301,8 +307,10 @@ function getApiData() {
             loadApiData(result);
         }, 
         error : function(result) { 
-            // Error = reset everything
-            removeSuggestions();
+            // Error = reset everything if not aborted
+            if (result.statusText !== "abort") {
+                removeSuggestions();
+            }
         } 
     }); 
 }
