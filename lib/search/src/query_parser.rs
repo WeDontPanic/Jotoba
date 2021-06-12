@@ -68,7 +68,7 @@ impl QueryParser {
         let query = query.join(" ").trim().to_string();
         let tags = tags
             .into_iter()
-            .filter_map(|i| Tag::parse_from_str(i))
+            .filter_map(|i| Tag::parse_from_str(&i.to_lowercase()))
             .collect();
 
         (query, tags)
