@@ -174,6 +174,12 @@ Util.awaitDocumentReady = function(callback) {
     }, 10);
 }
 
+// Splits the input by " " and returns the last result
+Util.getLastWordOfString = function (s) {
+    let inputSplit = s.split(" ");
+    return inputSplit[inputSplit.length-1];
+}
+
 // Used for animation curves
 Math.easeInOutQuad = function (t, b, c, d) {
     t /= d/2;

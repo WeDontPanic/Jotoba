@@ -2,6 +2,12 @@
  * This JS-File contains functions handling the website search (e.g. Search suggestions)
  */
 
+// #-QuickSearches, hardcoded to reduce server callbacks
+const hashtags = [
+    "#adverb", "#auxilary", "#conjungation", "#noun", "#prefix", "#suffix", "#particle", "#sfx",
+    "#verb", "#adjective", "#counter", "#expression", "#interjection", "#pronoun", "#nummeric", "#unclassified"
+];
+
 // Elements used
 const searchRow = document.querySelector("#search-row");
 const input = document.querySelector("#search");
@@ -52,10 +58,10 @@ $(document).on("keydown", (event) => {
 
 // Event whenever the user types into the search bar
 input.addEventListener("input", e => {
-        if (input.value != oldInputValue) {
-            callApiAndSetShadowText();
-        }
-        oldInputValue = input.value;
+    if (input.value != oldInputValue) {
+        callApiAndSetShadowText();
+    }
+    oldInputValue = input.value;
 });
 
 // Check if input was focussed / not focussed to show / hide overlay 長い
@@ -67,7 +73,6 @@ input.addEventListener("focus", e => {
     keepSuggestions = false;
 });
 document.addEventListener("click", e => {
-    
     // When clicking anything but the search bar or dropdown
     if (!Util.isChildOf(searchRow, e.target)) {
         container.classList.add("hidden");
@@ -82,9 +87,14 @@ window.addEventListener("resize", e => {
 
 // Function to be called by input events. Updates the API data and shadow txt
 function callApiAndSetShadowText() {
+
+    // Tooltips for # - searches
+    let lastWord = Util.getLastWordOfString(input.value);
+    if (lastWord.includes("#")) {
+        getHashtagData(lastWord);
+    }
     // Load new API data
-    let lastWord = getLastInputWord();
-    if (lastWord.length > 0) {
+    else if (lastWord.length > 0) {
         getApiData();
     } else {
         removeSuggestions();
@@ -137,11 +147,16 @@ function getSuggestion(index) {
 }
 
 // Selects the suggestion at the index above (-1) or beneath (1)
-function changeSuggestionIndex(direction) {
+// If setDirectly = true, the index will be used directly
+function changeSuggestionIndex(direction, setDirectly) {
     let oldIndex = currentSuggestionIndex;
 
+    // Set directly
+    if (setDirectly) {
+        currentSuggestionIndex = direction;
+    }
     // Scroll up or down
-    if (currentSuggestionIndex + direction < -1) {
+    else if (currentSuggestionIndex + direction < -1) {
         currentSuggestionIndex = availableSuggestions - 1;
     } 
     else if (currentSuggestionIndex + direction == availableSuggestions) {
@@ -151,11 +166,11 @@ function changeSuggestionIndex(direction) {
     }
 
     // Get newly selected suggestion
-    if (currentSuggestionIndex != -1) {
+    if (currentSuggestionIndex != -1) { 
         let suggestion = getSuggestion(currentSuggestionIndex);
     
         // Add Furigana. If Kanji are used, select the secondary suggestion. If user types kanji, show him kanji instead
-        if (suggestion[1].innerHTML.length > 0 && getLastInputWord().match(kanjiRegEx) === null) {
+        if (suggestion[1].innerHTML.length > 0 && input.value.match(kanjiRegEx) === null) {
             currentSuggestion = suggestion[1].innerHTML.substring(1, suggestion[1].innerHTML.length - 1);
         } else {
             currentSuggestion = suggestion[0].innerHTML;
@@ -166,7 +181,7 @@ function changeSuggestionIndex(direction) {
     }
    
     // Remove mark on old row
-    let oldSuggestion = (oldIndex == -1 ? undefined : getSuggestion(oldIndex));
+    let oldSuggestion = (oldIndex < 0 ? undefined : getSuggestion(oldIndex));
     if (oldSuggestion != undefined) {
         oldSuggestion[2].classList.remove("selected");
     }
@@ -206,12 +221,6 @@ function activateSelection(element) {
     removeSuggestions();
 }
 
-// Splits the input by " " and returns the last result
-function getLastInputWord() {
-    let inputSplit = input.value.split(" ");
-    return inputSplit[inputSplit.length-1];
-}
-
 // Returns the substring of what the user already typed for the current suggestion
 // If target is not empty, the substring of target will be searched instead
 function getCurrentSubstring(target) {
@@ -249,13 +258,33 @@ function removeSuggestions() {
     availableSuggestions = 0;
 }
 
+// Loads API data by creating the json from known values instead of calling backend
+function getHashtagData(currentText) {
+    let suggestions = [];
+    for (let i = 0; i < hashtags.length; i++) {
+        if (hashtags[i].includes(currentText)) {
+            suggestions.push({"primary": hashtags[i]});
+
+            if (suggestions.length == 10) {
+                break;
+            }
+        }
+    }
+
+    let resultJSON =  {
+        "suggestions": suggestions
+    }
+
+    loadApiData(resultJSON);
+}
+
 // Calls the API to get input suggestions
 function getApiData() {
 
     // Create the JSON
     let lang = Cookies.get("default_lang");
     let inputJSON = {
-        "input": getLastInputWord(),
+        "input": input.value,
         "lang": lang === undefined ? "en-US" : lang
     }
 
@@ -281,11 +310,16 @@ function getApiData() {
 // Loads data called from the API into the frontend
 function loadApiData(result) {
 
+    // Keep old suggestion if it exists in the list again
+    let oldSuggestion = currentSuggestion;
+    let suggestionChosen = false;
+
     // Remove current suggestions
     removeSuggestions();
 
     // Return if no suggestions were found
     if (result.suggestions.length == 0) {
+        console.log("return");
         return;
     }
 
@@ -302,6 +336,7 @@ function loadApiData(result) {
         // Only one result
         if (result.suggestions[i].secondary === undefined) {
             primaryResult = result.suggestions[i].primary;
+            console.log(primaryResult);
         }
         // Two results, kanji needs to be in the first position here
         else {
@@ -314,11 +349,19 @@ function loadApiData(result) {
         ' <div class="search-suggestion" onclick="onSuggestionClick(this);"> ' +
         '   <span class="primary-suggestion">'+primaryResult+'</span> ' +
         '   <span class="secondary-suggestion">'+secondaryResult+'</span> ' +
-        ' </div> ';        
+        ' </div> ';      
+
+        // Activate suggestion, if available again
+        if (oldSuggestion == primaryResult) {
+            changeSuggestionIndex(i, true);
+            suggestionChosen = true;
+        }
     }
 
     // Activate first suggestion
-    changeSuggestionIndex(1);
+    if (!suggestionChosen) {
+        changeSuggestionIndex(1);
+    }
 }
 
 // Handles clicks on the suggestion dropdown

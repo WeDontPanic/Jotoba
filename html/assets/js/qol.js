@@ -18,16 +18,16 @@ $(document).on("keypress", (event) => {
             $('#search').select();
             break
         case 'w': // Focus search bar
-            changeSearchType("0");
+            changeSearchType(null, "0");
             break;
         case 'k': // Change to Word Tab
-            changeSearchType("1");
+            changeSearchType(null, "1");
             break;
         case 's': // Change to Sentence Tab
-            changeSearchType("2");
+            changeSearchType(null, "2");
             break;
         case 'n': // Change to Names Tab
-            changeSearchType("3");
+            changeSearchType(null, "3");
             break;
         case 'p': // Play first Audio on page
             $(".audioBtn").first().trigger("click");
