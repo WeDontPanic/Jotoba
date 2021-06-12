@@ -78,10 +78,10 @@
                               <div class="choices noselect" data-type="select-one" tabindex="1">
                                  <div class="choices__inner">
                                     <select data-trigger="" name="type" data-onchange="changeSearchType" class="hidden">
-                                       <option value="0">@data.gettext("ENTER_IDENTIFIER_HERE")</option>
+                                       <option value="@data.get_search_site_id()">@data.get_search_site_name()</option>
                                     </select>
                                     <div class="choices__list choices__list--single">
-                                       <div class="choices__item choices__item--selectable">@data.gettext("ENTER_IDENTFIER_HERE")</div>
+                                       <div class="choices__item choices__item--selectable">@data.get_search_site_name()</div>
                                     </div>
                                  </div>
                                  <div class="choices__list choices__list--dropdown">

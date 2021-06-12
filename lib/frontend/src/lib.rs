@@ -62,6 +62,32 @@ impl<'a> BaseData<'a> {
         }
     }
 
+    pub fn get_search_site_id(&self) -> u8 {
+        if let Site::SearchResult(ref res) = self.site {
+            return match res.result {
+                ResultData::Word(_) => 0,
+                ResultData::KanjiInfo(_) => 1,
+                ResultData::Sentence(_) => 2,
+                ResultData::Name(_) => 3,
+            };
+        }
+
+        0
+    }
+
+    pub fn get_search_site_name(&self) -> &str {
+        if let Site::SearchResult(ref res) = self.site {
+            return match res.result {
+                ResultData::Word(_) => self.gettext("Words"),
+                ResultData::KanjiInfo(_) => self.gettext("Kanji"),
+                ResultData::Sentence(_) => self.gettext("Sentences"),
+                ResultData::Name(_) => self.gettext("Names"),
+            };
+        }
+
+        self.gettext("Words")
+    }
+
     pub fn new_word_search(
         query: &'a Query,
         result: WordResult,
