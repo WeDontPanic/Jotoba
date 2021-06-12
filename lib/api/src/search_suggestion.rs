@@ -1,5 +1,9 @@
 use std::{
     cmp::Ordering,
+    collections::HashMap,
+    fs::{self, File},
+    io::{self, BufRead, BufReader},
+    path::PathBuf,
     str::FromStr,
     sync::Arc,
     time::{Duration, SystemTime},
@@ -12,11 +16,14 @@ use actix_web::{
 };
 use config::Config;
 use error::api_error::RestError;
+use itertools::Itertools;
+use log::info;
 use parse::jmdict::languages::Language;
 use query_parser::QueryType;
 use search::{
     query::{Query, QueryLang, UserSettings},
     query_parser,
+    suggestions::{store_item, SuggestionSearch, TextSearch},
 };
 use serde::{Deserialize, Serialize};
 use tokio_postgres::Client;
@@ -46,6 +53,68 @@ pub struct WordPair {
 
 /// Max results to show
 const MAX_RESULTS: i64 = 10;
+
+#[derive(Clone, Debug)]
+pub struct SuggestionItem {
+    pub text: String,
+    pub sequence: i32,
+}
+
+impl store_item::Item for SuggestionItem {
+    fn get_text(&self) -> &str {
+        &self.text
+    }
+}
+
+/// In-memor storage for suggestions
+static SUGGESTIONS: once_cell::sync::OnceCell<SuggestionSearch<Vec<SuggestionItem>>> =
+    once_cell::sync::OnceCell::new();
+
+/// Load Suggestions from suggestion folder
+pub fn load_suggestions(config: &Config) {
+    let mut map = HashMap::new();
+    let path = config.get_suggestion_sources();
+
+    if let Ok(entries) = fs::read_dir(path).and_then(|i| {
+        i.map(|res| res.map(|e| e.path()))
+            .collect::<Result<Vec<_>, io::Error>>()
+    }) {
+        for entry in entries {
+            let entry_name = entry.file_name().unwrap().to_str().unwrap();
+            let lang = Language::from_str(entry_name);
+            if lang.is_err() {
+                continue;
+            }
+            let suggestions = load_file(&entry);
+            if let Some(suggestions) = suggestions {
+                map.insert(lang.unwrap(), TextSearch::new(suggestions));
+                info!("Loaded {:?} suggestion file", lang.unwrap());
+            }
+        }
+    }
+
+    SUGGESTIONS.set(SuggestionSearch::new(map)).ok();
+}
+
+/// Parse suggestion file
+fn load_file(path: &PathBuf) -> Option<Vec<SuggestionItem>> {
+    let file = File::open(path).ok()?;
+    let content = BufReader::new(file)
+        .lines()
+        .map(|i| {
+            i.ok().and_then(|i| {
+                let mut split = i.split(',').rev();
+                let number: i32 = split.next()?.parse().ok()?;
+                let text: String = split.rev().join(",");
+                Some(SuggestionItem {
+                    text,
+                    sequence: number,
+                })
+            })
+        })
+        .collect::<Option<Vec<SuggestionItem>>>()?;
+    Some(content)
+}
 
 /// Get search suggestions
 pub async fn suggestion(
@@ -119,9 +188,9 @@ async fn get_suggestion_by_query(
     // Get sugesstions for matching language
     let mut word_pairs = match query.language {
         QueryLang::Japanese => japanese::suggestions(&pool, &query.query).await?,
-        QueryLang::Foreign | QueryLang::Undetected => {
-            foreign::suggestions(&pool, &query, &query.query).await?
-        }
+        QueryLang::Foreign | QueryLang::Undetected => foreign::suggestions(&query, &query.query)
+            .await
+            .ok_or(RestError::Internal)?,
     };
 
     // Put exact matches to top
@@ -210,8 +279,28 @@ mod japanese {
 mod foreign {
     use super::*;
 
+    pub async fn suggestions(query: &Query, query_str: &str) -> Option<Vec<WordPair>> {
+        let lang = query.settings.user_lang;
+
+        let dict = SUGGESTIONS.get()?;
+
+        let res = dict.search(query_str, lang)?;
+
+        let res = res
+            .into_iter()
+            .map(|i| WordPair {
+                primary: i.text.to_owned(),
+                secondary: None,
+            })
+            .take(10)
+            .collect();
+
+        Some(res)
+    }
+
+    /*
     /// Get suggestions for foreign search input
-    pub async fn suggestions(
+    pub async fn suggestions_db(
         client: &Client,
         query: &Query,
         query_str: &str,
@@ -251,6 +340,7 @@ mod foreign {
             })
             .collect())
     }
+    */
 }
 
 impl WordPair {

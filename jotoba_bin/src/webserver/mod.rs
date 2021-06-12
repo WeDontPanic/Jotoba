@@ -8,9 +8,9 @@ use japanese::jp_parsing::{JA_NL_PARSER, NL_PARSER_PATH};
 use localization::TranslationDict;
 use tokio_postgres::Client;
 
-use config::Config;
 use actix_web::{middleware, web as actixweb, App, HttpServer};
 use cache_control::CacheInterceptor;
+use config::Config;
 use models::DbPool;
 use std::{mem::ManuallyDrop, sync::Arc, time::Duration};
 
@@ -49,6 +49,9 @@ pub(super) async fn start(db: DbPool, async_postgres: Client) -> std::io::Result
     }
 
     let config_clone = config.clone();
+
+    api::search_suggestion::load_suggestions(&config);
+
     HttpServer::new(move || {
         let app = App::new()
             // Data
@@ -93,6 +96,42 @@ pub(super) async fn start(db: DbPool, async_postgres: Client) -> std::io::Result
     .run()
     .await
 }
+
+/*
+fn load_suggestions(config: &Config) -> MultiSearch<Vec<String>> {
+    let mut map = HashMap::new();
+    let path = config.get_suggestion_sources();
+
+    if let Ok(entries) = fs::read_dir(path).and_then(|i| {
+        i.map(|res| res.map(|e| e.path()))
+            .collect::<Result<Vec<_>, io::Error>>()
+    }) {
+        for entry in entries {
+            let entry_name = entry.file_name().unwrap().to_str().unwrap();
+            let lang = Language::from_str(entry_name);
+            if lang.is_err() {
+                continue;
+            }
+            let suggestions = load_file(&entry);
+            if let Some(suggestions) = suggestions {
+                map.insert(lang.unwrap(), suggestions);
+                info!("Loaded {:?} suggestion file", lang);
+            }
+        }
+    }
+
+    MultiSearch::new(map)
+}
+
+fn load_file(path: &PathBuf) -> Option<Vec<String>> {
+    let file = File::open(path).ok()?;
+    let content = BufReader::new(file)
+        .lines()
+        .map(|i| i.ok())
+        .collect::<Option<Vec<String>>>()?;
+    Some(content)
+}
+*/
 
 fn setup_logger() {
     env_logger::init_from_env(env_logger::Env::new().default_filter_or("debug"));

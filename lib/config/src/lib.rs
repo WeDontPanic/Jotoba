@@ -32,6 +32,7 @@ pub struct SentryConfig {
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct SearchConfig {
     pub suggestion_timeout: Option<u64>,
+    pub suggestion_sources: Option<String>,
 }
 
 impl Config {
@@ -41,6 +42,14 @@ impl Config {
             .as_ref()
             .and_then(|i| i.suggestion_timeout)
             .unwrap_or(100)
+    }
+
+    /// Returns the configured suggestion source files or its default value if not set
+    pub fn get_suggestion_sources(&self) -> &str {
+        self.search
+            .as_ref()
+            .and_then(|i| i.suggestion_sources.as_ref().map(|i| i.as_str()))
+            .unwrap_or("./suggestions")
     }
 }
 

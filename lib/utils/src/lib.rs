@@ -184,3 +184,12 @@ pub fn char_eq_str(c: char, s: &str) -> bool {
     let is = chars.next().map(|i| i == c).unwrap_or_default();
     is && chars.next().is_none()
 }
+
+/// Makes the first character to Uppercase and returns a newly owned string
+pub fn first_letter_upper(s: &str) -> String {
+    let mut c = s.chars();
+    match c.next() {
+        None => String::new(),
+        Some(f) => f.to_uppercase().chain(c).collect(),
+    }
+}

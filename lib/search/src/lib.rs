@@ -7,6 +7,7 @@ use models::search_mode::SearchMode;
 
 pub mod kanji;
 pub mod name;
+pub mod suggestions;
 pub mod query;
 pub mod query_parser;
 pub mod search_order;

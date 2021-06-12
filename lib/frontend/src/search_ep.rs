@@ -6,7 +6,6 @@ use std::{
 
 use actix_web::{web, HttpMessage, HttpRequest, HttpResponse};
 use localization::TranslationDict;
-use log::warn;
 use serde::Deserialize;
 
 use crate::{templates, BaseData};
@@ -104,6 +103,7 @@ fn search_too_long(duration: Duration) -> bool {
 
 #[cfg(not(feature = "sentry_error"))]
 fn log_duration(search_type: QueryType, duration: Duration) {
+    use log::warn;
     warn!("Search took: {:?}", duration);
 }
 

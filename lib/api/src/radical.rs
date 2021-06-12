@@ -11,7 +11,7 @@ use diesel::{
     prelude::*,
     sql_types::{Integer, Text},
 };
-use error::api_error::{Origin, RestError};
+use error::api_error::RestError;
 use japanese::JapaneseExt;
 use models::DbPool;
 use once_cell::sync::Lazy;

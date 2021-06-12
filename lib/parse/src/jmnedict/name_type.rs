@@ -1,4 +1,4 @@
-use std::{convert::TryFrom, fmt::Display, io::Write};
+use std::{convert::TryFrom, io::Write};
 
 use crate::error;
 use diesel::{
