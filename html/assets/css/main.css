@@ -140,6 +140,10 @@ a:hover {
 .fat {
     font-weight: bold;
 }
+
+.about_title {
+    font-size: 22px; 
+}
   
 
 /* ----------------- Search Row ----------------- */
