@@ -1,5 +1,7 @@
 #![allow(dead_code)]
 
+use std::time::Duration;
+
 #[cfg(not(feature = "sentry_error"))]
 use log::warn;
 
@@ -37,11 +39,14 @@ pub struct SearchConfig {
 
 impl Config {
     /// Returns the configured suggestion timeout or its default value if not set
-    pub fn get_suggestion_timeout(&self) -> u64 {
-        self.search
+    pub fn get_suggestion_timeout(&self) -> Duration {
+        let amount = self
+            .search
             .as_ref()
             .and_then(|i| i.suggestion_timeout)
-            .unwrap_or(100)
+            .unwrap_or(100);
+
+        Duration::from_millis(amount)
     }
 
     /// Returns the configured suggestion source files or its default value if not set

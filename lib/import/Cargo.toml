@@ -14,7 +14,7 @@ cache = { path = "../cache" }
 error = { path = "../error" }
 utils = { path = "../utils" }
 search = { path = "../search" }
-itertools = "0.10.0"
+itertools = "0.10.1"
 serde = "1.0.126"
 serde_json = "1.0.64"
 futures = "0.3.15"
