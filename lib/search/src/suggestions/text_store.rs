@@ -4,7 +4,7 @@ use super::store_item::Item;
 
 /// Store text data
 pub trait TextStore {
-    type Item: Item;
+    type Item: Item + Sync;
 
     /// Returns the Item at [`pos`]
     fn get_at(&self, pos: usize) -> &Self::Item;
@@ -40,7 +40,7 @@ pub trait TextStore {
     }
 }
 
-impl<T: Item> TextStore for &Vec<T> {
+impl<T: Item + Sync> TextStore for &Vec<T> {
     type Item = T;
 
     fn len(&self) -> usize {
@@ -53,7 +53,7 @@ impl<T: Item> TextStore for &Vec<T> {
     }
 }
 
-impl<T: Item> TextStore for Vec<T> {
+impl<T: Item + Sync> TextStore for Vec<T> {
     type Item = T;
 
     fn len(&self) -> usize {
@@ -66,7 +66,7 @@ impl<T: Item> TextStore for Vec<T> {
     }
 }
 
-impl<T: Item> TextStore for &[T] {
+impl<T: Item + Sync> TextStore for &[T] {
     type Item = T;
 
     fn len(&self) -> usize {

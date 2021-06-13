@@ -38,14 +38,14 @@ impl<T: TextStore> SuggestionSearch<T> {
             // Do jaro search
             if query.len() > 3 {
                 let dict = self.dicts.get(&lang)?;
-                res.extend(dict.find_jaro_async(query, 5).await);
+                res.extend(dict.find_jaro_async(query, 3).await);
             }
         }
 
         // Order by best match against `query`
         res.sort_by(|l, r| {
-            Self::result_order_value(r.get_text(), query)
-                .cmp(&Self::result_order_value(l.get_text(), query))
+            Self::result_order_value(query, r.get_text())
+                .cmp(&Self::result_order_value(query, l.get_text()))
         });
 
         // Remove duplicates
@@ -55,7 +55,7 @@ impl<T: TextStore> SuggestionSearch<T> {
     }
 
     fn result_order_value(query: &str, v: &str) -> u32 {
-        (jaro_winkler(&v.get_text().to_lowercase(), query) * 100_f64) as u32
+        (jaro_winkler(&v.get_text().to_lowercase(), &query.to_lowercase()) * 100_f64) as u32
     }
 
     /// Searches for one language
