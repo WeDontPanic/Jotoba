@@ -190,7 +190,7 @@ async fn get_suggestion_by_query(
         QueryLang::Japanese => japanese::suggestions(&pool, &query.query).await?,
         QueryLang::Foreign | QueryLang::Undetected => foreign::suggestions(&query, &query.query)
             .await
-            .ok_or(RestError::Internal)?,
+            .unwrap_or_default(),
     };
 
     // Put exact matches to top
@@ -282,11 +282,10 @@ mod foreign {
     pub async fn suggestions(query: &Query, query_str: &str) -> Option<Vec<WordPair>> {
         let lang = query.settings.user_lang;
 
-        let dict = SUGGESTIONS.get()?;
-
-        let res = dict.search(query_str, lang).await?;
-
-        let res = res
+        let res = SUGGESTIONS
+            .get()?
+            .search(query_str, lang)
+            .await?
             .into_iter()
             .map(|i| WordPair {
                 primary: i.text.to_owned(),
@@ -297,50 +296,6 @@ mod foreign {
 
         Some(res)
     }
-
-    /*
-    /// Get suggestions for foreign search input
-    pub async fn suggestions_db(
-        client: &Client,
-        query: &Query,
-        query_str: &str,
-    ) -> Result<Vec<WordPair>, RestError> {
-        let lang_str = match query.settings.user_lang {
-            Language::English => "language = 0".to_owned(),
-            _ => {
-                let lang: i32 = query.settings.user_lang.into();
-                format!("language = 0 or language = {}", lang)
-            }
-        };
-        let seq_query = format!("SELECT sense.sequence, sense.gloss FROM sense WHERE gloss ilike $1 AND ({}) ORDER BY LENGTH(gloss) limit 50", lang_str);
-
-        //let seq_query = "SELECT sense.sequence, sense.gloss FROM sense JOIN dict ON (dict.sequence = sense.sequence) WHERE gloss &@ $1 AND (language = 1 OR Language = 0) ORDER BY ARRAY_LENGTH(priorities, 1) DESC NULLS LAST LIMIT 50";
-
-        let rows = client
-            .query(seq_query.as_str(), &[&format!("{}%", query_str)])
-            .await?;
-
-        let mut words: Vec<String> = rows.into_iter().map(|i| i.get(1)).collect();
-
-        // Put exact matches to top
-        words.sort_by(|a, b| {
-            let a_lv = levenshtein::levenshtein(a, query_str);
-            let b_lv = levenshtein::levenshtein(b, query_str);
-            a_lv.cmp(&b_lv)
-        });
-
-        words.dedup();
-        words.truncate(10);
-
-        Ok(words
-            .into_iter()
-            .map(|i| WordPair {
-                primary: i,
-                secondary: None,
-            })
-            .collect())
-    }
-    */
 }
 
 impl WordPair {
