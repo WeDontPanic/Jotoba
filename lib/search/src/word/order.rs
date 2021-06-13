@@ -58,15 +58,11 @@ pub(super) fn native_search_order(word: &Word, search_order: &SearchOrder) -> us
 
     let mut score = 0;
 
-    if word.is_common() {
-        score += 8;
-    }
-
     if reading.reading == *query_str || kana_reading.reading == *query_str {
-        score += 30;
+        score += 35;
 
         // Show kana only readings on top if they match with query
-        if kana_reading.reading == *query_str && word.reading.kanji.is_none() {
+        if word.reading.kanji.is_none() {
             score += 20;
         }
     } else if reading.reading.starts_with(query_str) {
@@ -74,7 +70,7 @@ pub(super) fn native_search_order(word: &Word, search_order: &SearchOrder) -> us
     }
 
     if let Some(jlpt) = reading.jlpt_lvl {
-        score += (jlpt * 2) as usize;
+        score += jlpt as usize;
     }
 
     // If alternative reading matches query exactly
@@ -84,7 +80,7 @@ pub(super) fn native_search_order(word: &Word, search_order: &SearchOrder) -> us
         .iter()
         .any(|i| i.reading == *query_str)
     {
-        score += 14;
+        score += 9;
     }
 
     #[cfg(feature = "tokenizer")]
@@ -95,11 +91,12 @@ pub(super) fn native_search_order(word: &Word, search_order: &SearchOrder) -> us
         }
 
         // Show kana only readings on top if they match with lexeme
-        if kana_reading.reading == lexeme && word.reading.kanji.is_none() {
+        if word.reading.kanji.is_none() {
             score += 30;
         }
     }
 
+    // Is common
     score += word
         .priorities
         .as_ref()
