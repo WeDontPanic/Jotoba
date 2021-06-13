@@ -13,7 +13,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"PO-Revision-Date: 2021-06-07 23:43+0200\n"
+"PO-Revision-Date: 2021-06-13 16:59+0200\n"
 "Last-Translator:  <jojii@gmx.net>\n"
 "Language-Team: English\n"
 "Language: en\n"
@@ -440,20 +440,17 @@ msgid "We took inspiration in their work and design to improve on their concept 
 msgstr ""
 
 # Source
-msgid "Words & Kanji"
+msgid "Words (except sound effects), Kanji and Names available on this site are publicly provided and maintained by"
 msgstr ""
 
-msgid "Words and Kanji are publicly provided by EDRDG (Electronic Dictionary Research and Development Group)."
-msgstr ""
-
-msgid "Visit their page to find out more about how this data came to be."
+msgid "and available under the license"
 msgstr ""
 
 # Source
 msgid "Audio Files"
 msgstr ""
 
-msgid "The audio files were graciously made public by"
+msgid "The audio files #1 were graciously made public by"
 msgstr ""
 
 msgid "WaniKani"
@@ -466,6 +463,15 @@ msgid "Tofugo"
 msgstr ""
 
 msgid "and uploaded to Github under the CC-BY-4.0 licence."
+msgstr ""
+
+msgid "The audio files #2 are provided by the"
+msgstr ""
+
+msgid "Kanji alive project"
+msgstr ""
+
+msgid "and are also available under the CC-BY-4.0 license."
 msgstr ""
 
 msgid "Manga Sound Effects"
