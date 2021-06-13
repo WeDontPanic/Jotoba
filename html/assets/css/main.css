@@ -142,7 +142,9 @@ a:hover {
 }
 
 .about_title {
-    font-size: 22px; 
+    font-size: 22px;
+    font-weight: bold;
+    color: var(--primaryColor); 
 }
   
 
