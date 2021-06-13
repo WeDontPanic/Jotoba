@@ -25,7 +25,7 @@ pub(super) async fn by_reading(search: &Search<'_>) -> Result<ResultData, Error>
         .ok_or(Error::Undefined)?;
 
     let kanji = kanji::find_by_literal(&search.db, reading.literal.to_string()).await?;
-    if !kanji.is_none() {
+    if kanji.is_none() {
         return alternative_reading_search(search).await;
     }
     let kanji = kanji.unwrap();
