@@ -96,7 +96,7 @@ function callApiAndSetShadowText() {
         getHashtagData(lastWord);
     }
     // Load new API data
-    else if (lastWord.length > 0) {
+    else if (input.value.length > 0) {
         getApiData();
     } else {
         removeSuggestions();
