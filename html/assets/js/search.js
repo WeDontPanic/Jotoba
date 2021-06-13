@@ -211,10 +211,11 @@ function activateSelection(element) {
 
     // Remove last text from string and append new word
     input.value = input.value.substring(0, input.value.lastIndexOf(" "));
-    if (input.value.length == 0) {
-        input.value += suggestion;   
-    } else {
+    if (suggestion.startsWith("#")) {
         input.value += " " + suggestion;   
+    }
+    else {
+        input.value = suggestion;
     }
     
 
