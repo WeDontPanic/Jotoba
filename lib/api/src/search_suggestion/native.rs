@@ -5,7 +5,7 @@ use itertools::Itertools;
 
 use super::*;
 
-const MAX_RESULTS: i32 = 10;
+const MAX_RESULTS: i64 = 10;
 
 /// Get suggestions for foreign search input
 pub(super) async fn suggestions(
