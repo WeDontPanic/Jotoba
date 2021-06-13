@@ -18,16 +18,16 @@ $(document).on("keypress", (event) => {
             $('#search').select();
             break
         case 'w': // Focus search bar
-            changeSearchType("0");
+            changeSearchType(null, "0");
             break;
         case 'k': // Change to Word Tab
-            changeSearchType("1");
+            changeSearchType(null, "1");
             break;
         case 's': // Change to Sentence Tab
-            changeSearchType("2");
+            changeSearchType(null, "2");
             break;
         case 'n': // Change to Names Tab
-            changeSearchType("3");
+            changeSearchType(null, "3");
             break;
         case 'p': // Play first Audio on page
             $(".audioBtn").first().trigger("click");
@@ -137,7 +137,8 @@ function copyTranslationAndShowMessage(textParent) {
 }
 
 // Changes the search type in the upper row depending on the users input
-function changeSearchType(newType) {
+function changeSearchType(html, newType) {
+    console.log("type called: "+html + " -> " + newType)
     var search_value = $('#search').val();
     if (search_value.length > 0) {
         var params = new URLSearchParams();
@@ -170,10 +171,4 @@ $('.audioBtn').each((e, i) => {
         audio.play();
     });
 
-});
-
-// Initialize things that need to have the page loaded completly first
-var lang_settings;
-Util.awaitDocumentReady(() => {
-    lang_settings = new Choices("#default_lang_settings",{searchEnabled:!1,itemSelectText:"",shouldSort:!1});
 });

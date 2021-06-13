@@ -79,8 +79,8 @@ function getCssValue(cssName) {
 }
 
 // Changes the Default Language to search for
-function onSettingsChange_DefaultLanguage(event) {
-    Cookies.set('default_lang', event.target.value, {path: '/'});
+function onSettingsChange_DefaultLanguage(html, value) {
+    Cookies.set('default_lang', value, {path: '/'});
     if (window.location.href.includes("/search")) {
         location.reload();
     }
@@ -131,18 +131,21 @@ function loadCookieData() {
     }
 
     // Set Default_Lang 
-    if (default_lang !== undefined)
-        $('#default_lang_settings').val(default_lang);
-    else {
-        // Find user language and set it as soon as the doc is ready
-        Util.awaitDocumentReady(() => {
-            let userLang = navigator.language || navigator.userLanguage || "en-US";
-            if (!isSupportedSearchLang(userLang)) {
-                userLang = "en-US";
-            }
-            lang_settings.setChoiceByValue(userLang);
-        });   
+    let userLang = default_lang || navigator.language || navigator.userLanguage || "en-US";
+    console.log(userLang);
+    if (!isSupportedSearchLang(userLang)) {
+         userLang = "en-US";
     }
+    // Activate by finding the correct 
+    document.querySelectorAll(".choices__item--choice").forEach((e) => {
+        if (e.dataset.value == userLang) {
+            let langTxt = e.innerHTML;
+            let choicesInner = e.parentElement.parentElement.parentElement.children[0].children;
+            
+            choicesInner[0].children[0].innerHTML = e.innerHTML;
+            choicesInner[1].children[0].innerHTML = e.innerHTML;
+        }
+    });
        
     // Set English results
     if (show_english === "false") {
