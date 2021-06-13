@@ -1,7 +1,5 @@
-use std::collections::HashMap;
-use std::hash::Hash;
+use std::{collections::HashMap, hash::Hash};
 
-// Implement our own cache type
 pub struct SharedCache<K: Hash + Eq, V: Clone> {
     store: HashMap<K, V>,
     capacity: usize,

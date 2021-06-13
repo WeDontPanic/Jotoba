@@ -5,8 +5,7 @@ use super::result::{Reading, Sense, Word};
 use super::super::{Search, SearchMode};
 use diesel::sql_types::{Integer, Text};
 use error::Error;
-use models::sql::ExpressionMethods;
-use models::{dict::Dict, sense, DbPool};
+use models::{dict::Dict, sense, sql::ExpressionMethods, DbPool};
 use parse::jmdict::{
     information::Information,
     languages::Language,
@@ -208,7 +207,6 @@ impl<'a> WordSearch<'a> {
         // this has to be done. If #20 gets resolved, change this !!
         let mut filter = String::from("SELECT sequence, length(gloss) as len from sense WHERE");
 
-        // TODO make operator adjustable
         filter.push_str(" gloss &@ $1 ");
 
         // Language filter

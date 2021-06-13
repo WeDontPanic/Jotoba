@@ -9,7 +9,7 @@ use super::ReadingType;
 use crate::{search_mode::SearchMode, DbPool};
 use error::Error;
 use japanese::JapaneseExt;
-use utils::{self, invert_ordering};
+use utils;
 
 use diesel::prelude::*;
 use futures::future::try_join_all;
@@ -259,7 +259,7 @@ fn order_kun(a: &Dict, b: &Dict, clean_kuns: &Vec<String>) -> Ordering {
     if a_jlpt.is_some() && b_jlpt.is_some() {
         let a_jlpt = a_jlpt.unwrap();
         let b_jlpt = b_jlpt.unwrap();
-        return invert_ordering(a_jlpt.cmp(&b_jlpt));
+        return a_jlpt.cmp(&b_jlpt).reverse();
     }
 
     Ordering::Equal

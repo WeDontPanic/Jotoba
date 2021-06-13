@@ -4,8 +4,7 @@ use actix_web::{web, HttpRequest, HttpResponse};
 use localization::TranslationDict;
 
 use crate::{
-    search_ep::parse_settings,
-    templates, {BaseData, Site},
+    templates, user_settings, {BaseData, Site},
 };
 
 /// About page
@@ -13,7 +12,7 @@ pub async fn about(
     locale_dict: web::Data<Arc<TranslationDict>>,
     request: HttpRequest,
 ) -> Result<HttpResponse, actix_web::Error> {
-    let settings = parse_settings(&request);
+    let settings = user_settings::parse(&request);
 
     Ok(HttpResponse::Ok().body(render!(
         templates::base,

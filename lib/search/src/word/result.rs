@@ -205,24 +205,6 @@ impl Word {
     pub fn get_furigana(&self) -> Option<Vec<SentencePartRef<'_>>> {
         let furi = self.get_reading().furigana.as_ref()?;
         Some(furigana::from_str(furi).collect_vec())
-        /*
-        if self.reading.kanji.is_some() && self.reading.kana.is_some() {
-            furigana::pairs_checked(
-                self.reading
-                    .kanji
-                    .as_ref()
-                    .map(|i| i.reading.as_str())
-                    .unwrap(),
-                self.reading
-                    .kana
-                    .as_ref()
-                    .map(|i| i.reading.as_str())
-                    .unwrap(),
-            )
-        } else {
-            None
-        }
-        */
     }
 
     /// Return true if item has a certain reading
@@ -302,6 +284,7 @@ impl Word {
                 self.reading.kana.as_ref().unwrap().reading
             );
 
+            // TODO maybe we shouldn't block here
             Path::new(&format!("html/assets/audio/{}", file))
                 .exists()
                 .then(|| file)
@@ -335,6 +318,7 @@ impl Word {
         )
     }
 
+    /// Returns an iterator over all parts of speech
     fn get_pos(&self) -> impl Iterator<Item = &PartOfSpeech> {
         self.senses
             .iter()
@@ -411,6 +395,7 @@ impl Word {
     }
 }
 
+/// A set of different inflections which will be displayed for vebs
 pub struct Inflections {
     pub present: InflectionPair,
     pub present_polite: InflectionPair,
@@ -529,16 +514,6 @@ impl Sense {
             .flatten()
             .collect::<Vec<_>>()
     }
-}
-
-fn map_to_str<T>(i: &Option<T>) -> Option<String>
-where
-    T: Into<String> + Copy,
-{
-    i.as_ref().map(|i| {
-        let s: String = (*i).into();
-        s
-    })
 }
 
 pub fn selected(curr: i32, selected: i32) -> &'static str {

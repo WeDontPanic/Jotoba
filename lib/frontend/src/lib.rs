@@ -2,10 +2,11 @@ include!(concat!(env!("OUT_DIR"), "/templates.rs"));
 
 use std::fmt::Display;
 
-use localization::language::Language;
-use localization::traits::Translatable;
-use localization::traits::TranslatablePlural;
-use localization::TranslationDict;
+use localization::{
+    language::Language,
+    traits::{Translatable, TranslatablePlural},
+    TranslationDict,
+};
 use models::name::Name;
 use parse::jmdict;
 use search::query::Query;
@@ -16,11 +17,13 @@ mod actix_ructe;
 pub mod about;
 pub mod index;
 pub mod search_ep;
+pub mod user_settings;
 pub mod web_error;
 
-use search::query::UserSettings;
-use search::{kanji::result::Item as KanjiItem, sentence::result::Item as SentenceItem};
-use search::{query_parser::QueryType, word::result::WordResult};
+use search::{
+    kanji::result::Item as KanjiItem, query::UserSettings, query_parser::QueryType,
+    sentence::result::Item as SentenceItem, word::result::WordResult,
+};
 
 /// Data for the base template
 pub struct BaseData<'a> {

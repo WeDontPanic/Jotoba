@@ -1,3 +1,5 @@
+use std::fs::File;
+
 use models::{dict, kanji, DbPool};
 use serde_json::Value;
 
@@ -6,7 +8,7 @@ use futures::future::try_join_all;
 /// Import jlpt patche file
 pub async fn import(db: &DbPool, path: &str) {
     println!("Importing jlpt patches...");
-    let f = std::fs::File::open(path).expect("Error reading jlpt patch file!");
+    let f = File::open(path).expect("Error reading jlpt patch file!");
     let json: Value = serde_json::from_reader(f).expect("invalid json data");
 
     // Import kanji patches

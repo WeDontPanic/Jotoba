@@ -1,16 +1,17 @@
 use std::{
-    str::FromStr,
     sync::Arc,
     time::{Duration, SystemTime},
 };
 
-use actix_web::{web, HttpMessage, HttpRequest, HttpResponse};
+use super::user_settings;
+
+use actix_web::{web, HttpRequest, HttpResponse};
 use localization::TranslationDict;
 use serde::Deserialize;
 
 use crate::{templates, BaseData};
+use config::Config;
 use models::DbPool;
-use parse::jmdict::languages::Language;
 use search::{
     self,
     query::{Query, UserSettings},
@@ -66,11 +67,12 @@ pub async fn search(
     pool: web::Data<DbPool>,
     query_data: web::Query<QueryStruct>,
     locale_dict: web::Data<Arc<TranslationDict>>,
+    config: web::Data<Config>,
     request: HttpRequest,
 ) -> Result<HttpResponse, web_error::Error> {
     let query_data = query_data.adjust();
 
-    let settings = parse_settings(&request);
+    let settings = user_settings::parse(&request);
 
     let query = match query_data.as_query_parser(settings).parse() {
         Some(k) => k,
@@ -89,16 +91,12 @@ pub async fn search(
 
     // Log search duration if too long and available
     if let Ok(search_duration) = search_duration {
-        if search_too_long(search_duration) {
+        if search_duration > config.get_query_report_timeout() {
             log_duration(query.type_, search_duration);
         }
     }
 
     Ok(HttpResponse::Ok().body(render!(templates::base, site_data)))
-}
-
-fn search_too_long(duration: Duration) -> bool {
-    duration.as_secs() >= 4
 }
 
 #[cfg(not(feature = "sentry_error"))]
@@ -183,29 +181,4 @@ fn redirect_home() -> HttpResponse {
     HttpResponse::MovedPermanently()
         .header("Location", "/")
         .finish()
-}
-
-pub(crate) fn parse_settings(request: &HttpRequest) -> UserSettings {
-    let show_english = request
-        .cookie("show_english")
-        .and_then(|i| i.value().parse().ok())
-        .unwrap_or_else(|| UserSettings::default().show_english);
-
-    let user_lang = request
-        .cookie("default_lang")
-        .and_then(|i| Language::from_str(i.value()).ok())
-        .unwrap_or_default();
-
-    let english_on_top = request
-        .cookie("show_english_on_top")
-        .and_then(|i| i.value().parse().ok())
-        .unwrap_or_else(|| UserSettings::default().english_on_top)
-        && show_english;
-
-    UserSettings {
-        user_lang,
-        show_english,
-        english_on_top,
-        ..Default::default()
-    }
 }

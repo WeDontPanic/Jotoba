@@ -26,7 +26,7 @@ impl<'a, 'parser> SearchOrder<'a, 'parser> {
     where
         T: Fn(&U, &SearchOrder) -> usize,
     {
-        vec.sort_by(|a, b| utils::invert_ordering(order_fn(a, &self).cmp(&order_fn(b, &self))))
+        vec.sort_by(|a, b| order_fn(a, &self).cmp(&order_fn(b, &self)).reverse())
     }
 }
 
@@ -40,6 +40,6 @@ impl<'a, 'parser> SearchOrder<'a> {
     where
         T: Fn(&U, &SearchOrder) -> usize,
     {
-        vec.sort_by(|a, b| utils::invert_ordering(order_fn(a, &self).cmp(&order_fn(b, &self))))
+        vec.sort_by(|a, b| order_fn(a, &self).cmp(&order_fn(b, &self)).reverse())
     }
 }

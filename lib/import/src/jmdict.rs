@@ -20,6 +20,7 @@ struct Word {
     sense: Vec<NewSense>,
 }
 
+/// Import jmdict file
 pub async fn import(db: &DbPool, path: String) {
     println!("Clearing existing entries");
     dict::clear_dicts(db).await.unwrap();

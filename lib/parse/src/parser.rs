@@ -2,8 +2,7 @@ use std::io::BufRead;
 
 use crate::error::{self, Error};
 
-/// Trait to build the basic contsruct
-/// of a parser.
+/// Trait to build the basic contsruct of a parser.
 pub trait Parse<R, T>
 where
     Self: Sized,
@@ -17,8 +16,7 @@ where
     where
         F: Fn(T, usize) -> bool;
 
-    /// Return the amount of items, the parser would return
-    /// on a full parse
+    /// Return the amount of items, the parser would return on a full parse
     fn count(self) -> Result<usize, error::Error> {
         Ok(0)
     }

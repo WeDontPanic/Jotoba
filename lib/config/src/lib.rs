@@ -35,6 +35,7 @@ pub struct SentryConfig {
 pub struct SearchConfig {
     pub suggestion_timeout: Option<u64>,
     pub suggestion_sources: Option<String>,
+    pub report_queries_after: Option<u64>,
 }
 
 impl Config {
@@ -55,6 +56,17 @@ impl Config {
             .as_ref()
             .and_then(|i| i.suggestion_sources.as_ref().map(|i| i.as_str()))
             .unwrap_or("./suggestions")
+    }
+
+    /// Returns the configured query report timeout
+    pub fn get_query_report_timeout(&self) -> Duration {
+        let timeout = self
+            .search
+            .as_ref()
+            .and_then(|i| i.report_queries_after)
+            .unwrap_or(4);
+
+        Duration::from_secs(timeout)
     }
 }
 

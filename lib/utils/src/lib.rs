@@ -1,7 +1,7 @@
 use itertools::Itertools;
 use std::cmp::Ordering;
 
-/// Return true if both vectors have the same elments
+/// Return true if both slices have the same elments without being stored to be in the same order
 pub fn same_elements<T>(v1: &[T], v2: &[T]) -> bool
 where
     T: PartialEq,
@@ -19,7 +19,7 @@ where
     true
 }
 
-/// Return true if both v1 is part of v2
+/// Return true if [`v1`] is a subset of [`v2`]
 pub fn part_of<T>(v1: &[T], v2: &[T]) -> bool
 where
     T: PartialEq,
@@ -37,7 +37,7 @@ where
     true
 }
 
-/// Returns a vector of all items which are part of both vectors
+/// Returns the cutset of both slices as newly allocated vector
 pub fn union_elements<'a, T>(v1: &'a [T], v2: &'a [T]) -> Vec<&'a T>
 where
     T: PartialEq,
@@ -45,7 +45,7 @@ where
     v1.iter().filter(|i| v2.contains(i)).collect::<Vec<_>>()
 }
 
-/// Get the order of two elements within a vector requires that a, b are element of vec
+/// Get the relative order of two elements within a vector requires that a, b being element of vec
 pub fn get_item_order<T>(vec: &[T], a: &T, b: &T) -> Option<Ordering>
 where
     T: PartialEq,
@@ -72,18 +72,9 @@ pub fn real_string_len(s: &str) -> usize {
     s.chars().count()
 }
 
-/// Retrns None if the vec is empty or Some(Vec<T>) if not
+/// Returns `None` if the vec is empty or Some(Vec<T>) if not
 pub fn to_option<T>(vec: Vec<T>) -> Option<Vec<T>> {
     (!vec.is_empty()).then(|| vec)
-}
-
-/// Returns an inverted Ordering of [`order`]
-pub fn invert_ordering(order: Ordering) -> Ordering {
-    match order {
-        Ordering::Less => Ordering::Greater,
-        Ordering::Equal => Ordering::Equal,
-        Ordering::Greater => Ordering::Less,
-    }
 }
 
 /// Returns an ordering based on the option variants.
@@ -99,7 +90,8 @@ pub fn option_order<T>(a: &Option<T>, b: &Option<T>) -> Option<Ordering> {
     }
 }
 
-/// Remove duplicates from a vector and return a newly allocated one
+/// Remove duplicates from a vector and return a newly allocated one. This doesn't need the source
+/// vector to be sorted unlike `.dedup()`. Therefore it's heavier in workload
 pub fn remove_dups<T>(inp: Vec<T>) -> Vec<T>
 where
     T: PartialEq,
@@ -115,8 +107,15 @@ where
     new
 }
 
-/// Returns an iterator over all occurences of [`substr`] within [`text`] of a bool whether it is
-/// surrounded by [`open`] and [`close`] or not
+/// Returns an iterator over bools for each [`substr`] within [`text`] with the value `true` if the
+/// given substr occurence is within [`open`] and [`close`] or not
+///
+/// Example:
+///
+/// is_surrounded_by(r#"this "is" an example"#, "is", '"','"')
+///
+/// => will return an iterator over [ false, true ]
+///
 pub fn is_surrounded_by<'a>(
     text: &'a str,
     substr: &'a str,
@@ -179,13 +178,14 @@ pub fn is_surrounded_by<'a>(
     })
 }
 
+/// Returns true if [`s`] represents [`c`]
 pub fn char_eq_str(c: char, s: &str) -> bool {
     let mut chars = s.chars();
     let is = chars.next().map(|i| i == c).unwrap_or_default();
     is && chars.next().is_none()
 }
 
-/// Makes the first character to Uppercase and returns a newly owned string
+/// Makes the first character to uppercase and returns a newly owned string
 pub fn first_letter_upper(s: &str) -> String {
     let mut c = s.chars();
     match c.next() {
