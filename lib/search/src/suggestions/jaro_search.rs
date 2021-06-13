@@ -1,3 +1,10 @@
+use std::{
+    cmp::min,
+    pin::Pin,
+    task::{Context, Poll},
+};
+
+use futures::Future;
 use strsim::jaro_winkler;
 
 use super::{store_item::Item, text_store::TextStore};
@@ -20,6 +27,8 @@ impl<'a, T: TextStore> Search<'a, T> {
         }
     }
 
+    /// Returns an iterator over each result. Calling `search` without using the result does
+    /// nothing
     pub(crate) fn search(mut self) -> impl Iterator<Item = &'a T::Item> {
         std::iter::from_fn(move || {
             let start = self.last_pos;
@@ -41,6 +50,8 @@ impl<'a, T: TextStore> Search<'a, T> {
         })
     }
 
+    /// Returns Some(&'a T::Item) if the item at position [`i`] matches the query using
+    /// jaro_winkler
     fn match_item(&self, i: usize) -> Option<&'a T::Item> {
         let item = self.text_store.get_at(i);
         let item_text = item.get_text();
@@ -51,15 +62,61 @@ impl<'a, T: TextStore> Search<'a, T> {
             return None;
         }
 
-        let lvst = self.normalized_levenshtein(item_text);
-        if lvst > 0.8 {
+        if self.jaro_winkler(item_text) > 0.8 {
             Some(item)
         } else {
             None
         }
     }
 
-    fn normalized_levenshtein(&self, s1: &str) -> f64 {
+    fn jaro_winkler(&self, s1: &str) -> f64 {
         jaro_winkler(&self.query.to_lowercase(), &s1.to_lowercase())
+    }
+}
+
+/// AsyncSearch implementation for `Search`
+pub(crate) struct AsyncSearch<'a, T: TextStore> {
+    search: Search<'a, T>,
+    result: Vec<&'a T::Item>,
+}
+
+impl<'a, T: TextStore> AsyncSearch<'a, T> {
+    pub(crate) fn new(search: Search<'a, T>) -> Self {
+        Self {
+            search,
+            result: Vec::new(),
+        }
+    }
+}
+
+impl<'a, T: TextStore> Future for AsyncSearch<'a, T> {
+    type Output = Vec<&'a T::Item>;
+
+    fn poll(mut self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Self::Output> {
+        let start = self.search.last_pos;
+
+        if start >= self.search.text_store.len() {
+            // We're done here
+            return Poll::Ready(std::mem::take(&mut self.result));
+        }
+
+        let end = min(self.search.text_store.len(), start + 300);
+
+        for i in start..end {
+            if let Some(item) = self.search.match_item(i) {
+                self.as_mut().result.push(item);
+            }
+        }
+        self.as_mut().search.last_pos = end;
+
+        cx.waker().wake_by_ref();
+
+        return Poll::Pending;
+    }
+}
+
+impl<'a, T: TextStore> From<Search<'a, T>> for AsyncSearch<'a, T> {
+    fn from(search: Search<'a, T>) -> AsyncSearch<'a, T> {
+        AsyncSearch::new(search)
     }
 }

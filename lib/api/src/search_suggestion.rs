@@ -284,7 +284,7 @@ mod foreign {
 
         let dict = SUGGESTIONS.get()?;
 
-        let res = dict.search(query_str, lang)?;
+        let res = dict.search(query_str, lang).await?;
 
         let res = res
             .into_iter()

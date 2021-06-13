@@ -11,7 +11,7 @@ use parse::jmdict::languages::Language;
 use strsim::jaro_winkler;
 use text_store::TextStore;
 
-use self::store_item::Item;
+use self::{jaro_search::AsyncSearch, store_item::Item};
 
 #[derive(Clone)]
 pub struct SuggestionSearch<T: TextStore> {
@@ -24,7 +24,7 @@ impl<T: TextStore> SuggestionSearch<T> {
     }
 
     /// Searches for suggestions in the provided language and uses english as fallback
-    pub fn search<'a>(&'a self, query: &'a str, lang: Language) -> Option<Vec<&'a T::Item>> {
+    pub async fn search<'a>(&'a self, query: &'a str, lang: Language) -> Option<Vec<&'a T::Item>> {
         if query.is_empty() {
             return None;
         }
@@ -36,11 +36,9 @@ impl<T: TextStore> SuggestionSearch<T> {
             res.extend(self.do_search(query, Language::English).unwrap_or_default());
 
             // Do jaro search
-            if query.len() > 4 {
-                println!("do jaro search: {}, {}", res.len(), query.len());
-                // TODO this blocks sometimes very long. Make to future!!
-                // let dict = self.dicts.get(&lang)?;
-                // res.extend(dict.find_jaro(query, 4));
+            if query.len() > 3 {
+                let dict = self.dicts.get(&lang)?;
+                res.extend(dict.find_jaro_async(query, 5).await);
             }
         }
 
@@ -115,6 +113,15 @@ impl<T: TextStore> TextSearch<T> {
         self.jaro_search(query, len_limit).search()
     }
 
+    pub async fn find_jaro_async<'a>(
+        &'a self,
+        query: &'a str,
+        len_limit: usize,
+    ) -> Vec<&'a T::Item> {
+        let search: AsyncSearch<'_, _> = self.jaro_search(query, len_limit).into();
+        search.await
+    }
+
     pub fn find_binary<'a>(&'a self, query: String) -> impl Iterator<Item = &'a T::Item> {
         self.binary_search(query).search()
     }
@@ -125,138 +132,5 @@ impl<T: TextStore> TextSearch<T> {
 
     fn jaro_search<'a>(&'a self, query: &'a str, len_limit: usize) -> JaroSearch<'a, T> {
         JaroSearch::new(query, &self.text_store, len_limit)
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use std::{
-        fs::File,
-        io::{BufRead, BufReader, Write},
-        time::SystemTime,
-    };
-
-    use strsim::jaro_winkler;
-
-    use super::*;
-
-    const TS: &'static [&'static str] = &["a", "abc", "add", "b", "bbc"];
-    const TS2: &'static [&'static str] = &["b", "bbc"];
-    const B_TS: &'static [&'static str] = &["a", "b", "go", "golang", "rust"];
-
-    fn simple_ts() -> TextSearch<'static, &'static [&'static str]> {
-        TextSearch::new(&TS)
-    }
-
-    fn simple_ts2() -> TextSearch<'static, &'static [&'static str]> {
-        TextSearch::new(&TS2)
-    }
-
-    fn bigger_ts() -> TextSearch<'static, &'static [&'static str]> {
-        TextSearch::new(&B_TS)
-    }
-
-    fn simple_dataset() -> Vec<TextSearch<'static, &'static [&'static str]>> {
-        vec![simple_ts(), simple_ts2()]
-    }
-
-    #[test]
-    fn first_matches() {
-        for search in simple_dataset() {
-            let e = search.find_all_bin("b");
-            assert_eq!(e, vec![&"b", &"bbc"]);
-        }
-    }
-
-    #[test]
-    fn one_element_store() {
-        let data = vec!["b"];
-        let search = TextSearch::new(&data);
-        let e = search.find_all_bin("b");
-        assert_eq!(e, vec![&"b"]);
-    }
-
-    #[test]
-    fn empty_query() {
-        for search in simple_dataset() {
-            let e = search.find_all_bin("");
-            let empty: Vec<&&str> = Vec::new();
-            assert_eq!(e, empty);
-        }
-    }
-
-    #[test]
-    fn not_found() {
-        for search in simple_dataset() {
-            let e = search.find_all_bin("0");
-            let empty: Vec<&&str> = Vec::new();
-            assert_eq!(e, empty);
-        }
-    }
-
-    #[test]
-    fn test_2st_matches() {
-        for search in simple_dataset() {
-            let e = search.find_all_bin("bb");
-            assert_eq!(e, vec![&"bbc"]);
-        }
-    }
-
-    #[test]
-    fn one_element_store_not_found() {
-        let data = vec!["b"];
-        let search = TextSearch::new(&data);
-        let e = search.find_all_bin("0");
-        let empty: Vec<&&str> = Vec::new();
-        assert_eq!(e, empty);
-    }
-
-    #[test]
-    fn test_matches_complex() {
-        let search = bigger_ts();
-        let e = search.find_all_bin("go");
-        assert_eq!(e, vec![&"go", &"golang"]);
-    }
-
-    #[test]
-    fn test_matches_complex2() {
-        let search = bigger_ts();
-        let e = search.find_all_bin("ga");
-        let empty: Vec<&&str> = Vec::new();
-        assert_eq!(e, empty);
-    }
-
-    #[test]
-    fn file() {
-        let file = File::open("./output_en.json").unwrap();
-        let reader = BufReader::new(file);
-        let vec: Vec<String> = reader.lines().map(|i| i.unwrap()).collect();
-
-        let searc = TextSearch::new(&vec);
-        let start = SystemTime::now();
-        let res = searc.find_all_bin("music");
-        println!("binary found: {}", res.len());
-        println!("binary took {:?}", start.elapsed());
-    }
-
-    #[test]
-    fn file_lev() {
-        let file = File::open("./output_en.json").unwrap();
-        let reader = BufReader::new(file);
-        let vec: Vec<String> = reader.lines().map(|i| i.unwrap()).collect();
-
-        let searc = TextSearch::new(&vec);
-        let start = SystemTime::now();
-        let query = "cmon";
-        let mut res: Vec<&String> = searc.find_jaro(query, 5).collect();
-        res.sort_by(|l, r| {
-            let l_j = (jaro_winkler(l, query) * 100_f64) as u32;
-            let r_j = (jaro_winkler(r, query) * 100_f64) as u32;
-            r_j.cmp(&l_j)
-        });
-
-        println!("{:#?}", res.iter().take(10000).collect::<Vec<_>>());
-        println!("lev found: {}", res.len());
-        println!("lev took {:?}", start.elapsed());
     }
 }
