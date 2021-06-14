@@ -83,6 +83,9 @@ pub fn pairs_checked(kanji: &str, kana: &str) -> Option<Vec<SentencePart>> {
 }
 
 /// Parses a furigana string into corresponding SentencePartRef's
+///
+/// Input format: [拝金主義|はい|きん|しゅ|ぎ]
+///
 pub fn from_str<'a>(input: &'a str) -> impl Iterator<Item = SentencePartRef<'a>> {
     let mut char_iter = input.char_indices().multipeek();
     let mut kanji_pos: Option<i8> = None;
@@ -151,6 +154,24 @@ pub fn from_str<'a>(input: &'a str) -> impl Iterator<Item = SentencePartRef<'a>>
     })
 }
 
+/// Check wether the passed furigana pairs are representing the given kana text or not
+pub fn check_pairs(pars: &[SentencePart], kana: &str) -> bool {
+    let s: String = pars.iter().map(|i| i.kana.clone()).collect();
+
+    romaji::RomajiExt::to_hiragana(s.as_str()).replace("・", "")
+        == romaji::RomajiExt::to_hiragana(kana).replace("・", "")
+}
+
+/// Returns a default [`SentencePart`], used as alternative if furigana algorithm calculated a
+/// wrong result. This happens when the kanji reading is not equal with the kana reading
+pub fn default_pair(kanji: &str, kana: &str) -> SentencePart {
+    SentencePart {
+        kana: kana.to_owned(),
+        kanji: (!kanji.is_empty()).then(|| kanji.to_owned()),
+    }
+}
+
+/// Builds a `SentencePartRef` from kanji and kana values
 fn format_parts<'a>(kanji: Option<&'a str>, kana: &'a str) -> SentencePartRef<'a> {
     if let Some(kanji) = kanji {
         if kana.is_empty() {
@@ -169,6 +190,7 @@ fn format_parts<'a>(kanji: Option<&'a str>, kana: &'a str) -> SentencePartRef<'a
     }
 }
 
+/// Returns the byte range of kana reading for a given kanji(compound)
 fn find_kana_window(char_iter: &mut MultiPeek<CharIndices>, k_pos: i8) -> Option<(usize, usize)> {
     let mut pipe_counter = 0;
     let kana_window = loop {
@@ -196,6 +218,7 @@ fn find_kana_window(char_iter: &mut MultiPeek<CharIndices>, k_pos: i8) -> Option
     Some(kana_window)
 }
 
+/// Returns the amount of kanji characters whithin the current kanji frame
 fn kanji_count(char_iter: &mut MultiPeek<CharIndices>) -> i32 {
     let mut kanjiparts = 0;
     while let Some((_, c)) = char_iter.peek() {
@@ -209,6 +232,7 @@ fn kanji_count(char_iter: &mut MultiPeek<CharIndices>) -> i32 {
     kanjiparts
 }
 
+/// Returns the amount of furigana parts
 fn furi_count(start: char, char_iter: &mut MultiPeek<CharIndices>) -> i32 {
     let mut furiparts = 0;
     let mut last = start;
@@ -228,23 +252,6 @@ fn furi_count(start: char, char_iter: &mut MultiPeek<CharIndices>) -> i32 {
     }
     char_iter.reset_peek();
     furiparts
-}
-
-/// Check wether the passed furigana pairs are representing the given kana text or not
-pub fn check_pairs(pars: &[SentencePart], kana: &str) -> bool {
-    let s: String = pars.iter().map(|i| i.kana.clone()).collect();
-
-    romaji::RomajiExt::to_hiragana(s.as_str()).replace("・", "")
-        == romaji::RomajiExt::to_hiragana(kana).replace("・", "")
-}
-
-/// Returns a default [`SentencePart`], used as alternative if furigana algorithm calculated a
-/// wrong result. This happens when the kanji reading is not equal with the kana reading
-pub fn default_pair(kanji: &str, kana: &str) -> SentencePart {
-    SentencePart {
-        kana: kana.to_owned(),
-        kanji: (!kanji.is_empty()).then(|| kanji.to_owned()),
-    }
 }
 
 /// Generates all kanji readins from a kanji and kana string an returns them (kanji, kana)
@@ -277,7 +284,7 @@ fn calc_kanji_readings(kanji: &str, kana: &str) -> Option<Vec<(String, String)>>
 
         // Current kanji buff
         curr_kanji.clear();
-        let mut counter = 0;
+        let mut counter = 1;
         let found = loop {
             if kana_pos >= kana.len() {
                 break false;
@@ -326,8 +333,7 @@ fn calc_kanji_readings(kanji: &str, kana: &str) -> Option<Vec<(String, String)>>
     Some(result)
 }
 
-/// Returns true if there are kanji
-/// elements within arr after the given offset
+/// Returns true if there are kanji elements within arr after the given offset
 fn has_kanji_after<T>(arr: &[T], offset: usize) -> bool
 where
     T: JapaneseExt,
