@@ -17,7 +17,7 @@ let colorCodings = [
 
 // Cookies that track the user
 let trackingCookies = [
-    "session_id"
+    "allow_cookies"
 ];
 
 /* ------------------------------------------------------------------- */
@@ -30,14 +30,14 @@ function deleteCookies(deleteAll) {
     var allCookies = document.cookie.split(';');
                 
     for (var i = 0; i < allCookies.length; i++) {
-        if (deleteAll || (!deleteAll && trackingCookies.includes("session_id"))) {
+        if (deleteAll || (!deleteAll && trackingCookies.includes(allCookies[i]))) {
             document.cookie = allCookies[i] + "=;expires="+ new Date(0).toUTCString();}
     }
 }
 
 // Opens the Settings Overlay and accepts cookie usage
 function cookiesAccepted() {
-    Cookies.set("user_agreement", true, {path: '/'});
+    Cookies.set("allow_cookies", "1", {path: '/'});
     Util.showMessage("success", "Cookies accepted!");
 
     $('#cookie-footer').addClass("hidden");
@@ -48,10 +48,6 @@ function cookiesAccepted() {
 // Revokes the right to store user Cookies
 function revokeCookieAgreement(manuallyCalled) {
     deleteCookies(false);
-
-    $('.settingsBtn').each((i, e) => {
-        e.dataset.target = "#cookiesModal";
-    });
 
     $('#cookie-footer').addClass("hidden");
     $('#cookie-agreement-accept').removeClass("hidden");
@@ -128,7 +124,7 @@ function onSettingsChange_AnimationSpeed(event) {
 function loadCookieData() {
 
     // User agreement on using Cookies
-    let user_agreement = Cookies.get("user_agreement");
+    let allow_cookies = Cookies.get("allow_cookies");
 
     // Load search language
     let default_lang = Cookies.get("default_lang");
@@ -141,7 +137,7 @@ function loadCookieData() {
     let anim_speed = Cookies.get("anim_speed");
 
     // Adjust settings btn if user already accepted cookies
-    if (user_agreement == undefined || user_agreement == "false") {
+    if (allow_cookies == undefined || allow_cookies == "0") {
         //$('#cookie-footer').removeClass("hidden");
         $('#cookie-agreement-accept').removeClass("hidden");
         $('#cookie-agreement-revoke').addClass("hidden");
