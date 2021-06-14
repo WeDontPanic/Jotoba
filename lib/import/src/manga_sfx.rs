@@ -17,15 +17,10 @@ pub async fn import(db: &DbPool, path: &str) {
     let mut min_seq = dict::min_sequence(&db).await.expect("db err");
 
     try_join_all(json.into_iter().filter_map(|(sfx_item, translation)| {
-        if let Value::Array(nr) = translation {
+        if let Value::String(translation) = translation {
             let seq = min_seq - 100;
             min_seq = seq;
-            Some(import_sfx(
-                db,
-                seq,
-                sfx_item.to_owned(),
-                nr.iter().map(|i| i.as_str().unwrap().to_owned()).collect(),
-            ))
+            Some(import_sfx(db, seq, sfx_item.to_owned(), translation))
         } else {
             None
         }
@@ -39,15 +34,16 @@ async fn import_sfx(
     db: &DbPool,
     seq: i32,
     jp: String,
-    translations: Vec<String>,
+    translation: &String,
 ) -> Result<(), error::Error> {
     // TODO also search for katakana (or hiragana) version to prevent cross-kana duplicates
     let native = WordSearch::new(db, &jp)
         .with_mode(SearchMode::Exact)
         .with_kana_only(true)
-        .search_native(|_|())
+        .search_native(|_| ())
         .await
-        .unwrap().0;
+        .unwrap()
+        .0;
 
     let seq = {
         if native.is_empty() {
@@ -62,19 +58,16 @@ async fn import_sfx(
             value: jp,
             ..Default::default()
         }],
-        senses: translations
-            .into_iter()
-            .map(|i| EntrySense {
-                lang: Language::English,
-                glosses: vec![GlossValue {
-                    value: i,
-                    language: Language::English,
-                    g_type: None,
-                }],
-                part_of_speech: vec![PartOfSpeech::Sfx],
-                ..Default::default()
-            })
-            .collect::<Vec<_>>(),
+        senses: vec![EntrySense {
+            lang: Language::English,
+            glosses: vec![GlossValue {
+                value: translation.to_owned(),
+                language: Language::English,
+                g_type: None,
+            }],
+            part_of_speech: vec![PartOfSpeech::Sfx],
+            ..Default::default()
+        }],
         sequence: seq as u64,
     };
 
