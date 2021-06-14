@@ -1,8 +1,8 @@
 # Jotoba
-A free online, selfhostable, multilang japanese dictionary.<br>
+A free online, selfhostable, multi-language japanese dictionary based on lots of various free resources.<br>
 Public instance: [jotoba.de](https://jotoba.de)<br>
 
-# Main Team
+# Team
 <table>
      <tr align="center">
           <td><a href="https://github.com/JojiiOfficial">JojiiOfficial</a></td>
@@ -18,45 +18,26 @@ Public instance: [jotoba.de](https://jotoba.de)<br>
      </tr>
 </table>
 
-# Requirements
-- [Jmdict.xml](https://www.edrdg.org/wiki/index.php/JMdict-EDICT_Dictionary_Project)
-- [Kanjidict2](https://www.edrdg.org/wiki/index.php/KANJIDIC_Project)
-- [jmnedict.xml](http://www.edrdg.org/enamdict/enamdict_doc.html)
-- [SVG files]()
-- [Radicals](https://github.com/mifunetoshiro/kanjium/blob/master/data/source_files/radicals.txt/)
-- [Search radicals]()
-- [Kanji elements]()
-- [SVG files]()
-- JLPT patches
-- PostgresDB
-- [Diesel](https://github.com/diesel-rs/diesel) with postgres feature (`cargo install diesel_cli --no-default-features --features postgres`)
+# Dictionary licenses
+Almost all of the data used by https://jotoba.de comes from external sources like [edrdg](http://www.edrdg.org/) 
+for Words, Kanji, Names and Radicales or [WaniKanji](https://www.wanikani.com/) and [Kanjialive](https://kanjialive.com/) for audio sources.
+For a detailed list of used resources and their licenses please visit [https://jotoba.de/about](https://jotoba.de/about).
 
-### Optional
-- [Audio files](https://github.com/tofugu/japanese-vocabulary-pronunciation-audio/tree/master/lib/ogg)
-- Manga SFX
-- Kanji stroke animations
+# Developing
+Jotoba is entirely open source. This allows contributions from everyone who wants to help which are greatly welcomed.<br>
+This being said all API endpoinds exposed by Jotoba are documented and allowed to be used (within a fair amount).<br>
+Refer to [API-Docs](https://github.com/WeDontPanic/Jotoba/tree/master/docs/api) for the API documentations.
 
-# Installation
-1. [Setup a postgres DB](#postgres-installation)
-2. Customize and run `echo DATABASE_URL=postgres://username:password@localhost/jotoba > .env` 
-4. Compile it: `cargo build --release` (The binary will be located in ./target/release/jotoba)
-5. Import kanji and jmdict: <br>
-`jotoba -i --jmdict-path <path-to-jmdic> --kanjidict-path <path-to-kanjidict2>`
-6. Start the server: 
-`jotoba -s`
+# Translations
+Jotoba is aimed to be a multi-language dictionary thus the website is aimed to be fully translated into all available languages.<br>
+However, the main developer of this project don't speak ~10 languages.
+If you're interested in contributing to this project we are thankful for each translation contribution.<br>
+For a guide on how to add translations please refer to the [wiki](https://github.com/WeDontPanic/Jotoba).
 
-# Postgres Installation
-1. Create a database and user with rights:
-```
-CREATE USER jotoba WITH PASSWORD 'pass';
-CREATE DATABASE jotoba with owner jotoba
-     LC_COLLATE 'en_US.utf8' LC_CTYPE 'en_US.utf8' encoding 'utf8'
-     TEMPLATE template0;
-```
+# Selfhosting
+Please refer to the [wiki](https://github.com/WeDontPanic/Jotoba) for a guide on how to host Jotoba yourself.
 
-2. Install [Pgroonga](https://pgroonga.github.io/install/debian.html#install-on-bullseye)
-2. Install groonga-tokenizer-mecab
-2. Run `CREATE EXTENSION pg_trgm;`
-3. Run `CREATE EXTENSION pgroonga;`
-3. Run `diesel migration run`
+# License
+Jotoba itself is licensed under GPL 3.0 or later. 
+Please refer to the [license file](https://github.com/WeDontPanic/Jotoba/blob/master/LICENSE) for further information.
 Joto-kun (including all of his variants) is licensed under [CC BY-NC-ND 4.0](https://creativecommons.org/licenses/by-nc-nd/4.0/).
