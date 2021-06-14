@@ -34,6 +34,9 @@ However, the main developer of this project don't speak ~10 languages.
 If you're interested in contributing to this project we are thankful for each translation contribution.<br>
 For a guide on how to add translations please refer to the [wiki](https://github.com/WeDontPanic/Jotoba).
 
+# Roadmap
+Please refer to our [Trello board](https://trello.com/b/nmG0xgaW/jotoba-roadmap) for a roadmap and the developing progress.
+
 # Selfhosting
 Please refer to the [wiki](https://github.com/WeDontPanic/Jotoba) for a guide on how to host Jotoba yourself.
 
