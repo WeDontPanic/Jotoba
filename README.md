@@ -23,6 +23,9 @@ Almost all of the data used by https://jotoba.de comes from external sources lik
 for Words, Kanji, Names and Radicales or [WaniKanji](https://www.wanikani.com/) and [Kanjialive](https://kanjialive.com/) for audio sources.
 For a detailed list of used resources and their licenses please visit [https://jotoba.de/about](https://jotoba.de/about).
 
+# Roadmap
+Please refer to our [Trello board](https://trello.com/b/nmG0xgaW/jotoba-roadmap) for a roadmap and the developing progress.
+
 # Developing
 Jotoba is entirely open source. Contributions are highly welcome and can be made by anyone who wants to help Jotoba grow.<br>
 That being said, all API endpoints exposed by Jotoba are documented and allowed to be used (within a fair amount).<br>
