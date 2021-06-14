@@ -13,38 +13,55 @@ let colorIdentifiers = [
 let colorCodings = [
     "0gú*+q", "1hó&-r", "2ií$%s", "3jté.M", "4ku~,N", "5lv\\§O", "6mw}/P", "7nx]:Q", "8oy[;R", "9pz{?S",
     "AaG@)T", "BbH°(U", "CdI^_V", "DYJ´!W", "EeK'#X", "FfL=áZ",
-]
+];
+
+// Cookies that track the user
+let trackingCookies = [
+    "session_id"
+];
 
 /* ------------------------------------------------------------------- */
 
 // On load, get all the cookie's data
 loadCookieData();
 
+// Deletes all stored cookies
+function deleteCookies(deleteAll) {
+    var allCookies = document.cookie.split(';');
+                
+    for (var i = 0; i < allCookies.length; i++) {
+        if (deleteAll || (!deleteAll && trackingCookies.includes("session_id"))) {
+            document.cookie = allCookies[i] + "=;expires="+ new Date(0).toUTCString();}
+    }
+}
+
 // Opens the Settings Overlay and accepts cookie usage
 function cookiesAccepted() {
     Cookies.set("user_agreement", true, {path: '/'});
-    let settingsBtns =  $('.settingsBtn')
-        settingsBtns.each((i, e) => {
-            e.dataset.target = "#settingsModal";
-        });
+    Util.showMessage("success", "Cookies accepted!");
 
-    setTimeout(function() {
-        if (!$('#settingsModal').hasClass("show")) 
-            settingsBtns[0].click();
-    }, 400);
+    $('#cookie-footer').addClass("hidden");
+    $('#cookie-agreement-accept').addClass("hidden");
+    $('#cookie-agreement-revoke').removeClass("hidden");
 }
 
 // Revokes the right to store user Cookies
-function revokeCookieAgreement() {
-    Util.deleteCookies();
+function revokeCookieAgreement(manuallyCalled) {
+    deleteCookies(false);
 
     $('.settingsBtn').each((i, e) => {
         e.dataset.target = "#cookiesModal";
     });
 
-    $('#settingsModal').modal('hide');
+    $('#cookie-footer').addClass("hidden");
+    $('#cookie-agreement-accept').removeClass("hidden");
+    $('#cookie-agreement-revoke').addClass("hidden");
 
-    Util.showMessage("success", "Successfully deleted your cookie data.")
+    if (manuallyCalled) {
+        Util.showMessage("success", "Successfully deleted your cookie data.");
+    } else {
+        Util.showMessage("success", "Your personal data will not be saved.");
+    }
 }
 
 // Changes the color that the caller represents
@@ -111,7 +128,7 @@ function onSettingsChange_AnimationSpeed(event) {
 function loadCookieData() {
 
     // User agreement on using Cookies
-    let user_agreement = true; //Cookies.get("user_agreement");
+    let user_agreement = Cookies.get("user_agreement");
 
     // Load search language
     let default_lang = Cookies.get("default_lang");
@@ -124,10 +141,10 @@ function loadCookieData() {
     let anim_speed = Cookies.get("anim_speed");
 
     // Adjust settings btn if user already accepted cookies
-    if (user_agreement !== undefined) {
-        $('.settingsBtn').each((i, e) => {
-            e.dataset.target = "#settingsModal";
-        });
+    if (user_agreement == undefined || user_agreement == "false") {
+        //$('#cookie-footer').removeClass("hidden");
+        $('#cookie-agreement-accept').removeClass("hidden");
+        $('#cookie-agreement-revoke').addClass("hidden");
     }
 
     // Set Default_Lang 

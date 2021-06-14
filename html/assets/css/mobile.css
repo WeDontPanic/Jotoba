@@ -331,6 +331,10 @@
     .rad-btn {
         width: 11.9%;
     }
+
+    .rad-picker-icon {
+        font-size: 30px;
+    }
   
     /* -------- Mobile only -------- */
 

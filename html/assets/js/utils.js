@@ -129,15 +129,6 @@ Util.scrollTo = function (final, duration) {
     window.requestAnimationFrame(animateScroll);
 };
   
-// Deletes all stored cookies
-Util.deleteCookies = function() {
-    var allCookies = document.cookie.split(';');
-                
-    for (var i = 0; i < allCookies.length; i++)
-        document.cookie = allCookies[i] + "=;expires="
-        + new Date(0).toUTCString();
-}
-
 // Checks if a given element is overflown
 Util.checkOverflow = function checkOverflow(el) {
    var curOverflow = el.style.overflow;
