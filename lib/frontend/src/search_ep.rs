@@ -5,11 +5,12 @@ use std::{
 
 use super::user_settings;
 
+use actix_session::Session;
 use actix_web::{web, HttpRequest, HttpResponse};
 use localization::TranslationDict;
 use serde::Deserialize;
 
-use crate::{templates, BaseData};
+use crate::{session, templates, BaseData};
 use config::Config;
 use models::DbPool;
 use search::{
@@ -69,17 +70,20 @@ pub async fn search(
     locale_dict: web::Data<Arc<TranslationDict>>,
     config: web::Data<Config>,
     request: HttpRequest,
+    session: Session,
 ) -> Result<HttpResponse, web_error::Error> {
-    let query_data = query_data.adjust();
-
     let settings = user_settings::parse(&request);
 
-    let query = match query_data.as_query_parser(settings).parse() {
+    session::init(&session, &settings);
+
+    // Parse query and redirect to home on error
+    let query = match query_data.adjust().as_query_parser(settings).parse() {
         Some(k) => k,
         None => return Ok(redirect_home()),
     };
 
     let start = SystemTime::now();
+
     // Perform the requested type of search and return base-data to display
     let site_data = match query.type_ {
         QueryType::Kanji => kanji_search(&pool, &locale_dict, settings, &query).await,

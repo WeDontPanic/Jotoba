@@ -1,5 +1,15 @@
 include!(concat!(env!("OUT_DIR"), "/templates.rs"));
 
+#[macro_use]
+mod actix_ructe;
+
+pub mod about;
+pub mod index;
+pub mod search_ep;
+mod session;
+pub mod user_settings;
+pub mod web_error;
+
 use std::fmt::Display;
 
 use localization::{
@@ -10,15 +20,6 @@ use localization::{
 use models::name::Name;
 use parse::jmdict;
 use search::query::Query;
-
-#[macro_use]
-mod actix_ructe;
-
-pub mod about;
-pub mod index;
-pub mod search_ep;
-pub mod user_settings;
-pub mod web_error;
 
 use search::{
     kanji::result::Item as KanjiItem, query::UserSettings, query_parser::QueryType,

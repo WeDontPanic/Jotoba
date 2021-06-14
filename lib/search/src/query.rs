@@ -31,6 +31,7 @@ pub struct UserSettings {
     pub user_lang: Language,
     pub show_english: bool,
     pub english_on_top: bool,
+    pub cookies_enabled: bool,
 }
 
 impl PartialEq for UserSettings {
@@ -52,6 +53,7 @@ impl Default for UserSettings {
             show_english: true,
             user_lang: Language::default(),
             english_on_top: false,
+            cookies_enabled: false,
         }
     }
 }

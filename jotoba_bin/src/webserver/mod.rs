@@ -1,5 +1,6 @@
 mod cache_control;
 
+use actix_session::CookieSession;
 use localization::TranslationDict;
 use tokio_postgres::Client;
 
@@ -35,6 +36,7 @@ pub(super) async fn start(db: DbPool, async_postgres: Client) -> std::io::Result
     if let Some(ref sentry_config) = config.sentry {
         use std::mem::ManuallyDrop;
 
+        // We want to run sentry all the time so don't drop here
         let _guard = ManuallyDrop::new(sentry::init((
             sentry_config.dsn.as_str(),
             sentry::ClientOptions {
@@ -42,6 +44,7 @@ pub(super) async fn start(db: DbPool, async_postgres: Client) -> std::io::Result
                 ..Default::default()
             },
         )));
+
         std::env::set_var("RUST_BACKTRACE", "1");
     }
 
@@ -60,6 +63,7 @@ pub(super) async fn start(db: DbPool, async_postgres: Client) -> std::io::Result
             .data(locale_dict_arc.clone())
             // Middlewares
             .wrap(middleware::Logger::default())
+            .wrap(CookieSession::signed(&[0; 32]).secure(false))
             .wrap(middleware::Compress::default())
             // Static files
             .route("/index.html", actixweb::get().to(frontend::index::index))

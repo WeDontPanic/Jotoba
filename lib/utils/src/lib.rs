@@ -1,4 +1,5 @@
 use itertools::Itertools;
+use rand::{distributions::Alphanumeric, thread_rng, Rng};
 use std::cmp::Ordering;
 
 /// Return true if both slices have the same elments without being stored to be in the same order
@@ -192,4 +193,13 @@ pub fn first_letter_upper(s: &str) -> String {
         None => String::new(),
         Some(f) => f.to_uppercase().chain(c).collect(),
     }
+}
+
+/// Returns a random alpha numeric string with the length of [`len`]
+pub fn rand_alpha_numeric(len: usize) -> String {
+    thread_rng()
+        .sample_iter(&Alphanumeric)
+        .take(len)
+        .map(char::from)
+        .collect()
 }

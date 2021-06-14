@@ -22,10 +22,21 @@ pub(super) fn parse(request: &HttpRequest) -> UserSettings {
         .unwrap_or_else(|| UserSettings::default().english_on_top)
         && show_english;
 
+    let cookies_enabled = request
+        .cookie("allow_cookies")
+        .and_then(|i| {
+            let c: u8 = i.value().parse().ok()?;
+            Some(c == 1)
+        })
+        .unwrap_or_else(|| UserSettings::default().cookies_enabled);
+
+    println!("cookies: {}", cookies_enabled);
+
     UserSettings {
         user_lang,
         show_english,
         english_on_top,
+        cookies_enabled,
         ..Default::default()
     }
 }

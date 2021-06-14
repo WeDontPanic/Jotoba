@@ -33,6 +33,7 @@ log = "0.4.14"
 sentry-actix = { version = "0.22.0", optional = true }
 sentry = { version = "0.22.0", optional = true }
 tokio-postgres = "0.7.2"
+actix-session = "0.4.1"
 
 [features]
 tokenizer = [ "search/tokenizer", "models/tokenizer", "japanese/tokenizer" ]
