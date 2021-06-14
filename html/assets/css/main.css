@@ -105,6 +105,10 @@ h4 {
     text-align: unset;
 }
 
+.text-left {
+    text-align: left;
+}
+
 .top-padding-05-rem {
     padding-top: 0.5rem
 }
@@ -140,13 +144,6 @@ a:hover {
 .fat {
     font-weight: bold;
 }
-
-.about_title {
-    font-size: 22px;
-    font-weight: bold;
-    color: var(--primaryColor); 
-}
-
 
 /* ----------------- Search Row ----------------- */
 
@@ -358,6 +355,24 @@ input[type="color"] {
 
 .mdl-tooltip {
     font-size: 12px;
+}
+
+.cookie-footer {
+    display: block;
+    position: fixed;
+    left: 10%;
+    bottom: 0;
+    width: 80%;
+    padding: 10px;
+    background: var(--overlay);
+    border: 2px solid var( --tagColor);
+    border-radius: 10px 10px 0px 0px;
+    border-bottom: 0px;
+}
+
+.cookie-btn {
+    margin-top: 10px;
+    margin-right: 10px;
 }
 
 /* ----------------- Main Page container ----------------- */
@@ -720,6 +735,13 @@ footer {
     width: 63%;
     padding-right: 10%;
 }
+
+.about_title {
+    font-size: 22px;
+    font-weight: bold;
+    color: var(--primaryColor); 
+}
+
 
 /* ---------------------- Stroke Order / Kanji Page Unique Stuff --------------------- */
 .stroke-container {
