@@ -24,18 +24,15 @@ for Words, Kanji, Names and Radicales or [WaniKanji](https://www.wanikani.com/) 
 For a detailed list of used resources and their licenses please visit [https://jotoba.de/about](https://jotoba.de/about).
 
 # Developing
-Jotoba is entirely open source. This allows contributions from everyone who wants to help which are greatly welcomed.<br>
-This being said all API endpoinds exposed by Jotoba are documented and allowed to be used (within a fair amount).<br>
+Jotoba is entirely open source. Contributions are highly welcome and can be made by anyone who wants to help Jotoba grow.<br>
+That being said, all API endpoints exposed by Jotoba are documented and allowed to be used (within a fair amount).<br>
 Refer to [API-Docs](https://github.com/WeDontPanic/Jotoba/tree/master/docs/api) for the API documentations.
 
 # Translations
 Jotoba is aimed to be a multi-language dictionary thus the website is aimed to be fully translated into all available languages.<br>
-However, the main developer of this project don't speak ~10 languages.
+However, the main developers of this project don't speak ~10 languages.
 If you're interested in contributing to this project we are thankful for each translation contribution.<br>
 For a guide on how to add translations please refer to the [wiki](https://github.com/WeDontPanic/Jotoba).
-
-# Roadmap
-Please refer to our [Trello board](https://trello.com/b/nmG0xgaW/jotoba-roadmap) for a roadmap and the developing progress.
 
 # Selfhosting
 Please refer to the [wiki](https://github.com/WeDontPanic/Jotoba) for a guide on how to host Jotoba yourself.
