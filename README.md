@@ -19,9 +19,9 @@ Public instance: [jotoba.de](https://jotoba.de)<br>
 </table>
 
 # Dictionary licenses
-Almost all of the data used by https://jotoba.de comes from external sources like [edrdg](http://www.edrdg.org/) 
+Almost all of the data used by [jotoba.de](https://jotoba.de) comes from external sources like [edrdg](http://www.edrdg.org/) 
 for Words, Kanji, Names and Radicales or [WaniKanji](https://www.wanikani.com/) and [Kanjialive](https://kanjialive.com/) for audio sources.
-For a detailed list of used resources and their licenses please visit [https://jotoba.de/about](https://jotoba.de/about).
+For a detailed list of used resources and their licenses please visit [jotoba.de/about](https://jotoba.de/about).
 
 # Roadmap
 Please refer to our [Trello board](https://trello.com/b/nmG0xgaW/jotoba-roadmap) for a roadmap and the developing progress.
