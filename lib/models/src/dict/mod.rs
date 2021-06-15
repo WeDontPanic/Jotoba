@@ -341,6 +341,17 @@ pub async fn reading_exists(db: &DbPool, r: &str) -> Result<bool, Error> {
         .await?)
 }
 
+/// Returns sequence id of the passed word
+pub async fn get_word_sequence(db: &DbPool, r: &str) -> Result<i32, Error> {
+    use crate::schema::dict::dsl::*;
+    Ok(dict
+        .select(sequence)
+        .filter(reading.eq_all(r))
+        .limit(1)
+        .get_result_async(&db)
+        .await?)
+}
+
 /// Returns Ok(true) if at least one dict exists in the Db
 pub async fn exists(db: &DbPool) -> Result<bool, Error> {
     use crate::schema::dict::dsl::*;

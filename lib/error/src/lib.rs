@@ -21,10 +21,33 @@ pub enum Error {
 
 /// Map a diesel not-found error to Error::NotFound
 /// Other diesel errors will be handled noramlly
+pub fn map_notfound_async(err: AsyncError) -> Error {
+    match err {
+        AsyncError::Checkout(c) => Error::Checkout(c),
+        AsyncError::Error(e) => map_notfound(e),
+    }
+}
+
+/// Map a diesel not-found error to Error::NotFound
+/// Other diesel errors will be handled noramlly
 pub fn map_notfound(err: DbError) -> Error {
     match err {
         DbError::NotFound => Error::NotFound,
         _ => err.into(),
+    }
+}
+
+pub fn db_to_option<T>(res: Result<T, Error>) -> Result<Option<T>, Error> {
+    match res {
+        Ok(v) => Ok(Some(v)),
+        Err(err) => match err {
+            Error::NotFound => Ok(None),
+            Error::DbError(e) => match e {
+                DbError::NotFound => Ok(None),
+                _ => Err(e.into()),
+            },
+            _ => Err(err),
+        },
     }
 }
 

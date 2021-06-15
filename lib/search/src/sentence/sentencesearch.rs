@@ -1,5 +1,4 @@
-use diesel::prelude::*;
-use diesel::{EqAll, JoinOnDsl, QueryDsl};
+use diesel::{prelude::*, EqAll, QueryDsl};
 use itertools::Itertools;
 use japanese::JapaneseExt;
 use tokio_diesel::AsyncRunQueryDsl;
@@ -7,14 +6,14 @@ use tokio_diesel::AsyncRunQueryDsl;
 use super::result;
 use error::Error;
 use models::{
-    dict::Dict,
     sentence::{Sentence, SentenceVocabulary, Translation},
     DbPool,
 };
 use parse::jmdict::languages::Language;
 
-/// The default limit of sentence results
-const DEFAULT_LIMIT: i32 = 10;
+/// The default limit of sentence results. This doesn't represent the max count of sentences being
+/// shown to the user but to reduce weight on the DB
+const DEFAULT_LIMIT: i64 = 100;
 
 #[derive(Clone, Copy)]
 pub(super) struct SentenceSearch<'a> {
@@ -22,7 +21,7 @@ pub(super) struct SentenceSearch<'a> {
     query: &'a str,
     target_lang: Language,
     offset: i32,
-    limit: i32,
+    limit: i64,
 }
 
 impl<'a> SentenceSearch<'a> {
@@ -36,7 +35,7 @@ impl<'a> SentenceSearch<'a> {
         }
     }
 
-    fn get_limit(&self) -> i32 {
+    fn get_limit(&self) -> i64 {
         if self.limit > 0 {
             self.limit
         } else {
@@ -44,7 +43,7 @@ impl<'a> SentenceSearch<'a> {
         }
     }
 
-    // TODO Improve matching for verbs/adjectives
+    /// Finds sentences based by japanese input
     pub(super) async fn by_jp(&self) -> Result<Vec<result::Sentence>, Error> {
         use models::schema::sentence::dsl::*;
         use models::schema::sentence_translation;
@@ -59,6 +58,7 @@ impl<'a> SentenceSearch<'a> {
                         .or(sentence_translation::language.eq_all(Language::English)),
                 )
                 .filter(kana.text_search(self.query))
+                .limit(self.get_limit())
                 .offset(self.offset as i64)
                 .load_async::<(Sentence, Translation)>(self.db)
                 .await?
@@ -72,9 +72,18 @@ impl<'a> SentenceSearch<'a> {
                 )
                 .filter(content.text_search(self.query))
                 .offset(self.offset as i64)
+                .limit(self.get_limit())
                 .load_async::<(Sentence, Translation)>(self.db)
                 .await?
         };
+
+        // Serach for sentences where
+        let dict_res = self.get_dict_matches(self.query).await?;
+
+        let mut res: Vec<(Sentence, Translation)> = res.into_iter().chain(dict_res).collect_vec();
+
+        // Remove duplicates which could come from `dict_res`
+        res.dedup_by(|a, b| a.0.id == b.0.id);
 
         let mut res = merge_results(res, self.target_lang);
         res.sort_by(|a, b| a.content.len().cmp(&b.content.len()));
@@ -83,6 +92,40 @@ impl<'a> SentenceSearch<'a> {
         Ok(res)
     }
 
+    /// Returns a set of sentences if query is found as dictionary word. The sentences getting
+    /// returned are those which are mapped to this dictionary word
+    async fn get_dict_matches(
+        &self,
+        query: &'a str,
+    ) -> Result<Vec<(Sentence, Translation)>, Error> {
+        use models::schema::sentence::dsl::*;
+        use models::schema::sentence_translation;
+        use models::schema::sentence_vocabulary;
+
+        let seq_id = error::db_to_option(models::dict::get_word_sequence(self.db, query).await)?;
+        if seq_id.is_none() {
+            return Ok(vec![]);
+        }
+        let seq_id = seq_id.unwrap();
+
+        let res = sentence
+            .inner_join(sentence_translation::table)
+            .inner_join(sentence_vocabulary::table)
+            .filter(
+                sentence_translation::language
+                    .eq_all(self.target_lang)
+                    .or(sentence_translation::language.eq_all(Language::English)),
+            )
+            .filter(sentence_vocabulary::dict_sequence.eq_all(seq_id))
+            .offset(self.offset as i64)
+            .limit(self.get_limit())
+            .load_async::<(Sentence, Translation, SentenceVocabulary)>(self.db)
+            .await?;
+
+        Ok(res.into_iter().map(|(s, t, _)| (s, t)).collect())
+    }
+
+    /// Finds sentences for foreign query input
     pub(super) async fn by_foreign(&self) -> Result<Vec<result::Sentence>, Error> {
         use models::schema::sentence::dsl::*;
         use models::schema::sentence_translation;
@@ -106,6 +149,7 @@ impl<'a> SentenceSearch<'a> {
         Ok(res)
     }
 
+    /*
     pub(super) async fn get_vocabularies(
         db: &DbPool,
         s_id: i32,
@@ -131,8 +175,10 @@ impl<'a> SentenceSearch<'a> {
             .map(|(voc, dict)| (dict.reading, voc))
             .collect_vec())
     }
+    */
 }
 
+/// Merge Sentences and its translations into one `result::Sentence`
 fn merge_results(items: Vec<(Sentence, Translation)>, lang: Language) -> Vec<result::Sentence> {
     items
         .into_iter()

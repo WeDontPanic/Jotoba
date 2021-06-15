@@ -65,8 +65,9 @@ CREATE TABLE kanji_meaning(
   value TEXT NOT NULL,
   foreign key (kanji_id) references kanji(id)
 );
-CREATE INDEX index_kanji_meaning_value on kanji_meaning using pgroonga (value);
+CREATE INDEX index_kanji_meaning_value_pgroonga on kanji_meaning using pgroonga (value);
 CREATE INDEX index_kanji_meaning_value_text_pattern_ops on kanji_meaning (value text_pattern_ops);
+CREATE INDEX index_kanji_meaning_valuek ON sentence (content);
 
 CREATE TABLE name (
   id SERIAL PRIMARY KEY,
@@ -92,8 +93,8 @@ CREATE INDEX index_sentence_content_pattern_ops on sentence (content text_patter
 CREATE INDEX index_sentence_content ON sentence (content);
 
 CREATE INDEX index_sentence_kana_pgroonga ON sentence using pgroonga (kana) WITH (tokenizer='TokenMecab');
-CREATE INDEX index_sentence_kana ON sentence (kana);
 CREATE INDEX index_sentence_kana_pattern_ops on sentence (kana text_pattern_ops);
+CREATE INDEX index_sentence_kana ON sentence (kana);
 
 CREATE TABLE sentence_translation (
   id SERIAL PRIMARY KEY,
@@ -104,6 +105,7 @@ CREATE TABLE sentence_translation (
 );
 CREATE INDEX index_sentence_translation_content ON sentence_translation using pgroonga (content);
 CREATE INDEX index_sentence_translation_language ON sentence_translation (language);
+CREATE INDEX index_sentence_translation_sentence_id ON sentence_translation (sentence_id);
 
 CREATE TABLE sentence_vocabulary (
   id SERIAL PRIMARY KEY,
@@ -112,6 +114,8 @@ CREATE TABLE sentence_vocabulary (
   start INTEGER NOT NULL,
   foreign key (sentence_id) references sentence(id)
 );
+CREATE INDEX index_sentence_vocabulary_sentence_id ON sentence_vocabulary (sentence_id);
+CREATE INDEX index_sentence_vocabulary_dict_sequence ON sentence_vocabulary (dict_sequence);
 
 CREATE TABLE radical (
   id INTEGER PRIMARY KEY,
