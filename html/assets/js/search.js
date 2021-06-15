@@ -286,8 +286,11 @@ function getApiData() {
 
     // Create the JSON
     let lang = Cookies.get("default_lang");
+    let type = $('#search-type').val();
+
     let inputJSON = {
         "input": input.value,
+        "search_type": type,
         "lang": lang === undefined ? "en-US" : lang
     }
 

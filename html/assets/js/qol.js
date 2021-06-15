@@ -138,7 +138,6 @@ function copyTranslationAndShowMessage(textParent) {
 
 // Changes the search type in the upper row depending on the users input
 function changeSearchType(html, newType) {
-    console.log("type called: "+html + " -> " + newType)
     var search_value = $('#search').val();
     if (search_value.length > 0) {
         var params = new URLSearchParams();
