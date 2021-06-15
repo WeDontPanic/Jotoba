@@ -125,6 +125,10 @@ function loadCookieData() {
 
     // User agreement on using Cookies
     let allow_cookies = Cookies.get("allow_cookies");
+    if (!checkTrackingAllowed()) {
+        allow_cookies = undefined;
+        Cookies.set("allow_cookies", 0);
+    }
 
     // Load search language
     let default_lang = Cookies.get("default_lang");
@@ -197,6 +201,19 @@ function setColorFromCookie() {
     });
 
     setSpecialColorVars();
+}
+
+// Check if the current browsers doesn't want the user to be tracked
+function checkTrackingAllowed() {
+    if (window.doNotTrack || navigator.doNotTrack || navigator.msDoNotTrack || 'msTrackingProtectionEnabled' in window.external) {
+        if (window.doNotTrack == "1" || navigator.doNotTrack == "yes" || navigator.doNotTrack == "1" || navigator.msDoNotTrack == "1" || window.external.msTrackingProtectionEnabled()) {
+            return false;
+        } else {
+            return true;
+        }
+    } else {
+        return true;
+    }
 }
 
 // Loads all colors form the given array

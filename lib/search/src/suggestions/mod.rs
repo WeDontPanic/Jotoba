@@ -52,7 +52,7 @@ impl<T: TextStore> SuggestionSearch<T> {
         });
 
         // Remove duplicates
-        res.dedup_by(|a, b| a.get_text() == b.get_text());
+        res.dedup_by(|a, b| a.get_hash() == b.get_hash() || a.get_text() == b.get_text());
 
         Some(res)
     }

@@ -590,6 +590,10 @@ footer {
     margin-right: 10px;
 }
 
+.kanji-entry-parent {
+    max-width: 1000px;
+}
+
 .kanji-entry {
     height: fit-content;
     padding-bottom: 10px;
@@ -736,7 +740,7 @@ footer {
     padding-right: 10%;
 }
 
-.about_title {
+.about-title {
     font-size: 22px;
     font-weight: bold;
     color: var(--primaryColor); 
