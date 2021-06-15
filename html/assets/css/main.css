@@ -590,6 +590,10 @@ footer {
     margin-right: 10px;
 }
 
+.kanji-entry-parent {
+    max-width: 1000px;
+}
+
 .kanji-entry {
     height: fit-content;
     padding-bottom: 10px;
