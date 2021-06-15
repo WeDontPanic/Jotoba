@@ -3,7 +3,7 @@ use itertools::Itertools;
 use japanese::JapaneseExt;
 use tokio_diesel::AsyncRunQueryDsl;
 
-use super::result;
+use super::{order::NativeOrder, result};
 use error::Error;
 use models::{
     sentence::{Sentence, SentenceVocabulary, Translation},
@@ -14,6 +14,9 @@ use parse::jmdict::languages::Language;
 /// The default limit of sentence results. This doesn't represent the max count of sentences being
 /// shown to the user but to reduce weight on the DB
 const DEFAULT_LIMIT: i64 = 100;
+
+/// The default limit for the items to display
+const DISPLAY_LIMIT: i64 = 10;
 
 #[derive(Clone, Copy)]
 pub(super) struct SentenceSearch<'a> {
@@ -32,6 +35,14 @@ impl<'a> SentenceSearch<'a> {
             target_lang,
             limit: 0,
             offset: 0,
+        }
+    }
+
+    fn get_display_limit(&self) -> i64 {
+        if self.limit > 0 {
+            self.limit
+        } else {
+            DISPLAY_LIMIT
         }
     }
 
@@ -86,8 +97,8 @@ impl<'a> SentenceSearch<'a> {
         res.dedup_by(|a, b| a.0.id == b.0.id);
 
         let mut res = merge_results(res, self.target_lang);
-        res.sort_by(|a, b| a.content.len().cmp(&b.content.len()));
-        res.truncate(self.get_limit() as usize);
+        NativeOrder::new(&self.query).sort(&mut res);
+        res.truncate(self.get_display_limit() as usize);
 
         Ok(res)
     }
@@ -145,7 +156,7 @@ impl<'a> SentenceSearch<'a> {
 
         let mut res = merge_results(res, self.target_lang);
         res.sort_by(|a, b| a.content.len().cmp(&b.content.len()));
-        res.truncate(self.get_limit() as usize);
+        res.truncate(self.get_display_limit() as usize);
         Ok(res)
     }
 
