@@ -384,6 +384,7 @@ dependencies = [
  "config",
  "diesel",
  "error",
+ "eudex",
  "futures",
  "itertools",
  "japanese",
@@ -1109,6 +1110,12 @@ dependencies = [
  "tokio-diesel",
  "tokio-postgres",
 ]
+
+[[package]]
+name = "eudex"
+version = "0.1.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "95cb9bf0969366245682aedd5197be1491f2a044fc99c45564710b22b0e9ac87"
 
 [[package]]
 name = "event-listener"
@@ -2680,6 +2687,7 @@ dependencies = [
  "cache",
  "diesel",
  "error",
+ "eudex",
  "futures",
  "itertools",
  "japanese",

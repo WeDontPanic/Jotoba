@@ -43,6 +43,9 @@ impl<T: TextStore> SuggestionSearch<T> {
         }
 
         // Order by best match against `query`
+        // TODO don't use jaro_winkler algorithm within order function since its way to heavy
+        // Idea: calculate jaro_winkler for each entry once and then use this set to compare the
+        // values
         res.sort_by(|l, r| {
             Self::result_order_value(query, r.get_text())
                 .cmp(&Self::result_order_value(query, l.get_text()))

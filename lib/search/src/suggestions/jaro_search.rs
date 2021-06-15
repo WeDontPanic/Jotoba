@@ -4,10 +4,8 @@ use std::{
     task::{Context, Poll},
 };
 
-use futures::Future;
-use strsim::jaro_winkler;
-
 use super::{store_item::Item, text_store::TextStore};
+use futures::Future;
 
 /// Represents a binary search adjusted for starts_with search
 pub(crate) struct Search<'a, T: TextStore> {
@@ -15,6 +13,8 @@ pub(crate) struct Search<'a, T: TextStore> {
     text_store: &'a T,
     last_pos: usize,
     len_limit: usize,
+    eudex_hash: eudex::Hash,
+    query_len: usize,
 }
 
 impl<'a, T: TextStore> Search<'a, T> {
@@ -24,6 +24,8 @@ impl<'a, T: TextStore> Search<'a, T> {
             text_store,
             last_pos: 0,
             len_limit,
+            eudex_hash: eudex::Hash::new(query),
+            query_len: query.len(),
         }
     }
 
@@ -50,27 +52,17 @@ impl<'a, T: TextStore> Search<'a, T> {
         })
     }
 
-    /// Returns Some(&'a T::Item) if the item at position [`i`] matches the query using
-    /// jaro_winkler
+    /// Returns Some(&'a T::Item) if the item at position [`i`] matches the query using eudex hash
     fn match_item(&self, i: usize) -> Option<&'a T::Item> {
         let item = self.text_store.get_at(i);
         let item_text = item.get_text();
 
         // Filter out impossible/unlike matches
-        if self.query.len() > item_text.len() || self.query.len() + self.len_limit < item_text.len()
-        {
+        if self.query_len > item_text.len() || self.query_len + self.len_limit < item_text.len() {
             return None;
         }
 
-        if self.jaro_winkler(item_text) > 0.8 {
-            Some(item)
-        } else {
-            None
-        }
-    }
-
-    fn jaro_winkler(&self, s1: &str) -> f64 {
-        jaro_winkler(&self.query.to_lowercase(), &s1.to_lowercase())
+        (self.eudex_hash - item.get_hash()).similar().then(|| item)
     }
 }
 
@@ -100,7 +92,7 @@ impl<'a, T: TextStore> Future for AsyncSearch<'a, T> {
             return Poll::Ready(std::mem::take(&mut self.result));
         }
 
-        let end = min(self.search.text_store.len(), start + 300);
+        let end = min(self.search.text_store.len(), start + 2500);
 
         for i in start..end {
             if let Some(item) = self.search.match_item(i) {

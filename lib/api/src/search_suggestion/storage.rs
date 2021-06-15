@@ -21,11 +21,16 @@ use super::SUGGESTIONS;
 pub struct SuggestionItem {
     pub text: String,
     pub sequence: i32,
+    pub hash: eudex::Hash,
 }
 
 impl store_item::Item for SuggestionItem {
     fn get_text(&self) -> &str {
         &self.text
+    }
+
+    fn get_hash(&self) -> eudex::Hash {
+        self.hash
     }
 }
 
@@ -37,6 +42,8 @@ impl FromStr for SuggestionItem {
         let number: i32 = split.next().ok_or(error::Error::ParseError)?.parse()?;
         let text: String = split.rev().join(",");
         Ok(SuggestionItem {
+            // generate hash here so lookups will be much faster
+            hash: eudex::Hash::new(&text),
             text,
             sequence: number,
         })
