@@ -1,7 +1,12 @@
 @use search::kanji::result::Item;
 @use crate::BaseData;
+@use super::search_help;
 
 @(data: &BaseData, kanji: Vec<Item>)
+
+@if kanji.is_empty() {
+  @:search_help(&data, data.gettext("kanji"))
+}
 
 <!-- Inner Main Body -->
 @for (kpos, k_item) in kanji.iter().enumerate() {
