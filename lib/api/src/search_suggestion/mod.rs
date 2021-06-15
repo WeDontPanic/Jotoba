@@ -39,6 +39,10 @@ pub struct Request {
     /// The user configured language
     #[serde(default)]
     pub lang: String,
+
+    /// The search type the input is designed for
+    #[serde(default)]
+    pub search_type: QueryType,
 }
 
 impl Request {
@@ -60,6 +64,7 @@ impl Request {
         Self {
             input: query_str.to_owned(),
             lang: self.lang.to_owned(),
+            search_type: self.search_type,
         }
     }
 
@@ -67,8 +72,7 @@ impl Request {
     fn get_query(&self) -> Result<Query, RestError> {
         let query_str = self.input.clone();
 
-        // Doesn't matter here
-        let search_type = QueryType::Words;
+        let search_type = self.search_type;
 
         let settings = UserSettings {
             user_lang: self.get_language(),
@@ -136,13 +140,24 @@ pub async fn suggestion_ep(
     Ok(Json(result))
 }
 
-/// Returns suggestions based on the query. Applies various approaches to give better results
+/// Returns best matching suggestions for the given query
 async fn get_suggestions(pool: &Client, query: Query) -> Result<Response, RestError> {
-    let response = get_suggestion_by_query(pool, &query).await?;
+    match query.type_ {
+        QueryType::Sentences | QueryType::Words => get_word_suggestions(pool, query).await,
+        // TODO kanji suggestions
+        QueryType::Kanji => Ok(Response::default()),
+        // TODO name suggestions
+        QueryType::Names => Ok(Response::default()),
+    }
+}
+
+/// Returns word suggestions based on the query. Applies various approaches to give better results
+async fn get_word_suggestions(pool: &Client, query: Query) -> Result<Response, RestError> {
+    let response = try_word_suggestions(pool, &query).await?;
 
     // Tries to do a katakana search if nothing was found
     let result = if response.suggestions.is_empty() && query.query.is_hiragana() {
-        get_suggestion_by_query(pool, &get_katakana_query(&query)).await?
+        try_word_suggestions(pool, &get_katakana_query(&query)).await?
     } else {
         response
     };
@@ -151,7 +166,7 @@ async fn get_suggestions(pool: &Client, query: Query) -> Result<Response, RestEr
 }
 
 /// Returns Ok(suggestions) for the given query ordered and ready to display
-async fn get_suggestion_by_query(pool: &Client, query: &Query) -> Result<Response, RestError> {
+async fn try_word_suggestions(pool: &Client, query: &Query) -> Result<Response, RestError> {
     // Get sugesstions for matching language
     let mut word_pairs = match query.language {
         QueryLang::Japanese => native::suggestions(&pool, &query.query).await?,
