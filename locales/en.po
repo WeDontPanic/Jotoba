@@ -401,7 +401,7 @@ msgstr ""
 msgid "About"
 msgstr ""
 
-msgid "Jotoba is a multilingual Japanese dictionary. It is easy to find translations for words or kanji, see<br>example sentences and the way names can be written."
+msgid "Jotoba is a multilingual Japanese dictionary. It is easy to find translations for words or kanji, see example sentences and the way names can be written."
 msgstr ""
 
 msgid "Jotoba is open source. Check out our"
