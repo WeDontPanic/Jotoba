@@ -27,29 +27,29 @@ msgstr ""
 
 #### Base template
 msgid "Search..."
-msgstr ""
+msgstr "Suche..."
 
 msgid "Settings"
-msgstr ""
+msgstr "Einstellungen"
 
 msgid "Radicals"
-msgstr ""
+msgstr "Radikale"
 
 msgid "Voice"
-msgstr ""
+msgstr "Stimme"
 
 # Rad Help Msg
 msgid "This tool allows you to find Kanji by their core components (Radicals)"
-msgstr ""
+msgstr "Dieses Tool erlaubt es dir Kanji anhand ihrer Kernelemente (Radikale) zu finden"
 
 msgid "You can select Radicals below and add found Kanji to the search bar"
-msgstr ""
+msgstr "Du kannst unten gewünschte Radikale auswählen und die gefunden Kanji der Suchleiste hinzufügen"
 
 msgid "Enter"
 msgstr ""
 
 msgid "to start searching"
-msgstr ""
+msgstr "zum starten der Suche"
 
 # Rad Btns
 
@@ -72,100 +72,100 @@ msgid "here"
 msgstr ""
 
 msgid "Accept"
-msgstr ""
+msgstr "Annehmen"
 
 msgid "Decline"
-msgstr ""
+msgstr "Ablehnen"
 
 # Search type / Dropdown
 msgid "Words"
-msgstr ""
+msgstr "Wörter"
 
 msgid "Kanji"
-msgstr ""
+msgstr "Kanji"
 
 msgid "Sentences"
-msgstr ""
+msgstr "Sätze"
 
 msgid "Names"
-msgstr ""
+msgstr "Namen"
 
 # Speech overlay
 
 msgid "Current language"
-msgstr ""
+msgstr "Aktuelle Sprache"
 
 msgid "Currently listening"
-msgstr ""
+msgstr "Am Zuhören"
 
 msgid "To change your language, select one of the following"
-msgstr ""
+msgstr "Um deine Sprache zu wechseln, wähle eins der folgenden"
 
 # Languages
 
 msgid "English"
-msgstr ""
+msgstr "Englisch"
 
 msgid "German"
-msgstr ""
+msgstr "Deutsch"
 
 msgid "Russian"
-msgstr ""
+msgstr "Russisch"
 
 msgid "Spanish"
-msgstr ""
+msgstr "Spanisch"
 
 msgid "Swedish"
-msgstr ""
+msgstr "Schwedisch"
 
 msgid "French"
-msgstr ""
+msgstr "Französisch"
 
 msgid "Dutch"
-msgstr ""
+msgstr "Niederländisch"
 
 msgid "Hungarian"
-msgstr ""
+msgstr "Ungarisch"
 
 msgid "Slovenian"
-msgstr ""
+msgstr "Slovenisch"
 
 msgid "Japanese"
-msgstr ""
+msgstr "Japanisch"
 
 # Settings
 msgid "Default search language"
-msgstr ""
+msgstr "Standardmäßige Suchsprache"
 
 msgid "Results will try to match the selected language"
-msgstr ""
+msgstr "Ergebnisse werden mit der ausgewählten Sprache gematched"
 
 msgid "Result settings"
-msgstr ""
+msgstr "Ergebnis Einstellungen"
 
 msgid "Always show english results"
-msgstr ""
+msgstr "Zeige immer englische Ergebnisse"
 
 msgid "Show english results on top"
-msgstr ""
+msgstr "Zeige englische Ergebnisse als erstes"
 
 msgid "Display settings"
-msgstr ""
+msgstr "Ansichts Einstellungen"
 
 msgid "Default kanji animation speed"
-msgstr ""
+msgstr "Kanji Animationsgeschwindigkeit"
 
 msgid "Select color scheme"
-msgstr ""
+msgstr "Wähle ein Farbschema aus"
 
 msgid "Use theme"
-msgstr ""
+msgstr "Benutze ein Farbschema"
 
 msgid "Light"
-msgstr ""
+msgstr "Hell"
 
 msgid "Dark"
-msgstr ""
+msgstr "Dunkel"
 
 msgid "background"
 msgstr ""
@@ -200,101 +200,101 @@ msgstr ""
 msgid "itemBG"
 msgstr ""
 
-msgid "scheme code"
-msgstr ""
+msgid "Theme Code"
+msgstr "Farbcode"
 
 msgid "Using the code you can share color schemes"
-msgstr ""
+msgstr "Mit diesem Code kannst du dein Farbschema mit anderen teilen"
 
 msgid "Cookie management"
-msgstr ""
+msgstr "Cookie Einstellungen"
 
 # Cookie text
 msgid "To use this feature you have to accept to the use of cookies."
-msgstr ""
+msgstr "Um dieses Feature nutzen zu können, musst du den Cookies zustimmen."
 
 msgid "Your data will only be used for your personal website settings."
-msgstr ""
+msgstr "Deine Daten werden ausschließlich für deine persönlichen Website Einstellungen verwendet."
 
 # Prefix of cookie revoke text
 msgid "Click"
-msgstr ""
+msgstr "Klicke"
 
 # Suffix of Cookie revoke text
 msgid "to revoke your Cookies agreement"
-msgstr ""
+msgstr "um deine Cookie Zustimmung zurückzunehmen"
 
 # Footer
 msgid "Jotoba wouldn't be able to exist without the help of many open-source data sources"
-msgstr ""
+msgstr "Jotoba würde ohne die Hilfe der Hilfe von vielen Open-Source Quellen nicht existieren"
 
 ### Index
 
 msgid "is a multilingual Japanese dictionary."
-msgstr ""
+msgstr "ist ein mehrsprachiges Japanisch-Wörterbuch"
 
 msgid "It is easy to find translations for words or kanji, see example sentences and the way names can be written."
-msgstr ""
+msgstr "Es ist einfach Übersetzungen für Wörter oder Kanji zu finden, sowie Beispiele für Beispielsätze und Namen zu finden."
 
 msgid "Here are some examples on how to use this page"
-msgstr ""
+msgstr "Hier sind einige Beispiele, wie man die Webseite benutzen kann"
 
 msgid "Quickly change the search type by pressing"
-msgstr ""
+msgstr "Ändere deinen Suchtypen mit diesen Tasten:"
 
 msgid "You can specify your search by typing"
-msgstr ""
+msgstr "Suche nach spezifischen Ergebnissen mit:"
 
 msgid "You can find verbs that are conjugated"
-msgstr ""
+msgstr "Du kannst Konjugierte Verben suchen"
 
 msgid "You can search multiple kanji at once"
-msgstr ""
+msgstr "Suche mehrere Kanji auf einmal"
 
 msgid "is open source."
-msgstr ""
+msgstr "ist Open Source"
 
 msgid "Check out our"
-msgstr ""
+msgstr "Check unser"
 
 msgid "Check out the"
-msgstr ""
+msgstr "Check die"
 
 msgid "aswell if you are interested in upcoming features and what we are currently working on"
-msgstr ""
+msgstr "aus, wenn du an zukünftigen Features interessiert bist und an welchen Features wir aktuell arbeiten"
 
 msgid "for a list of all contributors in this project."
-msgstr ""
+msgstr "aus, für eine aller Mitwirkenden an diesem Projekt."
 
 msgctxt "index"
 msgid "or"
-msgstr ""
+msgstr "oder"
 
 msgctxt "index"
 msgid "Press"
-msgstr ""
+msgstr "Drücke"
 
 msgid "to instantly focus the search bar"
-msgstr ""
+msgstr "um die Suchleiste zu fokussieren"
 
 ## Name search
 msgid "Full name"
-msgstr ""
+msgstr "Vollständer Name"
 
 msgid "Sex"
-msgstr ""
+msgstr "Geschlecht"
 
 msgid "Name origin"
-msgstr ""
+msgstr "Namensherkunft"
 
 ## Kanji results
 
 # strokes suffix
 msgid "strokes"
-msgstr ""
+msgstr "Linien"
 
 msgid "Radical"
-msgstr ""
+msgstr "Radikal"
 
 msgid "Kun"
 msgstr ""
@@ -303,235 +303,236 @@ msgid "On"
 msgstr ""
 
 msgid "JLPT level"
-msgstr ""
+msgstr "JLPT Level"
 
 msgid "of 2500 most used kanji in newspapers"
-msgstr ""
+msgstr "der 2500 meist genutzten Kanji in Zeitungen"
 
 msgid "Japanese names"
-msgstr ""
+msgstr "Japanische Namen"
 
 ## Word results
 msgid "{} could be an inflection of"
-msgstr ""
+msgstr "{} könnte eine Flexion sein von"
 
 msgid " with these forms:"
-msgstr ""
+msgstr " mit diesen Formen:"
 
 msgid "Show Conjugations"
-msgstr ""
+msgstr "Zeige Konjugationen"
 
 msgid "Show Collocation"
 msgid_plural "Show Collocations"
-msgstr[0] "Show Collocation"
+msgstr[0] "Zeige Kollokation"
+msgstr[1] "Zeige Kollokationen"
 
 msgid "Collocations"
-msgstr ""
+msgstr "Kollokationen"
 
 msgid "Conjugations"
-msgstr ""
+msgstr "Konjugationen"
 
 msgid "Antonym of"
-msgstr ""
+msgstr "Antonym von"
 
 msgid "See also"
-msgstr ""
+msgstr "Siehe auch"
 
 msgid "Pitch accent"
-msgstr ""
+msgstr "Tonhöhenakzent"
 
 msgid "Other forms"
-msgstr ""
+msgstr "Andere Formen"
 
 msgid "Affirmative"
-msgstr ""
+msgstr "Positiv"
 
 msgid "Negative"
-msgstr ""
+msgstr "Negativ"
 
 msgid "Present"
-msgstr ""
+msgstr "Gegenwart"
 
 msgid "Present, polite"
-msgstr ""
+msgstr "Gegenwart, höflich"
 
 msgid "Past"
-msgstr ""
+msgstr "Vergangenheit"
 
 msgid "Past, polite"
-msgstr ""
+msgstr "Vergangenheit, höflich"
 
 msgid "Te-form"
-msgstr ""
+msgstr "Te-Form"
 
 msgid "Potential"
-msgstr ""
+msgstr "Potenzielle"
 
 msgid "Passive"
-msgstr ""
+msgstr "Passiv"
 
 msgid "Causative"
-msgstr ""
+msgstr "Kausativ"
 
 msgid "Play audio"
-msgstr ""
+msgstr "Vorlesen"
 
 msgid "common word"
-msgstr ""
+msgstr "häufiges Wort"
 
 msgid "JLPT"
 msgstr ""
 
 msgid "Sentence search"
-msgstr ""
+msgstr "Satz Suche"
 
 # "no words found"
 msgid "words"
-msgstr ""
+msgstr "Wörter"
 
 ## Sentence search
 
 # "No sentences found"
 msgid "sentences"
-msgstr ""
+msgstr "Sätze"
 
 ## About page
 
 # Title 1
 msgid "About"
-msgstr ""
+msgstr "Über Jotoba"
 
 msgid "Jotoba is a multilingual Japanese dictionary. It is easy to find translations for words or kanji, see<br>example sentences and the way names can be written."
-msgstr ""
+msgstr "Jotoba ist ein mehrsprachiges Japanisch Wörterbuch. Es ist einfach Übersetzungen für Wörter oder Kanji zu finden<br>oder zu sehen, wie Beispielsätze und Namen geschrieben werden."
 
 msgid "Jotoba is open source. Check out our"
-msgstr ""
+msgstr "Jotob ist Open Source. Check unsere"
 
 msgid "Github page"
-msgstr ""
+msgstr "Github Seite"
 
 msgid "if you want to contribute or host Jotoba yourself."
-msgstr ""
+msgstr "aus, wenn du Jotoba helfen willst zu wachsen oder auch selbst hosten möchtest."
 
 msgid "Trello Board"
-msgstr ""
+msgstr "Trello Roadmap"
 
 msgid "aswell if you are interested in upcoming features and what we are currently working on!"
-msgstr ""
+msgstr "auch, wenn du an zukünftigen Features oder unserer aktuellen Arbeit interessiert bist!"
 
 # Title 2
 msgid "Data Sources and Inspiration"
-msgstr ""
+msgstr "Daten Quellen und Inspirationen"
 
 msgid "Of course this project wouldn't have been possible without the help of some great data sources."
-msgstr ""
+msgstr "Jotoba wäre ohne die Hilfe von vielen großartigen und kostenlosen Projekten niemals möglich gewesen."
 
 msgid "Many thanks to every one of them for providing such a variety of data people can use to learn the japanese language."
-msgstr ""
+msgstr "Vielen Dank an jeden, der daran beteiligt war diese große Vielfalt an Daten für Japanisch Lernende zu erschaffen. "
 
 # Source
 msgid "Jisho"
 msgstr ""
 
 msgid "Jisho, created by Kim Ahlström, Miwa Ahlström and Andrew Plummer is a pretty and powerful english-japanese dictionary."
-msgstr ""
+msgstr "Jisho, welches von Kim Ahlström, Miwa Ahlström und Andrew Plummer erstellt wurde, ist ein großartiges Englisch-Japanisch Wörterbuch."
 
 msgid "We took inspiration in their work and design to improve on their concept and offer it to a wider variety of people."
-msgstr ""
+msgstr "Wir haben uns von ihrer Arbeit inspirieren lassen um ihr Konzept und Design weiterzuentwickeln und so vielen Menschen wie möglich zur Verfügung stellen zu können."
 
 # Source
 msgid "Words (except sound effects), Kanji and Names available on this site are publicly provided and maintained by"
-msgstr ""
+msgstr "Wörter (außer Sound Effekten), Kanji und Namen auf unserer Seite sind öffentlich bereitgestellt und fallen unter die"
 
 msgid "and available under the license"
-msgstr ""
+msgstr "und verfügbar unter der Lizenz"
 
 # Source
 msgid "Audio Files"
-msgstr ""
+msgstr "Audio Dateien"
 
 msgid "The audio files #1 were graciously made public by"
-msgstr ""
+msgstr "Die Audio Dateien #1 wurden netterweise von"
 
 msgid "WaniKani"
-msgstr ""
+msgstr "WaniKani"
 
 msgid "and"
-msgstr ""
+msgstr "und"
 
 msgid "Tofugo"
-msgstr ""
+msgstr "Tofugo"
 
 msgid "and uploaded to Github under the CC-BY-4.0 licence."
-msgstr ""
+msgstr "öffentlich gemacht und auf Github unter der CC-BY-4.0 Lizenz veröffentlicht."
 
 msgid "The audio files #2 are provided by the"
-msgstr ""
+msgstr "Die Audio dateien #2 wurden vom"
 
 msgid "Kanji alive project"
-msgstr ""
+msgstr "Kanji alive Projekt"
 
 msgid "and are also available under the CC-BY-4.0 license."
-msgstr ""
+msgstr "veröffentlicht und stehen auch unter der CC-BY-4.0 Lizenz."
 
 msgid "Manga Sound Effects"
-msgstr ""
+msgstr "Manga Sound Effekte"
 
 msgid "The data about Sound Effects is graciously provided by Chris Kincaid and is used as additional data in the word search."
-msgstr ""
+msgstr "Die Daten der Sound Effekte wurden uns netterweise von Chris Kincaid zur Verfügung gestellt und können über die Wörtersuche gefunden werden."
 
 # Source
 msgid "Sentences are provided by Tatoeba under the Creative Commons CC 1.0 and 2.0 licences. "
-msgstr ""
+msgstr "Sätze sind von Tatoeba unter den Creative Commons CC 1.0 und 2.0 Lizenzen bereitgestellt."
 
 # Source
 msgid "Kanji Animations"
-msgstr ""
+msgstr "Kanji Animationen"
 
 msgid "The raw data used for kanji animations is publicly provided by KanjiVG, a project by Ulrich Apel."
-msgstr ""
+msgstr "Die Rohdaten der Kanji Animationen wurden von Ulrich Apel und seinem Projekt 'KanjiVG' bereitgestellt."
 
 msgid "The conversion into images and animated SVG is done by a ruby script which was made by"
-msgstr ""
+msgstr "Die Konvertierung der Bilder und animierten SVG wurde durch ein Ruby Skript von"
 
 msgid "Kimtaro"
 msgstr ""
 
 msgid "and altered by"
-msgstr ""
+msgstr "erschaffen, welches von"
 
 msgid "Yukáru"
-msgstr ""
+msgstr "Yukáru speziell für Jotoba angepasst wurde."
 
 # Source
 msgid "JLPT Data"
-msgstr ""
+msgstr "JLPT Daten"
 
 msgid "Data about JLPT proficiencies are by provided by Jonathan Waller."
-msgstr ""
+msgstr "Die Informationen über die JLPT Fähigkeitslevel sind von Jonathan Waller zur Verfügung gestellt worden."
 
 msgid "There is also some non-free data available on his website, so check it out if you are interested."
-msgstr ""
+msgstr "Auf seiner Webseite gibt es noch weitere, nicht kostenlose Daten, falls du dich für seine Arbeit interessiert."
 
 # Source
 msgid "Word tokenization"
-msgstr ""
+msgstr "Wort-Tokenisierung"
 
 msgid "Word tokenization is done using a project from Hideki Yamane and used for Japanese morphological analysis implementations."
-msgstr ""
+msgstr "Die Wort-Tokenisierung wurde durch ein Projekt von Hideki Yamane ermöglicht, welches der Implementierung von Japanisch-Morphologischen Analysen dient."
 
 #Source
 msgid "Pitch Accents and Radicals"
-msgstr ""
+msgstr "Pitch-Akzente und Radikale"
 
-msgid "Data about Pitch Accents and Radicals used in specific Kanji are provided by Kanjium"
-msgstr ""
+msgid "Data about Pitch Accents and Radicals used in specific Kanji are provided by Kanjium."
+msgstr "Diese Daten wurden vom Kanjium Projekt zur Verfügung gestellt."
 
 msgid "On the project's Github Page you can find lots of data about Kanji."
-msgstr ""
+msgstr "Auf ihrer Github Seite findet man viele verschiedene Infos über Kanji."
 
 msgid "Additional to Kanjium, RADKFILE by Jin Breen is used to link Radicals to Kanji."
-msgstr ""
+msgstr "Außerdem wird die RADKFILE von JinBreen verwendet, welche Radikale und Kanji verlinkt."
 
 ## Jmdict
 
