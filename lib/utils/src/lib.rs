@@ -68,9 +68,27 @@ where
 }
 
 /// Returns the real amount of characters in a string
+#[inline]
 pub fn real_string_len(s: &str) -> usize {
     // We should probably use grapheme clusters here
     s.chars().count()
+}
+
+/// Returns an antisymmetric ordering of [`a`] and [`b`] where `a == true` < `b == true`
+/// Example:
+///
+/// let a = true;
+/// let b = false;
+/// assert_eq!(bool_ord(a, b), Ordering::Less);
+#[inline]
+pub fn bool_ord(a: bool, b: bool) -> Ordering {
+    if a && !b {
+        Ordering::Less
+    } else if !a && b {
+        Ordering::Greater
+    } else {
+        Ordering::Equal
+    }
 }
 
 /// Returns `None` if the vec is empty or Some(Vec<T>) if not

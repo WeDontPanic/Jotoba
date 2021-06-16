@@ -1,7 +1,9 @@
 mod foreign;
+mod kanji_reading;
 mod native;
 mod storage;
 
+use models::kanji::reading::KanjiReading;
 pub use storage::load_suggestions;
 use storage::SuggestionItem;
 
@@ -13,7 +15,7 @@ use japanese::JapaneseExt;
 use parse::jmdict::languages::Language;
 use query_parser::{QueryParser, QueryType};
 use search::{
-    query::{Query, QueryLang, UserSettings},
+    query::{self, Form, Query, QueryLang, UserSettings},
     query_parser,
     suggestions::SuggestionSearch,
 };
@@ -97,6 +99,23 @@ impl Request {
 #[derive(Clone, Debug, Serialize, Default)]
 pub struct Response {
     pub suggestions: Vec<WordPair>,
+    pub suggestion_type: SuggestionType,
+}
+
+/// The type of suggestion. `Default` in most cases
+#[derive(Clone, Debug, Serialize)]
+#[serde(rename_all = "snake_case")]
+pub enum SuggestionType {
+    /// Default suggestion type
+    Default,
+    /// Special suggestion type for kanji readings
+    KanjiReading,
+}
+
+impl Default for SuggestionType {
+    fn default() -> Self {
+        Self::Default
+    }
 }
 
 /// A word with kana and kanji reading used within [`SuggestionResponse`]
@@ -143,11 +162,38 @@ pub async fn suggestion_ep(
 /// Returns best matching suggestions for the given query
 async fn get_suggestions(pool: &Client, query: Query) -> Result<Response, RestError> {
     match query.type_ {
-        QueryType::Sentences | QueryType::Words => get_word_suggestions(pool, query).await,
+        QueryType::Sentences | QueryType::Words => {
+            if let Some(kanji_reading) = as_kanji_reading(&query) {
+                kanji_reading::suggestions(pool, kanji_reading).await
+            } else {
+                get_word_suggestions(pool, query).await
+            }
+        }
         // TODO kanji suggestions
         QueryType::Kanji => Ok(Response::default()),
         // TODO name suggestions
         QueryType::Names => Ok(Response::default()),
+    }
+}
+
+/// Returns Some(KanjiReading) if query is or 'could be' a kanji reading query
+fn as_kanji_reading(query: &Query) -> Option<KanjiReading> {
+    match &query.form {
+        Form::KanjiReading(r) => Some(r.clone()),
+        _ => {
+            let mut query_str = query.original_query.chars();
+            let first = query_str.next()?;
+            let second = query_str.next()?;
+
+            if first.is_kanji() && second == ' ' {
+                Some(KanjiReading {
+                    reading: String::new(),
+                    literal: first,
+                })
+            } else {
+                None
+            }
+        }
     }
 }
 
@@ -156,17 +202,20 @@ async fn get_word_suggestions(pool: &Client, query: Query) -> Result<Response, R
     let response = try_word_suggestions(pool, &query).await?;
 
     // Tries to do a katakana search if nothing was found
-    let result = if response.suggestions.is_empty() && query.query.is_hiragana() {
+    let result = if response.is_empty() && query.query.is_hiragana() {
         try_word_suggestions(pool, &get_katakana_query(&query)).await?
     } else {
         response
     };
 
-    Ok(result)
+    Ok(Response {
+        suggestions: result,
+        ..Default::default()
+    })
 }
 
 /// Returns Ok(suggestions) for the given query ordered and ready to display
-async fn try_word_suggestions(pool: &Client, query: &Query) -> Result<Response, RestError> {
+async fn try_word_suggestions(pool: &Client, query: &Query) -> Result<Vec<WordPair>, RestError> {
     // Get sugesstions for matching language
     let mut word_pairs = match query.language {
         QueryLang::Japanese => native::suggestions(&pool, &query.query).await?,
@@ -178,9 +227,7 @@ async fn try_word_suggestions(pool: &Client, query: &Query) -> Result<Response, 
     // Order: put exact matches to top
     word_pairs.sort_by(|a, b| word_pair_order(a, b, &query.query));
 
-    Ok(Response {
-        suggestions: word_pairs,
-    })
+    Ok(word_pairs)
 }
 
 /// Ordering for [`WordPair`]s which puts the exact matches to top
@@ -213,4 +260,34 @@ fn validate_request(payload: &Request) -> Result<(), RestError> {
     }
 
     Ok(())
+}
+
+#[cfg(test)]
+mod test {
+    use super::*;
+
+    #[test]
+    fn test_as_kanji_reading() {
+        let query = Query {
+            query: String::from("痛 いた.い"),
+            ..Default::default()
+        };
+
+        let res = as_kanji_reading(&query);
+        assert!(res.is_some());
+
+        let query = Query {
+            query: String::from("痛 "),
+            ..Default::default()
+        };
+        let res = as_kanji_reading(&query);
+        assert!(res.is_some());
+
+        let query = Query {
+            query: String::from("痛い "),
+            ..Default::default()
+        };
+        let res = as_kanji_reading(&query);
+        assert!(res.is_none());
+    }
 }
