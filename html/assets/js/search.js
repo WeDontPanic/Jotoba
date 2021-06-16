@@ -215,7 +215,7 @@ function activateSelection(element) {
         switch (currentSuggestionType) {
             case "kanji_reading":
                 let s = getSuggestion(currentSuggestionIndex);
-                suggestion =  s[0].innerHTML; + " " + s[1].innerHTML.substring(1, s[1].innerHTML.length - 1);
+                suggestion = s[0].innerHTML + " " + s[1].innerHTML.substring(1, s[1].innerHTML.length - 1);
                 break;
             default:
                 suggestion = getSuggestion(currentSuggestionIndex)[0].innerHTML;
