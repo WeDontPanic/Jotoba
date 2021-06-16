@@ -49,7 +49,7 @@ msgid "Enter"
 msgstr ""
 
 msgid "to start searching"
-msgstr "zum starten der Suche"
+msgstr "zum Starten der Suche"
 
 # Rad Btns
 
@@ -66,10 +66,10 @@ msgid "create"
 msgstr ""
 
 msgid "Close"
-msgstr ""
+msgstr "Schließen"
 
 msgid "here"
-msgstr ""
+msgstr "hier"
 
 msgid "Accept"
 msgstr "Annehmen"
@@ -138,7 +138,7 @@ msgid "Default search language"
 msgstr "Standardmäßige Suchsprache"
 
 msgid "Results will try to match the selected language"
-msgstr "Ergebnisse werden mit der ausgewählten Sprache gematched"
+msgstr "Die gewählte Sprache wird für Suchen verwendet"
 
 msgid "Result settings"
 msgstr "Ergebnis Einstellungen"
@@ -159,7 +159,7 @@ msgid "Select color scheme"
 msgstr "Wähle ein Farbschema aus"
 
 msgid "Use theme"
-msgstr "Benutze ein Farbschema"
+msgstr "Presets:"
 
 msgid "Light"
 msgstr "Hell"
@@ -230,11 +230,11 @@ msgstr "Jotoba würde ohne die Hilfe der Hilfe von vielen Open-Source Quellen ni
 
 ### Index
 
-msgid "is a multilingual Japanese dictionary."
+msgid "is a multilingual Japanese dictionary"
 msgstr "ist ein mehrsprachiges Japanisch-Wörterbuch"
 
 msgid "It is easy to find translations for words or kanji, see example sentences and the way names can be written."
-msgstr "Es ist einfach Übersetzungen für Wörter oder Kanji zu finden, sowie Beispiele für Beispielsätze und Namen zu finden."
+msgstr "Es ist einfach Übersetzungen für Wörter oder Kanji, aber auch Beispielsätze und Namen zu finden."
 
 msgid "Here are some examples on how to use this page"
 msgstr "Hier sind einige Beispiele, wie man die Webseite benutzen kann"
@@ -251,11 +251,11 @@ msgstr "Du kannst Konjugierte Verben suchen"
 msgid "You can search multiple kanji at once"
 msgstr "Suche mehrere Kanji auf einmal"
 
-msgid "is open source."
+msgid "is open source"
 msgstr "ist Open Source"
 
 msgid "Check out our"
-msgstr "Check unser"
+msgstr "Besuche unsere"
 
 msgid "Check out the"
 msgstr "Check die"
@@ -270,7 +270,6 @@ msgctxt "index"
 msgid "or"
 msgstr "oder"
 
-msgctxt "index"
 msgid "Press"
 msgstr "Drücke"
 
@@ -384,7 +383,7 @@ msgid "JLPT"
 msgstr ""
 
 msgid "Sentence search"
-msgstr "Satz Suche"
+msgstr "Beispiel Sätze"
 
 # "no words found"
 msgid "words"
@@ -406,23 +405,23 @@ msgid "Jotoba is a multilingual Japanese dictionary. It is easy to find translat
 msgstr "Jotoba ist ein mehrsprachiges Japanisch Wörterbuch. Es ist einfach Übersetzungen für Wörter oder Kanji zu finden<br>oder zu sehen, wie Beispielsätze und Namen geschrieben werden."
 
 msgid "Jotoba is open source. Check out our"
-msgstr "Jotob ist Open Source. Check unsere"
+msgstr "Jotob ist Open Source. Besuche unsere"
 
 msgid "Github page"
 msgstr "Github Seite"
 
 msgid "if you want to contribute or host Jotoba yourself."
-msgstr "aus, wenn du Jotoba helfen willst zu wachsen oder auch selbst hosten möchtest."
+msgstr ", wenn du Jotoba helfen willst zu wachsen oder auch selbst hosten möchtest."
 
 msgid "Trello Board"
 msgstr "Trello Roadmap"
 
 msgid "aswell if you are interested in upcoming features and what we are currently working on!"
-msgstr "auch, wenn du an zukünftigen Features oder unserer aktuellen Arbeit interessiert bist!"
+msgstr ", wenn du an zukünftigen Features oder unserer aktuellen Arbeit interessiert bist!"
 
 # Title 2
 msgid "Data Sources and Inspiration"
-msgstr "Daten Quellen und Inspirationen"
+msgstr "Quellen und Inspirationen"
 
 msgid "Of course this project wouldn't have been possible without the help of some great data sources."
 msgstr "Jotoba wäre ohne die Hilfe von vielen großartigen und kostenlosen Projekten niemals möglich gewesen."

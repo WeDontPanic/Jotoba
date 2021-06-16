@@ -183,7 +183,7 @@ svg {
 
 .btn-container {
     text-align: center;
-    width: 46px;
+    min-width: 46px;
     padding: 5px 0;
     margin-left: 6px;
     cursor: pointer;

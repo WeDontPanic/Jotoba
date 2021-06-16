@@ -230,7 +230,7 @@ msgstr ""
 
 ### Index
 
-msgid "is a multilingual Japanese dictionary."
+msgid "is a multilingual Japanese dictionary"
 msgstr ""
 
 msgid "It is easy to find translations for words or kanji, see example sentences and the way names can be written."
@@ -251,7 +251,7 @@ msgstr ""
 msgid "You can search multiple kanji at once"
 msgstr ""
 
-msgid "is open source."
+msgid "is open source"
 msgstr ""
 
 msgid "Check out our"
