@@ -401,8 +401,8 @@ msgstr "Sätze"
 msgid "About"
 msgstr "Über Jotoba"
 
-msgid "Jotoba is a multilingual Japanese dictionary. It is easy to find translations for words or kanji, see<br>example sentences and the way names can be written."
-msgstr "Jotoba ist ein mehrsprachiges Japanisch Wörterbuch. Es ist einfach Übersetzungen für Wörter oder Kanji zu finden<br>oder zu sehen, wie Beispielsätze und Namen geschrieben werden."
+msgid "Jotoba is a multilingual Japanese dictionary. It is easy to find translations for words or kanji, see example sentences and the way names can be written."
+msgstr "Jotoba ist ein mehrsprachiges Japanisch Wörterbuch. Es ist einfach Übersetzungen für Wörter oder Kanji zu finden oder zu sehen, wie Beispielsätze und Namen geschrieben werden."
 
 msgid "Jotoba is open source. Check out our"
 msgstr "Jotob ist Open Source. Besuche unsere"
