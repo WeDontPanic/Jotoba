@@ -18,6 +18,7 @@ const kanjiRegEx = '([一-龯|々|𥝱|𩺊])';
 
 // Global variables used
 var currentSuggestion = "";
+var currentSuggestionType = "default";
 var currentSuggestionIndex = -1;
 var availableSuggestions = 0;
 var keepSuggestions = false;
@@ -200,11 +201,22 @@ function activateSelection(element) {
 
     // If element is given as parameter directly, use its the suggestion instead
     if (element !== undefined) {
-        suggestion = element.querySelector(".primary-suggestion").innerHTML;
+        switch (currentSuggestionType) {
+            case "kanji_reading":
+                suggestion =  element.querySelector(".primary-suggestion").innerHTML + " " + element.querySelector(".secondary-suggestion").innerHTML;
+            default:
+                suggestion = element.querySelector(".primary-suggestion").innerHTML;
+        }
     } 
     // Else, find the suggestion by searching for the current index
     else {
-        suggestion = getSuggestion(currentSuggestionIndex)[0].innerHTML;
+        switch (currentSuggestionType) {
+            case "kanji_reading":
+                let s = getSuggestion(currentSuggestionIndex);
+                suggestion =  s[0].innerHTML; + " " + s[1].innerHTML;
+            default:
+                suggestion = getSuggestion(currentSuggestionIndex)[0].innerHTML;
+        }
     }
 
     // Fix some weird characters
@@ -335,6 +347,9 @@ function loadApiData(result) {
         console.log("return");
         return;
     }
+
+    // Set suggestion type
+    currentSuggestionType = result.suggestion_type;
 
     // Set the amount of possible suggestions
     availableSuggestions = result.suggestions.length;

@@ -884,31 +884,31 @@ msgid "Ornithology"
 msgstr ""
 
 msgid "Paleontology"
-msgstr ""
+msgstr "Paleontologie"
 
 msgid "Pathology"
-msgstr ""
+msgstr "Pathologie"
 
 msgid "Pharmacy"
-msgstr ""
+msgstr "Pharmazie"
 
 msgid "Philosophy"
-msgstr ""
+msgstr "Philosophie"
 
 msgid "Photography"
-msgstr ""
+msgstr "Fotografie"
 
 msgid "Physics"
-msgstr ""
+msgstr "Physik"
 
 msgid "Physiology"
-msgstr ""
+msgstr "Physiologie"
 
 msgid "Printing"
 msgstr ""
 
 msgid "Psychology/psychiatry"
-msgstr ""
+msgstr "Psychologie"
 
 msgid "Shinto"
 msgstr ""
@@ -917,16 +917,16 @@ msgid "Shogi"
 msgstr ""
 
 msgid "Sports"
-msgstr ""
+msgstr "Sport"
 
 msgid "Statistics"
-msgstr ""
+msgstr "Statistiken"
 
 msgid "Sumo"
 msgstr ""
 
 msgid "Telecommunications"
-msgstr ""
+msgstr "Telekommunikation"
 
 msgid "Trademark"
 msgstr ""
@@ -935,7 +935,7 @@ msgid "Videogame"
 msgstr "Videospiel"
 
 msgid "Zoology"
-msgstr ""
+msgstr "Zoologie"
 
 # Part of speech
 msgid "Godan verb"
