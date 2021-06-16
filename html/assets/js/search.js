@@ -204,6 +204,7 @@ function activateSelection(element) {
         switch (currentSuggestionType) {
             case "kanji_reading":
                 suggestion =  element.querySelector(".primary-suggestion").innerHTML + " " + element.querySelector(".secondary-suggestion").innerHTML;
+                break;
             default:
                 suggestion = element.querySelector(".primary-suggestion").innerHTML;
         }
@@ -214,6 +215,7 @@ function activateSelection(element) {
             case "kanji_reading":
                 let s = getSuggestion(currentSuggestionIndex);
                 suggestion =  s[0].innerHTML; + " " + s[1].innerHTML;
+                break;
             default:
                 suggestion = getSuggestion(currentSuggestionIndex)[0].innerHTML;
         }
