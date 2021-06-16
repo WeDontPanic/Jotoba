@@ -14,9 +14,14 @@ pub(crate) async fn suggestions(
     let reading = kanji_reading.reading.replace("。", "").replace(".", "");
 
     // Find readings
-    let mut readings = readings_by_lit(client, literal)
+    let readings = readings_by_lit(client, literal)
         .await?
-        .get_suggestions(literal);
+        .map(|i| i.get_suggestions(literal));
+
+    if readings.is_none() {
+        return Ok(Response::default());
+    }
+    let mut readings = readings.unwrap();
 
     // User provided additionally a part of a reading
     if !reading.is_empty() {
@@ -64,14 +69,15 @@ impl From<Row> for ReadingsRes {
 }
 
 /// Returns a single item of [`ReadingsRes`] for the kanji identified by its literal
-async fn readings_by_lit(client: &Client, literal: char) -> Result<ReadingsRes, RestError> {
+async fn readings_by_lit(client: &Client, literal: char) -> Result<Option<ReadingsRes>, RestError> {
     let query = "SELECT onyomi, kunyomi FROM kanji WHERE literal = $1 LIMIT 1";
 
     let statement = client.prepare(query).await?;
-    let res: ReadingsRes = client
-        .query_one(&statement, &[&literal.to_string()])
-        .await?
-        .into();
 
-    Ok(res)
+    // TODO chechk against error for Kind::RowCount
+    let res = client
+        .query_one(&statement, &[&literal.to_string()])
+        .await?;
+
+    Ok(Some(ReadingsRes::from(res)))
 }

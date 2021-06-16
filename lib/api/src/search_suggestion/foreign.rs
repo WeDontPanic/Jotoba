@@ -5,7 +5,7 @@ pub(super) async fn suggestions(query: &Query, query_str: &str) -> Option<Vec<Wo
     let lang = query.settings.user_lang;
 
     // Get suggestion DB
-    let suggestion_db = SUGGESTIONS.get()?;
+    let suggestion_db = WORD_SUGGESTIONS.get()?;
 
     // Search for suggestions
     let results = suggestion_db.search(query_str, lang).await?;

@@ -50,8 +50,12 @@ pub(super) async fn start(db: DbPool, async_postgres: Client) -> std::io::Result
 
     let config_clone = config.clone();
 
-    if let Err(err) = api::search_suggestion::load_suggestions(&config) {
+    if let Err(err) = api::search_suggestion::load_word_suggestions(&config) {
         log::error!("Failed loading suggestions: {}", err);
+    }
+
+    if let Err(err) = api::search_suggestion::load_meaning_suggestions(&config) {
+        log::error!("Failed loading kanji suggestions: {}", err);
     }
 
     HttpServer::new(move || {

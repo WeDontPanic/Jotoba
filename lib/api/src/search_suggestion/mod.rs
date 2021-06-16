@@ -1,36 +1,32 @@
 mod foreign;
+mod kanji_meaning;
 mod kanji_reading;
 mod native;
 mod storage;
 
-use models::kanji::reading::KanjiReading;
-pub use storage::load_suggestions;
-use storage::SuggestionItem;
+pub use storage::{load_meaning_suggestions, load_word_suggestions};
 
 use std::{cmp::Ordering, str::FromStr, sync::Arc};
 
 use config::Config;
 use error::api_error::RestError;
 use japanese::JapaneseExt;
+use models::kanji::reading::KanjiReading;
 use parse::jmdict::languages::Language;
 use query_parser::{QueryParser, QueryType};
 use search::{
-    query::{self, Form, Query, QueryLang, UserSettings},
+    query::{Form, Query, QueryLang, UserSettings},
     query_parser,
-    suggestions::SuggestionSearch,
 };
-use utils::real_string_len;
+use storage::WORD_SUGGESTIONS;
+use utils::{bool_ord, real_string_len};
 
 use actix_web::{
     rt::time,
     web::{self, Json},
 };
-use once_cell::sync::OnceCell;
 use serde::{Deserialize, Serialize};
 use tokio_postgres::Client;
-
-/// In-memory storage for suggestions
-static SUGGESTIONS: OnceCell<SuggestionSearch<Vec<SuggestionItem>>> = OnceCell::new();
 
 /// Request struct for suggestion endpoint
 #[derive(Clone, Debug, Deserialize, PartialEq)]
@@ -170,9 +166,18 @@ async fn get_suggestions(pool: &Client, query: Query) -> Result<Response, RestEr
             }
         }
         // TODO kanji suggestions
-        QueryType::Kanji => Ok(Response::default()),
+        QueryType::Kanji => kanji_suggestions(pool, query).await,
         // TODO name suggestions
         QueryType::Names => Ok(Response::default()),
+    }
+}
+
+/// Returns kanji suggestions
+async fn kanji_suggestions(client: &Client, query: Query) -> Result<Response, RestError> {
+    if query.language == QueryLang::Foreign {
+        kanji_meaning::suggestions(client, &query).await
+    } else {
+        Ok(Response::default())
     }
 }
 
@@ -232,16 +237,7 @@ async fn try_word_suggestions(pool: &Client, query: &Query) -> Result<Vec<WordPa
 
 /// Ordering for [`WordPair`]s which puts the exact matches to top
 fn word_pair_order(a: &WordPair, b: &WordPair, query: &str) -> Ordering {
-    let a_has_reading = a.has_reading(&query);
-    let b_has_reading = b.has_reading(&query);
-
-    if a_has_reading && !b_has_reading {
-        Ordering::Less
-    } else if b_has_reading && !a_has_reading {
-        Ordering::Greater
-    } else {
-        Ordering::Equal
-    }
+    bool_ord(a.has_reading(&query), b.has_reading(&query))
 }
 
 /// Returns an equivalent katakana query
@@ -260,34 +256,4 @@ fn validate_request(payload: &Request) -> Result<(), RestError> {
     }
 
     Ok(())
-}
-
-#[cfg(test)]
-mod test {
-    use super::*;
-
-    #[test]
-    fn test_as_kanji_reading() {
-        let query = Query {
-            query: String::from("痛 いた.い"),
-            ..Default::default()
-        };
-
-        let res = as_kanji_reading(&query);
-        assert!(res.is_some());
-
-        let query = Query {
-            query: String::from("痛 "),
-            ..Default::default()
-        };
-        let res = as_kanji_reading(&query);
-        assert!(res.is_some());
-
-        let query = Query {
-            query: String::from("痛い "),
-            ..Default::default()
-        };
-        let res = as_kanji_reading(&query);
-        assert!(res.is_none());
-    }
 }

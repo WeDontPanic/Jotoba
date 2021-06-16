@@ -13,6 +13,21 @@ use text_store::TextStore;
 
 use self::{jaro_search::AsyncSearch, store_item::Item};
 
+/// Searches for kanji suggestions by their meanings
+pub async fn kanji_meaning<'a, T: TextStore>(
+    dict: &'a TextSearch<T>,
+    query: &'a str,
+) -> Option<Vec<&'a T::Item>> {
+    let mut items: Vec<_> = dict.find_binary(query.to_owned()).take(100).collect();
+
+    if items.len() < 5 {
+        let jaro_res = dict.find_jaro_async(query, 5).await;
+        items.extend(jaro_res);
+    }
+
+    Some(items)
+}
+
 #[derive(Clone)]
 pub struct SuggestionSearch<T: TextStore> {
     dicts: HashMap<Language, TextSearch<T>>,
