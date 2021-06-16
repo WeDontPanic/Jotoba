@@ -165,7 +165,6 @@ async fn get_suggestions(pool: &Client, query: Query) -> Result<Response, RestEr
                 get_word_suggestions(pool, query).await
             }
         }
-        // TODO kanji suggestions
         QueryType::Kanji => kanji_suggestions(pool, query).await,
         // TODO name suggestions
         QueryType::Names => Ok(Response::default()),

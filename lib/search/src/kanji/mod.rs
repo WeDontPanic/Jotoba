@@ -55,7 +55,12 @@ async fn by_literals(db: &DbPool, query: &str) -> Result<Vec<KanjiResult>, Error
 
 /// Find kanji by mits meaning
 async fn by_meaning(db: &DbPool, meaning: &str) -> Result<Vec<KanjiResult>, Error> {
-    Ok(kanji::meaning::find(db, meaning).await?)
+    Ok(kanji::meaning::find(db, meaning)
+        .await?
+        .into_iter()
+        // TODO add paginator
+        .take(5)
+        .collect())
 }
 
 async fn to_item(db: &DbPool, items: Vec<KanjiResult>, query: &Query) -> Result<Vec<Item>, Error> {
