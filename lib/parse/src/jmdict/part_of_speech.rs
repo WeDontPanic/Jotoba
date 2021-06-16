@@ -48,7 +48,7 @@ pub enum PosSimple {
     #[strum(serialize = "pronoun", serialize = "pron")]
     Pronoun,
     #[strum(serialize = "nummeric", serialize = "nr")]
-    Nummeric,
+    Numeric,
     #[strum(serialize = "unclassified", serialize = "unc")]
     Unclassified,
 }
@@ -71,7 +71,7 @@ impl TryFrom<i32> for PosSimple {
             11 => Self::Expr,
             12 => Self::Interjection,
             13 => Self::Pronoun,
-            15 => Self::Nummeric,
+            15 => Self::Numeric,
             16 => Self::Unclassified,
             _ => return Err(error::Error::ParseError),
         })
@@ -95,7 +95,7 @@ impl Into<i32> for PosSimple {
             Self::Expr => 11,
             Self::Interjection => 12,
             Self::Pronoun => 13,
-            Self::Nummeric => 15,
+            Self::Numeric => 15,
             Self::Unclassified => 16,
         }
     }
@@ -112,7 +112,7 @@ impl From<PartOfSpeech> for PosSimple {
             PartOfSpeech::Expr => PosSimple::Expr,
             PartOfSpeech::Interjection => PosSimple::Interjection,
             PartOfSpeech::Noun(_) => PosSimple::Noun,
-            PartOfSpeech::Nummeric => PosSimple::Nummeric,
+            PartOfSpeech::Numeric => PosSimple::Numeric,
             PartOfSpeech::Pronoun => PosSimple::Pronoun,
             PartOfSpeech::Prefix => PosSimple::Prefix,
             PartOfSpeech::Suffix => PosSimple::Suffix,
@@ -161,7 +161,7 @@ pub enum PartOfSpeech {
 
     Noun(NounType),
 
-    Nummeric,
+    Numeric,
     Pronoun,
     Prefix,
     Suffix,
@@ -328,7 +328,7 @@ impl Translatable for PartOfSpeech {
             PartOfSpeech::Pronoun => "Pronoun",
             PartOfSpeech::Auxilary => "Auxilary",
             PartOfSpeech::Adjective(adj) => adj.get_id(),
-            PartOfSpeech::Nummeric => "Nummeric",
+            PartOfSpeech::Numeric => "Numeric",
             PartOfSpeech::AdverbTo => "Adverb-To",
             PartOfSpeech::Adverb => "Adverb",
             PartOfSpeech::Verb(verb) => verb.get_id(),
@@ -731,7 +731,7 @@ impl Into<String> for PartOfSpeech {
                 PartOfSpeech::Conjungation => "conj",
                 PartOfSpeech::Expr => "exp",
                 PartOfSpeech::Interjection => "int",
-                PartOfSpeech::Nummeric => "num",
+                PartOfSpeech::Numeric => "num",
                 PartOfSpeech::Particle => "prt",
                 PartOfSpeech::Suffix => "suf",
                 PartOfSpeech::Unclassified => "unc",
@@ -761,7 +761,7 @@ impl TryFrom<&str> for PartOfSpeech {
             "ctr" => PartOfSpeech::Counter,
             "exp" => PartOfSpeech::Expr,
             "int" => PartOfSpeech::Interjection,
-            "num" => PartOfSpeech::Nummeric,
+            "num" => PartOfSpeech::Numeric,
             "prt" => PartOfSpeech::Particle,
             "conj" => PartOfSpeech::Conjungation,
             "suf" => PartOfSpeech::Suffix,

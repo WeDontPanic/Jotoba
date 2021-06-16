@@ -13,7 +13,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"PO-Revision-Date: 2021-06-13 16:59+0200\n"
+"PO-Revision-Date: 2021-06-16 18:59+0200\n"
 "Last-Translator:  <jojii@gmx.net>\n"
 "Language-Team: English\n"
 "Language: en\n"
@@ -54,16 +54,16 @@ msgstr "zum Starten der Suche"
 # Rad Btns
 
 msgid "Reset"
-msgstr ""
+msgstr "zurücksetzen"
 
 msgid "reset"
-msgstr ""
+msgstr "zurücksetzen"
 
 msgid "apply"
-msgstr ""
+msgstr "Annehmen"
 
 msgid "create"
-msgstr ""
+msgstr "erstellen"
 
 msgid "Close"
 msgstr "Schließen"
@@ -168,7 +168,7 @@ msgid "Dark"
 msgstr "Dunkel"
 
 msgid "background"
-msgstr ""
+msgstr "Hintergrund"
 
 msgid "overlay"
 msgstr ""
@@ -261,10 +261,10 @@ msgid "Check out the"
 msgstr "Check die"
 
 msgid "aswell if you are interested in upcoming features and what we are currently working on"
-msgstr "aus, wenn du an zukünftigen Features interessiert bist und an welchen Features wir aktuell arbeiten"
+msgstr ", wenn du an zukünftigen Features interessiert bist oder dich interessiert an welchen Features wir aktuell arbeiten"
 
 msgid "for a list of all contributors in this project."
-msgstr "aus, für eine aller Mitwirkenden an diesem Projekt."
+msgstr "für eine aller Mitwirkenden an diesem Projekt."
 
 msgctxt "index"
 msgid "or"
@@ -290,7 +290,7 @@ msgstr "Namensherkunft"
 
 # strokes suffix
 msgid "strokes"
-msgstr "Linien"
+msgstr "Striche"
 
 msgid "Radical"
 msgstr "Radikal"
@@ -311,6 +311,9 @@ msgid "Japanese names"
 msgstr "Japanische Namen"
 
 ## Word results
+msgid "Words and kanji"
+msgstr "Wörter und Kanjis"
+
 msgid "{} could be an inflection of"
 msgstr "{} könnte eine Flexion sein von"
 
@@ -537,32 +540,32 @@ msgstr "Außerdem wird die RADKFILE von JinBreen verwendet, welche Radikale und 
 
 # Dialect(s)
 msgid "{} dialect"
-msgstr ""
+msgstr "{} Dialekt"
 
 # Information
 msgid "ateji"
 msgstr ""
 
 msgid "irregular kana"
-msgstr ""
+msgstr "Unregelmäßiges Kana"
 
 msgid "irregular kanji"
-msgstr ""
+msgstr "Unregelmäßiges Kanji"
 
 msgid "irregular okurigana"
-msgstr ""
+msgstr "Unregelmäßiges Okurigana"
 
 msgid "outdated kana"
-msgstr ""
+msgstr "veraltetes Kana"
 
 msgid "outdated kanji"
-msgstr ""
+msgstr "veraltetes Kanji"
 
 msgid "gikun"
 msgstr ""
 
 msgid "usually written in kana"
-msgstr ""
+msgstr "Normalerweise geschrieben in Kana"
 
 # Misc
 
@@ -582,10 +585,10 @@ msgid "Colloquialism"
 msgstr ""
 
 msgid "Company name"
-msgstr ""
+msgstr "Firmenname"
 
 msgid "Creature"
-msgstr ""
+msgstr "Kreatur"
 
 msgid "Dated term"
 msgstr ""
@@ -725,7 +728,7 @@ msgstr ""
 # Fields
 
 msgid "{} term"
-msgstr ""
+msgstr "{} Begriff"
 
 msgid "Agriculture"
 msgstr ""
@@ -929,223 +932,223 @@ msgid "Trademark"
 msgstr ""
 
 msgid "Videogame"
-msgstr ""
+msgstr "Videospiel"
 
 msgid "Zoology"
 msgstr ""
 
 # Part of speech
 msgid "Godan verb"
-msgstr ""
+msgstr "Godan Verb"
 
 msgid "Irregular verb with {} ending"
-msgstr ""
+msgstr "Unregelmäßiges Wort mit {} Endung"
 
 msgid "SoundFx"
 msgstr ""
 
 msgid "Expression"
-msgstr ""
+msgstr "Ausdruck"
 
 msgid "Counter"
-msgstr ""
+msgstr "Zählwort"
 
 msgid "Suffix"
 msgstr ""
 
 msgid "Prefix"
-msgstr ""
+msgstr "Präfix"
 
 msgid "Particle"
-msgstr ""
+msgstr "Partikel"
 
 msgid "Interjection"
-msgstr ""
+msgstr "Ausruf"
 
 msgid "Symbol"
 msgstr ""
 
 msgid "Pronoun"
-msgstr ""
+msgstr "Pronomen"
 
 msgid "Auxilary"
 msgstr ""
 
-msgid "Nummeric"
-msgstr ""
+msgid "Numeric"
+msgstr "Nummer"
 
 msgid "Adverb-To"
-msgstr ""
+msgstr "To-Adverb"
 
 msgid "Adverb"
-msgstr ""
+msgstr "Adverb"
 
 msgid "Adjective"
-msgstr ""
+msgstr "Adjektiv"
 
 msgid "Auxilary adjective"
-msgstr ""
+msgstr "Hilfsadjektiv"
 
 msgid "Auxilary Verb"
-msgstr ""
+msgstr "Hilfsverb"
 
 msgid "Verb"
-msgstr ""
+msgstr "Verb"
 
 msgid "Conjugation"
-msgstr ""
+msgstr "Konjugation"
 
 msgid "Unclassified"
-msgstr ""
+msgstr "nicht klassifiziert"
 
 msgid "Noun or verb describing a noun"
-msgstr ""
+msgstr "Nomen beschreibendes Nomen oder Verb"
 
 msgid "I adjective"
-msgstr ""
+msgstr "I Adjektiv"
 
 msgid "I adjective (conjugated like いい)"
-msgstr ""
+msgstr "I Adjektiv (konjugiert wie いい)"
 
 msgid "Ku adjective"
-msgstr ""
+msgstr "Ku Adjektiv"
 
 msgid "Na adjective"
-msgstr ""
+msgstr "Na Adjektiv"
 
 msgid "Formal form of na adjective"
-msgstr ""
+msgstr "Formelle Form eines na-Adjektives"
 
 msgid "No adjective"
-msgstr ""
+msgstr "No-Adjektiv"
 
 msgid "Pre noun adjective"
-msgstr ""
+msgstr "Pre-Nomen Adjektiv"
 
 msgid "Shiku adjective"
-msgstr ""
+msgstr "Shiku Adjektiv"
 
 msgid "Taru adjective"
-msgstr ""
+msgstr "Taru Adjektiv"
 
 msgid "Noun"
-msgstr ""
+msgstr "Nomen"
 
 msgid "Noun adverbial"
-msgstr ""
+msgstr "adverbiales Nomen"
 
 msgid "Prefix (noun)"
-msgstr ""
+msgstr "Präfix (Nomen)"
 
 msgid "Suffix (noun)"
-msgstr ""
+msgstr "Suffix (Nomen)"
 
 msgid "Temporal noun"
-msgstr ""
+msgstr "zeitliches Nomen"
 
 msgid "Unspecified verb"
-msgstr ""
+msgstr "Unspezifiziertes Verb"
 
 msgid "Intransitive verb"
-msgstr ""
+msgstr "Intransitives Verb"
 
 msgid "Transitive verb"
-msgstr ""
+msgstr "Transitives Verb"
 
 msgid "Ichidan verb"
-msgstr ""
+msgstr "Ichidan Verb"
 
 msgid "Ichidan zuru verb"
-msgstr ""
+msgstr "Ichidan zuru Verb"
 
 msgid "Ichidan kureru verb"
-msgstr ""
+msgstr "Ichidan kureru Verb"
 
 msgid "Kuru verb"
-msgstr ""
+msgstr "Kuru Verb"
 
 msgid "Noun taking suru"
 msgstr ""
 
 msgid "Suru verb"
-msgstr ""
+msgstr "Suru Verb"
 
 msgid "Suru special"
-msgstr ""
+msgstr "Suru verb, Spezialfall"
 
 msgid "Pre-noun"
 msgstr ""
 
 # this thingy -> " "
 msgid "Space"
-msgstr ""
+msgstr "Leerzeichen"
 
 ## Name search
 msgid "Company"
-msgstr ""
+msgstr "Firma"
 
 msgid "Female"
-msgstr ""
+msgstr "Weiblich"
 
 msgid "Male"
-msgstr ""
+msgstr "Männlich"
 
 msgid "Organization"
-msgstr ""
+msgstr "Organisation"
 
 msgid "Persons name"
-msgstr ""
+msgstr "Personenname"
 
 msgid "Place"
-msgstr ""
+msgstr "Platz"
 
 msgid "Product"
-msgstr ""
+msgstr "Produkt"
 
 msgid "(Railway)Station"
-msgstr ""
+msgstr "Haltestelle"
 
 msgid "Surname"
-msgstr ""
+msgstr "Familienname"
 
 msgid "Unknown"
-msgstr ""
+msgstr "unbekannt"
 
 msgid "Art work"
-msgstr ""
+msgstr "Kunstwerk"
 
 # "No names found"
 msgid "names"
-msgstr ""
+msgstr "Namen"
 
 ## Search help
 msgid "Search Help"
-msgstr ""
+msgstr "Suchhilfe"
 
 msgid "No {} found"
-msgstr ""
+msgstr "Keine {} gefunden"
 
 msgid "Your default search language might not fit your input"
-msgstr ""
+msgstr "Deine eingestellte Sprache und die in der gesuchten Sprache stimmen nicht überein"
 
 msgid "Check your search for typos"
-msgstr ""
+msgstr "Überprüfe deine Suche nach Tippfehlern"
 
 msgid "Use more generic search terms"
-msgstr ""
+msgstr "Benutze allgemeinere Begriffe"
 
-msgid "Try finding your search in a different category using "
-msgstr ""
+msgid "Try finding your search in a different category using"
+msgstr "Versuche in einer anderen Kategorie zu suchen, mithilfe "
 
 msgid "Your search request might not be included in our database yet"
-msgstr ""
+msgstr "Deine Suchanfrage ist (noch) nicht in unserer Datenbank"
 
 msgid "If you think your search should be contained in our database, submit an issue on"
-msgstr ""
+msgstr "Wenn du der Meinung bist, diese Suchanfrage sei in unserer Datenbank, erstelle gerne ein Issue auf"
 
 # Also check our Trello board since we might be working on it
 msgid "Also check our"
-msgstr ""
+msgstr "Außerdem besuche unser"
 
 msgid "since we might be working on it!"
-msgstr ""
+msgstr ", denn es kann sein, dass wir bereits daran arbeiten!"

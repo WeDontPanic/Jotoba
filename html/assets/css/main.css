@@ -673,7 +673,6 @@ footer {
     -webkit-font-smoothing: antialiased;
     background-color: var(--secondaryColor);
     border-radius: 3px;
-    text-transform: lowercase;
     color: var(--secondaryTextColor);
     font-weight: bold;
     text-align: center;

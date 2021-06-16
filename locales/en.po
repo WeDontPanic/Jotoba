@@ -13,7 +13,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"PO-Revision-Date: 2021-06-13 16:59+0200\n"
+"PO-Revision-Date: 2021-06-16 18:54+0200\n"
 "Last-Translator:  <jojii@gmx.net>\n"
 "Language-Team: English\n"
 "Language: en\n"
@@ -312,6 +312,9 @@ msgid "Japanese names"
 msgstr ""
 
 ## Word results
+msgid "Words and kanji"
+msgstr ""
+
 msgid "{} could be an inflection of"
 msgstr ""
 
@@ -971,7 +974,7 @@ msgstr ""
 msgid "Auxilary"
 msgstr ""
 
-msgid "Nummeric"
+msgid "Numeric"
 msgstr ""
 
 msgid "Adverb-To"
@@ -1134,7 +1137,7 @@ msgstr ""
 msgid "Use more generic search terms"
 msgstr ""
 
-msgid "Try finding your search in a different category using "
+msgid "Try finding your search in a different category using"
 msgstr ""
 
 msgid "Your search request might not be included in our database yet"
