@@ -1,6 +1,7 @@
 #![allow(dead_code, unreachable_patterns)]
 
 use actix_web::{http::StatusCode, HttpResponse, ResponseError};
+use deadpool_postgres::PoolError;
 use serde::Serialize;
 use thiserror::Error;
 use tokio_diesel::AsyncError;
@@ -80,6 +81,14 @@ impl ResponseError for RestError {
             error: self.name(),
         };
         HttpResponse::build(status_code).json(error_response)
+    }
+}
+
+impl From<PoolError> for RestError {
+    fn from(e: PoolError) -> Self {
+        match e {
+            _ => Self::Internal,
+        }
     }
 }
 

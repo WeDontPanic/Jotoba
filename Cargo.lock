@@ -381,7 +381,8 @@ dependencies = [
  "actix-web",
  "async-std",
  "cache",
- "config",
+ "config 0.1.0",
+ "deadpool-postgres",
  "diesel",
  "error",
  "eudex",
@@ -806,6 +807,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "config"
+version = "0.11.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "1b1b9d958c2b1368a663f05538fc1b5975adce1e19f435acceae987aceeeb369"
+dependencies = [
+ "lazy_static",
+ "nom 5.1.2",
+ "serde",
+]
+
+[[package]]
 name = "const_fn"
 version = "0.4.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -917,6 +929,35 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "fb4a30d54f7443bf3d6191dcd486aca19e67cb3c49fa7a06a319966346707e7f"
 dependencies = [
  "cipher",
+]
+
+[[package]]
+name = "deadpool"
+version = "0.8.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a2d41e5afb1b1e89cc7204eb9ca99e05ba6fc810962957e7fe285d5024ed5890"
+dependencies = [
+ "async-trait",
+ "config 0.11.0",
+ "num_cpus",
+ "serde",
+ "tokio 1.6.2",
+]
+
+[[package]]
+name = "deadpool-postgres"
+version = "0.9.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "1586368a579e26f158266d0a415bcb5df04a64b65913b2a31715d97987bd4d44"
+dependencies = [
+ "async-trait",
+ "config 0.11.0",
+ "deadpool",
+ "futures",
+ "log",
+ "serde",
+ "tokio 1.6.2",
+ "tokio-postgres",
 ]
 
 [[package]]
@@ -1101,6 +1142,7 @@ name = "error"
 version = "0.1.0"
 dependencies = [
  "actix-web",
+ "deadpool-postgres",
  "diesel",
  "log",
  "r2d2",
@@ -1188,7 +1230,7 @@ dependencies = [
  "actix-session",
  "actix-web",
  "cache",
- "config",
+ "config 0.1.0",
  "dyn-fmt",
  "error",
  "japanese",
@@ -1733,7 +1775,8 @@ dependencies = [
  "argparse",
  "async-std",
  "cache",
- "config",
+ "config 0.1.0",
+ "deadpool-postgres",
  "env_logger",
  "error",
  "frontend",
@@ -2053,6 +2096,17 @@ checksum = "2ad2a91a8e869eeb30b9cb3119ae87773a8f4ae617f41b1eb9c154b2905f7bd6"
 dependencies = [
  "memchr",
  "version_check 0.1.5",
+]
+
+[[package]]
+name = "nom"
+version = "5.1.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "ffb4262d26ed83a1c0a33a38fe2bb15797329c85770da05e6b828ddb782627af"
+dependencies = [
+ "lexical-core",
+ "memchr",
+ "version_check 0.9.3",
 ]
 
 [[package]]

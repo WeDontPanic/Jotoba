@@ -4,9 +4,10 @@ mod kanji_reading;
 mod native;
 mod storage;
 
+use deadpool_postgres::Pool;
 pub use storage::{load_meaning_suggestions, load_word_suggestions};
 
-use std::{cmp::Ordering, str::FromStr, sync::Arc};
+use std::{cmp::Ordering, str::FromStr};
 
 use config::Config;
 use error::api_error::RestError;
@@ -136,7 +137,7 @@ impl WordPair {
 
 /// Get search suggestions endpoint
 pub async fn suggestion_ep(
-    pool: web::Data<Arc<Client>>,
+    pool: web::Data<Pool>,
     config: web::Data<Config>,
     payload: Json<Request>,
 ) -> Result<Json<Response>, actix_web::Error> {
@@ -156,7 +157,7 @@ pub async fn suggestion_ep(
 }
 
 /// Returns best matching suggestions for the given query
-async fn get_suggestions(pool: &Client, query: Query) -> Result<Response, RestError> {
+async fn get_suggestions(pool: &Pool, query: Query) -> Result<Response, RestError> {
     match query.type_ {
         QueryType::Sentences | QueryType::Words => {
             if let Some(kanji_reading) = as_kanji_reading(&query) {
@@ -172,7 +173,7 @@ async fn get_suggestions(pool: &Client, query: Query) -> Result<Response, RestEr
 }
 
 /// Returns kanji suggestions
-async fn kanji_suggestions(client: &Client, query: Query) -> Result<Response, RestError> {
+async fn kanji_suggestions(client: &Pool, query: Query) -> Result<Response, RestError> {
     if query.language == QueryLang::Foreign {
         kanji_meaning::suggestions(client, &query).await
     } else {
@@ -202,7 +203,7 @@ fn as_kanji_reading(query: &Query) -> Option<KanjiReading> {
 }
 
 /// Returns word suggestions based on the query. Applies various approaches to give better results
-async fn get_word_suggestions(pool: &Client, query: Query) -> Result<Response, RestError> {
+async fn get_word_suggestions(pool: &Pool, query: Query) -> Result<Response, RestError> {
     let response = try_word_suggestions(pool, &query).await?;
 
     // Tries to do a katakana search if nothing was found
@@ -219,7 +220,7 @@ async fn get_word_suggestions(pool: &Client, query: Query) -> Result<Response, R
 }
 
 /// Returns Ok(suggestions) for the given query ordered and ready to display
-async fn try_word_suggestions(pool: &Client, query: &Query) -> Result<Vec<WordPair>, RestError> {
+async fn try_word_suggestions(pool: &Pool, query: &Query) -> Result<Vec<WordPair>, RestError> {
     // Get sugesstions for matching language
     let mut word_pairs = match query.language {
         QueryLang::Japanese => native::suggestions(&pool, &query.query).await?,

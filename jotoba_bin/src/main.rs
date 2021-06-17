@@ -3,8 +3,9 @@
 mod cli;
 mod webserver;
 
-use std::env;
+use std::{env, str::FromStr};
 
+use deadpool_postgres::{Manager, ManagerConfig, Pool, RecyclingMethod};
 use import::has_required_data;
 use tokio_postgres::NoTls;
 
@@ -29,15 +30,7 @@ pub async fn main() {
 
     // Start the werbserver on --stat/-s
     if options.start {
-        let (async_postgres, connection) = tokio_postgres::connect(&connection_str, NoTls)
-            .await
-            .expect("Couldn't connect to postgres");
-        tokio::spawn(async move {
-            if let Err(e) = connection.await {
-                eprintln!("connection error: {}", e);
-            }
-        });
-        webserver::start(database, async_postgres).expect("webserver failed");
+        webserver::start(database, connection_str).expect("webserver failed");
         return;
     }
 

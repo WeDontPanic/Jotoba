@@ -1,24 +1,39 @@
 mod cache_control;
 
 use actix_session::CookieSession;
+use deadpool_postgres::{Manager, ManagerConfig, Pool, RecyclingMethod};
 use localization::TranslationDict;
-use tokio_postgres::Client;
 
 use actix_web::{middleware, web as actixweb, App, HttpServer};
 use cache_control::CacheInterceptor;
 use config::Config;
 use models::DbPool;
-use std::{sync::Arc, time::Duration};
+use std::{str::FromStr, sync::Arc, time::Duration};
+use tokio_postgres::NoTls;
 
 /// How long frontend assets are going to be cached by the clients. Currently 1 week
 const ASSET_CACHE_MAX_AGE: u64 = 604800;
 
+fn load_db(connection_str: String) -> Pool {
+    let pg_config =
+        tokio_postgres::Config::from_str(&connection_str).expect("Failed to parse config");
+
+    let mgr_config = ManagerConfig {
+        recycling_method: RecyclingMethod::Fast,
+    };
+    let mgr = Manager::from_config(pg_config, NoTls, mgr_config);
+    Pool::new(mgr, 16)
+}
+
 /// Start the webserver
 #[actix_web::main]
-pub(super) async fn start(db: DbPool, async_postgres: Client) -> std::io::Result<()> {
+pub(super) async fn start(db: DbPool, connection_str: String) -> std::io::Result<()> {
     setup_logger();
 
     let config = Config::new().await.expect("config failed");
+
+    // Connect to db. Since were migrating to tokio-postgres there are two db libraries used
+    let pool = load_db(connection_str);
 
     #[cfg(feature = "tokenizer")]
     load_tokenizer();
@@ -30,7 +45,6 @@ pub(super) async fn start(db: DbPool, async_postgres: Client) -> std::io::Result
     .expect("Failed to load localization files");
 
     let locale_dict_arc = Arc::new(locale_dict);
-    let async_pg_arc = Arc::new(async_postgres);
 
     #[cfg(feature = "sentry_error")]
     if let Some(ref sentry_config) = config.sentry {
@@ -63,7 +77,7 @@ pub(super) async fn start(db: DbPool, async_postgres: Client) -> std::io::Result
             // Data
             .data(db.clone())
             .data(config_clone.clone())
-            .data(async_pg_arc.clone())
+            .data(pool.clone())
             .data(locale_dict_arc.clone())
             // Middlewares
             .wrap(middleware::Logger::default())
