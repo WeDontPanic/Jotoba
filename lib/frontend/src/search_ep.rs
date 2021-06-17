@@ -7,6 +7,7 @@ use super::user_settings;
 
 use actix_session::Session;
 use actix_web::{web, HttpRequest, HttpResponse};
+use deadpool_postgres::Pool;
 use localization::TranslationDict;
 use serde::Deserialize;
 
@@ -66,6 +67,7 @@ impl QueryStruct {
 /// Endpoint to perform a search
 pub async fn search(
     pool: web::Data<DbPool>,
+    poolv2: web::Data<Pool>,
     query_data: web::Query<QueryStruct>,
     locale_dict: web::Data<Arc<TranslationDict>>,
     config: web::Data<Config>,
@@ -88,7 +90,7 @@ pub async fn search(
     let site_data = match query.type_ {
         QueryType::Kanji => kanji_search(&pool, &locale_dict, settings, &query).await,
         QueryType::Sentences => sentence_search(&pool, &locale_dict, settings, &query).await,
-        QueryType::Names => name_search(&pool, &locale_dict, settings, &query).await,
+        QueryType::Names => name_search(&poolv2, &locale_dict, settings, &query).await,
         QueryType::Words => word_search(&pool, &locale_dict, settings, &query).await,
     }?;
     let search_duration = start.elapsed();
@@ -151,7 +153,7 @@ async fn kanji_search<'a>(
 
 /// Perform a name search
 async fn name_search<'a>(
-    pool: &web::Data<DbPool>,
+    pool: &Pool,
     locale_dict: &'a TranslationDict,
     user_settings: UserSettings,
     query: &'a Query,

@@ -3,6 +3,7 @@ use diesel::prelude::*;
 use error::Error;
 use parse::jmnedict::{name_type::NameType, NameEntry};
 use tokio_diesel::*;
+use tokio_postgres::Row;
 
 #[derive(Queryable, Clone, Debug, Default)]
 pub struct Name {
@@ -60,6 +61,20 @@ impl From<NameEntry> for NewName {
             transcription: val.transcription,
             name_type: val.name_type,
             xref: val.xref,
+        }
+    }
+}
+
+impl From<Row> for Name {
+    fn from(row: Row) -> Self {
+        Self {
+            id: row.get(0),
+            sequence: row.get(1),
+            kana: row.get(2),
+            kanji: row.get(3),
+            transcription: row.get(4),
+            name_type: row.get(5),
+            xref: row.get(6),
         }
     }
 }
