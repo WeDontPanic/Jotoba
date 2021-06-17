@@ -449,6 +449,9 @@ msgstr ""
 msgid "and available under the license"
 msgstr ""
 
+msgid "Additionally, the RADKFILE by Jin Breen is used to link Radicals to Kanji."
+msgstr ""
+
 # Source
 msgid "Audio Files"
 msgstr ""
@@ -531,9 +534,6 @@ msgid "Data about Pitch Accents and Radicals used in specific Kanji are provided
 msgstr ""
 
 msgid "On the project's Github Page you can find lots of data about Kanji."
-msgstr ""
-
-msgid "Additional to Kanjium, RADKFILE by Jin Breen is used to link Radicals to Kanji."
 msgstr ""
 
 ## Jmdict
