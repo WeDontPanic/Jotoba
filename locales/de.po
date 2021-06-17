@@ -146,6 +146,12 @@ msgstr "Seitensprache"
 msgid "Displays the website in the selected language"
 msgstr "Die gewählte Sprache bestimmt die UI Sprache"
 
+msgid "This language has not been translated yet."
+msgstr "Diese Sprache wurde noch nicht übersetzt."
+
+msgid "Contributions are welcome!"
+msgstr "Kontributionen sind willkommen!"
+
 msgid "Result settings"
 msgstr "Ergebnis Einstellungen"
 

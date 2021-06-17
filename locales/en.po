@@ -146,6 +146,12 @@ msgstr ""
 msgid "Displays the website in the selected language"
 msgstr ""
 
+msgid "This language has not been translated yet."
+msgstr ""
+
+msgid "Contributions are welcome!"
+msgstr ""
+
 msgid "Result settings"
 msgstr ""
 
