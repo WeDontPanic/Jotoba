@@ -140,6 +140,12 @@ msgstr ""
 msgid "Results will try to match the selected language"
 msgstr ""
 
+msgid "Page language"
+msgstr ""
+
+msgid "Displays the website in the selected language"
+msgstr ""
+
 msgid "Result settings"
 msgstr ""
 

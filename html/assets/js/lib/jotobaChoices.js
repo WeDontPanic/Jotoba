@@ -1,5 +1,5 @@
 // Add on-click data select and dropdown close on children
-document.querySelectorAll(".choices__item--choice").forEach((e) => {
+document.querySelectorAll(".choices__item--choice.choices__item--selectable").forEach((e) => {
 
     // Create listener
     e.addEventListener("click", (event) => {

@@ -140,6 +140,12 @@ msgstr "Standardmäßige Suchsprache"
 msgid "Results will try to match the selected language"
 msgstr "Die gewählte Sprache wird für Suchen verwendet"
 
+msgid "Page language"
+msgstr "Seitensprache"
+
+msgid "Displays the website in the selected language"
+msgstr "Die gewählte Sprache bestimmt die UI Sprache"
+
 msgid "Result settings"
 msgstr "Ergebnis Einstellungen"
 
