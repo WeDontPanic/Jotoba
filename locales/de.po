@@ -449,6 +449,9 @@ msgstr "Wörter (außer Sound Effekten), Kanji und Namen auf unserer Seite sind 
 msgid "and available under the license"
 msgstr "und verfügbar unter der Lizenz"
 
+msgid "Additionally, the RADKFILE by Jin Breen is used to link Radicals to Kanji."
+msgstr "Außerdem wird die RADKFILE von JinBreen verwendet, welche Radikale und Kanji verlinkt."
+
 # Source
 msgid "Audio Files"
 msgstr "Audio Dateien"
@@ -532,9 +535,6 @@ msgstr "Diese Daten wurden vom Kanjium Projekt zur Verfügung gestellt."
 
 msgid "On the project's Github Page you can find lots of data about Kanji."
 msgstr "Auf ihrer Github Seite findet man viele verschiedene Infos über Kanji."
-
-msgid "Additional to Kanjium, RADKFILE by Jin Breen is used to link Radicals to Kanji."
-msgstr "Außerdem wird die RADKFILE von JinBreen verwendet, welche Radikale und Kanji verlinkt."
 
 ## Jmdict
 
