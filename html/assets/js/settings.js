@@ -168,6 +168,16 @@ function loadCookieData() {
             choicesInner[1].children[0].innerHTML = e.innerHTML;
         }
     });
+
+    // Set in cookie selected language
+    document.querySelectorAll("#page-lang-select > .choices__item--choice").forEach((e) => {
+        if (e.dataset.value == page_lang) {
+            let choicesInner = e.parentElement.parentElement.parentElement.children[0].children;
+            
+            choicesInner[0].children[0].innerHTML = e.innerHTML;
+            choicesInner[1].children[0].innerHTML = e.innerHTML;
+        }
+    });
        
     // Set English results
     if (show_english === "false") {
