@@ -302,7 +302,7 @@ msgstr "Namensherkunft"
 
 # strokes suffix
 msgid "strokes"
-msgstr "Striche"
+msgstr "Linien"
 
 msgid "Radical"
 msgstr "Radikal"
