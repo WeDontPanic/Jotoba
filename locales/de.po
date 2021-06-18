@@ -14,7 +14,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "PO-Revision-Date: 2021-06-16 18:59+0200\n"
-"Last-Translator:  <jojii@gmx.net>\n"
+"Last-Translator:  <>\n"
 "Language-Team: English\n"
 "Language: en\n"
 "MIME-Version: 1.0\n"
@@ -582,19 +582,19 @@ msgstr "Normalerweise geschrieben in Kana"
 # Misc
 
 msgid "Abbreviation"
-msgstr ""
+msgstr "Abkürzung"
 
 msgid "Anarchism"
-msgstr ""
+msgstr "Anarchismus"
 
 msgid "Character"
-msgstr ""
+msgstr "Charakter"
 
 msgid "Childrens language"
-msgstr ""
+msgstr "Kindersprache"
 
 msgid "Colloquialism"
-msgstr ""
+msgstr "Umgangssprache"
 
 msgid "Company name"
 msgstr "Firmenname"
@@ -603,109 +603,109 @@ msgid "Creature"
 msgstr "Kreatur"
 
 msgid "Dated term"
-msgstr ""
+msgstr "Datierter Begriff"
 
 msgid "Deity"
-msgstr ""
+msgstr "Gottheit"
 
 msgid "Derogatory"
-msgstr ""
+msgstr "Abwertend"
 
 msgid "Event"
 msgstr ""
 
 msgid "Familiar language"
-msgstr ""
+msgstr "Vertraute Sprache"
 
 msgid "Female term/language"
-msgstr ""
+msgstr "Weblicher Begriff/Sprache"
 
 msgid "Fiction"
-msgstr ""
+msgstr "Fiktion"
 
 msgid "Given name"
-msgstr ""
+msgstr "Vorname"
 
 msgid "Historical term"
-msgstr ""
+msgstr "Historischer Begriff"
 
 msgid "Honorific language"
-msgstr ""
+msgstr "Ehrhafte Sprache"
 
 msgid "Humble language"
-msgstr ""
+msgstr "Bescheidene Sprache"
 
 msgid "Idiomatic expression"
-msgstr ""
+msgstr "Idiomatischer Ausdruck"
 
 msgid "Jocular humorous term"
-msgstr ""
+msgstr "Scherzhafter humoristischer Begriff"
 
 msgid "Legend"
-msgstr ""
+msgstr "Legende"
 
 msgid "Literary/formal term"
-msgstr ""
+msgstr "Literarischer/formeller Begriff"
 
 msgid "Manga slang"
-msgstr ""
+msgstr "Manga-Slang"
 
 msgid "Male term/language"
-msgstr ""
+msgstr "Männlicher Begriff/Sprache"
 
 msgid "Mythology"
-msgstr ""
+msgstr "Mythologie"
 
 msgid "Internet slang"
-msgstr ""
+msgstr "Internet-Slang"
 
 msgid "Object"
-msgstr ""
+msgstr "Objekt"
 
 msgid "Obsolete term"
-msgstr ""
+msgstr "Veralteter Begriff"
 
 msgid "Obscure term"
-msgstr ""
+msgstr "Unbekannter Begriff"
 
 msgid "Onomatopoetic or mimetic word"
-msgstr ""
+msgstr "Onomatopoetisches oder mimetisches Wort"
 
 msgid "Organization name"
-msgstr ""
+msgstr "Organisationsname"
 
 msgid "Other"
-msgstr ""
+msgstr "Andere"
 
 msgid "Person name"
-msgstr ""
+msgstr "Personenname"
 
 msgid "Place name"
-msgstr ""
+msgstr "Ortsname"
 
 msgid "Poetical term"
-msgstr ""
+msgstr "Poetischer Begriff"
 
 msgid "Polite language"
-msgstr ""
+msgstr "Höfliche Sprache"
 
 msgid "Product name"
-msgstr ""
+msgstr "Produktname"
 
 msgid "Proverb"
-msgstr ""
+msgstr "Sprichwort"
 
 msgid "Qutation"
-msgstr ""
+msgstr "Zitat"
 
 msgid "Rare"
-msgstr ""
+msgstr "Selten"
 
 msgid "Religion"
 msgstr ""
 
 msgid "Sensitive"
-msgstr ""
+msgstr "Sensibel"
 
 msgid "Service"
 msgstr ""
@@ -714,25 +714,25 @@ msgid "Slang"
 msgstr ""
 
 msgid "Railway station"
-msgstr ""
+msgstr "Bahnhof"
 
 msgid "Family or surname"
-msgstr ""
+msgstr "Familien- oder Nachname"
 
 msgid "Usually written in kana"
-msgstr ""
+msgstr "Üblicherweise in Kana geschrieben"
 
 msgid "Unclassified name"
-msgstr ""
+msgstr "Nicht klassifizierter Name"
 
 msgid "Vulgar expression/word"
-msgstr ""
+msgstr "Vulgärer Ausdruck/Wort"
 
 msgid "Artwork"
-msgstr ""
+msgstr "Kunstwerk"
 
 msgid "Rude/x-rated term"
-msgstr ""
+msgstr "Nicht Jugendfreier Begriff"
 
 msgid "Yojijukugo"
 msgstr ""
@@ -743,103 +743,103 @@ msgid "{} term"
 msgstr "{} Begriff"
 
 msgid "Agriculture"
-msgstr ""
+msgstr "Landwirtschaft"
 
 msgid "Anatomy"
-msgstr ""
+msgstr "Anatomie"
 
 msgid "Archeology"
-msgstr ""
+msgstr "Archäologie"
 
 msgid "Architecture"
-msgstr ""
+msgstr "Architektur"
 
 msgid "Art aesthetics"
-msgstr ""
+msgstr "Kunstästhetik"
 
 msgid "Astronomy"
-msgstr ""
+msgstr "Astronomie"
 
 msgid "Audio/visual"
-msgstr ""
+msgstr "Audio/visuell"
 
 msgid "Aviation"
-msgstr ""
+msgstr "Luftfahrt"
 
 msgid "Baseball"
 msgstr ""
 
 msgid "Biochemistry"
-msgstr ""
+msgstr "Biochemie"
 
 msgid "Biology"
-msgstr ""
+msgstr "Biologie"
 
 msgid "Botany"
-msgstr ""
+msgstr "Botanik"
 
 msgid "Buddhism"
-msgstr ""
+msgstr "Buddhismus"
 
 msgid "Business"
 msgstr ""
 
 msgid "Chemistry"
-msgstr ""
+msgstr "Chemie"
 
 msgid "Christianity"
-msgstr ""
+msgstr "Christentum"
 
 msgid "Computing"
-msgstr ""
+msgstr "Computer"
 
 msgid "Crystallography"
-msgstr ""
+msgstr "Kristallographie"
 
 msgid "Ecology"
-msgstr ""
+msgstr "Ökologie"
 
 msgid "Economics"
-msgstr ""
+msgstr "Wirtschaft"
 
 msgid "Electricity"
-msgstr ""
+msgstr "Elektrizität"
 
 msgid "Electronics"
-msgstr ""
+msgstr "Elektronik"
 
 msgid "Embryology"
-msgstr ""
+msgstr "Embryologie"
 
 msgid "Engineering"
-msgstr ""
+msgstr "Ingenieurwesen"
 
 msgid "Entomology"
-msgstr ""
+msgstr "Entomologie"
 
 msgid "Finance"
-msgstr ""
+msgstr "Finanzen"
 
 msgid "Fishing"
-msgstr ""
+msgstr "Fischen"
 
 msgid "FoodCooking"
-msgstr ""
+msgstr "Essen kochen"
 
 msgid "Gardening"
-msgstr ""
+msgstr "Gärtnerei"
 
 msgid "Genetics"
-msgstr ""
+msgstr "Genetik"
 
 msgid "Geography"
-msgstr ""
+msgstr "Geografie"
 
 msgid "Geology"
-msgstr ""
+msgstr "Geologie"
 
 msgid "Geometry"
-msgstr ""
+msgstr "Geometrie"
 
 msgid "Go (game)"
 msgstr ""
@@ -848,25 +848,25 @@ msgid "Golf"
 msgstr ""
 
 msgid "Grammar"
-msgstr ""
+msgstr "Grammatik"
 
 msgid "Greek mythology"
-msgstr ""
+msgstr "Griechische Mythologie"
 
 msgid "Hanafuda"
 msgstr ""
 
 msgid "Horseracing"
-msgstr ""
+msgstr "Pferderennen"
 
 msgid "Law"
-msgstr ""
+msgstr "Recht"
 
 msgid "Linguistics"
-msgstr ""
+msgstr "Linguistik"
 
 msgid "Logic"
-msgstr ""
+msgstr "Logik"
 
 msgid "Martial arts"
 msgstr ""
@@ -875,28 +875,28 @@ msgid "Mahjong"
 msgstr ""
 
 msgid "Mathematics"
-msgstr ""
+msgstr "Mathemaik"
 
 msgid "MechanicalEngineering"
-msgstr ""
+msgstr "Maschinenbau"
 
 msgid "Medicine"
-msgstr ""
+msgstr "Medizin"
 
 msgid "Climate/weather"
-msgstr ""
+msgstr "Klima/Wetter"
 
 msgid "Military"
-msgstr ""
+msgstr "Militär"
 
 msgid "Music"
-msgstr ""
+msgstr "Musik"
 
 msgid "Ornithology"
-msgstr ""
+msgstr "Vogelkunde"
 
 msgid "Paleontology"
-msgstr "Paleontologie"
+msgstr "Paläontologie"
 
 msgid "Pathology"
 msgstr "Pathologie"
