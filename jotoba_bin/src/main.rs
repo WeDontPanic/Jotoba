@@ -3,11 +3,9 @@
 mod cli;
 mod webserver;
 
-use std::{env, str::FromStr};
+use std::env;
 
-use deadpool_postgres::{Manager, ManagerConfig, Pool, RecyclingMethod};
 use import::has_required_data;
-use tokio_postgres::NoTls;
 
 //#[tokio::main]
 #[actix_web::main]

@@ -8,4 +8,4 @@ edition = "2018"
 
 [dependencies]
 itertools = "0.10.1"
-rand = "0.8.3"
+rand = "0.8.4"

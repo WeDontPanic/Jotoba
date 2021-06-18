@@ -6,10 +6,11 @@ use diesel::{
     pg::Pg,
     serialize::{self, Output},
     sql_types::Integer,
-    types::{FromSql, ToSql},
+    types::ToSql,
 };
 use localization::traits::Translatable;
 use strum_macros::{AsRefStr, EnumString};
+use tokio_postgres::{types::Type, Row};
 
 #[derive(AsExpression, FromSqlRow, Debug, PartialEq, Clone, Copy, AsRefStr, EnumString)]
 #[sql_type = "Integer"]
@@ -71,14 +72,6 @@ impl ToSql<Integer, Pg> for NameType {
     }
 }
 
-impl FromSql<Integer, Pg> for NameType {
-    fn from_sql(bytes: Option<&[u8]>) -> deserialize::Result<Self> {
-        Ok(Self::try_from(<i32 as FromSql<Integer, Pg>>::from_sql(
-            bytes,
-        )?)?)
-    }
-}
-
 impl TryFrom<i32> for NameType {
     type Error = crate::error::Error;
     fn try_from(value: i32) -> Result<Self, Self::Error> {
@@ -116,5 +109,20 @@ impl From<NameType> for i32 {
             NameType::Unclassified => 10,
             NameType::Work => 11,
         }
+    }
+}
+
+impl<'a> tokio_postgres::types::FromSql<'a> for NameType {
+    fn from_sql(
+        ty: &tokio_postgres::types::Type,
+        raw: &'a [u8],
+    ) -> Result<Self, Box<dyn std::error::Error + Sync + Send>> {
+        Ok(NameType::try_from(
+            <i32 as tokio_postgres::types::FromSql>::from_sql(ty, raw)?,
+        )?)
+    }
+
+    fn accepts(ty: &tokio_postgres::types::Type) -> bool {
+        matches!(ty, &tokio_postgres::types::Type::INT4)
     }
 }
