@@ -19,6 +19,8 @@ const radicals = [
     ["龠"]
 ];
 
+var baseRadResult = $('.rad-results')[0].innerHTML;
+
 function toggleRadicalOverlay() {
     $('.overlay.speech').addClass('hidden');
 
@@ -33,6 +35,7 @@ function toggleRadicalOverlay() {
     if (overlay.hasClass("hidden")) {
         resetRadPicker()
     } else {
+        $('.rad-results').html(baseRadResult);
         $('.rad-results').removeClass("hidden");
     }
 }
