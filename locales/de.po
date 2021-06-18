@@ -171,7 +171,7 @@ msgid "Select color scheme"
 msgstr "Wähle ein Farbschema aus"
 
 msgid "Use theme"
-msgstr "Presets:"
+msgstr "Presets"
 
 msgid "Light"
 msgstr "Hell"
@@ -183,34 +183,34 @@ msgid "background"
 msgstr "Hintergrund"
 
 msgid "overlay"
-msgstr ""
+msgstr "Overlay"
 
 msgid "primary"
-msgstr ""
+msgstr "Primär"
 
 msgid "primHover"
-msgstr ""
+msgstr "PrimHover"
 
 msgid "secondary"
-msgstr ""
+msgstr "Sekundär"
 
 msgid "text"
-msgstr ""
+msgstr "Text"
 
 msgid "overlayText"
-msgstr ""
+msgstr "OverlayText"
 
 msgid "searchBG"
-msgstr ""
+msgstr "SuchBG"
 
 msgid "searchText"
-msgstr ""
+msgstr "SuchText"
 
 msgid "tags"
-msgstr ""
+msgstr "Tags"
 
 msgid "itemBG"
-msgstr ""
+msgstr "ItemBG"
 
 msgid "Theme Code"
 msgstr "Farbcode"
