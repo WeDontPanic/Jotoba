@@ -1,12 +1,11 @@
 use crate::{
     schema::{radical, search_radical},
-    DbConnection, DbPool,
+    DbConnection,
 };
 use diesel::prelude::*;
 use error::Error;
 use itertools::Itertools;
 use parse::radicals::{self, search_radicals};
-use tokio_diesel::*;
 use utils::to_option;
 
 #[derive(Queryable, QueryableByName, Clone, Debug, Default, PartialEq)]
@@ -89,41 +88,43 @@ pub fn insert(db: &DbConnection, radical: NewRadical) -> Result<(), Error> {
     Ok(())
 }
 
-pub async fn find_by_id(db: &DbPool, i: i32) -> Result<Radical, Error> {
+pub async fn find_by_id(db: &DbConnection, i: i32) -> Result<Radical, Error> {
     use crate::schema::radical::dsl::*;
-    Ok(radical.filter(id.eq(i)).get_result_async(db).await?)
+    Ok(radical.filter(id.eq(i)).get_result(db)?)
 }
 
-pub async fn search_radical_find_by_literal(db: &DbPool, l: char) -> Result<SearchRadical, Error> {
+pub async fn search_radical_find_by_literal(
+    db: &DbConnection,
+    l: char,
+) -> Result<SearchRadical, Error> {
     use crate::schema::search_radical::dsl::*;
     Ok(search_radical
         .filter(literal.eq(l.to_string()))
-        .get_result_async(db)
-        .await?)
+        .get_result(db)?)
 }
 
 /// Clear all radical entries
-pub async fn clear(db: &DbPool) -> Result<(), Error> {
+pub async fn clear(db: &DbConnection) -> Result<(), Error> {
     use crate::schema::radical::dsl::*;
-    diesel::delete(radical).execute_async(db).await?;
+    diesel::delete(radical).execute(db)?;
     Ok(())
 }
 
 /// Returns Ok(true) if at least one radical exists in the Db
-pub async fn exists(db: &DbPool) -> Result<bool, Error> {
+pub async fn exists(db: &DbConnection) -> Result<bool, Error> {
     use crate::schema::radical::dsl::*;
-    Ok(radical.select(id).limit(1).execute_async(db).await? == 1)
+    Ok(radical.select(id).limit(1).execute(db)? == 1)
 }
 
 /// Clear all searh_radical entries
-pub async fn clear_search_radicals(db: &DbPool) -> Result<(), Error> {
+pub async fn clear_search_radicals(db: &DbConnection) -> Result<(), Error> {
     use crate::schema::search_radical::dsl::*;
-    diesel::delete(search_radical).execute_async(db).await?;
+    diesel::delete(search_radical).execute(db)?;
     Ok(())
 }
 
 /// Returns Ok(true) if at least one search_radical exists in the Db
-pub async fn search_radical_exists(db: &DbPool) -> Result<bool, Error> {
+pub async fn search_radical_exists(db: &DbConnection) -> Result<bool, Error> {
     use crate::schema::search_radical::dsl::*;
-    Ok(search_radical.select(id).limit(1).execute_async(db).await? == 1)
+    Ok(search_radical.select(id).limit(1).execute(db)? == 1)
 }

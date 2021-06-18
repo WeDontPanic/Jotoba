@@ -1,13 +1,12 @@
 use diesel::{prelude::*, EqAll, QueryDsl};
 use itertools::Itertools;
 use japanese::JapaneseExt;
-use tokio_diesel::AsyncRunQueryDsl;
 
 use super::{order::NativeOrder, result};
 use error::Error;
 use models::{
     sentence::{Sentence, SentenceVocabulary, Translation},
-    DbPool,
+    DbConnection,
 };
 use parse::jmdict::languages::Language;
 
@@ -20,7 +19,7 @@ const DISPLAY_LIMIT: i64 = 10;
 
 #[derive(Clone, Copy)]
 pub(super) struct SentenceSearch<'a> {
-    db: &'a DbPool,
+    db: &'a DbConnection,
     query: &'a str,
     target_lang: Language,
     offset: i32,
@@ -28,7 +27,7 @@ pub(super) struct SentenceSearch<'a> {
 }
 
 impl<'a> SentenceSearch<'a> {
-    pub(super) fn new(db: &'a DbPool, query: &'a str, target_lang: Language) -> Self {
+    pub(super) fn new(db: &'a DbConnection, query: &'a str, target_lang: Language) -> Self {
         Self {
             db,
             query,
@@ -71,8 +70,7 @@ impl<'a> SentenceSearch<'a> {
                 .filter(kana.text_search(self.query))
                 .limit(self.get_limit())
                 .offset(self.offset as i64)
-                .load_async::<(Sentence, Translation)>(self.db)
-                .await?
+                .load::<(Sentence, Translation)>(self.db)?
         } else {
             sentence
                 .inner_join(sentence_translation::table)
@@ -84,8 +82,7 @@ impl<'a> SentenceSearch<'a> {
                 .filter(content.text_search(self.query))
                 .offset(self.offset as i64)
                 .limit(self.get_limit())
-                .load_async::<(Sentence, Translation)>(self.db)
-                .await?
+                .load::<(Sentence, Translation)>(self.db)?
         };
 
         // Serach for sentences where
@@ -130,8 +127,7 @@ impl<'a> SentenceSearch<'a> {
             .filter(sentence_vocabulary::dict_sequence.eq_all(seq_id))
             .offset(self.offset as i64)
             .limit(self.get_limit())
-            .load_async::<(Sentence, Translation, SentenceVocabulary)>(self.db)
-            .await?;
+            .load::<(Sentence, Translation, SentenceVocabulary)>(self.db)?;
 
         Ok(res.into_iter().map(|(s, t, _)| (s, t)).collect())
     }
@@ -151,8 +147,7 @@ impl<'a> SentenceSearch<'a> {
             )
             .filter(sentence_translation::content.text_search(self.query))
             .offset(self.offset as i64)
-            .load_async(self.db)
-            .await?;
+            .load(self.db)?;
 
         let mut res = merge_results(res, self.target_lang);
         res.sort_by(|a, b| a.content.len().cmp(&b.content.len()));
@@ -162,7 +157,7 @@ impl<'a> SentenceSearch<'a> {
 
     /*
     pub(super) async fn get_vocabularies(
-        db: &DbPool,
+        db: &DbConnection,
         s_id: i32,
     ) -> Result<Vec<(String, SentenceVocabulary)>, Error> {
         use models::schema::dict;
@@ -171,7 +166,7 @@ impl<'a> SentenceSearch<'a> {
             .inner_join(dict::table.on(dict_sequence.eq_all(dict::sequence)))
             .filter(sentence_id.eq_all(s_id))
             .order(id)
-            .get_results_async(db)
+            .get_results(db)
             .await?;
 
         let mapped: Vec<(SentenceVocabulary, Dict)> = e

@@ -1,7 +1,7 @@
 use std::path::Path;
 
 use error::Error;
-use models::{dict, kanji, name, radical, sense, DbPool};
+use models::{dict, kanji, name, radical, sense, DbConnection};
 
 pub mod accents;
 pub mod jlpt_patches;
@@ -66,7 +66,7 @@ impl Options {
 }
 
 /// Returns true if DB has all required data
-pub async fn has_required_data(database: &DbPool) -> Result<bool, Error> {
+pub async fn has_required_data(database: &DbConnection) -> Result<bool, Error> {
     #[cfg(debug_assertions)]
     return Ok(true);
 
@@ -111,7 +111,7 @@ pub async fn has_required_data(database: &DbPool) -> Result<bool, Error> {
 }
 
 /// Import data
-pub async fn import(database: &DbPool, options: &Options) {
+pub async fn import(database: &DbConnection, options: &Options) {
     if !options.has_import_data() {
         println!("No import files were provided!");
         return;
@@ -182,14 +182,14 @@ pub async fn import(database: &DbPool, options: &Options) {
 }
 
 /// Updates Kun and On readings for kanji
-pub async fn update_dict_links(database: &DbPool) -> Result<(), Error> {
+pub async fn update_dict_links(database: &DbConnection) -> Result<(), Error> {
     kanji::gen_readings::update_links(&database).await?;
     dict::collocations::generate(&database).await?;
     Ok(())
 }
 
 /// Import independent items
-async fn import_independent(database: &DbPool, options: &Options) {
+async fn import_independent(database: &DbConnection, options: &Options) {
     // Kanji dict
     if !options.kanjidict_path.is_empty() {
         kanjidict::import(&database, options.kanjidict_path.clone()).await;

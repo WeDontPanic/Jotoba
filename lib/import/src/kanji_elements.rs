@@ -1,8 +1,8 @@
-use models::{kanji, DbPool};
+use models::{kanji, DbConnection};
 use parse::kanji_ele;
 
 /// Import kanji elements
-pub async fn import(db: &DbPool, path: &str) {
+pub async fn import(db: &DbConnection, path: &str) {
     kanji::clear_kanji_elements(db).await.unwrap();
     println!("Importing kanji elements...");
 

@@ -8,8 +8,11 @@ license = "GPLv3"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-actix-files = "0.5.0"
-actix-web = "3.3.2"
+actix-files = "0.6.0-beta.4"
+actix-http = "=3.0.0-beta.5"
+actix-rt = "2.2.0"
+actix-service = "=2.0.0-beta.5"
+actix-web = "=4.0.0-beta.5"
 argparse = "0.2.2"
 env_logger = "0.8.4"
 futures = "0.3.15"

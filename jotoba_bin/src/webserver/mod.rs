@@ -5,7 +5,7 @@ use deadpool_postgres::{Manager, ManagerConfig, Pool, RecyclingMethod};
 use localization::TranslationDict;
 
 use actix_web::{middleware, web as actixweb, App, HttpServer};
-use cache_control::CacheInterceptor;
+//use cache_control::CacheInterceptor;
 use config::Config;
 use models::DbPool;
 use std::{str::FromStr, sync::Arc, time::Duration};
@@ -26,7 +26,6 @@ fn load_db(connection_str: String) -> Pool {
 }
 
 /// Start the webserver
-#[actix_web::main]
 pub(super) async fn start(db: DbPool, connection_str: String) -> std::io::Result<()> {
     setup_logger();
 
@@ -81,7 +80,7 @@ pub(super) async fn start(db: DbPool, connection_str: String) -> std::io::Result
             .data(locale_dict_arc.clone())
             // Middlewares
             .wrap(middleware::Logger::default())
-            .wrap(CookieSession::signed(&[0; 32]).secure(false))
+            //.wrap(CookieSession::signed(&[0; 32]).secure(false))
             .wrap(middleware::Compress::default())
             // Static files
             .route("/index.html", actixweb::get().to(frontend::index::index))
@@ -101,15 +100,15 @@ pub(super) async fn start(db: DbPool, connection_str: String) -> std::io::Result
             // Static files
             .service(
                 actixweb::scope("/assets")
-                    .wrap(CacheInterceptor(Duration::from_secs(ASSET_CACHE_MAX_AGE)))
+                    //.wrap(CacheInterceptor(Duration::from_secs(ASSET_CACHE_MAX_AGE)))
                     .service(actix_files::Files::new(
                         "",
                         config_clone.server.get_html_files(),
                     )),
             );
 
-        #[cfg(feature = "sentry_error")]
-        let app = app.wrap(sentry_actix::Sentry::new());
+        //#[cfg(feature = "sentry_error")]
+        //let app = app.wrap(sentry_actix::Sentry::new());
 
         app
     })

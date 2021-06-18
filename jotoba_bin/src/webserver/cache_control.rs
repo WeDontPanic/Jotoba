@@ -14,6 +14,7 @@ use std::{
     time::Duration,
 };
 
+/*
 /// Custom middle ware to set the response `CACHE_CONTROL` header to the passed Duration
 pub struct CacheInterceptor(pub Duration);
 
@@ -74,3 +75,4 @@ where
         })
     }
 }
+*/

@@ -17,7 +17,10 @@ error = { path = "../error" }
 utils = { path = "../utils" }
 config = { path = "../config" }
 localization = { path = "../localization" }
-actix-web = "3.3.2"
+actix-http = "=3.0.0-beta.5"
+actix-rt = "2.2.0"
+actix-service = "=2.0.0-beta.5"
+actix-web = "=4.0.0-beta.5"
 ructe = "0.13.2"
 serde = "1.0.126"
 dyn-fmt = "0.3.0"

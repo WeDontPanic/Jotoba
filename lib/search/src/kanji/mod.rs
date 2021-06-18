@@ -7,7 +7,7 @@ use error::Error;
 use japanese::JapaneseExt;
 use models::{
     kanji::{self, KanjiResult},
-    DbPool,
+    DbConnection,
 };
 
 use super::query::Query;
@@ -19,7 +19,7 @@ fn format_query(query: &str) -> String {
 }
 
 /// The entry of a kanji search
-pub async fn search(db: &DbPool, query: &Query) -> Result<Vec<Item>, Error> {
+pub async fn search(db: &DbConnection, query: &Query) -> Result<Vec<Item>, Error> {
     let q = format_query(&query.query);
 
     let res = if q.is_japanese() {
@@ -37,7 +37,7 @@ pub async fn search(db: &DbPool, query: &Query) -> Result<Vec<Item>, Error> {
 }
 
 /// Find a kanji by its literal
-async fn by_literals(db: &DbPool, query: &str) -> Result<Vec<KanjiResult>, Error> {
+async fn by_literals(db: &DbConnection, query: &str) -> Result<Vec<KanjiResult>, Error> {
     let kanji = query
         .chars()
         .into_iter()
@@ -54,7 +54,7 @@ async fn by_literals(db: &DbPool, query: &str) -> Result<Vec<KanjiResult>, Error
 }
 
 /// Find kanji by mits meaning
-async fn by_meaning(db: &DbPool, meaning: &str) -> Result<Vec<KanjiResult>, Error> {
+async fn by_meaning(db: &DbConnection, meaning: &str) -> Result<Vec<KanjiResult>, Error> {
     Ok(kanji::meaning::find(db, meaning)
         .await?
         .into_iter()
@@ -63,7 +63,7 @@ async fn by_meaning(db: &DbPool, meaning: &str) -> Result<Vec<KanjiResult>, Erro
         .collect())
 }
 
-async fn to_item(db: &DbPool, items: Vec<KanjiResult>, query: &Query) -> Result<Vec<Item>, Error> {
+async fn to_item(db: &DbConnection, items: Vec<KanjiResult>, query: &Query) -> Result<Vec<Item>, Error> {
     Ok(try_join_all(
         items
             .into_iter()

@@ -5,14 +5,14 @@ use std::{
 
 use super::user_settings;
 
-use actix_session::Session;
+//use actix_session::Session;
 use actix_web::{web, HttpRequest, HttpResponse};
 use localization::TranslationDict;
 use serde::Deserialize;
 
 use crate::{session, templates, BaseData};
 use config::Config;
-use models::DbPool;
+use models::{DbConnection, DbPool};
 use search::{
     self,
     query::{Query, UserSettings},
@@ -70,11 +70,11 @@ pub async fn search(
     locale_dict: web::Data<Arc<TranslationDict>>,
     config: web::Data<Config>,
     request: HttpRequest,
-    session: Session,
 ) -> Result<HttpResponse, web_error::Error> {
     let settings = user_settings::parse(&request);
+    let pool = pool.get().unwrap();
 
-    session::init(&session, &settings);
+    //session::init(&session, &settings);
 
     // Parse query and redirect to home on error
     let query = match query_data.adjust().as_query_parser(settings).parse() {
@@ -119,7 +119,7 @@ fn log_duration(search_type: QueryType, duration: Duration) {
 
 /// Perform a sentence search
 async fn sentence_search<'a>(
-    pool: &web::Data<DbPool>,
+    pool: &DbConnection,
     locale_dict: &'a TranslationDict,
     user_settings: UserSettings,
     query: &'a Query,
@@ -135,7 +135,7 @@ async fn sentence_search<'a>(
 
 /// Perform a kanji search
 async fn kanji_search<'a>(
-    pool: &web::Data<DbPool>,
+    pool: &DbConnection,
     locale_dict: &'a TranslationDict,
     user_settings: UserSettings,
     query: &'a Query,
@@ -151,7 +151,7 @@ async fn kanji_search<'a>(
 
 /// Perform a name search
 async fn name_search<'a>(
-    pool: &web::Data<DbPool>,
+    pool: &DbConnection,
     locale_dict: &'a TranslationDict,
     user_settings: UserSettings,
     query: &'a Query,
@@ -167,7 +167,7 @@ async fn name_search<'a>(
 
 /// Perform a word search
 async fn word_search<'a>(
-    pool: &web::Data<DbPool>,
+    pool: &DbConnection,
     locale_dict: &'a TranslationDict,
     user_settings: UserSettings,
     query: &'a Query,

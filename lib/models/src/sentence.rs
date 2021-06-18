@@ -1,9 +1,9 @@
+use diesel::RunQueryDsl;
 use itertools::Itertools;
-use tokio_diesel::AsyncRunQueryDsl;
 
 use crate::{
     schema::{sentence, sentence_translation, sentence_vocabulary},
-    DbPool,
+    DbConnection,
 };
 use error::Error;
 use japanese;
@@ -62,7 +62,7 @@ pub struct NewSentenceVocabulary {
 
 /// Inserts a new sentence into the DB
 pub async fn insert_sentence(
-    db: &DbPool,
+    db: &DbConnection,
     text: String,
     furigana: String,
     translations: Vec<(String, Language)>,
@@ -77,7 +77,11 @@ pub async fn insert_sentence(
 
 /// Generates the relations between sentences and its words from [`dict`]
 #[cfg(feature = "tokenizer")]
-async fn generate_dict_relations(db: &DbPool, sentence_id: i32, text: String) -> Result<(), Error> {
+async fn generate_dict_relations(
+    db: &DbConnection,
+    sentence_id: i32,
+    text: String,
+) -> Result<(), Error> {
     let lexemes = japanese::jp_parsing::JA_NL_PARSER
         .parse(&text)
         .into_iter()
@@ -101,15 +105,14 @@ async fn generate_dict_relations(db: &DbPool, sentence_id: i32, text: String) ->
 
     diesel::insert_into(sentence_vocabulary::table)
         .values(&readings)
-        .execute_async(db)
-        .await?;
+        .execute(db)?;
 
     Ok(())
 }
 
 /// Insert a new sentence into DB and returns the created sentence ID
 async fn insert_new_sentence(
-    db: &DbPool,
+    db: &DbConnection,
     text: String,
     furigana: String,
     translations: Vec<(String, Language)>,
@@ -127,8 +130,7 @@ async fn insert_new_sentence(
     let sid: i32 = diesel::insert_into(sentence::table)
         .values(new_sentence)
         .returning(sentence::id)
-        .get_result_async(db)
-        .await?;
+        .get_result(db)?;
 
     let translations = translations
         .into_iter()
@@ -141,20 +143,15 @@ async fn insert_new_sentence(
 
     diesel::insert_into(sentence_translation::table)
         .values(translations)
-        .execute_async(db)
-        .await?;
+        .execute(db)?;
 
     Ok(sid)
 }
 
 /// Clear all sentence entries
-pub async fn clear(db: &DbPool) -> Result<(), Error> {
-    diesel::delete(sentence_translation::table)
-        .execute_async(db)
-        .await?;
-    diesel::delete(sentence_vocabulary::table)
-        .execute_async(db)
-        .await?;
-    diesel::delete(sentence::table).execute_async(db).await?;
+pub async fn clear(db: &DbConnection) -> Result<(), Error> {
+    diesel::delete(sentence_translation::table).execute(db)?;
+    diesel::delete(sentence_vocabulary::table).execute(db)?;
+    diesel::delete(sentence::table).execute(db)?;
     Ok(())
 }

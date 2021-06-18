@@ -1,8 +1,7 @@
-use crate::{schema::name, DbPool};
+use crate::{schema::name, DbConnection};
 use diesel::prelude::*;
 use error::Error;
 use parse::jmnedict::{name_type::NameType, NameEntry};
-use tokio_diesel::*;
 
 #[derive(Queryable, Clone, Debug, Default)]
 pub struct Name {
@@ -65,26 +64,23 @@ impl From<NameEntry> for NewName {
 }
 
 /// Insert multiple names into the DB
-pub async fn insert_names(db: &DbPool, values: Vec<NewName>) -> Result<(), Error> {
+pub async fn insert_names(db: &DbConnection, values: Vec<NewName>) -> Result<(), Error> {
     use crate::schema::name::dsl::*;
 
-    diesel::insert_into(name)
-        .values(values)
-        .execute_async(&db)
-        .await?;
+    diesel::insert_into(name).values(values).execute(db)?;
 
     Ok(())
 }
 
 /// Clear all name entries
-pub async fn clear(db: &DbPool) -> Result<(), Error> {
+pub async fn clear(db: &DbConnection) -> Result<(), Error> {
     use crate::schema::name::dsl::*;
-    diesel::delete(name).execute_async(db).await?;
+    diesel::delete(name).execute(db)?;
     Ok(())
 }
 
 /// Returns Ok(true) if at least one name exists in the Db
-pub async fn exists(db: &DbPool) -> Result<bool, Error> {
+pub async fn exists(db: &DbConnection) -> Result<bool, Error> {
     use crate::schema::name::dsl::*;
-    Ok(name.select(id).limit(1).execute_async(db).await? == 1)
+    Ok(name.select(id).limit(1).execute(db)? == 1)
 }

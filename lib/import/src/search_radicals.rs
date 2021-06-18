@@ -1,12 +1,12 @@
-use models::{radical, DbPool};
+use models::{radical, DbConnection};
 use parse::radicals::search_radicals;
 
 /// Import search radicals
-pub async fn import(db: &DbPool, path: &str) {
+pub async fn import(db: &DbConnection, path: &str) {
     println!("Clearing old search-radicals...");
     radical::clear_search_radicals(db).await.unwrap();
     println!("Importing search-radicals...");
-    let db = db.get().unwrap();
+    //let db = db.get().unwrap();
 
     for s_radical in search_radicals::parse(path).expect("parsing error") {
         radical::insert_search_radical(&db, s_radical.into()).unwrap();

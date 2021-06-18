@@ -5,7 +5,7 @@ use super::result::{Reading, Sense, Word};
 use super::super::{Search, SearchMode};
 use diesel::sql_types::{Integer, Text};
 use error::Error;
-use models::{dict::Dict, sense, sql::ExpressionMethods, DbPool};
+use models::{dict::Dict, sense, sql::ExpressionMethods, DbConnection};
 use parse::jmdict::{
     information::Information,
     languages::Language,
@@ -17,7 +17,6 @@ use utils::to_option;
 use diesel::prelude::*;
 use futures::future::try_join_all;
 use itertools::Itertools;
-use tokio_diesel::*;
 
 const MAX_WORDS_TO_HANDLE: usize = 1000;
 
@@ -26,7 +25,7 @@ const MAX_WORDS_TO_HANDLE: usize = 1000;
 #[derive(Clone)]
 pub struct WordSearch<'a> {
     search: Search<'a>,
-    db: &'a DbPool,
+    db: &'a DbConnection,
     language: Option<Language>,
     ignore_case: bool,
     kana_only: bool,
@@ -35,7 +34,7 @@ pub struct WordSearch<'a> {
 }
 
 impl<'a> WordSearch<'a> {
-    pub fn new(db: &'a DbPool, query: &'a str) -> Self {
+    pub fn new(db: &'a DbConnection, query: &'a str) -> Self {
         Self {
             search: Search::new(query, SearchMode::Variable),
             db,
@@ -109,7 +108,7 @@ impl<'a> WordSearch<'a> {
         let lang = self.language.unwrap_or_default();
 
         Ok(Self::load_words_by_seq(
-            &self.db,
+            self.db,
             &seq_ids,
             lang,
             self.english_glosses,
@@ -132,7 +131,7 @@ impl<'a> WordSearch<'a> {
         let lang = self.language.unwrap_or_default();
 
         let (words, original_len) = Self::load_words_by_seq(
-            &self.db,
+            self.db,
             &seq_ids,
             lang,
             self.english_glosses,
@@ -159,7 +158,7 @@ impl<'a> WordSearch<'a> {
 
     /// Get search results of seq_ids
     pub async fn load_words_by_seq<F>(
-        db: &DbPool,
+        db: &DbConnection,
         seq_ids: &[i32],
         lang: Language,
         include_english: bool,
@@ -224,8 +223,7 @@ impl<'a> WordSearch<'a> {
 
         let res: Vec<SearchItemsSql> = diesel::sql_query(&filter)
             .bind::<Text, _>(&self.search.query)
-            .get_results_async(&self.db)
-            .await?;
+            .get_results(self.db)?;
 
         Ok(SearchItemsSql::order(res))
     }
@@ -240,18 +238,15 @@ impl<'a> WordSearch<'a> {
                 dict.select((sequence, length(reading)))
                     .filter(reading.text_search(self.search.query))
                     .limit(self.search.limit as i64)
-                    .get_results_async(&self.db)
-                    .await?
+                    .get_results(self.db)?
             } else if self.search.mode != SearchMode::Exact {
                 dict.select((sequence, length(reading)))
                     .filter(reading.text_search(self.search.query))
-                    .get_results_async(&self.db)
-                    .await?
+                    .get_results(self.db)?
             } else {
                 dict.select((sequence, length(reading)))
                     .filter(reading.eq_all(self.search.query))
-                    .get_results_async(&self.db)
-                    .await?
+                    .get_results(self.db)?
             }
         };
 
@@ -268,7 +263,7 @@ impl<'a> WordSearch<'a> {
 
     /// Load all senses for the sequence ids
     async fn load_senses(
-        db: &DbPool,
+        db: &DbConnection,
         sequence_ids: &[i32],
         lang: Language,
     ) -> Result<Vec<sense::Sense>, Error> {
@@ -293,13 +288,12 @@ impl<'a> WordSearch<'a> {
             .filter(sense_schema::sequence.eq_any(sequence_ids))
             .filter(sql(&language))
             .order(sense_schema::id)
-            .get_results_async(db)
-            .await?)
+            .get_results(db)?)
     }
 
     /// Loads the collocations for all words
     pub async fn load_collocations(
-        db: &DbPool,
+        db: &DbConnection,
         words: &mut Vec<Word>,
         language: Language,
     ) -> Result<(), Error> {
@@ -325,7 +319,10 @@ impl<'a> WordSearch<'a> {
     }
 
     /// Load Dictionaries of all sequences
-    pub async fn load_dictionaries(db: &DbPool, sequence_ids: &[i32]) -> Result<Vec<Dict>, Error> {
+    pub async fn load_dictionaries(
+        db: &DbConnection,
+        sequence_ids: &[i32],
+    ) -> Result<Vec<Dict>, Error> {
         use diesel::ExpressionMethods;
         use models::schema::dict as dict_schema;
 
@@ -336,8 +333,7 @@ impl<'a> WordSearch<'a> {
         Ok(dict_schema::table
             .filter(dict_schema::sequence.eq_any(sequence_ids))
             .order_by(dict_schema::id)
-            .get_results_async(&db)
-            .await?)
+            .get_results(db)?)
     }
 
     /// Returns true if the search will run against

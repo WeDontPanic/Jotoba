@@ -7,7 +7,10 @@ edition = "2018"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-actix-web = "3.3.2"
+actix-http = "=3.0.0-beta.5"
+actix-rt = "2.2.0"
+actix-service = "=2.0.0-beta.5"
+actix-web = "=4.0.0-beta.5"
 deadpool-postgres = "0.9.0"
 diesel = { version = "1.4.7", features = ["postgres","r2d2"] }
 log = "0.4.14"
@@ -15,5 +18,4 @@ r2d2 = "0.8.9"
 serde = "1.0.126"
 strum = "0.21.0"
 thiserror = "1.0.25"
-tokio-diesel = {git = "https://github.com/mehcode/tokio-diesel" }
 tokio-postgres = "0.7.2"

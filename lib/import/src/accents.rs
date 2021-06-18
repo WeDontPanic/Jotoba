@@ -1,12 +1,12 @@
 use std::io::{stdout, Write};
 
-use models::{dict, DbPool};
+use models::{dict, DbConnection};
 use parse::accents;
 
 /// Import accent resources
-pub async fn import(db: &DbPool, path: &str) {
+pub async fn import(db: &DbConnection, path: &str) {
     println!("Importing pitch accents...");
-    let db = db.get().unwrap();
+    //let db = db.get().unwrap();
 
     let (count, iter) = accents::parse(path).expect("Parse error");
 

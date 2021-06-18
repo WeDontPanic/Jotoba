@@ -3,7 +3,6 @@ use std::collections::HashMap;
 use actix_web::web::{self, Json};
 use itertools::Itertools;
 use serde::{Deserialize, Serialize};
-use tokio_diesel::AsyncRunQueryDsl;
 
 use async_std::sync::Mutex;
 use cache::SharedCache;
@@ -13,7 +12,7 @@ use diesel::{
 };
 use error::api_error::RestError;
 use japanese::JapaneseExt;
-use models::DbPool;
+use models::DbConnection;
 use once_cell::sync::Lazy;
 use utils::{part_of, remove_dups};
 
@@ -39,7 +38,7 @@ pub struct RadicalsResponse {
 
 /// Get kanji by its radicals
 pub async fn kanji_by_radicals(
-    pool: web::Data<DbPool>,
+    pool: web::Data<DbConnection>,
     payload: Json<RadicalsRequest>,
 ) -> Result<Json<RadicalsResponse>, actix_web::Error> {
     // Validate an adjust request
@@ -68,7 +67,10 @@ pub async fn kanji_by_radicals(
 }
 
 /// Finds all kanji which are constructed used the passing radicals
-async fn find_by_radicals(db: &DbPool, radicals: &[char]) -> Result<Vec<SqlFindResult>, RestError> {
+async fn find_by_radicals(
+    db: &DbConnection,
+    radicals: &[char],
+) -> Result<Vec<SqlFindResult>, RestError> {
     if radicals.is_empty() {
         return Ok(vec![]);
     }
@@ -78,8 +80,7 @@ async fn find_by_radicals(db: &DbPool, radicals: &[char]) -> Result<Vec<SqlFindR
     // All kanji with the first radical
     let kanji_ids: Vec<SqlKanjiLiteralResult> = diesel::sql_query(query)
         .bind::<Text, _>(radicals[0].to_string())
-        .get_results_async(db)
-        .await?;
+        .get_results(db)?;
 
     // Kanji ids which have all [`radicals`]
     let kanji_ids = kanji_ids
@@ -104,8 +105,7 @@ async fn find_by_radicals(db: &DbPool, radicals: &[char]) -> Result<Vec<SqlFindR
         .select((kanji::id, kanji::literal, kanji::stroke_count))
         .filter(kanji::id.eq_any(&kanji_ids))
         .order((kanji::stroke_count, kanji::grade))
-        .get_results_async::<(i32, String, i32)>(db)
-        .await?
+        .get_results::<(i32, String, i32)>(db)?
         .into_iter()
         .map(|i| SqlFindResult {
             id: i.0,
@@ -117,7 +117,7 @@ async fn find_by_radicals(db: &DbPool, radicals: &[char]) -> Result<Vec<SqlFindR
 
 /// Returns a vec of all possible radicals
 async fn posible_radicals(
-    db: &DbPool,
+    db: &DbConnection,
     kanji_ids: &[i32],
     radicals: &[char],
 ) -> Result<Vec<char>, RestError> {
@@ -129,8 +129,7 @@ async fn posible_radicals(
         .distinct()
         .inner_join(kanji_element::table)
         .filter(kanji_element::kanji_id.eq_any(kanji_ids))
-        .get_results_async::<String>(db)
-        .await?
+        .get_results::<String>(db)?
         .into_iter()
         // Get char from string
         .map(|i| i.chars().next().unwrap())

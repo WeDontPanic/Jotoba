@@ -11,7 +11,7 @@ use models::{
     dict::{self, NewDict},
     kanji,
     sense::{self, NewSense},
-    DbPool,
+    DbConnection,
 };
 use parse::{jmdict::Parser as jmdictParser, parser::Parse};
 
@@ -21,12 +21,12 @@ struct Word {
 }
 
 /// Import jmdict file
-pub async fn import(db: &DbPool, path: String) {
+pub async fn import(db: &DbConnection, path: String) {
     println!("Clearing existing entries");
     dict::clear_dicts(db).await.unwrap();
     sense::clear_senses(db).await.unwrap();
 
-    let db_connection = db.get().unwrap();
+    //let db_connection = db.get().unwrap();
 
     let path = Path::new(&path);
     let parser = jmdictParser::new(BufReader::new(File::open(path).unwrap()));
@@ -47,6 +47,9 @@ pub async fn import(db: &DbPool, path: String) {
                     std::io::stdout().flush().ok();
                 }
 
+                // TODO
+                /*
+
                 let dicts = dict::new_dicts_from_entry(&db_connection, &entry);
                 let senses = sense::new_from_entry(&entry);
 
@@ -57,6 +60,7 @@ pub async fn import(db: &DbPool, path: String) {
                     })
                     .unwrap();
 
+                    */
                 false
             })
             .unwrap();
@@ -105,7 +109,7 @@ pub async fn import(db: &DbPool, path: String) {
     t1.join().ok();
 }
 
-async fn get_dict_kanji(db: &DbPool, dicts: &mut Vec<NewDict>) {
+async fn get_dict_kanji(db: &DbConnection, dicts: &mut Vec<NewDict>) {
     for dict in dicts.iter_mut() {
         // Skip kana dict-entries
         if !dict.kanji {

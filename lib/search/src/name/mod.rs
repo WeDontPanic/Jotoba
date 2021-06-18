@@ -6,7 +6,7 @@ use super::{name::namesearch::NameSearch, query::Query};
 use cache::SharedCache;
 use error::Error;
 use japanese::JapaneseExt;
-use models::{name::Name, DbPool};
+use models::{name::Name, DbConnection};
 
 use async_std::sync::Mutex;
 use once_cell::sync::Lazy;
@@ -18,7 +18,7 @@ static NAME_SEARCH_CACHE: Lazy<Mutex<SharedCache<String, Vec<Name>>>> =
     Lazy::new(|| Mutex::new(SharedCache::with_capacity(1000)));
 
 /// Search for names
-pub async fn search(db: &DbPool, query: &Query) -> Result<Vec<Name>, Error> {
+pub async fn search(db: &DbConnection, query: &Query) -> Result<Vec<Name>, Error> {
     let mut ns_cache = NAME_SEARCH_CACHE.lock().await;
 
     if let Some(cached) = ns_cache.cache_get(&query.query.clone()) {
@@ -39,7 +39,7 @@ pub async fn search(db: &DbPool, query: &Query) -> Result<Vec<Name>, Error> {
 }
 
 /// Search by transcription
-async fn search_transcription(db: &DbPool, query: &Query) -> Result<Vec<Name>, Error> {
+async fn search_transcription(db: &DbConnection, query: &Query) -> Result<Vec<Name>, Error> {
     let search = NameSearch::new(&db, &query.query);
 
     let mut items = search.search_transcription().await?;
@@ -54,7 +54,7 @@ async fn search_transcription(db: &DbPool, query: &Query) -> Result<Vec<Name>, E
 }
 
 /// Search by japanese input
-async fn search_native(db: &DbPool, query: &Query) -> Result<Vec<Name>, Error> {
+async fn search_native(db: &DbConnection, query: &Query) -> Result<Vec<Name>, Error> {
     let search = NameSearch::new(&db, &query.query);
 
     let mut items = search.search_native(&query.query).await?;
@@ -69,7 +69,7 @@ async fn search_native(db: &DbPool, query: &Query) -> Result<Vec<Name>, Error> {
 }
 
 /// Search by japanese input
-async fn search_kanji(db: &DbPool, query: &Query) -> Result<Vec<Name>, Error> {
+async fn search_kanji(db: &DbConnection, query: &Query) -> Result<Vec<Name>, Error> {
     let search = NameSearch::new(&db, &query.query);
 
     let kanji = query.form.as_kanji_reading().unwrap();

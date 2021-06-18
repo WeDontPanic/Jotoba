@@ -1,7 +1,7 @@
 use itertools::Itertools;
 use models::{
     name::{self, NewName},
-    DbPool,
+    DbConnection,
 };
 use parse::{jmnedict::Parser as jmnedictParser, parser::Parse};
 use std::{
@@ -12,7 +12,7 @@ use std::{
 };
 
 /// Imports jmnedict into database
-pub async fn import(db: &DbPool, path: &str) {
+pub async fn import(db: &DbConnection, path: &str) {
     println!("Clearing existing names");
     name::clear(db).await.unwrap();
 

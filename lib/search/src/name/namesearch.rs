@@ -2,22 +2,21 @@ use super::{super::Search, SearchMode};
 use error::Error;
 use japanese::JapaneseExt;
 use models::sql::{length, ExpressionMethods};
-use models::{kanji::reading::KanjiReading, name::Name, DbPool};
+use models::{kanji::reading::KanjiReading, name::Name, DbConnection};
 
 use diesel::prelude::*;
-use tokio_diesel::*;
 
 /// Defines the structure of a
 /// name based search
 #[derive(Clone)]
 pub struct NameSearch<'a> {
     search: Search<'a>,
-    db: &'a DbPool,
+    db: &'a DbConnection,
     limit: i64,
 }
 
 impl<'a> NameSearch<'a> {
-    pub fn new(db: &'a DbPool, query: &'a str) -> Self {
+    pub fn new(db: &'a DbConnection, query: &'a str) -> Self {
         Self {
             search: Search::new(query, SearchMode::Exact),
             db,
@@ -42,12 +41,10 @@ impl<'a> NameSearch<'a> {
             name.filter(transcription.text_search(&like_pred))
                 .order(length(transcription))
                 .limit(20)
-                .get_results_async(&self.db)
-                .await?
+                .get_results(self.db)?
         } else {
             name.filter(transcription.text_search(&like_pred))
-                .get_results_async(&self.db)
-                .await?
+                .get_results(self.db)?
         })
     }
 
@@ -57,8 +54,7 @@ impl<'a> NameSearch<'a> {
         Ok(name::table
             .filter(name::kanji.text_search(kanji.literal.to_string()))
             .filter(name::kana.text_search(&kanji.reading))
-            .get_results_async(&self.db)
-            .await?)
+            .get_results(self.db)?)
     }
 
     /// Search name by japanese
@@ -73,43 +69,34 @@ impl<'a> NameSearch<'a> {
                     name.filter(kanji.text_search(query))
                         .order(models::sql::Nullable::length(kanji))
                         .limit(20)
-                        .get_results_async(&self.db)
-                        .await?
+                        .get_results(self.db)?
                 } else if query.is_kana() {
                     // Only need to search in kanji
                     name.filter(kana.text_search(query))
                         .order(length(kana))
                         .limit(20)
-                        .get_results_async(&self.db)
-                        .await?
+                        .get_results(self.db)?
                 } else {
                     name.filter(kanji.text_search(query).or(kana.text_search(query)))
                         .order(length(kana))
                         .limit(20)
-                        .get_results_async(&self.db)
-                        .await?
+                        .get_results(self.db)?
                 })
             } else {
                 Ok(if query.is_kanji() {
                     // Only need to search in kana
-                    name.filter(kanji.text_search(query))
-                        .get_results_async(&self.db)
-                        .await?
+                    name.filter(kanji.text_search(query)).get_results(self.db)?
                 } else if query.is_kana() {
                     // Only need to search in kanji
-                    name.filter(kana.text_search(query))
-                        .get_results_async(&self.db)
-                        .await?
+                    name.filter(kana.text_search(query)).get_results(self.db)?
                 } else if query.is_japanese() {
                     // Search in both, kana & kanji
                     name.filter(kanji.text_search(query).or(kana.text_search(query)))
-                        .get_results_async(&self.db)
-                        .await?
+                        .get_results(self.db)?
                 } else {
                     // Search in transcriptions
                     name.filter(transcription.text_search(query))
-                        .get_results_async(&self.db)
-                        .await?
+                        .get_results(self.db)?
                 })
             }
         } else {
@@ -117,26 +104,22 @@ impl<'a> NameSearch<'a> {
                 // Only need to search in kana
                 name.filter(kanji.text_search(query))
                     .limit(self.limit)
-                    .get_results_async(&self.db)
-                    .await?
+                    .get_results(self.db)?
             } else if query.is_kana() {
                 // Only need to search in kanji
                 name.filter(kana.text_search(query))
                     .limit(self.limit)
-                    .get_results_async(&self.db)
-                    .await?
+                    .get_results(self.db)?
             } else if query.is_japanese() {
                 // Search in both, kana & kanji
                 name.filter(kanji.text_search(query).or(kana.text_search(query)))
                     .limit(self.limit)
-                    .get_results_async(&self.db)
-                    .await?
+                    .get_results(self.db)?
             } else {
                 // Search in transcriptions
                 name.filter(transcription.text_search(query))
                     .limit(self.limit)
-                    .get_results_async(&self.db)
-                    .await?
+                    .get_results(self.db)?
             })
         }
     }

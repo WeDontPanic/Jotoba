@@ -1,4 +1,4 @@
-use crate::{schema::sense, DbPool};
+use crate::{schema::sense, DbConnection};
 use diesel::prelude::*;
 use error::Error;
 use parse::jmdict::{
@@ -10,7 +10,6 @@ use parse::jmdict::{
     part_of_speech::{PartOfSpeech, PosSimple},
     Entry,
 };
-use tokio_diesel::*;
 
 #[derive(Queryable, Clone, Debug)]
 pub struct Sense {
@@ -93,30 +92,22 @@ pub fn pos_simplified(pos: &[PartOfSpeech]) -> Vec<PosSimple> {
 }
 
 /// Returns Ok(true) if at least one sense exists in the Db
-pub async fn exists(db: &DbPool) -> Result<bool, Error> {
+pub async fn exists(db: &DbConnection) -> Result<bool, Error> {
     use crate::schema::sense::dsl::*;
-    Ok(sense
-        .select((id, sequence))
-        .limit(1)
-        .execute_async(db)
-        .await?
-        == 1)
+    Ok(sense.select((id, sequence)).limit(1).execute(db)? == 1)
 }
 
 /// Insert multiple dicts into the database
-pub async fn insert_sense(db: &DbPool, senses: Vec<NewSense>) -> Result<(), Error> {
+pub async fn insert_sense(db: &DbConnection, senses: Vec<NewSense>) -> Result<(), Error> {
     use crate::schema::sense::dsl::*;
 
-    diesel::insert_into(sense)
-        .values(senses)
-        .execute_async(db)
-        .await?;
+    diesel::insert_into(sense).values(senses).execute(db)?;
 
     Ok(())
 }
 
 pub async fn short_glosses(
-    db: &DbPool,
+    db: &DbConnection,
     seq: i32,
     lang: Language,
 ) -> Result<(i32, Vec<String>), Error> {
@@ -132,15 +123,14 @@ pub async fn short_glosses(
         )
         .order_by((language.desc(), id.asc()))
         .limit(5)
-        .get_results_async(db)
-        .await?;
+        .get_results(db)?;
 
     Ok((seq, res))
 }
 
 /// Clear all sense entries
-pub async fn clear_senses(db: &DbPool) -> Result<(), Error> {
+pub async fn clear_senses(db: &DbConnection) -> Result<(), Error> {
     use crate::schema::sense::dsl::*;
-    diesel::delete(sense).execute_async(db).await?;
+    diesel::delete(sense).execute(db)?;
     Ok(())
 }

@@ -4,7 +4,6 @@ use std::{fmt::Display, num::ParseIntError, string::FromUtf8Error};
 
 use diesel::result::Error as DbError;
 use strum::ParseError;
-use tokio_diesel::AsyncError;
 
 #[derive(Debug)]
 pub enum Error {
@@ -17,15 +16,6 @@ pub enum Error {
     DbError(DbError),
     IoError(std::io::Error),
     Checkout(r2d2::Error),
-}
-
-/// Map a diesel not-found error to Error::NotFound
-/// Other diesel errors will be handled noramlly
-pub fn map_notfound_async(err: AsyncError) -> Error {
-    match err {
-        AsyncError::Checkout(c) => Error::Checkout(c),
-        AsyncError::Error(e) => map_notfound(e),
-    }
 }
 
 /// Map a diesel not-found error to Error::NotFound
@@ -80,15 +70,6 @@ impl From<ParseError> for Error {
 impl From<ParseIntError> for Error {
     fn from(err: ParseIntError) -> Self {
         Self::ParseInt(err)
-    }
-}
-
-impl From<AsyncError> for Error {
-    fn from(err: AsyncError) -> Self {
-        match err {
-            AsyncError::Checkout(co) => Self::Checkout(co),
-            AsyncError::Error(err) => Self::DbError(err),
-        }
     }
 }
 

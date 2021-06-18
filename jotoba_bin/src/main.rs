@@ -9,7 +9,8 @@ use deadpool_postgres::{Manager, ManagerConfig, Pool, RecyclingMethod};
 use import::has_required_data;
 use tokio_postgres::NoTls;
 
-#[tokio::main]
+//#[tokio::main]
+#[actix_web::main]
 pub async fn main() {
     let options = cli::parse();
     let database = models::connect();
@@ -18,19 +19,25 @@ pub async fn main() {
 
     // Run import process on --import/-i
     if options.import {
+        let database = database.get().unwrap();
         import::import(&database, &(&options).into()).await;
         return;
     }
 
     // Check for required data to be available
-    if !has_required_data(&database).await.expect("fatal DB error") {
+    if !has_required_data(&database.get().unwrap())
+        .await
+        .expect("fatal DB error")
+    {
         println!("Required data missing!");
         return;
     }
 
     // Start the werbserver on --stat/-s
     if options.start {
-        webserver::start(database, connection_str).expect("webserver failed");
+        webserver::start(database, connection_str)
+            .await
+            .expect("webserver failed");
         return;
     }
 

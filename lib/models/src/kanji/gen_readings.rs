@@ -6,7 +6,7 @@ use std::{
 use super::dict::Dict;
 use super::ReadingType;
 
-use crate::{search_mode::SearchMode, DbPool};
+use crate::{search_mode::SearchMode, DbConnection};
 use error::Error;
 use japanese::JapaneseExt;
 use utils;
@@ -14,20 +14,18 @@ use utils;
 use diesel::prelude::*;
 use futures::future::try_join_all;
 use itertools::Itertools;
-use tokio_diesel::*;
 
 type KanjiWReading = (i32, String, Vec<String>);
 
 /// Update kun/on reading compounds
-pub async fn update_links(db: &DbPool) -> Result<(), Error> {
+pub async fn update_links(db: &DbConnection) -> Result<(), Error> {
     use crate::schema::kanji::dsl::*;
 
     clear_links(db).await?;
 
     let all_kanji: Vec<(i32, String, Option<Vec<String>>, Option<Vec<String>>)> = kanji
         .select((id, literal, kunyomi, onyomi))
-        .get_results_async(db)
-        .await?;
+        .get_results(db)?;
 
     let all_kuns = all_kanji
         .iter()
@@ -54,7 +52,7 @@ pub async fn update_links(db: &DbPool) -> Result<(), Error> {
 
 // Generate and store readingcompounds of kanji
 async fn gen_reading(
-    db: &DbPool,
+    db: &DbConnection,
     kanji: Vec<KanjiWReading>,
     reading_type: ReadingType,
 ) -> Result<(), Error> {
@@ -93,7 +91,7 @@ async fn gen_reading(
 
 /// Returns all kun reading compounds for a kanji given by its literal
 async fn find_readings(
-    db: &DbPool,
+    db: &DbConnection,
     literal: String,
     readings: &[String], // All kanji kun readings
     reading_type: ReadingType,
@@ -111,14 +109,12 @@ async fn find_readings(
         .select(sequence)
         .filter(reading.like(formatter))
         .filter(kanji.eq(true))
-        .get_results_async(&db)
-        .await?;
+        .get_results(db)?;
 
     let dicts: Vec<Dict> = dict
         .filter(sequence.eq_any(seq_ids))
         .order_by(id)
-        .get_results_async(&db)
-        .await?;
+        .get_results(db)?;
 
     // result vec
     let mut compound_dicts: Vec<Dict> = Vec::new();
@@ -274,7 +270,7 @@ pub fn literal_reading(kun: &str) -> String {
 }
 
 async fn update_link(
-    db: &DbPool,
+    db: &DbConnection,
     reading_type: ReadingType,
     kanji_id: i32,
     dict_ids: &[i32],
@@ -289,14 +285,12 @@ async fn update_link(
         diesel::update(kanji)
             .filter(id.eq(kanji_id))
             .set(on_dicts.eq(dict_ids))
-            .execute_async(db)
-            .await?;
+            .execute(db)?;
     } else if reading_type == ReadingType::Kunyomi {
         diesel::update(kanji)
             .filter(id.eq(kanji_id))
             .set(kun_dicts.eq(dict_ids))
-            .execute_async(db)
-            .await?;
+            .execute(db)?;
     }
     Ok(())
 }
@@ -351,14 +345,13 @@ fn matches_on(literal: &str, reading: &str, kana_reading: &str, kanji_reading: &
 }
 
 /// Clear existinig kun links
-async fn clear_links(db: &DbPool) -> Result<(), Error> {
+async fn clear_links(db: &DbConnection) -> Result<(), Error> {
     use crate::schema::kanji::dsl::*;
 
     let empty: Option<Vec<i32>> = None;
     diesel::update(kanji)
         .set((kun_dicts.eq(&empty), on_dicts.eq(&empty)))
-        .execute_async(&db)
-        .await?;
+        .execute(db)?;
 
     Ok(())
 }

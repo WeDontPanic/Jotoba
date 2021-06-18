@@ -6,14 +6,14 @@ use std::{
 };
 
 use itertools::Itertools;
-use models::{kanji, DbPool};
+use models::{kanji, DbConnection};
 use parse::{
     kanjidict::{Character, Parser as kanjidictParser},
     parser::Parse,
 };
 
 /// Imports kanji dict into database
-pub async fn import(db: &DbPool, path: String) {
+pub async fn import(db: &DbConnection, path: String) {
     println!("Clearing existing kanji");
     kanji::meaning::clear_meanings(db).await.unwrap();
     kanji::clear_kanji_elements(db).await.unwrap();

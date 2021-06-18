@@ -12,7 +12,7 @@ use super::{
 use crate::{
     schema::{kanji, kanji_element},
     search_mode::SearchMode,
-    DbPool,
+    DbConnection,
 };
 use cache::SharedCache;
 use error::Error;
@@ -31,7 +31,6 @@ use futures::future::try_join_all;
 use itertools::Itertools;
 use once_cell::sync::Lazy;
 use romaji::RomajiExt;
-use tokio_diesel::*;
 
 /// An in memory Cache for kanji items
 static KANJI_RESULT_CACHE: Lazy<Mutex<SharedCache<i32, KanjiResult>>> =
@@ -129,12 +128,12 @@ pub enum ReadingType {
 
 impl Kanji {
     /// Returns all dict entries assigned to the kanji's kun readings
-    pub async fn get_kun_readings(db: &DbPool, ids: &[i32]) -> Result<Vec<Dict>, Error> {
+    pub async fn get_kun_readings(db: &DbConnection, ids: &[i32]) -> Result<Vec<Dict>, Error> {
         dict::load_by_ids(db, ids).await
     }
 
     // TODO return Result<Option<Radical>, Error> to handle non existing radicals properly
-    pub async fn load_radical(&self, db: &DbPool) -> Result<Radical, Error> {
+    pub async fn load_radical(&self, db: &DbConnection) -> Result<Radical, Error> {
         Ok(radical::find_by_id(db, self.radical.unwrap()).await?)
     }
 
@@ -188,7 +187,7 @@ impl Kanji {
     /// Find sequence ids of dict entries containing the kanji and the passed reading
     pub async fn find_readings(
         &self,
-        db: &DbPool,
+        db: &DbConnection,
         reading: &KanjiReading,
         r_type: ReadingType,
         mode: SearchMode,
@@ -210,15 +209,14 @@ impl Kanji {
     }
 
     /// Returns a Vec of the kanjis parts
-    pub async fn load_parts(&self, db: &DbPool) -> Result<Vec<String>, Error> {
+    pub async fn load_parts(&self, db: &DbConnection) -> Result<Vec<String>, Error> {
         use crate::schema::kanji_element::dsl::*;
         use crate::schema::search_radical;
 
         let res: Vec<(KanjiElement, SearchRadical)> = kanji_element
             .inner_join(search_radical::table)
             .filter(kanji_id.eq(self.id))
-            .get_results_async(db)
-            .await?;
+            .get_results(db)?;
 
         Ok(res.into_iter().map(|i| i.1.literal).collect())
     }
@@ -242,7 +240,7 @@ pub fn format_reading_with_literal(literal: &str, reading: &str, r_type: Reading
 /// Find sequence ids of dict entries containing the kanji and the passed reading
 pub async fn find_readings_by_liteal(
     literal: &str,
-    db: &DbPool,
+    db: &DbConnection,
     reading: KanjiReading,
     r_type: ReadingType,
     mode: SearchMode,
@@ -263,13 +261,12 @@ pub async fn find_readings_by_liteal(
         .bind::<Text, _>(&lit_sql_kk)
         .bind::<Text, _>(&lit_reading)
         .bind::<Bool, _>(only_main_readins)
-        .get_results_async::<Dict>(db)
-        .await?;
+        .get_results::<Dict>(db)?;
 
     Ok(res.into_iter().map(|i| i.sequence).collect())
 }
 
-pub async fn insert_kanji_part(db: &DbPool, element: KanjiPart) -> Result<(), Error> {
+pub async fn insert_kanji_part(db: &DbConnection, element: KanjiPart) -> Result<(), Error> {
     // Find kanji
     let kanji = match find_by_literal(db, element.kanji.to_string()).await {
         Ok(v) => v.ok_or(Error::NotFound)?,
@@ -302,11 +299,10 @@ pub async fn insert_kanji_part(db: &DbPool, element: KanjiPart) -> Result<(), Er
     Ok(())
 }
 
-async fn insert_kanji_elements(db: &DbPool, items: &[NewKanjiElement]) -> Result<(), Error> {
+async fn insert_kanji_elements(db: &DbConnection, items: &[NewKanjiElement]) -> Result<(), Error> {
     diesel::insert_into(kanji_element::table)
         .values(items)
-        .execute_async(db)
-        .await?;
+        .execute(db)?;
     Ok(())
 }
 
@@ -316,18 +312,20 @@ pub fn format_reading(reading: &str) -> String {
 }
 
 /// Update the jlpt information for a kanji by its literal
-pub async fn update_jlpt(db: &DbPool, l: &str, level: i32) -> Result<(), Error> {
+pub async fn update_jlpt(db: &DbConnection, l: &str, level: i32) -> Result<(), Error> {
     use crate::schema::kanji::dsl::*;
     diesel::update(kanji)
         .filter(literal.eq(l))
         .set(jlpt.eq(level))
-        .execute_async(db)
-        .await?;
+        .execute(db)?;
     Ok(())
 }
 
 /// Inserts a new kanji into db
-pub async fn insert(db: &DbPool, kanji_chars: Vec<kanjidict::Character>) -> Result<(), Error> {
+pub async fn insert(
+    db: &DbConnection,
+    kanji_chars: Vec<kanjidict::Character>,
+) -> Result<(), Error> {
     use crate::schema::kanji::dsl::*;
 
     let items: Vec<NewKanji> = kanji_chars.iter().map(|i| i.to_owned().into()).collect();
@@ -336,8 +334,7 @@ pub async fn insert(db: &DbPool, kanji_chars: Vec<kanjidict::Character>) -> Resu
     let kanji_id: Vec<(i32, String)> = diesel::insert_into(kanji)
         .values(items)
         .returning((id, literal))
-        .get_results_async(db)
-        .await?;
+        .get_results(db)?;
 
     let new_meanings = kanji_id
         .into_iter()
@@ -360,33 +357,33 @@ pub async fn insert(db: &DbPool, kanji_chars: Vec<kanjidict::Character>) -> Resu
 }
 
 /// Clear all kanji entries
-pub async fn clear_kanji_elements(db: &DbPool) -> Result<(), Error> {
+pub async fn clear_kanji_elements(db: &DbConnection) -> Result<(), Error> {
     use crate::schema::kanji_element::dsl::*;
-    diesel::delete(kanji_element).execute_async(db).await?;
+    diesel::delete(kanji_element).execute(db)?;
     Ok(())
 }
 
 /// Clear all kanji entries
-pub async fn clear_kanji(db: &DbPool) -> Result<(), Error> {
+pub async fn clear_kanji(db: &DbConnection) -> Result<(), Error> {
     use crate::schema::kanji::dsl::*;
-    diesel::delete(kanji).execute_async(db).await?;
+    diesel::delete(kanji).execute(db)?;
     Ok(())
 }
 
 /// Returns Ok(true) if at least one kanji exists in the Db
-pub async fn exists(db: &DbPool) -> Result<bool, Error> {
+pub async fn exists(db: &DbConnection) -> Result<bool, Error> {
     use crate::schema::kanji::dsl::*;
-    Ok(kanji.select(id).limit(1).execute_async(db).await? == 1)
+    Ok(kanji.select(id).limit(1).execute(db)? == 1)
 }
 
 /// Returns Ok(true) if at least one kanji element exists
-pub async fn element_exists(db: &DbPool) -> Result<bool, Error> {
+pub async fn element_exists(db: &DbConnection) -> Result<bool, Error> {
     use crate::schema::kanji_element::dsl::*;
-    Ok(kanji_element.select(id).limit(1).execute_async(db).await? == 1)
+    Ok(kanji_element.select(id).limit(1).execute(db)? == 1)
 }
 
 /// Find a kanji by its literal
-pub async fn find_by_literal(db: &DbPool, l: String) -> Result<Option<KanjiResult>, Error> {
+pub async fn find_by_literal(db: &DbConnection, l: String) -> Result<Option<KanjiResult>, Error> {
     // Try to find literal in kanji cache
     let mut k_cache: MutexGuard<SharedCache<i32, KanjiResult>> = KANJI_RESULT_CACHE.lock().await;
     if let Some(k) = k_cache.find_by_predicate(|i| i.kanji.literal == l) {
@@ -416,7 +413,7 @@ pub async fn find_by_literal(db: &DbPool, l: String) -> Result<Option<KanjiResul
 }
 
 /// Find a kanji by its literal
-pub async fn find_by_literals(db: &DbPool, l: &[String]) -> Result<Vec<KanjiResult>, Error> {
+pub async fn find_by_literals(db: &DbConnection, l: &[String]) -> Result<Vec<KanjiResult>, Error> {
     if l.is_empty() {
         return Ok(vec![]);
     }
@@ -446,7 +443,7 @@ pub async fn find_by_literals(db: &DbPool, l: &[String]) -> Result<Vec<KanjiResu
 }
 
 /// Find Kanji items by its ids
-pub async fn load_by_ids(db: &DbPool, ids: &[i32]) -> Result<Vec<KanjiResult>, Error> {
+pub async fn load_by_ids(db: &DbConnection, ids: &[i32]) -> Result<Vec<KanjiResult>, Error> {
     if ids.is_empty() {
         return Ok(vec![]);
     }
@@ -478,7 +475,7 @@ pub async fn load_by_ids(db: &DbPool, ids: &[i32]) -> Result<Vec<KanjiResult>, E
 
 /// Retrieve kanji by ids from DB
 async fn retrieve_by_ids_with_meanings(
-    db: &DbPool,
+    db: &DbConnection,
     ids: &[i32],
 ) -> Result<Vec<KanjiResult>, Error> {
     if ids.is_empty() {
@@ -492,13 +489,12 @@ async fn retrieve_by_ids_with_meanings(
         kanji
             .inner_join(kanji_meaning::table)
             .filter(id.eq_any(ids))
-            .get_results_async::<(Kanji, Meaning)>(db)
-            .await?,
+            .get_results::<(Kanji, Meaning)>(db)?,
     ))
 }
 
 /// Load a kanji by its literal from DB
-async fn load_by_literals(db: &DbPool, l: &[&String]) -> Result<Vec<KanjiResult>, Error> {
+async fn load_by_literals(db: &DbConnection, l: &[&String]) -> Result<Vec<KanjiResult>, Error> {
     use crate::schema::kanji::dsl::*;
     use crate::schema::kanji_meaning;
 
@@ -509,14 +505,13 @@ async fn load_by_literals(db: &DbPool, l: &[&String]) -> Result<Vec<KanjiResult>
     let res = kanji
         .inner_join(kanji_meaning::table)
         .filter(literal.eq_any(l))
-        .get_results_async::<(Kanji, Meaning)>(db)
-        .await?;
+        .get_results::<(Kanji, Meaning)>(db)?;
 
     Ok(format_results(res))
 }
 
 /// Load a kanji by its literal from DB
-async fn load_by_literal(db: &DbPool, l: &str) -> Result<KanjiResult, Error> {
+async fn load_by_literal(db: &DbConnection, l: &str) -> Result<KanjiResult, Error> {
     use crate::schema::kanji::dsl::*;
     use crate::schema::kanji_meaning;
 
@@ -524,8 +519,7 @@ async fn load_by_literal(db: &DbPool, l: &str) -> Result<KanjiResult, Error> {
         .inner_join(kanji_meaning::table)
         .filter(literal.eq(l))
         .limit(1)
-        .get_results_async::<(Kanji, Meaning)>(db)
-        .await?;
+        .get_results::<(Kanji, Meaning)>(db)?;
 
     if res.is_empty() {
         return Err(Error::NotFound);
@@ -554,13 +548,11 @@ pub static KANJICACHE: Lazy<
     std::sync::Mutex<SharedCache<String, (Option<Vec<String>>, Option<Vec<String>>)>>,
 > = Lazy::new(|| std::sync::Mutex::new(SharedCache::with_capacity(10000)));
 
-pub async fn load_kanji_cache(db: &DbPool) -> Result<(), Error> {
+pub async fn load_kanji_cache(db: &DbConnection) -> Result<(), Error> {
     use crate::schema::kanji::dsl::*;
 
-    let all_kanji: Vec<(String, Option<Vec<String>>, Option<Vec<String>>)> = kanji
-        .select((literal, kunyomi, onyomi))
-        .get_results_async(db)
-        .await?;
+    let all_kanji: Vec<(String, Option<Vec<String>>, Option<Vec<String>>)> =
+        kanji.select((literal, kunyomi, onyomi)).get_results(db)?;
 
     let mut kanji_cache = KANJICACHE.lock().unwrap();
     for curr_kanji in all_kanji {

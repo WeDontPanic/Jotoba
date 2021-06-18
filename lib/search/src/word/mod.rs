@@ -21,7 +21,7 @@ use cache::SharedCache;
 use error::Error;
 use japanese::{inflection::SentencePart, JapaneseExt};
 use models::search_mode::SearchMode;
-use models::{kanji::KanjiResult, DbPool};
+use models::{kanji::KanjiResult, DbConnection};
 use utils::real_string_len;
 
 use self::result::{InflectionInformation, WordResult};
@@ -36,12 +36,12 @@ static SEARCH_CACHE: Lazy<Mutex<SharedCache<u64, WordResult>>> =
     Lazy::new(|| Mutex::new(SharedCache::with_capacity(1000)));
 
 pub(self) struct Search<'a> {
-    db: &'a DbPool,
+    db: &'a DbConnection,
     query: &'a Query,
 }
 
 /// Search among all data based on the input query
-pub async fn search(db: &DbPool, query: &Query) -> Result<WordResult, Error> {
+pub async fn search(db: &DbConnection, query: &Query) -> Result<WordResult, Error> {
     let search = Search { db, query };
 
     // Try to use cache

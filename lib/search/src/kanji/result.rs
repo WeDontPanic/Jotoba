@@ -4,7 +4,7 @@ use futures::try_join;
 
 use super::super::word::{result::Word, WordSearch};
 use error::Error;
-use models::{kanji::KanjiResult, radical::Radical, DbPool};
+use models::{kanji::KanjiResult, radical::Radical, DbConnection};
 use parse::jmdict::languages::Language;
 use utils::{self, to_option};
 
@@ -23,7 +23,7 @@ impl Item {
     /// Required because the kanji's reading-componds
     /// aren't loaded by default due it being an array
     pub async fn from_db(
-        db: &DbPool,
+        db: &DbConnection,
         k: KanjiResult,
         lang: Language,
         show_english: bool,
