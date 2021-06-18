@@ -240,6 +240,25 @@ msgstr ""
 msgid "Jotoba wouldn't be able to exist without the help of many open-source data sources"
 msgstr ""
 
+msgid "About Page"
+msgstr 
+
+# Cookie Footer
+msgid "This Website uses Cookies"
+msgstr ""
+
+msgid "We use cookies to let you personalize the website as you desire and improve search suggestions. In addition, we use anonymous analytics to improve our service quality. We don't share any data with third parties nor do we store or collect data that allows us to identify you or track your behaviour."
+msgstr ""
+
+msgid "You can change your preferences at any time by pressing on the Settings icon."
+msgstr ""
+
+msgid "Only use necessary cookies"
+msgstr ""
+
+msgid "Allow Cookies"
+msgstr ""
+
 ### Index
 
 msgid "is a multilingual Japanese dictionary"
@@ -302,6 +321,7 @@ msgstr ""
 ## Kanji results
 
 # strokes suffix
+
 msgid "strokes"
 msgstr ""
 
@@ -312,6 +332,12 @@ msgid "Kun"
 msgstr ""
 
 msgid "On"
+msgstr ""
+
+msgid "On reading compounds"
+msgstr ""
+
+msgid "Kun reading compounds"
 msgstr ""
 
 msgid "JLPT level"

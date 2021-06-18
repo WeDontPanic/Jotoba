@@ -212,7 +212,7 @@ msgstr "Tags"
 msgid "itemBG"
 msgstr "ItemBG"
 
-msgid "Theme Code"
+msgid "scheme code"
 msgstr "Farbcode"
 
 msgid "Using the code you can share color schemes"
@@ -237,8 +237,27 @@ msgid "to revoke your Cookies agreement"
 msgstr "um deine Cookie Zustimmung zurückzunehmen"
 
 # Footer
-msgid "Jotoba wouldn't be able to exist without the help of many open-source data sources"
+msgid "Jotoba wouldn't be able to exist without the help of many open-source data sources."
 msgstr "Jotoba würde ohne die Hilfe der Hilfe von vielen Open-Source Quellen nicht existieren"
+
+msgid "About Page"
+msgstr "\"Über Uns\" - Seite"
+
+# Cookie Footer
+msgid "This Website uses Cookies"
+msgstr "Diese Webseite verwendet Cookies"
+
+msgid "We use cookies to let you personalize the website as you desire and improve search suggestions. In addition, we use anonymous analytics to improve our service quality. We don't share any data with third parties nor do we store or collect data that allows us to identify you or track your behaviour."
+msgstr "Wir verwenden Cookies um diese Webseite für Dich zu personalisieren und deine Suchanfragen zu verbessern. Dazu verwenden wir anonyme Statistiken, wodurch wir unsere Service Qualität stetig verbessern können. Weder teilen wir Deine Daten mit Außenstehenden, noch werden sie verwendet um Dich zu identifizieren oder zu überwachen."
+
+msgid "You can change your preferences at any time by pressing on the Settings icon."
+msgstr "Du kannst jederzeit deine Meinung ändern, indem du auf das \"Einstellungen\" Symbol drückst."
+
+msgid "Only use necessary cookies"
+msgstr "Nur mit notwendigen Cookies weiter"
+
+msgid "Allow Cookies"
+msgstr "Erlaube Cookies"
 
 ### Index
 
@@ -276,7 +295,7 @@ msgid "aswell if you are interested in upcoming features and what we are current
 msgstr ", wenn du an zukünftigen Features interessiert bist oder dich interessiert an welchen Features wir aktuell arbeiten"
 
 msgid "for a list of all contributors in this project."
-msgstr "für eine aller Mitwirkenden an diesem Projekt."
+msgstr "für eine Liste aller Mitwirkenden an diesem Projekt."
 
 msgctxt "index"
 msgid "or"
@@ -312,6 +331,12 @@ msgstr ""
 
 msgid "On"
 msgstr ""
+
+msgid "On reading compounds"
+msgstr "On - Lesemöglichkeiten"
+
+msgid "Kun reading compounds"
+msgstr "Kun - Lesemöglichkeiten"
 
 msgid "JLPT level"
 msgstr "JLPT Level"
