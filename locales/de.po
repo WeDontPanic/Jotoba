@@ -630,7 +630,7 @@ msgid "Historical term"
 msgstr "Historischer Begriff"
 
 msgid "Honorific language"
-msgstr "Ehrhafte Sprache"
+msgstr "Höfliche Sprache"
 
 msgid "Humble language"
 msgstr "Bescheidene Sprache"
@@ -741,6 +741,8 @@ msgstr ""
 
 msgid "{} term"
 msgstr "{} Begriff"
+
+# The following words will be inserted in the brackets above. Check the Syntax.
 
 msgid "Agriculture"
 msgstr "Landwirtschaft"
