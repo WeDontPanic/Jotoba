@@ -88,7 +88,7 @@ pub async fn search(
     // Perform the requested type of search and return base-data to display
     let site_data = match query.type_ {
         QueryType::Kanji => kanji_search(&pool, &locale_dict, settings, &query).await,
-        QueryType::Sentences => sentence_search(&pool, &locale_dict, settings, &query).await,
+        QueryType::Sentences => sentence_search(&poolv2, &locale_dict, settings, &query).await,
         QueryType::Names => name_search(&poolv2, &locale_dict, settings, &query).await,
         QueryType::Words => word_search(&pool, &locale_dict, settings, &query).await,
     }?;
@@ -120,7 +120,7 @@ fn log_duration(search_type: QueryType, duration: Duration) {
 
 /// Perform a sentence search
 async fn sentence_search<'a>(
-    pool: &DbConnection,
+    pool: &Pool,
     locale_dict: &'a TranslationDict,
     user_settings: UserSettings,
     query: &'a Query,

@@ -1,5 +1,6 @@
 use diesel::RunQueryDsl;
 use itertools::Itertools;
+use tokio_postgres::Row;
 
 use crate::{
     schema::{sentence, sentence_translation, sentence_vocabulary},
@@ -58,6 +59,17 @@ pub struct NewSentenceVocabulary {
     pub sentence_id: i32,
     pub dict_sequence: i32,
     pub start: i32,
+}
+
+impl From<Row> for Sentence {
+    fn from(row: Row) -> Self {
+        Self {
+            id: row.get(0),
+            content: row.get(1),
+            kana: row.get(2),
+            furigana: row.get(3),
+        }
+    }
 }
 
 /// Inserts a new sentence into the DB

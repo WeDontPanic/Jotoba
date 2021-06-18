@@ -1,21 +1,13 @@
-use diesel::sql_types::{Integer, Text};
-
 use japanese::{furigana, furigana::SentencePartRef};
 use parse::jmdict::languages::Language;
 
-#[derive(Debug, PartialEq, Clone, QueryableByName)]
+#[derive(Debug, PartialEq, Clone)]
 pub struct Sentence {
-    #[sql_type = "Integer"]
     pub id: i32,
-    #[sql_type = "Text"]
     pub content: String,
-    #[sql_type = "Text"]
     pub furigana: String,
-    #[sql_type = "Text"]
     pub translation: String,
-    #[sql_type = "Integer"]
     pub language: Language,
-    #[sql_type = "Text"]
     pub eng: String,
 }
 

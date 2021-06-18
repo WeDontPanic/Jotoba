@@ -1,5 +1,5 @@
+use deadpool_postgres::Pool;
 use error::Error;
-use models::DbConnection;
 use parse::jmdict::languages::Language;
 use sentencesearch::SentenceSearch;
 
@@ -13,7 +13,7 @@ pub mod result;
 mod sentencesearch;
 
 /// Searches for sentences
-pub async fn search(db: &DbConnection, query: &Query) -> Result<Vec<result::Item>, Error> {
+pub async fn search(db: &Pool, query: &Query) -> Result<Vec<result::Item>, Error> {
     if query.language == QueryLang::Japanese {
         search_jp(db, query).await
     } else {
@@ -22,7 +22,7 @@ pub async fn search(db: &DbConnection, query: &Query) -> Result<Vec<result::Item
 }
 
 /// Searches for sentences (jp input)
-pub async fn search_jp(db: &DbConnection, query: &Query) -> Result<Vec<result::Item>, Error> {
+pub async fn search_jp(db: &Pool, query: &Query) -> Result<Vec<result::Item>, Error> {
     let search = SentenceSearch::new(db, &query.query, query.settings.user_lang);
     let sentences = search.by_jp().await?;
 
@@ -30,7 +30,7 @@ pub async fn search_jp(db: &DbConnection, query: &Query) -> Result<Vec<result::I
 }
 
 /// Searches for sentences (other input)
-pub async fn search_foreign(db: &DbConnection, query: &Query) -> Result<Vec<result::Item>, Error> {
+pub async fn search_foreign(db: &Pool, query: &Query) -> Result<Vec<result::Item>, Error> {
     let search = SentenceSearch::new(db, &query.query, query.settings.user_lang);
     let sentences = search.by_foreign().await?;
     Ok(merge_results(sentences, query.settings.user_lang))
