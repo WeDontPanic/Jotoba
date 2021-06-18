@@ -2,10 +2,7 @@ use super::{super::Search, SearchMode};
 use deadpool_postgres::Pool;
 use error::Error;
 use japanese::JapaneseExt;
-use models::sql::{length, ExpressionMethods};
-use models::{kanji::reading::KanjiReading, name::Name, DbPool};
-
-use diesel::prelude::*;
+use models::{kanji::reading::KanjiReading, name::Name};
 
 /// Defines the structure of a
 /// name based search
@@ -48,17 +45,20 @@ impl<'a> NameSearch<'a> {
     }
 
     pub async fn kanji_search(&self, kanji: &KanjiReading) -> Result<Vec<Name>, Error> {
-        /*
-        use models::schema::name;
+        let db = self.db.get().await?;
 
-        Ok(name::table
-            .filter(name::kanji.text_search(kanji.literal.to_string()))
-            .filter(name::kana.text_search(&kanji.reading))
-            .get_results_async(&self.db)
-            .await?)
-            */
+        let prepared = db
+            .prepare_cached("SELECT * FROM name WHERE kanji &@ $1 AND kana &@ $2 LIMIT 10")
+            .await?;
 
-        Ok(vec![])
+        let res = db
+            .query(&prepared, &[&kanji.literal.to_string(), &kanji.reading])
+            .await?
+            .into_iter()
+            .map(|i| Name::from(i))
+            .collect();
+
+        Ok(res)
     }
 
     /// Search name by japanese
