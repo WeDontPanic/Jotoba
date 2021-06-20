@@ -3,11 +3,10 @@
 use super::result::{Reading, Sense, Word};
 
 use super::super::{Search, SearchMode};
-use deadpool_postgres::Pool;
-use diesel::sql_types::{Integer, Text};
+use deadpool_postgres::{tokio_postgres::Row, Pool};
 use error::Error;
-use models::queryable::{Queryable, SQL};
-use models::{dict::Dict, sense, sql::ExpressionMethods, DbConnection};
+use models::queryable::{prepared_query, FromRow, Queryable, SQL};
+use models::{dict::Dict, sense};
 use parse::jmdict::{
     information::Information,
     languages::Language,
@@ -16,7 +15,6 @@ use parse::jmdict::{
 };
 use utils::to_option;
 
-use diesel::prelude::*;
 use futures::future::try_join_all;
 use itertools::Itertools;
 
@@ -27,7 +25,7 @@ const MAX_WORDS_TO_HANDLE: usize = 1000;
 #[derive(Clone)]
 pub struct WordSearch<'a> {
     search: Search<'a>,
-    db: &'a DbConnection,
+    pool: &'a Pool,
     language: Option<Language>,
     ignore_case: bool,
     kana_only: bool,
@@ -36,10 +34,10 @@ pub struct WordSearch<'a> {
 }
 
 impl<'a> WordSearch<'a> {
-    pub fn new(db: &'a DbConnection, query: &'a str) -> Self {
+    pub fn new(pool: &'a Pool, query: &'a str) -> Self {
         Self {
             search: Search::new(query, SearchMode::Variable),
-            db,
+            pool,
             language: None,
             ignore_case: false,
             kana_only: false,
@@ -109,8 +107,8 @@ impl<'a> WordSearch<'a> {
         // always search by a language.
         let lang = self.language.unwrap_or_default();
 
-        Ok(Self::load_words_by_seq(
-            self.db,
+        Ok(Self::load_words_by_seqv2(
+            &self.pool,
             &seq_ids,
             lang,
             self.english_glosses,
@@ -127,13 +125,13 @@ impl<'a> WordSearch<'a> {
         F: Fn(&mut Vec<Word>),
     {
         // Load sequence ids to display
-        let seq_ids = self.get_sequence_ids_by_native().await?;
+        let seq_ids = self.get_sequence_ids_by_nativev2().await?;
 
         // always search by a language.
         let lang = self.language.unwrap_or_default();
 
-        let (words, original_len) = Self::load_words_by_seq(
-            self.db,
+        let (words, original_len) = Self::load_words_by_seqv2(
+            &self.pool,
             &seq_ids,
             lang,
             self.english_glosses,
@@ -193,107 +191,46 @@ impl<'a> WordSearch<'a> {
         ))
     }
 
-    /// Get search results of seq_ids
-    pub async fn load_words_by_seq<F>(
-        db: &DbConnection,
-        seq_ids: &[i32],
-        lang: Language,
-        include_english: bool,
-        pos_filter: &Option<Vec<PosSimple>>,
-        ordering: F,
-    ) -> Result<(Vec<Word>, usize), Error>
-    where
-        F: Fn(&mut Vec<Word>),
-    {
-        if seq_ids.is_empty() {
-            return Ok((vec![], 0));
-        }
-
-        let dicts: Vec<Dict> = Self::load_dictionaries(&db, &seq_ids).await?;
-        let mut word_items = convert_dicts_to_words(dicts);
-        let original_len = word_items.len();
-        ordering(&mut word_items);
-
-        let required_sequences: Vec<i32> = word_items.iter().map(|i| i.sequence).collect_vec();
-        let senses: Vec<sense::Sense> = Self::load_senses(&db, &required_sequences, lang).await?;
-
-        /*
-        // Request Redings and Senses in parallel
-        let (dicts, senses): (Vec<Dict>, Vec<sense::Sense>) = futures::try_join!(
-            Self::load_dictionaries(&db, &seq_ids),
-            Self::load_senses(&db, &seq_ids, lang)
-        )?;
-        */
-
-        //Self::load_readings(&db, &seq_ids),
-        Ok((
-            merge_words_with_senses(
-                word_items,
-                senses,
-                include_english || lang == Language::default(),
-                pos_filter,
-            ),
-            original_len,
-        ))
-    }
-
     /// Find the sequence ids of the results to load
     async fn get_sequence_ids_by_glosses(&mut self) -> Result<Vec<i32>, Error> {
-        // Since boxed queries don't work with tokio-diesel
-        // this has to be done. If #20 gets resolved, change this !!
-        let mut filter = String::from("SELECT sequence, length(gloss) as len from sense WHERE");
-
-        filter.push_str(" gloss &@ $1 ");
+        let filter = "SELECT sequence, length(gloss) as len FROM sense WHERE gloss &@ $1";
 
         // Language filter
-        let lang: i32 = self.language.unwrap_or_default().into();
-        if self.is_default_language() || !self.english_glosses {
-            filter.push_str(format!(" AND language = {}", lang).as_str());
+        let lang = if self.is_default_language() || !self.english_glosses {
+            "AND language = $2"
         } else {
-            filter.push_str(format!(" AND (language = {} or language = 0)", lang).as_str());
-        }
+            "AND (language = $2 or language = 0)"
+        };
 
-        // Add a limit
-        if self.search.limit > 0 {
-            filter.push_str(format!(" limit {}", self.search.limit).as_str());
-        }
+        let filter = if self.search.limit > 0 {
+            format!("{} {} LIMIT {}", filter, lang, self.search.limit)
+        } else {
+            format!("{} {}", filter, lang)
+        };
 
-        let res: Vec<SearchItemsSql> = diesel::sql_query(&filter)
-            .bind::<Text, _>(&self.search.query)
-            .get_results(self.db)?;
+        let query = &self.search.query;
+        let language = self.language.unwrap_or_default();
+
+        let res: Vec<SearchItemsSql> =
+            SearchItemsSql::query(self.pool, filter, &[query, &language], 0).await?;
 
         Ok(SearchItemsSql::order(res))
     }
 
     /// Find the sequence ids of the results to load
-    async fn get_sequence_ids_by_native(&mut self) -> Result<Vec<i32>, Error> {
-        use models::schema::dict::dsl::*;
-        use models::sql::length;
+    async fn get_sequence_ids_by_nativev2(&mut self) -> Result<Vec<i32>, Error> {
+        let select = "SELECT sequence, LENGTH(reading) FROM dict";
 
-        let res: Vec<(i32, i32)> = {
-            if self.search.limit > 0 {
-                dict.select((sequence, length(reading)))
-                    .filter(reading.text_search(self.search.query))
-                    .limit(self.search.limit as i64)
-                    .get_results(self.db)?
-            } else if self.search.mode != SearchMode::Exact {
-                dict.select((sequence, length(reading)))
-                    .filter(reading.text_search(self.search.query))
-                    .get_results(self.db)?
-            } else {
-                dict.select((sequence, length(reading)))
-                    .filter(reading.eq_all(self.search.query))
-                    .get_results(self.db)?
-            }
+        let sql = if self.search.limit > 0 {
+            format!("{} WHERE reading &@ $1 LIMIT {}", select, self.search.limit)
+        } else if self.search.mode != SearchMode::Exact {
+            format!("{} WHERE reading &@ $1", select)
+        } else {
+            format!("{} WHERE reading = $1", select)
         };
 
-        let res = res
-            .into_iter()
-            .map(|i| SearchItemsSql {
-                sequence: i.0,
-                len: i.1,
-            })
-            .collect_vec();
+        let res: Vec<SearchItemsSql> =
+            prepared_query(self.pool, &sql, &[&self.search.query]).await?;
 
         Ok(SearchItemsSql::order(res))
     }
@@ -325,39 +262,9 @@ impl<'a> WordSearch<'a> {
         Ok(res)
     }
 
-    /// Load all senses for the sequence ids
-    async fn load_senses(
-        db: &DbConnection,
-        sequence_ids: &[i32],
-        lang: Language,
-    ) -> Result<Vec<sense::Sense>, Error> {
-        if sequence_ids.is_empty() {
-            return Ok(vec![]);
-        }
-
-        use diesel::dsl::sql;
-        use diesel::ExpressionMethods;
-        use models::schema::sense as sense_schema;
-
-        let lang_i: i32 = lang.into();
-        let language = {
-            if lang == Language::default() {
-                format!(" language = {}", lang_i)
-            } else {
-                format!(" (language = {} or language = 0)", lang_i)
-            }
-        };
-
-        Ok(sense_schema::table
-            .filter(sense_schema::sequence.eq_any(sequence_ids))
-            .filter(sql(&language))
-            .order(sense_schema::id)
-            .get_results(db)?)
-    }
-
     /// Loads the collocations for all words
     pub async fn load_collocations(
-        db: &DbConnection,
+        db: &Pool,
         words: &mut Vec<Word>,
         language: Language,
     ) -> Result<(), Error> {
@@ -394,24 +301,6 @@ impl<'a> WordSearch<'a> {
         Ok(res)
     }
 
-    /// Load Dictionaries of all sequences
-    pub async fn load_dictionaries(
-        db: &DbConnection,
-        sequence_ids: &[i32],
-    ) -> Result<Vec<Dict>, Error> {
-        use diesel::ExpressionMethods;
-        use models::schema::dict as dict_schema;
-
-        if sequence_ids.is_empty() {
-            return Ok(vec![]);
-        }
-
-        Ok(dict_schema::table
-            .filter(dict_schema::sequence.eq_any(sequence_ids))
-            .order_by(dict_schema::id)
-            .get_results(db)?)
-    }
-
     /// Returns true if the search will run against
     /// the default language
     fn is_default_language(&self) -> bool {
@@ -422,12 +311,16 @@ impl<'a> WordSearch<'a> {
     }
 }
 
-#[derive(QueryableByName)]
-struct SearchItemsSql {
-    #[sql_type = "Integer"]
-    sequence: i32,
-    #[sql_type = "Integer"]
-    len: i32,
+impl FromRow for SearchItemsSql {
+    fn from_row(row: &Row, offset: usize) -> Self
+    where
+        Self: Sized,
+    {
+        Self {
+            sequence: row.get(offset + 0),
+            len: row.get(offset + 1),
+        }
+    }
 }
 
 impl SearchItemsSql {
@@ -608,8 +501,11 @@ fn pos_unionized(senses: &[Sense]) -> Vec<PartOfSpeech> {
     pos
 }
 
-#[derive(Debug, PartialEq, Clone, QueryableByName)]
 pub struct SenqenceSelect {
-    #[sql_type = "Integer"]
     pub sequence: i32,
+}
+
+struct SearchItemsSql {
+    sequence: i32,
+    len: i32,
 }

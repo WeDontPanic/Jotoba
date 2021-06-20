@@ -1,17 +1,14 @@
 #![allow(dead_code)]
 
-#[macro_use]
-extern crate diesel;
-
 use models::search_mode::SearchMode;
 
 pub mod kanji;
 pub mod name;
-pub mod suggestions;
 pub mod query;
 pub mod query_parser;
 pub mod search_order;
 pub mod sentence;
+pub mod suggestions;
 pub mod word;
 
 /// Predefines data, required for

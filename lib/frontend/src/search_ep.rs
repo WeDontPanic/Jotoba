@@ -10,9 +10,8 @@ use deadpool_postgres::Pool;
 use localization::TranslationDict;
 use serde::Deserialize;
 
-use crate::{session, templates, BaseData};
+use crate::{templates, BaseData};
 use config::Config;
-use models::{DbConnection, DbPool};
 use search::{
     self,
     query::{Query, UserSettings},
@@ -65,14 +64,12 @@ impl QueryStruct {
 
 /// Endpoint to perform a search
 pub async fn search(
-    pool: web::Data<DbPool>,
-    poolv2: web::Data<Pool>,
+    pool: web::Data<Pool>,
     query_data: web::Query<QueryStruct>,
     locale_dict: web::Data<Arc<TranslationDict>>,
     config: web::Data<Config>,
     request: HttpRequest,
 ) -> Result<HttpResponse, web_error::Error> {
-    let pool = pool.get().unwrap();
     let settings = user_settings::parse(&request);
 
     //session::init(&session, &settings);
@@ -87,9 +84,9 @@ pub async fn search(
 
     // Perform the requested type of search and return base-data to display
     let site_data = match query.type_ {
-        QueryType::Kanji => kanji_search(&poolv2, &locale_dict, settings, &query).await,
-        QueryType::Sentences => sentence_search(&poolv2, &locale_dict, settings, &query).await,
-        QueryType::Names => name_search(&poolv2, &locale_dict, settings, &query).await,
+        QueryType::Kanji => kanji_search(&pool, &locale_dict, settings, &query).await,
+        QueryType::Sentences => sentence_search(&pool, &locale_dict, settings, &query).await,
+        QueryType::Names => name_search(&pool, &locale_dict, settings, &query).await,
         QueryType::Words => word_search(&pool, &locale_dict, settings, &query).await,
     }?;
     let search_duration = start.elapsed();
@@ -168,7 +165,7 @@ async fn name_search<'a>(
 
 /// Perform a word search
 async fn word_search<'a>(
-    pool: &DbConnection,
+    pool: &Pool,
     locale_dict: &'a TranslationDict,
     user_settings: UserSettings,
     query: &'a Query,

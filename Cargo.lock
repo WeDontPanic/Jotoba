@@ -2854,7 +2854,6 @@ dependencies = [
  "async-std",
  "cache",
  "deadpool-postgres",
- "diesel",
  "error",
  "eudex",
  "futures",

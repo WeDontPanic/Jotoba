@@ -1,9 +1,9 @@
 use crate::{
-    queryable::{FromRow, SQL},
+    queryable::{prepared_query, FromRow, SQL},
     schema::sense,
     DbConnection,
 };
-use deadpool_postgres::tokio_postgres::Row;
+use deadpool_postgres::{tokio_postgres::Row, Pool};
 use diesel::prelude::*;
 use error::Error;
 use parse::jmdict::{
@@ -142,24 +142,12 @@ pub async fn insert_sense(db: &DbConnection, senses: Vec<NewSense>) -> Result<()
 }
 
 pub async fn short_glosses(
-    db: &DbConnection,
+    db: &Pool,
     seq: i32,
     lang: Language,
 ) -> Result<(i32, Vec<String>), Error> {
-    use crate::schema::sense::dsl::*;
-
-    let res: Vec<String> = sense
-        .select(gloss)
-        .filter(sequence.eq(seq))
-        .filter(
-            language
-                .eq_all(lang)
-                .or(language.eq_all(Language::default())),
-        )
-        .order_by((language.desc(), id.asc()))
-        .limit(5)
-        .get_results(db)?;
-
+    let sql = "SELECT gloss FROM sense WHERE sequence = $1 AND (language = $2 OR language = $3) ORDER BY language desc, id asc LIMIT 5";
+    let res: Vec<String> = prepared_query(db, sql, &[&seq, &lang, &Language::default()]).await?;
     Ok((seq, res))
 }
 

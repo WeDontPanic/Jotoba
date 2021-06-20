@@ -37,6 +37,7 @@ async fn import_sfx(
     translation: &String,
 ) -> Result<(), error::Error> {
     // TODO also search for katakana (or hiragana) version to prevent cross-kana duplicates
+    /*
     let native = WordSearch::new(db, &jp)
         .with_mode(SearchMode::Exact)
         .with_kana_only(true)
@@ -80,6 +81,7 @@ async fn import_sfx(
     if native.is_empty() {
         dict::insert_dicts(db, dicts).await?;
     }
+    */
 
     Ok(())
 }

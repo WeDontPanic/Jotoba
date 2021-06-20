@@ -41,6 +41,18 @@ pub trait SQL {
     fn delete_where(where_part: &str) -> String {
         format!("{} WHERE {}", Self::get_delete(), where_part)
     }
+
+    fn get_exists() -> String {
+        format!("SELECT EXISTS (SELECT 1 FROM {})", Self::get_tablename(),)
+    }
+
+    fn get_exists_where(where_part: &str) -> String {
+        let table = Self::get_tablename();
+        format!(
+            "SELECT EXISTS (SELECT 1 FROM {} WHERE {})",
+            table, where_part
+        )
+    }
 }
 
 /// Allow converting a row to `Self`
@@ -117,6 +129,29 @@ pub trait OneQueryable: FromRow {
 }
 
 #[async_trait]
+pub trait CheckAvailable: SQL {
+    /// Delete all rows by a condition in a table
+    async fn exists_where(
+        db: &Pool,
+        condition: &str,
+        params: &[&(dyn ToSql + Sync)],
+    ) -> Result<bool, Error> {
+        let db = db.get().await?;
+        let prepared = db
+            .prepare_cached(&Self::get_exists_where(condition))
+            .await?;
+        Ok(db.query_one(&prepared, params).await?.get(0))
+    }
+
+    /// Delete all rows in a table
+    async fn exists(db: &Pool) -> Result<bool, Error> {
+        let db = db.get().await?;
+        let prepared = db.prepare_cached(&Self::get_exists()).await?;
+        Ok(db.query_one(&prepared, &[]).await?.get(0))
+    }
+}
+
+#[async_trait]
 pub trait Deletable: SQL {
     /// Delete all rows by a condition in a table
     async fn delete(db: &Pool, condition: &str) -> Result<u64, Error> {
@@ -134,6 +169,7 @@ pub trait Deletable: SQL {
 }
 
 impl<T: SQL> Deletable for T {}
+impl<T: SQL> CheckAvailable for T {}
 impl<T: FromRows> Queryable for T {}
 impl<T: FromRow> OneQueryable for T {}
 impl<T: FromRow> OptQueryable for T {}
@@ -147,5 +183,58 @@ impl<T: FromRow> FromRows for T {
         rows.into_iter()
             .map(|i| Self::from_row(&i, offset))
             .collect()
+    }
+}
+
+/// Executes a prepared query, using a statement-cache
+pub async fn prepared_query<S: AsRef<str>, T: FromRow>(
+    db: &Pool,
+    query: S,
+    params: &[&(dyn ToSql + Sync)],
+) -> Result<Vec<T>, Error> {
+    let db = db.get().await?;
+    let prepared = db.prepare_cached(query.as_ref()).await?;
+    Ok(db
+        .query(&prepared, params)
+        .await
+        .map_err::<Error, _>(|i| i.into())?
+        .into_iter()
+        .map(|i| T::from_row(&i, 0))
+        .collect())
+}
+
+impl FromRow for Option<i32> {
+    fn from_row(row: &Row, offset: usize) -> Self
+    where
+        Self: Sized,
+    {
+        row.get(offset + 0)
+    }
+}
+
+impl FromRow for Option<String> {
+    fn from_row(row: &Row, offset: usize) -> Self
+    where
+        Self: Sized,
+    {
+        row.get(offset + 0)
+    }
+}
+
+impl FromRow for String {
+    fn from_row(row: &Row, offset: usize) -> String
+    where
+        Self: Sized,
+    {
+        row.get(offset + 0)
+    }
+}
+
+impl FromRow for i32 {
+    fn from_row(row: &Row, offset: usize) -> i32
+    where
+        Self: Sized,
+    {
+        row.get(offset + 0)
     }
 }

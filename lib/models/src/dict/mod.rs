@@ -7,11 +7,11 @@ use super::{
     sense,
 };
 use crate::{
-    queryable::{FromRow, SQL},
+    queryable::{prepared_query, CheckAvailable, FromRow, SQL},
     schema::dict,
     DbConnection,
 };
-use deadpool_postgres::tokio_postgres::Row;
+use deadpool_postgres::{tokio_postgres::Row, Pool};
 use diesel::{
     prelude::*,
     sql_types::{Integer, Text},
@@ -105,14 +105,14 @@ impl Dict {
     }
 
     /// Retrieve the kanji items of the dict's kanji info
-    pub async fn load_kanji_info(&self, db: &DbConnection) -> Result<Vec<KanjiResult>, Error> {
+    pub async fn load_kanji_info(&self, db: &Pool) -> Result<Vec<KanjiResult>, Error> {
         if self.kanji_info.is_none() || self.kanji_info.as_ref().unwrap().is_empty() {
             return Ok(vec![]);
         }
         let ids = self.kanji_info.as_ref().unwrap();
 
         // Load kanji from DB
-        let mut items = super::kanji::load_by_ids(db, ids).await?;
+        let mut items = super::kanji::load_by_idsv2(db, ids).await?;
         // Order items based on their occurence
         items.sort_by(|a, b| {
             utils::get_item_order(ids, &a.kanji.id, &b.kanji.id).unwrap_or(Ordering::Equal)
@@ -133,11 +133,9 @@ impl Dict {
     /// Loads all collocations of a dict entry
     pub async fn load_collocation(
         &self,
-        db: &DbConnection,
+        pool: &Pool,
         language: Language,
     ) -> Result<(i32, Vec<(String, String)>), Error> {
-        use crate::schema::dict::dsl::*;
-
         if self.collocations.is_none() || self.collocations.as_ref().unwrap().is_empty() {
             return Ok((self.sequence, vec![]));
         }
@@ -145,18 +143,21 @@ impl Dict {
         let cc = self.collocations.as_ref().unwrap();
 
         // Load collocation readings
-        let readings: Vec<(i32, String)> = dict
-            .select((sequence, reading))
-            .filter(kanji.eq_all(true))
-            .filter(sequence.eq_any(cc))
-            .filter(is_main.eq_all(true))
-            .get_results(db)?;
+        let sql = "SELECT sequence, reading FROM dict WHERE kanji = true AND sequence = ANY($1) AND is_main = true";
+        let db = pool.get().await?;
+        let prepared = db.prepare_cached(sql).await?;
+        let readings: Vec<(i32, String)> = db
+            .query(&prepared, &[&cc])
+            .await?
+            .into_iter()
+            .map(|i| (i.get(0), i.get(1)))
+            .collect();
 
         // Load senses to [`readings`]
         let senses = try_join_all(
             readings
                 .iter()
-                .map(|(seq, _)| sense::short_glosses(db, *seq, language)),
+                .map(|(seq, _)| sense::short_glosses(pool, *seq, language)),
         )
         .await?;
 
@@ -360,6 +361,11 @@ pub(crate) async fn find_by_reading(
 }
 
 /// Returns true if the database contains at least one dict entry with the passed reading
+pub async fn reading_existsv2(db: &Pool, r: &str) -> Result<bool, Error> {
+    Dict::exists_where(db, "reading = $1", &[&r]).await
+}
+
+/// Returns true if the database contains at least one dict entry with the passed reading
 pub async fn reading_exists(db: &DbConnection, r: &str) -> Result<bool, Error> {
     use crate::schema::dict::dsl::*;
     use diesel::dsl::exists;
@@ -420,23 +426,14 @@ pub async fn load_dictionary(db: &DbConnection, sequence_id: i32) -> Result<Vec<
 
 /// Returns furigana string for a word which contains at least one kanji. If [`r`] exists multiple
 /// times in the database Ok(None) gets returned
-pub async fn furigana_by_reading(db: &DbConnection, r: &str) -> Result<Option<String>, Error> {
-    use crate::schema::dict::dsl::*;
-
-    let mut furi: Vec<Option<String>> = dict
-        .select(furigana)
-        .filter(kanji)
-        .filter(reading.eq_all(r))
-        .filter(is_main)
-        .get_results(db)?;
+pub async fn furigana_by_reading(db: &Pool, r: &str) -> Result<Option<String>, Error> {
+    let query = "SELECT furigana FROM dict WHERE kanji = true AND reading = $1 AND is_main = true";
+    let mut furi: Vec<Option<String>> = prepared_query(db, query, &[&r]).await?;
 
     // If nothing was found search for non main readings too!
     if furi.is_empty() {
-        furi = dict
-            .select(furigana)
-            .filter(kanji)
-            .filter(reading.eq_all(r))
-            .get_results(db)?;
+        let query = "SELECT furigana FROM dict WHERE kanji = true AND reading = $1";
+        furi = prepared_query(db, query, &[&r]).await?;
     }
 
     if furi.len() != 1 {
