@@ -1,4 +1,4 @@
-use tokio_postgres::Row;
+use deadpool_postgres::tokio_postgres::Row;
 
 use super::*;
 

@@ -1,5 +1,6 @@
 use std::iter::FromIterator;
 
+use deadpool_postgres::tokio_postgres::Client;
 use futures::{stream::FuturesOrdered, TryStreamExt};
 use itertools::Itertools;
 

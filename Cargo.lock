@@ -583,7 +583,6 @@ dependencies = [
  "cache",
  "config 0.1.0",
  "deadpool-postgres",
- "diesel",
  "error",
  "eudex",
  "futures",
@@ -598,7 +597,6 @@ dependencies = [
  "search",
  "serde",
  "tokio 1.7.0",
- "tokio-postgres",
  "utils",
 ]
 

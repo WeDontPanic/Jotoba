@@ -27,7 +27,6 @@ use actix_web::{
     web::{self, Json},
 };
 use serde::{Deserialize, Serialize};
-use tokio_postgres::Client;
 
 /// Request struct for suggestion endpoint
 #[derive(Clone, Debug, Deserialize, PartialEq)]
