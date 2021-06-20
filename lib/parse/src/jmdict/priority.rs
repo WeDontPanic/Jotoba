@@ -7,6 +7,7 @@ use diesel::{
     sql_types::Text,
     types::{FromSql, ToSql},
 };
+use postgres_types::{accepts, to_sql_checked};
 
 use crate::error::{self, Error};
 
@@ -72,6 +73,39 @@ impl FromSql<Text, Pg> for Priority {
             (<String as FromSql<Text, Pg>>::from_sql(bytes)?).as_str(),
         )?)
     }
+}
+
+impl<'a> tokio_postgres::types::FromSql<'a> for Priority {
+    fn from_sql(
+        ty: &tokio_postgres::types::Type,
+        raw: &'a [u8],
+    ) -> Result<Self, Box<dyn std::error::Error + Sync + Send>> {
+        Ok(Self::try_from(
+            <String as tokio_postgres::types::FromSql>::from_sql(ty, raw)?.as_str(),
+        )?)
+    }
+
+    accepts!(TEXT);
+}
+
+impl tokio_postgres::types::ToSql for Priority {
+    fn to_sql(
+        &self,
+        ty: &postgres_types::Type,
+        out: &mut postgres_types::private::BytesMut,
+    ) -> Result<postgres_types::IsNull, Box<dyn std::error::Error + Sync + Send>>
+    where
+        Self: Sized,
+    {
+        let i: String = (*self).into();
+        Ok(<String as tokio_postgres::types::ToSql>::to_sql(
+            &i, ty, out,
+        )?)
+    }
+
+    accepts!(TEXT);
+
+    to_sql_checked!();
 }
 
 #[cfg(test)]

@@ -9,6 +9,7 @@ use diesel::{
 };
 
 use localization::traits::Translatable;
+use postgres_types::{accepts, to_sql_checked};
 use strum_macros::{AsRefStr, EnumString};
 
 use crate::error;
@@ -93,4 +94,35 @@ impl Into<i32> for Information {
             Self::UsuallyKana => 7,
         }
     }
+}
+
+impl<'a> tokio_postgres::types::FromSql<'a> for Information {
+    fn from_sql(
+        ty: &tokio_postgres::types::Type,
+        raw: &'a [u8],
+    ) -> Result<Self, Box<dyn std::error::Error + Sync + Send>> {
+        Ok(Self::try_from(
+            <i32 as tokio_postgres::types::FromSql>::from_sql(ty, raw)?,
+        )?)
+    }
+
+    accepts!(INT4);
+}
+
+impl tokio_postgres::types::ToSql for Information {
+    fn to_sql(
+        &self,
+        ty: &postgres_types::Type,
+        out: &mut postgres_types::private::BytesMut,
+    ) -> Result<postgres_types::IsNull, Box<dyn std::error::Error + Sync + Send>>
+    where
+        Self: Sized,
+    {
+        let i: i32 = (*self).into();
+        Ok(<i32 as tokio_postgres::types::ToSql>::to_sql(&i, ty, out)?)
+    }
+
+    accepts!(INT4);
+
+    to_sql_checked!();
 }

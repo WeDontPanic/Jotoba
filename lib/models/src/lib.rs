@@ -7,6 +7,7 @@ use r2d2::{Pool, PooledConnection};
 pub mod dict;
 pub mod kanji;
 pub mod name;
+pub mod queryable;
 pub mod radical;
 pub mod schema;
 pub mod search_mode;

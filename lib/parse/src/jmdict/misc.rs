@@ -9,6 +9,7 @@ use diesel::{
 };
 
 use localization::traits::Translatable;
+use postgres_types::{accepts, to_sql_checked};
 use strum_macros::{AsRefStr, EnumString};
 
 #[derive(AsExpression, FromSqlRow, Debug, PartialEq, Clone, Copy, AsRefStr, EnumString)]
@@ -191,4 +192,38 @@ impl FromSql<Text, Pg> for Misc {
             (<String as FromSql<Text, Pg>>::from_sql(bytes)?).as_str(),
         )?)
     }
+}
+
+impl<'a> tokio_postgres::types::FromSql<'a> for Misc {
+    fn from_sql(
+        ty: &tokio_postgres::types::Type,
+        raw: &'a [u8],
+    ) -> Result<Self, Box<dyn std::error::Error + Sync + Send>> {
+        Ok(Self::from_str(
+            <String as tokio_postgres::types::FromSql>::from_sql(ty, raw)?.as_str(),
+        )?)
+    }
+
+    accepts!(TEXT);
+}
+
+impl tokio_postgres::types::ToSql for Misc {
+    fn to_sql(
+        &self,
+        ty: &postgres_types::Type,
+        out: &mut postgres_types::private::BytesMut,
+    ) -> Result<postgres_types::IsNull, Box<dyn std::error::Error + Sync + Send>>
+    where
+        Self: Sized,
+    {
+        Ok(<&str as tokio_postgres::types::ToSql>::to_sql(
+            &self.as_ref(),
+            ty,
+            out,
+        )?)
+    }
+
+    accepts!(TEXT);
+
+    to_sql_checked!();
 }

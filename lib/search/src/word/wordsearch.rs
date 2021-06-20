@@ -3,8 +3,10 @@
 use super::result::{Reading, Sense, Word};
 
 use super::super::{Search, SearchMode};
+use deadpool_postgres::Pool;
 use diesel::sql_types::{Integer, Text};
 use error::Error;
+use models::queryable::{Queryable, SQL};
 use models::{dict::Dict, sense, sql::ExpressionMethods, DbConnection};
 use parse::jmdict::{
     information::Information,
@@ -157,6 +159,41 @@ impl<'a> WordSearch<'a> {
     }
 
     /// Get search results of seq_ids
+    pub async fn load_words_by_seqv2<F>(
+        db: &Pool,
+        seq_ids: &[i32],
+        lang: Language,
+        include_english: bool,
+        pos_filter: &Option<Vec<PosSimple>>,
+        ordering: F,
+    ) -> Result<(Vec<Word>, usize), Error>
+    where
+        F: Fn(&mut Vec<Word>),
+    {
+        if seq_ids.is_empty() {
+            return Ok((vec![], 0));
+        }
+
+        let dicts: Vec<Dict> = Self::load_dictionariesv2(&db, &seq_ids).await?;
+        let mut word_items = convert_dicts_to_words(dicts);
+        let original_len = word_items.len();
+        ordering(&mut word_items);
+
+        let required_sequences: Vec<i32> = word_items.iter().map(|i| i.sequence).collect_vec();
+        let senses: Vec<sense::Sense> = Self::load_sensesv2(&db, &required_sequences, lang).await?;
+
+        Ok((
+            merge_words_with_senses(
+                word_items,
+                senses,
+                include_english || lang == Language::default(),
+                pos_filter,
+            ),
+            original_len,
+        ))
+    }
+
+    /// Get search results of seq_ids
     pub async fn load_words_by_seq<F>(
         db: &DbConnection,
         seq_ids: &[i32],
@@ -262,6 +299,33 @@ impl<'a> WordSearch<'a> {
     }
 
     /// Load all senses for the sequence ids
+    async fn load_sensesv2(
+        db: &Pool,
+        sequence_ids: &[i32],
+        lang: Language,
+    ) -> Result<Vec<sense::Sense>, Error> {
+        if sequence_ids.is_empty() {
+            return Ok(vec![]);
+        }
+
+        let lang_i: i32 = lang.into();
+        let language = {
+            if lang == Language::default() {
+                format!(" language = {}", lang_i)
+            } else {
+                format!(" (language = {} or language = 0)", lang_i)
+            }
+        };
+
+        let sql_query =
+            sense::Sense::select_where_order(&format!("sequence = ANY($1) AND {}", language), "id");
+
+        let res = sense::Sense::query(db, sql_query, &[&sequence_ids], 0).await?;
+
+        Ok(res)
+    }
+
+    /// Load all senses for the sequence ids
     async fn load_senses(
         db: &DbConnection,
         sequence_ids: &[i32],
@@ -316,6 +380,18 @@ impl<'a> WordSearch<'a> {
         }
 
         Ok(())
+    }
+
+    /// Load Dictionaries of all sequences
+    pub async fn load_dictionariesv2(db: &Pool, sequence_ids: &[i32]) -> Result<Vec<Dict>, Error> {
+        if sequence_ids.is_empty() {
+            return Ok(vec![]);
+        }
+
+        let sql_query = Dict::select_where_order("sequence = ANY($1)", "id");
+        let res = Dict::query(db, sql_query, &[&sequence_ids], 0).await?;
+
+        Ok(res)
     }
 
     /// Load Dictionaries of all sequences

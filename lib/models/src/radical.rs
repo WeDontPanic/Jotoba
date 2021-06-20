@@ -1,7 +1,9 @@
 use crate::{
+    queryable::{FromRow, OneQueryable, OptQueryable, SQL},
     schema::{radical, search_radical},
     DbConnection,
 };
+use deadpool_postgres::{tokio_postgres::Row, Pool};
 use diesel::prelude::*;
 use error::Error;
 use itertools::Itertools;
@@ -38,11 +40,52 @@ pub struct SearchRadical {
     pub stroke_count: i32,
 }
 
+impl SQL for SearchRadical {
+    fn get_tablename() -> &'static str {
+        "search_radical"
+    }
+}
+
+impl FromRow for SearchRadical {
+    fn from_row(row: &Row, offset: usize) -> Self
+    where
+        Self: Sized,
+    {
+        Self {
+            id: row.get(offset + 0),
+            literal: row.get(offset + 1),
+            stroke_count: row.get(offset + 2),
+        }
+    }
+}
+
 #[derive(Insertable, Clone, Debug, PartialEq)]
 #[table_name = "search_radical"]
 pub struct NewSearchRadical {
     pub literal: String,
     pub stroke_count: i32,
+}
+
+impl SQL for Radical {
+    fn get_tablename() -> &'static str {
+        "radical"
+    }
+}
+
+impl FromRow for Radical {
+    fn from_row(row: &Row, offset: usize) -> Self
+    where
+        Self: Sized,
+    {
+        Self {
+            id: row.get(offset + 0),
+            literal: row.get(offset + 1),
+            alternative: row.get(offset + 2),
+            stroke_count: row.get(offset + 3),
+            readings: row.get(offset + 4),
+            translations: row.get(offset + 5),
+        }
+    }
 }
 
 impl From<search_radicals::SearchRadical> for NewSearchRadical {
@@ -88,9 +131,9 @@ pub fn insert(db: &DbConnection, radical: NewRadical) -> Result<(), Error> {
     Ok(())
 }
 
-pub async fn find_by_id(db: &DbConnection, i: i32) -> Result<Radical, Error> {
-    use crate::schema::radical::dsl::*;
-    Ok(radical.filter(id.eq(i)).get_result(db)?)
+/// Finds and Radical by its ID. Returns `None` if none found
+pub async fn find_by_id(db: &Pool, i: i32) -> Result<Option<Radical>, Error> {
+    Ok(Radical::query_opt(db, Radical::select_where("id = $1"), &[&i], 0).await?)
 }
 
 pub async fn search_radical_find_by_literal(

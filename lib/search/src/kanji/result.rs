@@ -1,10 +1,11 @@
 use std::{fs::read_to_string, path::Path, vec};
 
+use deadpool_postgres::Pool;
 use futures::try_join;
 
 use super::super::word::{result::Word, WordSearch};
 use error::Error;
-use models::{kanji::KanjiResult, radical::Radical, DbConnection};
+use models::{kanji::KanjiResult, radical::Radical};
 use parse::jmdict::languages::Language;
 use utils::{self, to_option};
 
@@ -23,7 +24,7 @@ impl Item {
     /// Required because the kanji's reading-componds
     /// aren't loaded by default due it being an array
     pub async fn from_db(
-        db: &DbConnection,
+        pool: &Pool,
         k: KanjiResult,
         lang: Language,
         show_english: bool,
@@ -31,12 +32,15 @@ impl Item {
         let kun_dicts = k.kanji.kun_dicts.clone().unwrap_or_default();
         let on_dicts = k.kanji.on_dicts.clone().unwrap_or_default();
 
-        let (radical, parts): (Radical, Vec<String>) =
-            try_join!(k.kanji.load_radical(db), k.kanji.load_parts(db),)?;
+        let (radical, parts): (Option<Radical>, Vec<String>) =
+            try_join!(k.kanji.load_radical(&pool), k.kanji.load_parts(&pool))?;
+
+        // TODO handle non existing radicals properly. None = radial not found in DB
+        let radical = radical.unwrap();
 
         let ((kun_words, _), (on_words, _)): ((Vec<Word>, _), (Vec<Word>, _)) = try_join!(
-            WordSearch::load_words_by_seq(db, &kun_dicts, lang, show_english, &None, |_| ()),
-            WordSearch::load_words_by_seq(db, &on_dicts, lang, show_english, &None, |_| ())
+            WordSearch::load_words_by_seqv2(&pool, &kun_dicts, lang, show_english, &None, |_| ()),
+            WordSearch::load_words_by_seqv2(&pool, &on_dicts, lang, show_english, &None, |_| ())
         )?;
 
         let loaded_kd = kun_words

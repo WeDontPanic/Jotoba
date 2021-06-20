@@ -2168,7 +2168,9 @@ name = "models"
 version = "0.1.0"
 dependencies = [
  "async-std",
+ "async-trait",
  "cache",
+ "deadpool-postgres",
  "diesel",
  "dotenv",
  "error",

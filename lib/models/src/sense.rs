@@ -1,4 +1,9 @@
-use crate::{schema::sense, DbConnection};
+use crate::{
+    queryable::{FromRow, SQL},
+    schema::sense,
+    DbConnection,
+};
+use deadpool_postgres::tokio_postgres::Row;
 use diesel::prelude::*;
 use error::Error;
 use parse::jmdict::{
@@ -32,6 +37,36 @@ pub struct Sense {
 impl PartialEq for Sense {
     fn eq(&self, other: &Sense) -> bool {
         self.id == other.id && self.sequence == other.sequence
+    }
+}
+
+impl SQL for Sense {
+    fn get_tablename() -> &'static str {
+        "sense"
+    }
+}
+
+impl FromRow for Sense {
+    fn from_row(row: &tokio_postgres::Row, offset: usize) -> Self
+    where
+        Self: Sized,
+    {
+        Self {
+            id: row.get(offset + 0),
+            sequence: row.get(offset + 1),
+            language: row.get(offset + 2),
+            gloss_pos: row.get(offset + 3),
+            gloss: row.get(offset + 4),
+            misc: row.get(offset + 5),
+            part_of_speech: row.get(offset + 6),
+            dialect: row.get(offset + 7),
+            xref: row.get(offset + 8),
+            gtype: row.get(offset + 9),
+            field: row.get(offset + 10),
+            information: row.get(offset + 11),
+            antonym: row.get(offset + 12),
+            pos_simplified: row.get(offset + 13),
+        }
     }
 }
 

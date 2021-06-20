@@ -12,6 +12,7 @@ use diesel::{
     types::{FromSql, ToSql},
 };
 use localization::{language::Language, traits::Translatable, TranslationDict};
+use postgres_types::{accepts, to_sql_checked};
 
 use crate::error;
 use strum_macros::EnumString;
@@ -138,6 +139,37 @@ impl FromSql<Integer, Pg> for PosSimple {
     }
 }
 
+impl<'a> tokio_postgres::types::FromSql<'a> for PosSimple {
+    fn from_sql(
+        ty: &tokio_postgres::types::Type,
+        raw: &'a [u8],
+    ) -> Result<Self, Box<dyn std::error::Error + Sync + Send>> {
+        Ok(Self::try_from(
+            <i32 as tokio_postgres::types::FromSql>::from_sql(ty, raw)?,
+        )?)
+    }
+
+    accepts!(INT4);
+}
+
+impl tokio_postgres::types::ToSql for PosSimple {
+    fn to_sql(
+        &self,
+        ty: &postgres_types::Type,
+        out: &mut postgres_types::private::BytesMut,
+    ) -> Result<postgres_types::IsNull, Box<dyn std::error::Error + Sync + Send>>
+    where
+        Self: Sized,
+    {
+        let s: i32 = (*self).into();
+        Ok(<i32 as tokio_postgres::types::ToSql>::to_sql(&s, ty, out)?)
+    }
+
+    accepts!(INT4);
+
+    to_sql_checked!();
+}
+
 #[derive(AsExpression, FromSqlRow, Debug, PartialEq, Clone, Copy)]
 #[sql_type = "Text"]
 pub enum PartOfSpeech {
@@ -213,6 +245,41 @@ impl FromSql<Text, Pg> for PartOfSpeech {
             .as_str()
             .try_into()?)
     }
+}
+
+impl<'a> tokio_postgres::types::FromSql<'a> for PartOfSpeech {
+    fn from_sql(
+        ty: &tokio_postgres::types::Type,
+        raw: &'a [u8],
+    ) -> Result<Self, Box<dyn std::error::Error + Sync + Send>> {
+        Ok(Self::try_from(
+            <String as tokio_postgres::types::FromSql>::from_sql(ty, raw)?.as_str(),
+        )?)
+    }
+
+    accepts!(TEXT);
+}
+
+impl tokio_postgres::types::ToSql for PartOfSpeech {
+    fn to_sql(
+        &self,
+        ty: &postgres_types::Type,
+        out: &mut postgres_types::private::BytesMut,
+    ) -> Result<postgres_types::IsNull, Box<dyn std::error::Error + Sync + Send>>
+    where
+        Self: Sized,
+    {
+        let s: String = (*self).into();
+        Ok(<&str as tokio_postgres::types::ToSql>::to_sql(
+            &s.as_str(),
+            ty,
+            out,
+        )?)
+    }
+
+    accepts!(TEXT);
+
+    to_sql_checked!();
 }
 
 #[derive(Debug, Clone, Copy, PartialEq)]

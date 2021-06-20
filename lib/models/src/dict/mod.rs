@@ -6,7 +6,12 @@ use super::{
     kanji::{KanjiResult, KANJICACHE},
     sense,
 };
-use crate::{schema::dict, DbConnection};
+use crate::{
+    queryable::{FromRow, SQL},
+    schema::dict,
+    DbConnection,
+};
+use deadpool_postgres::tokio_postgres::Row;
 use diesel::{
     prelude::*,
     sql_types::{Integer, Text},
@@ -53,6 +58,35 @@ pub struct NewDict {
     pub accents: Option<Vec<i32>>,
     pub furigana: Option<String>,
     pub collocations: Option<Vec<i32>>,
+}
+
+impl SQL for Dict {
+    fn get_tablename() -> &'static str {
+        "dict"
+    }
+}
+
+impl FromRow for Dict {
+    fn from_row(row: &Row, offset: usize) -> Self
+    where
+        Self: Sized,
+    {
+        Self {
+            id: row.get(offset + 0),
+            sequence: row.get(offset + 1),
+            reading: row.get(offset + 2),
+            kanji: row.get(offset + 3),
+            no_kanji: row.get(offset + 4),
+            priorities: row.get(offset + 5),
+            information: row.get(offset + 6),
+            kanji_info: row.get(offset + 7),
+            jlpt_lvl: row.get(offset + 8),
+            is_main: row.get(offset + 9),
+            accents: row.get(offset + 10),
+            furigana: row.get(offset + 11),
+            collocations: row.get(offset + 12),
+        }
+    }
 }
 
 impl PartialEq for Dict {

@@ -15,7 +15,8 @@ use parse::{
 /// Imports kanji dict into database
 pub async fn import(db: &DbConnection, path: String) {
     println!("Clearing existing kanji");
-    kanji::meaning::clear_meanings(db).await.unwrap();
+    // TODO uncomment when rewriting this to tokio-postgres
+    //kanji::meaning::clear_meanings(db).await.unwrap();
     kanji::clear_kanji_elements(db).await.unwrap();
     kanji::clear_kanji(db).await.unwrap();
 
