@@ -5,11 +5,11 @@ use deadpool_postgres::{tokio_postgres::Row, Pool};
 use itertools::Itertools;
 use serde::{Deserialize, Serialize};
 
-use async_std::sync::Mutex;
 use cache::SharedCache;
 use error::api_error::RestError;
 use japanese::JapaneseExt;
 use once_cell::sync::Lazy;
+use tokio::sync::Mutex;
 use utils::{part_of, remove_dups};
 
 /// Max radicals to allow per request
