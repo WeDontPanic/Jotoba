@@ -14,7 +14,8 @@ use std::{
 /// Imports jmnedict into database
 pub async fn import(db: &DbConnection, path: &str) {
     println!("Clearing existing names");
-    name::clear(db).await.unwrap();
+    // TODO uncomment when migrating to tokio-postgres
+    //name::clear(db).await.unwrap();
 
     let path = Path::new(&path);
     let parser = jmnedictParser::new(BufReader::new(File::open(path).unwrap()));

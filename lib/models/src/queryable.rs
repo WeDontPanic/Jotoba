@@ -19,8 +19,18 @@ pub trait SQL {
         format!("{} WHERE {}", Self::get_select(), where_part)
     }
 
+    /// Returns a default SQL query with a `where_part`
+    fn select_where_limit(where_part: &str, limit: i64) -> String {
+        format!("{} LIMIT {}", Self::select_where(where_part), limit)
+    }
+
     fn select_where_order(where_part: &str, order_part: &str) -> String {
         format!("{} ORDER BY {}", Self::select_where(where_part), order_part)
+    }
+
+    fn select_where_order_limit(where_part: &str, order_part: &str, limit: i64) -> String {
+        let order = Self::select_where_order(where_part, order_part);
+        format!("{} LIMIT {}", order, limit)
     }
 
     fn get_delete() -> String {

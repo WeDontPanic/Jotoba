@@ -2,7 +2,11 @@ use super::{super::Search, SearchMode};
 use deadpool_postgres::Pool;
 use error::Error;
 use japanese::JapaneseExt;
-use models::{kanji::reading::KanjiReading, name::Name};
+use models::{
+    kanji::reading::KanjiReading,
+    name::Name,
+    queryable::{Queryable, SQL},
+};
 
 /// Defines the structure of a
 /// name based search
@@ -29,42 +33,27 @@ impl<'a> NameSearch<'a> {
 
     /// Search name by transcription
     pub async fn search_transcription(&self) -> Result<Vec<Name>, Error> {
-        let mut query = String::from("SELECT * FROM name WHERE transcription &@ $1 ");
-        if query.len() < 3 {
-            query.push_str("ORDER BY LENGTH(transcription) LIMIT 20");
-        }
+        let query = if self.search.query.len() < 3 {
+            Name::select_where_order_limit("transcription &@ $1", "LENGTH(transcription)", 20)
+        } else {
+            Name::select_where("transcription &@ $1")
+        };
 
-        let client = self.db.get().await?;
-
-        let prepared = client.prepare_cached(&query).await?;
-        let rows = client.query(&prepared, &[&self.search.query]).await?;
-
-        let res = rows.into_iter().map(|i| Name::from(i)).collect();
-
-        Ok(res)
+        Ok(Name::query(self.db, query, &[&self.search.query], 0).await?)
     }
 
     pub async fn kanji_search(&self, kanji: &KanjiReading) -> Result<Vec<Name>, Error> {
-        let db = self.db.get().await?;
-
-        let prepared = db
-            .prepare_cached("SELECT * FROM name WHERE kanji &@ $1 AND kana &@ $2 LIMIT 10")
-            .await?;
-
-        let res = db
-            .query(&prepared, &[&kanji.literal.to_string(), &kanji.reading])
-            .await?
-            .into_iter()
-            .map(|i| Name::from(i))
-            .collect();
-
-        Ok(res)
+        Ok(Name::query(
+            self.db,
+            Name::select_where_limit("kanji &@ $1 AND kana &@ $2", 10),
+            &[&kanji.literal.to_string(), &kanji.reading],
+            0,
+        )
+        .await?)
     }
 
     /// Search name by japanese
     pub async fn search_native(&self, query: &str) -> Result<Vec<Name>, Error> {
-        let db = self.db.get().await?;
-
         let (where_, column) = if query.is_kanji() {
             ("kanji &@ $1", "kanji")
         } else if query.is_kana() {
@@ -75,13 +64,6 @@ impl<'a> NameSearch<'a> {
             ("transcription &@ $1", "transcription")
         };
 
-        let prepared = db
-            .prepare_cached(&format!(
-                "SELECT * FROM name WHERE {} ORDER BY LENGTH({}) LIMIT $2",
-                where_, column
-            ))
-            .await?;
-
         let limit = if query.len() < 3 && self.limit == 0 {
             20
         } else if self.limit > 0 {
@@ -90,11 +72,8 @@ impl<'a> NameSearch<'a> {
             100
         };
 
-        Ok(db
-            .query(&prepared, &[&query, &limit])
-            .await?
-            .into_iter()
-            .map(|i| Name::from(i))
-            .collect())
+        let sql_query =
+            Name::select_where_order_limit(where_, &format!("LENGTH({})", column), limit);
+        Ok(Name::query(self.db, sql_query, &[&query], 0).await?)
     }
 }

@@ -1,8 +1,12 @@
-use crate::{schema::name, DbConnection, DbPool};
+use crate::{
+    queryable::{Deletable, FromRow, SQL},
+    schema::name,
+    DbConnection,
+};
+use deadpool_postgres::{tokio_postgres::Row, Pool};
 use diesel::prelude::*;
 use error::Error;
 use parse::jmnedict::{name_type::NameType, NameEntry};
-use tokio_postgres::Row;
 
 #[derive(Queryable, Clone, Debug, Default)]
 pub struct Name {
@@ -13,6 +17,29 @@ pub struct Name {
     pub transcription: String,
     pub name_type: Option<Vec<NameType>>,
     pub xref: Option<String>,
+}
+
+impl SQL for Name {
+    fn get_tablename() -> &'static str {
+        "name"
+    }
+}
+
+impl FromRow for Name {
+    fn from_row(row: &Row, offset: usize) -> Self
+    where
+        Self: Sized,
+    {
+        Self {
+            id: row.get(offset + 0),
+            sequence: row.get(offset + 1),
+            kana: row.get(offset + 2),
+            kanji: row.get(offset + 3),
+            transcription: row.get(offset + 4),
+            name_type: row.get(offset + 5),
+            xref: row.get(offset + 6),
+        }
+    }
 }
 
 #[derive(Insertable, Clone, Debug, PartialEq)]
@@ -88,9 +115,8 @@ pub async fn insert_names(db: &DbConnection, values: Vec<NewName>) -> Result<(),
 }
 
 /// Clear all name entries
-pub async fn clear(db: &DbConnection) -> Result<(), Error> {
-    use crate::schema::name::dsl::*;
-    diesel::delete(name).execute(db)?;
+pub async fn clear(db: &Pool) -> Result<(), Error> {
+    Name::delete_all(&db).await?;
     Ok(())
 }
 

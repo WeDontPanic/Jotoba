@@ -9,6 +9,7 @@ use diesel::{
     types::ToSql,
 };
 use localization::traits::Translatable;
+use postgres_types::accepts;
 use strum_macros::{AsRefStr, EnumString};
 use tokio_postgres::{types::Type, Row};
 
@@ -122,7 +123,5 @@ impl<'a> tokio_postgres::types::FromSql<'a> for NameType {
         )?)
     }
 
-    fn accepts(ty: &tokio_postgres::types::Type) -> bool {
-        matches!(ty, &tokio_postgres::types::Type::INT4)
-    }
+    accepts!(INT4);
 }
