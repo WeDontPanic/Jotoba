@@ -1,5 +1,8 @@
 use crate::{
-    queryable::{CheckAvailable, FromRow, OneQueryable, OptQueryable, SQL},
+    queryable::{
+        prepared_query, CheckAvailable, Deletable, FromRow, Insertable, OneQueryable, OptQueryable,
+        SQL,
+    },
     schema::{radical, search_radical},
     DbConnection,
 };
@@ -8,6 +11,7 @@ use diesel::prelude::*;
 use error::Error;
 use itertools::Itertools;
 use parse::radicals::{self, search_radicals};
+use tokio_postgres::types::ToSql;
 use utils::to_option;
 
 #[derive(Queryable, QueryableByName, Clone, Debug, Default, PartialEq)]
@@ -21,6 +25,28 @@ pub struct Radical {
     pub translations: Option<Vec<String>>,
 }
 
+impl SQL for Radical {
+    fn get_tablename() -> &'static str {
+        "radical"
+    }
+}
+
+impl FromRow for Radical {
+    fn from_row(row: &Row, offset: usize) -> Self
+    where
+        Self: Sized,
+    {
+        Self {
+            id: row.get(offset + 0),
+            literal: row.get(offset + 1),
+            alternative: row.get(offset + 2),
+            stroke_count: row.get(offset + 3),
+            readings: row.get(offset + 4),
+            translations: row.get(offset + 5),
+        }
+    }
+}
+
 #[derive(Insertable, Clone, Debug, PartialEq)]
 #[table_name = "radical"]
 pub struct NewRadical {
@@ -30,6 +56,36 @@ pub struct NewRadical {
     pub stroke_count: i32,
     pub readings: Vec<String>,
     pub translations: Option<Vec<String>>,
+}
+
+impl SQL for NewRadical {
+    fn get_tablename() -> &'static str {
+        "radical"
+    }
+}
+
+impl Insertable<6> for NewRadical {
+    fn column_names() -> [&'static str; 6] {
+        [
+            "id",
+            "literal",
+            "alternative",
+            "stroke_count",
+            "readings",
+            "translations",
+        ]
+    }
+
+    fn fields(&self) -> [&(dyn ToSql + Sync); 6] {
+        [
+            &self.id,
+            &self.literal,
+            &self.alternative,
+            &self.stroke_count,
+            &self.readings,
+            &self.translations,
+        ]
+    }
 }
 
 #[derive(Queryable, QueryableByName, Clone, Debug, Default, PartialEq)]
@@ -66,25 +122,19 @@ pub struct NewSearchRadical {
     pub stroke_count: i32,
 }
 
-impl SQL for Radical {
+impl SQL for NewSearchRadical {
     fn get_tablename() -> &'static str {
-        "radical"
+        "search_radical"
     }
 }
 
-impl FromRow for Radical {
-    fn from_row(row: &Row, offset: usize) -> Self
-    where
-        Self: Sized,
-    {
-        Self {
-            id: row.get(offset + 0),
-            literal: row.get(offset + 1),
-            alternative: row.get(offset + 2),
-            stroke_count: row.get(offset + 3),
-            readings: row.get(offset + 4),
-            translations: row.get(offset + 5),
-        }
+impl Insertable<2> for NewSearchRadical {
+    fn column_names() -> [&'static str; 2] {
+        ["literal", "stroke_count"]
+    }
+
+    fn fields(&self) -> [&(dyn ToSql + Sync); 2] {
+        [&self.literal, &self.stroke_count]
     }
 }
 
@@ -97,7 +147,7 @@ impl From<search_radicals::SearchRadical> for NewSearchRadical {
     }
 }
 
-impl<'a> From<radicals::Radical<'a>> for NewRadical {
+impl From<radicals::Radical> for NewRadical {
     fn from(r: radicals::Radical) -> Self {
         Self {
             id: r.id,
@@ -116,18 +166,17 @@ impl<'a> From<radicals::Radical<'a>> for NewRadical {
 }
 
 /// Inserts a new Radical into the Db
-pub fn insert_search_radical(db: &DbConnection, radical: NewSearchRadical) -> Result<(), Error> {
-    diesel::insert_into(search_radical::table)
-        .values(radical)
-        .execute(db)?;
+pub async fn insert_search_radical(db: &Pool, radical: NewSearchRadical) -> Result<(), Error> {
+    NewSearchRadical::insert(db, &[radical]).await?;
     Ok(())
 }
 
 /// Inserts a new Radical into the Db
-pub fn insert(db: &DbConnection, radical: NewRadical) -> Result<(), Error> {
-    diesel::insert_into(radical::table)
-        .values(radical)
-        .execute(db)?;
+pub async fn insert<T: Into<NewRadical>>(
+    db: &Pool,
+    radicals: impl Iterator<Item = T>,
+) -> Result<(), Error> {
+    NewRadical::insert(db, &radicals.map(|i| i.into()).collect::<Vec<NewRadical>>()).await?;
     Ok(())
 }
 
@@ -136,21 +185,14 @@ pub async fn find_by_id(db: &Pool, i: i32) -> Result<Option<Radical>, Error> {
     Ok(Radical::query_opt(db, Radical::select_where("id = $1"), &[&i], 0).await?)
 }
 
-pub async fn search_radical_find_by_literal(
-    db: &DbConnection,
-    l: char,
-) -> Result<SearchRadical, Error> {
-    use crate::schema::search_radical::dsl::*;
-    Ok(search_radical
-        .filter(literal.eq(l.to_string()))
-        .get_result(db)?)
+pub async fn search_radical_find_by_literal(db: &Pool, l: char) -> Result<SearchRadical, Error> {
+    let query = SearchRadical::select_where("literal = $1");
+    SearchRadical::query_one(db, query, &[&l.to_string()], 0).await
 }
 
 /// Clear all radical entries
-pub async fn clear(db: &DbConnection) -> Result<(), Error> {
-    use crate::schema::radical::dsl::*;
-    diesel::delete(radical).execute(db)?;
-    Ok(())
+pub async fn clear(db: &Pool) -> Result<u64, Error> {
+    Radical::delete_all(db).await
 }
 
 /// Returns Ok(true) if at least one radical exists in the Db
@@ -159,9 +201,8 @@ pub async fn exists(db: &Pool) -> Result<bool, Error> {
 }
 
 /// Clear all searh_radical entries
-pub async fn clear_search_radicals(db: &DbConnection) -> Result<(), Error> {
-    use crate::schema::search_radical::dsl::*;
-    diesel::delete(search_radical).execute(db)?;
+pub async fn clear_search_radicals(db: &Pool) -> Result<(), Error> {
+    SearchRadical::delete_all(db).await?;
     Ok(())
 }
 

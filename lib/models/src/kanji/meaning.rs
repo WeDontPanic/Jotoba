@@ -1,12 +1,11 @@
 use crate::{
-    queryable::{Deletable, FromRow, Queryable, SQL},
+    queryable::{Deletable, FromRow, Insertable, Queryable, SQL},
     schema::kanji_meaning,
-    DbConnection,
 };
-use diesel::RunQueryDsl;
 use error::Error;
 
 use deadpool_postgres::{tokio_postgres::Row, Pool};
+use tokio_postgres::types::ToSql;
 
 use super::KanjiResult;
 
@@ -41,11 +40,24 @@ pub struct NewMeaning {
     pub value: String,
 }
 
-pub async fn insert_meanings(db: &DbConnection, meanings: Vec<NewMeaning>) -> Result<(), Error> {
-    use crate::schema::kanji_meaning::dsl::*;
-    diesel::insert_into(kanji_meaning)
-        .values(meanings)
-        .execute(db)?;
+impl SQL for NewMeaning {
+    fn get_tablename() -> &'static str {
+        "kanji_meaning"
+    }
+}
+
+impl Insertable<2> for NewMeaning {
+    fn column_names() -> [&'static str; 2] {
+        ["kanji_id", "value"]
+    }
+
+    fn fields(&self) -> [&(dyn ToSql + Sync); 2] {
+        [&self.kanji_id, &self.value]
+    }
+}
+
+pub async fn insert_meanings(db: &Pool, meanings: Vec<NewMeaning>) -> Result<(), Error> {
+    NewMeaning::insert(db, &meanings).await?;
     Ok(())
 }
 

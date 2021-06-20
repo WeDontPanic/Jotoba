@@ -120,7 +120,7 @@ pub async fn import(database: &DbConnection, pool: &Pool, options: &Options) {
     }
 
     // Import all independent items first
-    import_independent(database, pool, options).await;
+    import_independent(pool, options).await;
 
     let kanji_exists = kanji::exists(&pool).await.expect("fatal db err");
     let jmdict_exists = dict::exists(&pool).await.expect("fatal DB error")
@@ -136,12 +136,12 @@ pub async fn import(database: &DbConnection, pool: &Pool, options: &Options) {
     // Import kanji elements
     if !options.elements_path.is_empty() {
         // TODO Check if search radicals exists
-        kanji_elements::import(&database, &options.elements_path).await;
+        kanji_elements::import(&pool, &options.elements_path).await;
     }
 
     // Import JMDict
     if !options.jmdict_path.is_empty() {
-        jmdict::import(&database, options.jmdict_path.clone()).await;
+        jmdict::import(pool.clone(), options.jmdict_path.clone()).await;
         imported_dicts = true;
     }
 
@@ -160,22 +160,22 @@ pub async fn import(database: &DbConnection, pool: &Pool, options: &Options) {
 
     // JLPT patches
     if !options.jlpt_paches_path.is_empty() {
-        jlpt_patches::import(&database, &options.jlpt_paches_path).await;
+        jlpt_patches::import(&pool, &options.jlpt_paches_path).await;
     }
 
     // Accents
     if !options.accents_path.is_empty() {
-        accents::import(&database, &options.accents_path).await;
+        accents::import(&pool, &options.accents_path).await;
     }
 
     // Manga patches
     if !options.manga_sfx_path.is_empty() {
-        manga_sfx::import(&database, &options.manga_sfx_path).await;
+        manga_sfx::import(&pool, &options.manga_sfx_path).await;
     }
 
     // Sentences
     if !options.sentences_path.is_empty() {
-        sentences::import(&database, &options.sentences_path).await;
+        sentences::import(&pool, &options.sentences_path).await;
     }
 }
 
@@ -187,24 +187,24 @@ pub async fn update_dict_links(database: &DbConnection) -> Result<(), Error> {
 }
 
 /// Import independent items
-async fn import_independent(database: &DbConnection, pool: &Pool, options: &Options) {
+async fn import_independent(pool: &Pool, options: &Options) {
     // Kanji dict
     if !options.kanjidict_path.is_empty() {
-        kanjidict::import(&database, options.kanjidict_path.clone()).await;
+        kanjidict::import(&pool, options.kanjidict_path.clone()).await;
     }
 
     // Radicals
     if !options.radicals_path.is_empty() {
-        radicals::import(&database, &options.radicals_path).await;
+        radicals::import(&pool, &options.radicals_path).await;
     }
 
     // Search radicals
     if !options.search_radicals_path.is_empty() {
-        search_radicals::import(&database, &options.search_radicals_path).await;
+        search_radicals::import(&pool, &options.search_radicals_path).await;
     }
 
     // Jmnedict
     if !options.jmnedict_path.is_empty() {
-        jmnedict::import(&database, &options.jmnedict_path).await;
+        jmnedict::import(&pool, &options.jmnedict_path).await;
     }
 }

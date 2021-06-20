@@ -1,5 +1,5 @@
 use crate::{
-    queryable::{prepared_query, CheckAvailable, FromRow, SQL},
+    queryable::{self, prepared_query, CheckAvailable, Deletable, FromRow, Insertable, SQL},
     schema::sense,
     DbConnection,
 };
@@ -88,6 +88,50 @@ pub struct NewSense {
     pub pos_simplified: Option<Vec<PosSimple>>,
 }
 
+impl SQL for NewSense {
+    fn get_tablename() -> &'static str {
+        "sense"
+    }
+}
+
+impl queryable::Insertable<13> for NewSense {
+    fn column_names() -> [&'static str; 13] {
+        [
+            "sequence",
+            "language",
+            "gloss_pos",
+            "gloss",
+            "misc",
+            "part_of_speech",
+            "dialect",
+            "xref",
+            "gtype",
+            "field",
+            "information",
+            "antonym",
+            "pos_simplified",
+        ]
+    }
+
+    fn fields(&self) -> [&(dyn tokio_postgres::types::ToSql + Sync); 13] {
+        [
+            &self.sequence,
+            &self.language,
+            &self.gloss_pos,
+            &self.gloss,
+            &self.misc,
+            &self.part_of_speech,
+            &self.dialect,
+            &self.xref,
+            &self.gtype,
+            &self.field,
+            &self.information,
+            &self.antonym,
+            &self.pos_simplified,
+        ]
+    }
+}
+
 /// Get all Database-dict structures from an entry
 pub fn new_from_entry(entry: &Entry) -> Vec<NewSense> {
     let mut gloss_pos = -1;
@@ -132,11 +176,8 @@ pub async fn exists(db: &Pool) -> Result<bool, Error> {
 }
 
 /// Insert multiple dicts into the database
-pub async fn insert_sense(db: &DbConnection, senses: Vec<NewSense>) -> Result<(), Error> {
-    use crate::schema::sense::dsl::*;
-
-    diesel::insert_into(sense).values(senses).execute(db)?;
-
+pub async fn insert_sense(db: &Pool, senses: Vec<NewSense>) -> Result<(), Error> {
+    NewSense::insert(db, &senses).await?;
     Ok(())
 }
 
@@ -151,8 +192,7 @@ pub async fn short_glosses(
 }
 
 /// Clear all sense entries
-pub async fn clear_senses(db: &DbConnection) -> Result<(), Error> {
-    use crate::schema::sense::dsl::*;
-    diesel::delete(sense).execute(db)?;
+pub async fn clear_senses(db: &Pool) -> Result<(), Error> {
+    Sense::delete_all(db).await?;
     Ok(())
 }

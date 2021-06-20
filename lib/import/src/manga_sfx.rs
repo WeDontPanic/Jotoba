@@ -1,4 +1,5 @@
-use models::{dict, search_mode::SearchMode, sense, DbConnection};
+use deadpool_postgres::Pool;
+use models::{dict, search_mode::SearchMode, sense};
 use parse::jmdict::{
     languages::Language, part_of_speech::PartOfSpeech, Entry, EntryElement, EntrySense, GlossValue,
 };
@@ -8,7 +9,7 @@ use serde_json::Value;
 use futures::future::try_join_all;
 
 /// Import manga sfx items file
-pub async fn import(db: &DbConnection, path: &str) {
+pub async fn import(db: &Pool, path: &str) {
     println!("Importing sfx patches...");
     let f = std::fs::File::open(path).expect("Error reading jlpt patch file!");
     let json: Value = serde_json::from_reader(f).expect("invalid json data");
@@ -31,13 +32,12 @@ pub async fn import(db: &DbConnection, path: &str) {
 
 /// Import a single sfx item
 async fn import_sfx(
-    db: &DbConnection,
+    db: &Pool,
     seq: i32,
     jp: String,
     translation: &String,
 ) -> Result<(), error::Error> {
     // TODO also search for katakana (or hiragana) version to prevent cross-kana duplicates
-    /*
     let native = WordSearch::new(db, &jp)
         .with_mode(SearchMode::Exact)
         .with_kana_only(true)
@@ -81,7 +81,6 @@ async fn import_sfx(
     if native.is_empty() {
         dict::insert_dicts(db, dicts).await?;
     }
-    */
 
     Ok(())
 }

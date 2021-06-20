@@ -1,5 +1,5 @@
 use crate::{
-    queryable::{CheckAvailable, Deletable, FromRow, SQL},
+    queryable::{self, CheckAvailable, Deletable, FromRow, Insertable, SQL},
     schema::name,
     DbConnection,
 };
@@ -7,6 +7,7 @@ use deadpool_postgres::{tokio_postgres::Row, Pool};
 use diesel::prelude::*;
 use error::Error;
 use parse::jmnedict::{name_type::NameType, NameEntry};
+use tokio_postgres::types::ToSql;
 
 #[derive(Queryable, Clone, Debug, Default)]
 pub struct Name {
@@ -51,6 +52,36 @@ pub struct NewName {
     pub transcription: String,
     pub name_type: Option<Vec<NameType>>,
     pub xref: Option<String>,
+}
+
+impl SQL for NewName {
+    fn get_tablename() -> &'static str {
+        "name"
+    }
+}
+
+impl queryable::Insertable<6> for NewName {
+    fn column_names() -> [&'static str; 6] {
+        [
+            "sequence",
+            "kana",
+            "kanji",
+            "transcription",
+            "name_type",
+            "xref",
+        ]
+    }
+
+    fn fields(&self) -> [&(dyn ToSql + Sync); 6] {
+        [
+            &self.sequence,
+            &self.kana,
+            &self.kanji,
+            &self.transcription,
+            &self.name_type,
+            &self.xref,
+        ]
+    }
 }
 
 impl Name {
@@ -106,11 +137,8 @@ impl From<Row> for Name {
 }
 
 /// Insert multiple names into the DB
-pub async fn insert_names(db: &DbConnection, values: Vec<NewName>) -> Result<(), Error> {
-    use crate::schema::name::dsl::*;
-
-    diesel::insert_into(name).values(values).execute(db)?;
-
+pub async fn insert_names(db: &Pool, values: Vec<NewName>) -> Result<(), Error> {
+    NewName::insert(db, &values).await?;
     Ok(())
 }
 

@@ -2,16 +2,14 @@ use std::{convert::TryFrom, io::Write};
 
 use crate::error;
 use diesel::{
-    deserialize,
     pg::Pg,
     serialize::{self, Output},
     sql_types::Integer,
     types::ToSql,
 };
 use localization::traits::Translatable;
-use postgres_types::accepts;
+use postgres_types::{accepts, to_sql_checked};
 use strum_macros::{AsRefStr, EnumString};
-use tokio_postgres::{types::Type, Row};
 
 #[derive(AsExpression, FromSqlRow, Debug, PartialEq, Clone, Copy, AsRefStr, EnumString)]
 #[sql_type = "Integer"]
@@ -124,4 +122,22 @@ impl<'a> tokio_postgres::types::FromSql<'a> for NameType {
     }
 
     accepts!(INT4);
+}
+
+impl tokio_postgres::types::ToSql for NameType {
+    fn to_sql(
+        &self,
+        ty: &postgres_types::Type,
+        out: &mut postgres_types::private::BytesMut,
+    ) -> Result<postgres_types::IsNull, Box<dyn std::error::Error + Sync + Send>>
+    where
+        Self: Sized,
+    {
+        let s: i32 = (*self).into();
+        Ok(<i32 as tokio_postgres::types::ToSql>::to_sql(&s, ty, out)?)
+    }
+
+    accepts!(INT4);
+
+    to_sql_checked!();
 }

@@ -1,16 +1,17 @@
-use models::{radical as DbRadical, DbConnection};
+use deadpool_postgres::Pool;
+use itertools::Itertools;
+use models::radical as DbRadical;
 use parse::radicals;
 
 /// Import radicals
-pub async fn import(db: &DbConnection, path: &str) {
+pub async fn import(db: &Pool, path: &str) {
     println!("Clearing old radicals...");
-    DbRadical::clear(db).await.unwrap();
+    DbRadical::clear(db).await.expect("Clearing radials failed");
     println!("Importing radicals...");
 
-    //let db = db.get().unwrap();
-
-    radicals::parse(&path, |radical| {
-        DbRadical::insert(&db, radical.into()).unwrap();
-    })
-    .expect("Parsing failed");
+    for radical_chunk in radicals::parse(&path).chunks(50).into_iter() {
+        DbRadical::insert(db, radical_chunk)
+            .await
+            .expect("Inserting radical failed");
+    }
 }
