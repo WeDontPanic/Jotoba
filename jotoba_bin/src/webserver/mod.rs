@@ -1,34 +1,19 @@
-use deadpool_postgres::{Manager, ManagerConfig, Pool, RecyclingMethod};
+use deadpool_postgres::Pool;
 use localization::TranslationDict;
 
 use actix_web::{http::header::CACHE_CONTROL, middleware, web as actixweb, App, HttpServer};
 use config::Config;
 use models::DbPool;
-use std::{str::FromStr, sync::Arc};
-use tokio_postgres::NoTls;
+use std::sync::Arc;
 
 /// How long frontend assets are going to be cached by the clients. Currently 1 week
 const ASSET_CACHE_MAX_AGE: u64 = 604800;
 
-fn load_db(connection_str: String) -> Pool {
-    let pg_config =
-        tokio_postgres::Config::from_str(&connection_str).expect("Failed to parse config");
-
-    let mgr_config = ManagerConfig {
-        recycling_method: RecyclingMethod::Fast,
-    };
-    let mgr = Manager::from_config(pg_config, NoTls, mgr_config);
-    Pool::new(mgr, 16)
-}
-
 /// Start the webserver
-pub(super) async fn start(db: DbPool, connection_str: String) -> std::io::Result<()> {
+pub(super) async fn start(db: DbPool, pool: Pool) -> std::io::Result<()> {
     setup_logger();
 
     let config = Config::new().await.expect("config failed");
-
-    // Connect to db. Since were migrating to tokio-postgres there are two db libraries used
-    let pool = load_db(connection_str);
 
     #[cfg(feature = "tokenizer")]
     load_tokenizer();

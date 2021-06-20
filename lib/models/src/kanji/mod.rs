@@ -8,7 +8,7 @@ use async_trait::async_trait;
 use deadpool_postgres::{tokio_postgres::Row, Pool};
 use reading::KanjiReading;
 
-use crate::queryable::{prepared_query, FromRow, FromRows, Queryable, SQL};
+use crate::queryable::{prepared_query, CheckAvailable, FromRow, FromRows, Queryable, SQL};
 
 use super::{
     dict::{self, Dict},
@@ -454,15 +454,13 @@ pub async fn clear_kanji(db: &DbConnection) -> Result<(), Error> {
 }
 
 /// Returns Ok(true) if at least one kanji exists in the Db
-pub async fn exists(db: &DbConnection) -> Result<bool, Error> {
-    use crate::schema::kanji::dsl::*;
-    Ok(kanji.select(id).limit(1).execute(db)? == 1)
+pub async fn exists(db: &Pool) -> Result<bool, Error> {
+    Kanji::exists(db).await
 }
 
 /// Returns Ok(true) if at least one kanji element exists
-pub async fn element_exists(db: &DbConnection) -> Result<bool, Error> {
-    use crate::schema::kanji_element::dsl::*;
-    Ok(kanji_element.select(id).limit(1).execute(db)? == 1)
+pub async fn element_exists(db: &Pool) -> Result<bool, Error> {
+    Kanji::exists(db).await
 }
 
 /// Find a kanji by its literal

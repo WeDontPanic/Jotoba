@@ -1,5 +1,5 @@
 use crate::{
-    queryable::{Deletable, FromRow, SQL},
+    queryable::{CheckAvailable, Deletable, FromRow, SQL},
     schema::name,
     DbConnection,
 };
@@ -121,7 +121,6 @@ pub async fn clear(db: &Pool) -> Result<(), Error> {
 }
 
 /// Returns Ok(true) if at least one name exists in the Db
-pub async fn exists(db: &DbConnection) -> Result<bool, Error> {
-    use crate::schema::name::dsl::*;
-    Ok(name.select(id).limit(1).execute(db)? == 1)
+pub async fn exists(db: &Pool) -> Result<bool, Error> {
+    Name::exists(db).await
 }

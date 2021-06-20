@@ -383,10 +383,8 @@ pub async fn get_word_sequence(db: &DbConnection, r: &str) -> Result<i32, Error>
 }
 
 /// Returns Ok(true) if at least one dict exists in the Db
-pub async fn exists(db: &DbConnection) -> Result<bool, Error> {
-    use crate::schema::dict::dsl::*;
-
-    Ok(dict.select((id, sequence)).limit(1).execute(db)? == 1)
+pub async fn exists(db: &Pool) -> Result<bool, Error> {
+    Dict::exists(db).await
 }
 
 /// Insert multiple dicts into the database

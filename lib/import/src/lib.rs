@@ -1,5 +1,6 @@
 use std::path::Path;
 
+use deadpool_postgres::Pool;
 use error::Error;
 use models::{dict, kanji, name, radical, sense, DbConnection};
 
@@ -66,17 +67,14 @@ impl Options {
 }
 
 /// Returns true if DB has all required data
-pub async fn has_required_data(database: &DbConnection) -> Result<bool, Error> {
-    #[cfg(debug_assertions)]
-    return Ok(true);
+pub async fn has_required_data(pool: &Pool) -> Result<bool, Error> {
+    let jmdict_exists = dict::exists(&pool).await? && sense::exists(&pool).await?;
+    let jmnedict_exists = name::exists(&pool).await?;
+    let kanji_exists = kanji::exists(&pool).await?;
 
-    let jmdict_exists = dict::exists(&database).await? && sense::exists(&database).await?;
-    let jmnedict_exists = name::exists(&database).await?;
-    let kanji_exists = kanji::exists(&database).await?;
-
-    let radicals_exists = radical::exists(&database).await?;
-    let search_radicals_exists = radical::search_radical_exists(&database).await?;
-    let kanji_elements_exists = kanji::element_exists(&database).await?;
+    let radicals_exists = radical::exists(&pool).await?;
+    let search_radicals_exists = radical::search_radical_exists(&pool).await?;
+    let kanji_elements_exists = kanji::element_exists(&pool).await?;
 
     if !jmdict_exists {
         println!("Jmdict missing");
@@ -111,7 +109,7 @@ pub async fn has_required_data(database: &DbConnection) -> Result<bool, Error> {
 }
 
 /// Import data
-pub async fn import(database: &DbConnection, options: &Options) {
+pub async fn import(database: &DbConnection, pool: &Pool, options: &Options) {
     if !options.has_import_data() {
         println!("No import files were provided!");
         return;
@@ -122,11 +120,11 @@ pub async fn import(database: &DbConnection, options: &Options) {
     }
 
     // Import all independent items first
-    import_independent(database, options).await;
+    import_independent(database, pool, options).await;
 
-    let kanji_exists = kanji::exists(&database).await.expect("fatal db err");
-    let jmdict_exists = dict::exists(&database).await.expect("fatal DB error")
-        && sense::exists(&database).await.expect("fatal db error");
+    let kanji_exists = kanji::exists(&pool).await.expect("fatal db err");
+    let jmdict_exists = dict::exists(&pool).await.expect("fatal DB error")
+        && sense::exists(&pool).await.expect("fatal db error");
     let mut imported_dicts = false;
 
     // From here on we're depending on kanji elements
@@ -189,7 +187,7 @@ pub async fn update_dict_links(database: &DbConnection) -> Result<(), Error> {
 }
 
 /// Import independent items
-async fn import_independent(database: &DbConnection, options: &Options) {
+async fn import_independent(database: &DbConnection, pool: &Pool, options: &Options) {
     // Kanji dict
     if !options.kanjidict_path.is_empty() {
         kanjidict::import(&database, options.kanjidict_path.clone()).await;

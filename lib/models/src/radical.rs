@@ -1,5 +1,5 @@
 use crate::{
-    queryable::{FromRow, OneQueryable, OptQueryable, SQL},
+    queryable::{CheckAvailable, FromRow, OneQueryable, OptQueryable, SQL},
     schema::{radical, search_radical},
     DbConnection,
 };
@@ -154,9 +154,8 @@ pub async fn clear(db: &DbConnection) -> Result<(), Error> {
 }
 
 /// Returns Ok(true) if at least one radical exists in the Db
-pub async fn exists(db: &DbConnection) -> Result<bool, Error> {
-    use crate::schema::radical::dsl::*;
-    Ok(radical.select(id).limit(1).execute(db)? == 1)
+pub async fn exists(db: &Pool) -> Result<bool, Error> {
+    Radical::exists(db).await
 }
 
 /// Clear all searh_radical entries
@@ -167,7 +166,6 @@ pub async fn clear_search_radicals(db: &DbConnection) -> Result<(), Error> {
 }
 
 /// Returns Ok(true) if at least one search_radical exists in the Db
-pub async fn search_radical_exists(db: &DbConnection) -> Result<bool, Error> {
-    use crate::schema::search_radical::dsl::*;
-    Ok(search_radical.select(id).limit(1).execute(db)? == 1)
+pub async fn search_radical_exists(db: &Pool) -> Result<bool, Error> {
+    SearchRadical::exists(db).await
 }

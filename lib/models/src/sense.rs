@@ -1,5 +1,5 @@
 use crate::{
-    queryable::{prepared_query, FromRow, SQL},
+    queryable::{prepared_query, CheckAvailable, FromRow, SQL},
     schema::sense,
     DbConnection,
 };
@@ -127,9 +127,8 @@ pub fn pos_simplified(pos: &[PartOfSpeech]) -> Vec<PosSimple> {
 }
 
 /// Returns Ok(true) if at least one sense exists in the Db
-pub async fn exists(db: &DbConnection) -> Result<bool, Error> {
-    use crate::schema::sense::dsl::*;
-    Ok(sense.select((id, sequence)).limit(1).execute(db)? == 1)
+pub async fn exists(db: &Pool) -> Result<bool, Error> {
+    Sense::exists(db).await
 }
 
 /// Insert multiple dicts into the database

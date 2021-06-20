@@ -21,8 +21,8 @@ use super::{
 use cache::SharedCache;
 use error::Error;
 use japanese::{inflection::SentencePart, JapaneseExt};
+use models::kanji::KanjiResult;
 use models::search_mode::SearchMode;
-use models::{kanji::KanjiResult, DbConnection};
 use utils::real_string_len;
 
 use self::result::{InflectionInformation, WordResult};
