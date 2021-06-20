@@ -1,10 +1,10 @@
 use deadpool_postgres::Pool;
 use diesel::RunQueryDsl;
 use itertools::Itertools;
-use tokio_postgres::Row;
+use tokio_postgres::{types::ToSql, Row};
 
 use crate::{
-    queryable::{Deletable, SQL},
+    queryable::{prepared_query, prepared_query_one, Deletable, Insertable, SQL},
     schema::{sentence, sentence_translation, sentence_vocabulary},
     DbConnection,
 };
@@ -43,6 +43,16 @@ impl SQL for NewSentence {
     }
 }
 
+impl Insertable<3> for NewSentence {
+    fn column_names() -> [&'static str; 3] {
+        ["content", "kana", "furigana"]
+    }
+
+    fn fields(&self) -> [&(dyn ToSql + Sync); 3] {
+        [&self.content, &self.kana, &self.furigana]
+    }
+}
+
 #[derive(Queryable, Clone, Debug, PartialEq)]
 pub struct Translation {
     pub id: i32,
@@ -68,6 +78,16 @@ pub struct NewTranslation {
 impl SQL for NewTranslation {
     fn get_tablename() -> &'static str {
         "sentence_translation"
+    }
+}
+
+impl Insertable<3> for NewTranslation {
+    fn column_names() -> [&'static str; 3] {
+        ["sentence_id", "language", "content"]
+    }
+
+    fn fields(&self) -> [&(dyn ToSql + Sync); 3] {
+        [&self.sentence_id, &self.language, &self.content]
     }
 }
 
@@ -99,6 +119,16 @@ impl SQL for NewSentenceVocabulary {
     }
 }
 
+impl Insertable<3> for NewSentenceVocabulary {
+    fn column_names() -> [&'static str; 3] {
+        ["sentence_id", "dict_sequence", "start"]
+    }
+
+    fn fields(&self) -> [&(dyn ToSql + Sync); 3] {
+        [&self.sentence_id, &self.dict_sequence, &self.start]
+    }
+}
+
 impl From<Row> for Sentence {
     fn from(row: Row) -> Self {
         Self {
@@ -127,11 +157,7 @@ pub async fn insert_sentence(
 
 /// Generates the relations between sentences and its words from [`dict`]
 #[cfg(feature = "tokenizer")]
-async fn generate_dict_relations(
-    db: &DbConnection,
-    sentence_id: i32,
-    text: String,
-) -> Result<(), Error> {
+async fn generate_dict_relations(db: &Pool, sentence_id: i32, text: String) -> Result<(), Error> {
     let lexemes = japanese::jp_parsing::JA_NL_PARSER
         .parse(&text)
         .into_iter()
@@ -153,9 +179,7 @@ async fn generate_dict_relations(
     })
     .collect::<Vec<_>>();
 
-    diesel::insert_into(sentence_vocabulary::table)
-        .values(&readings)
-        .execute(db)?;
+    NewSentenceVocabulary::insert(db, &readings).await?;
 
     Ok(())
 }
@@ -177,11 +201,9 @@ async fn insert_new_sentence(
         kana,
     };
 
-    /*
-    let sid: i32 = diesel::insert_into(sentence::table)
-        .values(new_sentence)
-        .returning(sentence::id)
-        .get_result(db)?;
+    let sql = format!("{} RETURNING id", NewSentence::get_insert_query(1));
+    let sid: i32 =
+        prepared_query_one(db, &sql, &NewSentence::get_bind_data(&[new_sentence])).await?;
 
     let translations = translations
         .into_iter()
@@ -192,13 +214,9 @@ async fn insert_new_sentence(
         })
         .collect_vec();
 
-    diesel::insert_into(sentence_translation::table)
-        .values(translations)
-        .execute(db)?;
+    NewTranslation::insert(db, &translations).await?;
 
-        */
-    // TODO sid
-    Ok(0)
+    Ok(sid)
 }
 
 /// Clear all sentence entries

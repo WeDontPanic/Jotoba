@@ -68,6 +68,9 @@ pub trait Insertable<const L: usize>: SQL + Sized + Sync {
     async fn insert(db: &Pool, values: &[Self]) -> Result<u64, Error> {
         let sql = Self::get_insert_query(values.len());
         let bind_data = Self::get_bind_data(values);
+        if values.is_empty() {
+            return Ok(0);
+        }
         prepared_execute(db, &sql, &bind_data).await
     }
 

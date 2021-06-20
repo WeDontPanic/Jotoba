@@ -9,7 +9,7 @@ use super::{
 use crate::{
     queryable::{
         prepared_execute, prepared_query, prepared_query_one, CheckAvailable, Deletable, FromRow,
-        Insertable, SQL,
+        Insertable, OneQueryable, OptQueryable, Queryable, SQL,
     },
     schema::dict,
     DbConnection,
@@ -334,16 +334,16 @@ pub async fn load_by_ids(db: &DbConnection, ids: &[i32]) -> Result<Vec<Dict>, Er
 /// Finds words by their exact readings and retuns a vec of their sequence ids
 #[cfg(feature = "tokenizer")]
 pub(crate) async fn find_by_reading(
-    db: &DbConnection,
+    db: &Pool,
     readings: &[(&str, i32, bool)],
 ) -> Result<Vec<(i32, i32)>, Error> {
-    use crate::schema::dict::dsl::*;
     if readings.is_empty() {
         return Ok(vec![]);
     }
 
     let mut result = Vec::new();
     for (reading_str, start, only_kana) in readings {
+        /*
         let dict_res: Result<Vec<Dict>, _> = if *only_kana {
             dict.filter(reading.eq(reading_str))
                 .filter(is_main.eq(true))
@@ -351,15 +351,23 @@ pub(crate) async fn find_by_reading(
         } else {
             dict.filter(reading.eq(reading_str)).get_results(db)
         };
+        */
 
-        // Don't break with error if its just a 'not found error'
-        if let Err(err) = dict_res {
-            match err {
-                diesel::result::Error::NotFound => continue,
-                _ => return Err(err.into()),
-            }
+        let mut dict_res: Vec<Dict> = if *only_kana {
+            Dict::query(
+                db,
+                Dict::select_where("reading = $1 AND is_main = true"),
+                &[&reading_str],
+                0,
+            )
+            .await?
+        } else {
+            Dict::query(db, Dict::select_where("reading = $1"), &[&reading_str], 0).await?
+        };
+
+        if dict_res.is_empty() {
+            continue;
         }
-        let mut dict_res = dict_res.unwrap();
 
         // Order results by probability
         dict_res.sort_by(|a, b| {
@@ -401,16 +409,6 @@ pub async fn reading_exists(db: &DbConnection, r: &str) -> Result<bool, Error> {
     Ok(diesel::select(exists(dict.filter(reading.eq(r)))).get_result(db)?)
 }
 
-/// Returns sequence id of the passed word
-pub async fn get_word_sequence(db: &DbConnection, r: &str) -> Result<i32, Error> {
-    use crate::schema::dict::dsl::*;
-    Ok(dict
-        .select(sequence)
-        .filter(reading.eq_all(r))
-        .limit(1)
-        .get_result(db)?)
-}
-
 /// Returns Ok(true) if at least one dict exists in the Db
 pub async fn exists(db: &Pool) -> Result<bool, Error> {
     Dict::exists(db).await
@@ -424,7 +422,7 @@ pub async fn insert_dicts(db: &Pool, dicts: Vec<NewDict>) -> Result<(), Error> {
 
 /// Clear all dict entries
 pub async fn clear_dicts(db: &Pool) -> Result<(), Error> {
-    Dict::delete_all(db).await;
+    Dict::delete_all(db).await?;
     Ok(())
 }
 

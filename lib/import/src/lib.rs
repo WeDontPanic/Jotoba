@@ -181,6 +181,7 @@ pub async fn import(database: &DbConnection, pool: &Pool, options: &Options) {
 
 /// Updates Kun and On readings for kanji
 pub async fn update_dict_links(database: &DbConnection) -> Result<(), Error> {
+    // TODO move to pool
     kanji::gen_readings::update_links(&database).await?;
     dict::collocations::generate(&database).await?;
     Ok(())
