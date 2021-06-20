@@ -1,13 +1,10 @@
-mod cache_control;
-
 use deadpool_postgres::{Manager, ManagerConfig, Pool, RecyclingMethod};
 use localization::TranslationDict;
 
-use actix_web::{middleware, web as actixweb, App, HttpServer};
-//use cache_control::CacheInterceptor;
+use actix_web::{http::header::CACHE_CONTROL, middleware, web as actixweb, App, HttpServer};
 use config::Config;
 use models::DbPool;
-use std::{str::FromStr, sync::Arc, time::Duration};
+use std::{str::FromStr, sync::Arc};
 use tokio_postgres::NoTls;
 
 /// How long frontend assets are going to be cached by the clients. Currently 1 week
@@ -99,7 +96,10 @@ pub(super) async fn start(db: DbPool, connection_str: String) -> std::io::Result
             // Static files
             .service(
                 actixweb::scope("/assets")
-                    //.wrap(CacheInterceptor(Duration::from_secs(ASSET_CACHE_MAX_AGE)))
+                    .wrap(
+                        middleware::DefaultHeaders::new()
+                            .header(CACHE_CONTROL, format!("max-age={}", ASSET_CACHE_MAX_AGE)),
+                    )
                     .service(actix_files::Files::new(
                         "",
                         config_clone.server.get_html_files(),
