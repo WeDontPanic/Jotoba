@@ -29,7 +29,7 @@ impl<'a> NameSearch<'a> {
 
     /// Search name by transcription
     pub async fn search_transcription(&self) -> Result<Vec<Name>, Error> {
-        let mut query = String::from("SELECT * FROM name where transcription &@ $1 ");
+        let mut query = String::from("SELECT * FROM name WHERE transcription &@ $1 ");
         if query.len() < 3 {
             query.push_str("ORDER BY LENGTH(transcription) LIMIT 20");
         }
@@ -63,84 +63,38 @@ impl<'a> NameSearch<'a> {
 
     /// Search name by japanese
     pub async fn search_native(&self, query: &str) -> Result<Vec<Name>, Error> {
-        use models::schema::name::dsl::*;
+        let db = self.db.get().await?;
 
-        /*
-            if self.limit == 0 {
-                // Search in both, kana & kanji
-                if utils::real_string_len(query) < 3 {
-                    Ok(if query.is_kanji() {
-                        // Only need to search in kana
-                        name.filter(kanji.text_search(query))
-                            .order(models::sql::Nullable::length(kanji))
-                            .limit(20)
-                            .get_results_async(&self.db)
-                            .await?
-                    } else if query.is_kana() {
-                        // Only need to search in kanji
-                        name.filter(kana.text_search(query))
-                            .order(length(kana))
-                            .limit(20)
-                            .get_results_async(&self.db)
-                            .await?
-                    } else {
-                        name.filter(kanji.text_search(query).or(kana.text_search(query)))
-                            .order(length(kana))
-                            .limit(20)
-                            .get_results_async(&self.db)
-                            .await?
-                    })
-                } else {
-                    Ok(if query.is_kanji() {
-                        // Only need to search in kana
-                        name.filter(kanji.text_search(query))
-                            .get_results_async(&self.db)
-                            .await?
-                    } else if query.is_kana() {
-                        // Only need to search in kanji
-                        name.filter(kana.text_search(query))
-                            .get_results_async(&self.db)
-                            .await?
-                    } else if query.is_japanese() {
-                        // Search in both, kana & kanji
-                        name.filter(kanji.text_search(query).or(kana.text_search(query)))
-                            .get_results_async(&self.db)
-                            .await?
-                    } else {
-                        // Search in transcriptions
-                        name.filter(transcription.text_search(query))
-                            .get_results_async(&self.db)
-                            .await?
-                    })
-                }
-            } else {
-                Ok(if query.is_kanji() {
-                    // Only need to search in kana
-                    name.filter(kanji.text_search(query))
-                        .limit(self.limit)
-                        .get_results_async(&self.db)
-                        .await?
-                } else if query.is_kana() {
-                    // Only need to search in kanji
-                    name.filter(kana.text_search(query))
-                        .limit(self.limit)
-                        .get_results_async(&self.db)
-                        .await?
-                } else if query.is_japanese() {
-                    // Search in both, kana & kanji
-                    name.filter(kanji.text_search(query).or(kana.text_search(query)))
-                        .limit(self.limit)
-                        .get_results_async(&self.db)
-                        .await?
-                } else {
-                    // Search in transcriptions
-                    name.filter(transcription.text_search(query))
-                        .limit(self.limit)
-                        .get_results_async(&self.db)
-                        .await?
-                })
-            }
-        */
-        Ok(vec![])
+        let (where_, column) = if query.is_kanji() {
+            ("kanji &@ $1", "kanji")
+        } else if query.is_kana() {
+            ("kana &@ $1", "kana")
+        } else if query.is_japanese() {
+            ("(kana &@ $1 OR kanji &@ $1)", "kana")
+        } else {
+            ("transcription &@ $1", "transcription")
+        };
+
+        let prepared = db
+            .prepare_cached(&format!(
+                "SELECT * FROM name WHERE {} ORDER BY LENGTH({}) LIMIT $2",
+                where_, column
+            ))
+            .await?;
+
+        let limit = if query.len() < 3 && self.limit == 0 {
+            20
+        } else if self.limit > 0 {
+            self.limit
+        } else {
+            100
+        };
+
+        Ok(db
+            .query(&prepared, &[&query, &limit])
+            .await?
+            .into_iter()
+            .map(|i| Name::from(i))
+            .collect())
     }
 }
