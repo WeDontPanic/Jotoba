@@ -1,6 +1,5 @@
 mod cache_control;
 
-use actix_session::CookieSession;
 use deadpool_postgres::{Manager, ManagerConfig, Pool, RecyclingMethod};
 use localization::TranslationDict;
 
@@ -81,7 +80,7 @@ pub(super) async fn start(db: DbPool, connection_str: String) -> std::io::Result
             // Middlewares
             .wrap(middleware::Logger::default())
             //.wrap(CookieSession::signed(&[0; 32]).secure(false))
-            .wrap(middleware::Compress::default())
+            //.wrap(middleware::Compress::default())
             // Static files
             .route("/index.html", actixweb::get().to(frontend::index::index))
             .route("/", actixweb::get().to(frontend::index::index))
