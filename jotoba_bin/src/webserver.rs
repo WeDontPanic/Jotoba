@@ -1,21 +1,15 @@
-mod cache_control;
-
-use actix_session::CookieSession;
+use deadpool_postgres::Pool;
 use localization::TranslationDict;
-use tokio_postgres::Client;
 
-use actix_web::{middleware, web as actixweb, App, HttpServer};
-use cache_control::CacheInterceptor;
+use actix_web::{http::header::CACHE_CONTROL, middleware, web as actixweb, App, HttpServer};
 use config::Config;
-use models::DbPool;
-use std::{sync::Arc, time::Duration};
+use std::sync::Arc;
 
 /// How long frontend assets are going to be cached by the clients. Currently 1 week
 const ASSET_CACHE_MAX_AGE: u64 = 604800;
 
 /// Start the webserver
-#[actix_web::main]
-pub(super) async fn start(db: DbPool, async_postgres: Client) -> std::io::Result<()> {
+pub(super) async fn start(pool: Pool) -> std::io::Result<()> {
     setup_logger();
 
     let config = Config::new().await.expect("config failed");
@@ -30,7 +24,6 @@ pub(super) async fn start(db: DbPool, async_postgres: Client) -> std::io::Result
     .expect("Failed to load localization files");
 
     let locale_dict_arc = Arc::new(locale_dict);
-    let async_pg_arc = Arc::new(async_postgres);
 
     #[cfg(feature = "sentry_error")]
     if let Some(ref sentry_config) = config.sentry {
@@ -61,14 +54,13 @@ pub(super) async fn start(db: DbPool, async_postgres: Client) -> std::io::Result
     HttpServer::new(move || {
         let app = App::new()
             // Data
-            .data(db.clone())
             .data(config_clone.clone())
-            .data(async_pg_arc.clone())
+            .data(pool.clone())
             .data(locale_dict_arc.clone())
             // Middlewares
             .wrap(middleware::Logger::default())
-            .wrap(CookieSession::signed(&[0; 32]).secure(false))
-            .wrap(middleware::Compress::default())
+            //.wrap(CookieSession::signed(&[0; 32]).secure(false))
+            //.wrap(middleware::Compress::default())
             // Static files
             .route("/index.html", actixweb::get().to(frontend::index::index))
             .route("/", actixweb::get().to(frontend::index::index))
@@ -87,15 +79,18 @@ pub(super) async fn start(db: DbPool, async_postgres: Client) -> std::io::Result
             // Static files
             .service(
                 actixweb::scope("/assets")
-                    .wrap(CacheInterceptor(Duration::from_secs(ASSET_CACHE_MAX_AGE)))
+                    .wrap(
+                        middleware::DefaultHeaders::new()
+                            .header(CACHE_CONTROL, format!("max-age={}", ASSET_CACHE_MAX_AGE)),
+                    )
                     .service(actix_files::Files::new(
                         "",
                         config_clone.server.get_html_files(),
                     )),
             );
 
-        #[cfg(feature = "sentry_error")]
-        let app = app.wrap(sentry_actix::Sentry::new());
+        //#[cfg(feature = "sentry_error")]
+        //let app = app.wrap(sentry_actix::Sentry::new());
 
         app
     })

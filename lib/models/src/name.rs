@@ -1,10 +1,10 @@
-use crate::{schema::name, DbPool};
-use diesel::prelude::*;
+use crate::queryable::{self, CheckAvailable, Deletable, FromRow, Insertable, SQL};
+use deadpool_postgres::{tokio_postgres::Row, Pool};
 use error::Error;
 use parse::jmnedict::{name_type::NameType, NameEntry};
-use tokio_diesel::*;
+use tokio_postgres::types::ToSql;
 
-#[derive(Queryable, Clone, Debug, Default)]
+#[derive(Clone, Debug, Default)]
 pub struct Name {
     pub id: i32,
     pub sequence: i32,
@@ -15,8 +15,30 @@ pub struct Name {
     pub xref: Option<String>,
 }
 
-#[derive(Insertable, Clone, Debug, PartialEq)]
-#[table_name = "name"]
+impl SQL for Name {
+    fn get_tablename() -> &'static str {
+        "name"
+    }
+}
+
+impl FromRow for Name {
+    fn from_row(row: &Row, offset: usize) -> Self
+    where
+        Self: Sized,
+    {
+        Self {
+            id: row.get(offset + 0),
+            sequence: row.get(offset + 1),
+            kana: row.get(offset + 2),
+            kanji: row.get(offset + 3),
+            transcription: row.get(offset + 4),
+            name_type: row.get(offset + 5),
+            xref: row.get(offset + 6),
+        }
+    }
+}
+
+#[derive(Clone, Debug, PartialEq)]
 pub struct NewName {
     pub sequence: i32,
     pub kana: String,
@@ -24,6 +46,36 @@ pub struct NewName {
     pub transcription: String,
     pub name_type: Option<Vec<NameType>>,
     pub xref: Option<String>,
+}
+
+impl SQL for NewName {
+    fn get_tablename() -> &'static str {
+        "name"
+    }
+}
+
+impl queryable::Insertable<6> for NewName {
+    fn column_names() -> [&'static str; 6] {
+        [
+            "sequence",
+            "kana",
+            "kanji",
+            "transcription",
+            "name_type",
+            "xref",
+        ]
+    }
+
+    fn fields(&self) -> [&(dyn ToSql + Sync); 6] {
+        [
+            &self.sequence,
+            &self.kana,
+            &self.kanji,
+            &self.transcription,
+            &self.name_type,
+            &self.xref,
+        ]
+    }
 }
 
 impl Name {
@@ -64,27 +116,33 @@ impl From<NameEntry> for NewName {
     }
 }
 
+impl From<Row> for Name {
+    fn from(row: Row) -> Self {
+        Self {
+            id: row.get(0),
+            sequence: row.get(1),
+            kana: row.get(2),
+            kanji: row.get(3),
+            transcription: row.get(4),
+            name_type: row.get(5),
+            xref: row.get(6),
+        }
+    }
+}
+
 /// Insert multiple names into the DB
-pub async fn insert_names(db: &DbPool, values: Vec<NewName>) -> Result<(), Error> {
-    use crate::schema::name::dsl::*;
-
-    diesel::insert_into(name)
-        .values(values)
-        .execute_async(&db)
-        .await?;
-
+pub async fn insert_names(db: &Pool, values: Vec<NewName>) -> Result<(), Error> {
+    NewName::insert(db, &values).await?;
     Ok(())
 }
 
 /// Clear all name entries
-pub async fn clear(db: &DbPool) -> Result<(), Error> {
-    use crate::schema::name::dsl::*;
-    diesel::delete(name).execute_async(db).await?;
+pub async fn clear(db: &Pool) -> Result<(), Error> {
+    Name::delete_all(&db).await?;
     Ok(())
 }
 
 /// Returns Ok(true) if at least one name exists in the Db
-pub async fn exists(db: &DbPool) -> Result<bool, Error> {
-    use crate::schema::name::dsl::*;
-    Ok(name.select(id).limit(1).execute_async(db).await? == 1)
+pub async fn exists(db: &Pool) -> Result<bool, Error> {
+    Name::exists(db).await
 }

@@ -1,18 +1,11 @@
-use std::{fmt::Display, io::Write, str::FromStr};
-
-use diesel::{
-    deserialize,
-    pg::Pg,
-    serialize::{self, Output},
-    sql_types::Text,
-    types::{FromSql, ToSql},
-};
+use std::{fmt::Display, str::FromStr};
 
 use localization::{language::Language, traits::Translatable, TranslationDict};
+use postgres_types::{accepts, to_sql_checked};
 use strum_macros::{AsRefStr, EnumString};
+use tokio_postgres::types::{FromSql, ToSql};
 
-#[derive(AsExpression, FromSqlRow, Debug, PartialEq, Clone, Copy, AsRefStr, EnumString)]
-#[sql_type = "Text"]
+#[derive(Debug, PartialEq, Clone, Copy, AsRefStr, EnumString)]
 pub enum Dialect {
     #[strum(serialize = "hob")]
     Hokkaido,
@@ -72,16 +65,32 @@ impl Translatable for Dialect {
     }
 }
 
-impl ToSql<Text, Pg> for Dialect {
-    fn to_sql<W: Write>(&self, out: &mut Output<W, Pg>) -> serialize::Result {
-        <&str as ToSql<Text, Pg>>::to_sql(&self.as_ref(), out)
-    }
-}
-
-impl FromSql<Text, Pg> for Dialect {
-    fn from_sql(bytes: Option<&[u8]>) -> deserialize::Result<Self> {
+impl<'a> FromSql<'a> for Dialect {
+    fn from_sql(
+        ty: &tokio_postgres::types::Type,
+        raw: &'a [u8],
+    ) -> Result<Self, Box<dyn std::error::Error + Sync + Send>> {
         Ok(Self::from_str(
-            (<String as FromSql<Text, Pg>>::from_sql(bytes)?).as_str(),
+            <String as tokio_postgres::types::FromSql>::from_sql(ty, raw)?.as_str(),
         )?)
     }
+
+    accepts!(TEXT);
+}
+
+impl ToSql for Dialect {
+    fn to_sql(
+        &self,
+        ty: &postgres_types::Type,
+        out: &mut postgres_types::private::BytesMut,
+    ) -> Result<postgres_types::IsNull, Box<dyn std::error::Error + Sync + Send>>
+    where
+        Self: Sized,
+    {
+        Ok(<&str as ToSql>::to_sql(&self.as_ref(), ty, out)?)
+    }
+
+    accepts!(TEXT);
+
+    to_sql_checked!();
 }

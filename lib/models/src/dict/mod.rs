@@ -6,11 +6,11 @@ use super::{
     kanji::{KanjiResult, KANJICACHE},
     sense,
 };
-use crate::{schema::dict, DbConnection, DbPool};
-use diesel::{
-    prelude::*,
-    sql_types::{Integer, Text},
+use crate::queryable::{
+    prepared_execute, prepared_query, prepared_query_one, CheckAvailable, Deletable, FromRow,
+    Insertable, SQL, Queryable,
 };
+use deadpool_postgres::{tokio_postgres::Row, Pool};
 use error::Error;
 use futures::future::try_join_all;
 use itertools::Itertools;
@@ -19,10 +19,9 @@ use parse::{
     accents::PitchItem,
     jmdict::{information::Information, languages::Language, priority::Priority, Entry},
 };
-use tokio_diesel::*;
+use tokio_postgres::types::ToSql;
 
-#[derive(Queryable, QueryableByName, Clone, Debug, Default)]
-#[table_name = "dict"]
+#[derive(Clone, Debug, Default)]
 pub struct Dict {
     pub id: i32,
     pub sequence: i32,
@@ -39,8 +38,7 @@ pub struct Dict {
     pub collocations: Option<Vec<i32>>,
 }
 
-#[derive(Insertable, Clone, Debug, PartialEq)]
-#[table_name = "dict"]
+#[derive(Clone, Debug, PartialEq)]
 pub struct NewDict {
     pub sequence: i32,
     pub reading: String,
@@ -54,6 +52,76 @@ pub struct NewDict {
     pub accents: Option<Vec<i32>>,
     pub furigana: Option<String>,
     pub collocations: Option<Vec<i32>>,
+}
+
+impl SQL for NewDict {
+    fn get_tablename() -> &'static str {
+        "dict"
+    }
+}
+
+impl Insertable<12> for NewDict {
+    fn column_names() -> [&'static str; 12] {
+        [
+            "sequence",
+            "reading",
+            "kanji",
+            "no_kanji",
+            "priorities",
+            "information",
+            "kanji_info",
+            "jlpt_lvl",
+            "is_main",
+            "accents",
+            "furigana",
+            "collocations",
+        ]
+    }
+    fn fields(&self) -> [&(dyn ToSql + Sync); 12] {
+        [
+            &self.sequence,
+            &self.reading,
+            &self.kanji,
+            &self.no_kanji,
+            &self.priorities,
+            &self.information,
+            &self.kanji_info,
+            &self.jlpt_lvl,
+            &self.is_main,
+            &self.accents,
+            &self.furigana,
+            &self.collocations,
+        ]
+    }
+}
+
+impl SQL for Dict {
+    fn get_tablename() -> &'static str {
+        "dict"
+    }
+}
+
+impl FromRow for Dict {
+    fn from_row(row: &Row, offset: usize) -> Self
+    where
+        Self: Sized,
+    {
+        Self {
+            id: row.get(offset + 0),
+            sequence: row.get(offset + 1),
+            reading: row.get(offset + 2),
+            kanji: row.get(offset + 3),
+            no_kanji: row.get(offset + 4),
+            priorities: row.get(offset + 5),
+            information: row.get(offset + 6),
+            kanji_info: row.get(offset + 7),
+            jlpt_lvl: row.get(offset + 8),
+            is_main: row.get(offset + 9),
+            accents: row.get(offset + 10),
+            furigana: row.get(offset + 11),
+            collocations: row.get(offset + 12),
+        }
+    }
 }
 
 impl PartialEq for Dict {
@@ -72,14 +140,14 @@ impl Dict {
     }
 
     /// Retrieve the kanji items of the dict's kanji info
-    pub async fn load_kanji_info(&self, db: &DbPool) -> Result<Vec<KanjiResult>, Error> {
+    pub async fn load_kanji_info(&self, db: &Pool) -> Result<Vec<KanjiResult>, Error> {
         if self.kanji_info.is_none() || self.kanji_info.as_ref().unwrap().is_empty() {
             return Ok(vec![]);
         }
         let ids = self.kanji_info.as_ref().unwrap();
 
         // Load kanji from DB
-        let mut items = super::kanji::load_by_ids(db, ids).await?;
+        let mut items = super::kanji::load_by_idsv2(db, ids).await?;
         // Order items based on their occurence
         items.sort_by(|a, b| {
             utils::get_item_order(ids, &a.kanji.id, &b.kanji.id).unwrap_or(Ordering::Equal)
@@ -100,11 +168,9 @@ impl Dict {
     /// Loads all collocations of a dict entry
     pub async fn load_collocation(
         &self,
-        db: &DbPool,
+        pool: &Pool,
         language: Language,
     ) -> Result<(i32, Vec<(String, String)>), Error> {
-        use crate::schema::dict::dsl::*;
-
         if self.collocations.is_none() || self.collocations.as_ref().unwrap().is_empty() {
             return Ok((self.sequence, vec![]));
         }
@@ -112,19 +178,21 @@ impl Dict {
         let cc = self.collocations.as_ref().unwrap();
 
         // Load collocation readings
-        let readings: Vec<(i32, String)> = dict
-            .select((sequence, reading))
-            .filter(kanji.eq_all(true))
-            .filter(sequence.eq_any(cc))
-            .filter(is_main.eq_all(true))
-            .get_results_async(db)
-            .await?;
+        let sql = "SELECT sequence, reading FROM dict WHERE kanji = true AND sequence = ANY($1) AND is_main = true";
+        let db = pool.get().await?;
+        let prepared = db.prepare_cached(sql).await?;
+        let readings: Vec<(i32, String)> = db
+            .query(&prepared, &[&cc])
+            .await?
+            .into_iter()
+            .map(|i| (i.get(0), i.get(1)))
+            .collect();
 
         // Load senses to [`readings`]
         let senses = try_join_all(
             readings
                 .iter()
-                .map(|(seq, _)| sense::short_glosses(db, *seq, language)),
+                .map(|(seq, _)| sense::short_glosses(pool, *seq, language)),
         )
         .await?;
 
@@ -141,66 +209,50 @@ impl Dict {
     }
 }
 
-pub fn update_accents(db: &DbConnection, pitch: PitchItem) -> Result<(), Error> {
-    use crate::schema::dict::dsl::*;
-
-    let seq = find_jp_word(db, &pitch.kanji, &pitch.kana)?;
-
-    if seq.is_none() {
-        return Ok(());
-    }
-
-    diesel::update(dict)
-        .filter(sequence.eq(&seq.unwrap().sequence))
-        .filter(reading.eq(&pitch.kana))
-        .set(accents.eq(&pitch.pitch))
-        .execute(db)?;
-
+pub async fn update_accents(
+    db: &Pool,
+    pitch: impl Iterator<Item = PitchItem>,
+) -> Result<(), Error> {
+    try_join_all(pitch.map(|i| update_accent(db, i))).await?;
     Ok(())
 }
 
-pub fn find_jp_word(db: &DbConnection, kanji: &str, kana: &str) -> Result<Option<Sequence>, Error> {
-    let query = include_str!("../../sql/find_jp_word.sql");
-    let sequence = diesel::sql_query(query)
-        .bind::<Text, _>(kanji)
-        .bind::<Text, _>(kana)
-        .get_result(db);
+async fn update_accent(db: &Pool, pitch: PitchItem) -> Result<(), Error> {
+    let seq = find_jp_word(db, &pitch.kanji, &pitch.kana).await?;
+    if seq.is_none() {
+        return Ok(());
+    }
+    let seq = seq.unwrap();
 
-    if let Err(e) = sequence {
-        match e {
-            diesel::result::Error::NotFound => return Ok(None),
-            _ => return Err(e.into()),
-        }
+    prepared_execute(
+        db,
+        "UPDATE dict SET accents=$1 WHERE sequence=$2 AND reading = $3",
+        &[&pitch.pitch, &seq, &pitch.kana],
+    )
+    .await?;
+    Ok(())
+}
+
+pub async fn find_jp_word(db: &Pool, kanji: &str, kana: &str) -> Result<Option<i32>, Error> {
+    let query = include_str!("../../sql/find_jp_word.sql");
+
+    let sequence: Vec<i32> = prepared_query(db, query, &[&kanji, &kana]).await?;
+
+    if sequence.is_empty() {
+        return Ok(None);
     }
 
-    Ok(sequence.unwrap())
+    Ok(Some(sequence[0]))
 }
 
-#[derive(QueryableByName, Clone, Copy, Debug, PartialEq)]
-pub struct Sequence {
-    #[sql_type = "Integer"]
-    sequence: i32,
-}
-
-pub async fn update_jlpt(db: &DbPool, l: &str, level: i32) -> Result<(), Error> {
-    use crate::schema::dict::dsl::*;
-    let seq_ids = dict
-        .select(sequence)
-        .filter(reading.eq(l))
-        .get_results_async::<i32>(db)
-        .await?;
-
-    diesel::update(dict)
-        .filter(sequence.eq_any(&seq_ids))
-        .set(jlpt_lvl.eq(level))
-        .execute_async(db)
-        .await?;
-
+pub async fn update_jlpt(db: &Pool, l: &str, level: i32) -> Result<(), Error> {
+    let query = "UPDATE dict SET JLpt_lvl=$1 WHERE sequence = ANY(SELECT sequence FROM dict WHERE reading = $2)";
+    prepared_execute(db, query, &[&level, &l]).await?;
     Ok(())
 }
 
 /// Get all Database-dict structures from an entry
-pub fn new_dicts_from_entry(db: &DbConnection, entry: &Entry) -> Vec<NewDict> {
+pub fn new_dicts_from_entry(entry: &Entry) -> Vec<NewDict> {
     let mut found_main = false;
     let has_kanji = entry.elements.iter().any(|i| i.kanji);
     let mut dicts: Vec<NewDict> = entry
@@ -236,7 +288,7 @@ pub fn new_dicts_from_entry(db: &DbConnection, entry: &Entry) -> Vec<NewDict> {
     if let Some(mut main) = dicts.iter_mut().find(|i| i.is_main && i.kanji) {
         if let Some(kana) = kana {
             let furigana =
-                furigana::generate::checked(|l: String| get_kanji(db, &l), &main.reading, &kana);
+                furigana::generate::checked(|l: String| get_kanji(&l), &main.reading, &kana);
             main.furigana = Some(furigana);
         }
     }
@@ -244,65 +296,38 @@ pub fn new_dicts_from_entry(db: &DbConnection, entry: &Entry) -> Vec<NewDict> {
     dicts
 }
 
-fn get_kanji(db: &DbConnection, l: &str) -> Option<(Option<Vec<String>>, Option<Vec<String>>)> {
-    use crate::schema::kanji::dsl::*;
-
-    let mut lock = KANJICACHE.lock().unwrap();
-    if let Some(cache) = lock.cache_get(&l.to_owned()) {
-        return Some(cache.to_owned());
-    }
-
-    let readings: (Option<Vec<String>>, Option<Vec<String>>) = kanji
-        .select((kunyomi, onyomi))
-        .filter(literal.eq(l))
-        .get_result(db)
-        .ok()?;
-
-    lock.cache_set(l.to_owned(), readings.clone());
-
-    Some(readings)
-}
-
-pub async fn load_by_ids(db: &DbPool, ids: &[i32]) -> Result<Vec<Dict>, Error> {
-    use crate::schema::dict::dsl::*;
-    if ids.is_empty() {
-        return Ok(vec![]);
-    }
-    Ok(dict.filter(id.eq_any(ids)).get_results_async(db).await?)
+fn get_kanji(l: &str) -> Option<(Option<Vec<String>>, Option<Vec<String>>)> {
+    let lock = KANJICACHE.lock().unwrap();
+    lock.cache_get(&l.to_owned()).map(|i| i.to_owned())
 }
 
 /// Finds words by their exact readings and retuns a vec of their sequence ids
 #[cfg(feature = "tokenizer")]
 pub(crate) async fn find_by_reading(
-    db: &DbPool,
+    db: &Pool,
     readings: &[(&str, i32, bool)],
 ) -> Result<Vec<(i32, i32)>, Error> {
-    use crate::schema::dict::dsl::*;
     if readings.is_empty() {
         return Ok(vec![]);
     }
 
     let mut result = Vec::new();
     for (reading_str, start, only_kana) in readings {
-        let dict_res: Result<Vec<Dict>, tokio_diesel::AsyncError> = if *only_kana {
-            dict.filter(reading.eq(reading_str))
-                .filter(is_main.eq(true))
-                .get_results_async(db)
-                .await
+        let mut dict_res: Vec<Dict> = if *only_kana {
+            Dict::query(
+                db,
+                Dict::select_where("reading = $1 AND is_main = true"),
+                &[&reading_str],
+                0,
+            )
+            .await?
         } else {
-            dict.filter(reading.eq(reading_str))
-                .get_results_async(db)
-                .await
+            Dict::query(db, Dict::select_where("reading = $1"), &[&reading_str], 0).await?
         };
 
-        // Don't break with error if its just a 'not found error'
-        if let Err(err) = dict_res {
-            match err {
-                AsyncError::Error(diesel::result::Error::NotFound) => continue,
-                _ => return Err(err.into()),
-            }
+        if dict_res.is_empty() {
+            continue;
         }
-        let mut dict_res = dict_res.unwrap();
 
         // Order results by probability
         dict_res.sort_by(|a, b| {
@@ -333,100 +358,50 @@ pub(crate) async fn find_by_reading(
 }
 
 /// Returns true if the database contains at least one dict entry with the passed reading
-pub async fn reading_exists(db: &DbPool, r: &str) -> Result<bool, Error> {
-    use crate::schema::dict::dsl::*;
-    use diesel::dsl::exists;
-    Ok(diesel::select(exists(dict.filter(reading.eq(r))))
-        .get_result_async(db)
-        .await?)
-}
-
-/// Returns sequence id of the passed word
-pub async fn get_word_sequence(db: &DbPool, r: &str) -> Result<i32, Error> {
-    use crate::schema::dict::dsl::*;
-    Ok(dict
-        .select(sequence)
-        .filter(reading.eq_all(r))
-        .limit(1)
-        .get_result_async(&db)
-        .await?)
+pub async fn reading_existsv2(db: &Pool, r: &str) -> Result<bool, Error> {
+    Dict::exists_where(db, "reading = $1", &[&r]).await
 }
 
 /// Returns Ok(true) if at least one dict exists in the Db
-pub async fn exists(db: &DbPool) -> Result<bool, Error> {
-    use crate::schema::dict::dsl::*;
-
-    Ok(dict
-        .select((id, sequence))
-        .limit(1)
-        .execute_async(db)
-        .await?
-        == 1)
+pub async fn exists(db: &Pool) -> Result<bool, Error> {
+    Dict::exists(db).await
 }
 
 /// Insert multiple dicts into the database
-pub async fn insert_dicts(db: &DbPool, dicts: Vec<NewDict>) -> Result<(), Error> {
-    use crate::schema::dict::dsl::*;
-
-    diesel::insert_into(dict)
-        .values(dicts)
-        .execute_async(db)
-        .await?;
-
+pub async fn insert_dicts(db: &Pool, dicts: Vec<NewDict>) -> Result<(), Error> {
+    NewDict::insert(db, &dicts).await?;
     Ok(())
 }
 
 /// Clear all dict entries
-pub async fn clear_dicts(db: &DbPool) -> Result<(), Error> {
-    use crate::schema::dict::dsl::*;
-    diesel::delete(dict).execute_async(db).await?;
+pub async fn clear_dicts(db: &Pool) -> Result<(), Error> {
+    Dict::delete_all(db).await?;
     Ok(())
 }
 
 /// Get the min(sequence) of all dicts
-pub async fn min_sequence(db: &DbPool) -> Result<i32, Error> {
-    use crate::schema::dict::dsl::*;
-
-    let res: Option<i32> = dict
-        .select(diesel::dsl::min(sequence))
-        .get_result_async(&db)
-        .await?;
-
-    Ok(res.unwrap_or(0))
+pub async fn min_sequence(db: &Pool) -> Result<i32, Error> {
+    Ok(prepared_query_one(db, "SELECT MIN(sequence) FROM dict", &[]).await?)
 }
 
 /// Load Dictionaries of a single sequence id
-pub async fn load_dictionary(db: &DbPool, sequence_id: i32) -> Result<Vec<Dict>, Error> {
-    use crate::schema::dict as dict_schema;
+pub async fn load_dictionary(db: &Pool, sequence_id: i32) -> Result<Vec<Dict>, Error> {
+    let sql = Dict::select_where_order("sequence=$1", "id");
+    let res = prepared_query(db, sql, &[&sequence_id]).await?;
 
-    Ok(dict_schema::table
-        .filter(dict_schema::sequence.eq_all(sequence_id))
-        .order_by(dict_schema::id)
-        .get_results_async(&db)
-        .await?)
+    Ok(res)
 }
 
 /// Returns furigana string for a word which contains at least one kanji. If [`r`] exists multiple
 /// times in the database Ok(None) gets returned
-pub async fn furigana_by_reading(db: &DbPool, r: &str) -> Result<Option<String>, Error> {
-    use crate::schema::dict::dsl::*;
-
-    let mut furi: Vec<Option<String>> = dict
-        .select(furigana)
-        .filter(kanji)
-        .filter(reading.eq_all(r))
-        .filter(is_main)
-        .get_results_async(db)
-        .await?;
+pub async fn furigana_by_reading(db: &Pool, r: &str) -> Result<Option<String>, Error> {
+    let query = "SELECT furigana FROM dict WHERE kanji = true AND reading = $1 AND is_main = true";
+    let mut furi: Vec<Option<String>> = prepared_query(db, query, &[&r]).await?;
 
     // If nothing was found search for non main readings too!
     if furi.is_empty() {
-        furi = dict
-            .select(furigana)
-            .filter(kanji)
-            .filter(reading.eq_all(r))
-            .get_results_async(db)
-            .await?;
+        let query = "SELECT furigana FROM dict WHERE kanji = true AND reading = $1";
+        furi = prepared_query(db, query, &[&r]).await?;
     }
 
     if furi.len() != 1 {

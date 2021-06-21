@@ -1,6 +1,6 @@
 use std::str::FromStr;
 
-use actix_web::{HttpMessage, HttpRequest};
+use actix_web::HttpRequest;
 use parse::jmdict::languages::Language;
 use search::query::UserSettings;
 

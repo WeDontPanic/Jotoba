@@ -230,9 +230,9 @@ fn format_readings(r: Vec<String>) -> Vec<String> {
 mod test {
     /*
     use super::*;
-    use crate::{db, DbPool};
+    use crate::{db, DbConnection};
 
-    fn get_db() -> DbPool {
+    fn get_db() -> DbConnection {
         db::connect()
     }
     */

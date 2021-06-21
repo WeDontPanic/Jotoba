@@ -1,4 +1,5 @@
-use models::{dict, search_mode::SearchMode, sense, DbPool};
+use deadpool_postgres::Pool;
+use models::{dict, search_mode::SearchMode, sense};
 use parse::jmdict::{
     languages::Language, part_of_speech::PartOfSpeech, Entry, EntryElement, EntrySense, GlossValue,
 };
@@ -8,7 +9,7 @@ use serde_json::Value;
 use futures::future::try_join_all;
 
 /// Import manga sfx items file
-pub async fn import(db: &DbPool, path: &str) {
+pub async fn import(db: &Pool, path: &str) {
     println!("Importing sfx patches...");
     let f = std::fs::File::open(path).expect("Error reading jlpt patch file!");
     let json: Value = serde_json::from_reader(f).expect("invalid json data");
@@ -31,7 +32,7 @@ pub async fn import(db: &DbPool, path: &str) {
 
 /// Import a single sfx item
 async fn import_sfx(
-    db: &DbPool,
+    db: &Pool,
     seq: i32,
     jp: String,
     translation: &String,
@@ -71,8 +72,8 @@ async fn import_sfx(
         sequence: seq as u64,
     };
 
-    let db_connection = db.get().unwrap();
-    let dicts = dict::new_dicts_from_entry(&db_connection, &entry);
+    //let db_connection = db.get().unwrap();
+    let dicts = dict::new_dicts_from_entry(&entry);
     let senses = sense::new_from_entry(&entry);
 
     sense::insert_sense(&db, senses).await?;

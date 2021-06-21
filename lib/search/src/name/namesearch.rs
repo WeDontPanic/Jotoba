@@ -1,23 +1,25 @@
 use super::{super::Search, SearchMode};
+use deadpool_postgres::Pool;
 use error::Error;
 use japanese::JapaneseExt;
-use models::sql::{length, ExpressionMethods};
-use models::{kanji::reading::KanjiReading, name::Name, DbPool};
-
-use diesel::prelude::*;
-use tokio_diesel::*;
+use models::{
+    kanji::reading::KanjiReading,
+    name::Name,
+    queryable::{Queryable, SQL},
+};
+use utils::real_string_len;
 
 /// Defines the structure of a
 /// name based search
 #[derive(Clone)]
 pub struct NameSearch<'a> {
     search: Search<'a>,
-    db: &'a DbPool,
+    db: &'a Pool,
     limit: i64,
 }
 
 impl<'a> NameSearch<'a> {
-    pub fn new(db: &'a DbPool, query: &'a str) -> Self {
+    pub fn new(db: &'a Pool, query: &'a str) -> Self {
         Self {
             search: Search::new(query, SearchMode::Exact),
             db,
@@ -32,112 +34,47 @@ impl<'a> NameSearch<'a> {
 
     /// Search name by transcription
     pub async fn search_transcription(&self) -> Result<Vec<Name>, Error> {
-        use diesel::prelude::*;
-        use models::schema::name::dsl::*;
-
-        let query = self.search.query;
-        let like_pred = self.search.mode.to_like(&query);
-
-        Ok(if query.len() < 3 {
-            name.filter(transcription.text_search(&like_pred))
-                .order(length(transcription))
-                .limit(20)
-                .get_results_async(&self.db)
-                .await?
+        let query = if self.search.query.len() < 3 {
+            Name::select_where_order_limit("transcription &@ $1", "LENGTH(transcription)", 20)
         } else {
-            name.filter(transcription.text_search(&like_pred))
-                .get_results_async(&self.db)
-                .await?
-        })
+            Name::select_where("transcription &@ $1")
+        };
+
+        Ok(Name::query(self.db, query, &[&self.search.query], 0).await?)
     }
 
     pub async fn kanji_search(&self, kanji: &KanjiReading) -> Result<Vec<Name>, Error> {
-        use models::schema::name;
-
-        Ok(name::table
-            .filter(name::kanji.text_search(kanji.literal.to_string()))
-            .filter(name::kana.text_search(&kanji.reading))
-            .get_results_async(&self.db)
-            .await?)
+        Ok(Name::query(
+            self.db,
+            Name::select_where_limit("kanji &@ $1 AND kana &@ $2", 10),
+            &[&kanji.literal.to_string(), &kanji.reading],
+            0,
+        )
+        .await?)
     }
 
     /// Search name by japanese
     pub async fn search_native(&self, query: &str) -> Result<Vec<Name>, Error> {
-        use models::schema::name::dsl::*;
-
-        if self.limit == 0 {
-            // Search in both, kana & kanji
-            if utils::real_string_len(query) < 3 {
-                Ok(if query.is_kanji() {
-                    // Only need to search in kana
-                    name.filter(kanji.text_search(query))
-                        .order(models::sql::Nullable::length(kanji))
-                        .limit(20)
-                        .get_results_async(&self.db)
-                        .await?
-                } else if query.is_kana() {
-                    // Only need to search in kanji
-                    name.filter(kana.text_search(query))
-                        .order(length(kana))
-                        .limit(20)
-                        .get_results_async(&self.db)
-                        .await?
-                } else {
-                    name.filter(kanji.text_search(query).or(kana.text_search(query)))
-                        .order(length(kana))
-                        .limit(20)
-                        .get_results_async(&self.db)
-                        .await?
-                })
-            } else {
-                Ok(if query.is_kanji() {
-                    // Only need to search in kana
-                    name.filter(kanji.text_search(query))
-                        .get_results_async(&self.db)
-                        .await?
-                } else if query.is_kana() {
-                    // Only need to search in kanji
-                    name.filter(kana.text_search(query))
-                        .get_results_async(&self.db)
-                        .await?
-                } else if query.is_japanese() {
-                    // Search in both, kana & kanji
-                    name.filter(kanji.text_search(query).or(kana.text_search(query)))
-                        .get_results_async(&self.db)
-                        .await?
-                } else {
-                    // Search in transcriptions
-                    name.filter(transcription.text_search(query))
-                        .get_results_async(&self.db)
-                        .await?
-                })
-            }
+        let (where_, column) = if query.is_kanji() {
+            ("kanji &@ $1", "kanji")
+        } else if query.is_kana() {
+            ("kana &@ $1", "kana")
+        } else if query.is_japanese() {
+            ("(kana &@ $1 OR kanji &@ $1)", "kana")
         } else {
-            Ok(if query.is_kanji() {
-                // Only need to search in kana
-                name.filter(kanji.text_search(query))
-                    .limit(self.limit)
-                    .get_results_async(&self.db)
-                    .await?
-            } else if query.is_kana() {
-                // Only need to search in kanji
-                name.filter(kana.text_search(query))
-                    .limit(self.limit)
-                    .get_results_async(&self.db)
-                    .await?
-            } else if query.is_japanese() {
-                // Search in both, kana & kanji
-                name.filter(kanji.text_search(query).or(kana.text_search(query)))
-                    .limit(self.limit)
-                    .get_results_async(&self.db)
-                    .await?
-            } else {
-                // Search in transcriptions
-                name.filter(transcription.text_search(query))
-                    .limit(self.limit)
-                    .get_results_async(&self.db)
-                    .await?
-            })
-        }
+            ("transcription &@ $1", "transcription")
+        };
+
+        let limit = if real_string_len(query) < 3 && self.limit == 0 {
+            20
+        } else if self.limit > 0 {
+            self.limit
+        } else {
+            100
+        };
+
+        let sql_query =
+            Name::select_where_order_limit(where_, &format!("LENGTH({})", column), limit);
+        Ok(Name::query(self.db, sql_query, &[&query], 0).await?)
     }
 }

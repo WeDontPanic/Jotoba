@@ -1,4 +1,4 @@
-use tokio_postgres::Row;
+use deadpool_postgres::tokio_postgres::Row;
 
 use super::*;
 
@@ -7,7 +7,7 @@ pub(crate) struct ReadingsRes(Vec<String>, Vec<String>);
 
 /// Gets suggestions for kanji reading search eg: "痛 いた.い"
 pub(crate) async fn suggestions(
-    client: &Client,
+    client: &Pool,
     kanji_reading: KanjiReading,
 ) -> Result<Response, RestError> {
     let literal = kanji_reading.literal;
@@ -69,15 +69,17 @@ impl From<Row> for ReadingsRes {
 }
 
 /// Returns a single item of [`ReadingsRes`] for the kanji identified by its literal
-async fn readings_by_lit(client: &Client, literal: char) -> Result<Option<ReadingsRes>, RestError> {
+async fn readings_by_lit(client: &Pool, literal: char) -> Result<Option<ReadingsRes>, RestError> {
+    let client = client.get().await?;
+
     let query = "SELECT onyomi, kunyomi FROM kanji WHERE literal = $1 LIMIT 1";
 
-    let statement = client.prepare(query).await?;
+    let statement = client.prepare_cached(query).await?;
 
-    // TODO chechk against error for Kind::RowCount
     let res = client
-        .query_one(&statement, &[&literal.to_string()])
-        .await?;
+        .query_opt(&statement, &[&literal.to_string()])
+        .await?
+        .map(|i| ReadingsRes::from(i));
 
-    Ok(Some(ReadingsRes::from(res)))
+    Ok(res)
 }

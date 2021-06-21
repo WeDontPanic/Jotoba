@@ -1,6 +1,6 @@
+use deadpool_postgres::Pool;
 use error::api_error::RestError;
 use search::{query::Query, suggestions};
-use tokio_postgres::Client;
 
 use crate::search_suggestion::WordPair;
 
@@ -10,7 +10,7 @@ use super::{
 };
 
 /// Returns kanji meaning suggestions
-pub async fn suggestions(_client: &Client, query: &Query) -> Result<Response, RestError> {
+pub async fn suggestions(_client: &Pool, query: &Query) -> Result<Response, RestError> {
     let dict = match K_MEANING_SUGGESTIONS.get() {
         Some(v) => v,
         None => return Ok(Response::default()),

@@ -5,15 +5,18 @@ use std::{
     sync::mpsc::{sync_channel, Receiver, SyncSender},
 };
 
+use deadpool_postgres::Pool;
 use itertools::Itertools;
-use models::{kanji, DbPool};
+use models::kanji;
 use parse::{
     kanjidict::{Character, Parser as kanjidictParser},
     parser::Parse,
 };
 
+const CHUNKSIZE: usize = 500;
+
 /// Imports kanji dict into database
-pub async fn import(db: &DbPool, path: String) {
+pub async fn import(db: &Pool, path: String) {
     println!("Clearing existing kanji");
     kanji::meaning::clear_meanings(db).await.unwrap();
     kanji::clear_kanji_elements(db).await.unwrap();
@@ -26,7 +29,7 @@ pub async fn import(db: &DbPool, path: String) {
         .count()
         .unwrap();
 
-    let (sender, receiver): (SyncSender<Character>, Receiver<Character>) = sync_channel(1000);
+    let (sender, receiver): (SyncSender<Character>, Receiver<Character>) = sync_channel(CHUNKSIZE);
     let t1 = std::thread::spawn(move || {
         parser
             .parse(|entry, i| {
@@ -48,10 +51,8 @@ pub async fn import(db: &DbPool, path: String) {
     while received.is_ok() {
         rec_kanji.push(received.unwrap());
 
-        let chunksize = 5000;
-
-        if rec_kanji.len() + 400 > chunksize {
-            for kanji in rec_kanji.clone().into_iter().chunks(chunksize).into_iter() {
+        if rec_kanji.len() + 400 > CHUNKSIZE {
+            for kanji in rec_kanji.clone().into_iter().chunks(CHUNKSIZE).into_iter() {
                 kanji::insert(db, kanji.collect_vec()).await.unwrap();
             }
 

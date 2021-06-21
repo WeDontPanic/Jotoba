@@ -4,13 +4,14 @@ use std::{
     str::FromStr,
 };
 
+use deadpool_postgres::Pool;
 use itertools::Itertools;
-use models::{sentence, DbPool};
+use models::sentence;
 use parse::jmdict::languages::Language;
 use serde_json::Value;
 
 /// Import sentences file
-pub async fn import(db: &DbPool, path: &str) {
+pub async fn import(db: &Pool, path: &str) {
     println!("Clearing old sentences");
     sentence::clear(db).await.unwrap();
 

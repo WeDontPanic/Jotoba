@@ -1,9 +1,9 @@
 #![allow(dead_code, unreachable_patterns)]
 
 use actix_web::{http::StatusCode, HttpResponse, ResponseError};
+use deadpool_postgres::PoolError;
 use serde::Serialize;
 use thiserror::Error;
-use tokio_diesel::AsyncError;
 
 #[derive(Clone, Copy, PartialEq)]
 pub enum Origin {
@@ -83,10 +83,11 @@ impl ResponseError for RestError {
     }
 }
 
-impl From<AsyncError> for RestError {
-    fn from(e: AsyncError) -> Self {
-        println!("{:?}", e);
-        Self::Internal
+impl From<PoolError> for RestError {
+    fn from(e: PoolError) -> Self {
+        match e {
+            _ => Self::Internal,
+        }
     }
 }
 
