@@ -918,6 +918,7 @@ version = "0.1.0"
 dependencies = [
  "async-std",
  "log",
+ "sentry",
  "serde",
  "serde_derive",
  "toml",

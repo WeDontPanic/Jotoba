@@ -36,9 +36,20 @@ pub struct SearchConfig {
     pub suggestion_timeout: Option<u64>,
     pub suggestion_sources: Option<String>,
     pub report_queries_after: Option<u64>,
+    pub search_timeout: Option<u64>,
 }
 
 impl Config {
+    /// Returns the configured search timeout or the default value `10s`
+    pub fn get_search_timeout(&self) -> Duration {
+        let sec = self
+            .search
+            .as_ref()
+            .and_then(|i| i.search_timeout)
+            .unwrap_or(10);
+        Duration::from_secs(sec)
+    }
+
     /// Returns the configured suggestion timeout or its default value if not set
     pub fn get_suggestion_timeout(&self) -> Duration {
         let amount = self
