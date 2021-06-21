@@ -1,4 +1,4 @@
-use std::{io::Write, str::FromStr};
+use std::str::FromStr;
 
 use localization::{language::Language, traits::Translatable, TranslationDict};
 use postgres_types::{accepts, to_sql_checked};

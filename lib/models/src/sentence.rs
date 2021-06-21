@@ -7,8 +7,6 @@ use error::Error;
 use japanese;
 use parse::jmdict::languages::Language;
 
-use super::dict;
-
 #[derive(Clone, Debug, PartialEq)]
 pub struct Sentence {
     pub id: i32,
@@ -149,6 +147,8 @@ pub async fn insert_sentence(
 /// Generates the relations between sentences and its words from [`dict`]
 #[cfg(feature = "tokenizer")]
 async fn generate_dict_relations(db: &Pool, sentence_id: i32, text: String) -> Result<(), Error> {
+    use super::dict;
+
     let lexemes = japanese::jp_parsing::JA_NL_PARSER
         .parse(&text)
         .into_iter()

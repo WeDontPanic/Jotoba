@@ -443,7 +443,7 @@ impl<'a> Search<'a> {
     }
 
     #[cfg(not(feature = "tokenizer"))]
-    fn ma_f(&self, w: &mut Vec<Word>, morpheme: bool) {
+    fn ma_f(&self, w: &mut Vec<Word>, _morpheme: bool) {
         #[cfg(not(feature = "tokenizer"))]
         let search_order = SearchOrder::new(self.query);
 

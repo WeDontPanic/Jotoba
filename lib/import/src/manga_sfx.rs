@@ -73,7 +73,7 @@ async fn import_sfx(
     };
 
     //let db_connection = db.get().unwrap();
-    let dicts = dict::new_dicts_from_entry(&db, &entry);
+    let dicts = dict::new_dicts_from_entry(&entry);
     let senses = sense::new_from_entry(&entry);
 
     sense::insert_sense(&db, senses).await?;

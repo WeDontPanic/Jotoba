@@ -1,4 +1,4 @@
-use std::{convert::TryFrom, io::Write};
+use std::convert::TryFrom;
 
 use localization::traits::Translatable;
 use postgres_types::{accepts, to_sql_checked};

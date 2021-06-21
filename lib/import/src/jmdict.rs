@@ -37,7 +37,6 @@ pub async fn import(db: Pool, path: String) {
     kanji::load_kanji_cache(&db).await.unwrap();
 
     let (sender, receiver): (SyncSender<Word>, Receiver<Word>) = sync_channel(10000);
-    let db_clone = db.clone();
     let t1 = std::thread::spawn(move || {
         parser
             .parse(|entry, i| {
@@ -46,7 +45,7 @@ pub async fn import(db: Pool, path: String) {
                     std::io::stdout().flush().ok();
                 }
 
-                let dicts = dict::new_dicts_from_entry(&db_clone, &entry);
+                let dicts = dict::new_dicts_from_entry(&entry);
                 let senses = sense::new_from_entry(&entry);
 
                 sender

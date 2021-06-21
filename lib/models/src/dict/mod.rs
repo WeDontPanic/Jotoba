@@ -8,7 +8,7 @@ use super::{
 };
 use crate::queryable::{
     prepared_execute, prepared_query, prepared_query_one, CheckAvailable, Deletable, FromRow,
-    Insertable, Queryable, SQL,
+    Insertable, SQL, Queryable,
 };
 use deadpool_postgres::{tokio_postgres::Row, Pool};
 use error::Error;
@@ -252,7 +252,7 @@ pub async fn update_jlpt(db: &Pool, l: &str, level: i32) -> Result<(), Error> {
 }
 
 /// Get all Database-dict structures from an entry
-pub fn new_dicts_from_entry(db: &Pool, entry: &Entry) -> Vec<NewDict> {
+pub fn new_dicts_from_entry(entry: &Entry) -> Vec<NewDict> {
     let mut found_main = false;
     let has_kanji = entry.elements.iter().any(|i| i.kanji);
     let mut dicts: Vec<NewDict> = entry

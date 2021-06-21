@@ -1,5 +1,5 @@
 use postgres_types::{accepts, to_sql_checked};
-use std::{convert::TryFrom, io::Write};
+use std::convert::TryFrom;
 use strum_macros::{AsRefStr, Display, EnumString};
 use tokio_postgres::types::{FromSql, ToSql};
 

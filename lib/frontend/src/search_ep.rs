@@ -104,7 +104,7 @@ pub async fn search(
 #[cfg(not(feature = "sentry_error"))]
 fn log_duration(search_type: QueryType, duration: Duration) {
     use log::warn;
-    warn!("Search took: {:?}", duration);
+    warn!("{:?}-search took: {:?}", search_type, duration);
 }
 
 #[cfg(feature = "sentry_error")]
@@ -181,6 +181,6 @@ async fn word_search<'a>(
 
 fn redirect_home() -> HttpResponse {
     HttpResponse::MovedPermanently()
-        .header("Location", "/")
+        .append_header(("Location", "/"))
         .finish()
 }

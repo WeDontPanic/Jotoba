@@ -1,8 +1,5 @@
 #![allow(clippy::from_over_into)]
-use std::{
-    convert::{TryFrom, TryInto},
-    io::Write,
-};
+use std::convert::TryFrom;
 
 use localization::{language::Language, traits::Translatable, TranslationDict};
 use postgres_types::{accepts, to_sql_checked};

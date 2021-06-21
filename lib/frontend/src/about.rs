@@ -5,7 +5,7 @@ use actix_web::{web, HttpRequest, HttpResponse};
 use localization::TranslationDict;
 
 use crate::{
-    session, templates, user_settings, {BaseData, Site},
+    templates, user_settings, {BaseData, Site},
 };
 
 /// About page
