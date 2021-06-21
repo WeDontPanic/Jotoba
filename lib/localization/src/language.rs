@@ -3,25 +3,25 @@ use strum_macros::{AsRefStr, Display, EnumString};
 /// Supported languages for translation
 #[derive(Copy, Clone, AsRefStr, EnumString, Display, Eq, PartialEq, Debug, Hash)]
 pub enum Language {
-    #[strum(serialize = "en")]
+    #[strum(serialize = "en", serialize = "en-US")]
     English,
-    #[strum(serialize = "de")]
+    #[strum(serialize = "de", serialize = "de-DE")]
     German,
     #[strum(serialize = "ru")]
     Russain,
-    #[strum(serialize = "sp")]
+    #[strum(serialize = "sp", serialize = "es-ES")]
     Spanish,
-    #[strum(serialize = "sw")]
+    #[strum(serialize = "sw", serialize = "sv-SE")]
     Swedish,
-    #[strum(serialize = "fr")]
+    #[strum(serialize = "fr", serialize = "fr-FR")]
     French,
-    #[strum(serialize = "nl")]
+    #[strum(serialize = "nl", serialize = "nl-NL")]
     Dutch,
     #[strum(serialize = "hu")]
     Hungarian,
-    #[strum(serialize = "sv")]
+    #[strum(serialize = "sv", serialize = "sl-SL", serialize = "svl")]
     Slovenian,
-    #[strum(serialize = "jp")]
+    #[strum(serialize = "jp", serialize = "ja-JP")]
     Japanese,
 }
 

@@ -29,6 +29,7 @@ pub struct Query {
 #[derive(Debug, Clone, Copy)]
 pub struct UserSettings {
     pub user_lang: Language,
+    pub page_lang: localization::language::Language,
     pub show_english: bool,
     pub english_on_top: bool,
     pub cookies_enabled: bool,
@@ -52,6 +53,7 @@ impl Default for UserSettings {
         Self {
             show_english: true,
             user_lang: Language::default(),
+            page_lang: localization::language::Language::default(),
             english_on_top: false,
             cookies_enabled: false,
         }

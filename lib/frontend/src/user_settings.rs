@@ -16,6 +16,11 @@ pub(super) fn parse(request: &HttpRequest) -> UserSettings {
         .and_then(|i| Language::from_str(i.value()).ok())
         .unwrap_or_default();
 
+    let page_lang = request
+        .cookie("page_lang")
+        .and_then(|i| localization::language::Language::from_str(i.value()).ok())
+        .unwrap_or_default();
+
     let english_on_top = request
         .cookie("show_english_on_top")
         .and_then(|i| i.value().parse().ok())
@@ -30,13 +35,12 @@ pub(super) fn parse(request: &HttpRequest) -> UserSettings {
         })
         .unwrap_or_else(|| UserSettings::default().cookies_enabled);
 
-    println!("cookies: {}", cookies_enabled);
-
     UserSettings {
         user_lang,
         show_english,
         english_on_top,
         cookies_enabled,
+        page_lang,
         ..Default::default()
     }
 }
