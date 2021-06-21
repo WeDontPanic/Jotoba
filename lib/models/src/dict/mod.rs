@@ -299,29 +299,7 @@ pub fn new_dicts_from_entry(entry: &Entry) -> Vec<NewDict> {
 fn get_kanji(l: &str) -> Option<(Option<Vec<String>>, Option<Vec<String>>)> {
     let lock = KANJICACHE.lock().unwrap();
     lock.cache_get(&l.to_owned()).map(|i| i.to_owned())
-
-    /*
-    let db = db.get().await.unwrap();
-    let sql = "SELECT kunyomi, onyomi FROM kanji WHERE literal=$1";
-    let prepared = db.prepare_cached(sql).await.unwrap();
-    let row = db.query_opt(&prepared, &[&l]).await.ok()??;
-    let readings: (Option<Vec<String>>, Option<Vec<String>>) = (row.get(0), row.get(1));
-
-    lock.cache_set(l.to_owned(), readings.clone());
-    */
-
-    //Some(readings)
 }
-
-/*
-pub async fn load_by_ids(db: &DbConnection, ids: &[i32]) -> Result<Vec<Dict>, Error> {
-    use crate::schema::dict::dsl::*;
-    if ids.is_empty() {
-        return Ok(vec![]);
-    }
-    Ok(dict.filter(id.eq_any(ids)).get_results(db)?)
-}
-*/
 
 /// Finds words by their exact readings and retuns a vec of their sequence ids
 #[cfg(feature = "tokenizer")]
@@ -335,16 +313,6 @@ pub(crate) async fn find_by_reading(
 
     let mut result = Vec::new();
     for (reading_str, start, only_kana) in readings {
-        /*
-        let dict_res: Result<Vec<Dict>, _> = if *only_kana {
-            dict.filter(reading.eq(reading_str))
-                .filter(is_main.eq(true))
-                .get_results(db)
-        } else {
-            dict.filter(reading.eq(reading_str)).get_results(db)
-        };
-        */
-
         let mut dict_res: Vec<Dict> = if *only_kana {
             Dict::query(
                 db,
@@ -422,14 +390,6 @@ pub async fn load_dictionary(db: &Pool, sequence_id: i32) -> Result<Vec<Dict>, E
     let res = prepared_query(db, sql, &[&sequence_id]).await?;
 
     Ok(res)
-
-    /*
-    use crate::schema::dict as dict_schema;
-    Ok(dict_schema::table
-        .filter(dict_schema::sequence.eq_all(sequence_id))
-        .order_by(dict_schema::id)
-        .get_results(db)?)
-        */
 }
 
 /// Returns furigana string for a word which contains at least one kanji. If [`r`] exists multiple

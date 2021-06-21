@@ -108,11 +108,6 @@ async fn find_readings(
     };
 
     // Find all Dict-seq_ids starting with the literal
-    /*let seq_ids: Vec<i32> = dict
-    .select(sequence)
-    .filter(reading.like(formatter))
-    .filter(kanji.eq(true))
-    .get_results(db)?;*/
     let seq_ids: Vec<i32> = prepared_query(
         db,
         "SELECT sequence FROM dict WHERE reading like $1 AND kanji = true",
@@ -122,12 +117,6 @@ async fn find_readings(
 
     let dicts_sql = Dict::select_where_order("sequence = ANY($1)", "id");
     let dicts: Vec<Dict> = prepared_query(db, dicts_sql, &[&seq_ids]).await?;
-    /*
-    let dicts: Vec<Dict> = dict
-        .filter(sequence.eq_any(seq_ids))
-        .order_by(id)
-        .get_results(db)?;
-        */
 
     // result vec
     let mut compound_dicts: Vec<Dict> = Vec::new();
