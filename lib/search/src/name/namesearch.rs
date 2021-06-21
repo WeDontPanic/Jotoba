@@ -7,6 +7,7 @@ use models::{
     name::Name,
     queryable::{Queryable, SQL},
 };
+use utils::real_string_len;
 
 /// Defines the structure of a
 /// name based search
@@ -64,7 +65,7 @@ impl<'a> NameSearch<'a> {
             ("transcription &@ $1", "transcription")
         };
 
-        let limit = if query.len() < 3 && self.limit == 0 {
+        let limit = if real_string_len(query) < 3 && self.limit == 0 {
             20
         } else if self.limit > 0 {
             self.limit
