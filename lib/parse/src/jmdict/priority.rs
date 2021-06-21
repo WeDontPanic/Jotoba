@@ -1,13 +1,7 @@
 use std::{convert::TryFrom, io::Write};
 
-use diesel::{
-    deserialize,
-    pg::Pg,
-    serialize::{self, Output},
-    sql_types::Text,
-    types::{FromSql, ToSql},
-};
 use postgres_types::{accepts, to_sql_checked};
+use tokio_postgres::types::{FromSql, ToSql};
 
 use crate::error::{self, Error};
 
@@ -60,22 +54,7 @@ impl TryFrom<&str> for Priority {
     }
 }
 
-impl ToSql<Text, Pg> for Priority {
-    fn to_sql<W: Write>(&self, out: &mut Output<W, Pg>) -> serialize::Result {
-        let s: String = (*self).into();
-        <&str as ToSql<Text, Pg>>::to_sql(&s.as_str(), out)
-    }
-}
-
-impl FromSql<Text, Pg> for Priority {
-    fn from_sql(bytes: Option<&[u8]>) -> deserialize::Result<Self> {
-        Ok(Self::try_from(
-            (<String as FromSql<Text, Pg>>::from_sql(bytes)?).as_str(),
-        )?)
-    }
-}
-
-impl<'a> tokio_postgres::types::FromSql<'a> for Priority {
+impl<'a> FromSql<'a> for Priority {
     fn from_sql(
         ty: &tokio_postgres::types::Type,
         raw: &'a [u8],
@@ -88,7 +67,7 @@ impl<'a> tokio_postgres::types::FromSql<'a> for Priority {
     accepts!(TEXT);
 }
 
-impl tokio_postgres::types::ToSql for Priority {
+impl ToSql for Priority {
     fn to_sql(
         &self,
         ty: &postgres_types::Type,
@@ -98,9 +77,7 @@ impl tokio_postgres::types::ToSql for Priority {
         Self: Sized,
     {
         let i: String = (*self).into();
-        Ok(<String as tokio_postgres::types::ToSql>::to_sql(
-            &i, ty, out,
-        )?)
+        Ok(<String as ToSql>::to_sql(&i, ty, out)?)
     }
 
     accepts!(TEXT);

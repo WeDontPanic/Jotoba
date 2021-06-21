@@ -2,7 +2,7 @@ use std::path::Path;
 
 use deadpool_postgres::Pool;
 use error::Error;
-use models::{dict, kanji, name, radical, sense, DbConnection};
+use models::{dict, kanji, name, radical, sense};
 
 pub mod accents;
 pub mod jlpt_patches;
@@ -109,7 +109,7 @@ pub async fn has_required_data(pool: &Pool) -> Result<bool, Error> {
 }
 
 /// Import data
-pub async fn import(database: &DbConnection, pool: &Pool, options: &Options) {
+pub async fn import(pool: &Pool, options: &Options) {
     if !options.has_import_data() {
         println!("No import files were provided!");
         return;
@@ -149,7 +149,7 @@ pub async fn import(database: &DbConnection, pool: &Pool, options: &Options) {
     if (!options.kanjidict_path.is_empty() && (jmdict_exists || imported_dicts))
         || (imported_dicts && (!options.kanjidict_path.is_empty() || kanji_exists))
     {
-        update_dict_links(database).await.expect("Fatal DB error");
+        update_dict_links(pool).await.expect("Fatal DB error");
     }
 
     // From here on we're depending on JMDict elements
@@ -180,10 +180,9 @@ pub async fn import(database: &DbConnection, pool: &Pool, options: &Options) {
 }
 
 /// Updates Kun and On readings for kanji
-pub async fn update_dict_links(database: &DbConnection) -> Result<(), Error> {
-    // TODO move to pool
-    kanji::gen_readings::update_links(&database).await?;
-    dict::collocations::generate(&database).await?;
+pub async fn update_dict_links(pool: &Pool) -> Result<(), Error> {
+    kanji::gen_readings::update_links(&pool).await?;
+    dict::collocations::generate(&pool).await?;
     Ok(())
 }
 

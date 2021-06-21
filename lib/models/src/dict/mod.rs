@@ -6,18 +6,13 @@ use super::{
     kanji::{KanjiResult, KANJICACHE},
     sense,
 };
-use crate::{
-    queryable::{
-        prepared_execute, prepared_query, prepared_query_one, CheckAvailable, Deletable, FromRow,
-        Insertable, OneQueryable, OptQueryable, Queryable, SQL,
-    },
-    schema::dict,
-    DbConnection,
+use crate::queryable::{
+    prepared_execute, prepared_query, prepared_query_one, CheckAvailable, Deletable, FromRow,
+    Insertable, Queryable, SQL,
 };
 use deadpool_postgres::{tokio_postgres::Row, Pool};
-use diesel::prelude::*;
 use error::Error;
-use futures::{executor::block_on, future::try_join_all};
+use futures::future::try_join_all;
 use itertools::Itertools;
 use japanese::{self, furigana, JapaneseExt};
 use parse::{
@@ -26,8 +21,7 @@ use parse::{
 };
 use tokio_postgres::types::ToSql;
 
-#[derive(Queryable, QueryableByName, Clone, Debug, Default)]
-#[table_name = "dict"]
+#[derive(Clone, Debug, Default)]
 pub struct Dict {
     pub id: i32,
     pub sequence: i32,
@@ -44,8 +38,7 @@ pub struct Dict {
     pub collocations: Option<Vec<i32>>,
 }
 
-#[derive(Insertable, Clone, Debug, PartialEq)]
-#[table_name = "dict"]
+#[derive(Clone, Debug, PartialEq)]
 pub struct NewDict {
     pub sequence: i32,
     pub reading: String,
@@ -294,11 +287,8 @@ pub fn new_dicts_from_entry(db: &Pool, entry: &Entry) -> Vec<NewDict> {
         .map(|i| i.reading.clone());
     if let Some(mut main) = dicts.iter_mut().find(|i| i.is_main && i.kanji) {
         if let Some(kana) = kana {
-            let furigana = furigana::generate::checked(
-                |l: String| block_on(get_kanji(db, &l)),
-                &main.reading,
-                &kana,
-            );
+            let furigana =
+                furigana::generate::checked(|l: String| get_kanji(&l), &main.reading, &kana);
             main.furigana = Some(furigana);
         }
     }
@@ -306,12 +296,11 @@ pub fn new_dicts_from_entry(db: &Pool, entry: &Entry) -> Vec<NewDict> {
     dicts
 }
 
-async fn get_kanji(db: &Pool, l: &str) -> Option<(Option<Vec<String>>, Option<Vec<String>>)> {
-    let mut lock = KANJICACHE.lock().unwrap();
-    if let Some(cache) = lock.cache_get(&l.to_owned()) {
-        return Some(cache.to_owned());
-    }
+fn get_kanji(l: &str) -> Option<(Option<Vec<String>>, Option<Vec<String>>)> {
+    let lock = KANJICACHE.lock().unwrap();
+    lock.cache_get(&l.to_owned()).map(|i| i.to_owned())
 
+    /*
     let db = db.get().await.unwrap();
     let sql = "SELECT kunyomi, onyomi FROM kanji WHERE literal=$1";
     let prepared = db.prepare_cached(sql).await.unwrap();
@@ -319,10 +308,12 @@ async fn get_kanji(db: &Pool, l: &str) -> Option<(Option<Vec<String>>, Option<Ve
     let readings: (Option<Vec<String>>, Option<Vec<String>>) = (row.get(0), row.get(1));
 
     lock.cache_set(l.to_owned(), readings.clone());
+    */
 
-    Some(readings)
+    //Some(readings)
 }
 
+/*
 pub async fn load_by_ids(db: &DbConnection, ids: &[i32]) -> Result<Vec<Dict>, Error> {
     use crate::schema::dict::dsl::*;
     if ids.is_empty() {
@@ -330,6 +321,7 @@ pub async fn load_by_ids(db: &DbConnection, ids: &[i32]) -> Result<Vec<Dict>, Er
     }
     Ok(dict.filter(id.eq_any(ids)).get_results(db)?)
 }
+*/
 
 /// Finds words by their exact readings and retuns a vec of their sequence ids
 #[cfg(feature = "tokenizer")]
@@ -402,13 +394,6 @@ pub async fn reading_existsv2(db: &Pool, r: &str) -> Result<bool, Error> {
     Dict::exists_where(db, "reading = $1", &[&r]).await
 }
 
-/// Returns true if the database contains at least one dict entry with the passed reading
-pub async fn reading_exists(db: &DbConnection, r: &str) -> Result<bool, Error> {
-    use crate::schema::dict::dsl::*;
-    use diesel::dsl::exists;
-    Ok(diesel::select(exists(dict.filter(reading.eq(r)))).get_result(db)?)
-}
-
 /// Returns Ok(true) if at least one dict exists in the Db
 pub async fn exists(db: &Pool) -> Result<bool, Error> {
     Dict::exists(db).await
@@ -432,13 +417,19 @@ pub async fn min_sequence(db: &Pool) -> Result<i32, Error> {
 }
 
 /// Load Dictionaries of a single sequence id
-pub async fn load_dictionary(db: &DbConnection, sequence_id: i32) -> Result<Vec<Dict>, Error> {
-    use crate::schema::dict as dict_schema;
+pub async fn load_dictionary(db: &Pool, sequence_id: i32) -> Result<Vec<Dict>, Error> {
+    let sql = Dict::select_where_order("sequence=$1", "id");
+    let res = prepared_query(db, sql, &[&sequence_id]).await?;
 
+    Ok(res)
+
+    /*
+    use crate::schema::dict as dict_schema;
     Ok(dict_schema::table
         .filter(dict_schema::sequence.eq_all(sequence_id))
         .order_by(dict_schema::id)
         .get_results(db)?)
+        */
 }
 
 /// Returns furigana string for a word which contains at least one kanji. If [`r`] exists multiple

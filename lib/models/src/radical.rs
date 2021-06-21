@@ -1,21 +1,14 @@
-use crate::{
-    queryable::{
-        prepared_query, CheckAvailable, Deletable, FromRow, Insertable, OneQueryable, OptQueryable,
-        SQL,
-    },
-    schema::{radical, search_radical},
-    DbConnection,
+use crate::queryable::{
+    CheckAvailable, Deletable, FromRow, Insertable, OneQueryable, OptQueryable, SQL,
 };
 use deadpool_postgres::{tokio_postgres::Row, Pool};
-use diesel::prelude::*;
 use error::Error;
 use itertools::Itertools;
 use parse::radicals::{self, search_radicals};
 use tokio_postgres::types::ToSql;
 use utils::to_option;
 
-#[derive(Queryable, QueryableByName, Clone, Debug, Default, PartialEq)]
-#[table_name = "radical"]
+#[derive(Clone, Debug, Default, PartialEq)]
 pub struct Radical {
     pub id: i32,
     pub literal: String,
@@ -47,8 +40,7 @@ impl FromRow for Radical {
     }
 }
 
-#[derive(Insertable, Clone, Debug, PartialEq)]
-#[table_name = "radical"]
+#[derive(Clone, Debug, PartialEq)]
 pub struct NewRadical {
     pub id: i32,
     pub literal: String,
@@ -88,8 +80,7 @@ impl Insertable<6> for NewRadical {
     }
 }
 
-#[derive(Queryable, QueryableByName, Clone, Debug, Default, PartialEq)]
-#[table_name = "search_radical"]
+#[derive(Clone, Debug, Default, PartialEq)]
 pub struct SearchRadical {
     pub id: i32,
     pub literal: String,
@@ -115,8 +106,7 @@ impl FromRow for SearchRadical {
     }
 }
 
-#[derive(Insertable, Clone, Debug, PartialEq)]
-#[table_name = "search_radical"]
+#[derive(Clone, Debug, PartialEq)]
 pub struct NewSearchRadical {
     pub literal: String,
     pub stroke_count: i32,

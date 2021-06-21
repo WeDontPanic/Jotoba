@@ -1,7 +1,4 @@
-use crate::{
-    queryable::{Deletable, FromRow, Insertable, Queryable, SQL},
-    schema::kanji_meaning,
-};
+use crate::queryable::{Deletable, FromRow, Insertable, Queryable, SQL};
 use error::Error;
 
 use deadpool_postgres::{tokio_postgres::Row, Pool};
@@ -25,16 +22,14 @@ impl FromRow for Meaning {
     }
 }
 
-#[derive(Queryable, QueryableByName, Clone, Debug, Default, PartialEq)]
-#[table_name = "kanji_meaning"]
+#[derive(Clone, Debug, Default, PartialEq)]
 pub struct Meaning {
     pub id: i32,
     pub kanji_id: i32,
     pub value: String,
 }
 
-#[derive(Insertable, Clone, Debug, PartialEq, Default)]
-#[table_name = "kanji_meaning"]
+#[derive(Clone, Debug, PartialEq, Default)]
 pub struct NewMeaning {
     pub kanji_id: i32,
     pub value: String,

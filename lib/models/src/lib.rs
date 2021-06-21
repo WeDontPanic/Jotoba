@@ -1,35 +1,31 @@
-#[macro_use]
-extern crate diesel;
-
-use diesel::{r2d2::ConnectionManager, PgConnection};
-use r2d2::{Pool, PooledConnection};
-
 pub mod dict;
 pub mod kanji;
 pub mod name;
 pub mod queryable;
 pub mod radical;
-pub mod schema;
 pub mod search_mode;
 pub mod sense;
 pub mod sentence;
-pub mod sql;
 
-pub type DbConnection = PooledConnection<ConnectionManager<PgConnection>>;
-pub type DbPool = Pool<ConnectionManager<PgConnection>>;
-use std::env;
+use std::{env, str::FromStr};
 
+use deadpool_postgres::{Manager, ManagerConfig, Pool, RecyclingMethod};
 use dotenv::dotenv;
+use tokio_postgres::NoTls;
 
-/// Connect to the postgres database
-pub fn connect() -> Pool<ConnectionManager<PgConnection>> {
+pub fn connect() -> Pool {
     dotenv().ok();
 
-    let manager = ConnectionManager::<PgConnection>::new(
-        env::var("DATABASE_URL").expect("DATABASE_URL must be set"),
-    );
+    let connection_str = env::var("DATABASE_URL").expect("DATABASE_URL must be set");
 
-    r2d2::Pool::builder()
-        .build(manager)
-        .expect("Failed to create pool")
+    let pg_config =
+        tokio_postgres::Config::from_str(&connection_str).expect("Failed to parse config");
+
+    // TODO make more configurable
+    let mgr_config = ManagerConfig {
+        recycling_method: RecyclingMethod::Fast,
+    };
+
+    let mgr = Manager::from_config(pg_config, NoTls, mgr_config);
+    Pool::new(mgr, 16)
 }

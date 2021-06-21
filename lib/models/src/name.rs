@@ -1,15 +1,10 @@
-use crate::{
-    queryable::{self, CheckAvailable, Deletable, FromRow, Insertable, SQL},
-    schema::name,
-    DbConnection,
-};
+use crate::queryable::{self, CheckAvailable, Deletable, FromRow, Insertable, SQL};
 use deadpool_postgres::{tokio_postgres::Row, Pool};
-use diesel::prelude::*;
 use error::Error;
 use parse::jmnedict::{name_type::NameType, NameEntry};
 use tokio_postgres::types::ToSql;
 
-#[derive(Queryable, Clone, Debug, Default)]
+#[derive(Clone, Debug, Default)]
 pub struct Name {
     pub id: i32,
     pub sequence: i32,
@@ -43,8 +38,7 @@ impl FromRow for Name {
     }
 }
 
-#[derive(Insertable, Clone, Debug, PartialEq)]
-#[table_name = "name"]
+#[derive(Clone, Debug, PartialEq)]
 pub struct NewName {
     pub sequence: i32,
     pub kana: String,

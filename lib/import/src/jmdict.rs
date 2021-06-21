@@ -26,8 +26,6 @@ pub async fn import(db: Pool, path: String) {
     dict::clear_dicts(&db).await.unwrap();
     sense::clear_senses(&db).await.unwrap();
 
-    //let db_connection = db.get().unwrap();
-
     let path = Path::new(&path);
     let parser = jmdictParser::new(BufReader::new(File::open(path).unwrap()));
 
@@ -38,7 +36,7 @@ pub async fn import(db: Pool, path: String) {
     println!("Initializing kanji cache");
     kanji::load_kanji_cache(&db).await.unwrap();
 
-    let (sender, receiver): (SyncSender<Word>, Receiver<Word>) = sync_channel(1000);
+    let (sender, receiver): (SyncSender<Word>, Receiver<Word>) = sync_channel(10000);
     let db_clone = db.clone();
     let t1 = std::thread::spawn(move || {
         parser
@@ -73,7 +71,7 @@ pub async fn import(db: Pool, path: String) {
             senses.extend(w.sense.clone());
         });
 
-        let chunksize = 10000;
+        let chunksize = 1000;
 
         if senses.len() + 400 > chunksize {
             for senses in senses.clone().into_iter().chunks(chunksize).into_iter() {

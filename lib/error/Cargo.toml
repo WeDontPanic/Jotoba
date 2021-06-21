@@ -9,7 +9,6 @@ edition = "2018"
 [dependencies]
 actix-web = "4.0.0-beta.7"
 deadpool-postgres = "0.9.0"
-diesel = { version = "1.4.7", features = ["postgres","r2d2"] }
 log = "0.4.14"
 r2d2 = "0.8.9"
 serde = "1.0.126"

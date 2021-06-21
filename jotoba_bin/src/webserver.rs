@@ -3,14 +3,13 @@ use localization::TranslationDict;
 
 use actix_web::{http::header::CACHE_CONTROL, middleware, web as actixweb, App, HttpServer};
 use config::Config;
-use models::DbPool;
 use std::sync::Arc;
 
 /// How long frontend assets are going to be cached by the clients. Currently 1 week
 const ASSET_CACHE_MAX_AGE: u64 = 604800;
 
 /// Start the webserver
-pub(super) async fn start(db: DbPool, pool: Pool) -> std::io::Result<()> {
+pub(super) async fn start(pool: Pool) -> std::io::Result<()> {
     setup_logger();
 
     let config = Config::new().await.expect("config failed");
@@ -55,7 +54,6 @@ pub(super) async fn start(db: DbPool, pool: Pool) -> std::io::Result<()> {
     HttpServer::new(move || {
         let app = App::new()
             // Data
-            .data(db.clone())
             .data(config_clone.clone())
             .data(pool.clone())
             .data(locale_dict_arc.clone())

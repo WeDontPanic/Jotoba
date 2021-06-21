@@ -4,7 +4,6 @@ pub mod reading;
 
 use std::mem::take;
 
-use async_trait::async_trait;
 use deadpool_postgres::{tokio_postgres::Row, Pool};
 use reading::KanjiReading;
 use tokio_postgres::types::ToSql;
@@ -15,15 +14,11 @@ use crate::queryable::{
 };
 
 use super::{
-    dict::{self, Dict},
+    dict,
     kanji::meaning::{Meaning, NewMeaning},
-    radical::{self, Radical, SearchRadical},
+    radical::{self, Radical},
 };
-use crate::{
-    schema::{kanji, kanji_element},
-    search_mode::SearchMode,
-    DbConnection,
-};
+use crate::search_mode::SearchMode;
 use cache::SharedCache;
 use error::Error;
 use parse::{
@@ -33,10 +28,6 @@ use parse::{
 use utils::to_option;
 
 use async_std::sync::{Mutex, MutexGuard};
-use diesel::{
-    prelude::*,
-    sql_types::{Bool, Text},
-};
 use futures::future::try_join_all;
 use itertools::Itertools;
 use once_cell::sync::Lazy;
@@ -46,8 +37,7 @@ use romaji::RomajiExt;
 static KANJI_RESULT_CACHE: Lazy<Mutex<SharedCache<i32, KanjiResult>>> =
     Lazy::new(|| Mutex::new(SharedCache::with_capacity(10000)));
 
-#[derive(diesel::Queryable, QueryableByName, Clone, Debug, Default, PartialEq)]
-#[table_name = "kanji"]
+#[derive(Clone, Debug, Default, PartialEq)]
 pub struct Kanji {
     pub id: i32,
     pub literal: String,
@@ -100,8 +90,7 @@ impl FromRow for Kanji {
     }
 }
 
-#[derive(Insertable, Clone, Debug, PartialEq, Default)]
-#[table_name = "kanji"]
+#[derive(Clone, Debug, PartialEq, Default)]
 pub struct NewKanji {
     pub literal: String,
     pub grade: Option<i32>,
@@ -198,8 +187,7 @@ impl FromRows for KanjiResult {
     }
 }
 
-#[derive(Queryable, QueryableByName, Clone, Debug, Default, PartialEq)]
-#[table_name = "kanji_element"]
+#[derive(Clone, Debug, Default, PartialEq)]
 pub struct KanjiElement {
     pub id: i32,
     pub kanji_id: i32,
@@ -225,8 +213,7 @@ impl FromRow for KanjiElement {
     }
 }
 
-#[derive(Insertable, Clone, Debug, Default, PartialEq)]
-#[table_name = "kanji_element"]
+#[derive(Clone, Debug, Default, PartialEq)]
 pub struct NewKanjiElement {
     pub kanji_id: i32,
     pub search_radical_id: i32,
@@ -277,10 +264,12 @@ pub enum ReadingType {
 }
 
 impl Kanji {
+    /*
     /// Returns all dict entries assigned to the kanji's kun readings
     pub async fn get_kun_readings(db: &DbConnection, ids: &[i32]) -> Result<Vec<Dict>, Error> {
         dict::load_by_ids(db, ids).await
     }
+    */
 
     pub async fn load_radical(&self, db: &Pool) -> Result<Option<Radical>, Error> {
         Ok(radical::find_by_id(db, self.radical.unwrap()).await?)
@@ -418,18 +407,15 @@ pub async fn find_readings_by_liteal(
 }
 
 pub async fn insert_kanji_parts(db: &Pool, elements: &[KanjiPart]) -> Result<(), Error> {
-    try_join_all(elements.into_iter().map(|i| insart_kanji_part(db, i))).await?;
+    try_join_all(elements.into_iter().map(|i| insert_kanji_part(db, i))).await?;
     Ok(())
 }
 
-async fn insart_kanji_part(db: &Pool, element: &KanjiPart) -> Result<(), Error> {
+async fn insert_kanji_part(db: &Pool, element: &KanjiPart) -> Result<(), Error> {
     // Find kanji
-    let kanji = match find_by_literalv2(db, element.kanji.to_string()).await {
-        Ok(v) => v.ok_or(Error::NotFound)?,
-        Err(err) => match err {
-            Error::DbError(diesel::result::Error::NotFound) => return Ok(()),
-            _ => return Err(err),
-        },
+    let kanji = match find_by_literalv2(db, element.kanji.to_string()).await? {
+        Some(v) => v,
+        None => return Ok(()),
     };
 
     // Find search_radicals IDs for all parts
@@ -536,50 +522,9 @@ pub async fn find_by_literalv2(db: &Pool, l: String) -> Result<Option<KanjiResul
         return Ok(Some(k.clone()));
     }
 
-    let db_kanji_res = load_by_literalv2(db, &l).await.map_err(|i| match i {
-        Error::DbError(db) => match db {
-            diesel::result::Error::NotFound => Error::NotFound,
-            _ => Error::DbError(db),
-        },
-        _ => i,
-    });
-
-    let db_kanji = match db_kanji_res {
-        Ok(val) => val,
-        Err(err) => match err {
-            Error::NotFound => return Ok(None),
-            _ => return Err(err),
-        },
-    };
-
-    // Add to cache for future usage
-    k_cache.cache_set(db_kanji.kanji.id, db_kanji.clone());
-
-    Ok(Some(db_kanji))
-}
-
-/// Find a kanji by its literal
-pub async fn find_by_literal(db: &DbConnection, l: String) -> Result<Option<KanjiResult>, Error> {
-    // Try to find literal in kanji cache
-    let mut k_cache: MutexGuard<SharedCache<i32, KanjiResult>> = KANJI_RESULT_CACHE.lock().await;
-    if let Some(k) = k_cache.find_by_predicate(|i| i.kanji.literal == l) {
-        return Ok(Some(k.clone()));
-    }
-
-    let db_kanji_res = load_by_literal(db, &l).await.map_err(|i| match i {
-        Error::DbError(db) => match db {
-            diesel::result::Error::NotFound => Error::NotFound,
-            _ => Error::DbError(db),
-        },
-        _ => i,
-    });
-
-    let db_kanji = match db_kanji_res {
-        Ok(val) => val,
-        Err(err) => match err {
-            Error::NotFound => return Ok(None),
-            _ => return Err(err),
-        },
+    let db_kanji = match load_by_literalv2(db, &l).await? {
+        Some(v) => v,
+        None => return Ok(None),
     };
 
     // Add to cache for future usage
@@ -649,37 +594,6 @@ pub async fn load_by_idsv2(db: &Pool, ids: &[i32]) -> Result<Vec<KanjiResult>, E
     Ok([db_result, cached_kanji].concat())
 }
 
-/// Find Kanji items by its ids
-pub async fn load_by_ids(db: &DbConnection, ids: &[i32]) -> Result<Vec<KanjiResult>, Error> {
-    if ids.is_empty() {
-        return Ok(vec![]);
-    }
-    // Lock cache
-    let mut k_cache: MutexGuard<SharedCache<i32, KanjiResult>> = KANJI_RESULT_CACHE.lock().await;
-
-    // Get cached kanji
-    let cached_kanji = k_cache.get_values(&ids);
-
-    // Determine which of the kanji
-    // still needs to get looked up
-    let to_lookup = ids
-        .iter()
-        .filter(|k_id| !cached_kanji.iter().any(|ci| ci.kanji.id == **k_id))
-        .copied()
-        .collect::<Vec<_>>();
-
-    if to_lookup.is_empty() {
-        return Ok(cached_kanji);
-    }
-
-    let db_result = retrieve_by_ids_with_meanings(&db, &to_lookup).await?;
-
-    // Add result to cache for next time
-    k_cache.extend(db_result.clone(), |i| i.kanji.id);
-
-    Ok([db_result, cached_kanji].concat())
-}
-
 /// Retrieve kanji by ids from DB
 async fn retrieve_by_ids_with_meaningsv2(
     db: &Pool,
@@ -693,26 +607,6 @@ async fn retrieve_by_ids_with_meaningsv2(
     Ok(KanjiResult::query(db, sql_query, &[&ids], 0).await?)
 }
 
-/// Retrieve kanji by ids from DB
-async fn retrieve_by_ids_with_meanings(
-    db: &DbConnection,
-    ids: &[i32],
-) -> Result<Vec<KanjiResult>, Error> {
-    if ids.is_empty() {
-        return Ok(vec![]);
-    }
-
-    use crate::schema::kanji::dsl::*;
-    use crate::schema::kanji_meaning;
-
-    Ok(format_results(
-        kanji
-            .inner_join(kanji_meaning::table)
-            .filter(id.eq_any(ids))
-            .get_results::<(Kanji, Meaning)>(db)?,
-    ))
-}
-
 /// Load a kanji by its literal from DB
 async fn load_by_literals(db: &Pool, l: &[&String]) -> Result<Vec<KanjiResult>, Error> {
     if l.is_empty() {
@@ -724,33 +618,15 @@ async fn load_by_literals(db: &Pool, l: &[&String]) -> Result<Vec<KanjiResult>, 
 }
 
 /// Load a kanji by its literal from DB
-async fn load_by_literalv2(db: &Pool, l: &str) -> Result<KanjiResult, Error> {
+async fn load_by_literalv2(db: &Pool, l: &str) -> Result<Option<KanjiResult>, Error> {
     let sql = KanjiResult::select_where_limit("literal = $1", 1);
     let mut res = KanjiResult::query(db, sql, &[&l], 0).await?;
 
     if res.is_empty() {
-        return Err(Error::NotFound);
+        return Ok(None);
     }
 
-    Ok(take(&mut res[0]))
-}
-
-/// Load a kanji by its literal from DB
-async fn load_by_literal(db: &DbConnection, l: &str) -> Result<KanjiResult, Error> {
-    use crate::schema::kanji::dsl::*;
-    use crate::schema::kanji_meaning;
-
-    let res = kanji
-        .inner_join(kanji_meaning::table)
-        .filter(literal.eq(l))
-        .limit(1)
-        .get_results::<(Kanji, Meaning)>(db)?;
-
-    if res.is_empty() {
-        return Err(Error::NotFound);
-    }
-
-    Ok(format_results(res)[0].to_owned())
+    Ok(Some(take(&mut res[0])))
 }
 
 fn format_results(res: Vec<(Kanji, Meaning)>) -> Vec<KanjiResult> {

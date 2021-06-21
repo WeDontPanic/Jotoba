@@ -1,18 +1,13 @@
-use std::{convert::TryFrom, io::Write};
+use std::convert::TryFrom;
 
-use crate::error;
-use diesel::{
-    pg::Pg,
-    serialize::{self, Output},
-    sql_types::Integer,
-    types::ToSql,
-};
 use localization::traits::Translatable;
 use postgres_types::{accepts, to_sql_checked};
 use strum_macros::{AsRefStr, EnumString};
+use tokio_postgres::types::{FromSql, ToSql};
 
-#[derive(AsExpression, FromSqlRow, Debug, PartialEq, Clone, Copy, AsRefStr, EnumString)]
-#[sql_type = "Integer"]
+use crate::error;
+
+#[derive(Debug, PartialEq, Clone, Copy, AsRefStr, EnumString)]
 pub enum NameType {
     #[strum(serialize = "company")]
     Company,
@@ -65,12 +60,6 @@ impl NameType {
     }
 }
 
-impl ToSql<Integer, Pg> for NameType {
-    fn to_sql<W: Write>(&self, out: &mut Output<W, Pg>) -> serialize::Result {
-        <i32 as ToSql<Integer, Pg>>::to_sql(&(*self).into(), out)
-    }
-}
-
 impl TryFrom<i32> for NameType {
     type Error = crate::error::Error;
     fn try_from(value: i32) -> Result<Self, Self::Error> {
@@ -111,7 +100,7 @@ impl From<NameType> for i32 {
     }
 }
 
-impl<'a> tokio_postgres::types::FromSql<'a> for NameType {
+impl<'a> FromSql<'a> for NameType {
     fn from_sql(
         ty: &tokio_postgres::types::Type,
         raw: &'a [u8],
@@ -124,7 +113,7 @@ impl<'a> tokio_postgres::types::FromSql<'a> for NameType {
     accepts!(INT4);
 }
 
-impl tokio_postgres::types::ToSql for NameType {
+impl ToSql for NameType {
     fn to_sql(
         &self,
         ty: &postgres_types::Type,
@@ -134,7 +123,7 @@ impl tokio_postgres::types::ToSql for NameType {
         Self: Sized,
     {
         let s: i32 = (*self).into();
-        Ok(<i32 as tokio_postgres::types::ToSql>::to_sql(&s, ty, out)?)
+        Ok(<i32 as ToSql>::to_sql(&s, ty, out)?)
     }
 
     accepts!(INT4);

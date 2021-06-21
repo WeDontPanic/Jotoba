@@ -1,21 +1,11 @@
-use std::{convert::TryFrom, io::Write};
-
-use diesel::{
-    deserialize,
-    pg::Pg,
-    serialize::{self, Output},
-    sql_types::Integer,
-    types::{FromSql, ToSql},
-};
 use postgres_types::{accepts, to_sql_checked};
+use std::{convert::TryFrom, io::Write};
 use strum_macros::{AsRefStr, Display, EnumString};
+use tokio_postgres::types::{FromSql, ToSql};
 
 use crate::error;
 
-#[derive(
-    AsExpression, FromSqlRow, Debug, PartialEq, Clone, Copy, AsRefStr, EnumString, Display, Hash, Eq,
-)]
-#[sql_type = "Integer"]
+#[derive(Debug, PartialEq, Clone, Copy, AsRefStr, EnumString, Display, Hash, Eq)]
 pub enum Language {
     #[strum(serialize = "eng", serialize = "en-US")]
     English,
@@ -40,20 +30,6 @@ pub enum Language {
 impl Default for Language {
     fn default() -> Self {
         Self::English
-    }
-}
-
-impl ToSql<Integer, Pg> for Language {
-    fn to_sql<W: Write>(&self, out: &mut Output<W, Pg>) -> serialize::Result {
-        <i32 as ToSql<Integer, Pg>>::to_sql(&(*self).into(), out)
-    }
-}
-
-impl FromSql<Integer, Pg> for Language {
-    fn from_sql(bytes: Option<&[u8]>) -> deserialize::Result<Self> {
-        Ok(Self::try_from(<i32 as FromSql<Integer, Pg>>::from_sql(
-            bytes,
-        )?)?)
     }
 }
 
@@ -91,7 +67,7 @@ impl Into<i32> for Language {
     }
 }
 
-impl<'a> tokio_postgres::types::FromSql<'a> for Language {
+impl<'a> FromSql<'a> for Language {
     fn from_sql(
         ty: &tokio_postgres::types::Type,
         raw: &'a [u8],
@@ -104,7 +80,7 @@ impl<'a> tokio_postgres::types::FromSql<'a> for Language {
     accepts!(INT4);
 }
 
-impl tokio_postgres::types::ToSql for Language {
+impl ToSql for Language {
     fn to_sql(
         &self,
         ty: &postgres_types::Type,
@@ -114,7 +90,7 @@ impl tokio_postgres::types::ToSql for Language {
         Self: Sized,
     {
         let i: i32 = (*self).into();
-        Ok(<i32 as tokio_postgres::types::ToSql>::to_sql(&i, ty, out)?)
+        Ok(<i32 as ToSql>::to_sql(&i, ty, out)?)
     }
 
     accepts!(INT4);

@@ -1,9 +1,9 @@
 use std::io::{stdout, Write};
 
-use crate::{sql::ExpressionMethods, DbConnection};
+use crate::queryable::{prepared_execute, prepared_query, prepared_query_one};
+use deadpool_postgres::Pool;
 use error::Error;
 
-use diesel::prelude::*;
 use futures::future::try_join_all;
 
 use super::Dict;
@@ -11,9 +11,7 @@ use super::Dict;
 type GenDict = (i32, String);
 
 /// Generate all collocations
-pub async fn generate(db: &DbConnection) -> Result<(), Error> {
-    use crate::schema::dict;
-
+pub async fn generate(db: &Pool) -> Result<(), Error> {
     println!("Clearing old collocations");
 
     clear(db).await?;
@@ -21,13 +19,8 @@ pub async fn generate(db: &DbConnection) -> Result<(), Error> {
     print!("Starting collocation generation...");
     stdout().flush().ok();
 
-    // Load woards to generate collocations for
-    let to_generate_dicts: Vec<GenDict> = dict::table.select((dict::sequence, dict::reading))
-        .filter(dict::kanji.eq_all(true))
-        .filter(dict::is_main.eq_all(true))
-        .filter(dict::reading.regex_match(
-        "^[\\x3400-\\x4DB5\\x4E00-\\x9FCB\\xF900-\\xFA6A]*[^(を|の|に|と|が|か|は|も|で|へ|や)]$",
-    )).get_results(db)?;
+    let sql = "SELECT sequence, reading FROM dict WHERE kanji = true AND is_main = true AND reading ~ '^[\\x3400-\\x4DB5\\x4E00-\\x9FCB\\xF900-\\xFA6A]*[^(を|の|に|と|が|か|は|も|で|へ|や)]$'";
+    let to_generate_dicts: Vec<GenDict> = prepared_query(db, sql, &[]).await?;
 
     let dict_count = to_generate_dicts.len();
 
@@ -50,19 +43,12 @@ pub async fn generate(db: &DbConnection) -> Result<(), Error> {
     Ok(())
 }
 
-async fn generate_dict(db: &DbConnection, dict: &GenDict) -> Result<(), Error> {
-    use crate::schema::dict;
+async fn generate_dict(db: &Pool, dict: &GenDict) -> Result<(), Error> {
+    let collocations_sql = format!("SELECT DISTINCT sequence FROM dict 
+                                   WHERE kanji=true AND reading LIKE $1 AND reading ~ '({})[(を|の|に|と|が|か|は|も|で|へ|や)][\\x3400-\\x4DB5\\x4E00-\\x9FCB\\xF900-\\xFA6A]*[^(を|の|に|と|が|か|は|も|で|へ|や)]$'", dict.1);
 
-    let regex_filter = format!("({})[(を|の|に|と|が|か|は|も|で|へ|や)][\\x3400-\\x4DB5\\x4E00-\\x9FCB\\xF900-\\xFA6A]*[^(を|の|に|と|が|か|は|も|で|へ|や)]$", dict.1);
-
-    // Sequence ids of collocation words
-    let collocations: Vec<i32> = dict::table
-        .select(dict::sequence)
-        .distinct()
-        .filter(dict::kanji.eq_all(true))
-        .filter(dict::reading.like(format!("{}%", dict.1)))
-        .filter(dict::reading.regex_match(regex_filter))
-        .get_results(db)?;
+    let collocations: Vec<i32> =
+        prepared_query(db, collocations_sql, &[&format!("{}%", dict.1)]).await?;
 
     let kana = get_kana(db, &dict).await?;
 
@@ -81,12 +67,8 @@ async fn generate_dict(db: &DbConnection, dict: &GenDict) -> Result<(), Error> {
     }
 
     // Update collocation references for dict
-    diesel::update(dict::table)
-        .set(dict::collocations.eq_all(collocations))
-        .filter(dict::sequence.eq_all(dict.0))
-        .filter(dict::is_main.eq_all(true))
-        .execute(db)?;
-
+    let sql = "UPDATE dict SET collocations=$1 WHERE sequence=$2 AND is_main=true";
+    prepared_execute(db, sql, &[&collocations, &dict.0]).await?;
     Ok(())
 }
 
@@ -98,24 +80,19 @@ fn collocation_matches(collocation: &Vec<Dict>, kana: &str) -> bool {
         .unwrap_or_default()
 }
 
-async fn get_kana(db: &DbConnection, gd: &GenDict) -> Result<String, Error> {
-    use crate::schema::dict::dsl::*;
-    let res: String = dict
-        .select(reading)
-        .filter(sequence.eq_all(gd.0))
-        .filter(kanji.eq_all(false))
-        .get_result(db)?;
+async fn get_kana(db: &Pool, gd: &GenDict) -> Result<String, Error> {
+    let res: String = prepared_query_one(
+        db,
+        "SELECT reading FROM dict WHERE sequence=$1 AND kanji=false LIMIT 1",
+        &[&gd.0],
+    )
+    .await?;
     Ok(res)
 }
 
 /// Clear existinig collections
-async fn clear(db: &DbConnection) -> Result<(), Error> {
-    use crate::schema::dict::dsl::*;
-
-    let empty: Option<Vec<i32>> = None;
-    diesel::update(dict)
-        .set(collocations.eq_all(&empty))
-        .execute(db)?;
-
+async fn clear(db: &Pool) -> Result<(), Error> {
+    let sql = "UPDATE dict SET collocations=NULL";
+    prepared_execute(db, sql, &[]).await?;
     Ok(())
 }

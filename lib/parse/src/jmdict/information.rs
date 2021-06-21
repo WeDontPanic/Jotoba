@@ -1,21 +1,13 @@
 use std::{convert::TryFrom, io::Write};
 
-use diesel::{
-    deserialize,
-    pg::Pg,
-    serialize::{self, Output},
-    sql_types::Integer,
-    types::{FromSql, ToSql},
-};
-
 use localization::traits::Translatable;
 use postgres_types::{accepts, to_sql_checked};
 use strum_macros::{AsRefStr, EnumString};
+use tokio_postgres::types::{FromSql, ToSql};
 
 use crate::error;
 
-#[derive(AsExpression, FromSqlRow, Debug, PartialEq, Clone, Copy, AsRefStr, EnumString)]
-#[sql_type = "Integer"]
+#[derive(Debug, PartialEq, Clone, Copy, AsRefStr, EnumString)]
 pub enum Information {
     #[strum(serialize = "ateji")]
     Ateji,
@@ -47,20 +39,6 @@ impl Translatable for Information {
             Information::Gikun => "gikun",
             Information::UsuallyKana => "usually written in kana",
         }
-    }
-}
-
-impl ToSql<Integer, Pg> for Information {
-    fn to_sql<W: Write>(&self, out: &mut Output<W, Pg>) -> serialize::Result {
-        <i32 as ToSql<Integer, Pg>>::to_sql(&(*self).into(), out)
-    }
-}
-
-impl FromSql<Integer, Pg> for Information {
-    fn from_sql(bytes: Option<&[u8]>) -> deserialize::Result<Self> {
-        Ok(Self::try_from(<i32 as FromSql<Integer, Pg>>::from_sql(
-            bytes,
-        )?)?)
     }
 }
 
@@ -96,7 +74,7 @@ impl Into<i32> for Information {
     }
 }
 
-impl<'a> tokio_postgres::types::FromSql<'a> for Information {
+impl<'a> FromSql<'a> for Information {
     fn from_sql(
         ty: &tokio_postgres::types::Type,
         raw: &'a [u8],
@@ -109,7 +87,7 @@ impl<'a> tokio_postgres::types::FromSql<'a> for Information {
     accepts!(INT4);
 }
 
-impl tokio_postgres::types::ToSql for Information {
+impl ToSql for Information {
     fn to_sql(
         &self,
         ty: &postgres_types::Type,
@@ -119,7 +97,7 @@ impl tokio_postgres::types::ToSql for Information {
         Self: Sized,
     {
         let i: i32 = (*self).into();
-        Ok(<i32 as tokio_postgres::types::ToSql>::to_sql(&i, ty, out)?)
+        Ok(<i32 as ToSql>::to_sql(&i, ty, out)?)
     }
 
     accepts!(INT4);

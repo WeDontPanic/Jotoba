@@ -4,21 +4,14 @@ use std::{
     io::Write,
 };
 
-use diesel::{
-    deserialize,
-    pg::Pg,
-    serialize::{self, Output},
-    sql_types::{Integer, Text},
-    types::{FromSql, ToSql},
-};
 use localization::{language::Language, traits::Translatable, TranslationDict};
 use postgres_types::{accepts, to_sql_checked};
+use tokio_postgres::types::{FromSql, ToSql};
 
 use crate::error;
 use strum_macros::EnumString;
 
-#[derive(AsExpression, FromSqlRow, Debug, PartialEq, Clone, Copy, Hash, EnumString)]
-#[sql_type = "Integer"]
+#[derive(Debug, PartialEq, Clone, Copy, Hash, EnumString)]
 pub enum PosSimple {
     #[strum(serialize = "adverb", serialize = "adv")]
     Adverb,
@@ -125,21 +118,7 @@ impl From<PartOfSpeech> for PosSimple {
     }
 }
 
-impl ToSql<Integer, Pg> for PosSimple {
-    fn to_sql<W: Write>(&self, out: &mut Output<W, Pg>) -> serialize::Result {
-        <i32 as ToSql<Integer, Pg>>::to_sql(&(*self).into(), out)
-    }
-}
-
-impl FromSql<Integer, Pg> for PosSimple {
-    fn from_sql(bytes: Option<&[u8]>) -> deserialize::Result<Self> {
-        Ok(Self::try_from(<i32 as FromSql<Integer, Pg>>::from_sql(
-            bytes,
-        )?)?)
-    }
-}
-
-impl<'a> tokio_postgres::types::FromSql<'a> for PosSimple {
+impl<'a> FromSql<'a> for PosSimple {
     fn from_sql(
         ty: &tokio_postgres::types::Type,
         raw: &'a [u8],
@@ -152,7 +131,7 @@ impl<'a> tokio_postgres::types::FromSql<'a> for PosSimple {
     accepts!(INT4);
 }
 
-impl tokio_postgres::types::ToSql for PosSimple {
+impl ToSql for PosSimple {
     fn to_sql(
         &self,
         ty: &postgres_types::Type,
@@ -162,7 +141,7 @@ impl tokio_postgres::types::ToSql for PosSimple {
         Self: Sized,
     {
         let s: i32 = (*self).into();
-        Ok(<i32 as tokio_postgres::types::ToSql>::to_sql(&s, ty, out)?)
+        Ok(<i32 as ToSql>::to_sql(&s, ty, out)?)
     }
 
     accepts!(INT4);
@@ -170,8 +149,7 @@ impl tokio_postgres::types::ToSql for PosSimple {
     to_sql_checked!();
 }
 
-#[derive(AsExpression, FromSqlRow, Debug, PartialEq, Clone, Copy)]
-#[sql_type = "Text"]
+#[derive(Debug, PartialEq, Clone, Copy)]
 pub enum PartOfSpeech {
     // Adjectives
     Adjective(AdjectiveType),
@@ -232,22 +210,7 @@ impl PartOfSpeech {
     }
 }
 
-impl ToSql<Text, Pg> for PartOfSpeech {
-    fn to_sql<W: Write>(&self, out: &mut Output<W, Pg>) -> serialize::Result {
-        let s: String = (*self).into();
-        <&str as ToSql<Text, Pg>>::to_sql(&s.as_str(), out)
-    }
-}
-
-impl FromSql<Text, Pg> for PartOfSpeech {
-    fn from_sql(bytes: Option<&[u8]>) -> deserialize::Result<Self> {
-        Ok(<String as FromSql<Text, Pg>>::from_sql(bytes)?
-            .as_str()
-            .try_into()?)
-    }
-}
-
-impl<'a> tokio_postgres::types::FromSql<'a> for PartOfSpeech {
+impl<'a> FromSql<'a> for PartOfSpeech {
     fn from_sql(
         ty: &tokio_postgres::types::Type,
         raw: &'a [u8],
@@ -260,7 +223,7 @@ impl<'a> tokio_postgres::types::FromSql<'a> for PartOfSpeech {
     accepts!(TEXT);
 }
 
-impl tokio_postgres::types::ToSql for PartOfSpeech {
+impl ToSql for PartOfSpeech {
     fn to_sql(
         &self,
         ty: &postgres_types::Type,
@@ -270,11 +233,7 @@ impl tokio_postgres::types::ToSql for PartOfSpeech {
         Self: Sized,
     {
         let s: String = (*self).into();
-        Ok(<&str as tokio_postgres::types::ToSql>::to_sql(
-            &s.as_str(),
-            ty,
-            out,
-        )?)
+        Ok(<&str as ToSql>::to_sql(&s.as_str(), ty, out)?)
     }
 
     accepts!(TEXT);

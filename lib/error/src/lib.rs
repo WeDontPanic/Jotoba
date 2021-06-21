@@ -3,7 +3,6 @@ pub mod api_error;
 use std::{fmt::Display, num::ParseIntError, string::FromUtf8Error};
 
 use deadpool_postgres::PoolError;
-use diesel::result::Error as DbError;
 use strum::ParseError;
 
 #[derive(Debug)]
@@ -14,34 +13,10 @@ pub enum Error {
     Utf8StrError(std::str::Utf8Error),
     ParseError,
     Undefined,
-    DbError(DbError), // old error, will be removed
     IoError(std::io::Error),
     Checkout(r2d2::Error),
     PoolError(PoolError),
     Postgres(tokio_postgres::Error), // new db error
-}
-
-/// Map a diesel not-found error to Error::NotFound
-/// Other diesel errors will be handled noramlly
-pub fn map_notfound(err: DbError) -> Error {
-    match err {
-        DbError::NotFound => Error::NotFound,
-        _ => err.into(),
-    }
-}
-
-pub fn db_to_option<T>(res: Result<T, Error>) -> Result<Option<T>, Error> {
-    match res {
-        Ok(v) => Ok(Some(v)),
-        Err(err) => match err {
-            Error::NotFound => Ok(None),
-            Error::DbError(e) => match e {
-                DbError::NotFound => Ok(None),
-                _ => Err(e.into()),
-            },
-            _ => Err(err),
-        },
-    }
 }
 
 impl From<tokio_postgres::Error> for Error {
@@ -59,12 +34,6 @@ impl From<PoolError> for Error {
 impl From<std::io::Error> for Error {
     fn from(err: std::io::Error) -> Self {
         Self::IoError(err)
-    }
-}
-
-impl From<DbError> for Error {
-    fn from(err: DbError) -> Self {
-        Self::DbError(err)
     }
 }
 

@@ -83,13 +83,6 @@ impl ResponseError for RestError {
     }
 }
 
-impl From<diesel::result::Error> for RestError {
-    fn from(e: diesel::result::Error) -> Self {
-        match e {
-            _ => Self::Internal,
-        }
-    }
-}
 impl From<PoolError> for RestError {
     fn from(e: PoolError) -> Self {
         match e {

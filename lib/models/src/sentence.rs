@@ -1,21 +1,15 @@
 use deadpool_postgres::Pool;
-use diesel::RunQueryDsl;
 use itertools::Itertools;
 use tokio_postgres::{types::ToSql, Row};
 
-use crate::{
-    queryable::{prepared_query, prepared_query_one, Deletable, Insertable, SQL},
-    schema::{sentence, sentence_translation, sentence_vocabulary},
-    DbConnection,
-};
+use crate::queryable::{prepared_query_one, Deletable, Insertable, SQL};
 use error::Error;
 use japanese;
 use parse::jmdict::languages::Language;
 
 use super::dict;
 
-#[derive(Queryable, Clone, Debug, PartialEq, QueryableByName)]
-#[table_name = "sentence"]
+#[derive(Clone, Debug, PartialEq)]
 pub struct Sentence {
     pub id: i32,
     pub content: String,
@@ -29,8 +23,7 @@ impl SQL for Sentence {
     }
 }
 
-#[derive(Insertable, Clone, PartialEq)]
-#[table_name = "sentence"]
+#[derive(Clone, PartialEq)]
 pub struct NewSentence {
     pub content: String,
     pub kana: String,
@@ -53,7 +46,7 @@ impl Insertable<3> for NewSentence {
     }
 }
 
-#[derive(Queryable, Clone, Debug, PartialEq)]
+#[derive(Clone, Debug, PartialEq)]
 pub struct Translation {
     pub id: i32,
     pub sentence_id: i32,
@@ -67,8 +60,7 @@ impl SQL for Translation {
     }
 }
 
-#[derive(Insertable, Clone, PartialEq)]
-#[table_name = "sentence_translation"]
+#[derive(Clone, PartialEq)]
 pub struct NewTranslation {
     pub sentence_id: i32,
     pub language: Language,
@@ -91,7 +83,7 @@ impl Insertable<3> for NewTranslation {
     }
 }
 
-#[derive(Queryable, Clone, PartialEq, Debug)]
+#[derive(Clone, PartialEq, Debug)]
 pub struct SentenceVocabulary {
     pub id: i32,
     pub sentence_id: i32,
@@ -105,8 +97,7 @@ impl SQL for SentenceVocabulary {
     }
 }
 
-#[derive(Insertable, Clone, PartialEq)]
-#[table_name = "sentence_vocabulary"]
+#[derive(Clone, PartialEq)]
 pub struct NewSentenceVocabulary {
     pub sentence_id: i32,
     pub dict_sequence: i32,

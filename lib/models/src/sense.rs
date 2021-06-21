@@ -1,10 +1,5 @@
-use crate::{
-    queryable::{self, prepared_query, CheckAvailable, Deletable, FromRow, Insertable, SQL},
-    schema::sense,
-    DbConnection,
-};
-use deadpool_postgres::{tokio_postgres::Row, Pool};
-use diesel::prelude::*;
+use crate::queryable::{self, prepared_query, CheckAvailable, Deletable, FromRow, Insertable, SQL};
+use deadpool_postgres::Pool;
 use error::Error;
 use parse::jmdict::{
     dialect::Dialect,
@@ -16,7 +11,7 @@ use parse::jmdict::{
     Entry,
 };
 
-#[derive(Queryable, Clone, Debug)]
+#[derive(Clone, Debug)]
 pub struct Sense {
     pub id: i32,
     pub sequence: i32,
@@ -70,8 +65,7 @@ impl FromRow for Sense {
     }
 }
 
-#[derive(Insertable, Clone, PartialEq)]
-#[table_name = "sense"]
+#[derive(Clone, PartialEq)]
 pub struct NewSense {
     pub sequence: i32,
     pub language: Language,
