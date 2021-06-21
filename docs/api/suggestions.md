@@ -32,7 +32,7 @@
 * **Success Response:**
 
   * **Code:** 200 <br />
-    **Content:** `{ "suggestions":[ {"primary":"まち","secondary":"町"} ] }`
+    **Content:** `{ "suggestions":[ {"primary":"まち","secondary":"町"} ], "suggestion_type": "default" }`
  
 * **Error Response:**
 
