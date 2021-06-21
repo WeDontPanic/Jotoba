@@ -7,7 +7,7 @@ use parse::jmdict::{
     gtype::GType,
     languages::Language,
     misc::Misc,
-    part_of_speech::{PartOfSpeech, PosSimple},
+    part_of_speech::{self, PartOfSpeech, PosSimple},
     Entry,
 };
 
@@ -161,7 +161,10 @@ pub fn new_from_entry(entry: &Entry) -> Vec<NewSense> {
 }
 
 pub fn pos_simplified(pos: &[PartOfSpeech]) -> Vec<PosSimple> {
-    pos.iter().map(|i| (*i).into()).collect()
+    pos.iter()
+        .map(|i| part_of_speech::pos_to_simple(i))
+        .flatten()
+        .collect()
 }
 
 /// Returns Ok(true) if at least one sense exists in the Db

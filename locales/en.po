@@ -13,7 +13,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"PO-Revision-Date: 2021-06-16 18:54+0200\n"
+"PO-Revision-Date: 2021-06-21 13:46+0200\n"
 "Last-Translator:  <jojii@gmx.net>\n"
 "Language-Team: English\n"
 "Language: en\n"
@@ -241,7 +241,7 @@ msgid "Jotoba wouldn't be able to exist without the help of many open-source dat
 msgstr ""
 
 msgid "About Page"
-msgstr 
+msgstr ""
 
 # Cookie Footer
 msgid "This Website uses Cookies"

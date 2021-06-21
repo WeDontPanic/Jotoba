@@ -38,8 +38,12 @@ pub enum PosSimple {
     Interjection,
     #[strum(serialize = "pronoun", serialize = "pron")]
     Pronoun,
-    #[strum(serialize = "nummeric", serialize = "nr")]
+    #[strum(serialize = "numeric", serialize = "nr")]
     Numeric,
+    #[strum(serialize = "transitive", serialize = "tr")]
+    Transitive,
+    #[strum(serialize = "intransitive", serialize = "itr")]
+    Intransitive,
     #[strum(serialize = "unclassified", serialize = "unc")]
     Unclassified,
 }
@@ -64,6 +68,8 @@ impl TryFrom<i32> for PosSimple {
             13 => Self::Pronoun,
             15 => Self::Numeric,
             16 => Self::Unclassified,
+            17 => Self::Intransitive,
+            18 => Self::Transitive,
             _ => return Err(error::Error::ParseError),
         })
     }
@@ -88,30 +94,41 @@ impl Into<i32> for PosSimple {
             Self::Pronoun => 13,
             Self::Numeric => 15,
             Self::Unclassified => 16,
+            Self::Intransitive => 17,
+            Self::Transitive => 18,
         }
     }
 }
 
-impl From<PartOfSpeech> for PosSimple {
-    fn from(pos: PartOfSpeech) -> PosSimple {
-        match pos {
-            PartOfSpeech::Adjective(_) | PartOfSpeech::AuxilaryAdj => PosSimple::Adjective,
-            PartOfSpeech::Adverb | PartOfSpeech::AdverbTo => PosSimple::Adverb,
-            PartOfSpeech::Auxilary => PosSimple::Auxilary,
-            PartOfSpeech::Conjungation => PosSimple::Conjungation,
-            PartOfSpeech::Counter => PosSimple::Counter,
-            PartOfSpeech::Expr => PosSimple::Expr,
-            PartOfSpeech::Interjection => PosSimple::Interjection,
-            PartOfSpeech::Noun(_) => PosSimple::Noun,
-            PartOfSpeech::Numeric => PosSimple::Numeric,
-            PartOfSpeech::Pronoun => PosSimple::Pronoun,
-            PartOfSpeech::Prefix => PosSimple::Prefix,
-            PartOfSpeech::Suffix => PosSimple::Suffix,
-            PartOfSpeech::Particle => PosSimple::Particle,
-            PartOfSpeech::Unclassified => PosSimple::Unclassified,
-            PartOfSpeech::Sfx => PosSimple::Sfx,
-            PartOfSpeech::Verb(_) | PartOfSpeech::AuxilaryVerb => PosSimple::Verb,
+/// Converts a `PartOfSpeech` tag to `PosSimple`
+pub fn pos_to_simple(pos: &PartOfSpeech) -> Vec<PosSimple> {
+    let simple = match pos {
+        PartOfSpeech::Adjective(_) | PartOfSpeech::AuxilaryAdj => PosSimple::Adjective,
+        PartOfSpeech::Adverb | PartOfSpeech::AdverbTo => PosSimple::Adverb,
+        PartOfSpeech::Auxilary => PosSimple::Auxilary,
+        PartOfSpeech::Conjungation => PosSimple::Conjungation,
+        PartOfSpeech::Counter => PosSimple::Counter,
+        PartOfSpeech::Expr => PosSimple::Expr,
+        PartOfSpeech::Interjection => PosSimple::Interjection,
+        PartOfSpeech::Noun(_) => PosSimple::Noun,
+        PartOfSpeech::Numeric => PosSimple::Numeric,
+        PartOfSpeech::Pronoun => PosSimple::Pronoun,
+        PartOfSpeech::Prefix => PosSimple::Prefix,
+        PartOfSpeech::Suffix => PosSimple::Suffix,
+        PartOfSpeech::Particle => PosSimple::Particle,
+        PartOfSpeech::Unclassified => PosSimple::Unclassified,
+        PartOfSpeech::Sfx => PosSimple::Sfx,
+        PartOfSpeech::Verb(_) | PartOfSpeech::AuxilaryVerb => PosSimple::Verb,
+    };
+
+    if let PartOfSpeech::Verb(verb) = pos {
+        match verb {
+            VerbType::Intransitive => vec![simple, PosSimple::Intransitive],
+            VerbType::Transitive => vec![simple, PosSimple::Transitive],
+            _ => vec![simple],
         }
+    } else {
+        vec![simple]
     }
 }
 

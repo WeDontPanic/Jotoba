@@ -5,7 +5,7 @@
 // #-QuickSearches, hardcoded to reduce server callbacks
 const hashtags = [
     "#adverb", "#auxilary", "#conjungation", "#noun", "#prefix", "#suffix", "#particle", "#sfx",
-    "#verb", "#adjective", "#counter", "#expression", "#interjection", "#pronoun", "#nummeric", 
+    "#verb", "#adjective", "#counter", "#expression", "#interjection", "#pronoun", "#numeric", "#transitive", "#intransitive",
     "#unclassified", "#word", "#sentence", "#name", "#kanji",
 ];
 
