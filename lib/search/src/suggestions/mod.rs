@@ -62,8 +62,17 @@ impl<T: TextStore> SuggestionSearch<T> {
         // Idea: calculate jaro_winkler for each entry once and then use this set to compare the
         // values
         res.sort_by(|l, r| {
-            Self::result_order_value(query, r.get_text())
-                .cmp(&Self::result_order_value(query, l.get_text()))
+            let a_jaro = Self::result_order_value(query, r.get_text());
+            let b_jaro = Self::result_order_value(query, l.get_text());
+
+            let a_ord = r.ord();
+            let b_ord = l.ord();
+
+            if (a_jaro > 70 || b_jaro > 70 || a_jaro == b_jaro) && (a_ord > 0 || b_ord > 0) {
+                r.ord().cmp(&l.ord())
+            } else {
+                a_jaro.cmp(&b_jaro)
+            }
         });
 
         // Remove duplicates
