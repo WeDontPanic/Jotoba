@@ -3,7 +3,7 @@ mod jaro_search;
 pub mod store_item;
 pub mod text_store;
 
-use std::collections::HashMap;
+use std::{cmp::Ordering, collections::HashMap};
 
 use binary_search::Search as BinarySearch;
 use jaro_search::Search as JaroSearch;
@@ -25,6 +25,8 @@ pub async fn kanji_meaning<'a, T: TextStore>(
         let jaro_res = dict.find_jaro_async(query, 5).await;
         items.extend(jaro_res);
     }
+
+    items.sort_by(|a, b| result_order::<T>(a, b, query));
 
     Some(items)
 }
@@ -58,38 +60,18 @@ impl<T: TextStore> SuggestionSearch<T> {
             }
         }
 
-        // Order by best match against `query`
-        // TODO don't use jaro_winkler algorithm within order function since its way to heavy
-        // Idea: calculate jaro_winkler for each entry once and then use this set to compare the
-        // values
-        res.sort_by(|l, r| {
-            let a_jaro = Self::result_order_value(query, r.get_text());
-            let b_jaro = Self::result_order_value(query, l.get_text());
-
-            let a_ord = r.ord();
-            let b_ord = l.ord();
-
-            if diff(b_jaro, 100) > 10 && diff(a_jaro, 100) > 10 && (a_ord > 0 || b_ord > 0) {
-                r.ord().cmp(&l.ord())
-            } else {
-                a_jaro.cmp(&b_jaro)
-            }
-        });
+        res.sort_by(|a, b| result_order::<T>(a, b, query));
 
         // Try to remove completely trash results
         let mut res: Vec<_> = res
             .into_iter()
-            .filter(|i| Self::result_order_value(query, i.get_text()) >= 55)
+            .filter(|i| result_order_value(query, i.get_text()) >= 55)
             .collect();
 
         // Remove duplicates
         res.dedup_by(|a, b| a.get_hash() == b.get_hash() || a.get_text() == b.get_text());
 
         Some(res)
-    }
-
-    fn result_order_value(query: &str, v: &str) -> u32 {
-        (jaro_winkler(&v.get_text().to_lowercase(), &query.to_lowercase()) * 100_f64) as u32
     }
 
     /// Searches for one language
@@ -105,6 +87,25 @@ impl<T: TextStore> SuggestionSearch<T> {
 
         Some(res)
     }
+}
+
+// Order by best match against `query`
+// TODO don't use jaro_winkler algorithm within order function since its way to heavy
+// Idea: calculate jaro_winkler for each entry once and then use this set to compare the
+// values
+fn result_order<T: TextStore>(a: &T::Item, b: &T::Item, query: &str) -> Ordering {
+    let a_jaro = result_order_value(query, a.get_text());
+    let b_jaro = result_order_value(query, b.get_text());
+
+    if diff(b_jaro, 100) > 10 && diff(a_jaro, 100) > 10 && (b.ord() > 0 || b.ord() > 0) {
+        b.ord().cmp(&a.ord())
+    } else {
+        b_jaro.cmp(&a_jaro)
+    }
+}
+
+fn result_order_value(query: &str, v: &str) -> u32 {
+    (jaro_winkler(&v.get_text().to_lowercase(), &query.to_lowercase()) * 100_f64) as u32
 }
 
 #[derive(Clone, Copy)]

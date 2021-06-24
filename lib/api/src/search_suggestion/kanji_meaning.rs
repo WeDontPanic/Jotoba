@@ -22,7 +22,6 @@ pub async fn suggestions(_client: &Pool, query: &Query) -> Result<Response, Rest
     };
 
     items.dedup_by(|a, b| a.literal == b.literal);
-    items.sort_by(|a, b| a.score.cmp(&b.score).reverse());
 
     let res = items.into_iter().map(item_to_wp).take(10).collect();
 

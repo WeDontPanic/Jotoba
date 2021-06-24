@@ -39,6 +39,10 @@ impl store_item::Item for KanjiMeaningSuggestionItem {
     fn get_hash(&self) -> eudex::Hash {
         self.hash
     }
+
+    fn ord(&self) -> usize {
+        self.score as usize
+    }
 }
 
 impl Parseable for KanjiMeaningSuggestionItem {
