@@ -83,6 +83,16 @@ impl ResponseError for RestError {
     }
 }
 
+impl From<super::Error> for RestError {
+    fn from(err: super::Error) -> Self {
+        match err {
+            crate::Error::NotFound => Self::NotFound,
+            crate::Error::PoolError(pool_err) => pool_err.into(),
+            _ => Self::Internal,
+        }
+    }
+}
+
 impl From<PoolError> for RestError {
     fn from(e: PoolError) -> Self {
         match e {

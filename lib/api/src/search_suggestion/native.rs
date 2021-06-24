@@ -1,8 +1,8 @@
 use std::iter::FromIterator;
 
-use deadpool_postgres::tokio_postgres::Client;
 use futures::{stream::FuturesOrdered, TryStreamExt};
 use itertools::Itertools;
+use models::queryable::prepared_query;
 
 use super::*;
 
@@ -19,27 +19,27 @@ pub(super) async fn suggestions(
 async fn get_sequence_ids(client: &Pool, query_str: &str) -> Result<Vec<WordPair>, RestError> {
     let seq_query = "SELECT sequence FROM dict WHERE reading LIKE $1 ORDER BY jlpt_lvl DESC NULLS LAST, ARRAY_LENGTH(priorities,1) DESC NULLS LAST, LENGTH(reading) LIMIT $2";
 
-    let client = client.get().await?;
+    let mut sequences: Vec<i32> = prepared_query(
+        &client,
+        seq_query,
+        &[&format!("{}%", query_str).as_str(), &MAX_RESULTS],
+    )
+    .await?;
 
-    let rows = client
-        .query(
-            seq_query,
-            &[&format!("{}%", query_str).as_str(), &MAX_RESULTS],
-        )
-        .await?;
-
-    let mut sequences: Vec<i32> = rows.into_iter().map(|i| i.get(0)).collect();
     sequences.dedup();
 
     Ok(load_words(&client, &sequences).await?)
 }
 
-async fn load_words(client: &Client, sequences: &[i32]) -> Result<Vec<WordPair>, RestError> {
+async fn load_words(client: &Pool, sequences: &[i32]) -> Result<Vec<WordPair>, RestError> {
     let word_query =
         "select reading, kanji from dict where sequence = $1 and (is_main or kanji = false)";
 
-    let prepared = client.prepare(word_query).await?;
+    let client = client.get().await?;
 
+    let prepared = client.prepare_cached(word_query).await?;
+
+    let client = &client;
     Ok(FuturesOrdered::from_iter(sequences.into_iter().map(|i| {
         let cloned = prepared.clone();
         async move { client.query(&cloned, &[&i]).await }
