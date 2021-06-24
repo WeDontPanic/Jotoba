@@ -9,7 +9,7 @@ use import::has_required_data;
 #[actix_web::main]
 pub async fn main() {
     let options = cli::parse();
-    let pool = models::connect();
+    let pool = models::connect().await;
 
     // Run import process on --import/-i
     if options.import {

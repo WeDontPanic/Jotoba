@@ -67,7 +67,7 @@ CREATE TABLE kanji_meaning(
 );
 CREATE INDEX index_kanji_meaning_value_pgroonga on kanji_meaning using pgroonga (value);
 CREATE INDEX index_kanji_meaning_value_text_pattern_ops on kanji_meaning (value text_pattern_ops);
-CREATE INDEX index_kanji_meaning_valuek ON sentence (content);
+CREATE INDEX index_kanji_meaning_valuek ON kanji_meaning (value);
 
 CREATE TABLE name (
   id SERIAL PRIMARY KEY,

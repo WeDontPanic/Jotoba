@@ -23,6 +23,7 @@ async-std = "1.9.0"
 tokio-postgres = "0.7.2"
 deadpool-postgres = "0.9.0"
 async-trait = "0.1.50"
+refinery = { version = "0.5.0", features = ["tokio-postgres"]}
 
 [features]
 default = []
