@@ -1,6 +1,6 @@
 use itertools::Itertools;
 use rand::{distributions::Alphanumeric, thread_rng, Rng};
-use std::cmp::Ordering;
+use std::{cmp::Ordering, ops::Sub};
 
 /// Return true if both slices have the same elments without being stored to be in the same order
 pub fn same_elements<T>(v1: &[T], v2: &[T]) -> bool
@@ -251,4 +251,13 @@ pub fn rand_alpha_numeric(len: usize) -> String {
         .take(len)
         .map(char::from)
         .collect()
+}
+
+/// Calculates the difference between `a` and `b`. This method never fails
+pub fn diff<T: Sub<Output = T> + Ord>(a: T, b: T) -> T {
+    if a > b {
+        a - b
+    } else {
+        b - a
+    }
 }

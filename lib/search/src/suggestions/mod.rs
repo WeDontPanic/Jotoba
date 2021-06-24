@@ -10,6 +10,7 @@ use jaro_search::Search as JaroSearch;
 use parse::jmdict::languages::Language;
 use strsim::jaro_winkler;
 use text_store::TextStore;
+use utils::diff;
 
 use self::{jaro_search::AsyncSearch, store_item::Item};
 
@@ -68,12 +69,18 @@ impl<T: TextStore> SuggestionSearch<T> {
             let a_ord = r.ord();
             let b_ord = l.ord();
 
-            if (a_jaro > 70 || b_jaro > 70 || a_jaro == b_jaro) && (a_ord > 0 || b_ord > 0) {
+            if diff(b_jaro, 100) > 10 && diff(a_jaro, 100) > 10 && (a_ord > 0 || b_ord > 0) {
                 r.ord().cmp(&l.ord())
             } else {
                 a_jaro.cmp(&b_jaro)
             }
         });
+
+        // Try to remove completely trash results
+        let mut res: Vec<_> = res
+            .into_iter()
+            .filter(|i| Self::result_order_value(query, i.get_text()) >= 55)
+            .collect();
 
         // Remove duplicates
         res.dedup_by(|a, b| a.get_hash() == b.get_hash() || a.get_text() == b.get_text());
