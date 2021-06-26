@@ -76,7 +76,7 @@ impl Item {
     }
 
     pub fn get_stroke_frames_url(&self) -> String {
-        format!("assets/svg/{}_frames.svg", self.kanji.kanji.literal)
+        format!("/assets/svg/{}_frames.svg", self.kanji.kanji.literal)
     }
 
     // Returns true if the kanji has a stroke animation file
