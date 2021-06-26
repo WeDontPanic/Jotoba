@@ -43,11 +43,11 @@ pub(super) async fn start(pool: Pool) -> std::io::Result<()> {
 
     let config_clone = config.clone();
 
-    if let Err(err) = api::search_suggestion::load_word_suggestions(&config) {
+    if let Err(err) = api::completions::load_word_suggestions(&config) {
         log::error!("Failed loading suggestions: {}", err);
     }
 
-    if let Err(err) = api::search_suggestion::load_meaning_suggestions(&config) {
+    if let Err(err) = api::completions::load_meaning_suggestions(&config) {
         log::error!("Failed loading kanji suggestions: {}", err);
     }
 
@@ -73,13 +73,17 @@ pub(super) async fn start(pool: Pool) -> std::io::Result<()> {
             // API
             .service(
                 actixweb::scope("/api")
+                    .service(
+                        actixweb::scope("search")
+                            .route("words", actixweb::post().to(api::search::word::word_search)),
+                    )
                     .route(
                         "/kanji/by_radical",
                         actixweb::post().to(api::radical::kanji_by_radicals),
                     )
                     .route(
                         "/suggestion",
-                        actixweb::post().to(api::search_suggestion::suggestion_ep),
+                        actixweb::post().to(api::completions::suggestion_ep),
                     ),
             )
             // Static files

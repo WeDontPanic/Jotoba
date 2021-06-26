@@ -2348,6 +2348,8 @@ dependencies = [
  "postgres-types",
  "quick-xml",
  "regex",
+ "serde",
+ "serde_derive",
  "strum",
  "strum_macros",
  "tokio-postgres",

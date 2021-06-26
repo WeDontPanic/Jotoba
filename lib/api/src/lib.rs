@@ -1,2 +1,3 @@
 pub mod radical;
-pub mod search_suggestion;
+pub mod search;
+pub mod completions;

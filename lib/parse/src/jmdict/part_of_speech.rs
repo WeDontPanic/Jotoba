@@ -163,7 +163,9 @@ impl ToSql for PosSimple {
     to_sql_checked!();
 }
 
-#[derive(Debug, PartialEq, Clone, Copy)]
+use serde::Serialize;
+
+#[derive(Debug, PartialEq, Clone, Copy, Serialize, PartialOrd, Ord, Eq)]
 pub enum PartOfSpeech {
     // Adjectives
     Adjective(AdjectiveType),
@@ -255,7 +257,7 @@ impl ToSql for PartOfSpeech {
     to_sql_checked!();
 }
 
-#[derive(Debug, Clone, Copy, PartialEq)]
+#[derive(Debug, Clone, Copy, PartialEq, Serialize, PartialOrd, Ord, Eq)]
 pub enum VerbType {
     Nidan(NidanVerb),
     Yodan(VerbEnding),
@@ -270,7 +272,7 @@ pub enum VerbType {
     Kuru,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq)]
+#[derive(Debug, Clone, Copy, PartialEq, Serialize, PartialOrd, Ord, Eq)]
 pub enum AdjectiveType {
     PreNounVerb,
     /// I Adjective
@@ -286,7 +288,7 @@ pub enum AdjectiveType {
     Taru,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq)]
+#[derive(Debug, Clone, Copy, PartialEq, Serialize, PartialOrd, Ord, Eq)]
 pub enum NounType {
     Normal,
     Adverbial,
@@ -295,7 +297,7 @@ pub enum NounType {
     Temporal,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq)]
+#[derive(Debug, Clone, Copy, PartialEq, Serialize, PartialOrd, Ord, Eq)]
 pub enum IrregularVerb {
     Nu,
     Ru,
@@ -305,20 +307,20 @@ pub enum IrregularVerb {
     Su,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq)]
+#[derive(Debug, Clone, Copy, PartialEq, Serialize, PartialOrd, Ord, Eq)]
 pub struct NidanVerb {
     class: VerbClass,
     ending: VerbEnding,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq)]
+#[derive(Debug, Clone, Copy, PartialEq, Serialize, PartialOrd, Ord, Eq)]
 pub enum VerbClass {
     Upper,
     Lower,
     None,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq)]
+#[derive(Debug, Clone, Copy, PartialEq, Serialize, PartialOrd, Ord, Eq)]
 pub enum VerbEnding {
     Bu,
     Dzu,
@@ -335,7 +337,7 @@ pub enum VerbEnding {
     Zu,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq)]
+#[derive(Debug, Clone, Copy, PartialEq, Serialize, PartialOrd, Ord, Eq)]
 pub enum GodanVerbEnding {
     Bu,
     Gu,
