@@ -75,7 +75,11 @@ pub(super) async fn start(pool: Pool) -> std::io::Result<()> {
                 actixweb::scope("/api")
                     .service(
                         actixweb::scope("search")
-                            .route("words", actixweb::post().to(api::search::word::word_search)),
+                            .route("words", actixweb::post().to(api::search::word::word_search))
+                            .route(
+                                "kanji",
+                                actixweb::post().to(api::search::kanji::kanji_search),
+                            ),
                     )
                     .route(
                         "/kanji/by_radical",

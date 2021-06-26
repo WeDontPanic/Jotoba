@@ -360,6 +360,10 @@ impl Kanji {
             .map(|i| i.get(0))
             .collect())
     }
+
+    pub fn get_stroke_frames_url(&self) -> String {
+        format!("/assets/svg/{}_frames.svg", self.literal)
+    }
 }
 
 pub fn format_reading_with_literal(literal: &str, reading: &str, r_type: ReadingType) -> String {

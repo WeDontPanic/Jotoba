@@ -1,60 +1,16 @@
-use models::kanji::KanjiResult;
 use parse::jmdict::{
     dialect::Dialect, field::Field, languages::Language, misc::Misc, part_of_speech::PartOfSpeech,
 };
 use search::word::result::{self, Item, WordResult};
 use serde::Serialize;
 
+use crate::search::kanji::response::Kanji;
+
 /// The API response struct for a word search
 #[derive(Serialize, Default)]
 pub struct Response {
     kanji: Vec<Kanji>,
     words: Vec<Word>,
-}
-
-/// Represents a single Kanji used to write one of the words occurring in word results
-#[derive(Serialize, Default)]
-pub struct Kanji {
-    literal: String,
-    meanings: Vec<String>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    grade: Option<i32>,
-    stroke_count: i32,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    frequency: Option<i32>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    jlpt: Option<i32>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    variant: Option<Vec<String>>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    onyomi: Option<Vec<String>>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    kunyomi: Option<Vec<String>>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    chinese: Option<Vec<String>>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    korean_r: Option<Vec<String>>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    korean_h: Option<Vec<String>>,
-}
-
-impl From<&KanjiResult> for Kanji {
-    fn from(kanji: &KanjiResult) -> Self {
-        Self {
-            literal: kanji.kanji.literal.clone(),
-            meanings: kanji.meanings.clone(),
-            grade: kanji.kanji.grade,
-            stroke_count: kanji.kanji.stroke_count,
-            frequency: kanji.kanji.frequency,
-            jlpt: kanji.kanji.jlpt,
-            variant: kanji.kanji.variant.clone(),
-            onyomi: kanji.kanji.onyomi.clone(),
-            kunyomi: kanji.kanji.kunyomi.clone(),
-            chinese: kanji.kanji.chinese.clone(),
-            korean_r: kanji.kanji.korean_r.clone(),
-            korean_h: kanji.kanji.korean_h.clone(),
-        }
-    }
 }
 
 /// Represents a single Word result with 1 (main) Japanese reading and n glosses
@@ -65,6 +21,8 @@ pub struct Word {
     senses: Vec<Sense>,
     #[serde(skip_serializing_if = "Option::is_none")]
     alt_readings: Option<Vec<Reading>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    audio: Option<String>,
 }
 
 #[derive(Serialize, Default)]
@@ -144,6 +102,10 @@ impl From<&result::Word> for Word {
             },
             senses,
             alt_readings: None,
+            audio: word
+                .audio_file()
+                .as_ref()
+                .map(|i| format!("/assets/audio/{}", i)),
         }
     }
 }
