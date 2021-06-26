@@ -63,21 +63,10 @@ impl From<&KanjiResult> for Kanji {
 impl From<result::Item> for Kanji {
     fn from(item: result::Item) -> Self {
         Self {
-            literal: item.kanji.kanji.literal.clone(),
-            meanings: item.kanji.meanings.clone(),
-            grade: item.kanji.kanji.grade,
-            stroke_count: item.kanji.kanji.stroke_count,
-            frequency: item.kanji.kanji.frequency,
-            jlpt: item.kanji.kanji.jlpt,
-            variant: item.kanji.kanji.variant.clone(),
-            onyomi: item.kanji.kanji.onyomi.clone(),
-            kunyomi: item.kanji.kanji.kunyomi.clone(),
-            chinese: item.kanji.kanji.chinese.clone(),
-            korean_r: item.kanji.kanji.korean_r.clone(),
-            korean_h: item.kanji.kanji.korean_h.clone(),
             parts: item.parts.clone(),
             radical: Some(item.radical.literal),
             stroke_frames: Some(item.kanji.kanji.get_stroke_frames_url()),
+            ..(&item.kanji).into()
         }
     }
 }
