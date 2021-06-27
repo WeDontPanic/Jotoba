@@ -18,12 +18,10 @@ mod embedded {
     embed_migrations!("../../db_migrations");
 }
 
-pub async fn connect() -> Pool {
+pub async fn connect() -> (Pool, String) {
     dotenv().ok();
 
     let connection_str = env::var("DATABASE_URL").expect("DATABASE_URL must be set");
-
-    migrate(&connection_str).await;
 
     let pg_config =
         tokio_postgres::Config::from_str(&connection_str).expect("Failed to parse config");
@@ -35,7 +33,7 @@ pub async fn connect() -> Pool {
 
     let mgr = Manager::from_config(pg_config, NoTls, mgr_config);
 
-    Pool::new(mgr, 16)
+    (Pool::new(mgr, 16), connection_str)
 }
 
 pub async fn migrate(connection_str: &str) {

@@ -107,7 +107,7 @@ impl<'a> WordSearch<'a> {
         // always search by a language.
         let lang = self.language.unwrap_or_default();
 
-        Ok(Self::load_words_by_seqv2(
+        Ok(Self::load_words_by_seq(
             &self.pool,
             &seq_ids,
             lang,
@@ -125,12 +125,12 @@ impl<'a> WordSearch<'a> {
         F: Fn(&mut Vec<Word>),
     {
         // Load sequence ids to display
-        let seq_ids = self.get_sequence_ids_by_nativev2().await?;
+        let seq_ids = self.get_sequence_ids_by_native().await?;
 
         // always search by a language.
         let lang = self.language.unwrap_or_default();
 
-        let (words, original_len) = Self::load_words_by_seqv2(
+        let (words, original_len) = Self::load_words_by_seq(
             &self.pool,
             &seq_ids,
             lang,
@@ -157,7 +157,7 @@ impl<'a> WordSearch<'a> {
     }
 
     /// Get search results of seq_ids
-    pub async fn load_words_by_seqv2<F>(
+    pub async fn load_words_by_seq<F>(
         db: &Pool,
         seq_ids: &[i32],
         lang: Language,
@@ -172,13 +172,13 @@ impl<'a> WordSearch<'a> {
             return Ok((vec![], 0));
         }
 
-        let dicts: Vec<Dict> = Self::load_dictionariesv2(&db, &seq_ids).await?;
+        let dicts: Vec<Dict> = Self::load_dictionaries(&db, &seq_ids).await?;
         let mut word_items = convert_dicts_to_words(dicts);
         let original_len = word_items.len();
         ordering(&mut word_items);
 
         let required_sequences: Vec<i32> = word_items.iter().map(|i| i.sequence).collect_vec();
-        let senses: Vec<sense::Sense> = Self::load_sensesv2(&db, &required_sequences, lang).await?;
+        let senses: Vec<sense::Sense> = Self::load_senses(&db, &required_sequences, lang).await?;
 
         Ok((
             merge_words_with_senses(
@@ -218,7 +218,7 @@ impl<'a> WordSearch<'a> {
     }
 
     /// Find the sequence ids of the results to load
-    async fn get_sequence_ids_by_nativev2(&mut self) -> Result<Vec<i32>, Error> {
+    async fn get_sequence_ids_by_native(&mut self) -> Result<Vec<i32>, Error> {
         let select = "SELECT sequence, LENGTH(reading) FROM dict";
 
         let sql = if self.search.limit > 0 {
@@ -236,7 +236,7 @@ impl<'a> WordSearch<'a> {
     }
 
     /// Load all senses for the sequence ids
-    async fn load_sensesv2(
+    async fn load_senses(
         db: &Pool,
         sequence_ids: &[i32],
         lang: Language,
@@ -290,7 +290,7 @@ impl<'a> WordSearch<'a> {
     }
 
     /// Load Dictionaries of all sequences
-    pub async fn load_dictionariesv2(db: &Pool, sequence_ids: &[i32]) -> Result<Vec<Dict>, Error> {
+    pub async fn load_dictionaries(db: &Pool, sequence_ids: &[i32]) -> Result<Vec<Dict>, Error> {
         if sequence_ids.is_empty() {
             return Ok(vec![]);
         }

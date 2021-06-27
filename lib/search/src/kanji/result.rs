@@ -39,8 +39,8 @@ impl Item {
         let radical = radical.unwrap();
 
         let ((kun_words, _), (on_words, _)): ((Vec<Word>, _), (Vec<Word>, _)) = try_join!(
-            WordSearch::load_words_by_seqv2(&pool, &kun_dicts, lang, show_english, &None, |_| ()),
-            WordSearch::load_words_by_seqv2(&pool, &on_dicts, lang, show_english, &None, |_| ())
+            WordSearch::load_words_by_seq(&pool, &kun_dicts, lang, show_english, &None, |_| ()),
+            WordSearch::load_words_by_seq(&pool, &on_dicts, lang, show_english, &None, |_| ())
         )?;
 
         let loaded_kd = kun_words

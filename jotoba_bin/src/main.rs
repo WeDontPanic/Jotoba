@@ -9,7 +9,12 @@ use import::has_required_data;
 #[actix_web::main]
 pub async fn main() {
     let options = cli::parse();
-    let pool = models::connect().await;
+    let (pool, db_dsn) = models::connect().await;
+
+    if !options.skip_migration {
+        // Do DB migration
+        models::migrate(&db_dsn).await;
+    }
 
     // Run import process on --import/-i
     if options.import {

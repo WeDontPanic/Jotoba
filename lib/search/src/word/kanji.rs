@@ -65,7 +65,7 @@ pub(super) async fn by_reading(search: &Search<'_>) -> Result<ResultData, Error>
         return alternative_reading_search(search).await;
     }
 
-    let (mut w, _) = WordSearch::load_words_by_seqv2(
+    let (mut w, _) = WordSearch::load_words_by_seq(
         search.pool,
         &seq_ids,
         search.query.settings.user_lang,
