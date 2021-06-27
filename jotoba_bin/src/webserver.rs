@@ -1,7 +1,11 @@
+use actix_files::NamedFile;
 use deadpool_postgres::Pool;
 use localization::TranslationDict;
 
-use actix_web::{http::header::CACHE_CONTROL, middleware, web as actixweb, App, HttpServer};
+use actix_web::{
+    http::header::{ACCESS_CONTROL_ALLOW_ORIGIN, CACHE_CONTROL},
+    middleware, web as actixweb, App, HttpRequest, HttpServer,
+};
 use config::Config;
 use std::sync::Arc;
 
@@ -63,6 +67,7 @@ pub(super) async fn start(pool: Pool) -> std::io::Result<()> {
             //.wrap(middleware::Compress::default())
             // Static files
             .route("/index.html", actixweb::get().to(frontend::index::index))
+            .route("/docs.html", actixweb::get().to(docs))
             .route("/", actixweb::get().to(frontend::index::index))
             .route(
                 "/search/{query}",
@@ -73,6 +78,9 @@ pub(super) async fn start(pool: Pool) -> std::io::Result<()> {
             // API
             .service(
                 actixweb::scope("/api")
+                    .wrap(
+                        middleware::DefaultHeaders::new().header(ACCESS_CONTROL_ALLOW_ORIGIN, "*"),
+                    )
                     .service(
                         actixweb::scope("search")
                             .route("words", actixweb::post().to(api::search::word::word_search))
@@ -116,6 +124,10 @@ pub(super) async fn start(pool: Pool) -> std::io::Result<()> {
     .bind(&config.server.listen_address)?
     .run()
     .await
+}
+
+async fn docs(req: HttpRequest) -> actix_web::Result<NamedFile> {
+    Ok(NamedFile::open("html/docs.html")?)
 }
 
 fn setup_logger() {

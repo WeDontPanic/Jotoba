@@ -1,0 +1,794 @@
+<html>
+  <head>
+    <meta charset="utf-8">
+    <script type="module" src="https://unpkg.com/rapidoc/dist/rapidoc-min.js"></script>
+    <style>
+    rapi-doc::part(section-servers) { /* <<< targets the server div */
+      color: #888888;
+      margin:0 24px 0 24px;
+      border-radius: 5px;
+    }
+    rapi-doc::part(label-selected-server) { /* <<< targets selected server label */
+      color: #888888;
+    }
+    rapi-doc{ /* <<< targets selected server label */
+      color: #888888;
+    }
+  </style>
+  </head>
+  <body>
+    <rapi-doc id="thedoc" render-style = "read" allow-try="true" theme='dark' allow-authentication = "false" show-header = "false"
+    primary-color ="#34A83C"
+    bg-color = "#202324"
+
+    > </rapi-doc>
+    
+    <script>
+      document.addEventListener('DOMContentLoaded', (event) => {
+        let docEl = document.getElementById("thedoc");
+        let strSpec = `{
+  "swagger": "2.0",
+  "info": {
+    "description": "Jotoba search API",
+    "version": "0.1",
+    "title": "Jotoba"
+  },
+  "host": "jotoba.de",
+  "tags": [
+    {
+      "name": "Search",
+      "description": "Search endpoints to address jotoba from own applications"
+    },
+    {
+      "name": "Radicals",
+      "description": "Radical API"
+    },
+    {
+      "name": "Completion",
+      "description": "Search completion related endpoints"
+    }
+  ],
+  "paths": {
+    "/api/search/words": {
+      "post": {
+        "tags": [
+          "Search"
+        ],
+        "summary": "Search for words",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/RequestPayload"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success response",
+            "schema": {
+              "$ref": "#/definitions/WordResponse"
+            }
+          },
+          "400": {
+            "description": "Bad request. Might occur if the query is empty",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "408": {
+            "description": "Timeout. Occurs if search takes too long",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/api/search/names": {
+      "post": {
+        "tags": [
+          "Search"
+        ],
+        "summary": "Search for japanese names",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/RequestPayload"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success response",
+            "schema": {
+              "$ref": "#/definitions/NameResponse"
+            }
+          },
+          "400": {
+            "description": "Bad request. Might occur if the query is empty",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "408": {
+            "description": "Timeout. Occurs if search takes too long",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/api/search/kanji": {
+      "post": {
+        "tags": [
+          "Search"
+        ],
+        "summary": "Search for kanji",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/RequestPayload"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success response",
+            "schema": {
+              "$ref": "#/definitions/KanjiResponse"
+            }
+          },
+          "400": {
+            "description": "Bad request. Might occur if the query is empty",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "408": {
+            "description": "Timeout. Occurs if search takes too long",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/api/search/sentences": {
+      "post": {
+        "tags": [
+          "Search"
+        ],
+        "summary": "Search for sentences",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/RequestPayload"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success response",
+            "schema": {
+              "$ref": "#/definitions/SentenceResponse"
+            }
+          },
+          "400": {
+            "description": "Bad request. Might occur if the query is empty",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "408": {
+            "description": "Timeout. Occurs if search takes too long",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/api/kanji/by_radical": {
+      "post": {
+        "tags": [
+          "Radicals"
+        ],
+        "summary": "Search kanji by its radicals",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/RadicalsPayload"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success response",
+            "schema": {
+              "$ref": "#/definitions/RadicalsResponse"
+            }
+          },
+          "400": {
+            "description": "Bad request. Might occur if no radicals were passed",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/api/suggestion": {
+      "post": {
+        "tags": [
+          "Completion"
+        ],
+        "summary": "Retrieve word completions for search queries",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/CompletionPayload"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success response",
+            "schema": {
+              "$ref": "#/definitions/CompletionResponse"
+            }
+          },
+          "400": {
+            "description": "Bad request. Might occur if no radicals were passed",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "408": {
+            "description": "Timeout. Occurs if suggestion takes too long",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "RequestPayload": {
+      "type": "object",
+      "required": [
+        "query"
+      ],
+      "properties": {
+        "query": {
+          "type": "string",
+          "example": "東京",
+          "description": "The search query"
+        },
+        "language": {
+          "$ref": "#/definitions/Language"
+        },
+        "no_english": {
+          "type": "boolean",
+          "example": false,
+          "description": "Does not return english results if the provided language differs from english",
+          "default": false
+        }
+      }
+    },
+    "Error": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "example": 400,
+          "description": "Error code"
+        },
+        "error": {
+          "type": "string",
+          "example": "BadRequest",
+          "description": "Error description"
+        },
+        "message": {
+          "type": "string",
+          "example": "Bad request",
+          "description": "Error informations"
+        }
+      }
+    },
+    "WordResponse": {
+      "type": "object",
+      "properties": {
+        "kanji": {
+          "type": "array",
+          "description": "Kanji used to write words found in search",
+          "items": {
+            "$ref": "#/definitions/Kanji"
+          }
+        },
+        "words": {
+          "type": "array",
+          "description": "Words found in search",
+          "items": {
+            "$ref": "#/definitions/Word"
+          }
+        }
+      }
+    },
+    "Kanji": {
+      "type": "object",
+      "properties": {
+        "literal": {
+          "type": "string",
+          "example": "今"
+        },
+        "meanings": {
+          "type": "array",
+          "example": [
+            "now"
+          ],
+          "items": {
+            "type": "string"
+          }
+        },
+        "grade": {
+          "type": "integer",
+          "example": 2
+        },
+        "stroke_count": {
+          "type": "integer",
+          "example": 4
+        },
+        "frequency": {
+          "type": "integer",
+          "example": 49
+        },
+        "jlpt": {
+          "type": "integer",
+          "example": 5
+        },
+        "onyomi": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "example": ""
+          }
+        },
+        "kunyomi": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "example": ""
+          }
+        },
+        "chinese": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "example": ""
+          }
+        },
+        "korean_r": {
+          "type": "array",
+          "description": "Korean reading romanized",
+          "items": {
+            "type": "string",
+            "example": ""
+          }
+        },
+        "korean_h": {
+          "type": "array",
+          "description": "Korean reading(s) in hangul",
+          "items": {
+            "type": "string",
+            "example": ""
+          }
+        },
+        "parts": {
+          "type": "array",
+          "description": "Parts used to construct the kanji. (only available in kanji search)",
+          "items": {
+            "type": "string"
+          }
+        },
+        "radical": {
+          "type": "string",
+          "description": "(only available in kanji search)"
+        },
+        "stroke_frames": {
+          "type": "string",
+          "description": "Path to the stroke order svg image. (only available in kanji search)"
+        }
+      }
+    },
+    "Word": {
+      "type": "object",
+      "properties": {
+        "reading": {
+          "$ref": "#/definitions/Reading"
+        },
+        "common": {
+          "type": "boolean",
+          "description": "Whether the word is a common word or not"
+        },
+        "senses": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Sense"
+          }
+        },
+        "audio": {
+          "type": "string",
+          "example": "/assets/audio/走る【はしる】.ogg",
+          "description": "Path of the audio file for the given word. Only provided if audio file exists"
+        }
+      }
+    },
+    "Reading": {
+      "type": "object",
+      "properties": {
+        "kana": {
+          "type": "string",
+          "example": "はしる",
+          "description": "The kana reading"
+        },
+        "kanji": {
+          "type": "string",
+          "example": "走る",
+          "description": "The kanji reading (if available)"
+        },
+        "furigana": {
+          "type": "string",
+          "example": "[走|はし]る",
+          "description": "An encoded string representing the furigana parts of the kanji reading"
+        }
+      }
+    },
+    "Sense": {
+      "type": "object",
+      "properties": {
+        "glosses": {
+          "type": "array",
+          "example": [
+            "to run"
+          ],
+          "description": "Equal meanings of the japanese word in the specified other language",
+          "items": {
+            "type": "string"
+          }
+        },
+        "pos": {
+          "type": "array",
+          "description": "Part of speech of the provided glosses",
+          "items": {
+            "type": "string"
+          }
+        },
+        "language": {
+          "$ref": "#/definitions/Language"
+        }
+      }
+    },
+    "KanjiResponse": {
+      "type": "object",
+      "properties": {
+        "kanji": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Kanji"
+          }
+        }
+      }
+    },
+    "NameResponse": {
+      "type": "object",
+      "properties": {
+        "names": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Name"
+          }
+        }
+      }
+    },
+    "Name": {
+      "type": "object",
+      "properties": {
+        "kana": {
+          "type": "string",
+          "example": "らん"
+        },
+        "kanji": {
+          "type": "string",
+          "example": "走"
+        },
+        "transcription": {
+          "type": "string",
+          "example": "Ran"
+        },
+        "name_type": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "Company",
+              "Female",
+              "Male",
+              "Place",
+              "Given",
+              "Organization",
+              "Person",
+              "Product",
+              "RailwayStation",
+              "Surname",
+              "Unclassified",
+              "Work"
+            ]
+          }
+        }
+      }
+    },
+    "SentenceResponse": {
+      "type": "object",
+      "properties": {
+        "sentences": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Sentence"
+          }
+        }
+      }
+    },
+    "Language": {
+      "type": "string",
+      "enum": [
+        "English",
+        "German",
+        "Spanish",
+        "Russain",
+        "Swedish",
+        "French",
+        "Dutch",
+        "Hungarian",
+        "Slovenian"
+      ]
+    },
+    "Sentence": {
+      "properties": {
+        "content": {
+          "type": "string",
+          "example": "いい天気です"
+        },
+        "furigana": {
+          "type": "string",
+          "example": "いい[天気|てん|き]です"
+        },
+        "translation": {
+          "type": "string",
+          "example": "It is a nice day"
+        },
+        "language": {
+          "type": "string",
+          "example": "English"
+        }
+      }
+    },
+    "RadicalsPayload": {
+      "type": "object",
+      "properties": {
+        "radicals": {
+          "type": "array",
+          "example": [
+            "山",
+            "一",
+            "冂",
+            "干"
+          ],
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "description": "Payload for kanji-by-radicals search"
+    },
+    "RadicalsResponse": {
+      "type": "object",
+      "properties": {
+        "kanji": {
+          "type": "array",
+          "description": "All kanji which can be built using the provided radicals. The keys of the objects are the stroke counts",
+          "items": {
+            "type": "string"
+          }
+        },
+        "possible_radicals": {
+          "type": "array",
+          "example": [
+            "小",
+            "岡",
+            "幺",
+            "糸"
+          ],
+          "description": "Left over radicals which will have a non empty kanji result",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "description": "Kanji-by-radicals response"
+    },
+    "CompletionPayload": {
+      "type": "object",
+      "properties": {
+        "input": {
+          "type": "string",
+          "example": "東",
+          "description": "Current search query to find completions for"
+        },
+        "lang": {
+          "type": "string",
+          "enum": [
+            "en-US",
+            "de-DE",
+            "es-ES",
+            "fr-FR",
+            "nl-NL",
+            "sv-SE",
+            "ru",
+            "hu",
+            "sl-SI"
+          ]
+        },
+        "search_type": {
+          "$ref": "#/definitions/SearchType"
+        }
+      },
+      "description": "Payload for completion request"
+    },
+    "CompletionResponse": {
+      "type": "object",
+      "properties": {
+        "suggestions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Suggestion"
+          }
+        },
+        "suggestion_type": {
+          "type": "string",
+          "description": "Type of suggestion",
+          "default": "Default",
+          "enum": [
+            "Default",
+            "KanjiReading"
+          ]
+        }
+      },
+      "description": "Completion response"
+    },
+    "Suggestion": {
+      "type": "object",
+      "properties": {
+        "primary": {
+          "type": "string",
+          "example": "ねこ"
+        },
+        "secondary": {
+          "type": "string",
+          "example": "猫"
+        }
+      },
+      "description": "A single suggestion item"
+    },
+    "SearchType": {
+      "type": "integer",
+      "description": "Type of search (Words, Kanji, Sentences, Names)",
+      "enum": [
+        "0",
+        "1",
+        "2",
+        "3"
+      ]
+    }
+  }
+}
+`;
+        let objSpec = JSON.parse(strSpec);
+        docEl.loadSpec(objSpec);
+      })
+    </script>
+
+  </body>
+</html>
+
