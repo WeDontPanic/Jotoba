@@ -79,6 +79,11 @@ pub(super) async fn start(pool: Pool) -> std::io::Result<()> {
                             .route(
                                 "kanji",
                                 actixweb::post().to(api::search::kanji::kanji_search),
+                            )
+                            .route("names", actixweb::post().to(api::search::name::name_search))
+                            .route(
+                                "sentences",
+                                actixweb::post().to(api::search::sentence::sentence_search),
                             ),
                     )
                     .route(
