@@ -64,17 +64,23 @@ pub(super) async fn start(pool: Pool) -> std::io::Result<()> {
             // Static files
             .route("/index.html", actixweb::get().to(frontend::index::index))
             .route("/", actixweb::get().to(frontend::index::index))
-            .route("/search", actixweb::get().to(frontend::search_ep::search))
+            .route(
+                "/search/{query}",
+                actixweb::get().to(frontend::search_ep::search),
+            )
             .route("/about", actixweb::get().to(frontend::about::about))
             .default_service(actix_web::Route::new().to(frontend::web_error::not_found))
             // API
-            .route(
-                "/api/kanji/by_radical",
-                actixweb::post().to(api::radical::kanji_by_radicals),
-            )
-            .route(
-                "/api/suggestion",
-                actixweb::post().to(api::search_suggestion::suggestion_ep),
+            .service(
+                actixweb::scope("/api")
+                    .route(
+                        "/kanji/by_radical",
+                        actixweb::post().to(api::radical::kanji_by_radicals),
+                    )
+                    .route(
+                        "/suggestion",
+                        actixweb::post().to(api::search_suggestion::suggestion_ep),
+                    ),
             )
             // Static files
             .service(

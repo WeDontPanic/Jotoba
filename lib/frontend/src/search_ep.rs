@@ -22,28 +22,25 @@ use super::web_error;
 
 #[derive(Deserialize, Debug)]
 pub struct QueryStruct {
-    #[serde(rename = "search")]
-    pub query: Option<String>,
-    #[serde(rename = "type")]
+    #[serde(rename = "t")]
     pub search_type: Option<QueryType>,
-    #[serde(rename = "word_index")]
+    #[serde(rename = "i")]
     pub word_index: Option<usize>,
     #[serde(rename = "page")]
     pub page: Option<usize>,
+
+    #[serde(skip_serializing, skip_deserializing)]
+    pub query_str: String,
 }
 
 impl QueryStruct {
     /// Adjusts the search query trim and map empty search queries to Option::None.
     /// Ensures `search_type` is always 'Some()'
-    fn adjust(&self) -> Self {
-        let search_query = self
-            .query
-            .clone()
-            .map(|i| i.trim().to_string())
-            .and_then(|i| (!i.is_empty()).then(|| i));
+    fn adjust(&self, query_str: String) -> Self {
+        let query_str = query_str.trim().to_string();
 
         QueryStruct {
-            query: search_query,
+            query_str,
             search_type: Some(self.search_type.unwrap_or_default()),
             page: self.page,
             word_index: self.word_index,
@@ -53,7 +50,7 @@ impl QueryStruct {
     /// Returns a [`QueryParser`] of the query
     fn as_query_parser(&self, user_settings: UserSettings) -> QueryParser {
         QueryParser::new(
-            self.query.clone().unwrap_or_default(),
+            self.query_str.clone(),
             self.search_type.unwrap_or_default(),
             user_settings,
             self.page.unwrap_or_default(),
@@ -65,6 +62,7 @@ impl QueryStruct {
 /// Endpoint to perform a search
 pub async fn search(
     pool: web::Data<Pool>,
+    query: web::Path<String>,
     query_data: web::Query<QueryStruct>,
     locale_dict: web::Data<Arc<TranslationDict>>,
     config: web::Data<Config>,
@@ -75,7 +73,11 @@ pub async fn search(
     //session::init(&session, &settings);
 
     // Parse query and redirect to home on error
-    let query = match query_data.adjust().as_query_parser(settings).parse() {
+    let query = match query_data
+        .adjust(query.to_string())
+        .as_query_parser(settings)
+        .parse()
+    {
         Some(k) => k,
         None => return Ok(redirect_home()),
     };

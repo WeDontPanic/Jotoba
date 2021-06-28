@@ -400,3 +400,11 @@ function onSuggestionClick(element) {
     activateSelection(element);
     document.getElementsByClassName("btn-search")[0].click()
 }
+
+// Interrupts the form's submit and makes the user visit the correct page
+function onSearchStart() {
+    var search_value = $('#search').val();
+    var search_type = $('#search-type').val();
+    window.location = window.location.origin + "/search/" + search_value + "?t=" + search_type;
+    return false;
+}
