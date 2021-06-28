@@ -140,10 +140,11 @@ function copyTranslationAndShowMessage(textParent) {
 function changeSearchType(html, newType) {
     var search_value = $('#search').val();
     if (search_value.length > 0) {
-        var params = new URLSearchParams();
-        params.set('type', newType);
-        params.set('search', search_value);
-        window.location = window.location.origin + "/search?" + params.toString();
+        var type = "";
+        if (newType != undefined && newType.length > 0) {
+            type = "?t=" + newType;
+        }
+        window.location = window.location.origin + "/search/" + search_value + type;
     }
 }
 

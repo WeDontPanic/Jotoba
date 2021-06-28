@@ -25,7 +25,7 @@
       <!-- Search Inflections -->
       <div class="search-inflection">
         <span>
-          @data.gettext_fmt("{} could be an inflection of", &[&query.query]) <a class="clickable no-align green" href="/search?type=0&search=@inflection.lexeme">@inflection.lexeme</a>@data.gettext(", with these forms:")
+          @data.gettext_fmt("{} could be an inflection of", &[&query.query]) <a class="clickable no-align green" href="/search/@inflection.lexeme">@inflection.lexeme</a>@data.gettext(", with these forms:")
           <br>
           @for form in inflection.forms.iter() {
             @form.as_ref()
@@ -47,7 +47,7 @@
       <div class="d-flex flex-row wrap sentence-reader">
         @for part in sentence_parts {
           @if let Some(ref furigana) = part.furigana {
-            <a id="p@part.pos" href="/search?type=0&search=@query.query&word_index=@part.pos" class="d-flex flex-row sentence-part @selected(part.pos, result.sentence_index)">
+            <a id="p@part.pos" href="/search/@query.query&word_index=@part.pos" class="d-flex flex-row sentence-part @selected(part.pos, result.sentence_index)">
               @for furi_part in furi_from_str(furigana) {
                 @if let Some(kanji) = furi_part.kanji {
                   <div class="furigana-kanji-container">
@@ -66,7 +66,7 @@
               }
             </a>
           } else {
-            <a id="p@part.pos" href="/search?type=0&search=@query.query&word_index=@part.pos" class="inline-kana-preview sentence-part @selected(part.pos, result.sentence_index)">@part.text</a>
+            <a id="p@part.pos" href="/search/@query.query&word_index=@part.pos" class="inline-kana-preview sentence-part @selected(part.pos, result.sentence_index)">@part.text</a>
           }
         }
       </div>
@@ -195,7 +195,7 @@
                     <li id="collocationBtn" class="info-entry noselect" data-toggle="modal" data-target="#coll@word.sequence" class="mdl-menu__item">@data.ngettext("Show Collocations", collocations.len() as u64)</li>
                     <li disabled class="mdl-menu__item" style="height: 10px;"><hr style="margin: 0px; margin-top: 5px;"></li>
                   }
-                  <li id="SentenceSearchBtn" class="info-entry noselect" class="mdl-menu__item"><a class="no-highlight" draggable="false" href="/search?type=2&search=@word.get_reading().reading">@data.gettext("Sentence search")</a></li>
+                  <li id="SentenceSearchBtn" class="info-entry noselect" class="mdl-menu__item"><a class="no-highlight" draggable="false" href="/search/@word.get_reading().reading?t=2">@data.gettext("Sentence search")</a></li>
                 </ul>
 
                 @for (spos, senses_compound) in word.get_senses_orderd(&query).iter().enumerate() { 
@@ -223,13 +223,13 @@
                               @data.gettext_custom(*dialect)
                             }
                             @if let Some(ref antonym) = antonym {
-                              @data.gettext("Antonym of") <a class="clickable no-align green" href="/search?type=0&search=@antonym">@antonym</a>
+                              @data.gettext("Antonym of") <a class="clickable no-align green" href="/search/@antonym">@antonym</a>
                             }
                             @if let Some(ref xref) = xref {
                               @if antonym.is_some() || dialect.is_some() {
                                 .
                               }
-                              @data.gettext("See also") <a class="clickable no-align green" href="/search?type=0&search=@xref">@xref</a>
+                              @data.gettext("See also") <a class="clickable no-align green" href="/search/@xref">@xref</a>
                             }
                           </div>
                         }
@@ -273,7 +273,7 @@
                           <tbody>
                             @for collocation in collocations {
                               <tr>
-                                  <th scope="row"><a class="clickable no-align green" href="/search?type=0&amp;search=@collocation.0">@collocation.0</a></th>
+                                  <th scope="row"><a class="clickable no-align green" href="/search/@collocation.0">@collocation.0</a></th>
                                   <td>@collocation.1</td>
                               </tr>
                             }
@@ -400,7 +400,7 @@
 
             <!-- Kanji and translation -->
             <div class="kanji-entry left d-flex flex-row">
-              <a class="kanji-preview large black" href="/search?type=1&search=@kanji.kanji.literal">
+              <a class="kanji-preview large black" href="/search/@kanji.kanji.literal?t=1">
                 @kanji.kanji.literal
               </a>
               <div class="translation kanji">
@@ -416,7 +416,7 @@
                   @if pos > 0 {
                     <span class="tags no-margin fat right-padding-10">,</span>
                   }
-                  <a class="clickable no-align green" href="/search?type=0&search=@kanji.kanji.literal+@reading">@reading</a>
+                  <a class="clickable no-align green" href="/search/@kanji.kanji.literal+@reading">@reading</a>
                 }
               </div>
             }
@@ -429,7 +429,7 @@
                   @if pos > 0 {
                     <span class="tags no-margin fat right-padding-10">,</span>
                   }
-                  <a class="clickable no-align green" href="/search?type=0&search=@kanji.kanji.literal+@reading">@reading</a>
+                  <a class="clickable no-align green" href="/search/@kanji.kanji.literal+@reading">@reading</a>
                 }
               </div>
             }
