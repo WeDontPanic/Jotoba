@@ -24,7 +24,7 @@ use super::web_error;
 pub struct QueryStruct {
     #[serde(rename = "t")]
     pub search_type: Option<QueryType>,
-    #[serde(rename = "word_index")]
+    #[serde(rename = "i")]
     pub word_index: Option<usize>,
     #[serde(rename = "page")]
     pub page: Option<usize>,
