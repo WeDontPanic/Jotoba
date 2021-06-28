@@ -5,7 +5,9 @@ use postgres_types::{accepts, to_sql_checked};
 use strum_macros::{AsRefStr, EnumString};
 use tokio_postgres::types::{FromSql, ToSql};
 
-#[derive(Debug, PartialEq, Clone, Copy, AsRefStr, EnumString)]
+use serde::Serialize;
+
+#[derive(Debug, PartialEq, Clone, Copy, AsRefStr, EnumString, Serialize)]
 pub enum Dialect {
     #[strum(serialize = "hob")]
     Hokkaido,

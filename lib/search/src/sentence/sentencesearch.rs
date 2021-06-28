@@ -216,10 +216,17 @@ fn merge_results(items: Vec<(Sentence, Translation)>, lang: Language) -> Vec<res
                 .then(|| english[0].content.clone())
                 .unwrap_or_else(|| String::from('-'));
 
+            let language = trans
+                .iter()
+                .filter(|i| i.language != Language::English)
+                .map(|i| i.language)
+                .next()
+                .unwrap_or_default();
+
             Some(result::Sentence {
                 id: i,
                 content: sent.content,
-                language: Language::German,
+                language,
                 furigana: sent.furigana,
                 translation: own[0].content.clone(),
                 eng,

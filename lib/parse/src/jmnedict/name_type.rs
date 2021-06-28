@@ -7,7 +7,9 @@ use tokio_postgres::types::{FromSql, ToSql};
 
 use crate::error;
 
-#[derive(Debug, PartialEq, Clone, Copy, AsRefStr, EnumString)]
+use serde::Serialize;
+
+#[derive(Debug, PartialEq, Clone, Copy, AsRefStr, EnumString, Serialize)]
 pub enum NameType {
     #[strum(serialize = "company")]
     Company,

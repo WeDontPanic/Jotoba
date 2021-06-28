@@ -2,9 +2,8 @@ use deadpool_postgres::Pool;
 use error::api_error::RestError;
 use search::{query::Query, suggestions};
 
-use crate::search_suggestion::WordPair;
-
 use super::{
+    WordPair,
     storage::{KanjiMeaningSuggestionItem, K_MEANING_SUGGESTIONS},
     Response,
 };

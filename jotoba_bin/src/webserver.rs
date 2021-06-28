@@ -1,7 +1,11 @@
+use actix_files::NamedFile;
 use deadpool_postgres::Pool;
 use localization::TranslationDict;
 
-use actix_web::{http::header::CACHE_CONTROL, middleware, web as actixweb, App, HttpServer};
+use actix_web::{
+    http::header::{ACCESS_CONTROL_ALLOW_ORIGIN, CACHE_CONTROL},
+    middleware, web as actixweb, App, HttpRequest, HttpServer,
+};
 use config::Config;
 use std::sync::Arc;
 
@@ -43,11 +47,11 @@ pub(super) async fn start(pool: Pool) -> std::io::Result<()> {
 
     let config_clone = config.clone();
 
-    if let Err(err) = api::search_suggestion::load_word_suggestions(&config) {
+    if let Err(err) = api::completions::load_word_suggestions(&config) {
         log::error!("Failed loading suggestions: {}", err);
     }
 
-    if let Err(err) = api::search_suggestion::load_meaning_suggestions(&config) {
+    if let Err(err) = api::completions::load_meaning_suggestions(&config) {
         log::error!("Failed loading kanji suggestions: {}", err);
     }
 
@@ -63,6 +67,7 @@ pub(super) async fn start(pool: Pool) -> std::io::Result<()> {
             //.wrap(middleware::Compress::default())
             // Static files
             .route("/index.html", actixweb::get().to(frontend::index::index))
+            .route("/docs.html", actixweb::get().to(docs))
             .route("/", actixweb::get().to(frontend::index::index))
             .route(
                 "/search/{query}",
@@ -73,13 +78,29 @@ pub(super) async fn start(pool: Pool) -> std::io::Result<()> {
             // API
             .service(
                 actixweb::scope("/api")
+                    .wrap(
+                        middleware::DefaultHeaders::new().header(ACCESS_CONTROL_ALLOW_ORIGIN, "*"),
+                    )
+                    .service(
+                        actixweb::scope("search")
+                            .route("words", actixweb::post().to(api::search::word::word_search))
+                            .route(
+                                "kanji",
+                                actixweb::post().to(api::search::kanji::kanji_search),
+                            )
+                            .route("names", actixweb::post().to(api::search::name::name_search))
+                            .route(
+                                "sentences",
+                                actixweb::post().to(api::search::sentence::sentence_search),
+                            ),
+                    )
                     .route(
                         "/kanji/by_radical",
                         actixweb::post().to(api::radical::kanji_by_radicals),
                     )
                     .route(
                         "/suggestion",
-                        actixweb::post().to(api::search_suggestion::suggestion_ep),
+                        actixweb::post().to(api::completions::suggestion_ep),
                     ),
             )
             // Static files
@@ -103,6 +124,10 @@ pub(super) async fn start(pool: Pool) -> std::io::Result<()> {
     .bind(&config.server.listen_address)?
     .run()
     .await
+}
+
+async fn docs(req: HttpRequest) -> actix_web::Result<NamedFile> {
+    Ok(NamedFile::open("html/docs.html")?)
 }
 
 fn setup_logger() {

@@ -5,7 +5,11 @@ use tokio_postgres::types::{FromSql, ToSql};
 
 use crate::error;
 
-#[derive(Debug, PartialEq, Clone, Copy, AsRefStr, EnumString, Display, Hash, Eq)]
+use serde::{Deserialize, Serialize};
+
+#[derive(
+    Debug, PartialEq, Clone, Copy, AsRefStr, EnumString, Display, Hash, Eq, Deserialize, Serialize,
+)]
 pub enum Language {
     #[strum(serialize = "eng", serialize = "en-US")]
     English,
