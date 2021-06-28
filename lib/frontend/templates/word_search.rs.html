@@ -47,7 +47,7 @@
       <div class="d-flex flex-row wrap sentence-reader">
         @for part in sentence_parts {
           @if let Some(ref furigana) = part.furigana {
-            <a id="p@part.pos" href="/search/@query.query&word_index=@part.pos" class="d-flex flex-row sentence-part @selected(part.pos, result.sentence_index)">
+            <a id="p@part.pos" href="/search/@query.query?i=@part.pos" class="d-flex flex-row sentence-part @selected(part.pos, result.sentence_index)">
               @for furi_part in furi_from_str(furigana) {
                 @if let Some(kanji) = furi_part.kanji {
                   <div class="furigana-kanji-container">
@@ -66,7 +66,7 @@
               }
             </a>
           } else {
-            <a id="p@part.pos" href="/search/@query.query&word_index=@part.pos" class="inline-kana-preview sentence-part @selected(part.pos, result.sentence_index)">@part.text</a>
+            <a id="p@part.pos" href="/search/@query.query?i=@part.pos" class="inline-kana-preview sentence-part @selected(part.pos, result.sentence_index)">@part.text</a>
           }
         }
       </div>
