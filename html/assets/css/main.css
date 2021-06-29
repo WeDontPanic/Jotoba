@@ -14,7 +14,7 @@
     --searchBackground: #ffffff;
     --searchTextColor: #555555;
     
-    --tagColor: #888888;
+    --tagColor: #808080;
     --itemBG: #d3d3d3;
 
     /* Special */
@@ -214,6 +214,11 @@ svg {
     width: 100%;
     max-width: 1000px;
     position: relative;
+}
+
+#searchDiv.index {
+    max-width: 1150px;
+    margin-left: 0px;
 }
  
 .d-flex.left {

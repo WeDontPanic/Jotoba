@@ -1,0 +1,58 @@
+/* ----------------- Index Page ----------------- */
+
+.title {
+    padding-top: 5%;
+    padding-bottom: 2.5%;
+    margin: auto;
+    width: 30%;
+}
+
+.titleImg {
+    width: 30vw;
+}
+
+.index-btn-container {
+    display: flex;
+    place-content: center;
+}
+
+.settingsBtn.index {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+}
+
+#settingsSvg.index {
+    fill: var(--tagColor);
+}
+
+.index-search-svg {
+    margin-top: -5px; 
+    fill: var(--tagColor);
+}
+
+.inner-form.index {
+    border-radius: 20px !important;
+    /* border-bottom-left-radius: 3px !important; -> enable on dropdown */
+}
+
+.input-field.index {
+    width: 120px;
+    height: 45px;
+    margin: 11px 4px;
+}
+
+.input-field.index.rad {
+    width: 180px;
+    height: 45px;
+    margin: 11px 4px;
+}
+
+.input-field.index.rad > .btn-search {
+    background: var(--secondaryColor);
+}
+
+.rad-picker-icon.index {
+    color: var(--searchBackground);
+    font-size: 22px;
+}
