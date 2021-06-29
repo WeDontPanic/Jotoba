@@ -56,3 +56,14 @@
     color: var(--searchBackground);
     font-size: 22px;
 }
+
+body.index {
+    min-height: 100%;
+    display: grid;
+    grid-template-rows: 1fr auto;
+}
+
+footer.index {
+    grid-row-start: 2;
+    grid-row-end: 3;
+  }
