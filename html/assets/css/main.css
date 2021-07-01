@@ -13,6 +13,7 @@
 
     --searchBackground: #ffffff;
     --searchTextColor: #555555;
+    --shadowColor: #222222;
     
     --tagColor: #808080;
     --itemBG: #d3d3d3;
@@ -21,6 +22,7 @@
     --itemBG_075: rgb(211, 211, 211, 0.75);
     --langSep: rgba(50,103,51,.1);
     --lineColor: rgba(0,0,0,.1);
+    --backgroundShadow: rgba(34,34,34,0.1);
 }
 
 /* ----------------- Overall Page Adjustments ----------------- */
