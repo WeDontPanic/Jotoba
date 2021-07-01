@@ -8,6 +8,7 @@ use thiserror::Error;
 #[derive(Clone, Copy, PartialEq)]
 pub enum Origin {
     Radicals,
+    Suggestions,
 }
 
 impl std::fmt::Debug for Origin {
@@ -17,6 +18,7 @@ impl std::fmt::Debug for Origin {
             "{}",
             match self {
                 Origin::Radicals => "radicals",
+                Origin::Suggestions => "suggestions",
             }
         )
     }

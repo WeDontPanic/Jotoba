@@ -1,11 +1,14 @@
 mod foreign;
 mod kanji_meaning;
 mod kanji_reading;
+mod names;
 mod native;
 mod storage;
 
 use deadpool_postgres::Pool;
-pub use storage::{load_meaning_suggestions, load_word_suggestions};
+pub use storage::{
+    load_meaning_suggestions, load_name_transcriptions, load_native_names, load_word_suggestions,
+};
 
 use std::{cmp::Ordering, str::FromStr};
 
@@ -166,9 +169,17 @@ async fn get_suggestions(pool: &Pool, query: Query) -> Result<Response, RestErro
             }
         }
         QueryType::Kanji => kanji_suggestions(pool, query).await,
-        // TODO name suggestions
-        QueryType::Names => Ok(Response::default()),
+        QueryType::Names => name_suggestions(pool, query).await,
     }
+}
+
+/// Returns name suggestions for the matching input language
+async fn name_suggestions(client: &Pool, query: Query) -> Result<Response, RestError> {
+    Ok(match query.language {
+        QueryLang::Japanese => names::native_suggestions(client, &query).await?,
+        QueryLang::Foreign => names::transcription_suggestions(client, &query).await?,
+        _ => Response::default(),
+    })
 }
 
 /// Returns kanji suggestions

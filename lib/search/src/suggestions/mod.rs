@@ -14,11 +14,22 @@ use utils::diff;
 
 use self::{jaro_search::AsyncSearch, store_item::Item};
 
-/// Searches for kanji suggestions by their meanings
-pub async fn kanji_meaning<'a, T: TextStore>(
+/// Searches for japanese suggestions
+pub async fn japanese<'a, T: TextStore>(
     dict: &'a TextSearch<T>,
     query: &'a str,
-) -> Option<Vec<&'a T::Item>> {
+) -> Vec<&'a T::Item> {
+    let mut items: Vec<_> = dict.find_binary(query.to_owned()).take(100).collect();
+
+    items.sort_by(|a, b| result_order::<T>(a, b, query));
+
+    items
+}
+
+pub async fn generic<'a, T: TextStore>(
+    dict: &'a TextSearch<T>,
+    query: &'a str,
+) -> Vec<&'a T::Item> {
     let mut items: Vec<_> = dict.find_binary(query.to_owned()).take(100).collect();
 
     if items.len() < 5 {
@@ -28,7 +39,24 @@ pub async fn kanji_meaning<'a, T: TextStore>(
 
     items.sort_by(|a, b| result_order::<T>(a, b, query));
 
-    Some(items)
+    items
+}
+
+/// Searches for kanji suggestions by their meanings
+pub async fn kanji_meaning<'a, T: TextStore>(
+    dict: &'a TextSearch<T>,
+    query: &'a str,
+) -> Vec<&'a T::Item> {
+    let mut items: Vec<_> = dict.find_binary(query.to_owned()).take(100).collect();
+
+    if items.len() < 5 {
+        let jaro_res = dict.find_jaro_async(query, 5).await;
+        items.extend(jaro_res);
+    }
+
+    items.sort_by(|a, b| result_order::<T>(a, b, query));
+
+    items
 }
 
 #[derive(Clone)]

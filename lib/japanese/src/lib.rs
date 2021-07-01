@@ -57,6 +57,8 @@ pub trait JapaneseExt {
 
     fn to_hiragana(&self) -> String;
 
+    fn has_roman_letter(&self) -> bool;
+
     fn is_roman_letter(&self) -> bool;
 
     /// Returns true if self is a small katakana letter
@@ -88,6 +90,10 @@ impl JapaneseExt for char {
 
     fn to_hiragana(&self) -> String {
         romaji::RomajiExt::to_hiragana(self.to_string().as_str())
+    }
+
+    fn has_roman_letter(&self) -> bool {
+        self.is_roman_letter()
     }
 
     fn is_roman_letter(&self) -> bool {
@@ -208,6 +214,10 @@ impl JapaneseExt for str {
 
     fn is_roman_letter(&self) -> bool {
         !self.chars().into_iter().any(|s| !s.is_roman_letter())
+    }
+
+    fn has_roman_letter(&self) -> bool {
+        self.chars().into_iter().any(|s| s.is_roman_letter())
     }
 
     fn has_kana(&self) -> bool {
