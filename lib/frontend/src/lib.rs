@@ -18,7 +18,6 @@ use localization::{
     TranslationDict,
 };
 use models::name::Name;
-use parse::jmdict;
 use search::query::Query;
 
 use search::{
@@ -181,17 +180,7 @@ impl<'a> BaseData<'a> {
 /// Translation helper
 impl<'a> BaseData<'a> {
     pub fn get_lang(&self) -> Language {
-        match self.user_settings.user_lang {
-            jmdict::languages::Language::German => Language::German,
-            jmdict::languages::Language::English => Language::English,
-            jmdict::languages::Language::Russain => Language::Russain,
-            jmdict::languages::Language::Spanish => Language::Spanish,
-            jmdict::languages::Language::Swedish => Language::Swedish,
-            jmdict::languages::Language::French => Language::French,
-            jmdict::languages::Language::Dutch => Language::Dutch,
-            jmdict::languages::Language::Hungarian => Language::Hungarian,
-            jmdict::languages::Language::Slovenian => Language::Slovenian,
-        }
+        self.user_settings.page_lang
     }
 
     pub fn gettext<T: Translatable>(&self, t: T) -> &'a str {

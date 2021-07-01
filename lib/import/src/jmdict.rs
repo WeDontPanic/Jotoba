@@ -5,13 +5,13 @@ use std::{
     sync::mpsc::{sync_channel, Receiver, SyncSender},
 };
 
+use deadpool_postgres::Pool;
 use itertools::Itertools;
 use japanese;
 use models::{
     dict::{self, NewDict},
     kanji,
     sense::{self, NewSense},
-    DbPool,
 };
 use parse::{jmdict::Parser as jmdictParser, parser::Parse};
 
@@ -21,12 +21,10 @@ struct Word {
 }
 
 /// Import jmdict file
-pub async fn import(db: &DbPool, path: String) {
+pub async fn import(db: Pool, path: String) {
     println!("Clearing existing entries");
-    dict::clear_dicts(db).await.unwrap();
-    sense::clear_senses(db).await.unwrap();
-
-    let db_connection = db.get().unwrap();
+    dict::clear_dicts(&db).await.unwrap();
+    sense::clear_senses(&db).await.unwrap();
 
     let path = Path::new(&path);
     let parser = jmdictParser::new(BufReader::new(File::open(path).unwrap()));
@@ -38,7 +36,7 @@ pub async fn import(db: &DbPool, path: String) {
     println!("Initializing kanji cache");
     kanji::load_kanji_cache(&db).await.unwrap();
 
-    let (sender, receiver): (SyncSender<Word>, Receiver<Word>) = sync_channel(1000);
+    let (sender, receiver): (SyncSender<Word>, Receiver<Word>) = sync_channel(10000);
     let t1 = std::thread::spawn(move || {
         parser
             .parse(|entry, i| {
@@ -47,7 +45,7 @@ pub async fn import(db: &DbPool, path: String) {
                     std::io::stdout().flush().ok();
                 }
 
-                let dicts = dict::new_dicts_from_entry(&db_connection, &entry);
+                let dicts = dict::new_dicts_from_entry(&entry);
                 let senses = sense::new_from_entry(&entry);
 
                 sender
@@ -72,7 +70,7 @@ pub async fn import(db: &DbPool, path: String) {
             senses.extend(w.sense.clone());
         });
 
-        let chunksize = 10000;
+        let chunksize = 1000;
 
         if senses.len() + 400 > chunksize {
             for senses in senses.clone().into_iter().chunks(chunksize).into_iter() {
@@ -88,7 +86,7 @@ pub async fn import(db: &DbPool, path: String) {
             for dicts in dicts.clone().into_iter().chunks(chunksize).into_iter() {
                 let mut dicts = dicts.collect_vec();
                 get_dict_kanji(&db, &mut dicts).await;
-                dict::insert_dicts(db, dicts).await.unwrap();
+                dict::insert_dicts(&db, dicts).await.unwrap();
             }
 
             dicts.clear();
@@ -96,16 +94,16 @@ pub async fn import(db: &DbPool, path: String) {
         received = receiver.recv();
     }
 
-    sense::insert_sense(db, senses).await.unwrap();
+    sense::insert_sense(&db, senses).await.unwrap();
 
     get_dict_kanji(&db, &mut dicts).await;
-    dict::insert_dicts(db, dicts).await.unwrap();
+    dict::insert_dicts(&db, dicts).await.unwrap();
     println!();
 
     t1.join().ok();
 }
 
-async fn get_dict_kanji(db: &DbPool, dicts: &mut Vec<NewDict>) {
+async fn get_dict_kanji(db: &Pool, dicts: &mut Vec<NewDict>) {
     for dict in dicts.iter_mut() {
         // Skip kana dict-entries
         if !dict.kanji {
@@ -127,7 +125,7 @@ async fn get_dict_kanji(db: &DbPool, dicts: &mut Vec<NewDict>) {
             .flatten()
             .collect_vec()
         {
-            let found_kanji = models::kanji::find_by_literal(&db, kanji.clone())
+            let found_kanji = models::kanji::find_by_literalv2(&db, kanji.clone())
                 .await
                 .ok()
                 .and_then(|i| i);

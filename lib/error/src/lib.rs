@@ -2,9 +2,8 @@ pub mod api_error;
 
 use std::{fmt::Display, num::ParseIntError, string::FromUtf8Error};
 
-use diesel::result::Error as DbError;
+use deadpool_postgres::PoolError;
 use strum::ParseError;
-use tokio_diesel::AsyncError;
 
 #[derive(Debug)]
 pub enum Error {
@@ -14,52 +13,27 @@ pub enum Error {
     Utf8StrError(std::str::Utf8Error),
     ParseError,
     Undefined,
-    DbError(DbError),
     IoError(std::io::Error),
     Checkout(r2d2::Error),
+    PoolError(PoolError),
+    Postgres(tokio_postgres::Error), // new db error
 }
 
-/// Map a diesel not-found error to Error::NotFound
-/// Other diesel errors will be handled noramlly
-pub fn map_notfound_async(err: AsyncError) -> Error {
-    match err {
-        AsyncError::Checkout(c) => Error::Checkout(c),
-        AsyncError::Error(e) => map_notfound(e),
+impl From<tokio_postgres::Error> for Error {
+    fn from(err: tokio_postgres::Error) -> Self {
+        Self::Postgres(err)
     }
 }
 
-/// Map a diesel not-found error to Error::NotFound
-/// Other diesel errors will be handled noramlly
-pub fn map_notfound(err: DbError) -> Error {
-    match err {
-        DbError::NotFound => Error::NotFound,
-        _ => err.into(),
-    }
-}
-
-pub fn db_to_option<T>(res: Result<T, Error>) -> Result<Option<T>, Error> {
-    match res {
-        Ok(v) => Ok(Some(v)),
-        Err(err) => match err {
-            Error::NotFound => Ok(None),
-            Error::DbError(e) => match e {
-                DbError::NotFound => Ok(None),
-                _ => Err(e.into()),
-            },
-            _ => Err(err),
-        },
+impl From<PoolError> for Error {
+    fn from(err: PoolError) -> Self {
+        Self::PoolError(err)
     }
 }
 
 impl From<std::io::Error> for Error {
     fn from(err: std::io::Error) -> Self {
         Self::IoError(err)
-    }
-}
-
-impl From<DbError> for Error {
-    fn from(err: DbError) -> Self {
-        Self::DbError(err)
     }
 }
 
@@ -80,15 +54,6 @@ impl From<ParseError> for Error {
 impl From<ParseIntError> for Error {
     fn from(err: ParseIntError) -> Self {
         Self::ParseInt(err)
-    }
-}
-
-impl From<AsyncError> for Error {
-    fn from(err: AsyncError) -> Self {
-        match err {
-            AsyncError::Checkout(co) => Self::Checkout(co),
-            AsyncError::Error(err) => Self::DbError(err),
-        }
     }
 }
 

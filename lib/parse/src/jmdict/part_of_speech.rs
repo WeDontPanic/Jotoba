@@ -1,23 +1,14 @@
 #![allow(clippy::from_over_into)]
-use std::{
-    convert::{TryFrom, TryInto},
-    io::Write,
-};
+use std::convert::TryFrom;
 
-use diesel::{
-    deserialize,
-    pg::Pg,
-    serialize::{self, Output},
-    sql_types::{Integer, Text},
-    types::{FromSql, ToSql},
-};
 use localization::{language::Language, traits::Translatable, TranslationDict};
+use postgres_types::{accepts, to_sql_checked};
+use tokio_postgres::types::{FromSql, ToSql};
 
 use crate::error;
 use strum_macros::EnumString;
 
-#[derive(AsExpression, FromSqlRow, Debug, PartialEq, Clone, Copy, Hash, EnumString)]
-#[sql_type = "Integer"]
+#[derive(Debug, PartialEq, Clone, Copy, Hash, EnumString)]
 pub enum PosSimple {
     #[strum(serialize = "adverb", serialize = "adv")]
     Adverb,
@@ -47,8 +38,12 @@ pub enum PosSimple {
     Interjection,
     #[strum(serialize = "pronoun", serialize = "pron")]
     Pronoun,
-    #[strum(serialize = "nummeric", serialize = "nr")]
+    #[strum(serialize = "numeric", serialize = "nr")]
     Numeric,
+    #[strum(serialize = "transitive", serialize = "tr")]
+    Transitive,
+    #[strum(serialize = "intransitive", serialize = "itr")]
+    Intransitive,
     #[strum(serialize = "unclassified", serialize = "unc")]
     Unclassified,
 }
@@ -73,6 +68,8 @@ impl TryFrom<i32> for PosSimple {
             13 => Self::Pronoun,
             15 => Self::Numeric,
             16 => Self::Unclassified,
+            17 => Self::Intransitive,
+            18 => Self::Transitive,
             _ => return Err(error::Error::ParseError),
         })
     }
@@ -97,49 +94,78 @@ impl Into<i32> for PosSimple {
             Self::Pronoun => 13,
             Self::Numeric => 15,
             Self::Unclassified => 16,
+            Self::Intransitive => 17,
+            Self::Transitive => 18,
         }
     }
 }
 
-impl From<PartOfSpeech> for PosSimple {
-    fn from(pos: PartOfSpeech) -> PosSimple {
-        match pos {
-            PartOfSpeech::Adjective(_) | PartOfSpeech::AuxilaryAdj => PosSimple::Adjective,
-            PartOfSpeech::Adverb | PartOfSpeech::AdverbTo => PosSimple::Adverb,
-            PartOfSpeech::Auxilary => PosSimple::Auxilary,
-            PartOfSpeech::Conjungation => PosSimple::Conjungation,
-            PartOfSpeech::Counter => PosSimple::Counter,
-            PartOfSpeech::Expr => PosSimple::Expr,
-            PartOfSpeech::Interjection => PosSimple::Interjection,
-            PartOfSpeech::Noun(_) => PosSimple::Noun,
-            PartOfSpeech::Numeric => PosSimple::Numeric,
-            PartOfSpeech::Pronoun => PosSimple::Pronoun,
-            PartOfSpeech::Prefix => PosSimple::Prefix,
-            PartOfSpeech::Suffix => PosSimple::Suffix,
-            PartOfSpeech::Particle => PosSimple::Particle,
-            PartOfSpeech::Unclassified => PosSimple::Unclassified,
-            PartOfSpeech::Sfx => PosSimple::Sfx,
-            PartOfSpeech::Verb(_) | PartOfSpeech::AuxilaryVerb => PosSimple::Verb,
+/// Converts a `PartOfSpeech` tag to `PosSimple`
+pub fn pos_to_simple(pos: &PartOfSpeech) -> Vec<PosSimple> {
+    let simple = match pos {
+        PartOfSpeech::Adjective(_) | PartOfSpeech::AuxilaryAdj => PosSimple::Adjective,
+        PartOfSpeech::Adverb | PartOfSpeech::AdverbTo => PosSimple::Adverb,
+        PartOfSpeech::Auxilary => PosSimple::Auxilary,
+        PartOfSpeech::Conjungation => PosSimple::Conjungation,
+        PartOfSpeech::Counter => PosSimple::Counter,
+        PartOfSpeech::Expr => PosSimple::Expr,
+        PartOfSpeech::Interjection => PosSimple::Interjection,
+        PartOfSpeech::Noun(_) => PosSimple::Noun,
+        PartOfSpeech::Numeric => PosSimple::Numeric,
+        PartOfSpeech::Pronoun => PosSimple::Pronoun,
+        PartOfSpeech::Prefix => PosSimple::Prefix,
+        PartOfSpeech::Suffix => PosSimple::Suffix,
+        PartOfSpeech::Particle => PosSimple::Particle,
+        PartOfSpeech::Unclassified => PosSimple::Unclassified,
+        PartOfSpeech::Sfx => PosSimple::Sfx,
+        PartOfSpeech::Verb(_) | PartOfSpeech::AuxilaryVerb => PosSimple::Verb,
+    };
+
+    if let PartOfSpeech::Verb(verb) = pos {
+        match verb {
+            VerbType::Intransitive => vec![simple, PosSimple::Intransitive],
+            VerbType::Transitive => vec![simple, PosSimple::Transitive],
+            _ => vec![simple],
         }
+    } else {
+        vec![simple]
     }
 }
 
-impl ToSql<Integer, Pg> for PosSimple {
-    fn to_sql<W: Write>(&self, out: &mut Output<W, Pg>) -> serialize::Result {
-        <i32 as ToSql<Integer, Pg>>::to_sql(&(*self).into(), out)
+impl<'a> FromSql<'a> for PosSimple {
+    fn from_sql(
+        ty: &tokio_postgres::types::Type,
+        raw: &'a [u8],
+    ) -> Result<Self, Box<dyn std::error::Error + Sync + Send>> {
+        Ok(Self::try_from(
+            <i32 as tokio_postgres::types::FromSql>::from_sql(ty, raw)?,
+        )?)
     }
+
+    accepts!(INT4);
 }
 
-impl FromSql<Integer, Pg> for PosSimple {
-    fn from_sql(bytes: Option<&[u8]>) -> deserialize::Result<Self> {
-        Ok(Self::try_from(<i32 as FromSql<Integer, Pg>>::from_sql(
-            bytes,
-        )?)?)
+impl ToSql for PosSimple {
+    fn to_sql(
+        &self,
+        ty: &postgres_types::Type,
+        out: &mut postgres_types::private::BytesMut,
+    ) -> Result<postgres_types::IsNull, Box<dyn std::error::Error + Sync + Send>>
+    where
+        Self: Sized,
+    {
+        let s: i32 = (*self).into();
+        Ok(<i32 as ToSql>::to_sql(&s, ty, out)?)
     }
+
+    accepts!(INT4);
+
+    to_sql_checked!();
 }
 
-#[derive(AsExpression, FromSqlRow, Debug, PartialEq, Clone, Copy)]
-#[sql_type = "Text"]
+use serde::Serialize;
+
+#[derive(Debug, PartialEq, Clone, Copy, Serialize, PartialOrd, Ord, Eq)]
 pub enum PartOfSpeech {
     // Adjectives
     Adjective(AdjectiveType),
@@ -200,22 +226,38 @@ impl PartOfSpeech {
     }
 }
 
-impl ToSql<Text, Pg> for PartOfSpeech {
-    fn to_sql<W: Write>(&self, out: &mut Output<W, Pg>) -> serialize::Result {
+impl<'a> FromSql<'a> for PartOfSpeech {
+    fn from_sql(
+        ty: &tokio_postgres::types::Type,
+        raw: &'a [u8],
+    ) -> Result<Self, Box<dyn std::error::Error + Sync + Send>> {
+        Ok(Self::try_from(
+            <String as tokio_postgres::types::FromSql>::from_sql(ty, raw)?.as_str(),
+        )?)
+    }
+
+    accepts!(TEXT);
+}
+
+impl ToSql for PartOfSpeech {
+    fn to_sql(
+        &self,
+        ty: &postgres_types::Type,
+        out: &mut postgres_types::private::BytesMut,
+    ) -> Result<postgres_types::IsNull, Box<dyn std::error::Error + Sync + Send>>
+    where
+        Self: Sized,
+    {
         let s: String = (*self).into();
-        <&str as ToSql<Text, Pg>>::to_sql(&s.as_str(), out)
+        Ok(<&str as ToSql>::to_sql(&s.as_str(), ty, out)?)
     }
+
+    accepts!(TEXT);
+
+    to_sql_checked!();
 }
 
-impl FromSql<Text, Pg> for PartOfSpeech {
-    fn from_sql(bytes: Option<&[u8]>) -> deserialize::Result<Self> {
-        Ok(<String as FromSql<Text, Pg>>::from_sql(bytes)?
-            .as_str()
-            .try_into()?)
-    }
-}
-
-#[derive(Debug, Clone, Copy, PartialEq)]
+#[derive(Debug, Clone, Copy, PartialEq, Serialize, PartialOrd, Ord, Eq)]
 pub enum VerbType {
     Nidan(NidanVerb),
     Yodan(VerbEnding),
@@ -230,7 +272,7 @@ pub enum VerbType {
     Kuru,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq)]
+#[derive(Debug, Clone, Copy, PartialEq, Serialize, PartialOrd, Ord, Eq)]
 pub enum AdjectiveType {
     PreNounVerb,
     /// I Adjective
@@ -246,7 +288,7 @@ pub enum AdjectiveType {
     Taru,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq)]
+#[derive(Debug, Clone, Copy, PartialEq, Serialize, PartialOrd, Ord, Eq)]
 pub enum NounType {
     Normal,
     Adverbial,
@@ -255,7 +297,7 @@ pub enum NounType {
     Temporal,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq)]
+#[derive(Debug, Clone, Copy, PartialEq, Serialize, PartialOrd, Ord, Eq)]
 pub enum IrregularVerb {
     Nu,
     Ru,
@@ -265,20 +307,20 @@ pub enum IrregularVerb {
     Su,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq)]
+#[derive(Debug, Clone, Copy, PartialEq, Serialize, PartialOrd, Ord, Eq)]
 pub struct NidanVerb {
     class: VerbClass,
     ending: VerbEnding,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq)]
+#[derive(Debug, Clone, Copy, PartialEq, Serialize, PartialOrd, Ord, Eq)]
 pub enum VerbClass {
     Upper,
     Lower,
     None,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq)]
+#[derive(Debug, Clone, Copy, PartialEq, Serialize, PartialOrd, Ord, Eq)]
 pub enum VerbEnding {
     Bu,
     Dzu,
@@ -295,7 +337,7 @@ pub enum VerbEnding {
     Zu,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq)]
+#[derive(Debug, Clone, Copy, PartialEq, Serialize, PartialOrd, Ord, Eq)]
 pub enum GodanVerbEnding {
     Bu,
     Gu,

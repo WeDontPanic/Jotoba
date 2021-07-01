@@ -67,7 +67,7 @@ CREATE TABLE kanji_meaning(
 );
 CREATE INDEX index_kanji_meaning_value_pgroonga on kanji_meaning using pgroonga (value);
 CREATE INDEX index_kanji_meaning_value_text_pattern_ops on kanji_meaning (value text_pattern_ops);
-CREATE INDEX index_kanji_meaning_valuek ON sentence (content);
+CREATE INDEX index_kanji_meaning_valuek ON kanji_meaning (value);
 
 CREATE TABLE name (
   id SERIAL PRIMARY KEY,
@@ -78,8 +78,8 @@ CREATE TABLE name (
   name_type INTEGER[],
   xref TEXT
 );
-CREATE INDEX index_kana_name ON name using pgroonga (kana);
-CREATE INDEX index_kanji_name ON name using pgroonga (kanji);
+CREATE INDEX index_kana_name ON name using pgroonga (kana) WITH (tokenizer='TokenMecab');
+CREATE INDEX index_kanji_name ON name using pgroonga (kanji) WITH (tokenizer='TokenMecab');
 CREATE INDEX index_transcription_name ON name using pgroonga (transcription);
 
 CREATE TABLE sentence (

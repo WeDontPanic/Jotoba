@@ -134,6 +134,14 @@
   cursor: pointer;
 }
 
+.choices__item--disabled {
+  cursor: not-allowed;
+  -webkit-user-select: none;
+      -ms-user-select: none;
+          user-select: none;
+  opacity: 0.5;
+}
+
 .choices__input {
   display: inline-block;
   vertical-align: baseline;

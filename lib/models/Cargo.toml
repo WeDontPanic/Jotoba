@@ -12,16 +12,18 @@ japanese = { path = "../japanese" }
 cache = { path = "../cache" }
 error = { path = "../error" }
 utils = { path = "../utils" }
-diesel = { version = "1.4.7", features = ["postgres","r2d2"] }
 dotenv = "0.15.0"
 itertools = "0.10.1"
 once_cell = "1.8.0"
 r2d2 = "0.8.9"
 romaji = "0.1.1"
-tokio = { version = "1.6.2", features = ["macros","rt-multi-thread","sync"] }
-tokio-diesel = {git = "https://github.com/mehcode/tokio-diesel" }
+tokio = { version = "1.7.0", features = ["macros","rt-multi-thread","sync"] }
 futures = "0.3.15"
 async-std = "1.9.0"
+tokio-postgres = "0.7.2"
+deadpool-postgres = "0.9.0"
+async-trait = "0.1.50"
+refinery = { version = "0.5.0", features = ["tokio-postgres"]}
 
 [features]
 default = []

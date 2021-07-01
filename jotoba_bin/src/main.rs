@@ -3,41 +3,34 @@
 mod cli;
 mod webserver;
 
-use std::env;
-
 use import::has_required_data;
-use tokio_postgres::NoTls;
 
-#[tokio::main]
+//#[tokio::main]
+#[actix_web::main]
 pub async fn main() {
     let options = cli::parse();
-    let database = models::connect();
+    let (pool, db_dsn) = models::connect().await;
 
-    let connection_str = env::var("DATABASE_URL").expect("DATABASE_URL must be set");
+    if !options.skip_migration {
+        // Do DB migration
+        models::migrate(&db_dsn).await;
+    }
 
     // Run import process on --import/-i
     if options.import {
-        import::import(&database, &(&options).into()).await;
+        import::import(&pool, &(&options).into()).await;
         return;
     }
 
     // Check for required data to be available
-    if !has_required_data(&database).await.expect("fatal DB error") {
+    if !has_required_data(&pool).await.expect("fatal DB error") {
         println!("Required data missing!");
         return;
     }
 
     // Start the werbserver on --stat/-s
     if options.start {
-        let (async_postgres, connection) = tokio_postgres::connect(&connection_str, NoTls)
-            .await
-            .expect("Couldn't connect to postgres");
-        tokio::spawn(async move {
-            if let Err(e) = connection.await {
-                eprintln!("connection error: {}", e);
-            }
-        });
-        webserver::start(database, async_postgres).expect("webserver failed");
+        webserver::start(pool).await.expect("webserver failed");
         return;
     }
 

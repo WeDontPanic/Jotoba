@@ -7,6 +7,9 @@ pub struct Options {
     /// Start the server
     pub start: bool,
 
+    /// Skip DB migration
+    pub skip_migration: bool,
+
     // Import files
     pub import: bool,
     /// Whether to import or not
@@ -55,6 +58,12 @@ pub fn parse() -> Options {
 
         ap.refer(&mut options.start)
             .add_option(&["--start", "-s"], StoreTrue, "Start the server");
+
+        ap.refer(&mut options.skip_migration).add_option(
+            &["--skip-migration"],
+            StoreTrue,
+            "Skip DB migration. Don't use this flag if you don't know what you do!",
+        );
 
         ap.refer(&mut options.import).add_option(
             &["--import", "-i"],

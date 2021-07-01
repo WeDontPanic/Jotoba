@@ -1,18 +1,13 @@
+use deadpool_postgres::Pool;
 use itertools::Itertools;
-use tokio_diesel::AsyncRunQueryDsl;
+use tokio_postgres::{types::ToSql, Row};
 
-use crate::{
-    schema::{sentence, sentence_translation, sentence_vocabulary},
-    DbPool,
-};
+use crate::queryable::{prepared_query_one, Deletable, Insertable, SQL};
 use error::Error;
 use japanese;
 use parse::jmdict::languages::Language;
 
-use super::dict;
-
-#[derive(Queryable, Clone, Debug, PartialEq, QueryableByName)]
-#[table_name = "sentence"]
+#[derive(Clone, Debug, PartialEq)]
 pub struct Sentence {
     pub id: i32,
     pub content: String,
@@ -20,15 +15,36 @@ pub struct Sentence {
     pub furigana: String,
 }
 
-#[derive(Insertable, Clone, PartialEq)]
-#[table_name = "sentence"]
+impl SQL for Sentence {
+    fn get_tablename() -> &'static str {
+        "sentence"
+    }
+}
+
+#[derive(Clone, PartialEq)]
 pub struct NewSentence {
     pub content: String,
     pub kana: String,
     pub furigana: String,
 }
 
-#[derive(Queryable, Clone, Debug, PartialEq)]
+impl SQL for NewSentence {
+    fn get_tablename() -> &'static str {
+        "sentence"
+    }
+}
+
+impl Insertable<3> for NewSentence {
+    fn column_names() -> [&'static str; 3] {
+        ["content", "kana", "furigana"]
+    }
+
+    fn fields(&self) -> [&(dyn ToSql + Sync); 3] {
+        [&self.content, &self.kana, &self.furigana]
+    }
+}
+
+#[derive(Clone, Debug, PartialEq)]
 pub struct Translation {
     pub id: i32,
     pub sentence_id: i32,
@@ -36,15 +52,36 @@ pub struct Translation {
     pub content: String,
 }
 
-#[derive(Insertable, Clone, PartialEq)]
-#[table_name = "sentence_translation"]
+impl SQL for Translation {
+    fn get_tablename() -> &'static str {
+        "sentence_translation"
+    }
+}
+
+#[derive(Clone, PartialEq)]
 pub struct NewTranslation {
     pub sentence_id: i32,
     pub language: Language,
     pub content: String,
 }
 
-#[derive(Queryable, Clone, PartialEq, Debug)]
+impl SQL for NewTranslation {
+    fn get_tablename() -> &'static str {
+        "sentence_translation"
+    }
+}
+
+impl Insertable<3> for NewTranslation {
+    fn column_names() -> [&'static str; 3] {
+        ["sentence_id", "language", "content"]
+    }
+
+    fn fields(&self) -> [&(dyn ToSql + Sync); 3] {
+        [&self.sentence_id, &self.language, &self.content]
+    }
+}
+
+#[derive(Clone, PartialEq, Debug)]
 pub struct SentenceVocabulary {
     pub id: i32,
     pub sentence_id: i32,
@@ -52,17 +89,49 @@ pub struct SentenceVocabulary {
     pub start: i32,
 }
 
-#[derive(Insertable, Clone, PartialEq)]
-#[table_name = "sentence_vocabulary"]
+impl SQL for SentenceVocabulary {
+    fn get_tablename() -> &'static str {
+        "sentence_vocabulary"
+    }
+}
+
+#[derive(Clone, PartialEq)]
 pub struct NewSentenceVocabulary {
     pub sentence_id: i32,
     pub dict_sequence: i32,
     pub start: i32,
 }
 
+impl SQL for NewSentenceVocabulary {
+    fn get_tablename() -> &'static str {
+        "sentence_vocabulary"
+    }
+}
+
+impl Insertable<3> for NewSentenceVocabulary {
+    fn column_names() -> [&'static str; 3] {
+        ["sentence_id", "dict_sequence", "start"]
+    }
+
+    fn fields(&self) -> [&(dyn ToSql + Sync); 3] {
+        [&self.sentence_id, &self.dict_sequence, &self.start]
+    }
+}
+
+impl From<Row> for Sentence {
+    fn from(row: Row) -> Self {
+        Self {
+            id: row.get(0),
+            content: row.get(1),
+            kana: row.get(2),
+            furigana: row.get(3),
+        }
+    }
+}
+
 /// Inserts a new sentence into the DB
 pub async fn insert_sentence(
-    db: &DbPool,
+    db: &Pool,
     text: String,
     furigana: String,
     translations: Vec<(String, Language)>,
@@ -77,7 +146,9 @@ pub async fn insert_sentence(
 
 /// Generates the relations between sentences and its words from [`dict`]
 #[cfg(feature = "tokenizer")]
-async fn generate_dict_relations(db: &DbPool, sentence_id: i32, text: String) -> Result<(), Error> {
+async fn generate_dict_relations(db: &Pool, sentence_id: i32, text: String) -> Result<(), Error> {
+    use super::dict;
+
     let lexemes = japanese::jp_parsing::JA_NL_PARSER
         .parse(&text)
         .into_iter()
@@ -99,17 +170,14 @@ async fn generate_dict_relations(db: &DbPool, sentence_id: i32, text: String) ->
     })
     .collect::<Vec<_>>();
 
-    diesel::insert_into(sentence_vocabulary::table)
-        .values(&readings)
-        .execute_async(db)
-        .await?;
+    NewSentenceVocabulary::insert(db, &readings).await?;
 
     Ok(())
 }
 
 /// Insert a new sentence into DB and returns the created sentence ID
 async fn insert_new_sentence(
-    db: &DbPool,
+    db: &Pool,
     text: String,
     furigana: String,
     translations: Vec<(String, Language)>,
@@ -124,11 +192,9 @@ async fn insert_new_sentence(
         kana,
     };
 
-    let sid: i32 = diesel::insert_into(sentence::table)
-        .values(new_sentence)
-        .returning(sentence::id)
-        .get_result_async(db)
-        .await?;
+    let sql = format!("{} RETURNING id", NewSentence::get_insert_query(1));
+    let sid: i32 =
+        prepared_query_one(db, &sql, &NewSentence::get_bind_data(&[new_sentence])).await?;
 
     let translations = translations
         .into_iter()
@@ -139,22 +205,15 @@ async fn insert_new_sentence(
         })
         .collect_vec();
 
-    diesel::insert_into(sentence_translation::table)
-        .values(translations)
-        .execute_async(db)
-        .await?;
+    NewTranslation::insert(db, &translations).await?;
 
     Ok(sid)
 }
 
 /// Clear all sentence entries
-pub async fn clear(db: &DbPool) -> Result<(), Error> {
-    diesel::delete(sentence_translation::table)
-        .execute_async(db)
-        .await?;
-    diesel::delete(sentence_vocabulary::table)
-        .execute_async(db)
-        .await?;
-    diesel::delete(sentence::table).execute_async(db).await?;
+pub async fn clear(db: &Pool) -> Result<(), Error> {
+    Translation::delete_all(db).await?;
+    SentenceVocabulary::delete_all(db).await?;
+    Sentence::delete_all(db).await?;
     Ok(())
 }

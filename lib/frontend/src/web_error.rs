@@ -9,6 +9,7 @@ use crate::templates;
 pub enum Error {
     Internal,
     NotFound,
+    SearchTimeout,
 }
 
 impl std::fmt::Display for Error {
@@ -41,6 +42,7 @@ impl ResponseError for Error {
         match self {
             Error::Internal => StatusCode::INTERNAL_SERVER_ERROR,
             Error::NotFound => StatusCode::NOT_FOUND,
+            Error::SearchTimeout => StatusCode::REQUEST_TIMEOUT,
         }
     }
 
@@ -61,6 +63,7 @@ impl Error {
             match self {
                 Error::Internal => ("Sorry", "try again later"),
                 Error::NotFound => ("The page", "was not found"),
+                Error::SearchTimeout => ("Search", "timed out"),
             }
         };
 

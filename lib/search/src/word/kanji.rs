@@ -24,7 +24,7 @@ pub(super) async fn by_reading(search: &Search<'_>) -> Result<ResultData, Error>
         .as_kanji_reading()
         .ok_or(Error::Undefined)?;
 
-    let kanji = kanji::find_by_literal(&search.db, reading.literal.to_string()).await?;
+    let kanji = kanji::find_by_literalv2(&search.pool, reading.literal.to_string()).await?;
     if kanji.is_none() {
         return alternative_reading_search(search).await;
     }
@@ -43,7 +43,7 @@ pub(super) async fn by_reading(search: &Search<'_>) -> Result<ResultData, Error>
 
     let mut seq_ids = kanji
         .kanji
-        .find_readings(search.db, reading, reading_type.unwrap(), mode, true)
+        .find_readings(search.pool, reading, reading_type.unwrap(), mode, true)
         .await?;
 
     // Do 2nd search if 1st didn't return enough
@@ -51,7 +51,7 @@ pub(super) async fn by_reading(search: &Search<'_>) -> Result<ResultData, Error>
         seq_ids = kanji
             .kanji
             .find_readings(
-                search.db,
+                search.pool,
                 reading,
                 reading_type.unwrap(),
                 SearchMode::Variable,
@@ -66,7 +66,7 @@ pub(super) async fn by_reading(search: &Search<'_>) -> Result<ResultData, Error>
     }
 
     let (mut w, _) = WordSearch::load_words_by_seq(
-        search.db,
+        search.pool,
         &seq_ids,
         search.query.settings.user_lang,
         search.query.settings.show_english,
@@ -99,7 +99,7 @@ pub(super) async fn alternative_reading_search(search: &Search<'_>) -> Result<Re
 
     // Modify search query
     Search {
-        db: search.db,
+        pool: search.pool,
         query: &Query {
             query: kanji::gen_readings::literal_reading(&reading.reading),
             ..search.query.to_owned()
@@ -122,7 +122,7 @@ pub(super) async fn load_word_kanji_info(
             try_join_all(
                 kanji_words
                     .iter()
-                    .map(|word| word.load_kanji_info(&search.db)),
+                    .map(|word| word.load_kanji_info(&search.pool)),
             )
             .await?
             .into_iter()
@@ -132,7 +132,7 @@ pub(super) async fn load_word_kanji_info(
             // No words found, search only for kanji appearing in the search query
             try_join_all(search.query.query.chars().into_iter().filter_map(|i| {
                 i.is_kanji()
-                    .then(|| models::kanji::find_by_literal(&search.db, i.to_string()))
+                    .then(|| models::kanji::find_by_literalv2(&search.pool, i.to_string()))
             }))
             .await?
             .into_iter()
@@ -155,7 +155,7 @@ pub(super) async fn load_word_kanji_info(
     Ok(utils::remove_dups(retrieved_kanji)
         .into_iter()
         .take(limit)
-        .collect_vec())
+        .collect())
 }
 
 /// Returns first 10 dicts of words which have a kanji
@@ -171,5 +171,5 @@ fn get_kanji_words(words: &[Word]) -> Vec<&Dict> {
         })
         // Don't load too much
         .take(10)
-        .collect_vec()
+        .collect()
 }

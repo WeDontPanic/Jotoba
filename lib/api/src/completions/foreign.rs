@@ -1,3 +1,5 @@
+use utils::remove_dups;
+
 use super::*;
 
 /// Returns suggestions based on non japanese input
@@ -11,7 +13,7 @@ pub(super) async fn suggestions(query: &Query, query_str: &str) -> Option<Vec<Wo
     let results = suggestion_db.search(query_str, lang).await?;
 
     // Transforms results into WordPairs
-    let res = results
+    let res: Vec<_> = results
         .into_iter()
         .map(|i| WordPair {
             primary: i.text.to_owned(),
@@ -19,6 +21,8 @@ pub(super) async fn suggestions(query: &Query, query_str: &str) -> Option<Vec<Wo
         })
         .take(10)
         .collect();
+
+    let res = remove_dups(res);
 
     Some(res)
 }

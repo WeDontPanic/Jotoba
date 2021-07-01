@@ -39,12 +39,14 @@ impl store_item::Item for KanjiMeaningSuggestionItem {
     fn get_hash(&self) -> eudex::Hash {
         self.hash
     }
+
+    fn ord(&self) -> usize {
+        self.score as usize
+    }
 }
 
-impl FromStr for KanjiMeaningSuggestionItem {
-    type Err = error::Error;
-
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
+impl Parseable for KanjiMeaningSuggestionItem {
+    fn parse(s: &str, _version: SuggestionVersion) -> Result<Self, error::Error> {
         let mut split = s.split(',').rev();
         let score: i32 = split.next().ok_or(error::Error::ParseError)?.parse()?;
         let literal: char = split
@@ -71,7 +73,14 @@ impl FromStr for KanjiMeaningSuggestionItem {
 pub struct WordSuggestionItem {
     pub text: String,
     pub sequence: i32,
+    pub occurences: usize,
     pub hash: eudex::Hash,
+}
+
+#[derive(Clone, Copy, PartialEq, Eq)]
+pub enum SuggestionVersion {
+    V0,
+    V1,
 }
 
 impl store_item::Item for WordSuggestionItem {
@@ -82,19 +91,34 @@ impl store_item::Item for WordSuggestionItem {
     fn get_hash(&self) -> eudex::Hash {
         self.hash
     }
+
+    fn ord(&self) -> usize {
+        self.occurences
+    }
 }
 
-impl FromStr for WordSuggestionItem {
-    type Err = error::Error;
+trait Parseable: Sized {
+    fn parse(s: &str, version: SuggestionVersion) -> Result<Self, error::Error>;
+}
 
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
+impl Parseable for WordSuggestionItem {
+    fn parse(s: &str, version: SuggestionVersion) -> Result<Self, error::Error> {
         let mut split = s.split(',').rev();
+        let occurences = if version == SuggestionVersion::V1 {
+            split.next().ok_or(error::Error::ParseError)?.parse()?
+        } else {
+            0
+        };
+
         let number: i32 = split.next().ok_or(error::Error::ParseError)?.parse()?;
+
         let text: String = split.rev().join(",");
+
         Ok(WordSuggestionItem {
             // generate hash here so lookups will be faster
             hash: eudex::Hash::new(&text),
             text,
+            occurences,
             sequence: number,
         })
     }
@@ -150,11 +174,22 @@ pub fn load_meaning_suggestions(config: &Config) -> Result<(), Box<dyn std::erro
 }
 
 /// Parse a single suggestion file
-fn load_file<T: FromStr<Err = error::Error>>(path: &PathBuf) -> Result<Vec<T>, error::Error> {
+fn load_file<T: Parseable>(path: &PathBuf) -> Result<Vec<T>, error::Error> {
     let file = File::open(path)?;
 
-    BufReader::new(file)
-        .lines()
-        .map(|i| i.map_err(|i| i.into()).and_then(|i| T::from_str(&i)))
+    let mut lines = BufReader::new(file).lines();
+
+    let first = lines.next().ok_or(error::Error::ParseError)??;
+
+    let version = match first.as_str() {
+        "v1" => SuggestionVersion::V1,
+        _ => SuggestionVersion::V0,
+    };
+
+    lines
+        .map(|i| {
+            i.map_err(|i| i.into())
+                .and_then(move |i| T::parse(&i, version))
+        })
         .collect::<Result<_, _>>()
 }

@@ -99,6 +99,12 @@ function onSettingsChange_DefaultLanguage(html, value) {
     }
 }
 
+// Changes the Page's UI Language
+function onSettingsChange_PageLanguage(html, value) {
+    Cookies.set('page_lang', value, {path: '/'});
+    location.reload();
+}
+
 // Changes whether english results should be shown
 function onSettingsChange_ShowEnglish(event) {
     Cookies.set('show_english', event.target.checked, {path: '/'});
@@ -132,6 +138,7 @@ function loadCookieData() {
 
     // Load search language
     let default_lang = Cookies.get("default_lang");
+    let page_lang = Cookies.get ("page_lang");
 
     // Load result settings
     let show_english = Cookies.get("show_english");
@@ -149,14 +156,22 @@ function loadCookieData() {
 
     // Set Default_Lang 
     let userLang = default_lang || navigator.language || navigator.userLanguage || "en-US";
-    console.log(userLang);
     if (!isSupportedSearchLang(userLang)) {
          userLang = "en-US";
     }
     // Activate by finding the correct 
-    document.querySelectorAll(".choices__item--choice").forEach((e) => {
+    document.querySelectorAll("#search-lang-select > .choices__item--choice").forEach((e) => {
         if (e.dataset.value == userLang) {
-            let langTxt = e.innerHTML;
+            let choicesInner = e.parentElement.parentElement.parentElement.children[0].children;
+            
+            choicesInner[0].children[0].innerHTML = e.innerHTML;
+            choicesInner[1].children[0].innerHTML = e.innerHTML;
+        }
+    });
+
+    // Set in cookie selected language
+    document.querySelectorAll("#page-lang-select > .choices__item--choice").forEach((e) => {
+        if (e.dataset.value == page_lang) {
             let choicesInner = e.parentElement.parentElement.parentElement.children[0].children;
             
             choicesInner[0].children[0].innerHTML = e.innerHTML;

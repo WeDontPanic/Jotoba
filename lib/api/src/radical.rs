@@ -1,20 +1,15 @@
 use std::collections::HashMap;
 
 use actix_web::web::{self, Json};
+use deadpool_postgres::{tokio_postgres::Row, Pool};
 use itertools::Itertools;
 use serde::{Deserialize, Serialize};
-use tokio_diesel::AsyncRunQueryDsl;
 
-use async_std::sync::Mutex;
 use cache::SharedCache;
-use diesel::{
-    prelude::*,
-    sql_types::{Integer, Text},
-};
 use error::api_error::RestError;
 use japanese::JapaneseExt;
-use models::DbPool;
 use once_cell::sync::Lazy;
+use tokio::sync::Mutex;
 use utils::{part_of, remove_dups};
 
 /// Max radicals to allow per request
@@ -39,7 +34,7 @@ pub struct RadicalsResponse {
 
 /// Get kanji by its radicals
 pub async fn kanji_by_radicals(
-    pool: web::Data<DbPool>,
+    poolv2: web::Data<Pool>,
     payload: Json<RadicalsRequest>,
 ) -> Result<Json<RadicalsResponse>, actix_web::Error> {
     // Validate an adjust request
@@ -51,7 +46,7 @@ pub async fn kanji_by_radicals(
     }
 
     // Kanji by search-radicals from DB
-    let kanji = find_by_radicals(&pool, &payload.radicals).await?;
+    let kanji = find_by_radicals(&poolv2, &payload.radicals).await?;
 
     // IDs of [`kanji`]
     let kanji_ids = kanji.iter().map(|i| i.id).collect_vec();
@@ -59,7 +54,7 @@ pub async fn kanji_by_radicals(
     // Build a new response
     let response = RadicalsResponse {
         kanji: format_kanji(&kanji),
-        possible_radicals: posible_radicals(&pool, &kanji_ids, &payload.radicals).await?,
+        possible_radicals: posible_radicals(&poolv2, &kanji_ids, &payload.radicals).await?,
     };
 
     set_cache(payload.radicals, response.clone()).await;
@@ -68,18 +63,24 @@ pub async fn kanji_by_radicals(
 }
 
 /// Finds all kanji which are constructed used the passing radicals
-async fn find_by_radicals(db: &DbPool, radicals: &[char]) -> Result<Vec<SqlFindResult>, RestError> {
+async fn find_by_radicals(pool: &Pool, radicals: &[char]) -> Result<Vec<SqlFindResult>, RestError> {
     if radicals.is_empty() {
         return Ok(vec![]);
     }
 
-    let query = include_str!("../sql/kanji_by_radical.sql");
+    let pool = pool.get().await?;
+    let prepared = pool.prepare_cached("SELECT kanji_element.kanji_id, search_radical.literal FROM kanji_element 
+              JOIN search_radical ON search_radical.id = kanji_element.search_radical_id 
+                WHERE kanji_element.kanji_id in 
+                  (SELECT kanji_element.kanji_id FROM search_radical JOIN kanji_element 
+                    ON kanji_element.search_radical_id = search_radical.id where search_radical.literal = $1)").await?;
 
-    // All kanji with the first radical
-    let kanji_ids: Vec<SqlKanjiLiteralResult> = diesel::sql_query(query)
-        .bind::<Text, _>(radicals[0].to_string())
-        .get_results_async(db)
-        .await?;
+    let kanji_ids: Vec<SqlKanjiLiteralResult> = pool
+        .query(&prepared, &[&radicals[0].to_string()])
+        .await?
+        .into_iter()
+        .map(|i| SqlKanjiLiteralResult::from(i))
+        .collect();
 
     // Kanji ids which have all [`radicals`]
     let kanji_ids = kanji_ids
@@ -97,64 +98,71 @@ async fn find_by_radicals(db: &DbPool, radicals: &[char]) -> Result<Vec<SqlFindR
         })
         .collect_vec();
 
-    use models::schema::kanji;
+    let prepared = pool
+        .prepare_cached(
+            "SELECT id, literal, stroke_count FROM kanji WHERE id = ANY ($1) ORDER BY stroke_count, grade",
+        )
+        .await?;
 
-    // Select all kanji by id ordered by stroke_count, grade
-    Ok(kanji::table
-        .select((kanji::id, kanji::literal, kanji::stroke_count))
-        .filter(kanji::id.eq_any(&kanji_ids))
-        .order((kanji::stroke_count, kanji::grade))
-        .get_results_async::<(i32, String, i32)>(db)
+    Ok(pool
+        .query(&prepared, &[&kanji_ids])
         .await?
         .into_iter()
-        .map(|i| SqlFindResult {
-            id: i.0,
-            literal: i.1,
-            stroke_count: i.2,
-        })
-        .collect_vec())
+        .map(|i| SqlFindResult::from(i))
+        .collect())
 }
 
 /// Returns a vec of all possible radicals
 async fn posible_radicals(
-    db: &DbPool,
+    db: &Pool,
     kanji_ids: &[i32],
     radicals: &[char],
 ) -> Result<Vec<char>, RestError> {
-    use models::schema::kanji_element;
-    use models::schema::search_radical::dsl::*;
+    let db = db.get().await?;
 
-    Ok(search_radical
-        .select(literal)
-        .distinct()
-        .inner_join(kanji_element::table)
-        .filter(kanji_element::kanji_id.eq_any(kanji_ids))
-        .get_results_async::<String>(db)
+    let prepared = db.prepare_cached("SELECT DISTINCT literal FROM search_radical INNER JOIN kanji_element ON kanji_element.search_radical_id = search_radical.id WHERE kanji_id = ANY($1)").await?;
+
+    Ok(db
+        .query(&prepared, &[&kanji_ids])
         .await?
         .into_iter()
-        // Get char from string
-        .map(|i| i.chars().next().unwrap())
-        // Skip all already provided radicals
-        .filter(|i| !radicals.contains(i))
+        .filter_map(|i| {
+            let s: String = i.get(0);
+            s.chars()
+                .next()
+                .and_then(|j| (!radicals.contains(&j)).then(|| j))
+        })
         .collect())
 }
 
-#[derive(QueryableByName, Debug)]
 struct SqlKanjiLiteralResult {
-    #[sql_type = "Integer"]
     pub kanji_id: i32,
-    #[sql_type = "Text"]
     pub literal: String,
 }
 
-#[derive(QueryableByName, Debug)]
+impl From<Row> for SqlKanjiLiteralResult {
+    fn from(row: Row) -> Self {
+        Self {
+            kanji_id: row.get(0),
+            literal: row.get(1),
+        }
+    }
+}
+
 struct SqlFindResult {
-    #[sql_type = "Integer"]
     pub id: i32,
-    #[sql_type = "Text"]
     pub literal: String,
-    #[sql_type = "Integer"]
     pub stroke_count: i32,
+}
+
+impl From<Row> for SqlFindResult {
+    fn from(row: Row) -> Self {
+        Self {
+            id: row.get(0),
+            literal: row.get(1),
+            stroke_count: row.get(2),
+        }
+    }
 }
 
 /// Validates the kanji by radicals request

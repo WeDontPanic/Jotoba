@@ -5,7 +5,7 @@
 // #-QuickSearches, hardcoded to reduce server callbacks
 const hashtags = [
     "#adverb", "#auxilary", "#conjungation", "#noun", "#prefix", "#suffix", "#particle", "#sfx",
-    "#verb", "#adjective", "#counter", "#expression", "#interjection", "#pronoun", "#nummeric", 
+    "#verb", "#adjective", "#counter", "#expression", "#interjection", "#pronoun", "#numeric", "#transitive", "#intransitive",
     "#unclassified", "#word", "#sentence", "#name", "#kanji",
 ];
 
@@ -414,4 +414,12 @@ function loadApiData(result) {
 function onSuggestionClick(element) {
     activateSelection(element);
     document.getElementsByClassName("btn-search")[0].click()
+}
+
+// Interrupts the form's submit and makes the user visit the correct page
+function onSearchStart() {
+    var search_value = $('#search').val();
+    var search_type = $('#search-type').val();
+    window.location = window.location.origin + "/search/" + search_value + "?t=" + search_type;
+    return false;
 }

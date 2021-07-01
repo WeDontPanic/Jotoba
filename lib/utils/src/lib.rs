@@ -1,6 +1,6 @@
 use itertools::Itertools;
 use rand::{distributions::Alphanumeric, thread_rng, Rng};
-use std::cmp::Ordering;
+use std::{cmp::Ordering, ops::Sub};
 
 /// Return true if both slices have the same elments without being stored to be in the same order
 pub fn same_elements<T>(v1: &[T], v2: &[T]) -> bool
@@ -107,6 +107,37 @@ pub fn option_order<T>(a: &Option<T>, b: &Option<T>) -> Option<Ordering> {
     } else {
         None
     }
+}
+
+/// Remove duplicates from a vector and return a newly allocated one using a func to compare both
+/// items. This doesn't need the source
+/// vector to be sorted unlike `.dedup()`. Therefore it's heavier in workload
+pub fn remove_dups_by<T, F>(inp: Vec<T>, eq: F) -> Vec<T>
+where
+    T: PartialEq,
+    F: Fn(&T, &T) -> bool,
+{
+    let mut new: Vec<T> = Vec::new();
+
+    for item in inp {
+        if !contains(&new, &item, &eq) {
+            new.push(item)
+        }
+    }
+
+    new
+}
+
+pub fn contains<T, F>(inp: &[T], item: &T, eq: F) -> bool
+where
+    F: Fn(&T, &T) -> bool,
+{
+    for i in inp {
+        if eq(i, item) {
+            return true;
+        }
+    }
+    false
 }
 
 /// Remove duplicates from a vector and return a newly allocated one. This doesn't need the source
@@ -220,4 +251,13 @@ pub fn rand_alpha_numeric(len: usize) -> String {
         .take(len)
         .map(char::from)
         .collect()
+}
+
+/// Calculates the difference between `a` and `b`. This method never fails
+pub fn diff<T: Sub<Output = T> + Ord>(a: T, b: T) -> T {
+    if a > b {
+        a - b
+    } else {
+        b - a
+    }
 }

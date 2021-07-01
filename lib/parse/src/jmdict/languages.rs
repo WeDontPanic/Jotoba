@@ -1,20 +1,15 @@
-use std::{convert::TryFrom, io::Write};
-
-use diesel::{
-    deserialize,
-    pg::Pg,
-    serialize::{self, Output},
-    sql_types::Integer,
-    types::{FromSql, ToSql},
-};
+use postgres_types::{accepts, to_sql_checked};
+use std::convert::TryFrom;
 use strum_macros::{AsRefStr, Display, EnumString};
+use tokio_postgres::types::{FromSql, ToSql};
 
 use crate::error;
 
+use serde::{Deserialize, Serialize};
+
 #[derive(
-    AsExpression, FromSqlRow, Debug, PartialEq, Clone, Copy, AsRefStr, EnumString, Display, Hash, Eq,
+    Debug, PartialEq, Clone, Copy, AsRefStr, EnumString, Display, Hash, Eq, Deserialize, Serialize,
 )]
-#[sql_type = "Integer"]
 pub enum Language {
     #[strum(serialize = "eng", serialize = "en-US")]
     English,
@@ -39,20 +34,6 @@ pub enum Language {
 impl Default for Language {
     fn default() -> Self {
         Self::English
-    }
-}
-
-impl ToSql<Integer, Pg> for Language {
-    fn to_sql<W: Write>(&self, out: &mut Output<W, Pg>) -> serialize::Result {
-        <i32 as ToSql<Integer, Pg>>::to_sql(&(*self).into(), out)
-    }
-}
-
-impl FromSql<Integer, Pg> for Language {
-    fn from_sql(bytes: Option<&[u8]>) -> deserialize::Result<Self> {
-        Ok(Self::try_from(<i32 as FromSql<Integer, Pg>>::from_sql(
-            bytes,
-        )?)?)
     }
 }
 
@@ -88,4 +69,35 @@ impl Into<i32> for Language {
             Self::Slovenian => 8,
         }
     }
+}
+
+impl<'a> FromSql<'a> for Language {
+    fn from_sql(
+        ty: &tokio_postgres::types::Type,
+        raw: &'a [u8],
+    ) -> Result<Self, Box<dyn std::error::Error + Sync + Send>> {
+        Ok(Language::try_from(
+            <i32 as tokio_postgres::types::FromSql>::from_sql(ty, raw)?,
+        )?)
+    }
+
+    accepts!(INT4);
+}
+
+impl ToSql for Language {
+    fn to_sql(
+        &self,
+        ty: &postgres_types::Type,
+        out: &mut postgres_types::private::BytesMut,
+    ) -> Result<postgres_types::IsNull, Box<dyn std::error::Error + Sync + Send>>
+    where
+        Self: Sized,
+    {
+        let i: i32 = (*self).into();
+        Ok(<i32 as ToSql>::to_sql(&i, ty, out)?)
+    }
+
+    accepts!(INT4);
+
+    to_sql_checked!();
 }

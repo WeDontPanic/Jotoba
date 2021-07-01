@@ -1,8 +1,6 @@
+use deadpool_postgres::Pool;
 use itertools::Itertools;
-use models::{
-    name::{self, NewName},
-    DbPool,
-};
+use models::name::{self, NewName};
 use parse::{jmnedict::Parser as jmnedictParser, parser::Parse};
 use std::{
     fs::File,
@@ -12,7 +10,7 @@ use std::{
 };
 
 /// Imports jmnedict into database
-pub async fn import(db: &DbPool, path: &str) {
+pub async fn import(db: &Pool, path: &str) {
     println!("Clearing existing names");
     name::clear(db).await.unwrap();
 
@@ -23,7 +21,7 @@ pub async fn import(db: &DbPool, path: &str) {
         .count()
         .unwrap();
 
-    let (sender, receiver): (SyncSender<NewName>, Receiver<NewName>) = sync_channel(1000);
+    let (sender, receiver): (SyncSender<NewName>, Receiver<NewName>) = sync_channel(4000);
     let t1 = std::thread::spawn(move || {
         parser
             .parse(|entry, i| {
@@ -45,7 +43,7 @@ pub async fn import(db: &DbPool, path: &str) {
     while received.is_ok() {
         rec_names.push(received.unwrap());
 
-        let chunksize = 10000;
+        let chunksize = 4000;
 
         if rec_names.len() + 400 > chunksize {
             for names in rec_names.clone().into_iter().chunks(chunksize).into_iter() {

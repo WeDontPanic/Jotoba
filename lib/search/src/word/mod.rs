@@ -3,6 +3,7 @@ mod order;
 pub mod result;
 mod wordsearch;
 
+use deadpool_postgres::Pool;
 use parse::jmdict::part_of_speech::PosSimple;
 use result::{Item, Word};
 pub use wordsearch::WordSearch;
@@ -20,8 +21,8 @@ use super::{
 use cache::SharedCache;
 use error::Error;
 use japanese::{inflection::SentencePart, JapaneseExt};
+use models::kanji::KanjiResult;
 use models::search_mode::SearchMode;
-use models::{kanji::KanjiResult, DbPool};
 use utils::real_string_len;
 
 use self::result::{InflectionInformation, WordResult};
@@ -36,13 +37,13 @@ static SEARCH_CACHE: Lazy<Mutex<SharedCache<u64, WordResult>>> =
     Lazy::new(|| Mutex::new(SharedCache::with_capacity(1000)));
 
 pub(self) struct Search<'a> {
-    db: &'a DbPool,
+    pool: &'a Pool,
     query: &'a Query,
 }
 
 /// Search among all data based on the input query
-pub async fn search(db: &DbPool, query: &Query) -> Result<WordResult, Error> {
-    let search = Search { db, query };
+pub async fn search(pool: &Pool, query: &Query) -> Result<WordResult, Error> {
+    let search = Search { pool, query };
 
     // Try to use cache
     if let Some(c_res) = search.get_cache().await {
@@ -80,7 +81,7 @@ impl<'a> Search<'a> {
 
         let (kanji_results, _): (Vec<KanjiResult>, _) = futures::try_join!(
             kanji::load_word_kanji_info(&self, &words_cloned),
-            WordSearch::load_collocations(self.db, &mut words, self.query.settings.user_lang)
+            WordSearch::load_collocations(self.pool, &mut words, self.query.settings.user_lang)
         )?;
 
         let kanji_items = kanji_results.len();
@@ -135,7 +136,7 @@ impl<'a> Search<'a> {
             return Ok((query_str.to_owned(), None, None));
         }
 
-        let in_db = models::dict::reading_exists(&self.db, query_str).await?;
+        let in_db = models::dict::reading_existsv2(&self.pool, query_str).await?;
         let parser = InputTextParser::new(query_str, &japanese::jp_parsing::JA_NL_PARSER, in_db)?;
 
         if let Some(parsed) = parser.parse() {
@@ -173,7 +174,7 @@ impl<'a> Search<'a> {
         // Request furigana for each kanji containing part
         for part in sentence_parts.iter_mut() {
             if part.text.has_kanji() {
-                part.furigana = models::dict::furigana_by_reading(self.db, &part.text)
+                part.furigana = models::dict::furigana_by_reading(self.pool, &part.text)
                     .await
                     .ok()
                     .and_then(|i| i);
@@ -261,7 +262,7 @@ impl<'a> Search<'a> {
         println!("query: {}", query);
 
         // Define basic search structure
-        let mut word_search = WordSearch::new(self.db, &query);
+        let mut word_search = WordSearch::new(self.pool, &query);
         word_search
             .with_language(self.query.settings.user_lang)
             .with_english_glosses(self.query.settings.show_english);
@@ -362,7 +363,7 @@ impl<'a> Search<'a> {
             SearchMode::Variable
         };
 
-        let mut word_search = WordSearch::new(self.db, &self.query.query);
+        let mut word_search = WordSearch::new(self.pool, &self.query.query);
         word_search
             .with_language(self.query.settings.user_lang)
             .with_case_insensitivity(true)
@@ -442,7 +443,7 @@ impl<'a> Search<'a> {
     }
 
     #[cfg(not(feature = "tokenizer"))]
-    fn ma_f(&self, w: &mut Vec<Word>, morpheme: bool) {
+    fn ma_f(&self, w: &mut Vec<Word>, _morpheme: bool) {
         #[cfg(not(feature = "tokenizer"))]
         let search_order = SearchOrder::new(self.query);
 

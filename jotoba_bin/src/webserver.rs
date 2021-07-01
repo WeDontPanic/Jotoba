@@ -1,21 +1,19 @@
-mod cache_control;
-
-use actix_session::CookieSession;
+use actix_files::NamedFile;
+use deadpool_postgres::Pool;
 use localization::TranslationDict;
-use tokio_postgres::Client;
 
-use actix_web::{middleware, web as actixweb, App, HttpServer};
-use cache_control::CacheInterceptor;
+use actix_web::{
+    http::header::{ACCESS_CONTROL_ALLOW_ORIGIN, CACHE_CONTROL},
+    middleware, web as actixweb, App, HttpRequest, HttpServer,
+};
 use config::Config;
-use models::DbPool;
-use std::{sync::Arc, time::Duration};
+use std::sync::Arc;
 
 /// How long frontend assets are going to be cached by the clients. Currently 1 week
 const ASSET_CACHE_MAX_AGE: u64 = 604800;
 
 /// Start the webserver
-#[actix_web::main]
-pub(super) async fn start(db: DbPool, async_postgres: Client) -> std::io::Result<()> {
+pub(super) async fn start(pool: Pool) -> std::io::Result<()> {
     setup_logger();
 
     let config = Config::new().await.expect("config failed");
@@ -30,7 +28,6 @@ pub(super) async fn start(db: DbPool, async_postgres: Client) -> std::io::Result
     .expect("Failed to load localization files");
 
     let locale_dict_arc = Arc::new(locale_dict);
-    let async_pg_arc = Arc::new(async_postgres);
 
     #[cfg(feature = "sentry_error")]
     if let Some(ref sentry_config) = config.sentry {
@@ -50,58 +47,87 @@ pub(super) async fn start(db: DbPool, async_postgres: Client) -> std::io::Result
 
     let config_clone = config.clone();
 
-    if let Err(err) = api::search_suggestion::load_word_suggestions(&config) {
+    if let Err(err) = api::completions::load_word_suggestions(&config) {
         log::error!("Failed loading suggestions: {}", err);
     }
 
-    if let Err(err) = api::search_suggestion::load_meaning_suggestions(&config) {
+    if let Err(err) = api::completions::load_meaning_suggestions(&config) {
         log::error!("Failed loading kanji suggestions: {}", err);
     }
 
     HttpServer::new(move || {
         let app = App::new()
             // Data
-            .data(db.clone())
             .data(config_clone.clone())
-            .data(async_pg_arc.clone())
+            .data(pool.clone())
             .data(locale_dict_arc.clone())
             // Middlewares
             .wrap(middleware::Logger::default())
-            .wrap(CookieSession::signed(&[0; 32]).secure(false))
-            .wrap(middleware::Compress::default())
+            //.wrap(CookieSession::signed(&[0; 32]).secure(false))
+            //.wrap(middleware::Compress::default())
             // Static files
             .route("/index.html", actixweb::get().to(frontend::index::index))
+            .route("/docs.html", actixweb::get().to(docs))
             .route("/", actixweb::get().to(frontend::index::index))
-            .route("/search", actixweb::get().to(frontend::search_ep::search))
+            .route(
+                "/search/{query}",
+                actixweb::get().to(frontend::search_ep::search),
+            )
             .route("/about", actixweb::get().to(frontend::about::about))
             .default_service(actix_web::Route::new().to(frontend::web_error::not_found))
             // API
-            .route(
-                "/api/kanji/by_radical",
-                actixweb::post().to(api::radical::kanji_by_radicals),
-            )
-            .route(
-                "/api/suggestion",
-                actixweb::post().to(api::search_suggestion::suggestion_ep),
+            .service(
+                actixweb::scope("/api")
+                    .wrap(
+                        middleware::DefaultHeaders::new().header(ACCESS_CONTROL_ALLOW_ORIGIN, "*"),
+                    )
+                    .service(
+                        actixweb::scope("search")
+                            .route("words", actixweb::post().to(api::search::word::word_search))
+                            .route(
+                                "kanji",
+                                actixweb::post().to(api::search::kanji::kanji_search),
+                            )
+                            .route("names", actixweb::post().to(api::search::name::name_search))
+                            .route(
+                                "sentences",
+                                actixweb::post().to(api::search::sentence::sentence_search),
+                            ),
+                    )
+                    .route(
+                        "/kanji/by_radical",
+                        actixweb::post().to(api::radical::kanji_by_radicals),
+                    )
+                    .route(
+                        "/suggestion",
+                        actixweb::post().to(api::completions::suggestion_ep),
+                    ),
             )
             // Static files
             .service(
                 actixweb::scope("/assets")
-                    .wrap(CacheInterceptor(Duration::from_secs(ASSET_CACHE_MAX_AGE)))
+                    .wrap(
+                        middleware::DefaultHeaders::new()
+                            .header(CACHE_CONTROL, format!("max-age={}", ASSET_CACHE_MAX_AGE)),
+                    )
                     .service(actix_files::Files::new(
                         "",
                         config_clone.server.get_html_files(),
                     )),
             );
 
-        #[cfg(feature = "sentry_error")]
-        let app = app.wrap(sentry_actix::Sentry::new());
+        //#[cfg(feature = "sentry_error")]
+        //let app = app.wrap(sentry_actix::Sentry::new());
 
         app
     })
     .bind(&config.server.listen_address)?
     .run()
     .await
+}
+
+async fn docs(req: HttpRequest) -> actix_web::Result<NamedFile> {
+    Ok(NamedFile::open("html/docs.html")?)
 }
 
 fn setup_logger() {

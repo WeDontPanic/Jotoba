@@ -13,7 +13,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"PO-Revision-Date: 2021-06-16 18:54+0200\n"
+"PO-Revision-Date: 2021-06-21 13:46+0200\n"
 "Last-Translator:  <jojii@gmx.net>\n"
 "Language-Team: English\n"
 "Language: en\n"
@@ -140,6 +140,18 @@ msgstr ""
 msgid "Results will try to match the selected language"
 msgstr ""
 
+msgid "Page language"
+msgstr ""
+
+msgid "Displays the website in the selected language"
+msgstr ""
+
+msgid "This language has not been translated yet."
+msgstr ""
+
+msgid "Contributions are welcome!"
+msgstr ""
+
 msgid "Result settings"
 msgstr ""
 
@@ -228,6 +240,25 @@ msgstr ""
 msgid "Jotoba wouldn't be able to exist without the help of many open-source data sources"
 msgstr ""
 
+msgid "About Page"
+msgstr ""
+
+# Cookie Footer
+msgid "This Website uses Cookies"
+msgstr ""
+
+msgid "We use cookies to let you personalize the website as you desire and improve search suggestions. In addition, we use anonymous analytics to improve our service quality. We don't share any data with third parties nor do we store or collect data that allows us to identify you or track your behaviour."
+msgstr ""
+
+msgid "You can change your preferences at any time by pressing on the Settings icon."
+msgstr ""
+
+msgid "Only use necessary cookies"
+msgstr ""
+
+msgid "Allow Cookies"
+msgstr ""
+
 ### Index
 
 msgid "is a multilingual Japanese dictionary"
@@ -290,6 +321,7 @@ msgstr ""
 ## Kanji results
 
 # strokes suffix
+
 msgid "strokes"
 msgstr ""
 
@@ -300,6 +332,12 @@ msgid "Kun"
 msgstr ""
 
 msgid "On"
+msgstr ""
+
+msgid "On reading compounds"
+msgstr ""
+
+msgid "Kun reading compounds"
 msgstr ""
 
 msgid "JLPT level"
@@ -449,6 +487,9 @@ msgstr ""
 msgid "and available under the license"
 msgstr ""
 
+msgid "Additionally, the RADKFILE by Jin Breen is used to link Radicals to Kanji."
+msgstr ""
+
 # Source
 msgid "Audio Files"
 msgstr ""
@@ -531,9 +572,6 @@ msgid "Data about Pitch Accents and Radicals used in specific Kanji are provided
 msgstr ""
 
 msgid "On the project's Github Page you can find lots of data about Kanji."
-msgstr ""
-
-msgid "Additional to Kanjium, RADKFILE by Jin Breen is used to link Radicals to Kanji."
 msgstr ""
 
 ## Jmdict

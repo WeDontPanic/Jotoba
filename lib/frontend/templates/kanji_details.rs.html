@@ -25,7 +25,7 @@
             <div class="rad-parts-parent">
               <div class="notes rad"><b>@data.gettext("Radical"):</b>
                 <br>
-                <a class="clickable no-align" href="/search?type=1&search=@k_item.radical.literal">@k_item.get_radical()</a>
+                <a class="clickable no-align" href="/search/@k_item.radical.literal?t=1">@k_item.get_radical()</a>
                 @if k_item.get_rad_len() > 7 {
                  <br>
                 }
@@ -40,7 +40,7 @@
                   @if pos > 0 {
                     <span class="tags no-margin fat">,</span>
                   }
-                  <a class="clickable no-align" href="/search?type=1&search=@part">@part</a>
+                  <a class="clickable no-align" href="/search/@part?t=1">@part</a>
                 }
               </div>
             }
@@ -63,7 +63,7 @@
                         @if pos > 0 {
                           <div class="tags no-margin fat right-padding-10">,</div>
                         }
-                        <a class="clickable no-align fat" href="/search?type=0&search=@k_item.kanji.kanji.literal+@kun">@kun</a>
+                        <a class="clickable no-align fat" href="/search/@k_item.kanji.kanji.literal @kun">@kun</a>
                       }
                  </div>
                 }
@@ -74,7 +74,7 @@
                         @if pos > 0 {
                           <div class="tags no-margin fat right-padding-10">,</div>
                         }
-                        <a class="clickable no-align fat" href="/search?type=0&search=@k_item.kanji.kanji.literal+@on">@on</a>
+                        <a class="clickable no-align fat" href="/search/@k_item.kanji.kanji.literal @on">@on</a>
                       }
                  </div>
                }
@@ -100,7 +100,7 @@
                 @if pos > 0 {
                   <div class="tags no-margin slim right-padding-10">,</div>
                 }
-                <a class="clickable no-align" href="/search?type=3&search=@k_item.kanji.kanji.literal+@n">@n</a>
+                <a class="clickable no-align" href="/search/@k_item.kanji.kanji.literal @n?t=3">@n</a>
               }
             </div>
           }
@@ -150,7 +150,7 @@
                    @for on in ons.iter() {
                       <span>
                         @if let Some(ref kanji_reading) = on.reading.kanji {
-                          <a class="clickable green" href="/search?type=0&search=@kanji_reading.reading">@kanji_reading.reading</a> 【@on.reading.kana.as_ref().unwrap().reading】@on.glosses_pretty()
+                          <a class="clickable green" href="/search/@kanji_reading.reading">@kanji_reading.reading</a> 【@on.reading.kana.as_ref().unwrap().reading】@on.glosses_pretty()
                         }
                       </span>
                     }
@@ -167,7 +167,7 @@
                   @for kun in kuns.iter() {
                     <span>
                       @if let Some(ref kanji_reading) = kun.reading.kanji {
-                        <a class="clickable green" href="/search?type=0&search=@kanji_reading.reading">@kanji_reading.reading</a> 【@kun.reading.kana.as_ref().unwrap().reading】@kun.glosses_pretty()
+                        <a class="clickable green" href="/search/@kanji_reading.reading">@kanji_reading.reading</a> 【@kun.reading.kana.as_ref().unwrap().reading】@kun.glosses_pretty()
                       }
                     </span>
                   }
@@ -179,5 +179,5 @@
    </div>
 
    <!-- Load this page's script -->
-   <script src="assets/js/kanjiAnimation.js"></script>
+   <script src="/assets/js/kanjiAnimation.js"></script>
 }
