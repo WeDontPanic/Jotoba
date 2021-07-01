@@ -405,6 +405,12 @@ function onSuggestionClick(element) {
 function onSearchStart() {
     var search_value = $('#search').val();
     var search_type = $('#search-type').val();
-    window.location = window.location.origin + "/search/" + search_value + "?t=" + search_type;
+
+    if (search_value.length == 0) {
+        window.location = window.location.origin;
+    } else {
+        window.location = window.location.origin + "/search/" + search_value + "?t=" + search_type;
+    }
+
     return false;
 }
