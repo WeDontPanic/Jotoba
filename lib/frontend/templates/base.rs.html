@@ -1,12 +1,12 @@
-@use super::{word_search_html, kanji_details, name_search, sentence_search, about_html, radpicker_html};
-@use crate::{BaseData, ResultData, Site};
-@*@use search::query_parser::QueryType;*@
+@use super::subtemplates::{head_html, input_dropdown_html, search_overlays_html, settings_html, main_body_html, footer_html};
+@use crate::BaseData;
 
 @(data: BaseData)
 
 <!DOCTYPE html>
 <html lang="en">
    <!-- TODO: Lade head.rs.html -->
+   @:head_html(&data)
 
    <body>
 
@@ -24,7 +24,7 @@
                   <h4 class="noselect">@data.gettext("Settings")</h4>
                </div>
                <div class="btn-container rad" onclick="toggleRadicalOverlay()">
-                  <span class="rad-picker-icon noselect">辞</span>
+                  <span class="rad-picker-icon noselect">部</span>
                   <h4 class="rad-picker-txt noselect">@data.gettext("Radicals")</h4>
                </div>
                <div class="btn-container" onclick='toggleSpeakOverlay()'>
@@ -41,6 +41,7 @@
                         <div class="inner-form">
                            
                            <!-- TODO: Lade input_dropdown.rs.html -->
+                            @:input_dropdown_html(&data)
 
                            <div class="input-field second-wrap">
                               <div class="input-group">
@@ -68,19 +69,23 @@
                   </div>
 
                   <!-- TODO: Lade search_overlays.rs.html -->
+                  @:search_overlays_html(&data)
 
                </div>
             </div>
 
             <!-- TODO Lade settings_overlay.rs.html -->
+            @:settings_html(&data)
 
          </div>
 
          <!-- TODO Lade main_body.rs.html -->
+         @:main_body_html(&data)
 
       </div>
 
       <!-- TODO Lade footer.rs.html -->
+      @:footer_html(&data)
 
    </body>
 </html>

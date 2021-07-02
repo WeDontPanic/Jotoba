@@ -1,4 +1,4 @@
-@use super::{word_search_html, kanji_details, name_search, sentence_search, about_html, radpicker_html};
+@use super::{word_search_html, kanji_details, name_search, sentence_search, about_html};
 @use crate::{BaseData, ResultData, Site};
 @(data: &BaseData)
 
@@ -47,7 +47,7 @@
      </button>
      <!-- Radical Input -->
      <button class="mobile-nav-inner-btn" onclick="toggleRadicalOverlay(); toggleMobileNav();">
-        <span class="rad-picker-icon noselect">辞</span>
+        <span class="rad-picker-icon noselect">部</span>
      </button>
      <!-- Speech Input -->
      <button class="mobile-nav-inner-btn" onclick="toggleSpeakOverlay(); toggleMobileNav();">

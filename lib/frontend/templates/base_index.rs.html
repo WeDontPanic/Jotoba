@@ -1,6 +1,5 @@
-@*@use super::{index_html, word_search_html, kanji_details, name_search, sentence_search, about_html, radpicker_html};*@
-@use crate::{BaseData, ResultData, Site};
-@*@use search::query_parser::QueryType;*@
+@use super::subtemplates::{head_html, input_dropdown_html, search_overlays_html, settings_html, footer_html};
+@use crate::BaseData;
 
 @(data: BaseData)
 
@@ -8,6 +7,7 @@
 <html lang="en">
    <!-- TODO: Lade head.rs.html -->
    <link rel="stylesheet" type="text/css" href="assets/css/index.css">
+   @:head_html(&data)
 
    <body>
 
@@ -29,6 +29,7 @@
                         <div class="inner-form">
                            
                            <!-- TODO: Lade input_dropdown.rs.html -->
+                           @:input_dropdown_html(&data)
 
                            <div class="input-field second-wrap">
                               <div class="input-group">
@@ -47,11 +48,13 @@
                   </div>
                   
                   <!-- TODO: Lade search_overlays.rs.html -->
+                  @:search_overlays_html(&data)
 
                </div>
             </div>
 
             <!-- TODO Lade settings_overlay.rs.html -->
+            @:settings_html(&data)
 
          </div>
        
@@ -84,6 +87,7 @@
       </div>
 
        <!-- TODO Lade footer.rs.html -->
+      @:footer_html(&data)
 
    </body>
 </html>
