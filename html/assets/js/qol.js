@@ -59,9 +59,9 @@ $(document).on("keydown", (event) => {
         }
     }
     if (lastKeys.toString() === "38,40,37,39,37,39,66,65") {
-        parseSchemeCode("1A1A1C252527C3083F9407416Fi32ZZZOR6Fi32");
+        parseSchemeCode("1A1A1C252527C3083F9407416Fi32636363ZZOR6Fi32D3D3D3");
         if (Cookies.get("user_agreement") !== "true") {
-            Util.deleteCookies();
+            deleteCookies(true);
         }
     }
 });

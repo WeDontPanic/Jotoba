@@ -237,7 +237,7 @@ svg {
     border: 2px solid var(--searchBackground);
     border-top: none;
     background-color: var(--searchBackground);
-    box-shadow: 0px 8px 20px 0px var(--lineColor)
+    box-shadow: 0px 8px 20px 0px var(--backgroundShadow)
 }
 
 .x-button {

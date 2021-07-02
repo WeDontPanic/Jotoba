@@ -409,7 +409,7 @@ function onSearchStart() {
     if (search_value.length == 0) {
         window.location = window.location.origin;
     } else {
-        window.location = window.location.origin + "/search/" + search_value + "?t=" + search_type;
+        window.location = window.location.origin + "/search/" + encodeURIComponent(search_value) + "?t=" + search_type;
     }
 
     return false;

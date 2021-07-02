@@ -26,6 +26,8 @@
       <link rel="preload" href="/assets/css/radselect.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
         <noscript><link rel="stylesheet" href="/assets/css/radselect.css"></noscript>
       <link rel="stylesheet" type="text/css" href="/assets/css/mobile.css">
+      <!-- TODO: Only load on Index Page -->
+      <link rel="stylesheet" type="text/css" href="assets/css/index.css"> 
       <!-- External JS -->
       <script src="/assets/js/lib/jquery.min.js"></script>
       <script async defer src="/assets/js/lib/bootstrap.min.js"></script>
@@ -44,353 +46,370 @@
    </head>
 
    <body>
-      <!-- Search Row -->
-      <div id="search-row" class="wrap-row">
-         <div class="d-flex center">
 
-            <!-- Left Buttons -->
-            <div class="btn-container settingsBtn" data-toggle="modal" data-target="#settingsModal">
-               <svg id="settingsSvg" height="30" viewBox="0 0 100 100">
-                  <path d="m50.011 0c-2.8839 0-5.7139 0.25936-8.4642 0.7281l-1.3424 14.221c-2.8444 0.79287-5.5365 1.9015-8.0546 3.322l-10.99-9.0785c-4.6419 3.286-8.7054 7.3259-11.991 11.968l9.1012 10.99c-1.4188 2.5151-2.552 5.214-3.3447 8.0546l-14.197 1.35c-0.46893 2.75-0.728 5.58-0.728 8.49 0 2.8897 0.25747 5.7085 0.7281 8.4641l14.198 1.3425c0.79274 2.8406 1.926 5.5395 3.3447 8.0546l-9.0785 10.99c3.2796 4.6294 7.3161 8.6885 11.945 11.968l11.013-9.1013c2.5197 1.4217 5.2082 2.5515 8.0546 3.3447l1.3424 14.221c2.7503 0.4688 5.5803 0.7054 8.4642 0.7054 2.8838 0 5.6911-0.2366 8.4414-0.7054l1.3424-14.221c2.8465-0.7932 5.5349-1.923 8.0546-3.3447l11.013 9.1013c4.6293-3.2797 8.6658-7.3388 11.945-11.968l-9.0785-10.99c1.4188-2.5151 2.552-5.214 3.3447-8.0546l14.198-1.3425c0.47063-2.7556 0.7281-5.5744 0.7281-8.4641 0-2.8848-0.25907-5.7131-0.7281-8.4642l-14.198-1.3424c-0.79274-2.8406-1.926-5.5395-3.3447-8.0546l9.1012-10.99c-3.2855-4.6423-7.349-8.6821-11.991-11.968l-10.99 9.0785c-2.5181-1.4205-5.2102-2.5291-8.0546-3.322l-1.3424-14.221c-2.7503-0.46874-5.5576-0.7281-8.4414-0.7281zm0 30.967c10.516 0 19.022 8.528 19.022 19.044s-8.5053 19.044-19.022 19.044c-10.516 0-19.044-8.528-19.044-19.044s8.528-19.044 19.044-19.044z"></path>
-               </svg>
-               <h4 class="noselect">@data.gettext("Settings")</h4>
-            </div>
-            <div class="btn-container rad" onclick="toggleRadicalOverlay()">
-               <span class="rad-picker-icon noselect">辞</span>
-               <h4 class="rad-picker-txt noselect">@data.gettext("Radicals")</h4>
-            </div>
-            <div class="btn-container" onclick='toggleSpeakOverlay()'>
-               <svg height="30" width="30">
-                  <path d="M15.93,24.714v3.091c3.09,0.168,5.483,1.19,5.483,2.146c0,0.023-12.679,0.023-12.679,0c0-0.919,2.213-1.91,5.139-2.133   v-3.115c-3.734-0.535-6.616-3.717-6.616-7.602v-1.541h1.027v1.541c0,3.688,2.992,6.682,6.681,6.683h0.005   c3.691-0.001,6.743-2.991,6.743-6.683v-1.541h1.029v1.541C22.743,21.031,19.729,24.236,15.93,24.714L15.93,24.714z M14.965,22.693   c-3.122,0-5.654-2.532-5.654-5.654v-1.477h11.373v1.477C20.684,20.161,18.087,22.693,14.965,22.693z M9.312,5.685   c0-3.121,2.531-5.653,5.654-5.653s5.718,2.532,5.718,5.653v8.849H9.312V5.685z"></path>
-               </svg>
-               <h4 class="noselect">@data.gettext("Voice")</h4>
-            </div>
+      <div class="index-noselect">
 
-            <!-- Search Bar -->
-            <div id="searchDiv">
-               <div class="searchDivInner">
-                  <form method="GET" action="/search" onsubmit="return onSearchStart()">
-                     <div class="inner-form">
-                        <div class="input-field first-wrap">
-                           <div class="input-select">
-                              <div class="choices noselect" data-type="select-one" tabindex="1">
-                                 <div class="choices__inner">
-                                    <select id="search-type" data-trigger="" name="type" data-onchange="changeSearchType" class="hidden">
-                                       <option value="@data.get_search_site_id()">@data.get_search_site_name()</option>
-                                    </select>
-                                    <div class="choices__list choices__list--single">
-                                       <div class="choices__item choices__item--selectable">@data.get_search_site_name()</div>
-                                    </div>
-                                 </div>
-                                 <div class="choices__list choices__list--dropdown">
-                                    <div class="choices__list">
-                                       <div data-value="0" class="choices__item choices__item--choice choices__item--selectable">@data.gettext("Words")</div>
-                                       <div data-value="1" class="choices__item choices__item--choice choices__item--selectable">@data.gettext("Kanji")</div>
-                                       <div data-value="2" class="choices__item choices__item--choice choices__item--selectable">@data.gettext("Sentences")</div>
-                                       <div data-value="3" class="choices__item choices__item--choice choices__item--selectable">@data.gettext("Names")</div>
+          <!-- Title Icon -->
+
+         <!-- TODO: Only load on Index Page -->
+         <div onmousedown="return false" class="title">
+            <embed class="titleImg" src="assets/jotokun/Titel.png">
+         </div>
+
+         <!-- Search Row -->
+         <div id="search-row" class="wrap-row">
+            <div class="d-flex center">
+
+               <!-- TODO Start: Only load when NOT on Index Page -->
+               <!-- Left Buttons -->
+               <div class="btn-container settingsBtn" data-toggle="modal" data-target="#settingsModal">
+                  <svg id="settingsSvg" height="30" viewBox="0 0 100 100">
+                     <path d="m50.011 0c-2.8839 0-5.7139 0.25936-8.4642 0.7281l-1.3424 14.221c-2.8444 0.79287-5.5365 1.9015-8.0546 3.322l-10.99-9.0785c-4.6419 3.286-8.7054 7.3259-11.991 11.968l9.1012 10.99c-1.4188 2.5151-2.552 5.214-3.3447 8.0546l-14.197 1.35c-0.46893 2.75-0.728 5.58-0.728 8.49 0 2.8897 0.25747 5.7085 0.7281 8.4641l14.198 1.3425c0.79274 2.8406 1.926 5.5395 3.3447 8.0546l-9.0785 10.99c3.2796 4.6294 7.3161 8.6885 11.945 11.968l11.013-9.1013c2.5197 1.4217 5.2082 2.5515 8.0546 3.3447l1.3424 14.221c2.7503 0.4688 5.5803 0.7054 8.4642 0.7054 2.8838 0 5.6911-0.2366 8.4414-0.7054l1.3424-14.221c2.8465-0.7932 5.5349-1.923 8.0546-3.3447l11.013 9.1013c4.6293-3.2797 8.6658-7.3388 11.945-11.968l-9.0785-10.99c1.4188-2.5151 2.552-5.214 3.3447-8.0546l14.198-1.3425c0.47063-2.7556 0.7281-5.5744 0.7281-8.4641 0-2.8848-0.25907-5.7131-0.7281-8.4642l-14.198-1.3424c-0.79274-2.8406-1.926-5.5395-3.3447-8.0546l9.1012-10.99c-3.2855-4.6423-7.349-8.6821-11.991-11.968l-10.99 9.0785c-2.5181-1.4205-5.2102-2.5291-8.0546-3.322l-1.3424-14.221c-2.7503-0.46874-5.5576-0.7281-8.4414-0.7281zm0 30.967c10.516 0 19.022 8.528 19.022 19.044s-8.5053 19.044-19.022 19.044c-10.516 0-19.044-8.528-19.044-19.044s8.528-19.044 19.044-19.044z"></path>
+                  </svg>
+                  <h4 class="noselect">@data.gettext("Settings")</h4>
+               </div>
+               <div class="btn-container rad" onclick="toggleRadicalOverlay()">
+                  <span class="rad-picker-icon noselect">辞</span>
+                  <h4 class="rad-picker-txt noselect">@data.gettext("Radicals")</h4>
+               </div>
+               <div class="btn-container" onclick='toggleSpeakOverlay()'>
+                  <svg height="30" width="30">
+                     <path d="M15.93,24.714v3.091c3.09,0.168,5.483,1.19,5.483,2.146c0,0.023-12.679,0.023-12.679,0c0-0.919,2.213-1.91,5.139-2.133   v-3.115c-3.734-0.535-6.616-3.717-6.616-7.602v-1.541h1.027v1.541c0,3.688,2.992,6.682,6.681,6.683h0.005   c3.691-0.001,6.743-2.991,6.743-6.683v-1.541h1.029v1.541C22.743,21.031,19.729,24.236,15.93,24.714L15.93,24.714z M14.965,22.693   c-3.122,0-5.654-2.532-5.654-5.654v-1.477h11.373v1.477C20.684,20.161,18.087,22.693,14.965,22.693z M9.312,5.685   c0-3.121,2.531-5.653,5.654-5.653s5.718,2.532,5.718,5.653v8.849H9.312V5.685z"></path>
+                  </svg>
+                  <h4 class="noselect">@data.gettext("Voice")</h4>
+               </div>
+               <!-- TODO END -->
+
+               <!-- Search Bar -->
+               <div id="searchDiv">
+                  <div class="searchDivInner">
+                     <form method="GET" action="/search" onsubmit="return onSearchStart()">
+                        <div class="inner-form">
+                           <div class="index-btn-container">
+                              <div class="input-field first-wrap">
+                                 <div class="input-select">
+                                    <div class="choices noselect" data-type="select-one" tabindex="1">
+                                       <div class="choices__inner">
+                                          <select id="search-type" data-trigger="" name="type" data-onchange="changeSearchType" class="hidden">
+                                             <option value="@data.get_search_site_id()">@data.get_search_site_name()</option>
+                                          </select>
+                                          <div class="choices__list choices__list--single">
+                                             <div class="choices__item choices__item--selectable index">@data.get_search_site_name()</div>
+                                          </div>
+                                       </div>
+                                       <div class="choices__list choices__list--dropdown index">
+                                          <div class="choices__list">
+                                             <div data-value="0" class="choices__item choices__item--choice choices__item--selectable">@data.gettext("Words")</div>
+                                             <div data-value="1" class="choices__item choices__item--choice choices__item--selectable">@data.gettext("Kanji")</div>
+                                             <div data-value="2" class="choices__item choices__item--choice choices__item--selectable">@data.gettext("Sentences")</div>
+                                             <div data-value="3" class="choices__item choices__item--choice choices__item--selectable">@data.gettext("Names")</div>
+                                          </div>
+                                       </div>
                                     </div>
                                  </div>
                               </div>
                            </div>
-                        </div>
-                        <div class="input-field second-wrap">
-                           <div class="input-group">
-                              <input id="search" name="search" type="text" value="@data.get_query_str()" placeholder='@data.gettext("Search...")' tabindex="1" lang="ja" autocapitalize="off" autocomplete="off" data-autoload="false" data-effective-keyword=""/>
-                              <span id="shadow-text"></span>
-                              <button id="emptyInput" type="button" class="btn bg-transparent" onclick="emptySearchInput()">
-                                 <svg height="10" width="10" viewBox="0 0 503.021 503.021" style="margin-top: -5px">
-                                    <path d="M491.613,75.643l-64.235-64.235c-15.202-15.202-39.854-15.202-55.056,0L251.507,132.222L130.686,11.407c-15.202-15.202-39.853-15.202-55.055,0L11.401,75.643c-15.202,15.202-15.202,39.854,0,55.056l120.821,120.815L11.401,372.328c-15.202,15.202-15.202,39.854,0,55.056l64.235,64.229c15.202,15.202,39.854,15.202,55.056,0l120.815-120.814l120.822,120.814c15.202,15.202,39.854,15.202,55.056,0l64.235-64.229c15.202-15.202,15.202-39.854,0-55.056L370.793,251.514l120.82-120.815C506.815,115.49,506.815,90.845,491.613,75.643z">
-                                    </path>
+                           <div class="input-field second-wrap">
+                              <div class="input-group">
+                                 <input id="search" name="search" type="text" value="@data.get_query_str()" placeholder='@data.gettext("Search...")' tabindex="1" lang="ja" autocapitalize="off" autocomplete="off" data-autoload="false" data-effective-keyword=""/>
+                                 <span id="shadow-text"></span>
+                                 <button id="emptyInput" type="button" class="btn bg-transparent" onclick="emptySearchInput()">
+                                    <svg height="10" width="10" viewBox="0 0 503.021 503.021" style="margin-top: -5px">
+                                       <path d="M491.613,75.643l-64.235-64.235c-15.202-15.202-39.854-15.202-55.056,0L251.507,132.222L130.686,11.407c-15.202-15.202-39.853-15.202-55.055,0L11.401,75.643c-15.202,15.202-15.202,39.854,0,55.056l120.821,120.815L11.401,372.328c-15.202,15.202-15.202,39.854,0,55.056l64.235,64.229c15.202,15.202,39.854,15.202,55.056,0l120.815-120.814l120.822,120.814c15.202,15.202,39.854,15.202,55.056,0l64.235-64.229c15.202-15.202,15.202-39.854,0-55.056L370.793,251.514l120.82-120.815C506.815,115.49,506.815,90.845,491.613,75.643z">
+                                       </path>
+                                    </svg>
+                                 </button>
+                             </div>
+                           </div>
+                           <div class="input-field third-wrap">
+                              <button class="btn-search" type="submit">
+                                 <svg class="svg-inline--fa fa-search fa-w-16" aria-hidden="true" data-prefix="fas" data-icon="search" role="img" viewBox="0 0 512 512">
+                                    <path fill="white" d="M505 442.7L405.3 343c-4.5-4.5-10.6-7-17-7H372c27.6-35.3 44-79.7 44-128C416 93.1 322.9 0 208 0S0 93.1 0 208s93.1 208 208 208c48.3 0 92.7-16.4 128-44v16.3c0 6.4 2.5 12.5 7 17l99.7 99.7c9.4 9.4 24.6 9.4 33.9 0l28.3-28.3c9.4-9.4 9.4-24.6.1-34zM208 336c-70.7 0-128-57.2-128-128 0-70.7 57.2-128 128-128 70.7 0 128 57.2 128 128 0 70.7-57.2 128-128 128z"></path>
                                  </svg>
                               </button>
-                          </div>
+                           </div>
                         </div>
-                        <div class="input-field third-wrap">
-                           <button class="btn-search" type="submit">
-                              <svg class="svg-inline--fa fa-search fa-w-16" aria-hidden="true" data-prefix="fas" data-icon="search" role="img" viewBox="0 0 512 512">
-                                 <path fill="white" d="M505 442.7L405.3 343c-4.5-4.5-10.6-7-17-7H372c27.6-35.3 44-79.7 44-128C416 93.1 322.9 0 208 0S0 93.1 0 208s93.1 208 208 208c48.3 0 92.7-16.4 128-44v16.3c0 6.4 2.5 12.5 7 17l99.7 99.7c9.4 9.4 24.6 9.4 33.9 0l28.3-28.3c9.4-9.4 9.4-24.6.1-34zM208 336c-70.7 0-128-57.2-128-128 0-70.7 57.2-128 128-128 70.7 0 128 57.2 128 128 0 70.7-57.2 128-128 128z"></path>
-                              </svg>
-                           </button>
-                        </div>
+                     </form>
+                     <div>
                      </div>
-                  </form>
-                  <div>
                   </div>
-               </div>
-               <!-- Start of Search Suggestion -->
-               <div class="overlay suggestion noselect">
-                  <div id="suggestion-container" class="d-flex flex-column">
-                  </div>
-               </div>
-
-               <!-- Start of Radical Overlay -->
-               <div class="overlay radical noselect hidden">
-                  <span class="x-button noselect" onclick="toggleRadicalOverlay()">x</span>
-
-                  <div class="d-flex flex-row wrap rad-results">
-                     <div class="rad-result-preview">
-                        <span>@data.gettext("This tool allows you to find Kanji by their core components (Radicals)")</span>
-                        <br>
-                        <span>@data.gettext("You can select Radicals below and add found Kanji to the search bar")</span>
-                        <br>
-                        <span>@data.gettext("Press") <span class="highlight">@data.gettext("Enter")</span> @data.gettext("to start searching")</span>
+                  <!-- Start of Search Suggestion -->
+                  <div class="overlay suggestion noselect">
+                     <div id="suggestion-container" class="d-flex flex-column">
                      </div>
                   </div>
 
-                  <br>
+                  <!-- Start of Radical Overlay -->
+                  <div class="overlay radical noselect hidden">
+                     <span class="x-button noselect" onclick="toggleRadicalOverlay()">x</span>
 
-                  <span class="clickable" onclick="resetRadPicker()">
+                     <div class="d-flex flex-row wrap rad-results">
+                        <div class="rad-result-preview">
+                           <span>@data.gettext("This tool allows you to find Kanji by their core components (Radicals)")</span>
+                           <br>
+                           <span>@data.gettext("You can select Radicals below and add found Kanji to the search bar")</span>
+                           <br>
+                           <span>@data.gettext("Press") <span class="highlight">@data.gettext("Enter")</span> @data.gettext("to start searching")</span>
+                        </div>
+                     </div>
+
+                     <br>
+
+                     <span class="clickable" onclick="resetRadPicker()">
                      @data.gettext("Reset")
-                  </span>
+                     </span>
 
-                  <div class="d-flex flex-row wrap rad-picker">
+                     <div class="d-flex flex-row wrap rad-picker">
                     @:radpicker_html()
-                  </div>
+                     </div>
 
-               </div>
-               <!-- End of Radical  Overlay -->
-                <!-- Start of Speech Overlay -->
-                <div class="overlay speech hidden">
-                  <span class="x-button noselect" onclick="toggleSpeakOverlay()">x</span>
-                  <div class="d-flex flex-column">
-                     <span>@data.gettext("Current language"): <b id="currentSpeechLang">English</b></span>
-                     <span>@data.gettext("Currently listening"): <b id="currentlyListening">No</b></span>
-                     <br>
-                     <span>@data.gettext("To change your language, select one of the following"):</span>
-                     <div class="d-flex flex-row wrap">
-                        <span class="clickable right-padding-10" onclick='setRecognitionLang("jap")'>@data.gettext("Japanese")</span>
-                        <span class="clickable right-padding-10" onclick='setRecognitionLang("ger")'>@data.gettext("German")</span>
-                        <span class="clickable right-padding-10" onclick='setRecognitionLang("eng")'>@data.gettext("English")</span>
-                        <span class="clickable right-padding-10" onclick='setRecognitionLang("rus")'>@data.gettext("Russian")</span>
-                        <span class="clickable right-padding-10" onclick='setRecognitionLang("spa")'>@data.gettext("Spanish")</span>
-                        <span class="clickable right-padding-10" onclick='setRecognitionLang("swe")'>@data.gettext("Swedish")</span>
-                        <span class="clickable right-padding-10" onclick='setRecognitionLang("fre")'>@data.gettext("French")</span>
-                        <span class="clickable right-padding-10" onclick='setRecognitionLang("dut")'>@data.gettext("Dutch")</span>
-                        <span class="clickable right-padding-10" onclick='setRecognitionLang("hun")'>@data.gettext("Hungarian")</span>
-                        <span class="clickable right-padding-10" onclick='setRecognitionLang("svl")'>@data.gettext("Slovenian")</span>
+                  </div>
+                  <!-- End of Radical  Overlay -->
+                   <!-- Start of Speech Overlay -->
+                   <div class="overlay speech hidden">
+                     <span class="x-button noselect" onclick="toggleSpeakOverlay()">x</span>
+                     <div class="d-flex flex-column">
+                        <span>@data.gettext("Current language"): <b id="currentSpeechLang">English</b></span>
+                        <span>@data.gettext("Currently listening"): <b id="currentlyListening">No</b></span>
+                        <br>
+                        <span>@data.gettext("To change your language, select one of the following"):</span>
+                        <div class="d-flex flex-row wrap">
+                           <span class="clickable right-padding-10" onclick='setRecognitionLang("jap")'>@data.gettext("Japanese")</span>
+                           <span class="clickable right-padding-10" onclick='setRecognitionLang("ger")'>@data.gettext("German")</span>
+                           <span class="clickable right-padding-10" onclick='setRecognitionLang("eng")'>@data.gettext("English")</span>
+                           <span class="clickable right-padding-10" onclick='setRecognitionLang("rus")'>@data.gettext("Russian")</span>
+                           <span class="clickable right-padding-10" onclick='setRecognitionLang("spa")'>@data.gettext("Spanish")</span>
+                           <span class="clickable right-padding-10" onclick='setRecognitionLang("swe")'>@data.gettext("Swedish")</span>
+                           <span class="clickable right-padding-10" onclick='setRecognitionLang("fre")'>@data.gettext("French")</span>
+                           <span class="clickable right-padding-10" onclick='setRecognitionLang("dut")'>@data.gettext("Dutch")</span>
+                           <span class="clickable right-padding-10" onclick='setRecognitionLang("hun")'>@data.gettext("Hungarian")</span>
+                           <span class="clickable right-padding-10" onclick='setRecognitionLang("svl")'>@data.gettext("Slovenian")</span>
+                        </div>
                      </div>
                   </div>
+                  <!-- End of Speech Overlay -->
                </div>
-               <!-- End of Speech Overlay -->
             </div>
-         </div>
 
-         <!-- Start of Settings Overlay -->
-         <div class="modal fade" id="settingsModal">
-            <div class="modal-dialog">
-               <div class="modal-content">
+            <!-- Start of Settings Overlay -->
+            <div class="modal fade" id="settingsModal">
+               <div class="modal-dialog">
+                  <div class="modal-content">
 
-                  <!-- Modal Header -->
-                  <div class="modal-header">
-                     <h3 class="modal-title">@data.gettext("Settings")</h4>
-                     <button type="button" class="close" data-dismiss="modal">&times;</button>
-                  </div>
+                     <!-- Modal Header -->
+                     <div class="modal-header">
+                        <h3 class="modal-title">@data.gettext("Settings")</h4>
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                     </div>
 
-                  <!-- Modal body -->
-                  <div class="modal-body">
-                     <span class="inner-title">@data.gettext("Default search language")</span>
-                     <br>
-                     <div class="choices noselect" data-type="select-one" tabindex="1">
-                        <div class="choices__inner">
-                           <select data-trigger="" name="type" data-onchange="onSettingsChange_DefaultLanguage" class="hidden">
-                              <option value="0">@data.gettext("English")</option>
-                           </select>
-                           <div class="choices__list choices__list--single">
-                              <div class="choices__item choices__item--selectable">@data.gettext("English")</div>
+                     <!-- Modal body -->
+                     <div class="modal-body">
+                        <span class="inner-title">@data.gettext("Default search language")</span>
+                        <br>
+                        <div class="choices noselect" data-type="select-one" tabindex="1">
+                           <div class="choices__inner">
+                              <select data-trigger="" name="type" data-onchange="onSettingsChange_DefaultLanguage" class="hidden">
+                                 <option value="0">@data.gettext("English")</option>
+                              </select>
+                              <div class="choices__list choices__list--single">
+                                 <div class="choices__item choices__item--selectable">@data.gettext("English")</div>
+                              </div>
+                           </div>
+                           <div class="choices__list choices__list--dropdown">
+                              <div id="search-lang-select" class="choices__list">
+                                 <div data-value="en-US" class="choices__item choices__item--choice choices__item--selectable">@data.gettext("English")</div>
+                                 <div data-value="de-DE" class="choices__item choices__item--choice choices__item--selectable">@data.gettext("German")</div>
+                                 <div data-value="es-ES" class="choices__item choices__item--choice choices__item--selectable">@data.gettext("Spanish")</div>
+                                 <div data-value="fr-FR" class="choices__item choices__item--choice choices__item--selectable">@data.gettext("French")</div>
+                                 <div data-value="nl-NL" class="choices__item choices__item--choice choices__item--selectable">@data.gettext("Dutch")</div>
+                                 <div data-value="sv-SE" class="choices__item choices__item--choice choices__item--selectable">@data.gettext("Swedish")</div>
+                                 <div data-value="ru" class="choices__item choices__item--choice choices__item--selectable">@data.gettext("Russian")</div>
+                                 <div data-value="hu" class="choices__item choices__item--choice choices__item--selectable">@data.gettext("Hungarian")</div>
+                                 <div data-value="sl-SI" class="choices__item choices__item--choice choices__item--selectable">@data.gettext("Slovenian")</div>
+                              </div>
                            </div>
                         </div>
-                        <div class="choices__list choices__list--dropdown">
-                           <div id="search-lang-select" class="choices__list">
-                              <div data-value="en-US" class="choices__item choices__item--choice choices__item--selectable">@data.gettext("English")</div>
-                              <div data-value="de-DE" class="choices__item choices__item--choice choices__item--selectable">@data.gettext("German")</div>
-                              <div data-value="es-ES" class="choices__item choices__item--choice choices__item--selectable">@data.gettext("Spanish")</div>
-                              <div data-value="fr-FR" class="choices__item choices__item--choice choices__item--selectable">@data.gettext("French")</div>
-                              <div data-value="nl-NL" class="choices__item choices__item--choice choices__item--selectable">@data.gettext("Dutch")</div>
-                              <div data-value="sv-SE" class="choices__item choices__item--choice choices__item--selectable">@data.gettext("Swedish")</div>
-                              <div data-value="ru" class="choices__item choices__item--choice choices__item--selectable">@data.gettext("Russian")</div>
-                              <div data-value="hu" class="choices__item choices__item--choice choices__item--selectable">@data.gettext("Hungarian")</div>
-                              <div data-value="sl-SI" class="choices__item choices__item--choice choices__item--selectable">@data.gettext("Slovenian")</div>
+                        <span class="tags search-lang-txt">@data.gettext("Results will try to match the selected language")</span>
+
+                        <br>
+
+                        <span class="inner-title">@data.gettext("Page language")</span>
+                        <br>
+                        <div class="choices noselect" data-type="select-one" tabindex="1">
+                           <div class="choices__inner">
+                              <select data-trigger="" name="type" data-onchange="onSettingsChange_PageLanguage" class="hidden">
+                                 <option value="0">@data.gettext("English")</option>
+                              </select>
+                              <div class="choices__list choices__list--single">
+                                 <div class="choices__item choices__item--selectable">@data.gettext("English")</div>
+                              </div>
+                           </div>
+                           <div class="choices__list choices__list--dropdown">
+                              <div id="page-lang-select" class="choices__list">
+                                 <div data-value="en-US" class="choices__item choices__item--choice choices__item--selectable">@data.gettext("English")</div>
+                                 <div data-value="de-DE" class="choices__item choices__item--choice choices__item--selectable">@data.gettext("German")</div>
+                                 <div id="dis1" data-value="ja-JP" class="choices__item choices__item--choice choices__item--disabled">@data.gettext("Japanese")</div>
+                                 <div id="dis2" data-value="es-ES" class="choices__item choices__item--choice choices__item--disabled">@data.gettext("Spanish")</div>
+                                 <div id="dis3" data-value="fr-FR" class="choices__item choices__item--choice choices__item--disabled">@data.gettext("French")</div>
+                                 <div id="dis4" data-value="nl-NL" class="choices__item choices__item--choice choices__item--disabled">@data.gettext("Dutch")</div>
+                                 <div id="dis5" data-value="sv-SE" class="choices__item choices__item--choice choices__item--disabled">@data.gettext("Swedish")</div>
+                                 <div id="dis6" data-value="ru" class="choices__item choices__item--choice choices__item--disabled">@data.gettext("Russian")</div>
+                                 <div id="dis7" data-value="hu" class="choices__item choices__item--choice choices__item--disabled">@data.gettext("Hungarian")</div>
+                                 <div id="dis8" data-value="sl-SI" class="choices__item choices__item--choice choices__item--disabled">@data.gettext("Slovenian")</div>
+                              </div>
                            </div>
                         </div>
-                     </div>
-                     <span class="tags search-lang-txt">@data.gettext("Results will try to match the selected language")</span>
+                        <span class="tags search-lang-txt">@data.gettext("Displays the website in the selected language")</span>
 
-                     <br>
+                        <!-- Tooltip for disabled texts. TODO Remove when 100% translated. -->
+                        <div class="mdl-tooltip" for="dis1">
+                        @data.gettext("This language has not been translated yet.") <br> @data.gettext("Contributions are welcome!")
+                        </div>
+                        <div class="mdl-tooltip" for="dis2">
+                        @data.gettext("This language has not been translated yet.") <br> @data.gettext("Contributions are welcome!")
+                        </div>
+                        <div class="mdl-tooltip" for="dis3">
+                        @data.gettext("This language has not been translated yet.") <br> @data.gettext("Contributions are welcome!")
+                        </div>
+                        <div class="mdl-tooltip" for="dis4">
+                        @data.gettext("This language has not been translated yet.") <br> @data.gettext("Contributions are welcome!")
+                        </div>
+                        <div class="mdl-tooltip" for="dis5">
+                        @data.gettext("This language has not been translated yet.") <br> @data.gettext("Contributions are welcome!")
+                        </div>
+                        <div class="mdl-tooltip" for="dis6">
+                        @data.gettext("This language has not been translated yet.") <br> @data.gettext("Contributions are welcome!")
+                        </div>
+                        <div class="mdl-tooltip" for="dis7">
+                        @data.gettext("This language has not been translated yet.") <br> @data.gettext("Contributions are welcome!")
+                        </div>
+                        <div class="mdl-tooltip" for="dis8">
+                        @data.gettext("This language has not been translated yet.") <br> @data.gettext("Contributions are welcome!")
+                        </div>
 
-                     <span class="inner-title">@data.gettext("Page language")</span>
-                     <br>
-                     <div class="choices noselect" data-type="select-one" tabindex="1">
-                        <div class="choices__inner">
-                           <select data-trigger="" name="type" data-onchange="onSettingsChange_PageLanguage" class="hidden">
-                              <option value="0">@data.gettext("English")</option>
-                           </select>
-                           <div class="choices__list choices__list--single">
-                              <div class="choices__item choices__item--selectable">@data.gettext("English")</div>
-                           </div>
-                        </div>
-                        <div class="choices__list choices__list--dropdown">
-                           <div id="page-lang-select" class="choices__list">
-                              <div data-value="en-US" class="choices__item choices__item--choice choices__item--selectable">@data.gettext("English")</div>
-                              <div data-value="de-DE" class="choices__item choices__item--choice choices__item--selectable">@data.gettext("German")</div>
-                              <div id="dis1" data-value="ja-JP" class="choices__item choices__item--choice choices__item--disabled">@data.gettext("Japanese")</div>
-                              <div id="dis2" data-value="es-ES" class="choices__item choices__item--choice choices__item--disabled">@data.gettext("Spanish")</div>
-                              <div id="dis3" data-value="fr-FR" class="choices__item choices__item--choice choices__item--disabled">@data.gettext("French")</div>
-                              <div id="dis4" data-value="nl-NL" class="choices__item choices__item--choice choices__item--disabled">@data.gettext("Dutch")</div>
-                              <div id="dis5" data-value="sv-SE" class="choices__item choices__item--choice choices__item--disabled">@data.gettext("Swedish")</div>
-                              <div id="dis6" data-value="ru" class="choices__item choices__item--choice choices__item--disabled">@data.gettext("Russian")</div>
-                              <div id="dis7" data-value="hu" class="choices__item choices__item--choice choices__item--disabled">@data.gettext("Hungarian")</div>
-                              <div id="dis8" data-value="sl-SI" class="choices__item choices__item--choice choices__item--disabled">@data.gettext("Slovenian")</div>
-                           </div>
-                        </div>
-                     </div>
-                     <span class="tags search-lang-txt">@data.gettext("Displays the website in the selected language")</span>
-
-                     <!-- Tooltip for disabled texts. TODO Remove when 100% translated. -->
-                     <div class="mdl-tooltip" for="dis1">
-                        @data.gettext("This language has not been translated yet.") <br> @data.gettext("Contributions are welcome!")
-                     </div>
-                     <div class="mdl-tooltip" for="dis2">
-                        @data.gettext("This language has not been translated yet.") <br> @data.gettext("Contributions are welcome!")
-                     </div>
-                     <div class="mdl-tooltip" for="dis3">
-                        @data.gettext("This language has not been translated yet.") <br> @data.gettext("Contributions are welcome!")
-                     </div>
-                     <div class="mdl-tooltip" for="dis4">
-                        @data.gettext("This language has not been translated yet.") <br> @data.gettext("Contributions are welcome!")
-                     </div>
-                     <div class="mdl-tooltip" for="dis5">
-                        @data.gettext("This language has not been translated yet.") <br> @data.gettext("Contributions are welcome!")
-                     </div>
-                     <div class="mdl-tooltip" for="dis6">
-                        @data.gettext("This language has not been translated yet.") <br> @data.gettext("Contributions are welcome!")
-                     </div>
-                     <div class="mdl-tooltip" for="dis7">
-                        @data.gettext("This language has not been translated yet.") <br> @data.gettext("Contributions are welcome!")
-                     </div>
-                     <div class="mdl-tooltip" for="dis8">
-                        @data.gettext("This language has not been translated yet.") <br> @data.gettext("Contributions are welcome!")
-                     </div>
-
-                     <br class="desktop-br">
-                     <br>
-                     <span class="inner-title">@data.gettext("Result settings")</span>
-                     <br>
-                     <span>@data.gettext("Always show english results"):</span>
-                     <input id="show_eng_settings" type="checkbox" checked onchange="onSettingsChange_ShowEnglish(event)">
-                     <br>
-                     <div id="show_eng_on_top_settings_parent">
-                        <span>@data.gettext("Show english results on top"):</span>
-                        <input id="show_eng_on_top_settings" type="checkbox" onchange="onSettingsChange_ShowEnglishOnTop(event)">
-                     </div>
-                     <br>
-                     <span class="inner-title">@data.gettext("Display settings")</span>
-                     <br>
-                     <span>@data.gettext("Default kanji animation speed"):</span>
-                     <div class="slidecontainer">
-                        <input id="show_anim_speed_settings" type="range" min="0.05" max="2" value="1" step="0.05" class="slider speedSlider" oninput="onSettingsChange_AnimationSpeed(event)">
-                        <span id="show_anim_speed_settings_slider">1.0</span>
-                     </div>
-                     <br>
-                     <span class="inner-title">@data.gettext("Select color scheme")</span>
-                     <div class="d-flex flex-column top-padding-05-rem">
-                        <div class="d-flex flex-row">
-                           <span class="colorLbl">@data.gettext("Use theme"):</span>
-                           <span onclick='parseSchemeCode("F2F1F0F3F3Fj4A83C50C058909DC0sZZORD3D3D3");' class="clickable" style="padding-right: 0.5em;">@data.gettext("Light")</span>
-                           <span onclick='parseSchemeCode("2023241F212362CF6A2A863038k63D3CFC9E8E6E3181A1b2ACA29D94o313531");' class="clickable">@data.gettext("Dark")</span>
-                        </div>
-                        <hr class="hr-settings"/>
-                        <div class="d-flex flex-row">
-                           <span class="colorLbl">@data.gettext("background"):</span>
-                           <input id="background_value" type="color" value="#f2f1f0"  onchange='onSettingsChange_Color(event)'/>
-                           <span onclick='onSettingsChange_Color(event)' class="clickable">@data.gettext("reset")</span>
-                        </div>
-                        <div class="d-flex flex-row">
-                           <span class="colorLbl">@data.gettext("overlay"):</span>
-                           <input id="overlay_value" type="color" value="#f3f3f3" onchange='onSettingsChange_Color(event)'/>
-                           <span onclick='onSettingsChange_Color(event)' class="clickable">@data.gettext("reset")</span>
-                        </div>
-                        <hr class="hr-settings"/>
-                        <div class="d-flex flex-row">
-                           <span class="colorLbl">@data.gettext("primary"):</span>
-                           <input id="primaryColor_value" type="color" value="#34a83c" onchange='onSettingsChange_Color(event)'/>
-                           <span onclick='onSettingsChange_Color(event)' class="clickable">@data.gettext("reset")</span>
-                        </div>
-                        <div class="d-flex flex-row">
-                           <span class="colorLbl">@data.gettext("primHover"):</span>
-                           <input id="bgPrimaryColor_value" type="color" value="#50c058" onchange='onSettingsChange_Color(event)'/>
-                           <span onclick='onSettingsChange_Color(event)' class="clickable">@data.gettext("reset")</span>
-                        </div>
-                        <div class="d-flex flex-row">
-                           <span class="colorLbl">@data.gettext("secondary"):</span>
-                           <input id="secondaryColor_value" type="color" value="#909dc0" onchange='onSettingsChange_Color(event)'/>
-                           <span onclick='onSettingsChange_Color(event)' class="clickable">@data.gettext("reset")</span>
-                        </div>
-                        <hr class="hr-settings"/>
-                        <div class="d-flex flex-row">
-                           <span class="colorLbl">@data.gettext("text"):</span>
-                           <input id="primaryTextColor_value" type="color" value="#909dc0" onchange='onSettingsChange_Color(event)'/>
-                           <span onclick='onSettingsChange_Color(event)' class="clickable">@data.gettext("reset")</span>
-                        </div>
-                        <div class="d-flex flex-row">
-                           <span class="colorLbl">@data.gettext("overlayText"):</span>
-                           <input id="secondaryTextColor_value" type="color" value="#909dc0" onchange='onSettingsChange_Color(event)'/>
-                           <span onclick='onSettingsChange_Color(event)' class="clickable">@data.gettext("reset")</span>
-                        </div>
-                        <hr class="hr-settings"/>
-                        <div class="d-flex flex-row">
-                           <span class="colorLbl">@data.gettext("searchBG"):</span>
-                           <input id="searchBackground_value" type="color" value="#909dc0" onchange='onSettingsChange_Color(event)'/>
-                           <span onclick='onSettingsChange_Color(event)' class="clickable">@data.gettext("reset")</span>
-                        </div>
-                        <div class="d-flex flex-row">
-                           <span class="colorLbl">@data.gettext("searchText"):</span>
-                           <input id="searchTextColor_value" type="color" value="#909dc0" onchange='onSettingsChange_Color(event)'/>
-                           <span onclick='onSettingsChange_Color(event)' class="clickable">@data.gettext("reset")</span>
-                        </div>
-                        <hr class="hr-settings"/>
-                        <div class="d-flex flex-row">
-                           <span class="colorLbl">@data.gettext("tags"):</span>
-                           <input id="tagColor_value" type="color" value="#909dc0" onchange='onSettingsChange_Color(event)'/>
-                           <span onclick='onSettingsChange_Color(event)' class="clickable">@data.gettext("reset")</span>
-                        </div>
-                        <div class="d-flex flex-row">
-                           <span class="colorLbl">@data.gettext("itemBG"):</span>
-                           <input id="itemBG_value" type="color" value="#909dc0" onchange='onSettingsChange_Color(event)'/>
-                           <span onclick='onSettingsChange_Color(event)' class="clickable">@data.gettext("reset")</span>
+                        <br class="desktop-br">
+                        <br>
+                        <span class="inner-title">@data.gettext("Result settings")</span>
+                        <br>
+                        <span>@data.gettext("Always show english results"):</span>
+                        <input id="show_eng_settings" type="checkbox" checked onchange="onSettingsChange_ShowEnglish(event)">
+                        <br>
+                        <div id="show_eng_on_top_settings_parent">
+                           <span>@data.gettext("Show english results on top"):</span>
+                           <input id="show_eng_on_top_settings" type="checkbox" onchange="onSettingsChange_ShowEnglishOnTop(event)">
                         </div>
                         <br>
-                        <div>
-                           <span class="colorLbl">@data.gettext("scheme code"):</span>
-                           <input id="scheme_input" class="form-control small" id="bg_col_settings_hex">
-                           <span onclick='parseSchemeCode()' class="clickable ">@data.gettext("apply")</span>
-                           <vl class="vl-settings"></vl>
-                           <span onclick='createSchemeCode(true)' class="clickable ">@data.gettext("create")</span>
+                        <span class="inner-title">@data.gettext("Display settings")</span>
+                        <br>
+                        <span>@data.gettext("Default kanji animation speed"):</span>
+                        <div class="slidecontainer">
+                           <input id="show_anim_speed_settings" type="range" min="0.05" max="2" value="1" step="0.05" class="slider speedSlider" oninput="onSettingsChange_AnimationSpeed(event)">
+                           <span id="show_anim_speed_settings_slider">1.0</span>
                         </div>
-                        <span class="tags">@data.gettext("Using the code you can share color schemes")</span>
+                        <br>
+                        <span class="inner-title">@data.gettext("Select color scheme")</span>
+                        <div class="d-flex flex-column top-padding-05-rem">
+                           <div class="d-flex flex-row">
+                              <span class="colorLbl">@data.gettext("Use theme"):</span>
+                              <span onclick='parseSchemeCode("F2F1F0F3F3Fj4A83C50C058909DC0sZZORD3D3D3");' class="clickable" style="padding-right: 0.5em;">@data.gettext("Light")</span>
+                              <span onclick='parseSchemeCode("2023241F212362CF6A2A863038k63D3CFC9E8E6E3181A1b2ACA29D94o313531");' class="clickable">@data.gettext("Dark")</span>
+                           </div>
+                           <hr class="hr-settings"/>
+                           <div class="d-flex flex-row">
+                              <span class="colorLbl">@data.gettext("background"):</span>
+                              <input id="background_value" type="color" value="#f2f1f0"  onchange='onSettingsChange_Color(event)'/>
+                              <span onclick='onSettingsChange_Color(event)' class="clickable">@data.gettext("reset")</span>
+                           </div>
+                           <div class="d-flex flex-row">
+                              <span class="colorLbl">@data.gettext("overlay"):</span>
+                              <input id="overlay_value" type="color" value="#f3f3f3" onchange='onSettingsChange_Color(event)'/>
+                              <span onclick='onSettingsChange_Color(event)' class="clickable">@data.gettext("reset")</span>
+                           </div>
+                           <hr class="hr-settings"/>
+                           <div class="d-flex flex-row">
+                              <span class="colorLbl">@data.gettext("primary"):</span>
+                              <input id="primaryColor_value" type="color" value="#34a83c" onchange='onSettingsChange_Color(event)'/>
+                              <span onclick='onSettingsChange_Color(event)' class="clickable">@data.gettext("reset")</span>
+                           </div>
+                           <div class="d-flex flex-row">
+                              <span class="colorLbl">@data.gettext("primHover"):</span>
+                              <input id="bgPrimaryColor_value" type="color" value="#50c058" onchange='onSettingsChange_Color(event)'/>
+                              <span onclick='onSettingsChange_Color(event)' class="clickable">@data.gettext("reset")</span>
+                           </div>
+                           <div class="d-flex flex-row">
+                              <span class="colorLbl">@data.gettext("secondary"):</span>
+                              <input id="secondaryColor_value" type="color" value="#909dc0" onchange='onSettingsChange_Color(event)'/>
+                              <span onclick='onSettingsChange_Color(event)' class="clickable">@data.gettext("reset")</span>
+                           </div>
+                           <hr class="hr-settings"/>
+                           <div class="d-flex flex-row">
+                              <span class="colorLbl">@data.gettext("text"):</span>
+                              <input id="primaryTextColor_value" type="color" value="#909dc0" onchange='onSettingsChange_Color(event)'/>
+                              <span onclick='onSettingsChange_Color(event)' class="clickable">@data.gettext("reset")</span>
+                           </div>
+                           <div class="d-flex flex-row">
+                              <span class="colorLbl">@data.gettext("overlayText"):</span>
+                              <input id="secondaryTextColor_value" type="color" value="#909dc0" onchange='onSettingsChange_Color(event)'/>
+                              <span onclick='onSettingsChange_Color(event)' class="clickable">@data.gettext("reset")</span>
+                           </div>
+                           <hr class="hr-settings"/>
+                           <div class="d-flex flex-row">
+                              <span class="colorLbl">@data.gettext("searchBG"):</span>
+                              <input id="searchBackground_value" type="color" value="#909dc0" onchange='onSettingsChange_Color(event)'/>
+                              <span onclick='onSettingsChange_Color(event)' class="clickable">@data.gettext("reset")</span>
+                           </div>
+                           <div class="d-flex flex-row">
+                              <span class="colorLbl">@data.gettext("searchText"):</span>
+                              <input id="searchTextColor_value" type="color" value="#909dc0" onchange='onSettingsChange_Color(event)'/>
+                              <span onclick='onSettingsChange_Color(event)' class="clickable">@data.gettext("reset")</span>
+                           </div>
+                           <hr class="hr-settings"/>
+                           <div class="d-flex flex-row">
+                              <span class="colorLbl">@data.gettext("tags"):</span>
+                              <input id="tagColor_value" type="color" value="#909dc0" onchange='onSettingsChange_Color(event)'/>
+                              <span onclick='onSettingsChange_Color(event)' class="clickable">@data.gettext("reset")</span>
+                           </div>
+                           <div class="d-flex flex-row">
+                              <span class="colorLbl">@data.gettext("itemBG"):</span>
+                              <input id="itemBG_value" type="color" value="#909dc0" onchange='onSettingsChange_Color(event)'/>
+                              <span onclick='onSettingsChange_Color(event)' class="clickable">@data.gettext("reset")</span>
+                           </div>
+                           <br>
+                           <div>
+                              <span class="colorLbl">@data.gettext("scheme code"):</span>
+                              <input id="scheme_input" class="form-control small" id="bg_col_settings_hex">
+                              <span onclick='parseSchemeCode()' class="clickable ">@data.gettext("apply")</span>
+                              <vl class="vl-settings"></vl>
+                              <span onclick='createSchemeCode(true)' class="clickable ">@data.gettext("create")</span>
+                           </div>
+                           <span class="tags">@data.gettext("Using the code you can share color schemes")</span>
+                        </div>
+                        <br>
+                        <span class="inner-title">@data.gettext("Cookie management")</span>
+                        <br>
+                        <span>@data.gettext("Click") <span onclick='revokeCookieAgreement()' class="clickable">@data.gettext("here")</span> @data.gettext("to revoke your Cookies agreement")</span>
+                        <br>
                      </div>
-                     <br>
-                     <span class="inner-title">@data.gettext("Cookie management")</span>
-                     <br>
-                     <span>@data.gettext("Click") <span onclick='revokeCookieAgreement()' class="clickable">@data.gettext("here")</span> @data.gettext("to revoke your Cookies agreement")</span>
-                     <br>
-                  </div>
 
-                  <!-- Modal footer -->
-                  <div class="modal-footer">
-                     <button type="button" class="btn btn-danger" data-dismiss="modal">@data.gettext("Close")</button>
-                  </div>
+                     <!-- Modal footer -->
+                     <div class="modal-footer">
+                        <button type="button" class="btn btn-danger" data-dismiss="modal">@data.gettext("Close")</button>
+                     </div>
 
+                  </div>
                </div>
             </div>
+            <!-- End of Settings Overlay -->
          </div>
-         <!-- End of Settings Overlay -->
-      </div>
 
-      <!-- Main Body -->
-      <div id="page-container">
-        <div class="d-flex center">
-          <div class="main-container">
-            <br>
+
+         <!-- TODO Start: ONLY LOAD ON INDEX PAGE -->
+
+         <!-- Main Body -->
+         <div id="page-container">
+           <div class="d-flex center">
+             <div class="main-container">
+               <br>
 
             @match data.site.clone() {
               Site::SearchResult(search_result) => {
@@ -417,39 +436,69 @@
               }
             }
 
-          </div>
-        </div>
-      </div>
+             </div>
+           </div>
+         </div>
+         
+         <!-- Special Buttons -->
+         <div class="index-btn-container">
+            <div class="btn-container settingsBtn index" data-toggle="modal" data-target="#settingsModal">
+               <svg id="settingsSvg" class="index" height="30" viewBox="0 0 100 100">
+                  <path d="m50.011 0c-2.8839 0-5.7139 0.25936-8.4642 0.7281l-1.3424 14.221c-2.8444 0.79287-5.5365 1.9015-8.0546 3.322l-10.99-9.0785c-4.6419 3.286-8.7054 7.3259-11.991 11.968l9.1012 10.99c-1.4188 2.5151-2.552 5.214-3.3447 8.0546l-14.197 1.35c-0.46893 2.75-0.728 5.58-0.728 8.49 0 2.8897 0.25747 5.7085 0.7281 8.4641l14.198 1.3425c0.79274 2.8406 1.926 5.5395 3.3447 8.0546l-9.0785 10.99c3.2796 4.6294 7.3161 8.6885 11.945 11.968l11.013-9.1013c2.5197 1.4217 5.2082 2.5515 8.0546 3.3447l1.3424 14.221c2.7503 0.4688 5.5803 0.7054 8.4642 0.7054 2.8838 0 5.6911-0.2366 8.4414-0.7054l1.3424-14.221c2.8465-0.7932 5.5349-1.923 8.0546-3.3447l11.013 9.1013c4.6293-3.2797 8.6658-7.3388 11.945-11.968l-9.0785-10.99c1.4188-2.5151 2.552-5.214 3.3447-8.0546l14.198-1.3425c0.47063-2.7556 0.7281-5.5744 0.7281-8.4641 0-2.8848-0.25907-5.7131-0.7281-8.4642l-14.198-1.3424c-0.79274-2.8406-1.926-5.5395-3.3447-8.0546l9.1012-10.99c-3.2855-4.6423-7.349-8.6821-11.991-11.968l-10.99 9.0785c-2.5181-1.4205-5.2102-2.5291-8.0546-3.322l-1.3424-14.221c-2.7503-0.46874-5.5576-0.7281-8.4414-0.7281zm0 30.967c10.516 0 19.022 8.528 19.022 19.044s-8.5053 19.044-19.022 19.044c-10.516 0-19.044-8.528-19.044-19.044s8.528-19.044 19.044-19.044z"></path>
+               </svg>
+               <h4 class="noselect hidden">Settings</h4>
+            </div>
+   
+            <div class="input-field third-wrap index">
+               <button class="btn-search" onclick="onSearchStart()">
+                  <span>Search</span>
+                  <svg class="svg-inline--fa fa-search fa-w-16" aria-hidden="true" data-prefix="fas" data-icon="search" role="img" viewBox="0 0 512 512">
+                     <path fill="white" d="M505 442.7L405.3 343c-4.5-4.5-10.6-7-17-7H372c27.6-35.3 44-79.7 44-128C416 93.1 322.9 0 208 0S0 93.1 0 208s93.1 208 208 208c48.3 0 92.7-16.4 128-44v16.3c0 6.4 2.5 12.5 7 17l99.7 99.7c9.4 9.4 24.6 9.4 33.9 0l28.3-28.3c9.4-9.4 9.4-24.6.1-34zM208 336c-70.7 0-128-57.2-128-128 0-70.7 57.2-128 128-128 70.7 0 128 57.2 128 128 0 70.7-57.2 128-128 128z"></path>
+                  </svg>
+               </button>
+            </div>
+   
+            <div class="input-field third-wrap index rad">
+               <button class="btn-search" onclick="toggleRadicalOverlay()">
+                  <span>Radicals</span>
+                  <span class="rad-picker-icon index noselect">部</span>
+               </button>
+            </div>
+         </div>  
 
-      <!-- Mobile Menu -->
-      <div class="mobile-nav d-flex flex-column-reverse hidden">
-         <!-- Settings -->
-         <button class="mobile-nav-inner-btn" data-toggle="modal" data-target="#settingsModal" onclick="toggleMobileNav()">
-            <svg height="26px" width="26px" viewBox="0 0 100 100">
-               <path d="m50.011 0c-2.8839 0-5.7139 0.25936-8.4642 0.7281l-1.3424 14.221c-2.8444 0.79287-5.5365 1.9015-8.0546 3.322l-10.99-9.0785c-4.6419 3.286-8.7054 7.3259-11.991 11.968l9.1012 10.99c-1.4188 2.5151-2.552 5.214-3.3447 8.0546l-14.197 1.35c-0.46893 2.75-0.728 5.58-0.728 8.49 0 2.8897 0.25747 5.7085 0.7281 8.4641l14.198 1.3425c0.79274 2.8406 1.926 5.5395 3.3447 8.0546l-9.0785 10.99c3.2796 4.6294 7.3161 8.6885 11.945 11.968l11.013-9.1013c2.5197 1.4217 5.2082 2.5515 8.0546 3.3447l1.3424 14.221c2.7503 0.4688 5.5803 0.7054 8.4642 0.7054 2.8838 0 5.6911-0.2366 8.4414-0.7054l1.3424-14.221c2.8465-0.7932 5.5349-1.923 8.0546-3.3447l11.013 9.1013c4.6293-3.2797 8.6658-7.3388 11.945-11.968l-9.0785-10.99c1.4188-2.5151 2.552-5.214 3.3447-8.0546l14.198-1.3425c0.47063-2.7556 0.7281-5.5744 0.7281-8.4641 0-2.8848-0.25907-5.7131-0.7281-8.4642l-14.198-1.3424c-0.79274-2.8406-1.926-5.5395-3.3447-8.0546l9.1012-10.99c-3.2855-4.6423-7.349-8.6821-11.991-11.968l-10.99 9.0785c-2.5181-1.4205-5.2102-2.5291-8.0546-3.322l-1.3424-14.221c-2.7503-0.46874-5.5576-0.7281-8.4414-0.7281zm0 30.967c10.516 0 19.022 8.528 19.022 19.044s-8.5053 19.044-19.022 19.044c-10.516 0-19.044-8.528-19.044-19.044s8.528-19.044 19.044-19.044z"></path>
-            </svg>
+         <!-- Mobile Menu -->
+         <div class="mobile-nav d-flex flex-column-reverse hidden">
+            <!-- Settings -->
+            <button class="mobile-nav-inner-btn" data-toggle="modal" data-target="#settingsModal" onclick="toggleMobileNav()">
+               <svg height="26px" width="26px" viewBox="0 0 100 100">
+                  <path d="m50.011 0c-2.8839 0-5.7139 0.25936-8.4642 0.7281l-1.3424 14.221c-2.8444 0.79287-5.5365 1.9015-8.0546 3.322l-10.99-9.0785c-4.6419 3.286-8.7054 7.3259-11.991 11.968l9.1012 10.99c-1.4188 2.5151-2.552 5.214-3.3447 8.0546l-14.197 1.35c-0.46893 2.75-0.728 5.58-0.728 8.49 0 2.8897 0.25747 5.7085 0.7281 8.4641l14.198 1.3425c0.79274 2.8406 1.926 5.5395 3.3447 8.0546l-9.0785 10.99c3.2796 4.6294 7.3161 8.6885 11.945 11.968l11.013-9.1013c2.5197 1.4217 5.2082 2.5515 8.0546 3.3447l1.3424 14.221c2.7503 0.4688 5.5803 0.7054 8.4642 0.7054 2.8838 0 5.6911-0.2366 8.4414-0.7054l1.3424-14.221c2.8465-0.7932 5.5349-1.923 8.0546-3.3447l11.013 9.1013c4.6293-3.2797 8.6658-7.3388 11.945-11.968l-9.0785-10.99c1.4188-2.5151 2.552-5.214 3.3447-8.0546l14.198-1.3425c0.47063-2.7556 0.7281-5.5744 0.7281-8.4641 0-2.8848-0.25907-5.7131-0.7281-8.4642l-14.198-1.3424c-0.79274-2.8406-1.926-5.5395-3.3447-8.0546l9.1012-10.99c-3.2855-4.6423-7.349-8.6821-11.991-11.968l-10.99 9.0785c-2.5181-1.4205-5.2102-2.5291-8.0546-3.322l-1.3424-14.221c-2.7503-0.46874-5.5576-0.7281-8.4414-0.7281zm0 30.967c10.516 0 19.022 8.528 19.022 19.044s-8.5053 19.044-19.022 19.044c-10.516 0-19.044-8.528-19.044-19.044s8.528-19.044 19.044-19.044z"></path>
+               </svg>
+            </button>
+            <!-- Radical Input -->
+            <button class="mobile-nav-inner-btn" onclick="toggleRadicalOverlay(); toggleMobileNav();">
+               <span class="rad-picker-icon noselect">辞</span>
+            </button>
+            <!-- Speech Input -->
+            <button class="mobile-nav-inner-btn" onclick="toggleSpeakOverlay(); toggleMobileNav();">
+               <svg height="30px" width="30px">
+                  <path d="M15.93,24.714v3.091c3.09,0.168,5.483,1.19,5.483,2.146c0,0.023-12.679,0.023-12.679,0c0-0.919,2.213-1.91,5.139-2.133   v-3.115c-3.734-0.535-6.616-3.717-6.616-7.602v-1.541h1.027v1.541c0,3.688,2.992,6.682,6.681,6.683h0.005   c3.691-0.001,6.743-2.991,6.743-6.683v-1.541h1.029v1.541C22.743,21.031,19.729,24.236,15.93,24.714L15.93,24.714z M14.965,22.693   c-3.122,0-5.654-2.532-5.654-5.654v-1.477h11.373v1.477C20.684,20.161,18.087,22.693,14.965,22.693z M9.312,5.685   c0-3.121,2.531-5.653,5.654-5.653s5.718,2.532,5.718,5.653v8.849H9.312V5.685z"></path>
+               </svg>
+            </button>
+            <!-- Jump Up / Down -->
+            <button onclick="jumpToTop()" id="jmp-btn" class="mobile-nav-inner-btn hidden">
+               <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="26px" height="26px" viewBox="0 0 16 16" xml:space="preserve">
+                  <polygon points="8,2.8 16,10.7 13.6,13.1 8.1,7.6 2.5,13.2 0,10.7 "></polygon>
+               </svg>
+            </button>
+         </div>
+         <!-- Shows / Hides the buttons above -->
+         <button onclick="toggleMobileNav()" class="mobile-nav-btn">
+            <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" height="28px" width="28px" viewBox="0 0 32 32" xml:space="preserve"><path d="M4,10h24c1.104,0,2-0.896,2-2s-0.896-2-2-2H4C2.896,6,2,6.896,2,8S2.896,10,4,10z M28,14H4c-1.104,0-2,0.896-2,2  s0.896,2,2,2h24c1.104,0,2-0.896,2-2S29.104,14,28,14z M28,22H4c-1.104,0-2,0.896-2,2s0.896,2,2,2h24c1.104,0,2-0.896,2-2  S29.104,22,28,22z"/></svg>
          </button>
-         <!-- Radical Input -->
-         <button class="mobile-nav-inner-btn" onclick="toggleRadicalOverlay(); toggleMobileNav();">
-            <span class="rad-picker-icon noselect">辞</span>
-         </button>
-         <!-- Speech Input -->
-         <button class="mobile-nav-inner-btn" onclick="toggleSpeakOverlay(); toggleMobileNav();">
-            <svg height="30px" width="30px">
-               <path d="M15.93,24.714v3.091c3.09,0.168,5.483,1.19,5.483,2.146c0,0.023-12.679,0.023-12.679,0c0-0.919,2.213-1.91,5.139-2.133   v-3.115c-3.734-0.535-6.616-3.717-6.616-7.602v-1.541h1.027v1.541c0,3.688,2.992,6.682,6.681,6.683h0.005   c3.691-0.001,6.743-2.991,6.743-6.683v-1.541h1.029v1.541C22.743,21.031,19.729,24.236,15.93,24.714L15.93,24.714z M14.965,22.693   c-3.122,0-5.654-2.532-5.654-5.654v-1.477h11.373v1.477C20.684,20.161,18.087,22.693,14.965,22.693z M9.312,5.685   c0-3.121,2.531-5.653,5.654-5.653s5.718,2.532,5.718,5.653v8.849H9.312V5.685z"></path>
-            </svg>
-         </button>
-         <!-- Jump Up / Down -->
-         <button onclick="jumpToTop()" id="jmp-btn" class="mobile-nav-inner-btn hidden">
-            <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="26px" height="26px" viewBox="0 0 16 16" xml:space="preserve">
-               <polygon points="8,2.8 16,10.7 13.6,13.1 8.1,7.6 2.5,13.2 0,10.7 "></polygon>
-            </svg>
-         </button>
+
+         <!-- TODO End: ONLY LOAD ON INDEX PAGE -->
+      
       </div>
-      <!-- Shows / Hides the buttons above -->
-      <button onclick="toggleMobileNav()" class="mobile-nav-btn">
-         <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" height="28px" width="28px" viewBox="0 0 32 32" xml:space="preserve"><path d="M4,10h24c1.104,0,2-0.896,2-2s-0.896-2-2-2H4C2.896,6,2,6.896,2,8S2.896,10,4,10z M28,14H4c-1.104,0-2,0.896-2,2  s0.896,2,2,2h24c1.104,0,2-0.896,2-2S29.104,14,28,14z M28,22H4c-1.104,0-2,0.896-2,2s0.896,2,2,2h24c1.104,0,2-0.896,2-2  S29.104,22,28,22z"/></svg>
-      </button>
 
       <!-- Footer -->
       <footer>
