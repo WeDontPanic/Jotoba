@@ -196,6 +196,10 @@
                     <li disabled class="mdl-menu__item" style="height: 10px;"><hr style="margin: 0px; margin-top: 5px;"></li>
                   }
                   <li id="SentenceSearchBtn" class="info-entry noselect" class="mdl-menu__item"><a class="no-highlight" draggable="false" href="/search/@word.get_reading().reading?t=2">@data.gettext("Sentence search")</a></li>
+                  @if let Some(audio) = word.audio_file() {
+                    <li disabled class="mdl-menu__item" style="height: 10px;"><hr style="margin: 0px; margin-top: 5px;"></li>
+                    <li id="AudioDlBtn" class="info-entry noselect" class="mdl-menu__item"><a class="no-highlight" draggable="false" href="/assets/audio/@audio">@data.gettext("Download Audio")</a></li>
+                  }
                 </ul>
 
                 @for (spos, senses_compound) in word.get_senses_orderd(&query).iter().enumerate() { 
