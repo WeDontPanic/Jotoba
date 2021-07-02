@@ -5,7 +5,6 @@
 
 <!DOCTYPE html>
 <html lang="en">
-   <!-- TODO: Lade head.rs.html -->
    @:head_html(&data)
 
    <body>
@@ -40,7 +39,6 @@
                      <form method="GET" action="/search" onsubmit="return onSearchStart()">
                         <div class="inner-form">
                            
-                           <!-- TODO: Lade input_dropdown.rs.html -->
                             @:input_dropdown_html(&data)
 
                            <div class="input-field second-wrap">
@@ -68,23 +66,19 @@
                      </form>
                   </div>
 
-                  <!-- TODO: Lade search_overlays.rs.html -->
                   @:search_overlays_html(&data)
 
                </div>
             </div>
 
-            <!-- TODO Lade settings_overlay.rs.html -->
             @:settings_html(&data)
 
          </div>
 
-         <!-- TODO Lade main_body.rs.html -->
          @:main_body_html(&data)
 
       </div>
 
-      <!-- TODO Lade footer.rs.html -->
       @:footer_html(&data)
 
    </body>
