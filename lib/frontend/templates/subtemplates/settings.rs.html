@@ -1,205 +1,208 @@
- <!-- Start of Settings Overlay -->
- <div class="modal fade" id="settingsModal" style="display: none;" aria-hidden="true">
+<!-- Start of Settings Overlay -->
+<div class="modal fade" id="settingsModal">
     <div class="modal-dialog">
        <div class="modal-content">
+
           <!-- Modal Header -->
           <div class="modal-header">
-             <h3 class="modal-title">Settings</h3>
-             <button type="button" class="close" data-dismiss="modal">×</button>
+             <h3 class="modal-title">@data.gettext("Settings")</h4>
+             <button type="button" class="close" data-dismiss="modal">&times;</button>
           </div>
+
           <!-- Modal body -->
           <div class="modal-body">
-             <span class="inner-title">Default search language</span>
+             <span class="inner-title">@data.gettext("Default search language")</span>
              <br>
              <div class="choices noselect" data-type="select-one" tabindex="1">
                 <div class="choices__inner">
                    <select data-trigger="" name="type" data-onchange="onSettingsChange_DefaultLanguage" class="hidden">
-                      <option value="0">German</option>
+                      <option value="0">@data.gettext("English")</option>
                    </select>
                    <div class="choices__list choices__list--single">
-                      <div class="choices__item choices__item--selectable">German</div>
+                      <div class="choices__item choices__item--selectable">@data.gettext("English")</div>
                    </div>
                 </div>
                 <div class="choices__list choices__list--dropdown">
                    <div id="search-lang-select" class="choices__list">
-                      <div data-value="en-US" class="choices__item choices__item--choice choices__item--selectable">English</div>
-                      <div data-value="de-DE" class="choices__item choices__item--choice choices__item--selectable">German</div>
-                      <div data-value="es-ES" class="choices__item choices__item--choice choices__item--selectable">Spanish</div>
-                      <div data-value="fr-FR" class="choices__item choices__item--choice choices__item--selectable">French</div>
-                      <div data-value="nl-NL" class="choices__item choices__item--choice choices__item--selectable">Dutch</div>
-                      <div data-value="sv-SE" class="choices__item choices__item--choice choices__item--selectable">Swedish</div>
-                      <div data-value="ru" class="choices__item choices__item--choice choices__item--selectable">Russian</div>
-                      <div data-value="hu" class="choices__item choices__item--choice choices__item--selectable">Hungarian</div>
-                      <div data-value="sl-SI" class="choices__item choices__item--choice choices__item--selectable">Slovenian</div>
+                      <div data-value="en-US" class="choices__item choices__item--choice choices__item--selectable">@data.gettext("English")</div>
+                      <div data-value="de-DE" class="choices__item choices__item--choice choices__item--selectable">@data.gettext("German")</div>
+                      <div data-value="es-ES" class="choices__item choices__item--choice choices__item--selectable">@data.gettext("Spanish")</div>
+                      <div data-value="fr-FR" class="choices__item choices__item--choice choices__item--selectable">@data.gettext("French")</div>
+                      <div data-value="nl-NL" class="choices__item choices__item--choice choices__item--selectable">@data.gettext("Dutch")</div>
+                      <div data-value="sv-SE" class="choices__item choices__item--choice choices__item--selectable">@data.gettext("Swedish")</div>
+                      <div data-value="ru" class="choices__item choices__item--choice choices__item--selectable">@data.gettext("Russian")</div>
+                      <div data-value="hu" class="choices__item choices__item--choice choices__item--selectable">@data.gettext("Hungarian")</div>
+                      <div data-value="sl-SI" class="choices__item choices__item--choice choices__item--selectable">@data.gettext("Slovenian")</div>
                    </div>
                 </div>
              </div>
-             <span class="tags search-lang-txt">Results will try to match the selected language</span>
+             <span class="tags search-lang-txt">@data.gettext("Results will try to match the selected language")</span>
+
              <br>
-             <span class="inner-title">Page language</span>
+
+             <span class="inner-title">@data.gettext("Page language")</span>
              <br>
              <div class="choices noselect" data-type="select-one" tabindex="1">
                 <div class="choices__inner">
                    <select data-trigger="" name="type" data-onchange="onSettingsChange_PageLanguage" class="hidden">
-                      <option value="0">English</option>
+                      <option value="0">@data.gettext("English")</option>
                    </select>
                    <div class="choices__list choices__list--single">
-                      <div class="choices__item choices__item--selectable">English</div>
+                      <div class="choices__item choices__item--selectable">@data.gettext("English")</div>
                    </div>
                 </div>
                 <div class="choices__list choices__list--dropdown">
                    <div id="page-lang-select" class="choices__list">
-                      <div data-value="en-US" class="choices__item choices__item--choice choices__item--selectable">English</div>
-                      <div data-value="de-DE" class="choices__item choices__item--choice choices__item--selectable">German</div>
-                      <div id="dis1" data-value="ja-JP" class="choices__item choices__item--choice choices__item--disabled" tabindex="0">Japanese</div>
-                      <div id="dis2" data-value="es-ES" class="choices__item choices__item--choice choices__item--disabled" tabindex="0">Spanish</div>
-                      <div id="dis3" data-value="fr-FR" class="choices__item choices__item--choice choices__item--disabled" tabindex="0">French</div>
-                      <div id="dis4" data-value="nl-NL" class="choices__item choices__item--choice choices__item--disabled" tabindex="0">Dutch</div>
-                      <div id="dis5" data-value="sv-SE" class="choices__item choices__item--choice choices__item--disabled" tabindex="0">Swedish</div>
-                      <div id="dis6" data-value="ru" class="choices__item choices__item--choice choices__item--disabled" tabindex="0">Russian</div>
-                      <div id="dis7" data-value="hu" class="choices__item choices__item--choice choices__item--disabled" tabindex="0">Hungarian</div>
-                      <div id="dis8" data-value="sl-SI" class="choices__item choices__item--choice choices__item--disabled" tabindex="0">Slovenian</div>
+                      <div data-value="en-US" class="choices__item choices__item--choice choices__item--selectable">@data.gettext("English")</div>
+                      <div data-value="de-DE" class="choices__item choices__item--choice choices__item--selectable">@data.gettext("German")</div>
+                      <div id="dis1" data-value="ja-JP" class="choices__item choices__item--choice choices__item--disabled">@data.gettext("Japanese")</div>
+                      <div id="dis2" data-value="es-ES" class="choices__item choices__item--choice choices__item--disabled">@data.gettext("Spanish")</div>
+                      <div id="dis3" data-value="fr-FR" class="choices__item choices__item--choice choices__item--disabled">@data.gettext("French")</div>
+                      <div id="dis4" data-value="nl-NL" class="choices__item choices__item--choice choices__item--disabled">@data.gettext("Dutch")</div>
+                      <div id="dis5" data-value="sv-SE" class="choices__item choices__item--choice choices__item--disabled">@data.gettext("Swedish")</div>
+                      <div id="dis6" data-value="ru" class="choices__item choices__item--choice choices__item--disabled">@data.gettext("Russian")</div>
+                      <div id="dis7" data-value="hu" class="choices__item choices__item--choice choices__item--disabled">@data.gettext("Hungarian")</div>
+                      <div id="dis8" data-value="sl-SI" class="choices__item choices__item--choice choices__item--disabled">@data.gettext("Slovenian")</div>
                    </div>
                 </div>
              </div>
-             <span class="tags search-lang-txt">Displays the website in the selected language</span>
+             <span class="tags search-lang-txt">@data.gettext("Displays the website in the selected language")</span>
+
              <!-- Tooltip for disabled texts. TODO Remove when 100% translated. -->
-             <div class="mdl-tooltip" for="dis1" data-upgraded=",MaterialTooltip">
-                This language has not been translated yet. <br> Contributions are welcome!
+             <div class="mdl-tooltip" for="dis1">
+             @data.gettext("This language has not been translated yet.") <br> @data.gettext("Contributions are welcome!")
              </div>
-             <div class="mdl-tooltip" for="dis2" data-upgraded=",MaterialTooltip">
-                This language has not been translated yet. <br> Contributions are welcome!
+             <div class="mdl-tooltip" for="dis2">
+             @data.gettext("This language has not been translated yet.") <br> @data.gettext("Contributions are welcome!")
              </div>
-             <div class="mdl-tooltip" for="dis3" data-upgraded=",MaterialTooltip">
-                This language has not been translated yet. <br> Contributions are welcome!
+             <div class="mdl-tooltip" for="dis3">
+             @data.gettext("This language has not been translated yet.") <br> @data.gettext("Contributions are welcome!")
              </div>
-             <div class="mdl-tooltip" for="dis4" data-upgraded=",MaterialTooltip">
-                This language has not been translated yet. <br> Contributions are welcome!
+             <div class="mdl-tooltip" for="dis4">
+             @data.gettext("This language has not been translated yet.") <br> @data.gettext("Contributions are welcome!")
              </div>
-             <div class="mdl-tooltip" for="dis5" data-upgraded=",MaterialTooltip">
-                This language has not been translated yet. <br> Contributions are welcome!
+             <div class="mdl-tooltip" for="dis5">
+             @data.gettext("This language has not been translated yet.") <br> @data.gettext("Contributions are welcome!")
              </div>
-             <div class="mdl-tooltip" for="dis6" data-upgraded=",MaterialTooltip">
-                This language has not been translated yet. <br> Contributions are welcome!
+             <div class="mdl-tooltip" for="dis6">
+             @data.gettext("This language has not been translated yet.") <br> @data.gettext("Contributions are welcome!")
              </div>
-             <div class="mdl-tooltip" for="dis7" data-upgraded=",MaterialTooltip">
-                This language has not been translated yet. <br> Contributions are welcome!
+             <div class="mdl-tooltip" for="dis7">
+             @data.gettext("This language has not been translated yet.") <br> @data.gettext("Contributions are welcome!")
              </div>
-             <div class="mdl-tooltip" for="dis8" data-upgraded=",MaterialTooltip">
-                This language has not been translated yet. <br> Contributions are welcome!
+             <div class="mdl-tooltip" for="dis8">
+             @data.gettext("This language has not been translated yet.") <br> @data.gettext("Contributions are welcome!")
              </div>
+
              <br class="desktop-br">
              <br>
-             <span class="inner-title">Result settings</span>
+             <span class="inner-title">@data.gettext("Result settings")</span>
              <br>
-             <span>Always show english results:</span>  
-             <input id="show_eng_settings" type="checkbox" checked="" onchange="onSettingsChange_ShowEnglish(event)">
+             <span>@data.gettext("Always show english results"):</span>
+             <input id="show_eng_settings" type="checkbox" checked onchange="onSettingsChange_ShowEnglish(event)">
              <br>
              <div id="show_eng_on_top_settings_parent">
-                <span>Show english results on top:</span> 
+                <span>@data.gettext("Show english results on top"):</span>
                 <input id="show_eng_on_top_settings" type="checkbox" onchange="onSettingsChange_ShowEnglishOnTop(event)">
              </div>
              <br>
-             <span class="inner-title">Display settings</span>
+             <span class="inner-title">@data.gettext("Display settings")</span>
              <br>
-             <span>Default kanji animation speed:</span>
+             <span>@data.gettext("Default kanji animation speed"):</span>
              <div class="slidecontainer">
                 <input id="show_anim_speed_settings" type="range" min="0.05" max="2" value="1" step="0.05" class="slider speedSlider" oninput="onSettingsChange_AnimationSpeed(event)">
-                <span id="show_anim_speed_settings_slider">1.3</span>
+                <span id="show_anim_speed_settings_slider">1.0</span>
              </div>
              <br>
-             <span class="inner-title">Select color scheme</span>
+             <span class="inner-title">@data.gettext("Select color scheme")</span>
              <div class="d-flex flex-column top-padding-05-rem">
                 <div class="d-flex flex-row">
-                   <span class="colorLbl">Use theme:</span>  
-                   <span onclick="parseSchemeCode('F2F1F0F3F3Fj4A83C50C058909DC0sZZOs808080D3D3D3');" class="clickable" style="padding-right: 0.5em;">Light</span>
-                   <span onclick="parseSchemeCode('2023231F212362CF6A2A863038k63D3CFC9E8E6E3181A1BACACA31A1C1D9D94o313531');" class="clickable">Dark</span>
+                   <span class="colorLbl">@data.gettext("Use theme"):</span>
+                   <span onclick='parseSchemeCode("F2F1F0F3F3Fj4A83C50C058909DC0sZZORD3D3D3");' class="clickable" style="padding-right: 0.5em;">@data.gettext("Light")</span>
+                   <span onclick='parseSchemeCode("2023241F212362CF6A2A863038k63D3CFC9E8E6E3181A1b2ACA29D94o313531");' class="clickable">@data.gettext("Dark")</span>
                 </div>
-                <hr class="hr-settings">
+                <hr class="hr-settings"/>
                 <div class="d-flex flex-row">
-                   <span class="colorLbl">background:</span>
-                   <input id="background_value" type="color" value="#f2f1f0" onchange="onSettingsChange_Color(event)">
-                   <span onclick="onSettingsChange_Color(event)" class="clickable">reset</span>
-                </div>
-                <div class="d-flex flex-row">
-                   <span class="colorLbl">overlay:</span>
-                   <input id="overlay_value" type="color" value="#f3f3f3" onchange="onSettingsChange_Color(event)">
-                   <span onclick="onSettingsChange_Color(event)" class="clickable">reset</span>
-                </div>
-                <hr class="hr-settings">
-                <div class="d-flex flex-row">
-                   <span class="colorLbl">primary:</span>
-                   <input id="primaryColor_value" type="color" value="#34a83c" onchange="onSettingsChange_Color(event)">
-                   <span onclick="onSettingsChange_Color(event)" class="clickable">reset</span>
-                </div>
-                <div class="d-flex flex-row"> 
-                   <span class="colorLbl">primHover:</span>
-                   <input id="bgPrimaryColor_value" type="color" value="#50c058" onchange="onSettingsChange_Color(event)">
-                   <span onclick="onSettingsChange_Color(event)" class="clickable">reset</span>
-                </div>
-                <div class="d-flex flex-row"> 
-                   <span class="colorLbl">secondary:</span>
-                   <input id="secondaryColor_value" type="color" value="#909dc0" onchange="onSettingsChange_Color(event)">
-                   <span onclick="onSettingsChange_Color(event)" class="clickable">reset</span>
-                </div>
-                <hr class="hr-settings">
-                <div class="d-flex flex-row"> 
-                   <span class="colorLbl">text:</span>
-                   <input id="primaryTextColor_value" type="color" value="#909dc0" onchange="onSettingsChange_Color(event)">
-                   <span onclick="onSettingsChange_Color(event)" class="clickable">reset</span>
-                </div>
-                <div class="d-flex flex-row"> 
-                   <span class="colorLbl">overlayText:</span>
-                   <input id="secondaryTextColor_value" type="color" value="#909dc0" onchange="onSettingsChange_Color(event)">
-                   <span onclick="onSettingsChange_Color(event)" class="clickable">reset</span>
-                </div>
-                <hr class="hr-settings">
-                <div class="d-flex flex-row">
-                   <span class="colorLbl">searchBG:</span>
-                   <input id="searchBackground_value" type="color" value="#909dc0" onchange="onSettingsChange_Color(event)">
-                   <span onclick="onSettingsChange_Color(event)" class="clickable">reset</span>
+                   <span class="colorLbl">@data.gettext("background"):</span>
+                   <input id="background_value" type="color" value="#f2f1f0"  onchange='onSettingsChange_Color(event)'/>
+                   <span onclick='onSettingsChange_Color(event)' class="clickable">@data.gettext("reset")</span>
                 </div>
                 <div class="d-flex flex-row">
-                   <span class="colorLbl">searchText:</span>
-                   <input id="searchTextColor_value" type="color" value="#909dc0" onchange="onSettingsChange_Color(event)">
-                   <span onclick="onSettingsChange_Color(event)" class="clickable">reset</span>
+                   <span class="colorLbl">@data.gettext("overlay"):</span>
+                   <input id="overlay_value" type="color" value="#f3f3f3" onchange='onSettingsChange_Color(event)'/>
+                   <span onclick='onSettingsChange_Color(event)' class="clickable">@data.gettext("reset")</span>
+                </div>
+                <hr class="hr-settings"/>
+                <div class="d-flex flex-row">
+                   <span class="colorLbl">@data.gettext("primary"):</span>
+                   <input id="primaryColor_value" type="color" value="#34a83c" onchange='onSettingsChange_Color(event)'/>
+                   <span onclick='onSettingsChange_Color(event)' class="clickable">@data.gettext("reset")</span>
                 </div>
                 <div class="d-flex flex-row">
-                   <span class="colorLbl">shadow:</span>
-                   <input id="shadowColor_value" type="color" value="#222222" onchange="onSettingsChange_Color(event)">
-                   <span onclick="onSettingsChange_Color(event)" class="clickable">reset</span>
+                   <span class="colorLbl">@data.gettext("primHover"):</span>
+                   <input id="bgPrimaryColor_value" type="color" value="#50c058" onchange='onSettingsChange_Color(event)'/>
+                   <span onclick='onSettingsChange_Color(event)' class="clickable">@data.gettext("reset")</span>
                 </div>
-                <hr class="hr-settings">
                 <div class="d-flex flex-row">
-                   <span class="colorLbl">tags:</span>
-                   <input id="tagColor_value" type="color" value="#909dc0" onchange="onSettingsChange_Color(event)">
-                   <span onclick="onSettingsChange_Color(event)" class="clickable">reset</span>
+                   <span class="colorLbl">@data.gettext("secondary"):</span>
+                   <input id="secondaryColor_value" type="color" value="#909dc0" onchange='onSettingsChange_Color(event)'/>
+                   <span onclick='onSettingsChange_Color(event)' class="clickable">@data.gettext("reset")</span>
                 </div>
-                <div class="d-flex flex-row"> 
-                   <span class="colorLbl">itemBG:</span>
-                   <input id="itemBG_value" type="color" value="#909dc0" onchange="onSettingsChange_Color(event)">
-                   <span onclick="onSettingsChange_Color(event)" class="clickable">reset</span>
+                <hr class="hr-settings"/>
+                <div class="d-flex flex-row">
+                   <span class="colorLbl">@data.gettext("text"):</span>
+                   <input id="primaryTextColor_value" type="color" value="#909dc0" onchange='onSettingsChange_Color(event)'/>
+                   <span onclick='onSettingsChange_Color(event)' class="clickable">@data.gettext("reset")</span>
+                </div>
+                <div class="d-flex flex-row">
+                   <span class="colorLbl">@data.gettext("overlayText"):</span>
+                   <input id="secondaryTextColor_value" type="color" value="#909dc0" onchange='onSettingsChange_Color(event)'/>
+                   <span onclick='onSettingsChange_Color(event)' class="clickable">@data.gettext("reset")</span>
+                </div>
+                <hr class="hr-settings"/>
+                <div class="d-flex flex-row">
+                   <span class="colorLbl">@data.gettext("searchBG"):</span>
+                   <input id="searchBackground_value" type="color" value="#909dc0" onchange='onSettingsChange_Color(event)'/>
+                   <span onclick='onSettingsChange_Color(event)' class="clickable">@data.gettext("reset")</span>
+                </div>
+                <div class="d-flex flex-row">
+                   <span class="colorLbl">@data.gettext("searchText"):</span>
+                   <input id="searchTextColor_value" type="color" value="#909dc0" onchange='onSettingsChange_Color(event)'/>
+                   <span onclick='onSettingsChange_Color(event)' class="clickable">@data.gettext("reset")</span>
+                </div>
+                <hr class="hr-settings"/>
+                <div class="d-flex flex-row">
+                   <span class="colorLbl">@data.gettext("tags"):</span>
+                   <input id="tagColor_value" type="color" value="#909dc0" onchange='onSettingsChange_Color(event)'/>
+                   <span onclick='onSettingsChange_Color(event)' class="clickable">@data.gettext("reset")</span>
+                </div>
+                <div class="d-flex flex-row">
+                   <span class="colorLbl">@data.gettext("itemBG"):</span>
+                   <input id="itemBG_value" type="color" value="#909dc0" onchange='onSettingsChange_Color(event)'/>
+                   <span onclick='onSettingsChange_Color(event)' class="clickable">@data.gettext("reset")</span>
                 </div>
                 <br>
                 <div>
-                   <span class="colorLbl">scheme code:</span>
-                   <input id="scheme_input" class="form-control small">
-                   <span onclick="parseSchemeCode()" class="clickable ">apply</span>
+                   <span class="colorLbl">@data.gettext("scheme code"):</span>
+                   <input id="scheme_input" class="form-control small" id="bg_col_settings_hex">
+                   <span onclick='parseSchemeCode()' class="clickable ">@data.gettext("apply")</span>
                    <vl class="vl-settings"></vl>
-                   <span onclick="createSchemeCode(true)" class="clickable ">create</span>
+                   <span onclick='createSchemeCode(true)' class="clickable ">@data.gettext("create")</span>
                 </div>
-                <span class="tags">Using the code you can share color schemes</span>
+                <span class="tags">@data.gettext("Using the code you can share color schemes")</span>
              </div>
              <br>
-             <span class="inner-title">Cookie management</span>
+             <span class="inner-title">@data.gettext("Cookie management")</span>
              <br>
-             <span>Click <span onclick="revokeCookieAgreement()" class="clickable">here</span> to revoke your Cookies agreement</span>
+             <span>@data.gettext("Click") <span onclick='revokeCookieAgreement()' class="clickable">@data.gettext("here")</span> @data.gettext("to revoke your Cookies agreement")</span>
              <br>
           </div>
+
           <!-- Modal footer -->
           <div class="modal-footer">
-             <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+             <button type="button" class="btn btn-danger" data-dismiss="modal">@data.gettext("Close")</button>
           </div>
-       </div>
+
+        </div>
     </div>
- </div>
+</div>
