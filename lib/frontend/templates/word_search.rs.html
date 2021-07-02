@@ -166,7 +166,7 @@
                 </div>
               }
               @if let Some(audio) = word.audio_file() {
-                <span class="clickable audioBtn">@data.gettext("Play audio")
+                <span class="clickable audioBtn" data="/assets/audio/@audio">@data.gettext("Play audio")
                   <audio preload="none">
                     <source src="/assets/audio/@audio" type="audio/ogg">
                   </audio>

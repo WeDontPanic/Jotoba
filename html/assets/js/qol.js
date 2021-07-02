@@ -168,3 +168,12 @@ $('.audioBtn').each((e, i) => {
     });
 
 });
+
+// Allow right-click on "Play audio" buttons to copy the proper asset-url
+$(".audioBtn").contextmenu((event) => {
+  event.preventDefault();
+  var url = window.location.origin + $(event.target).attr('data');
+  Util.copyToClipboard(url);
+  Util.showMessage("success", "Audio URL copied to clipboard");
+});
+
