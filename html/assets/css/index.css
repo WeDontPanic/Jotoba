@@ -12,7 +12,7 @@
 
 .title {
     padding-top: 5%;
-    padding-bottom: 2.5%;
+    padding-bottom: 2.25%;
     margin: auto;
     width: 30%;
 }
@@ -23,6 +23,19 @@
 
 form {
     margin-block-end: 1em;
+}
+
+.overlay {
+    border-radius: 20px;
+    margin-top: -14px;
+}
+
+.overlay > .flex-column {
+    margin: 5px 10px;
+}
+
+.x-button {
+    margin-right: 5px;
 }
 
 .index-btn-container {
@@ -49,6 +62,10 @@ form {
     border-radius: 20px !important;
 }
 
+.searchDivInner .choices__list--dropdown > .choices__list {
+    margin-left: 10px;
+}
+
 .choices__list.choices__list--dropdown.index.is-active {
     animation: dropdownAnim 0.2s linear forwards;
 }
@@ -60,11 +77,11 @@ form {
 
 @keyframes dropdownAnim {
     from {height: 0px;}
-    to { height: 325%;}
+    to { height: 335%;}
 }
 
 @keyframes dropdownAnimClose {
-    from {height: 325%; }
+    from {height: 335%; }
     to { height: 0%; display:hidden !important;}
 }
 
@@ -97,7 +114,8 @@ form {
 @media only screen and (min-width: 600px) {
 
     .searchDivInner form .inner-form .input-field.first-wrap .choices__list.choices__list--dropdown {
-        border-top-left-radius: 20px !important;
+        border-radius: 20px !important;
+        border-top-right-radius: 0px !important;
     }
 
 }
