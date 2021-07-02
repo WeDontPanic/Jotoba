@@ -170,6 +170,11 @@
                    <input id="searchTextColor_value" type="color" value="#909dc0" onchange='onSettingsChange_Color(event)'/>
                    <span onclick='onSettingsChange_Color(event)' class="clickable">@data.gettext("reset")</span>
                 </div>
+                <div class="d-flex flex-row">
+                    <span class="colorLbl">@data.gettext("shadow"):</span>
+                    <input id="shadowColor_value" type="color" value="#222222" onchange="onSettingsChange_Color(event)">
+                    <span onclick="onSettingsChange_Color(event)" class="clickable">@data.gettext("reset")</span>
+                 </div>
                 <hr class="hr-settings"/>
                 <div class="d-flex flex-row">
                    <span class="colorLbl">@data.gettext("tags"):</span>

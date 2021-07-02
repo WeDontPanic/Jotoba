@@ -206,6 +206,9 @@ msgstr "SuchBG"
 msgid "searchText"
 msgstr "SuchText"
 
+msgid "shadow"
+msgstr "Schatten"
+
 msgid "tags"
 msgstr "Tags"
 
