@@ -21,6 +21,10 @@
     width: 30vw;
 }
 
+form {
+    margin-block-end: 1em;
+}
+
 .index-btn-container {
     display: flex;
     place-content: center;
@@ -88,18 +92,6 @@
     color: white;
     font-size: 22px;
 }
-
-body {
-    min-height: 100%;
-    display: grid;
-    grid-template-rows: 1fr auto;
-}
-
-footer {
-    grid-row-start: 2;
-    grid-row-end: 3;
-}
-
 
 /* Dekstop Only */
 @media only screen and (min-width: 600px) {
