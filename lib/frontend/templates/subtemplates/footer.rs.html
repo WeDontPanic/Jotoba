@@ -1,0 +1,26 @@
+<!-- Footer -->
+<footer>
+    <div class="center-text">
+       <hr class="footer-hr">
+       <span>
+          @data.gettext("Jotoba wouldn't be able to exist without the help of many open-source data sources.") <br> @data.gettext("Check out the") <a class="clickable no-align green" href="/about">@data.gettext("About Page")</a> @data.gettext("for a list of all contributors in this project.")
+       </span>
+    </div>
+
+    <!-- Cookies -->
+    <div id="cookie-footer" class="cookie-footer hidden">
+       <h3 class="text-left">@data.gettext("This Website uses Cookies")</h3>
+       <span>
+          @data.gettext("We use cookies to let you personalize the website as you desire and improve search suggestions. In addition, we use anonymous analytics to improve our service quality. We don't share any data with third parties nor do we store or collect data that allows us to identify you or track your behaviour.")
+       </span>
+       <br>
+       <hr class="res-separator">
+       <span>
+          @data.gettext("You can change your preferences at any time by pressing on the Settings icon.")
+       </span>
+       <div class="d-flex flex-row">
+          <button type="button" class="btn btn-danger cookie-btn" onclick="revokeCookieAgreement()">@data.gettext("Only use necessary cookies")</button>
+          <button type="button" class="btn btn-success cookie-btn" onclick="cookiesAccepted()">@data.gettext("Allow Cookies")</button>
+       </div>
+    </div>
+ </footer>
