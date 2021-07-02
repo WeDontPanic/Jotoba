@@ -1,5 +1,8 @@
 use ructe::{Result, Ructe};
 
 fn main() -> Result<()> {
-    Ructe::from_env()?.compile_templates("templates")
+    let mut ructe = Ructe::from_env()?;
+    ructe.compile_templates("templates")?;
+    ructe.compile_templates("templates/subtemplates")
+    //Ructe::from_env()?.compile_templates("templates")
 }
