@@ -178,6 +178,10 @@ form {
     .overlay {
         z-index: 1;
     }
+    .overlay.suggestion {
+        width: 72.5%;
+        margin-left: 20%;
+    }
     
     .rad-picker {
         max-height: 44vh;
