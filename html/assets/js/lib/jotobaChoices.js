@@ -34,6 +34,7 @@ document.querySelectorAll(".choices__inner").forEach((e) => {
 
         // Open dropdown
         e.parentElement.children[1].classList.toggle("is-active");
+        e.parentElement.classList.toggle("is-open");
     });
 
 });

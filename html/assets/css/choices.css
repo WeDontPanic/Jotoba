@@ -45,6 +45,7 @@
 .choices[data-type*="select-one"].is-open:after {
   border-color: transparent transparent var(--tagColor) transparent !important;
   margin-top: -7.5px;
+  rotate: 180deg;
 }
 
 .choices__inner {

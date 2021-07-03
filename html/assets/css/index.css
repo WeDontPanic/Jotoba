@@ -70,18 +70,18 @@ form {
     animation: dropdownAnim 0.2s linear forwards;
 }
 
-.choices__list.choices__list--dropdown.index:not(.is-active) {
+.choices__list.choices__list--dropdown.index.animate:not(.is-active) {
     display: unset !important;
     animation: dropdownAnimClose 0.2s linear forwards;
 }
 
 @keyframes dropdownAnim {
     from {height: 0px;}
-    to { height: 335%;}
+    to { height: 330%;}
 }
 
 @keyframes dropdownAnimClose {
-    from {height: 335%; }
+    from {height: 330%; }
     to { height: 0%; display:hidden !important;}
 }
 
@@ -110,6 +110,15 @@ form {
     font-size: 22px;
 }
 
+
+.choices[data-type*="select-one"]:after {
+    transition: linear 0.2s;
+}
+
+.choices[data-type*="select-one"].is-open:after {
+    transition: linear 0.2s;
+}
+  
 /* Dekstop Only */
 @media only screen and (min-width: 600px) {
 

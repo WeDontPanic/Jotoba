@@ -168,3 +168,8 @@ $('.audioBtn').each((e, i) => {
     });
 
 });
+
+// Disables the dropdown's animation until the first onclick event
+$(".index-btn-container").one("click", (event) => {
+    $('.choices__list.choices__list--dropdown.index').addClass('animate');
+})
