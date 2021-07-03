@@ -111,11 +111,11 @@ form {
 }
 
 
-.choices[data-type*="select-one"]:after {
+.choices.main[data-type*="select-one"]:after {
     transition: linear 0.2s;
 }
 
-.choices[data-type*="select-one"].is-open:after {
+.choices.main[data-type*="select-one"].is-open:after {
     transition: linear 0.2s;
 }
   
