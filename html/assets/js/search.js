@@ -378,7 +378,6 @@ function loadApiData(result) {
         // Only one result
         if (result.suggestions[i].secondary === undefined) {
             primaryResult = result.suggestions[i].primary;
-            console.log(primaryResult);
         }
         // Two results, kanji needs to be in the first position here
         else {

@@ -176,6 +176,6 @@ $(".input-field.first-wrap").one("click", (event) => {
 
 // When opening an overlay, scroll it into view
 function scrollOverlayIntoView(stopElementId) {
-   let top = $(stopElementId).offset().top
+   var top = $(stopElementId).offset().top - $(stopElementId)[0].parentElement.offsetHeight -  $('#searchDiv')[0].parentElement.offsetHeight
    Util.scrollTo(top, 500);
 }
