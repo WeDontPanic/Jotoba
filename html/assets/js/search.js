@@ -72,7 +72,9 @@ input.addEventListener("focus", e => {
     if (!keepSuggestions) {
         callApiAndSetShadowText();
     }
-    container.classList.remove("hidden");
+    if (availableSuggestions > 0) {
+        container.classList.remove("hidden");
+    }
     keepSuggestions = false;
 });
 document.addEventListener("click", e => {
