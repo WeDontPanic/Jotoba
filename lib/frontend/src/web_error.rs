@@ -10,6 +10,7 @@ pub enum Error {
     Internal,
     NotFound,
     SearchTimeout,
+    BadRequest,
 }
 
 impl std::fmt::Display for Error {
@@ -43,6 +44,7 @@ impl ResponseError for Error {
             Error::Internal => StatusCode::INTERNAL_SERVER_ERROR,
             Error::NotFound => StatusCode::NOT_FOUND,
             Error::SearchTimeout => StatusCode::REQUEST_TIMEOUT,
+            Error::BadRequest => StatusCode::BAD_REQUEST,
         }
     }
 
@@ -56,6 +58,12 @@ impl ResponseError for Error {
     }
 }
 
+impl From<std::str::Utf8Error> for Error {
+    fn from(_: std::str::Utf8Error) -> Self {
+        Self::BadRequest
+    }
+}
+
 impl Error {
     /// Return an [`InfoText`] based on the error suitable for displaying on the error site
     fn get_info_text(&self) -> InfoText {
@@ -64,6 +72,7 @@ impl Error {
                 Error::Internal => ("Sorry", "try again later"),
                 Error::NotFound => ("The page", "was not found"),
                 Error::SearchTimeout => ("Search", "timed out"),
+                Error::BadRequest => ("Bad request", ""),
             }
         };
 

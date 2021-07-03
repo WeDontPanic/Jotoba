@@ -8,6 +8,7 @@ use super::user_settings;
 use actix_web::{rt::time::timeout, web, HttpRequest, HttpResponse};
 use deadpool_postgres::Pool;
 use localization::TranslationDict;
+use percent_encoding::percent_decode;
 use serde::Deserialize;
 
 use crate::{templates, BaseData};
@@ -69,6 +70,8 @@ pub async fn search(
     request: HttpRequest,
 ) -> Result<HttpResponse, web_error::Error> {
     let settings = user_settings::parse(&request);
+
+    let query = percent_decode(query.as_bytes()).decode_utf8()?;
 
     //session::init(&session, &settings);
 
