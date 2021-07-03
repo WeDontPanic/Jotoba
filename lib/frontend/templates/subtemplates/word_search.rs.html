@@ -25,7 +25,7 @@
       <!-- Search Inflections -->
       <div class="search-inflection">
         <span>
-          @data.gettext_fmt("{} could be an inflection of", &[&query.query]) <a class="clickable no-align green" href="/search/@inflection.lexeme">@inflection.lexeme</a>@data.gettext(", with these forms:")
+          @data.gettext_fmt("{} could be an inflection of", &[&result.searched_query]) <a class="clickable no-align green" href="/search/@inflection.lexeme">@inflection.lexeme</a>@data.gettext(", with these forms:")
           <br>
           @for form in inflection.forms.iter() {
             @form.as_ref()
