@@ -64,6 +64,7 @@ pub(crate) struct ResultData {
     pub(crate) count: usize,
     pub(crate) sentence_index: i32,
     pub(crate) sentence_parts: Option<Vec<SentencePart>>,
+    pub(crate) searched_query: String,
 }
 
 impl<'a> Search<'a> {
@@ -92,6 +93,7 @@ impl<'a> Search<'a> {
             count: search_result.count,
             sentence_parts: search_result.sentence_parts,
             sentence_index: search_result.sentence_index,
+            searched_query: search_result.searched_query,
         });
     }
 
@@ -112,6 +114,7 @@ impl<'a> Search<'a> {
             count: native_word_res.count + gloss_word_res.count,
             sentence_parts: native_word_res.sentence_parts,
             sentence_index: self.query.word_index as i32,
+            searched_query: native_word_res.searched_query,
         })
     }
 
@@ -346,6 +349,9 @@ impl<'a> Search<'a> {
             count: original_len,
             sentence_parts: sentence,
             sentence_index: self.query.word_index as i32,
+            searched_query: morpheme
+                .map(|i| i.original_word.to_owned())
+                .unwrap_or(query),
         })
     }
 
