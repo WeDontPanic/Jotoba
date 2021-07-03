@@ -63,11 +63,10 @@ $(document).on("keydown", (event) => {
 function showContainer() {
     if (availableSuggestions > 0) {
         container.classList.remove("hidden");
+        scrollOverlayIntoView('#sug-end-point');
     } else {
         container.classList.add("hidden");
-    }
-
-    scrollOverlayIntoView('#sug-end-point'); 
+    } 
 }
 
 // Event whenever the user types into the search bar
