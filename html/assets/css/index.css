@@ -178,9 +178,14 @@ form {
     .overlay {
         z-index: 1;
     }
+
     .overlay.suggestion {
-        width: 72.5%;
-        margin-left: 20%;
+        width: 100%;
+        margin-left: 0%;
+    }
+
+    #suggestion-container {
+        margin: 5px -5px;
     }
     
     .rad-picker {
