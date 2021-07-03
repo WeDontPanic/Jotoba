@@ -64,6 +64,9 @@ input.addEventListener("input", e => {
     if (input.value != oldInputValue) {
         callApiAndSetShadowText();
     }
+    if (availableSuggestions > 0) {
+        container.classList.remove("hidden");
+    }
     oldInputValue = input.value;
 });
 
