@@ -287,6 +287,7 @@ function removeSuggestions() {
     currentSuggestion = "";
     currentSuggestionIndex = -2;
     availableSuggestions = 0;
+    showContainer();
 }
 
 // Loads API data by creating the json from known values instead of calling backend
