@@ -59,14 +59,23 @@ $(document).on("keydown", (event) => {
     }
 });
 
+// Shows the suggestion container if availableSuggestions > 0
+function showContainer() {
+    if (availableSuggestions > 0) {
+        container.classList.remove("hidden");
+    } else {
+        container.classList.add("hidden");
+    }
+
+    scrollOverlayIntoView('#sug-end-point'); 
+}
+
 // Event whenever the user types into the search bar
 input.addEventListener("input", e => {
     if (input.value != oldInputValue) {
         callApiAndSetShadowText();
     }
-    if (availableSuggestions > 0) {
-        container.classList.remove("hidden");
-    }
+    showContainer();
     oldInputValue = input.value;
 });
 
@@ -75,9 +84,7 @@ input.addEventListener("focus", e => {
     if (!keepSuggestions) {
         callApiAndSetShadowText();
     }
-    if (availableSuggestions > 0) {
-        container.classList.remove("hidden");
-    }
+    showContainer();
     keepSuggestions = false;
 });
 document.addEventListener("click", e => {

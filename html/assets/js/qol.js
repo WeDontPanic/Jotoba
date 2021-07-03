@@ -170,6 +170,12 @@ $('.audioBtn').each((e, i) => {
 });
 
 // Disables the dropdown's animation until the first onclick event
-$(".index-btn-container").one("click", (event) => {
+$(".input-field.first-wrap").one("click", (event) => {
     $('.choices__list.choices__list--dropdown.index').addClass('animate');
 })
+
+// When opening an overlay, scroll it into view
+function scrollOverlayIntoView(stopElementId) {
+   let top = $(stopElementId).offset().top
+   Util.scrollTo(top, 500);
+}
