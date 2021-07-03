@@ -42,6 +42,7 @@ $(document).on("keydown", (event) => {
         case "Tab": // Append current suggestion
             if (currentSuggestionIndex > -1) {
                 activateSelection();
+                showContainer();
             } else {
                 changeSuggestionIndex(1);
             }
