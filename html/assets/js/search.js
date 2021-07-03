@@ -60,11 +60,13 @@ $(document).on("keydown", (event) => {
     }
 });
 
-// Shows the suggestion container if availableSuggestions > 0
+// Shows the suggestion container if availableSuggestions > 0 and something was typed
 function showContainer() {
-    if (availableSuggestions > 0) {
+    if (availableSuggestions > 0 && input.value.length > 0) {
         container.classList.remove("hidden");
-        scrollOverlayIntoView('#sug-end-point');
+        if (typeof scrollOverlayIntoView === "function") {
+            scrollOverlayIntoView('#sug-end-point');
+        }
     } else {
         container.classList.add("hidden");
     } 
@@ -75,7 +77,6 @@ input.addEventListener("input", e => {
     if (input.value != oldInputValue) {
         callApiAndSetShadowText();
     }
-    showContainer();
     oldInputValue = input.value;
 });
 
@@ -404,6 +405,9 @@ function loadApiData(result) {
     if (!suggestionChosen) {
         changeSuggestionIndex(1);
     }
+
+    // Load Container if there is text present
+    showContainer();
 }
 
 // Handles clicks on the suggestion dropdown

@@ -74,6 +74,7 @@ footer {
 h3 {
     font-size: 22px;
     text-align: center;
+    text-align: -webkit-center;
     font-weight: bold;
 } 
 
@@ -94,6 +95,7 @@ h4 {
 .clickable {
     color: var(--primaryColor);
     text-align: center;
+    text-align: -webkit-center;
     cursor: pointer;
 }
 
@@ -197,6 +199,7 @@ svg {
 
 .btn-container {
     text-align: center;
+    text-align: -webkit-center;
     min-width: 46px;
     padding: 5px 0;
     margin-left: 6px;
@@ -409,6 +412,7 @@ input[type="color"] {
 
 .title-div {
     text-align: center;
+    text-align: -webkit-center;
     width: 80%;
 }
 
@@ -478,6 +482,7 @@ footer {
 
 .center-text {
     text-align: center;
+    text-align: -webkit-center;
 }
 
 .footer-hr {
@@ -598,6 +603,7 @@ footer {
     color: var(--tagColor);
     font-weight: bold;
     text-align: center;
+    text-align: -webkit-center;
     cursor: pointer;
 }
 
@@ -695,6 +701,7 @@ footer {
     color: var(--secondaryTextColor);
     font-weight: bold;
     text-align: center;
+    text-align: -webkit-center;
 }
 
 .word-frequency.common {
@@ -782,6 +789,7 @@ footer {
 
 .furigana-kanji-container {
     text-align: center;
+    text-align: -webkit-center;
     word-spacing: 10px;
 }
 

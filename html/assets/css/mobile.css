@@ -12,6 +12,7 @@
         border-radius: 50%;
         font-size: 50px;
         text-align: center;
+        text-align: -webkit-center;
         background-color: var(--itemBG_075);
         line-height: 110%;
         position: fixed;
@@ -175,6 +176,7 @@
 	.kanji-parent > .tags {
 		padding-bottom: 5px;
         text-align: center;
+        text-align: -webkit-center;
 	}
 
     .list-entry > .tags, .kanji-entry.right, .tags.no-margin {
@@ -241,6 +243,7 @@
 		padding: 0;
 		width: 100%;
 		text-align: center;
+        text-align: -webkit-center;
 	}	
 
     .rad-parts-parent {
@@ -250,6 +253,7 @@
 
     .notes.stroke {
         text-align: center;
+        text-align: -webkit-center;
     }
 
     .notes.rad {
@@ -352,13 +356,14 @@
         position: fixed;
         bottom: 20px;
         right: 30px; 
-        z-index: 99; 
+        z-index: 99;  
         border: none;
         outline: none; 
         background-color: var(--itemBG_075);
         border-radius: 50%;
         width: 50px;
         height: 50px;
+        text-align: -webkit-center;
     }
 
     .mobile-nav-inner-btn {
@@ -388,11 +393,13 @@
 
     .kanji-jump {
         text-align: center;
+        text-align: -webkit-center;
         margin-bottom: 20px;
     }
 
     .kanji-jump.parent {
         text-align: center;
+        text-align: -webkit-center;
         width: 100%;
     }
 
