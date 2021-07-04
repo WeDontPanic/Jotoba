@@ -103,6 +103,11 @@ impl<'a> Search<'a> {
         let (native_word_res, gloss_word_res): (ResultData, ResultData) =
             futures::try_join!(self.native_results(&self.query.query), self.gloss_results())?;
 
+        let sentence_parts = native_word_res
+            .sentence_parts
+            .map(|i| Some(i))
+            .unwrap_or(gloss_word_res.sentence_parts);
+
         // Chain native and word results into one vector
         Ok(ResultData {
             words: native_word_res
@@ -112,7 +117,7 @@ impl<'a> Search<'a> {
                 .collect_vec(),
             infl_info: native_word_res.infl_info,
             count: native_word_res.count + gloss_word_res.count,
-            sentence_parts: native_word_res.sentence_parts,
+            sentence_parts,
             sentence_index: self.query.word_index as i32,
             searched_query: native_word_res.searched_query,
         })
@@ -249,7 +254,7 @@ impl<'a> Search<'a> {
         #[cfg(not(feature = "tokenizer"))]
         let pos_filter_tags = self.get_pos_filter();
 
-        let query_modified = query != self.query.query;
+        let query_modified = query != query_str;
 
         #[cfg(feature = "tokenizer")]
         let infl_info = morpheme.as_ref().and_then(|i| {
@@ -261,8 +266,6 @@ impl<'a> Search<'a> {
 
         #[cfg(not(feature = "tokenizer"))]
         let infl_info: Option<InflectionInformation> = None;
-
-        println!("query: {}", query);
 
         // Define basic search structure
         let mut word_search = WordSearch::new(self.pool, &query);
@@ -389,8 +392,10 @@ impl<'a> Search<'a> {
         let mut wordresults = word_search.search_by_glosses().await?;
 
         // Do romaji search if no results were found
-        if wordresults.is_empty() {
-            return self.native_results(&self.query.query.to_hiragana()).await;
+        if wordresults.is_empty() && !self.query.query.is_japanese() {
+            return self
+                .native_results(&self.query.query.replace(" ", "").to_hiragana())
+                .await;
         }
 
         #[cfg(feature = "tokenizer")]
