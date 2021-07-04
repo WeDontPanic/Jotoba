@@ -21,4 +21,14 @@ pub struct SentencePart {
     pub info: Option<&'static str>,
     pub furigana: Option<String>,
     pub pos: i32,
+    pub add_class: Option<String>,
+}
+
+impl SentencePart {
+    pub fn get_add_class(&self) -> String {
+        self.add_class
+            .as_ref()
+            .map(|i| i.clone())
+            .unwrap_or_default()
+    }
 }

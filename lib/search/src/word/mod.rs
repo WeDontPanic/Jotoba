@@ -343,15 +343,21 @@ impl<'a> Search<'a> {
             results
         };
 
+        #[cfg(feature = "tokenizer")]
+        let searched_query = morpheme
+            .map(|i| i.original_word.to_owned())
+            .unwrap_or(query);
+
+        #[cfg(not(feature = "tokenizer"))]
+        let searched_query = query;
+
         Ok(ResultData {
             words: wordresults,
             infl_info,
             count: original_len,
             sentence_parts: sentence,
             sentence_index: self.query.word_index as i32,
-            searched_query: morpheme
-                .map(|i| i.original_word.to_owned())
-                .unwrap_or(query),
+            searched_query,
         })
     }
 
