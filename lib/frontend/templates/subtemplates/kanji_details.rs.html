@@ -104,6 +104,16 @@
               }
             </div>
           }
+          @if let Some(ref similar_kanji) = k_item.kanji.kanji.similar_kanji {
+            <div class="notes d-flex flex-row wrap"><b class="right-padding-10">@data.gettext("Similar Kanji"):</b> 
+              @for (pos, n) in similar_kanji.iter().enumerate() {
+                @if pos > 0 {
+                  <div class="tags no-margin slim right-padding-10">,</div>
+                }
+                <a class="clickable no-align" href="/search/@n?t=1">@n</a>
+              }
+            </div>
+          }
           @if let Some(ref chinese) = k_item.kanji.kanji.chinese {
             <div class="notes"><b>@data.gettext("Chinese reading"):</b> @chinese.join(", ")</div>
           }

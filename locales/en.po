@@ -349,6 +349,15 @@ msgstr ""
 msgid "of 2500 most used kanji in newspapers"
 msgstr ""
 
+msgid "Similar Kanji"
+msgstr ""
+
+msgid "Chinese reading"
+msgstr ""
+
+msgid "Korean reading"
+msgstr ""
+
 msgid "Japanese names"
 msgstr ""
 

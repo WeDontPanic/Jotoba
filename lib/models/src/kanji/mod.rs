@@ -55,6 +55,7 @@ pub struct Kanji {
     pub natori: Option<Vec<String>>,
     pub kun_dicts: Option<Vec<i32>>,
     pub on_dicts: Option<Vec<i32>>,
+    pub similar_kanji: Option<Vec<String>>,
 }
 
 impl SQL for Kanji {
@@ -86,6 +87,7 @@ impl FromRow for Kanji {
             natori: row.get(offset + 13),
             kun_dicts: row.get(offset + 14),
             on_dicts: row.get(offset + 15),
+            similar_kanji: row.get(offset + 16),
         }
     }
 }
@@ -107,6 +109,7 @@ pub struct NewKanji {
     pub natori: Option<Vec<String>>,
     pub kun_dicts: Option<Vec<i32>>,
     pub on_dicts: Option<Vec<i32>>,
+    pub similar_kanji: Option<Vec<String>>,
 }
 
 impl SQL for NewKanji {
@@ -115,8 +118,8 @@ impl SQL for NewKanji {
     }
 }
 
-impl Insertable<15> for NewKanji {
-    fn column_names() -> [&'static str; 15] {
+impl Insertable<16> for NewKanji {
+    fn column_names() -> [&'static str; 16] {
         [
             "literal",
             "grade",
@@ -133,10 +136,11 @@ impl Insertable<15> for NewKanji {
             "natori",
             "kun_dicts",
             "on_dicts",
+            "similar_kanji",
         ]
     }
 
-    fn fields(&self) -> [&(dyn ToSql + Sync); 15] {
+    fn fields(&self) -> [&(dyn ToSql + Sync); 16] {
         [
             &self.literal,
             &self.grade,
@@ -153,6 +157,7 @@ impl Insertable<15> for NewKanji {
             &self.natori,
             &self.kun_dicts,
             &self.on_dicts,
+            &self.similar_kanji,
         ]
     }
 }
@@ -181,7 +186,7 @@ impl FromRows for KanjiResult {
     {
         format_results(
             rows.into_iter()
-                .map(|i| (Kanji::from_row(&i, 0), Meaning::from_row(&i, 16)))
+                .map(|i| (Kanji::from_row(&i, 0), Meaning::from_row(&i, 17)))
                 .collect(),
         )
     }
@@ -253,6 +258,7 @@ impl From<Character> for NewKanji {
             kun_dicts: None,
             on_dicts: None,
             radical: k.radical,
+            similar_kanji: None,
         }
     }
 }
@@ -627,6 +633,21 @@ async fn load_by_literalv2(db: &Pool, l: &str) -> Result<Option<KanjiResult>, Er
     }
 
     Ok(Some(take(&mut res[0])))
+}
+
+/// Updates similar kanji of a kanji by its literal
+pub async fn set_similarkanji(db: &Pool, literal: char, similar: &[char]) -> Result<(), Error> {
+    let literal = literal.to_string();
+    let similar: Vec<_> = similar.into_iter().map(|i| i.to_string()).collect();
+    let query = "UPDATE kanji SET similar_kanji=$1 WHERE literal=$2";
+    prepared_execute(db, query, &[&similar, &literal]).await?;
+    Ok(())
+}
+
+/// Resets all similar kanji
+pub async fn clear_similar_kanji(db: &Pool) -> Result<(), Error> {
+    prepared_execute(db, "UPDATE kanji SET similar_kanji=NULL", &[]).await?;
+    Ok(())
 }
 
 fn format_results(res: Vec<(Kanji, Meaning)>) -> Vec<KanjiResult> {

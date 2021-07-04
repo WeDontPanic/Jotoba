@@ -23,7 +23,8 @@ pub async fn connect() -> Pool {
 
     let connection_str = env::var("DATABASE_URL").expect("DATABASE_URL must be set");
 
-    migrate(&connection_str).await;
+    // TODO remove
+    //migrate(&connection_str).await;
 
     let pg_config =
         tokio_postgres::Config::from_str(&connection_str).expect("Failed to parse config");

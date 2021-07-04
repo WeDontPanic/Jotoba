@@ -336,16 +336,25 @@ msgid "On"
 msgstr ""
 
 msgid "On reading compounds"
-msgstr "On - Lesemöglichkeiten"
+msgstr "On - Zusammensetzungen"
 
 msgid "Kun reading compounds"
-msgstr "Kun - Lesemöglichkeiten"
+msgstr "Kun - Zusammensetzungen"
 
 msgid "JLPT level"
 msgstr "JLPT Level"
 
 msgid "of 2500 most used kanji in newspapers"
 msgstr "der 2500 meist genutzten Kanji in Zeitungen"
+
+msgid "Similar Kanji"
+msgstr "Ähnliche Kanji"
+
+msgid "Chinese reading"
+msgstr "Chinesische Lesungen"
+
+msgid "Korean reading"
+msgstr "Koreanische Lesungen"
 
 msgid "Japanese names"
 msgstr "Japanische Namen"
