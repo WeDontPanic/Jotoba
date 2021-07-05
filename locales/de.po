@@ -485,6 +485,12 @@ msgstr "Vielen Dank an jeden, der daran beteiligt war diese große Vielfalt an D
 msgid "Jisho"
 msgstr ""
 
+msgid "Joto-kun"
+msgstr ""
+
+msgid "Joto-kun was created by a good friend of ours who is truly a wizard when it comes down to design!"
+msgstr "Joto-kun wurde von einer guten Freundin erstellt, welche eine wahrere Zauberin ist, wenn es ums Designen geht!"
+
 msgid "Jisho, created by Kim Ahlström, Miwa Ahlström and Andrew Plummer is a pretty and powerful english-japanese dictionary."
 msgstr "Jisho, welches von Kim Ahlström, Miwa Ahlström und Andrew Plummer erstellt wurde, ist ein großartiges Englisch-Japanisch Wörterbuch."
 

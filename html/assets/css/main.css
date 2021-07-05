@@ -796,10 +796,19 @@ footer {
     padding-right: 10%;
 }
 
+/* ----------------- About Page ----------------- */
+
 .about-title {
     font-size: 22px;
     font-weight: bold;
     color: var(--primaryColor); 
+}
+
+.joto-wizard {
+    width: 60px;
+    position: relative;
+    margin-top: -37px;
+    margin-left: 10px;
 }
 
 

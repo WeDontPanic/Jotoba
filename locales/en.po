@@ -486,6 +486,12 @@ msgstr ""
 msgid "Jisho"
 msgstr ""
 
+msgid "Joto-kun"
+msgstr ""
+
+msgid "Joto-kun was created by a good friend of ours who is truly a wizard when it comes down to design!"
+msgstr ""
+
 msgid "Jisho, created by Kim Ahlström, Miwa Ahlström and Andrew Plummer is a pretty and powerful english-japanese dictionary."
 msgstr ""
 
