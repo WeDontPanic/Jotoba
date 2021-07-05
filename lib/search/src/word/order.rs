@@ -18,10 +18,10 @@ pub(super) fn foreign_search_order(word: &Word, search_order: &SearchOrder) -> u
         score += jlpt as usize;
     }
 
-    score += (calc_likenes(search_order, word, SearchMode::Exact, false) / 10) as usize;
-    score += (calc_likenes(search_order, word, SearchMode::Exact, true) / 30) as usize;
-    score += (calc_likenes(search_order, word, SearchMode::Variable, false) / 50) as usize;
-    score += (calc_likenes(search_order, word, SearchMode::Variable, true) / 80) as usize;
+    score += (calc_likeliness(search_order, word, SearchMode::Exact, false) / 10) as usize;
+    score += (calc_likeliness(search_order, word, SearchMode::Exact, true) / 30) as usize;
+    score += (calc_likeliness(search_order, word, SearchMode::Variable, false) / 50) as usize;
+    score += (calc_likeliness(search_order, word, SearchMode::Variable, true) / 80) as usize;
 
     if !word.is_katakana_word() {
         score += 6;
@@ -157,7 +157,7 @@ fn calc_importance(pos: usize, total: usize) -> usize {
     (pos * 100) / total
 }
 
-pub fn calc_likenes(
+pub fn calc_likeliness(
     search_order: &SearchOrder,
     this: &Word,
     s_mode: SearchMode,
