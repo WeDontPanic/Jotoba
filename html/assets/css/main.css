@@ -563,19 +563,50 @@ footer {
 
 .sentence-part {
     color: var(--primaryTextColor) !important;
-    border-bottom: 1px solid var(--lineColor);
+    border-bottom: 2px solid var(--lineColor);
     margin-right: 15px;
+    margin-top: 9px;
     cursor: pointer;
 }
 
 .sentence-part.selected {
-    border-bottom: 1px solid var(--primaryColor);
+    border-bottom: 2px solid var(--primaryColor);
 }
 
 .sentence-part:hover {
     text-decoration: unset;
     text-shadow: -1px -1px var(--primaryTextColor);
     color: var(--primaryTextColor) !important; 
+}
+
+.sentence-part:not(.kanji) {
+    margin-top: 19px;
+}
+
+.sentence-part.symbol {
+    border-bottom: 0px;
+    margin-right: 0px;
+    margin-left: -15px;
+}
+
+.sentence-part.particle {
+    color: var(--primaryColor) !important;
+}
+
+.sentence-part.particle:hover {
+    text-shadow: -1px -1px var(--primaryColor);
+}
+
+.sentence-part:empty {
+    padding-top: 19px;
+}
+
+.sentence-part > .furigana-kanji-container {
+    padding-top: 10px;
+}
+
+.sentence-part > .inline-kana-preview {
+    margin-top: 9px;
 }
 
 .entry-min-height-1 {

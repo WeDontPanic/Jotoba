@@ -64,8 +64,8 @@ $(document).on("keydown", (event) => {
 function showContainer() {
     if (availableSuggestions > 0 && input.value.length > 0) {
         container.classList.remove("hidden");
-        if (typeof scrollOverlayIntoView === "function") {
-            scrollOverlayIntoView('#sug-end-point');
+        if (typeof scrollSearchIntoView === "function") {
+            scrollSearchIntoView();
         }
     } else {
         container.classList.add("hidden");
