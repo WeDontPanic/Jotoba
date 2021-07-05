@@ -194,3 +194,5 @@ pub fn get_query_pos_in_gloss(
 
     None
 }
+
+//pub fn found_in_own_lang(word: &Word, )
