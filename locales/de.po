@@ -239,6 +239,10 @@ msgstr "Klicke"
 msgid "to revoke your Cookies agreement"
 msgstr "um deine Cookie Zustimmung zurückzunehmen"
 
+# Suffix of Cookie agree text
+msgid "to enable Cookies"
+msgstr "um Cookies zu aktivieren"
+
 # Footer
 msgid "Jotoba wouldn't be able to exist without the help of many open-source data sources."
 msgstr "Jotoba würde ohne die Hilfe der Hilfe von vielen Open-Source Quellen nicht existieren"
