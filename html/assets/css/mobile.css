@@ -339,6 +339,12 @@
     .rad-picker-icon {
         font-size: 30px;
     }
+
+    /* -------- Help Page --------- */
+
+    .help-joto {
+        display: none;
+    }
   
     /* -------- Mobile only -------- */
 
@@ -424,6 +430,12 @@
     .mobile-nav-btn:focus, .mobile-nav-inner-btn:focus {
         outline: none;
         box-shadow: 0 0 3pt 2pt var(--primaryColor);
+    }
+
+    /* Footer */
+
+    .cookie-footer {
+        z-index: 1;
     }
 }
 

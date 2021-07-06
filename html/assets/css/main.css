@@ -811,6 +811,14 @@ footer {
     margin-left: 10px;
 }
 
+/* ----------------- Help Page ------------------- */
+
+.help-joto {
+    width: 100px;
+    position: relative;
+    margin-top: -210px;
+    margin-left: 530px;
+}
 
 /* ---------------------- Stroke Order / Kanji Page Unique Stuff --------------------- */
 .stroke-container {
