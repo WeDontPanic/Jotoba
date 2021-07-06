@@ -4,7 +4,9 @@ use localization::TranslationDict;
 
 use actix_web::{
     http::header::{ACCESS_CONTROL_ALLOW_ORIGIN, CACHE_CONTROL},
-    middleware, web as actixweb, App, HttpRequest, HttpServer,
+    middleware,
+    web::{self as actixweb, Data},
+    App, HttpRequest, HttpServer,
 };
 use config::Config;
 use std::sync::Arc;
@@ -66,13 +68,13 @@ pub(super) async fn start(pool: Pool) -> std::io::Result<()> {
     HttpServer::new(move || {
         let app = App::new()
             // Data
-            .data(config_clone.clone())
-            .data(pool.clone())
-            .data(locale_dict_arc.clone())
+            .app_data(Data::new(config_clone.clone()))
+            .app_data(Data::new(pool.clone()))
+            .app_data(Data::new(locale_dict_arc.clone()))
             // Middlewares
             .wrap(middleware::Logger::default())
-            //.wrap(CookieSession::signed(&[0; 32]).secure(false))
             //.wrap(middleware::Compress::default())
+            //.wrap(CookieSession::signed(&[0; 32]).secure(false))
             // Static files
             .route("/index.html", actixweb::get().to(frontend::index::index))
             .route("/docs.html", actixweb::get().to(docs))
