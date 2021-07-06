@@ -24,6 +24,8 @@ var availableSuggestions = 0;
 var keepSuggestions = false;
 var oldInputValue = "";
 var lastRequest = undefined;
+var preventApiCallUntilDelete = false;
+var textToPrevent = "";
 
 // Key Events focussing on the search
 $(document).on("keydown", (event) => {
@@ -313,6 +315,16 @@ function getHashtagData(currentText) {
 // Calls the API to get input suggestions
 function getApiData() {
 
+    // Check if API call should be prevented
+    if (preventApiCallUntilDelete) {
+        if (textToPrevent.length <= input.value.length && input.value.substring(0, textToPrevent.length) === textToPrevent) {
+            return;
+        } else {
+            preventApiCallUntilDelete = false;
+            textToPrevent = "";
+        }
+    }
+
     // Create the JSON
     let lang = Cookies.get("default_lang");
     let type = $('#search-type').val();
@@ -359,9 +371,13 @@ function loadApiData(result) {
     // Remove current suggestions
     removeSuggestions();
 
-    // Return if no suggestions were found
+    // Return if no suggestions were found and 
     if (result.suggestions.length == 0) {
-        console.log("return");
+        // Prevent future requests if no result was found 
+        preventApiCallUntilDelete = true;
+        textToPrevent = input.value;
+
+        // Return
         return;
     }
 
