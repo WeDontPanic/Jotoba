@@ -1,8 +1,6 @@
-# Jotoba
-A free online, selfhostable, multi-language japanese dictionary based on lots of various free resources.<br>
+# Jotoba <img class="titleImg" width="30" src="https://jotoba.de/assets/jotokun/JotoBook.svg">
+Jotoba is a free online, selfhostable, multi-language japanese dictionary based on lots of various free resources.<br>
 Public instance: [jotoba.de](https://jotoba.de)<br>
-
-<a href="https://discord.gg/ysSkFFxmjr"><img src="https://img.shields.io/discord/854657468867936267?style=for-the-badge" alt="Discord"></a>
 
 # Team
 <table>
