@@ -25,6 +25,8 @@ pub enum Information {
     Gikun,
     #[strum(serialize = "uK")]
     UsuallyKana,
+    #[strum(serialize = "rK")]
+    RarelyUsedKanjiForm,
 }
 
 impl Translatable for Information {
@@ -38,6 +40,7 @@ impl Translatable for Information {
             Information::OutdatedKana => "outdated kana",
             Information::Gikun => "gikun",
             Information::UsuallyKana => "usually written in kana",
+            Information::RarelyUsedKanjiForm => "rarely used kanji form",
         }
     }
 }
@@ -54,6 +57,7 @@ impl TryFrom<i32> for Information {
             5 => Self::OutdatedKana,
             6 => Self::Gikun,
             7 => Self::UsuallyKana,
+            8 => Self::RarelyUsedKanjiForm,
             _ => return Err(error::Error::ParseError),
         })
     }
@@ -70,6 +74,7 @@ impl Into<i32> for Information {
             Self::OutdatedKana => 5,
             Self::Gikun => 6,
             Self::UsuallyKana => 7,
+            Self::RarelyUsedKanjiForm => 8,
         }
     }
 }

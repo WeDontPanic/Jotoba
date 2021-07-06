@@ -154,6 +154,8 @@ where
                     let tag =
                         Tag::from_str(str::from_utf8(start.name())?, Some(start.attributes()));
 
+                    println!("{}", tag);
+
                     // Clear necessary items for new usage
                     if tag == Tag::KEle || tag == Tag::REle {
                         element.clear();
@@ -364,6 +366,7 @@ enum Tag {
     Gloss(GlossValue), // gloss Represents trans language words
     Pri, // pri Highlights patricular target-language words which are strongly associated with the japanese word
     SInf, // s_inf sense information, for additional sense info
+    Example,
 
     Unknown, // Parsing error
 }
@@ -439,6 +442,7 @@ impl Tag {
             "dial" => Tag::Dialect,
             "gloss" => Tag::Gloss(GlossValue::new(attributes)),
             "pri" => Tag::Pri,
+            "example" => Tag::Example,
             "s_inf" => Tag::SInf,
             _ => Tag::Unknown,
         }

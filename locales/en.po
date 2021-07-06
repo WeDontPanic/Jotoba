@@ -13,7 +13,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"PO-Revision-Date: 2021-06-21 13:46+0200\n"
+"PO-Revision-Date: 2021-07-06 23:38+0200\n"
 "Last-Translator:  <jojii@gmx.net>\n"
 "Language-Team: English\n"
 "Language: en\n"
@@ -627,6 +627,9 @@ msgstr ""
 msgid "usually written in kana"
 msgstr ""
 
+msgid "rarely used kanji form"
+msgstr ""
+
 # Misc
 
 msgid "Abbreviation"
@@ -662,6 +665,9 @@ msgstr ""
 msgid "Event"
 msgstr ""
 
+msgid "Document"
+msgstr ""
+
 msgid "Familiar language"
 msgstr ""
 
@@ -672,6 +678,9 @@ msgid "Fiction"
 msgstr ""
 
 msgid "Given name"
+msgstr ""
+
+msgid "Group"
 msgstr ""
 
 msgid "Historical term"
@@ -841,6 +850,9 @@ msgstr ""
 msgid "Computing"
 msgstr ""
 
+msgid "Clothing"
+msgstr ""
+
 msgid "Crystallography"
 msgstr ""
 
@@ -967,7 +979,13 @@ msgstr ""
 msgid "Printing"
 msgstr ""
 
-msgid "Psychology/psychiatry"
+msgid "Psychology"
+msgstr ""
+
+msgid "Psychiatry"
+msgstr ""
+
+msgid "Railway"
 msgstr ""
 
 msgid "Shinto"
