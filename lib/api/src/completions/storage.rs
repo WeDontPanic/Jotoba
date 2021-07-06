@@ -14,6 +14,15 @@ use once_cell::sync::OnceCell;
 use parse::jmdict::languages::Language;
 use search::suggestions::{store_item, SuggestionSearch, TextSearch};
 
+use super::WordPair;
+
+/// In-memory storage for native name suggestions
+pub(crate) static NAME_NATIVE: OnceCell<TextSearch<Vec<NameNative>>> = OnceCell::new();
+
+/// In-memory storage for name transcriptions suggestions
+pub(crate) static NAME_TRANSCRIPTIONS: OnceCell<TextSearch<Vec<NameTranscription>>> =
+    OnceCell::new();
+
 /// In-memory storage for kanji meaning suggestions
 pub(crate) static K_MEANING_SUGGESTIONS: OnceCell<TextSearch<Vec<KanjiMeaningSuggestionItem>>> =
     OnceCell::new();
@@ -64,6 +73,15 @@ impl Parseable for KanjiMeaningSuggestionItem {
             literal,
             score,
         })
+    }
+}
+
+impl Into<WordPair> for &KanjiMeaningSuggestionItem {
+    fn into(self) -> WordPair {
+        WordPair {
+            primary: self.meaning.clone(),
+            secondary: Some(self.literal.to_string()),
+        }
     }
 }
 
@@ -124,6 +142,71 @@ impl Parseable for WordSuggestionItem {
     }
 }
 
+#[derive(Clone, Debug)]
+pub struct NameTranscription {
+    pub name: String,
+    pub hash: eudex::Hash,
+}
+
+impl Parseable for NameTranscription {
+    fn parse(s: &str, _version: SuggestionVersion) -> Result<Self, error::Error> {
+        Ok(NameTranscription {
+            name: s.to_owned(),
+            hash: eudex::Hash::new(s),
+        })
+    }
+}
+
+impl store_item::Item for NameTranscription {
+    fn get_text(&self) -> &str {
+        &self.name
+    }
+
+    fn get_hash(&self) -> eudex::Hash {
+        self.hash
+    }
+}
+
+impl Into<WordPair> for &NameTranscription {
+    fn into(self) -> WordPair {
+        WordPair {
+            primary: self.name.clone(),
+            ..Default::default()
+        }
+    }
+}
+
+#[derive(Clone, Debug)]
+pub struct NameNative {
+    pub name: String,
+}
+
+impl Parseable for NameNative {
+    fn parse(s: &str, _version: SuggestionVersion) -> Result<Self, error::Error> {
+        Ok(NameNative { name: s.to_owned() })
+    }
+}
+
+impl store_item::Item for NameNative {
+    fn get_text(&self) -> &str {
+        &self.name
+    }
+}
+
+impl Into<WordPair> for &NameNative {
+    fn into(self) -> WordPair {
+        WordPair {
+            primary: self.name.clone(),
+            ..Default::default()
+        }
+    }
+}
+
+pub fn load_suggestions(config: &Config) -> Result<(), Box<dyn Error>> {
+    //
+    Ok(())
+}
+
 /// Load Suggestions from suggestion folder into memory
 pub fn load_word_suggestions(config: &Config) -> Result<(), Box<dyn Error>> {
     let mut map = HashMap::new();
@@ -169,6 +252,40 @@ pub fn load_meaning_suggestions(config: &Config) -> Result<(), Box<dyn std::erro
     K_MEANING_SUGGESTIONS.set(TextSearch::new(items)).ok();
 
     info!("Loaded kanji meaning suggestion file");
+
+    Ok(())
+}
+
+/// Load native name suggestions
+pub fn load_native_names(config: &Config) -> Result<(), Box<dyn std::error::Error>> {
+    let file = Path::new(config.get_suggestion_sources()).join("names_native");
+    if !file.exists() {
+        info!("Native name suggestion file does not exists");
+        return Ok(());
+    }
+
+    let items: Vec<NameNative> = load_file(&file)?;
+
+    NAME_NATIVE.set(TextSearch::new(items)).ok();
+
+    info!("Loaded native name suggestion file");
+
+    Ok(())
+}
+
+/// Load name transcription suggestions
+pub fn load_name_transcriptions(config: &Config) -> Result<(), Box<dyn std::error::Error>> {
+    let file = Path::new(config.get_suggestion_sources()).join("names_trans");
+    if !file.exists() {
+        info!("Name transcription suggestion file does not exists");
+        return Ok(());
+    }
+
+    let items: Vec<NameTranscription> = load_file(&file)?;
+
+    NAME_TRANSCRIPTIONS.set(TextSearch::new(items)).ok();
+
+    info!("Loaded name transcriptions suggestion file");
 
     Ok(())
 }

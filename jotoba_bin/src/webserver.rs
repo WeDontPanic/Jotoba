@@ -55,6 +55,14 @@ pub(super) async fn start(pool: Pool) -> std::io::Result<()> {
         log::error!("Failed loading kanji suggestions: {}", err);
     }
 
+    if let Err(err) = api::completions::load_name_transcriptions(&config) {
+        log::error!("Failed loading name transcriptions suggestions: {}", err);
+    }
+
+    if let Err(err) = api::completions::load_native_names(&config) {
+        log::error!("Failed loading name transcriptions suggestions: {}", err);
+    }
+
     HttpServer::new(move || {
         let app = App::new()
             // Data
