@@ -42,6 +42,7 @@ $(document).on("keydown", (event) => {
         case "Tab": // Append current suggestion
             if (currentSuggestionIndex > -1) {
                 activateSelection();
+                showContainer();
             } else {
                 changeSuggestionIndex(1);
             }
@@ -59,6 +60,18 @@ $(document).on("keydown", (event) => {
     }
 });
 
+// Shows the suggestion container if availableSuggestions > 0 and something was typed
+function showContainer() {
+    if (availableSuggestions > 0 && input.value.length > 0) {
+        container.classList.remove("hidden");
+        if (typeof scrollSearchIntoView === "function") {
+            scrollSearchIntoView();
+        }
+    } else {
+        container.classList.add("hidden");
+    } 
+}
+
 // Event whenever the user types into the search bar
 input.addEventListener("input", e => {
     if (input.value != oldInputValue) {
@@ -72,7 +85,7 @@ input.addEventListener("focus", e => {
     if (!keepSuggestions) {
         callApiAndSetShadowText();
     }
-    container.classList.remove("hidden");
+    showContainer();
     keepSuggestions = false;
 });
 document.addEventListener("click", e => {
@@ -274,6 +287,7 @@ function removeSuggestions() {
     currentSuggestion = "";
     currentSuggestionIndex = -2;
     availableSuggestions = 0;
+    showContainer();
 }
 
 // Loads API data by creating the json from known values instead of calling backend
@@ -367,7 +381,6 @@ function loadApiData(result) {
         // Only one result
         if (result.suggestions[i].secondary === undefined) {
             primaryResult = result.suggestions[i].primary;
-            console.log(primaryResult);
         }
         // Two results, kanji needs to be in the first position here
         else {
@@ -393,6 +406,9 @@ function loadApiData(result) {
     if (!suggestionChosen) {
         changeSuggestionIndex(1);
     }
+
+    // Load Container if there is text present
+    showContainer();
 }
 
 // Handles clicks on the suggestion dropdown
@@ -405,6 +421,12 @@ function onSuggestionClick(element) {
 function onSearchStart() {
     var search_value = $('#search').val();
     var search_type = $('#search-type').val();
-    window.location = window.location.origin + "/search/" + search_value + "?t=" + search_type;
+
+    if (search_value.length == 0) {
+        window.location = window.location.origin;
+    } else {
+        window.location = window.location.origin + "/search/" + encodeURIComponent(search_value) + "?t=" + search_type;
+    }
+
     return false;
 }

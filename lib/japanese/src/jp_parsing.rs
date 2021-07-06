@@ -3,6 +3,7 @@ use std::cmp::Ordering;
 use crate::inflection::{Inflection, SentencePart};
 use error::Error;
 use igo_unidic::{ConjungationForm, Morpheme, Parser, ParticleType, VerbType, WordClass};
+use itertools::Itertools;
 use once_cell::sync::Lazy;
 
 pub use igo_unidic;
@@ -44,6 +45,8 @@ pub struct WordItem<'dict, 'input> {
     pub word_class: Option<WordClass<'dict>>,
     pub was_in_db: bool,
     pub inflections: Vec<Inflection>,
+    pub start: usize,
+    pub original_word: String,
 }
 
 impl<'dict, 'input> WordItem<'dict, 'input> {
@@ -51,13 +54,17 @@ impl<'dict, 'input> WordItem<'dict, 'input> {
         m: Morpheme<'dict, 'input>,
         in_db: bool,
         inflections: Vec<Inflection>,
+        original_word: String,
     ) -> Self {
+        println!("{:#?}", m);
         WordItem {
             word_class: Some(m.word_class),
             lexeme: m.lexeme,
             surface: m.surface,
             was_in_db: in_db,
             inflections,
+            start: m.start,
+            original_word,
         }
     }
 
@@ -76,6 +83,9 @@ impl<'dict, 'input> WordItem<'dict, 'input> {
             pos,
             info: self.word_class_to_str(),
             furigana: None,
+            add_class: self
+                .word_class_to_str()
+                .map(|i| i.to_owned().to_lowercase()),
         }
     }
 
@@ -179,12 +189,15 @@ impl<'dict, 'input> InputTextParser<'dict, 'input> {
             self.parse_sentence()
         } else {
             if !inflections.is_empty() && self.is_word_inflection() && !self.is_sentence() {
+                let orig_query = self.original.to_owned();
                 let items = self
                     .morphemes
                     .into_iter()
                     // Remove inflection parts
                     .filter(|i| !i.is_inflection())
-                    .map(|i| WordItem::from_morpheme(i, false, inflections.clone()))
+                    .map(|i| {
+                        WordItem::from_morpheme(i, false, inflections.clone(), orig_query.clone())
+                    })
                     .collect();
 
                 Some(ParseResult { items })
@@ -202,6 +215,8 @@ impl<'dict, 'input> InputTextParser<'dict, 'input> {
                     word_class: None,
                     was_in_db: self.in_db,
                     inflections: vec![],
+                    start: 0,
+                    original_word: String::new(),
                 }];
                 Some(ParseResult { items })
             }
@@ -252,7 +267,14 @@ impl<'dict, 'input> InputTextParser<'dict, 'input> {
                 if morph.is_empty() {
                     return aux
                         .iter()
-                        .map(|i| WordItem::from_morpheme(i.to_owned().to_owned(), false, vec![]))
+                        .map(|i| {
+                            WordItem::from_morpheme(
+                                i.to_owned().to_owned(),
+                                false,
+                                vec![],
+                                String::new(),
+                            )
+                        })
                         .collect();
                 }
 
@@ -266,12 +288,17 @@ impl<'dict, 'input> InputTextParser<'dict, 'input> {
                     Some(it),
                 );
 
+                let suffix = aux.into_iter().map(|i| i.surface).join("");
+                let original = format!("{}{}", it.surface, suffix);
+
                 vec![WordItem {
                     inflections,
                     was_in_db: false,
                     word_class: Some(it.word_class),
                     lexeme: it.lexeme,
                     surface: it.surface,
+                    start: it.start,
+                    original_word: original,
                 }]
             })
             .flatten()

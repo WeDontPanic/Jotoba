@@ -1321,6 +1321,7 @@ dependencies = [
  "log",
  "models",
  "parse",
+ "percent-encoding",
  "ructe",
  "search",
  "sentry",

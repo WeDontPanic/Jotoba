@@ -1,0 +1,27 @@
+@use crate::BaseData;
+@(data: &BaseData)
+
+<div class="index-btn-container">
+    <div class="input-field first-wrap">
+       <div class="input-select">
+          <div class="choices main noselect" data-type="select-one" tabindex="1">
+             <div class="choices__inner">
+                <select id="search-type" data-trigger="" name="type" data-onchange="changeSearchType" class="hidden">
+                   <option value="@data.get_search_site_id()">@data.get_search_site_name()</option>
+                </select>
+                <div class="choices__list choices__list--single">
+                   <div class="choices__item choices__item--selectable index">@data.get_search_site_name()</div>
+                </div>
+             </div>
+             <div class="choices__list choices__list--dropdown index">
+                <div class="choices__list">
+                   <div data-value="0" class="choices__item choices__item--choice choices__item--selectable">@data.gettext("Words")</div>
+                   <div data-value="1" class="choices__item choices__item--choice choices__item--selectable">@data.gettext("Kanji")</div>
+                   <div data-value="2" class="choices__item choices__item--choice choices__item--selectable">@data.gettext("Sentences")</div>
+                   <div data-value="3" class="choices__item choices__item--choice choices__item--selectable">@data.gettext("Names")</div>
+                </div>
+             </div>
+          </div>
+       </div>
+    </div>
+ </div>

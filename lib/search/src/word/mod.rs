@@ -64,6 +64,7 @@ pub(crate) struct ResultData {
     pub(crate) count: usize,
     pub(crate) sentence_index: i32,
     pub(crate) sentence_parts: Option<Vec<SentencePart>>,
+    pub(crate) searched_query: String,
 }
 
 impl<'a> Search<'a> {
@@ -92,6 +93,7 @@ impl<'a> Search<'a> {
             count: search_result.count,
             sentence_parts: search_result.sentence_parts,
             sentence_index: search_result.sentence_index,
+            searched_query: search_result.searched_query,
         });
     }
 
@@ -100,6 +102,11 @@ impl<'a> Search<'a> {
         // Perform searches asynchronously
         let (native_word_res, gloss_word_res): (ResultData, ResultData) =
             futures::try_join!(self.native_results(&self.query.query), self.gloss_results())?;
+
+        let sentence_parts = native_word_res
+            .sentence_parts
+            .map(|i| Some(i))
+            .unwrap_or(gloss_word_res.sentence_parts);
 
         // Chain native and word results into one vector
         Ok(ResultData {
@@ -110,8 +117,9 @@ impl<'a> Search<'a> {
                 .collect_vec(),
             infl_info: native_word_res.infl_info,
             count: native_word_res.count + gloss_word_res.count,
-            sentence_parts: native_word_res.sentence_parts,
+            sentence_parts,
             sentence_index: self.query.word_index as i32,
+            searched_query: native_word_res.searched_query,
         })
     }
 
@@ -246,7 +254,7 @@ impl<'a> Search<'a> {
         #[cfg(not(feature = "tokenizer"))]
         let pos_filter_tags = self.get_pos_filter();
 
-        let query_modified = query != self.query.query;
+        let query_modified = query != query_str;
 
         #[cfg(feature = "tokenizer")]
         let infl_info = morpheme.as_ref().and_then(|i| {
@@ -258,8 +266,6 @@ impl<'a> Search<'a> {
 
         #[cfg(not(feature = "tokenizer"))]
         let infl_info: Option<InflectionInformation> = None;
-
-        println!("query: {}", query);
 
         // Define basic search structure
         let mut word_search = WordSearch::new(self.pool, &query);
@@ -340,12 +346,21 @@ impl<'a> Search<'a> {
             results
         };
 
+        #[cfg(feature = "tokenizer")]
+        let searched_query = morpheme
+            .map(|i| i.original_word.to_owned())
+            .unwrap_or(query);
+
+        #[cfg(not(feature = "tokenizer"))]
+        let searched_query = query;
+
         Ok(ResultData {
             words: wordresults,
             infl_info,
             count: original_len,
             sentence_parts: sentence,
             sentence_index: self.query.word_index as i32,
+            searched_query,
         })
     }
 
@@ -377,8 +392,10 @@ impl<'a> Search<'a> {
         let mut wordresults = word_search.search_by_glosses().await?;
 
         // Do romaji search if no results were found
-        if wordresults.is_empty() {
-            return self.native_results(&self.query.query.to_hiragana()).await;
+        if wordresults.is_empty() && !self.query.query.is_japanese() {
+            return self
+                .native_results(&self.query.query.replace(" ", "").to_hiragana())
+                .await;
         }
 
         #[cfg(feature = "tokenizer")]

@@ -37,6 +37,7 @@ function toggleRadicalOverlay() {
     } else {
         $('.rad-results').html(baseRadResult);
         $('.rad-results').removeClass("hidden");
+        scrollSearchIntoView();
     }
 }
 

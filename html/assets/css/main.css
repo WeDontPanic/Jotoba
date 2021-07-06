@@ -13,14 +13,16 @@
 
     --searchBackground: #ffffff;
     --searchTextColor: #555555;
+    --shadowColor: #222222;
     
-    --tagColor: #888888;
+    --tagColor: #808080;
     --itemBG: #d3d3d3;
 
     /* Special */
     --itemBG_075: rgb(211, 211, 211, 0.75);
     --langSep: rgba(50,103,51,.1);
     --lineColor: rgba(0,0,0,.1);
+    --backgroundShadow: rgba(34,34,34,0.1);
 }
 
 /* ----------------- Overall Page Adjustments ----------------- */
@@ -43,6 +45,18 @@ body {
     -webkit-font-smoothing: auto;
 }
 
+body {
+    min-height: 100vh;
+    height: 100vh;
+    display: grid;
+    grid-template-rows: 1fr auto;
+}
+
+footer {
+    grid-row-start: 2;
+    grid-row-end: 3;
+}
+
 .noselect, .tags, .clickable, .entry-count, .no-drag {
     -webkit-touch-callout: none; /* iOS Safari */
     -webkit-user-select: none; /* Safari */
@@ -60,6 +74,7 @@ body {
 h3 {
     font-size: 22px;
     text-align: center;
+    text-align: -webkit-center;
     font-weight: bold;
 } 
 
@@ -80,6 +95,7 @@ h4 {
 .clickable {
     color: var(--primaryColor);
     text-align: center;
+    text-align: -webkit-center;
     cursor: pointer;
 }
 
@@ -183,6 +199,7 @@ svg {
 
 .btn-container {
     text-align: center;
+    text-align: -webkit-center;
     min-width: 46px;
     padding: 5px 0;
     margin-left: 6px;
@@ -215,6 +232,11 @@ svg {
     max-width: 1000px;
     position: relative;
 }
+
+#searchDiv.index {
+    max-width: 1150px;
+    margin-left: 0px;
+}
  
 .d-flex.left {
     flex-direction: row;
@@ -230,7 +252,7 @@ svg {
     border: 2px solid var(--searchBackground);
     border-top: none;
     background-color: var(--searchBackground);
-    box-shadow: 0px 8px 20px 0px var(--lineColor)
+    box-shadow: 0px 8px 20px 0px var(--backgroundShadow)
 }
 
 .x-button {
@@ -390,6 +412,7 @@ input[type="color"] {
 
 .title-div {
     text-align: center;
+    text-align: -webkit-center;
     width: 80%;
 }
 
@@ -459,6 +482,7 @@ footer {
 
 .center-text {
     text-align: center;
+    text-align: -webkit-center;
 }
 
 .footer-hr {
@@ -539,19 +563,50 @@ footer {
 
 .sentence-part {
     color: var(--primaryTextColor) !important;
-    border-bottom: 1px solid var(--lineColor);
+    border-bottom: 2px solid var(--lineColor);
     margin-right: 15px;
+    margin-top: 9px;
     cursor: pointer;
 }
 
 .sentence-part.selected {
-    border-bottom: 1px solid var(--primaryColor);
+    border-bottom: 2px solid var(--primaryColor);
 }
 
 .sentence-part:hover {
     text-decoration: unset;
     text-shadow: -1px -1px var(--primaryTextColor);
     color: var(--primaryTextColor) !important; 
+}
+
+.sentence-part.inline-kana-preview {
+    margin-top: 19px;
+}
+
+.sentence-part.symbol {
+    border-bottom: 0px;
+    margin-right: 0px;
+    margin-left: -15px;
+}
+
+.sentence-part.particle {
+    color: var(--primaryColor) !important;
+}
+
+.sentence-part.particle:hover {
+    text-shadow: -1px -1px var(--primaryColor);
+}
+
+.sentence-part:empty {
+    padding-top: 19px;
+}
+
+.sentence-part > .furigana-kanji-container {
+    padding-top: 10px;
+}
+
+.sentence-part > .inline-kana-preview {
+    margin-top: 9px;
 }
 
 .entry-min-height-1 {
@@ -579,6 +634,7 @@ footer {
     color: var(--tagColor);
     font-weight: bold;
     text-align: center;
+    text-align: -webkit-center;
     cursor: pointer;
 }
 
@@ -676,6 +732,7 @@ footer {
     color: var(--secondaryTextColor);
     font-weight: bold;
     text-align: center;
+    text-align: -webkit-center;
 }
 
 .word-frequency.common {
@@ -739,12 +796,29 @@ footer {
     padding-right: 10%;
 }
 
+/* ----------------- About Page ----------------- */
+
 .about-title {
     font-size: 22px;
     font-weight: bold;
     color: var(--primaryColor); 
 }
 
+.joto-wizard {
+    width: 60px;
+    position: relative;
+    margin-top: -37px;
+    margin-left: 10px;
+}
+
+/* ----------------- Help Page ------------------- */
+
+.help-joto {
+    width: 100px;
+    position: relative;
+    margin-top: -320px;
+    margin-left: 530px;
+}
 
 /* ---------------------- Stroke Order / Kanji Page Unique Stuff --------------------- */
 .stroke-container {
@@ -763,6 +837,7 @@ footer {
 
 .furigana-kanji-container {
     text-align: center;
+    text-align: -webkit-center;
     word-spacing: 10px;
 }
 

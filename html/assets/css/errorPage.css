@@ -8,6 +8,7 @@ body {
 
 .err-parent {
 	text-align: center;
+	text-align: -webkit-center;
 	display: block;
 	position: relative;
 	width: 80%;
@@ -25,6 +26,7 @@ body {
 
 .txt-primary {
 	text-align: center;
+	text-align: -webkit-center;
 	display: block;
 	position: relative;
 	letter-spacing: 12px;
@@ -43,6 +45,7 @@ body {
 
 .txt-secondary {
 	text-align: center;
+	text-align: -webkit-center;
 	display: block;
 	position: relative;
 	font-size: 20px;
@@ -86,6 +89,7 @@ hr {
 	border-top: 5px solid #50c058;
 	color: #50c058;
 	text-align: center;
+	text-align: -webkit-center;
 	margin: 0px auto;
 	width: 420px;
 	height: 10px;

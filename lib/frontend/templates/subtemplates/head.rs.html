@@ -1,0 +1,42 @@
+@use crate::BaseData;
+@(data: &BaseData)
+
+<head>
+    <!-- Meta Info -->
+    <title>@data.gettext("Jotoba")</title>
+    <link rel="icon" type="image/svg+xml" href="/assets/jotokun/JotoHead.svg">
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Jotoba is a powerful and free Japanese dictionary supporting words, kanji, sentences, and many different languages.">
+
+    <!-- External Stylesheets -->
+    <link rel="stylesheet" type="text/css" href="/assets/css/lib/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="/assets/css/lib/material.min.css">
+    <link rel="preload" href="/assets/css/lib/alertify.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+       <noscript><link rel="stylesheet" href="/assets/css/lib/alertify.min.css"></noscript>
+    <link rel="preload" href="/assets/css/lib/alertifyThemes/bootstrap.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+       <noscript><link rel="stylesheet" href="/assets/css/lib/alertifyThemes/bootstrap.min.css"></noscript>
+    <!-- Internal Stylesheets -->
+    <link rel="preload" href="/assets/css/alerts.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+       <noscript><link rel="stylesheet" href="/assets/css/alerts.css"></noscript>
+    <link rel="stylesheet" type="text/css" href="/assets/css/main.css">
+    <link rel="stylesheet" type="text/css" href="/assets/css/choices.css">
+    <link rel="preload" href="/assets/css/radselect.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+      <noscript><link rel="stylesheet" href="/assets/css/radselect.css"></noscript>
+    <link rel="stylesheet" type="text/css" href="/assets/css/mobile.css">
+    <!-- External JS -->
+    <script src="/assets/js/lib/jquery.min.js"></script>
+    <script async defer src="/assets/js/lib/bootstrap.min.js"></script>
+    <script async defer src="/assets/js/lib/material.min.js"></script>
+    <script async defer src="/assets/js/lib/alertify.min.js"></script>
+    <script defer src ="/assets/js/lib/js-cookie-2.2.1.min.js"></script>
+    <script async defer src="/assets/js/lib/jotobaChoices.js"></script>
+    <!-- Internal JS -->
+    <script src="/assets/js/utils.js"></script>
+     <script async defer src="/assets/js/qol.js"></script>
+    <script defer src="/assets/js/search.js"></script>
+    <script async defer src="/assets/js/stt.js"></script>
+    <script async defer src="/assets/js/radicals.js"></script>
+    <script async defer src="/assets/js/mobile.js"></script>
+    <script defer src="/assets/js/settings.js"></script>
+ </head>

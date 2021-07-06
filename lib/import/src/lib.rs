@@ -14,6 +14,7 @@ pub mod manga_sfx;
 pub mod radicals;
 pub mod search_radicals;
 pub mod sentences;
+pub mod similar_kanji;
 
 #[derive(Default)]
 pub struct Options {
@@ -27,6 +28,7 @@ pub struct Options {
     pub radicals_path: String,
     pub elements_path: String,
     pub search_radicals_path: String,
+    pub similar_kanji_path: String,
 }
 
 impl Options {
@@ -42,6 +44,7 @@ impl Options {
             &self.radicals_path,
             &self.elements_path,
             &self.search_radicals_path,
+            &self.similar_kanji_path,
         ]
         .into_iter()
         .filter(|i| !i.is_empty())
@@ -191,6 +194,11 @@ async fn import_independent(pool: &Pool, options: &Options) {
     // Kanji dict
     if !options.kanjidict_path.is_empty() {
         kanjidict::import(&pool, options.kanjidict_path.clone()).await;
+    }
+
+    // Similar kanji
+    if !options.similar_kanji_path.is_empty() {
+        similar_kanji::import(&pool, &options.similar_kanji_path).await;
     }
 
     // Radicals

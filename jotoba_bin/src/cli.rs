@@ -11,8 +11,9 @@ pub struct Options {
     pub skip_migration: bool,
 
     // Import files
-    pub import: bool,
     /// Whether to import or not
+    pub import: bool,
+
     // Import paths
     pub jmdict_path: String,
     pub kanjidict_path: String,
@@ -24,6 +25,7 @@ pub struct Options {
     pub radicals_path: String,
     pub elements_path: String,
     pub search_radicals_path: String,
+    pub similar_kanji_path: String,
 }
 
 impl Into<ImportOptions> for &Options {
@@ -39,6 +41,7 @@ impl Into<ImportOptions> for &Options {
             sentences_path: self.sentences_path.clone(),
             jlpt_paches_path: self.jlpt_paches_path.clone(),
             manga_sfx_path: self.manga_sfx_path.clone(),
+            similar_kanji_path: self.similar_kanji_path.clone(),
         }
     }
 }
@@ -130,6 +133,12 @@ pub fn parse() -> Options {
             &["--sradicals"],
             Store,
             "The path to import the search radicals from. Required for --import",
+        );
+
+        ap.refer(&mut options.similar_kanji_path).add_option(
+            &["--similar_kanji"],
+            Store,
+            "The path to import the similar kanji elements from. Required for --import",
         );
 
         ap.parse_args_or_exit();

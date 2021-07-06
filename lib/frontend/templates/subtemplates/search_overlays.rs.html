@@ -1,0 +1,59 @@
+@use crate::BaseData;
+@use super::radpicker_html;
+@(data: &BaseData)
+
+<!-- Start of Search Suggestion -->
+<div class="overlay suggestion noselect">
+    <div id="suggestion-container" class="d-flex flex-column hidden"></div>
+    <div id="sug-end-point"></div>
+ </div>
+
+ <!-- Start of Radical Overlay -->
+ <div class="overlay radical noselect hidden">
+    <span class="x-button noselect" onclick="toggleRadicalOverlay()">x</span>
+
+    <div class="d-flex flex-row wrap rad-results">
+       <div class="rad-result-preview">
+          <span>@data.gettext("This tool allows you to find Kanji by their core components (Radicals)")</span>
+          <br>
+          <span>@data.gettext("You can select Radicals below and add found Kanji to the search bar")</span>
+          <br>
+          <span>@data.gettext("Press") <span class="highlight">@data.gettext("Enter")</span> @data.gettext("to start searching")</span>
+       </div>
+    </div>
+
+    <br>
+
+    <span class="clickable" onclick="resetRadPicker()">
+    @data.gettext("Reset")
+    </span>
+
+    <div class="d-flex flex-row wrap rad-picker">
+   @:radpicker_html()
+    </div>
+    <div id="rad-end-point"></div>
+ </div>
+ <!-- End of Radical  Overlay -->
+
+  <!-- Start of Speech Overlay -->
+  <div class="overlay speech hidden">
+    <span class="x-button noselect" onclick="toggleSpeakOverlay()">x</span>
+    <div class="d-flex flex-column">
+       <span>@data.gettext("Current language"): <b id="currentSpeechLang">English</b></span>
+       <span>@data.gettext("Currently listening"): <b id="currentlyListening">No</b></span>
+       <br>
+       <span>@data.gettext("To change your language, select one of the following"):</span>
+       <div class="d-flex flex-row wrap">
+          <span class="clickable right-padding-10" onclick='setRecognitionLang("jap")'>@data.gettext("Japanese")</span>
+          <span class="clickable right-padding-10" onclick='setRecognitionLang("ger")'>@data.gettext("German")</span>
+          <span class="clickable right-padding-10" onclick='setRecognitionLang("eng")'>@data.gettext("English")</span>
+          <span class="clickable right-padding-10" onclick='setRecognitionLang("rus")'>@data.gettext("Russian")</span>
+          <span class="clickable right-padding-10" onclick='setRecognitionLang("spa")'>@data.gettext("Spanish")</span>
+          <span class="clickable right-padding-10" onclick='setRecognitionLang("swe")'>@data.gettext("Swedish")</span>
+          <span class="clickable right-padding-10" onclick='setRecognitionLang("fre")'>@data.gettext("French")</span>
+          <span class="clickable right-padding-10" onclick='setRecognitionLang("dut")'>@data.gettext("Dutch")</span>
+          <span class="clickable right-padding-10" onclick='setRecognitionLang("hun")'>@data.gettext("Hungarian")</span>
+          <span class="clickable right-padding-10" onclick='setRecognitionLang("svl")'>@data.gettext("Slovenian")</span>
+       </div>
+    </div>
+ </div>

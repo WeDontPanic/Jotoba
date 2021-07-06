@@ -206,6 +206,9 @@ msgstr "SuchBG"
 msgid "searchText"
 msgstr "SuchText"
 
+msgid "shadow"
+msgstr "Schatten"
+
 msgid "tags"
 msgstr "Tags"
 
@@ -235,6 +238,10 @@ msgstr "Klicke"
 # Suffix of Cookie revoke text
 msgid "to revoke your Cookies agreement"
 msgstr "um deine Cookie Zustimmung zurückzunehmen"
+
+# Suffix of Cookie agree text
+msgid "to enable Cookies"
+msgstr "um Cookies zu aktivieren"
 
 # Footer
 msgid "Jotoba wouldn't be able to exist without the help of many open-source data sources."
@@ -333,16 +340,25 @@ msgid "On"
 msgstr ""
 
 msgid "On reading compounds"
-msgstr "On - Lesemöglichkeiten"
+msgstr "On - Zusammensetzungen"
 
 msgid "Kun reading compounds"
-msgstr "Kun - Lesemöglichkeiten"
+msgstr "Kun - Zusammensetzungen"
 
 msgid "JLPT level"
 msgstr "JLPT Level"
 
 msgid "of 2500 most used kanji in newspapers"
 msgstr "der 2500 meist genutzten Kanji in Zeitungen"
+
+msgid "Similar Kanji"
+msgstr "Ähnliche Kanji"
+
+msgid "Chinese reading"
+msgstr "Chinesische Lesungen"
+
+msgid "Korean reading"
+msgstr "Koreanische Lesungen"
 
 msgid "Japanese names"
 msgstr "Japanische Namen"
@@ -472,6 +488,12 @@ msgstr "Vielen Dank an jeden, der daran beteiligt war diese große Vielfalt an D
 # Source
 msgid "Jisho"
 msgstr ""
+
+msgid "Joto-kun"
+msgstr ""
+
+msgid "Joto-kun was created by a good friend of ours who is truly a wizard when it comes down to design!"
+msgstr "Joto-kun wurde von einer guten Freundin erstellt, welche eine wahrere Zauberin ist, wenn es ums Designen geht!"
 
 msgid "Jisho, created by Kim Ahlström, Miwa Ahlström and Andrew Plummer is a pretty and powerful english-japanese dictionary."
 msgstr "Jisho, welches von Kim Ahlström, Miwa Ahlström und Andrew Plummer erstellt wurde, ist ein großartiges Englisch-Japanisch Wörterbuch."

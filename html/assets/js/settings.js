@@ -5,7 +5,7 @@
 // Array containing all ids of color settings
 let colorIdentifiers = [
     "background_value", "overlay_value", "primaryColor_value", "bgPrimaryColor_value", "secondaryColor_value",
-    "primaryTextColor_value", "secondaryTextColor_value", "searchBackground_value", "searchTextColor_value", "tagColor_value", 
+    "primaryTextColor_value", "secondaryTextColor_value", "searchBackground_value", "searchTextColor_value", "shadowColor_value", "tagColor_value", 
     "itemBG_value"
 ];
 
@@ -30,8 +30,23 @@ function deleteCookies(deleteAll) {
     var allCookies = document.cookie.split(';');
                 
     for (var i = 0; i < allCookies.length; i++) {
-        if (deleteAll || (!deleteAll && trackingCookies.includes(allCookies[i]))) {
-            document.cookie = allCookies[i] + "=;expires="+ new Date(0).toUTCString();}
+        if (deleteAll || (!deleteAll && !trackingCookies.includes(allCookies[i]))) {
+            document.cookie = allCookies[i] + "=;expires="+ new Date(0).toUTCString()+";path=/;";
+        }
+    }
+}
+
+// Handle Cookie stuff on load
+function prepareCookieSettings(allow_cookies) {
+    console.log(allow_cookies);
+
+    if (allow_cookies == undefined) {
+        $('#cookie-footer').removeClass("hidden");
+        $('#cookie-agreement-accept').removeClass("hidden");
+    } else if (allow_cookies == "1") {
+        $('#cookie-agreement-revoke').removeClass("hidden");
+    } else {
+        $('#cookie-agreement-accept').removeClass("hidden");
     }
 }
 
@@ -47,17 +62,19 @@ function cookiesAccepted() {
 
 // Revokes the right to store user Cookies
 function revokeCookieAgreement(manuallyCalled) {
-    deleteCookies(false);
-
     $('#cookie-footer').addClass("hidden");
     $('#cookie-agreement-accept').removeClass("hidden");
     $('#cookie-agreement-revoke').addClass("hidden");
 
     if (manuallyCalled) {
         Util.showMessage("success", "Successfully deleted your cookie data.");
+        deleteCookies(true);
     } else {
         Util.showMessage("success", "Your personal data will not be saved.");
+        deleteCookies(false);
     }
+
+    Cookies.set("allow_cookies", "0", {path: '/'});
 }
 
 // Changes the color that the caller represents
@@ -132,9 +149,10 @@ function loadCookieData() {
     // User agreement on using Cookies
     let allow_cookies = Cookies.get("allow_cookies");
     if (!checkTrackingAllowed()) {
-        allow_cookies = undefined;
+        allow_cookies = "0";
         Cookies.set("allow_cookies", 0);
     }
+    prepareCookieSettings(allow_cookies);
 
     // Load search language
     let default_lang = Cookies.get("default_lang");
@@ -146,13 +164,6 @@ function loadCookieData() {
 
     // Load display settings
     let anim_speed = Cookies.get("anim_speed");
-
-    // Adjust settings btn if user already accepted cookies
-    if (allow_cookies == undefined || allow_cookies == "0") {
-        //$('#cookie-footer').removeClass("hidden");
-        $('#cookie-agreement-accept').removeClass("hidden");
-        $('#cookie-agreement-revoke').addClass("hidden");
-    }
 
     // Set Default_Lang 
     let userLang = default_lang || navigator.language || navigator.userLanguage || "en-US";
@@ -262,6 +273,10 @@ function setSpecialColorVars() {
     let hexVal_lineColor = getComputedStyle(document.documentElement).getPropertyValue("--primaryTextColor").trim();
     let rgbVal_lineColor = Util.hexToRgb(hexVal_lineColor);
     document.documentElement.style.setProperty("--lineColor", "rgba("+rgbVal_lineColor.r+","+rgbVal_lineColor.g+","+rgbVal_lineColor.b+",0.1)");
+
+    let hexVal_shadowColor = getComputedStyle(document.documentElement).getPropertyValue("--shadowColor").trim();
+    let rgbVal_shadowColor = Util.hexToRgb(hexVal_shadowColor);
+    document.documentElement.style.setProperty("--backgroundShadow", "rgba("+rgbVal_shadowColor.r+","+rgbVal_shadowColor.g+","+rgbVal_shadowColor.b+",0.1)");
 
 }
 
@@ -394,3 +409,4 @@ var kanjis = $('.kanjisvg');
 kanjis.each(function() {
     restartAnimation(this, getDefaultAnimSpeed());
 });
+

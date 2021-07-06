@@ -1,0 +1,233 @@
+/* ----------------- Index Page ----------------- */
+
+.index-noselect {
+    -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+    -khtml-user-select: none; /* Konqueror HTML */
+    -moz-user-select: none; /* Old versions of Firefox */
+    -ms-user-select: none; /* Internet Explorer/Edge */
+    -o-user-select:none; /* Opera */
+    user-select: none; /* Non-prefixed version, currently supported by Chrome, Edge, Opera and Firefox */;
+}
+
+.title {
+    padding-top: 5%;
+    padding-bottom: 2.25%;
+    margin: auto;
+    width: 30%;
+}
+
+.titleImg {
+    width: 30vw;
+}
+
+form {
+    margin-block-end: 1em;
+}
+
+.overlay {
+    border-radius: 20px;
+    margin-top: -14px;
+}
+
+.overlay > .flex-column {
+    margin: 5px 10px;
+}
+
+.overlay.suggestion {
+    width: 81%;
+    margin-left: 17.5%;
+}
+
+.x-button {
+    margin-right: 5px;
+}
+
+.index-btn-container {
+    display: flex;
+    place-content: center;
+}
+
+.settingsBtn {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+}
+
+#settingsSvg {
+    fill: var(--tagColor);
+}
+
+.index-search-svg {
+    margin-top: -5px; 
+    fill: var(--tagColor);
+}
+
+.inner-form {
+    border-radius: 20px !important;
+}
+
+.searchDivInner .choices__list--dropdown > .choices__list {
+    margin-left: 10px;
+}
+
+.choices__list.choices__list--dropdown.index.is-active {
+    animation: dropdownAnim 0.2s linear forwards;
+}
+
+.choices__list.choices__list--dropdown.index.animate:not(.is-active) {
+    display: unset !important;
+    animation: dropdownAnimClose 0.2s linear forwards;
+}
+
+@keyframes dropdownAnim {
+    from {height: 0px;}
+    to { height: 330%;}
+}
+
+@keyframes dropdownAnimClose {
+    from {height: 330%; }
+    to { height: 0%; display:hidden !important;}
+}
+
+.input-field.third-wrap {
+    width: 120px;
+    height: 45px;
+    margin: 11px 4px;
+}
+
+.input-field.third-wrap.rad {
+    width: 180px;
+    height: 45px;
+    margin: 11px 4px;
+}
+
+.btn-search {
+    color: white !important;
+}
+
+.input-field.third-wrap.rad > .btn-search {
+    background: var(--secondaryColor);
+}
+
+.rad-picker-icon {
+    color: white;
+    font-size: 22px;
+}
+
+
+.choices.main[data-type*="select-one"]:after {
+    transition: linear 0.2s;
+}
+
+.choices.main[data-type*="select-one"].is-open:after {
+    transition: linear 0.2s;
+}
+  
+/* Dekstop Only */
+@media only screen and (min-width: 600px) {
+
+    .searchDivInner form .inner-form .input-field.first-wrap .choices__list.choices__list--dropdown {
+        border-radius: 20px !important;
+        border-top-right-radius: 0px !important;
+    }
+
+}
+
+/* Mobile View */
+@media only screen and (max-width: 600px) {
+
+    @keyframes dropdownAnim {
+        from {height: 0px;}
+        to { height: 360%;}
+    }   
+
+	.title {
+        padding-top: 15%;
+        width: 72%;
+    }
+    
+    .titleImg {
+        width: 70vw;
+    }
+
+    .searchDivInner form .inner-form .input-field input{
+        padding: 27px 30px 27px 15px;
+    }
+
+    .inner-form > .index-btn-container {
+        position: absolute;
+        top: 75px;
+        width: 50%;
+        place-content: flex-start;
+        z-index: -1;
+    }
+
+    .choices__item.index {
+        color: white !important;
+    }
+
+    .input-field.first-wrap {
+        background: var(--bgPrimaryColor);
+        border-radius: 3px;
+        height: 45px !important;
+        width: 100% !important;
+        margin-left: 10px;
+    }
+
+    .overlay {
+        z-index: 1;
+    }
+
+    .overlay.suggestion {
+        width: 100%;
+        margin-left: 0%;
+    }
+
+    #suggestion-container {
+        margin: 5px -5px;
+    }
+    
+    .rad-picker {
+        max-height: 44vh;
+    }
+
+    #settingsModal {
+        display: none;
+    }
+
+    div:not(.inner-form) > .index-btn-container {
+        flex-direction: row-reverse;
+        place-content: flex-start;
+    }
+
+    .settingsBtn {
+        display: unset !important;
+        left: 10px !important;
+    }
+
+    .input-field.third-wrap:not(.rad) {
+        display: none;
+    }
+    
+    .input-field.third-wrap.rad {
+        width: max-content;
+        margin-top: 9px;
+        padding-right: 15px;
+    }
+
+    .btn-search {
+        border-radius: 3px;
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+
+    .mobile-nav-btn {
+        display: none;
+    }
+
+    footer > div > span {
+        font-size: 15px;
+    }
+
+}

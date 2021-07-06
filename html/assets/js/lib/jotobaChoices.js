@@ -22,6 +22,7 @@ document.querySelectorAll(".choices__item--choice.choices__item--selectable").fo
 
         // Close dropdown
         event.target.parentElement.parentElement.classList.remove("is-active");
+        event.target.parentElement.parentElement.parentElement.classList.remove("is-open");
     });
     
 });
@@ -34,6 +35,7 @@ document.querySelectorAll(".choices__inner").forEach((e) => {
 
         // Open dropdown
         e.parentElement.children[1].classList.toggle("is-active");
+        e.parentElement.classList.toggle("is-open");
     });
 
 });
@@ -46,6 +48,8 @@ document.querySelectorAll(".choices").forEach((e) => {
 
         // Close dropdown
         e.children[1].classList.remove("is-active");
+        e.classList.remove("is-open");
+
     });
 
 });

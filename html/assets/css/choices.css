@@ -45,6 +45,7 @@
 .choices[data-type*="select-one"].is-open:after {
   border-color: transparent transparent var(--tagColor) transparent !important;
   margin-top: -7.5px;
+  rotate: 180deg;
 }
 
 .choices__inner {
@@ -172,8 +173,8 @@
 }
 
 .modal-body .choices__list.choices__list--single {
-  box-shadow: 0px 1px 2px 0px var(--lineColor);
-  border: 1px solid var(--lineColor);
+  box-shadow: 0px 1px 2px 0px var(--backgroundShadow);
+  border: 1px solid var(--backgroundShadow);
   padding-right: 20px;
 }
 
@@ -187,7 +188,7 @@
   border: 0;
   margin-top: 2px;
   border-radius: 4px;
-  box-shadow: 0px 8px 20px 0px var(--lineColor);
+  box-shadow: 0px 8px 20px 0px var(--backgroundShadow);
 }
 
 .modal-body .choices__list--dropdown .choices__item {
@@ -226,10 +227,10 @@
   display: flex;
   width: 100%;
   -ms-flex-pack: justify;
-      justify-content: space-between;
+  justify-content: space-between;
   -ms-flex-align: center;
-      align-items: center;
-  box-shadow: 0px 8px 20px 0px var(--lineColor);
+  align-items: center;
+  box-shadow: 0px 8px 20px 0px var(--backgroundShadow);
   border-radius: 3px;
 }
 
@@ -317,7 +318,7 @@
   border: 0;
   margin-top: 2px;
   border-radius: 4px;
-  box-shadow: 0px 8px 20px 0px var(--lineColor);
+  box-shadow: 0px 8px 20px 0px var(--backgroundShadow);
 }
 
 .searchDivInner form .inner-form .input-field.first-wrap .choices__list.choices__list--dropdown .choices__item--selectable {
@@ -338,25 +339,26 @@
   width: 74px;
 }
 
-.searchDivInner form .inner-form .input-field.third-wrap .btn-search {
+.btn-search {
   height: 100%;
   width: 100%;
   white-space: nowrap;
   border: 0;
   cursor: pointer;
+  color: var(--searchBackground);
   background: var(--bgPrimaryColor);
   transition: all .2s ease-out, color .2s ease-out;
 }
 
-.searchDivInner form .inner-form .input-field.third-wrap .btn-search svg {
+.btn-search svg {
   width: 16px;
 }
 
-.searchDivInner form .inner-form .input-field.third-wrap .btn-search:hover {
+.btn-search:hover {
   background: var(--primaryColor);
 }
 
-.searchDivInner form .inner-form .input-field.third-wrap .btn-search:focus {
+.btn-search:focus {
   outline: 0;
   box-shadow: none;
 }

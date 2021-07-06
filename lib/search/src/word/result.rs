@@ -34,6 +34,7 @@ pub struct WordResult {
     pub inflection_info: Option<InflectionInformation>,
     pub sentence_parts: Option<Vec<SentencePart>>,
     pub sentence_index: i32,
+    pub searched_query: String,
 }
 
 impl WordResult {

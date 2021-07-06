@@ -47,7 +47,7 @@ $(document).on("keypress", (event) => {
     }
 });
 
-// You might just unlock a secret
+// Is it Easter already?
 var lastKeys = [];
 var lastKeyDown = -1;
 $(document).on("keydown", (event) => {
@@ -59,9 +59,9 @@ $(document).on("keydown", (event) => {
         }
     }
     if (lastKeys.toString() === "38,40,37,39,37,39,66,65") {
-        parseSchemeCode("1A1A1C252527C3083F9407416Fi32ZZZOR6Fi32");
-        if (Cookies.get("user_agreement") !== "true") {
-            Util.deleteCookies();
+        parseSchemeCode("1A1A1C252527C3083F9407416Fi32636363ZC4C4C4OR6Fi32D3D3D3");
+        if (Cookies.get("allow_cookies") !== "1") {
+            deleteCookies(true);
         }
     }
 });
@@ -176,4 +176,9 @@ $(".audioBtn").contextmenu((event) => {
   Util.copyToClipboard(url);
   Util.showMessage("success", "Audio URL copied to clipboard");
 });
+
+// Disables the dropdown's animation until the first onclick event
+$(".input-field.first-wrap").one("click", (event) => {
+    $('.choices__list.choices__list--dropdown.index').addClass('animate');
+})
 

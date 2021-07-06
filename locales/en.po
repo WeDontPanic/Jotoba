@@ -206,6 +206,9 @@ msgstr ""
 msgid "searchText"
 msgstr ""
 
+msgid "shadow"
+msgstr ""
+
 msgid "tags"
 msgstr ""
 
@@ -234,6 +237,10 @@ msgstr ""
 
 # Suffix of Cookie revoke text
 msgid "to revoke your Cookies agreement"
+msgstr ""
+
+# Suffix of Cookie agree text
+msgid "to enable Cookies"
 msgstr ""
 
 # Footer
@@ -344,6 +351,15 @@ msgid "JLPT level"
 msgstr ""
 
 msgid "of 2500 most used kanji in newspapers"
+msgstr ""
+
+msgid "Similar Kanji"
+msgstr ""
+
+msgid "Chinese reading"
+msgstr ""
+
+msgid "Korean reading"
 msgstr ""
 
 msgid "Japanese names"
@@ -472,6 +488,12 @@ msgstr ""
 
 # Source
 msgid "Jisho"
+msgstr ""
+
+msgid "Joto-kun"
+msgstr ""
+
+msgid "Joto-kun was created by a good friend of ours who is truly a wizard when it comes down to design!"
 msgstr ""
 
 msgid "Jisho, created by Kim Ahlström, Miwa Ahlström and Andrew Plummer is a pretty and powerful english-japanese dictionary."

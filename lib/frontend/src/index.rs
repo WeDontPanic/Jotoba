@@ -18,7 +18,7 @@ pub async fn index(
     //session::init(&session, &settings);
 
     Ok(HttpResponse::Ok().body(render!(
-        templates::base,
+        templates::base_index,
         BaseData::new(Site::Index, &locale_dict, settings)
     )))
 }
