@@ -143,12 +143,12 @@ form {
     }   
 
 	.title {
-        padding-top: 20%;
-        width: 45%;
+        padding-top: 15%;
+        width: 72%;
     }
     
     .titleImg {
-        width: 45vw;
+        width: 70vw;
     }
 
     .searchDivInner form .inner-form .input-field input{
