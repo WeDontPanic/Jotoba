@@ -579,7 +579,7 @@ footer {
     color: var(--primaryTextColor) !important; 
 }
 
-.sentence-part:not(.kanji) {
+.sentence-part.inline-kana-preview {
     margin-top: 19px;
 }
 
