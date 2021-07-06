@@ -1,5 +1,7 @@
 /html/assets/svg
 /html/assets/audio
+/html/*.html
+!/html/docs.html
 /target
 out
 *.old
