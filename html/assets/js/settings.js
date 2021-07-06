@@ -46,7 +46,7 @@ function prepareCookieSettings(allow_cookies) {
     } else if (allow_cookies == "1") {
         $('#cookie-agreement-revoke').removeClass("hidden");
     } else {
-        $('#cookie-agreement-accept').removelass("hidden");
+        $('#cookie-agreement-accept').removeClass("hidden");
     }
 }
 
