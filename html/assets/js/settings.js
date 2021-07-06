@@ -36,6 +36,20 @@ function deleteCookies(deleteAll) {
     }
 }
 
+// Handle Cookie stuff on load
+function prepareCookieSettings(allow_cookies) {
+    console.log(allow_cookies);
+
+    if (allow_cookies == undefined) {
+        $('#cookie-footer').removeClass("hidden");
+        $('#cookie-agreement-accept').removeClass("hidden");
+    } else if (allow_cookies == "1") {
+        $('#cookie-agreement-revoke').removeClass("hidden");
+    } else {
+        $('#cookie-agreement-accept').removelass("hidden");
+    }
+}
+
 // Opens the Settings Overlay and accepts cookie usage
 function cookiesAccepted() {
     Cookies.set("allow_cookies", "1", {path: '/'});
@@ -135,9 +149,10 @@ function loadCookieData() {
     // User agreement on using Cookies
     let allow_cookies = Cookies.get("allow_cookies");
     if (!checkTrackingAllowed()) {
-        allow_cookies = undefined;
+        allow_cookies = "0";
         Cookies.set("allow_cookies", 0);
     }
+    prepareCookieSettings(allow_cookies);
 
     // Load search language
     let default_lang = Cookies.get("default_lang");
@@ -149,13 +164,6 @@ function loadCookieData() {
 
     // Load display settings
     let anim_speed = Cookies.get("anim_speed");
-
-    // Adjust settings btn if user already accepted cookies
-    if (allow_cookies == undefined || allow_cookies == "0") {
-        //$('#cookie-footer').removeClass("hidden");
-        $('#cookie-agreement-accept').removeClass("hidden");
-        $('#cookie-agreement-revoke').addClass("hidden");
-    }
 
     // Set Default_Lang 
     let userLang = default_lang || navigator.language || navigator.userLanguage || "en-US";
@@ -401,3 +409,4 @@ var kanjis = $('.kanjisvg');
 kanjis.each(function() {
     restartAnimation(this, getDefaultAnimSpeed());
 });
+
