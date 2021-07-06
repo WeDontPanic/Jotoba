@@ -25,6 +25,7 @@ strsim = "0.10.0"
 eudex = "0.1.1"
 deadpool-postgres = "0.9.0"
 tokio-postgres = "0.7.2"
+regex = "1.5.4"
 
 [features]
 tokenizer = []
