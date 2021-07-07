@@ -281,12 +281,6 @@ impl Kanji {
         Ok(radical::find_by_id(db, self.radical.unwrap()).await?)
     }
 
-    // TODO replace with gettext string
-    /// Print kanji grade pretty for frontend
-    pub fn school_str(&self) -> Option<String> {
-        self.grade.map(|grade| format!("Taught in {} grade", grade))
-    }
-
     /// Returns the ReadingType of the reading for a kanji
     pub fn get_reading_type(&self, reading: &String) -> Option<ReadingType> {
         let in_on = self.in_on_reading(reading);

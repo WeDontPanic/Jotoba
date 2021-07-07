@@ -2,6 +2,7 @@ use std::{fs::read_to_string, path::Path, vec};
 
 use deadpool_postgres::Pool;
 use futures::try_join;
+use localization::TranslationDict;
 
 use super::super::word::{result::Word, WordSearch};
 use error::Error;
@@ -66,11 +67,6 @@ impl Item {
 }
 
 impl Item {
-    /// Print kanji grade pretty for frontend
-    pub fn school_str(&self) -> Option<String> {
-        self.kanji.kanji.school_str()
-    }
-
     pub fn get_animation_path(&self) -> String {
         format!("html/assets/svg/{}_animated.svgs", self.kanji.kanji.literal)
     }

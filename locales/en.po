@@ -13,7 +13,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"PO-Revision-Date: 2021-07-06 23:38+0200\n"
+"PO-Revision-Date: 2021-07-07 18:38+0200\n"
 "Last-Translator:  <jojii@gmx.net>\n"
 "Language-Team: English\n"
 "Language: en\n"
@@ -372,15 +372,19 @@ msgstr ""
 msgid "{} could be an inflection of"
 msgstr ""
 
+msgid "Taught in {} grade"
+msgstr ""
+
 msgid " with these forms:"
 msgstr ""
 
 msgid "Show Conjugations"
 msgstr ""
 
-msgid "Show Collocation"
-msgid_plural "Show Collocations"
-msgstr[0] "Show Collocation"
+msgid "Show collocation"
+msgid_plural "Show collocations"
+msgstr[0] "Show collocation"
+msgstr[1] "Show collocations"
 
 msgid "Collocations"
 msgstr ""
@@ -437,6 +441,9 @@ msgid "common word"
 msgstr ""
 
 msgid "JLPT"
+msgstr ""
+
+msgid "Download audio"
 msgstr ""
 
 msgid "Sentence search"
