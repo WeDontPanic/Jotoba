@@ -26,6 +26,7 @@ var oldInputValue = "";
 var lastRequest = undefined;
 var preventApiCallUntilDelete = false;
 var textToPrevent = "";
+var isUsingSearchBtn = false;
 
 // Key Events focussing on the search
 $(document).on("keydown", (event) => {
@@ -74,12 +75,30 @@ function showContainer() {
     } 
 }
 
+// Shows the Voice / Search Icon when possible
+function toggleSearchIcon(duration) {
+    if (isUsingSearchBtn && input.value.length == 0) {
+        $('#searchBtn.search-embedded-btn').hide(duration);
+        $('#voiceBtn.search-embedded-btn').show(duration);
+        isUsingSearchBtn = false;
+    } else if (!isUsingSearchBtn && input.value.length > 0) {
+        $('#searchBtn.search-embedded-btn').show(duration);
+        $('#voiceBtn.search-embedded-btn').hide(duration);
+        isUsingSearchBtn = true;
+    }
+}
+
+// Prepare Search / Voice Icon when loading the page
+toggleSearchIcon(0);
+
 // Event whenever the user types into the search bar
 input.addEventListener("input", e => {
     if (input.value != oldInputValue) {
         callApiAndSetShadowText();
     }
     oldInputValue = input.value;
+
+    toggleSearchIcon(200);
 });
 
 // Check if input was focussed / not focussed to show / hide overlay 長い

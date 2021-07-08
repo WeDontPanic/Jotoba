@@ -213,6 +213,10 @@ a:hover {
     right: 14px;
 }
 
+.search-embedded-btn.search > svg > path, #voiceBtn.search-embedded-btn > svg > path {
+    fill: var(--primaryColor);
+}
+
 .search-embedded-btn.radical {
     right: 38px;
 }
