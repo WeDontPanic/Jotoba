@@ -1,10 +1,8 @@
 # Jotoba <img class="titleImg" width="30" src="/html/assets/jotokun/JotoBook.svg">
-<p align="center">
-<img src="https://camo.githubusercontent.com/f045cbbb51444bf80b15e1c06d5c148f97e82cee9d005210271fa3bdbf71db22/68747470733a2f2f66696c65732e6a6f6a69692e64652f707265766965772f7261772f4672555450664f68645761354c5071594364454674656a3743" width="600">
-</p>
-
 Jotoba is a free online, selfhostable, multi-language japanese dictionary based on lots of various free resources.<br>
 Public instance: [jotoba.de](https://jotoba.de)<br>
+
+<img src="https://camo.githubusercontent.com/f045cbbb51444bf80b15e1c06d5c148f97e82cee9d005210271fa3bdbf71db22/68747470733a2f2f66696c65732e6a6f6a69692e64652f707265766965772f7261772f4672555450664f68645761354c5071594364454674656a3743" width="600">
 
 # Team
 <table>
