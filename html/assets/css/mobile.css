@@ -27,6 +27,30 @@
 
 	/* -------- Word Search -------- */
     
+    .search-embedded-btn {
+        right: 5px;
+        margin-top: 9px;
+    }
+
+    .search-embedded-btn.search {
+        right: 7px;
+        margin-top: 10px;
+    }
+
+    .search-embedded-btn.radical {
+        display: none;
+    }
+
+    #search-vl {
+        position: absolute;
+        right: 39px;
+    }    
+
+    #emptyInput {
+        right: 31px;
+        margin-top: 7px;
+    }
+
     .overlay.suggestion {
         width: 100%;
         margin-left: 0%;
@@ -35,6 +59,9 @@
     .search-annotation {
         width: 80%;
         margin-left: 10%;
+        padding-left: 0px;
+        padding-right: 0px;
+        align-items: center;
     }
 
     #shadow-text {
@@ -77,8 +104,7 @@
     }
 
     .searchDivInner form .inner-form .input-field.first-wrap {
-        width: 150px;
-        border-right: 1px solid var(--lineColor);
+        display: none;
     }
 
     .searchDivInner form .inner-form .input-field input {
@@ -86,8 +112,8 @@
         background: transparent;
         border: 0;
         display: block;
-        width: 100%;
-        padding: 27px 30px 27px 10px;
+        width: 88%;
+        padding: 25px 30px 27px 15px;
         font-size: 1em;
         color: var(--searchTextcolor);
     }

@@ -8,18 +8,7 @@ function toggleMobileNav() {
 }
 
 // On Start, check if mobile view is enabled. If yes, activate the btn
-if (Util.getBrowserWidth() <= 600) {
-    prepareMobilePageBtn();
-
-    scrollSentenceReaderIntoView();
-} else {
-    $(window).on('resize', function() {
-        if ($(this).width() <= 600) {
-            $(window).off('resize');
-            prepareMobilePageBtn();
-        }
-    });
-}
+Util.awaitDocumentReady(prepareMobilePageBtn);
 
 // Scrolls the sentence reader onto the selected element on mobile
 function scrollSentenceReaderIntoView() {

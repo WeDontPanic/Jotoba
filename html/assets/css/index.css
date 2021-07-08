@@ -25,6 +25,10 @@ form {
     margin-block-end: 1em;
 }
 
+#searchDiv {
+    max-width: 1000px;
+}
+
 .overlay {
     border-radius: 20px;
     margin-top: -14px;
@@ -49,9 +53,7 @@ form {
 }
 
 .settingsBtn {
-    position: absolute;
     top: 15px;
-    left: 15px;
 }
 
 #settingsSvg {
@@ -123,6 +125,10 @@ form {
 .choices.main[data-type*="select-one"].is-open:after {
     transition: linear 0.2s;
 }
+
+.searchDivInner form .inner-form .input-field input {
+    width: 96%;
+}
   
 /* Dekstop Only */
 @media only screen and (min-width: 600px) {
@@ -149,10 +155,6 @@ form {
     
     .titleImg {
         width: 70vw;
-    }
-
-    .searchDivInner form .inner-form .input-field input{
-        padding: 27px 30px 27px 15px;
     }
 
     .inner-form > .index-btn-container {
