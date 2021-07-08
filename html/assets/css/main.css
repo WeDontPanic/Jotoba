@@ -211,6 +211,11 @@ a:hover {
 .search-embedded-btn.search {
     width: 30px;
     right: 14px;
+    display: none;
+}
+
+#voiceBtn.search-embedded-btn {
+    display: none;
 }
 
 .search-embedded-btn.search > svg > path, #voiceBtn.search-embedded-btn > svg > path {
@@ -307,14 +312,19 @@ svg {
 
 .overlay {
     z-index: -1;
-    margin-top: -1px;
+    margin-top: -14px;
     position: absolute;
     width: 100%;
     height: max-content;
     border: 2px solid var(--searchBackground);
+    border-radius: 20px;
     border-top: none;
     background-color: var(--searchBackground);
     box-shadow: 0px 8px 20px 0px var(--backgroundShadow)
+}
+
+.overlay > .flex-column {
+    margin: 5px 10px;
 }
 
 .x-button {

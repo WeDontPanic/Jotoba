@@ -29,15 +29,6 @@ form {
     max-width: 1000px;
 }
 
-.overlay {
-    border-radius: 20px;
-    margin-top: -14px;
-}
-
-.overlay > .flex-column {
-    margin: 5px 10px;
-}
-
 .overlay.suggestion {
     width: 81%;
     margin-left: 17.5%;
@@ -54,10 +45,7 @@ form {
 
 .settingsBtn {
     top: 15px;
-}
-
-#settingsSvg {
-    fill: var(--tagColor);
+    position: absolute !important;
 }
 
 .index-search-svg {
@@ -67,29 +55,6 @@ form {
 
 .inner-form {
     border-radius: 20px !important;
-}
-
-.searchDivInner .choices__list--dropdown > .choices__list {
-    margin-left: 10px;
-}
-
-.choices__list.choices__list--dropdown.index.is-active {
-    animation: dropdownAnim 0.2s linear forwards;
-}
-
-.choices__list.choices__list--dropdown.index.animate:not(.is-active) {
-    display: unset !important;
-    animation: dropdownAnimClose 0.2s linear forwards;
-}
-
-@keyframes dropdownAnim {
-    from {height: 0px;}
-    to { height: 330%;}
-}
-
-@keyframes dropdownAnimClose {
-    from {height: 330%; }
-    to { height: 0%; display:hidden !important;}
 }
 
 .input-field.third-wrap {
@@ -117,29 +82,14 @@ form {
     font-size: 22px;
 }
 
-
-.choices.main[data-type*="select-one"]:after {
-    transition: linear 0.2s;
-}
-
-.choices.main[data-type*="select-one"].is-open:after {
-    transition: linear 0.2s;
-}
-
 .searchDivInner form .inner-form .input-field input {
     width: 96%;
 }
-  
-/* Dekstop Only */
-@media only screen and (min-width: 600px) {
 
-    .searchDivInner form .inner-form .input-field.first-wrap .choices__list.choices__list--dropdown {
-        border-radius: 20px !important;
-        border-top-right-radius: 0px !important;
-    }
-
+.searchDivInner form .inner-form .input-field.first-wrap {
+    display: unset !important;
 }
-
+  
 /* Mobile View */
 @media only screen and (max-width: 600px) {
 
@@ -155,6 +105,14 @@ form {
     
     .titleImg {
         width: 70vw;
+    }
+
+    .choices.main[data-type*="select-one"]:after {
+        border-color: var(--secondaryTextColor) transparent transparent transparent;
+    }
+
+    .choices.main[data-type*="select-one"].is-open:after {
+        border-color: transparent transparent var(--secondaryTextColor) transparent !important;
     }
 
     .inner-form > .index-btn-container {
@@ -206,6 +164,12 @@ form {
     .settingsBtn {
         display: unset !important;
         left: 10px !important;
+    }
+
+    .index-search-svg {
+        width: 24px;
+        height: 24px;
+        margin-top: -1px;
     }
 
     .input-field.third-wrap:not(.rad) {

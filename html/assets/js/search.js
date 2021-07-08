@@ -122,6 +122,13 @@ window.addEventListener("resize", e => {
     setShadowText();
 });
 
+// Resets the value of the search input
+function emptySearchInput() {
+    $('#search').val("");
+    $('#search').focus();
+    toggleSearchIcon(200);
+}
+
 // Function to be called by input events. Updates the API data and shadow txt
 function callApiAndSetShadowText() {
 
@@ -449,7 +456,7 @@ function loadApiData(result) {
 // Handles clicks on the suggestion dropdown
 function onSuggestionClick(element) {
     activateSelection(element);
-    document.getElementsByClassName("btn-search")[0].click()
+    document.getElementById("searchBtn").click();
 }
 
 // Interrupts the form's submit and makes the user visit the correct page

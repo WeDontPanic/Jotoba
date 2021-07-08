@@ -144,12 +144,6 @@ function changeSearchType(html, newType) {
     }
 }
 
-// Resets the value of the search input
-function emptySearchInput() {
-    $('#search').val("");
-    $('#search').focus();
-}
-
 // Focus Search Bar on index page
 $(document).ready(() => {
     if (window.location.href.substring(0,window.location.href.length - 1) == window.location.origin) {

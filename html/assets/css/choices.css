@@ -379,3 +379,44 @@
 .btn-search > svg > path {
   fill: var(--secondaryTextColor);
 }
+
+.searchDivInner .choices__list--dropdown > .choices__list {
+  margin-left: 10px;
+}
+
+.choices__list.choices__list--dropdown.index.is-active {
+  animation: dropdownAnim 0.2s linear forwards;
+}
+
+.choices__list.choices__list--dropdown.index.animate:not(.is-active) {
+  display: unset !important;
+  animation: dropdownAnimClose 0.2s linear forwards;
+}
+
+@keyframes dropdownAnim {
+  from {height: 0px;}
+  to { height: 330%;}
+}
+
+@keyframes dropdownAnimClose {
+  from {height: 330%; }
+  to { height: 0%; display:hidden !important;}
+}
+
+.choices.main[data-type*="select-one"]:after {
+  transition: linear 0.2s;
+}
+
+.choices.main[data-type*="select-one"].is-open:after {
+  transition: linear 0.2s;
+}
+
+/* Dekstop Only */
+@media only screen and (min-width: 600px) {
+
+  .searchDivInner form .inner-form .input-field.first-wrap .choices__list.choices__list--dropdown {
+      border-radius: 20px !important;
+      border-top-right-radius: 0px !important;
+  }
+
+}

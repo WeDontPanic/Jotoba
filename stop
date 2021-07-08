@@ -1,0 +1,302 @@
+[33mcommit fbd4f1288e1dea86f65e58cf6baa414330d07e71[m[33m ([m[1;36mHEAD -> [m[1;32msearch-update[m[33m, [m[1;31morigin/search-update[m[33m)[m
+Author: Yukaru <nilsrw@gmx.de>
+Date:   Thu Jul 8 23:30:28 2021 +0200
+
+    update base rs for search bar
+
+[33mcommit aa7864a8e95b315c28b7337043cca431c87f76bc[m[33m ([m[1;31morigin/kanji-jmp[m[33m, [m[1;32mkanji-jmp[m[33m)[m
+Author: Yukaru <nilsrw@gmx.de>
+Date:   Thu Jul 8 18:07:53 2021 +0200
+
+    fix kanji jmp
+
+[33mcommit 67d6ddf8901c23bc576cd931a2ca1f3670a7d2f3[m[33m ([m[1;32mmaster[m[33m)[m
+Author: Yukaru <nilsrw@gmx.de>
+Date:   Tue Jul 6 17:30:36 2021 +0200
+
+    improve new mic icon
+
+[33mcommit 49bd21fae72929d118dacc82d2e6b358826873f1[m
+Merge: 56b2056 50f5cf4
+Author: jojii <jojii@gmx.net>
+Date:   Tue Jul 6 16:51:57 2021 +0200
+
+    Merge branch 'master' of github.com:WeDontPanic/Jotoba
+
+[33mcommit 56b2056c3265ef1af51b9a924df11c0a6a3f954f[m
+Author: jojii <jojii@gmx.net>
+Date:   Tue Jul 6 16:51:47 2021 +0200
+
+    update voice icon
+
+[33mcommit 50f5cf4657eeff539a4a714855c4687414f59a70[m
+Author: Yukaru <nilsrw@gmx.de>
+Date:   Tue Jul 6 15:31:25 2021 +0200
+
+    update gitignore
+
+[33mcommit b5d68c0c3900663dc71e6084781ba30496d23392[m
+Author: jojii <jojii@gmx.net>
+Date:   Tue Jul 6 14:48:49 2021 +0200
+
+    Fix merge
+
+[33mcommit 75cfda54459cf3e42f34f42cc67ab7f372a84642[m
+Merge: 0024f7e 891e830
+Author: jojii <jojii@gmx.net>
+Date:   Tue Jul 6 14:46:44 2021 +0200
+
+    Merge branch 'suggestion_improvement'
+
+[33mcommit 0024f7ead2dd55a0a301a91dd75c343878f26257[m
+Merge: 816bc64 e7ec415
+Author: jojii <jojii@gmx.net>
+Date:   Tue Jul 6 14:45:52 2021 +0200
+
+    Merge branch 'add_name_suggestions'
+
+[33mcommit 816bc64cf0a61e580e1e02220a5eaaebf588be3f[m
+Merge: 418ae9a 8a53b33
+Author: jojii <jojii@gmx.net>
+Date:   Tue Jul 6 14:43:58 2021 +0200
+
+    Merge branch 'index-rewrite'
+
+[33mcommit 8a53b335eae81d02cdc3754f05e41eb161a0bdc8[m
+Author: Yukaru <nilsrw@gmx.de>
+Date:   Tue Jul 6 14:23:18 2021 +0200
+
+    append /
+
+[33mcommit fdf32fef9f2e5177b7d0c89a23e3322359f1f21d[m
+Author: Yukaru <nilsrw@gmx.de>
+Date:   Tue Jul 6 14:15:23 2021 +0200
+
+    Improve joto positioning
+
+[33mcommit 875592f7894bf38e013c68fe483bc65a71867936[m
+Author: Yukaru <nilsrw@gmx.de>
+Date:   Tue Jul 6 14:08:13 2021 +0200
+
+    fix footer overlay on index page
+
+[33mcommit 418ae9acf57b4735e4a4741d85586494998c3c04[m
+Author: Yukaru <57414313+Yukaru-san@users.noreply.github.com>
+Date:   Tue Jul 6 13:52:48 2021 +0200
+
+    Update README.md
+
+[33mcommit 39819310f1c250c7707a6476b5b212a47cccb601[m
+Author: Yukaru <57414313+Yukaru-san@users.noreply.github.com>
+Date:   Tue Jul 6 13:51:09 2021 +0200
+
+    Update README.md
+
+[33mcommit 730668d5993e34f765455139599b3c37dfa7825a[m
+Author: Yukaru <nilsrw@gmx.de>
+Date:   Tue Jul 6 13:25:18 2021 +0200
+
+    bigger index img on mobile
+
+[33mcommit 1eae76a3b623b24a4e97f8409a3d45fb8c50429e[m
+Author: Yukaru <nilsrw@gmx.de>
+Date:   Tue Jul 6 13:22:05 2021 +0200
+
+    improve sentence reader
+
+[33mcommit cb8414183d2404e6fcc6343db20ba9399e5bf85a[m
+Author: Yukaru <nilsrw@gmx.de>
+Date:   Tue Jul 6 12:28:40 2021 +0200
+
+    fix typo
+
+[33mcommit 8b54930e663a7984e216911ce98d0a3a9a572acd[m
+Author: Yukaru <nilsrw@gmx.de>
+Date:   Tue Jul 6 11:59:37 2021 +0200
+
+    add settings-cookiesText as TL
+
+[33mcommit 2f831492ec9f5f464f5d4497372ab5f53667f5eb[m
+Author: Yukaru <nilsrw@gmx.de>
+Date:   Tue Jul 6 11:51:10 2021 +0200
+
+    fix cookies banner and settings
+
+[33mcommit e3c21a13065d666443161163117df9d939c7b4a1[m
+Author: Yukaru <nilsrw@gmx.de>
+Date:   Mon Jul 5 23:48:22 2021 +0200
+
+    load title as img
+
+[33mcommit 8062decadb5db208ca1eb64c466eb8383ea5fbe2[m
+Author: Yukaru <nilsrw@gmx.de>
+Date:   Mon Jul 5 23:38:50 2021 +0200
+
+    logo text -> svg
+
+[33mcommit ab2707946e99be2801695ac27d7d1124624067de[m
+Author: Yukaru <nilsrw@gmx.de>
+Date:   Mon Jul 5 22:57:07 2021 +0200
+
+    change <embed> to <img>
+
+[33mcommit 3de98d8e99ebe1aa8b768630048f22229d7e076e[m
+Author: jojii <jojii@gmx.net>
+Date:   Mon Jul 5 22:54:54 2021 +0200
+
+    fix paths
+
+[33mcommit 8b72920335bf466c57ad3811bf1bed4d495a3800[m
+Author: Yukaru <nilsrw@gmx.de>
+Date:   Mon Jul 5 22:41:43 2021 +0200
+
+    use Joto SVG
+
+[33mcommit f0317b61d67e5769ec32fda2edbfd49caaa77756[m
+Author: jojii <jojii@gmx.net>
+Date:   Mon Jul 5 21:38:21 2021 +0200
+
+    fix typo
+
+[33mcommit 025abe36ac8ce0884e10d873848140b6a06f1719[m
+Author: Yukaru <nilsrw@gmx.de>
+Date:   Mon Jul 5 14:17:35 2021 +0200
+
+    improve scroll on smol phones
+
+[33mcommit eca25f77a44bf79e48cdebb1abe3b265620c7c50[m
+Author: jojii <jojii@gmx.net>
+Date:   Sun Jul 4 23:03:31 2021 +0200
+
+    allow jp sentence search with romaji
+
+[33mcommit 63fd305a320e7273ad5dd3b95a8ec86de65e1f7e[m
+Author: jojii <jojii@gmx.net>
+Date:   Sun Jul 4 21:55:22 2021 +0200
+
+    add similar kanji support
+
+[33mcommit 637c5f385257e3bc0b3efacb9c056d0c5d5e3bc2[m
+Author: jojii <jojii@gmx.net>
+Date:   Sun Jul 4 19:00:43 2021 +0200
+
+    add p-o-s classes to sentence parts
+
+[33mcommit 4a0613a9fe07f5c1ce552cb8c528d81d7bbbedb2[m
+Author: Yukaru <nilsrw@gmx.de>
+Date:   Sun Jul 4 00:37:31 2021 +0200
+
+    fix suggestions too short on mobile
+
+[33mcommit 84589bb84c85c53e31b5ec7c7d3f79637d6383b1[m
+Author: Yukaru <nilsrw@gmx.de>
+Date:   Sun Jul 4 00:34:36 2021 +0200
+
+    fix suggestions too short on mobile
+
+[33mcommit 8f4f7b342edf5da41ea357cd0ac4be8a5436993a[m
+Author: Yukaru <nilsrw@gmx.de>
+Date:   Sun Jul 4 00:03:38 2021 +0200
+
+    even more bugs that met their ends
+
+[33mcommit 2e868adcb64908320685383a5348c5c733418f10[m
+Merge: 22eb289 b0f8de1
+Author: Yukaru <nilsrw@gmx.de>
+Date:   Sat Jul 3 23:38:37 2021 +0200
+
+    went bug hunting
+
+[33mcommit 22eb2899047d0a17bf5315b73c9f30979cde8589[m
+Author: Yukaru <nilsrw@gmx.de>
+Date:   Sat Jul 3 23:38:26 2021 +0200
+
+    went bug hunting
+
+[33mcommit b0f8de1dedf12503f74ab9d688628d31f4ded8be[m
+Author: jojii <jojii@gmx.net>
+Date:   Sat Jul 3 21:52:51 2021 +0200
+
+    fix sentence search + inflections
+
+[33mcommit fe8733887fbba455f3ae38d5161de9ecab206340[m
+Author: Yukaru <nilsrw@gmx.de>
+Date:   Sat Jul 3 15:05:09 2021 +0200
+
+    fix minor bugs
+
+[33mcommit ba64bebbf76560ab70afdf41c5568c0727534c40[m
+Author: Yukaru <nilsrw@gmx.de>
+Date:   Sat Jul 3 14:50:25 2021 +0200
+
+    experimental overlay scroll improvement
+
+[33mcommit 69186225f8429a5b87f11fae5ee130ce0d1b5e58[m
+Author: Yukaru <nilsrw@gmx.de>
+Date:   Sat Jul 3 14:19:16 2021 +0200
+
+    only scroll for suggestions when there are some
+
+[33mcommit ab7864760f4ea1afc95f48b8bc01054acfba3bfe[m
+Author: Yukaru <nilsrw@gmx.de>
+Date:   Sat Jul 3 14:14:58 2021 +0200
+
+    scroll overlays into view
+
+[33mcommit 65a6118980826d6ff2e457f2ec0e1f82f56bbfe9[m
+Author: Yukaru <nilsrw@gmx.de>
+Date:   Sat Jul 3 13:43:08 2021 +0200
+
+    fix dropdown thingy not changing sometimes
+
+[33mcommit 92fdcf76835fddd2bd2dcafedb98f365a42c5b73[m
+Author: Yukaru <nilsrw@gmx.de>
+Date:   Sat Jul 3 13:02:13 2021 +0200
+
+    animation now only affects search bar
+
+[33mcommit 44a34499d3bf34256654459b9dfe18f2ee31f8bb[m
+Author: Yukaru <nilsrw@gmx.de>
+Date:   Sat Jul 3 13:00:06 2021 +0200
+
+    improve index page yet again
+
+[33mcommit 54efa6936cc183e38c5827a7c234a989a52baaba[m
+Author: Yukaru <nilsrw@gmx.de>
+Date:   Sat Jul 3 12:24:15 2021 +0200
+
+    correctly place hidden class
+
+[33mcommit 0559ce4e7e207eac0c8fb9ceed51cbc62449ee62[m
+Author: Yukaru <nilsrw@gmx.de>
+Date:   Sat Jul 3 12:20:23 2021 +0200
+
+    update suggestion dropdown on input
+
+[33mcommit e4b3b8e03fbab9f34c0313012ecf778143c2c100[m
+Author: jojii <jojii@gmx.net>
+Date:   Sat Jul 3 12:17:19 2021 +0200
+
+    Add PercentDecode
+
+[33mcommit c8a48cc81ba8defc004673c0ee51b1b8c5cc893c[m
+Author: Yukaru <nilsrw@gmx.de>
+Date:   Sat Jul 3 12:09:13 2021 +0200
+
+    Fix Suggestions showing without results
+
+[33mcommit e840f83f274f098a3febfc77a303a00a3afb4e5a[m
+Author: Yukaru <nilsrw@gmx.de>
+Date:   Sat Jul 3 01:45:14 2021 +0200
+
+    add meta desc
+
+[33mcommit 21893b6473ea19658d78c6109de2f36347d0d7a0[m
+Author: Yukaru <nilsrw@gmx.de>
+Date:   Sat Jul 3 01:32:00 2021 +0200
+
+    improve index page
+
+[33mcommit 6119a7093d09d290353923d5efd8bc31387412aa[m
+Author: Yukaru <nilsrw@gmx.de>
+Date:   Sat Jul 3 01:09:19 2021

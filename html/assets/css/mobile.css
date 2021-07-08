@@ -41,6 +41,10 @@
         display: none;
     }
 
+    #voiceBtn > svg {
+        margin-top: 3px;
+    }
+
     #search-vl {
         position: absolute;
         right: 39px;
