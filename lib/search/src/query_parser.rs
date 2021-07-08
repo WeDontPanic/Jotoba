@@ -43,10 +43,11 @@ impl QueryParser {
         user_settings: UserSettings,
         page: usize,
         word_index: usize,
+        trim: bool,
     ) -> QueryParser {
         // Split query into the actual query and possibly available tags
-        let (parsed_query, tags) = Self::partition_tags_query(&query);
-        let parsed_query = Self::format_query(parsed_query);
+        let (parsed_query, tags) = Self::partition_tags_query(&query, trim);
+        let parsed_query = Self::format_query(parsed_query, trim);
 
         QueryParser {
             q_type,
@@ -60,16 +61,21 @@ impl QueryParser {
     }
 
     // Split the query string into tags and the actual query
-    fn partition_tags_query(query: &str) -> (String, Vec<Tag>) {
+    fn partition_tags_query(query_str: &str, trim: bool) -> (String, Vec<Tag>) {
         // TODO don't split by space to allow queries like: '<KANJI>#kanji'
         let (tags, query): (Vec<&str>, Vec<&str>) =
-            query.split(' ').partition(|i| i.starts_with('#'));
+            query_str.split(' ').partition(|i| i.starts_with('#'));
 
-        let query = query.join(" ").trim().to_string();
+        let mut query = query.join(" ").trim().to_string();
         let tags = tags
             .into_iter()
             .filter_map(|i| Tag::parse_from_str(&i.to_lowercase()))
             .collect();
+
+        // TODO this is ugly but works for our needs
+        if !trim && query_str.ends_with(' ') {
+            query.push(' ');
+        }
 
         (query, tags)
     }
@@ -109,8 +115,8 @@ impl QueryParser {
     }
 
     /// Formats the query
-    fn format_query(query: String) -> String {
-        query.trim().replace("%", "")
+    fn format_query(query: String, trim: bool) -> String {
+        if trim { query.trim().to_owned() } else { query }.replace("%", "")
     }
 
     /// Parses the QueryType based on the user selection and tags

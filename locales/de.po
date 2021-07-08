@@ -13,7 +13,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"PO-Revision-Date: 2021-07-07 18:38+0200\n"
+"PO-Revision-Date: 2021-07-07 19:25+0200\n"
 "Last-Translator:  <>\n"
 "Language-Team: English\n"
 "Language: en\n"
@@ -328,7 +328,7 @@ msgstr "Namensherkunft"
 
 # strokes suffix
 msgid "strokes"
-msgstr "Linien"
+msgstr "Striche"
 
 msgid "Radical"
 msgstr "Radikal"
@@ -371,7 +371,7 @@ msgid "{} could be an inflection of"
 msgstr "{} könnte eine Flexion sein von"
 
 msgid "Taught in {} grade"
-msgstr "Beigebraucht in der {}. Klasse"
+msgstr "Beigebracht in der {}. Klasse"
 
 msgid " with these forms:"
 msgstr " mit diesen Formen:"

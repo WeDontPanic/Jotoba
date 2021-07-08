@@ -71,7 +71,7 @@ impl Request {
 
     // Returns a [`Query`] based on the [`Request`]
     fn get_query(&self) -> Result<Query, RestError> {
-        let query_str = self.input.clone();
+        let query_str = self.input.trim_start().to_string();
 
         let search_type = self.search_type;
 
@@ -81,7 +81,7 @@ impl Request {
         };
 
         // Build and parse the query
-        let query = QueryParser::new(query_str, search_type, settings, 0, 0)
+        let query = QueryParser::new(query_str, search_type, settings, 0, 0, false)
             .parse()
             .ok_or(RestError::BadRequest)?;
 
