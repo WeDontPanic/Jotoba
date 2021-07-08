@@ -9,6 +9,8 @@ use serde::Serialize;
 
 #[derive(Debug, PartialEq, Clone, Copy, AsRefStr, EnumString, Serialize)]
 pub enum Dialect {
+    #[strum(serialize = "bra")]
+    Brazilian,
     #[strum(serialize = "hob")]
     Hokkaido,
     #[strum(serialize = "ksb")]
@@ -43,6 +45,7 @@ impl Into<&'static str> for Dialect {
     fn into(self) -> &'static str {
         match self {
             Dialect::Hokkaido => "Hokkaido",
+            Dialect::Brazilian => "Brazilian",
             Dialect::Kansai => "Kansai",
             Dialect::Kantou => "Kantou",
             Dialect::Kyoto => "Kyoto",

@@ -29,6 +29,8 @@ pub enum Misc {
     Deity,
     #[strum(serialize = "derog")]
     Derogatory,
+    #[strum(serialize = "doc")]
+    Document,
     #[strum(serialize = "ev")]
     Event,
     #[strum(serialize = "fam")]
@@ -39,6 +41,8 @@ pub enum Misc {
     Fiction,
     #[strum(serialize = "given")]
     GivenName,
+    #[strum(serialize = "group")]
+    Group,
     #[strum(serialize = "hist")]
     HistoricalTerm,
     #[strum(serialize = "hon")]
@@ -51,7 +55,7 @@ pub enum Misc {
     JocularHumorousTerm,
     #[strum(serialize = "leg")]
     Legend,
-    #[strum(serialize = "litf")]
+    #[strum(serialize = "form")]
     LiteraryOrFormalTerm,
     #[strum(serialize = "m-sl")]
     MangaSlang,
@@ -128,11 +132,13 @@ impl Translatable for Misc {
             Misc::DatedTerm => "Dated term",
             Misc::Deity => "Deity",
             Misc::Derogatory => "Derogatory",
+            Misc::Document => "Document",
             Misc::Event => "Event",
             Misc::FamiliarLanguage => "Familiar language",
             Misc::FemaleTermOrLanguage => "Female term/language",
             Misc::Fiction => "Fiction",
             Misc::GivenName => "Given name",
+            Misc::Group => "Group",
             Misc::HistoricalTerm => "Historical term",
             Misc::HonorificLanguage => "Honorific language",
             Misc::HumbleLanguage => "Humble language",

@@ -4,8 +4,8 @@
 pub enum SearchMode {
     Exact,
     Variable,
-    LeftVariable,
     RightVariable,
+    LeftVariable,
 }
 
 impl SearchMode {
@@ -33,5 +33,15 @@ impl SearchMode {
             SearchMode::LeftVariable => format!("%{}", a.as_ref()),
             SearchMode::RightVariable => format!("{}%", a.as_ref()),
         }
+    }
+
+    pub fn ordered_iter() -> impl Iterator<Item = &'static SearchMode> {
+        [
+            SearchMode::Exact,
+            SearchMode::Variable,
+            SearchMode::RightVariable,
+            SearchMode::LeftVariable,
+        ]
+        .iter()
     }
 }

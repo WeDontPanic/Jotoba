@@ -192,13 +192,13 @@
                   }
                   
                   @if let Some(ref collocations) = word.collocations {
-                    <li id="collocationBtn" class="info-entry noselect" data-toggle="modal" data-target="#coll@word.sequence" class="mdl-menu__item">@data.ngettext("Show Collocations", collocations.len() as u64)</li>
+                    <li id="collocationBtn" class="info-entry noselect" data-toggle="modal" data-target="#coll@word.sequence" class="mdl-menu__item">@data.ngettext("Show collocation", collocations.len() as u64)</li>
                     <li disabled class="mdl-menu__item" style="height: 10px;"><hr style="margin: 0px; margin-top: 5px;"></li>
                   }
                   <li id="SentenceSearchBtn" class="info-entry noselect" class="mdl-menu__item"><a class="no-highlight" draggable="false" href="/search/@word.get_reading().reading?t=2">@data.gettext("Sentence search")</a></li>
                   @if let Some(audio) = word.audio_file() {
                     <li disabled class="mdl-menu__item" style="height: 10px;"><hr style="margin: 0px; margin-top: 5px;"></li>
-                    <li id="AudioDlBtn" class="info-entry noselect" class="mdl-menu__item"><a class="no-highlight" draggable="false" href="/assets/audio/@audio">@data.gettext("Download Audio")</a></li>
+                    <li id="AudioDlBtn" class="info-entry noselect" class="mdl-menu__item"><a class="no-highlight" draggable="false" href="/assets/audio/@audio">@data.gettext("Download audio")</a></li>
                   }
                 </ul>
 
@@ -397,8 +397,8 @@
               @if let Some(jplt_lvl) = kanji.kanji.jlpt {
                 JLPT N@jplt_lvl.
               }
-              @if let Some(school_str) = kanji.kanji.school_str() {
-                @school_str
+              @if let Some(grade) = kanji.kanji.grade {
+                @data.gettext_fmt("Taught in {} grade", &[grade])
               }
             </div>
 

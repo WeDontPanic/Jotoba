@@ -35,7 +35,7 @@ impl SearchRequest {
             ..UserSettings::default()
         };
 
-        let query = QueryParser::new(payload.query_str.clone(), q_type, settings, 0, 0)
+        let query = QueryParser::new(payload.query_str.clone(), q_type, settings, 0, 0, true)
             .parse()
             .ok_or(RestError::BadRequest)?;
 

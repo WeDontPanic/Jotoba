@@ -43,6 +43,8 @@ pub enum Field {
     Christianity,
     #[strum(serialize = "comp")]
     Computing,
+    #[strum(serialize = "cloth")]
+    Clothing,
     #[strum(serialize = "cryst")]
     Crystallography,
     #[strum(serialize = "ecol")]
@@ -128,9 +130,13 @@ pub enum Field {
     #[strum(serialize = "print")]
     Printing,
     #[strum(serialize = "psych")]
-    PsychologyPsychiatry,
+    Psychology,
+    #[strum(serialize = "psy")]
+    Psychitatry,
     #[strum(serialize = "Shinto")]
     Shinto,
+    #[strum(serialize = "rail")]
+    Railway,
     #[strum(serialize = "shogi")]
     Shogi,
     #[strum(serialize = "sports")]
@@ -211,7 +217,9 @@ impl Translatable for Field {
             Field::Physics => "Physics",
             Field::Physiology => "Physiology",
             Field::Printing => "Printing",
-            Field::PsychologyPsychiatry => "Psychology/psychiatry",
+            Field::Psychology => "Psychology",
+            Field::Psychitatry => "Psychiatry",
+            Field::Railway => "Railway",
             Field::Shinto => "Shinto",
             Field::Shogi => "Shogi",
             Field::Sports => "Sports",
@@ -221,6 +229,7 @@ impl Translatable for Field {
             Field::Trademark => "Trademark",
             Field::Videogame => "Videogame",
             Field::Zoology => "Zoology",
+            Field::Clothing => "Clothing",
         }
     }
 

@@ -13,7 +13,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"PO-Revision-Date: 2021-06-16 18:59+0200\n"
+"PO-Revision-Date: 2021-07-07 19:25+0200\n"
 "Last-Translator:  <>\n"
 "Language-Team: English\n"
 "Language: en\n"
@@ -328,7 +328,7 @@ msgstr "Namensherkunft"
 
 # strokes suffix
 msgid "strokes"
-msgstr "Linien"
+msgstr "Striche"
 
 msgid "Radical"
 msgstr "Radikal"
@@ -370,14 +370,17 @@ msgstr "Wörter und Kanjis"
 msgid "{} could be an inflection of"
 msgstr "{} könnte eine Flexion sein von"
 
+msgid "Taught in {} grade"
+msgstr "Beigebracht in der {}. Klasse"
+
 msgid " with these forms:"
 msgstr " mit diesen Formen:"
 
 msgid "Show Conjugations"
 msgstr "Zeige Konjugationen"
 
-msgid "Show Collocation"
-msgid_plural "Show Collocations"
+msgid "Show collocation"
+msgid_plural "Show collocations"
 msgstr[0] "Zeige Kollokation"
 msgstr[1] "Zeige Kollokationen"
 
@@ -439,7 +442,10 @@ msgid "JLPT"
 msgstr ""
 
 msgid "Sentence search"
-msgstr "Beispiel Sätze"
+msgstr "Beispielsätze"
+
+msgid "Download audio"
+msgstr "Audio herunterladen"
 
 # "no words found"
 msgid "words"
@@ -626,6 +632,9 @@ msgstr ""
 msgid "usually written in kana"
 msgstr "Normalerweise geschrieben in Kana"
 
+msgid "rarely used kanji form"
+msgstr "Selten verwendete Kanjiform"
+
 # Misc
 
 msgid "Abbreviation"
@@ -658,8 +667,11 @@ msgstr "Gottheit"
 msgid "Derogatory"
 msgstr "Abwertend"
 
+msgid "Document"
+msgstr "Dokument"
+
 msgid "Event"
-msgstr ""
+msgstr "Event"
 
 msgid "Familiar language"
 msgstr "Vertraute Sprache"
@@ -672,6 +684,9 @@ msgstr "Fiktion"
 
 msgid "Given name"
 msgstr "Vorname"
+
+msgid "Group"
+msgstr "Gruppe"
 
 msgid "Historical term"
 msgstr "Historischer Begriff"
@@ -842,6 +857,9 @@ msgstr "Christentum"
 msgid "Computing"
 msgstr "Computer"
 
+msgid "Clothing"
+msgstr "Kleidung"
+
 msgid "Crystallography"
 msgstr "Kristallographie"
 
@@ -968,8 +986,15 @@ msgstr "Physiologie"
 msgid "Printing"
 msgstr ""
 
-msgid "Psychology/psychiatry"
+msgid "Psychology"
 msgstr "Psychologie"
+
+msgid "Psychiatry"
+msgstr "Psychatrie"
+
+msgid "Railway"
+msgstr "Eisenbahn"
+
 
 msgid "Shinto"
 msgstr ""

@@ -56,6 +56,7 @@ impl QueryStruct {
             user_settings,
             self.page.unwrap_or_default(),
             self.word_index.unwrap_or_default(),
+            true,
         )
     }
 }

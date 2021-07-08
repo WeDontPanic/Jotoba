@@ -1,44 +1,58 @@
 use japanese::JapaneseExt;
 use levenshtein::levenshtein;
+use once_cell::sync::Lazy;
+use parse::jmdict::languages::Language;
+use regex::Regex;
 
+use crate::query::Query;
+
+use super::result::Sense;
 use super::{super::search_order::SearchOrder, result::Word};
 use models::kanji;
 use models::search_mode::SearchMode;
-use utils;
 
 pub(super) fn foreign_search_order(word: &Word, search_order: &SearchOrder) -> usize {
     let mut score = 0;
     let reading = word.get_reading();
+    //let query_str = &search_order.query.query;
 
     if word.is_common() {
-        score += 4;
+        score += 5;
     }
 
     if let Some(jlpt) = reading.jlpt_lvl {
         score += jlpt as usize;
     }
 
-    score += (calc_likeliness(search_order, word, SearchMode::Exact, false) / 10) as usize;
-    score += (calc_likeliness(search_order, word, SearchMode::Exact, true) / 30) as usize;
-    score += (calc_likeliness(search_order, word, SearchMode::Variable, false) / 50) as usize;
-    score += (calc_likeliness(search_order, word, SearchMode::Variable, true) / 80) as usize;
+    let found = match find_reading(word, &search_order.query) {
+        Some(v) => v,
+        None => {
+            return score;
+        }
+    };
 
-    if !word.is_katakana_word() {
-        score += 6;
+    // Result found within users specified language
+    if found.language == search_order.query.settings.user_lang {
+        score += 12;
     }
 
-    if word
-        .senses
-        .iter()
-        .map(|i| &i.glosses)
-        .flatten()
-        .map(|i| utils::is_surrounded_by(&i.gloss, &search_order.query.query, '(', ')'))
-        .flatten()
-        .any(|i| !i)
-    {
-        score += 30;
-    } else {
+    let divisor = match (found.mode, found.case_ignored) {
+        (SearchMode::Exact, false) => 10,
+        (SearchMode::Exact, true) => 30,
+        (_, false) => 50,
+        (_, true) => 80,
+    };
+
+    score += (calc_likeliness(word, &found) / divisor) as usize;
+
+    if !word.is_katakana_word() {
+        score += 7;
+    }
+
+    if found.in_parentheses {
         score = score - score.clamp(0, 10);
+    } else {
+        score += 30;
     }
 
     score
@@ -151,43 +165,53 @@ pub(super) fn kanji_reading_search(word: &Word, search_order: &SearchOrder) -> u
     score
 }
 
-/// Returns a value from 1 to 100 based on importance
-/// an item inside a result
-fn calc_importance(pos: usize, total: usize) -> usize {
-    (pos * 100) / total
-}
+fn calc_likeliness(this: &Word, fres: &FindResult) -> u8 {
+    let gloss_len: usize = this
+        .senses
+        .iter()
+        // Ignore other languages
+        .filter_map(|i| (fres.language == i.language).then(|| i.glosses.len()))
+        .sum();
 
-pub fn calc_likeliness(
-    search_order: &SearchOrder,
-    this: &Word,
-    s_mode: SearchMode,
-    ign_case: bool,
-) -> u8 {
-    let total_gloss_len: usize = this.senses.iter().map(|i| i.glosses.len()).sum();
-    let pos = get_query_pos_in_gloss(search_order, this, s_mode, ign_case);
-    if pos.is_none() {
-        return 0;
-    }
-    100 - calc_importance(pos.unwrap(), total_gloss_len) as u8
+    100 - ((fres.sense_pos * 100) / gloss_len) as u8
 }
 
 pub fn get_query_pos_in_gloss(
-    search_order: &SearchOrder,
+    query_str: &String,
     this: &Word,
     s_mode: SearchMode,
     ign_case: bool,
 ) -> Option<usize> {
-    let items = this.get_senses();
+    for lang_senes in this.get_senses() {
+        let res = find_in_senses(&lang_senes, query_str, s_mode, ign_case);
+        if let Some(res) = res {
+            return Some(res.pos);
+        }
+    }
 
-    for lang_senes in items.iter() {
-        let mut pos = 0;
-        for sense in lang_senes {
-            for gloss in sense.glosses.iter() {
-                if s_mode.str_eq(&gloss.gloss, &search_order.query.query, ign_case) {
-                    return Some(pos);
-                }
+    None
+}
 
-                pos += 1;
+#[derive(Debug, Clone)]
+struct FindResult {
+    mode: SearchMode,
+    case_ignored: bool,
+    language: Language,
+    pos: usize,
+    gloss: String,
+    in_parentheses: bool,
+    sense: Sense,
+    sense_pos: usize,
+}
+
+fn find_reading(word: &Word, query: &Query) -> Option<FindResult> {
+    let query_str = &query.query;
+
+    for mode in SearchMode::ordered_iter() {
+        for ign_case in &[false, true] {
+            let res = find_in_senses(&word.senses, query_str, *mode, *ign_case);
+            if res.is_some() {
+                return res;
             }
         }
     }
@@ -195,4 +219,59 @@ pub fn get_query_pos_in_gloss(
     None
 }
 
-//pub fn found_in_own_lang(word: &Word, )
+/// A Regex matching parentheses and its contents
+pub(crate) static REMOVE_PARENTHESES: Lazy<Regex> =
+    Lazy::new(|| regex::Regex::new("\\(.*\\)").unwrap());
+
+fn find_in_senses(
+    senses: &[Sense],
+    query_str: &str,
+    mode: SearchMode,
+    ign_case: bool,
+) -> Option<FindResult> {
+    for (pos, sense) in senses.iter().enumerate() {
+        let mut found = try_find_in_sense(&sense, query_str, mode, ign_case, true);
+        let in_parentheses = found.is_none();
+
+        if found.is_none() {
+            found = try_find_in_sense(&sense, query_str, mode, ign_case, false);
+            if found.is_none() {
+                continue;
+            }
+        }
+
+        let (sense_pos, gloss) = found.unwrap();
+
+        return Some(FindResult {
+            mode,
+            pos,
+            language: sense.language,
+            case_ignored: ign_case,
+            gloss,
+            in_parentheses,
+            sense: sense.clone(),
+            sense_pos,
+        });
+    }
+
+    None
+}
+
+fn try_find_in_sense(
+    sense: &Sense,
+    query_str: &str,
+    mode: SearchMode,
+    ign_case: bool,
+    ign_parentheses: bool,
+) -> Option<(usize, String)> {
+    sense.glosses.iter().enumerate().find_map(|(pos, g)| {
+        let gloss = if ign_parentheses {
+            let gloss = REMOVE_PARENTHESES.replace(&g.gloss, "");
+            gloss.trim().to_string()
+        } else {
+            g.gloss.to_owned()
+        };
+        mode.str_eq(&gloss.as_str(), &query_str, ign_case)
+            .then(|| (pos, gloss.to_owned()))
+    })
+}
