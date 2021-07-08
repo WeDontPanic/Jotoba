@@ -2,6 +2,8 @@
 Jotoba is a free online, selfhostable, multi-language japanese dictionary based on lots of various free resources.<br>
 Public instance: [jotoba.de](https://jotoba.de)<br>
 
+<img src="https://camo.githubusercontent.com/73684e28f3a5b8f2d64119eb46561113ed1a9b84ece365e8a3a3288e516df848/68747470733a2f2f766572792e686967686c792e696c6c6567616c2d6461726b2d7765622d7365727665722e78797a2f707265766965772f7261772f4c4a68413879777236456751794934754844764c7874355049" width="600">
+
 # Team
 <table>
      <tr align="center">
