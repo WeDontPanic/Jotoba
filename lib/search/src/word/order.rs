@@ -14,10 +14,10 @@ use models::search_mode::SearchMode;
 pub(super) fn foreign_search_order(word: &Word, search_order: &SearchOrder) -> usize {
     let mut score = 0;
     let reading = word.get_reading();
-    let query_str = &search_order.query.query;
+    //let query_str = &search_order.query.query;
 
     if word.is_common() {
-        score += 4;
+        score += 5;
     }
 
     if let Some(jlpt) = reading.jlpt_lvl {
@@ -27,8 +27,6 @@ pub(super) fn foreign_search_order(word: &Word, search_order: &SearchOrder) -> u
     let found = match find_reading(word, &search_order.query) {
         Some(v) => v,
         None => {
-            println!("none: {}", reading.reading);
-            println!("{:#?}", word);
             return score;
         }
     };
@@ -45,7 +43,7 @@ pub(super) fn foreign_search_order(word: &Word, search_order: &SearchOrder) -> u
         (_, true) => 80,
     };
 
-    score += (calc_likeliness(query_str, word, found.mode, found.case_ignored) / divisor) as usize;
+    score += (calc_likeliness(word, &found) / divisor) as usize;
 
     if !word.is_katakana_word() {
         score += 7;
@@ -167,19 +165,15 @@ pub(super) fn kanji_reading_search(word: &Word, search_order: &SearchOrder) -> u
     score
 }
 
-/// Returns a value from 1 to 100 based on importance
-/// an item inside a result
-fn calc_importance(pos: usize, total: usize) -> usize {
-    (pos * 100) / total
-}
+fn calc_likeliness(this: &Word, fres: &FindResult) -> u8 {
+    let gloss_len: usize = this
+        .senses
+        .iter()
+        // Ignore other languages
+        .filter_map(|i| (fres.language == i.language).then(|| i.glosses.len()))
+        .sum();
 
-pub fn calc_likeliness(query_str: &String, this: &Word, s_mode: SearchMode, ign_case: bool) -> u8 {
-    let total_gloss_len: usize = this.senses.iter().map(|i| i.glosses.len()).sum();
-    let pos = get_query_pos_in_gloss(query_str, this, s_mode, ign_case);
-    if pos.is_none() {
-        return 0;
-    }
-    100 - calc_importance(pos.unwrap(), total_gloss_len) as u8
+    100 - ((fres.sense_pos * 100) / gloss_len) as u8
 }
 
 pub fn get_query_pos_in_gloss(
@@ -206,6 +200,8 @@ struct FindResult {
     pos: usize,
     gloss: String,
     in_parentheses: bool,
+    sense: Sense,
+    sense_pos: usize,
 }
 
 fn find_reading(word: &Word, query: &Query) -> Option<FindResult> {
@@ -224,7 +220,8 @@ fn find_reading(word: &Word, query: &Query) -> Option<FindResult> {
 }
 
 /// A Regex matching parentheses and its contents
-pub(crate) static REMOVE_PARENTHESES: Lazy<Regex> = Lazy::new(|| regex::Regex::new("\\(.*\\)").unwrap());
+pub(crate) static REMOVE_PARENTHESES: Lazy<Regex> =
+    Lazy::new(|| regex::Regex::new("\\(.*\\)").unwrap());
 
 fn find_in_senses(
     senses: &[Sense],
@@ -243,13 +240,17 @@ fn find_in_senses(
             }
         }
 
+        let (sense_pos, gloss) = found.unwrap();
+
         return Some(FindResult {
             mode,
             pos,
             language: sense.language,
             case_ignored: ign_case,
-            gloss: found.unwrap(),
+            gloss,
             in_parentheses,
+            sense: sense.clone(),
+            sense_pos,
         });
     }
 
@@ -262,8 +263,8 @@ fn try_find_in_sense(
     mode: SearchMode,
     ign_case: bool,
     ign_parentheses: bool,
-) -> Option<String> {
-    sense.glosses.iter().find_map(|g| {
+) -> Option<(usize, String)> {
+    sense.glosses.iter().enumerate().find_map(|(pos, g)| {
         let gloss = if ign_parentheses {
             let gloss = REMOVE_PARENTHESES.replace(&g.gloss, "");
             gloss.trim().to_string()
@@ -271,6 +272,6 @@ fn try_find_in_sense(
             g.gloss.to_owned()
         };
         mode.str_eq(&gloss.as_str(), &query_str, ign_case)
-            .then(|| gloss.to_owned())
+            .then(|| (pos, gloss.to_owned()))
     })
 }
