@@ -8,7 +8,7 @@ pub fn get_types_humanized(name: &Name, dict: &TranslationDict, lang: Language) 
         n_types
             .iter()
             .filter_map(|i| (!i.is_gender()).then(|| i.gettext(dict, Some(lang))))
-            .join(",")
+            .join(", ")
     } else {
         String::from("")
     }

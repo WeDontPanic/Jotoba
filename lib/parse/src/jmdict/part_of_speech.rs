@@ -125,6 +125,10 @@ pub fn pos_to_simple(pos: &PartOfSpeech) -> Vec<PosSimple> {
         match verb {
             VerbType::Intransitive => vec![simple, PosSimple::Intransitive],
             VerbType::Transitive => vec![simple, PosSimple::Transitive],
+            VerbType::Irregular(irr) => match irr {
+                IrregularVerb::NounOrAuxSuru => vec![simple, PosSimple::Noun],
+                _ => vec![simple],
+            },
             _ => vec![simple],
         }
     } else {
