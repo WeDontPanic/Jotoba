@@ -29,6 +29,10 @@ form {
     max-width: 1000px;
 }
 
+.overlay {
+    margin-top: -14px;
+}
+
 .overlay.suggestion {
     width: 81%;
     margin-left: 17.5%;
