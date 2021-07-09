@@ -56,8 +56,8 @@
     }
 
     .overlay.suggestion {
-        width: 100%;
-        margin-left: 0%;
+        width: 98%;
+        margin-left: 1%;
     }
 
     .search-annotation {
