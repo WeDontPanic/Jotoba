@@ -38,8 +38,6 @@ function deleteCookies(deleteAll) {
 
 // Handle Cookie stuff on load
 function prepareCookieSettings(allow_cookies) {
-    console.log(allow_cookies);
-
     if (allow_cookies == undefined) {
         $('#cookie-footer').removeClass("hidden");
         $('#cookie-agreement-accept').removeClass("hidden");

@@ -63,33 +63,11 @@ $(document).on("keydown", (event) => {
     }
 });
 
-// Shows the suggestion container if availableSuggestions > 0 and something was typed
-function showContainer() {
-    if (availableSuggestions > 0 && input.value.length > 0) {
-        container.classList.remove("hidden");
-        if (typeof scrollSearchIntoView === "function") {
-            scrollSearchIntoView();
-        }
-    } else {
-        container.classList.add("hidden");
-    } 
-}
-
-// Shows the Voice / Search Icon when possible
-function toggleSearchIcon(duration) {
-    if (isUsingSearchBtn && input.value.length == 0) {
-        $('#searchBtn.search-embedded-btn').hide(duration);
-        $('#voiceBtn.search-embedded-btn').show(duration);
-        isUsingSearchBtn = false;
-    } else if (!isUsingSearchBtn && input.value.length > 0) {
-        $('#searchBtn.search-embedded-btn').show(duration);
-        $('#voiceBtn.search-embedded-btn').hide(duration);
-        isUsingSearchBtn = true;
-    }
-}
-
 // Prepare Search / Voice Icon when loading the page
 toggleSearchIcon(0);
+
+// Mark the currently selected search type (only used for mobile so far)
+markCurrentSearchType();
 
 // Event whenever the user types into the search bar
 input.addEventListener("input", e => {
@@ -121,6 +99,45 @@ document.addEventListener("click", e => {
 window.addEventListener("resize", e => {
     setShadowText();
 });
+
+// Marks the current search's type, so it can be displayed in another color
+function markCurrentSearchType() {
+    let searchType = $('#search-type').val();
+    console.log(searchType);
+
+    for (let i = 0; i < 4; i ++) {
+        if (i == searchType) {
+            $('.choices__item[data-value="'+i+'"]').addClass('selected');
+        } else {
+            $('.choices__item[data-value="'+i+'"]').removeClass('selected');
+        }
+    }
+}
+
+// Shows the suggestion container if availableSuggestions > 0 and something was typed
+function showContainer() {
+    if (availableSuggestions > 0 && input.value.length > 0) {
+        container.classList.remove("hidden");
+        if (typeof scrollSearchIntoView === "function") {
+            scrollSearchIntoView();
+        }
+    } else {
+        container.classList.add("hidden");
+    } 
+}
+
+// Shows the Voice / Search Icon when possible
+function toggleSearchIcon(duration) {
+    if (isUsingSearchBtn && input.value.length == 0) {
+        $('#searchBtn.search-embedded-btn').hide(duration);
+        $('#voiceBtn.search-embedded-btn').show(duration);
+        isUsingSearchBtn = false;
+    } else if (!isUsingSearchBtn && input.value.length > 0) {
+        $('#searchBtn.search-embedded-btn').show(duration);
+        $('#voiceBtn.search-embedded-btn').hide(duration);
+        isUsingSearchBtn = true;
+    }
+}
 
 // Resets the value of the search input
 function emptySearchInput() {
