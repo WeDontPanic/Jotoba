@@ -29,15 +29,8 @@ body {
 	text-align: -webkit-center;
 	display: block;
 	position: relative;
-	letter-spacing: 12px;
-	font-size: 4em;
-	line-height: 80%;
     padding-bottom: 5px;
-    text-transform: uppercase;
-}
-
-.txt-primary.small {
-    letter-spacing: 8px;
+	letter-spacing: 8px;
 	font-size: 3em;
 	line-height: 80%;
     text-transform: uppercase;
@@ -78,6 +71,10 @@ body {
 	text-decoration: none;
 }
 
+.git-logo {
+	fill: black;
+}
+
 a:hover {
     text-decoration: none;
     color: white;
@@ -96,6 +93,33 @@ hr {
 	z-index: -10;
 }
 
-.git-logo {
-	fill: black;
+/* Mobile adjustments */
+@media only screen and (max-width: 600px) {
+	
+	.err-code {
+		font-size: 150px;
+		height: 150px;
+		margin-left: 1vw;
+	}
+
+	.txt-primary {
+		font-size: 2.5em;
+	}
+
+	.back-btn, hr {
+		width: 100%;
+	}
+
+	.git-logo {
+		width: 100%;
+	}
+}
+
+/* Mobile adjustments */
+@media only screen and (max-width: 300px) {
+	
+	.err-code {
+		font-size: 120px;
+		margin-top: -30px;
+	}
 }
