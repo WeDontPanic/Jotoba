@@ -571,8 +571,9 @@ footer {
     height: 20px;
     width: 120px;
     background: var(--background);
-    left: calc(50% - 50px);
     margin: -10px;
+    /* left: calc(50% - 50px); */
+    margin-left: -60px;
     box-shadow: inherit
 }
 
@@ -583,7 +584,7 @@ footer {
     height: 10px;
     width: 10px;
     background: var(--bgPrimaryColor);
-    left: 50%;
+    /* left: 50%; */
     margin: -5px;
     box-shadow: inherit
 }
