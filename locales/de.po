@@ -13,7 +13,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"PO-Revision-Date: 2021-07-07 19:25+0200\n"
+"PO-Revision-Date: 2021-07-11 00:12+0200\n"
 "Last-Translator:  <>\n"
 "Language-Team: English\n"
 "Language: en\n"
@@ -257,7 +257,7 @@ msgstr "Diese Webseite verwendet Cookies"
 msgid "We use cookies to provide you with the best experience possible. You can find more details in our"
 msgstr "Wir verwenden Cookies um Dir das bestmögliche Erlebnis bieten zu können. Für mehr Informationen, besuche unsere"
 
-msgid "privacy notice"
+msgid "privacy policy"
 msgstr "Datenschutzerklärung"
 
 msgid "You can change your preferences at any time by pressing on the Settings icon."
