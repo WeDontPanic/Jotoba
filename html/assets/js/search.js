@@ -55,10 +55,8 @@ $(document).on("keydown", (event) => {
             if (currentSuggestionIndex > -1) {
                 event.preventDefault();
                 activateSelection();
-                document.getElementsByClassName("btn-search")[0].click();
-            } else {
-                document.getElementsByClassName("btn-search")[0].click();
             }
+            $('#searchBtn').click();
             break;
     }
 });
