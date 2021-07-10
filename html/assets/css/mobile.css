@@ -478,7 +478,23 @@
     /* Footer */
 
     .cookie-footer {
-        z-index: 1;
+        z-index: 100;
+        height: 175px;
+        width: 90%;
+        left: 5%;
+    }
+
+    .cookie-footer > h3 {
+        font-size: 17px;
+        margin-bottom: 5px;
+    }
+
+    .cookie-footer > span {
+        font-size: 12px;
+    }
+
+    .cookie-footer > .d-flex {
+        height: 45px;
     }
 }
 

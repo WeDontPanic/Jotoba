@@ -254,8 +254,11 @@ msgstr "\"Über Uns\" - Seite"
 msgid "This Website uses Cookies"
 msgstr "Diese Webseite verwendet Cookies"
 
-msgid "We use cookies to let you personalize the website as you desire and improve search suggestions. In addition, we use anonymous analytics to improve our service quality. We don't share any data with third parties nor do we store or collect data that allows us to identify you or track your behaviour."
-msgstr "Wir verwenden Cookies um diese Webseite für Dich zu personalisieren und deine Suchanfragen zu verbessern. Dazu verwenden wir anonyme Statistiken, wodurch wir unsere Service Qualität stetig verbessern können. Weder teilen wir Deine Daten mit Außenstehenden, noch werden sie verwendet um Dich zu identifizieren oder zu überwachen."
+msgid "We use cookies to provide you with the best experience possible. You can find more details in our"
+msgstr "Wir verwenden Cookies um Dir das bestmögliche Erlebnis bieten zu können. Für mehr Informationen, besuche unsere"
+
+msgid "privacy notice"
+msgstr "Datenschutzerklärung"
 
 msgid "You can change your preferences at any time by pressing on the Settings icon."
 msgstr "Du kannst jederzeit deine Meinung ändern, indem du auf das \"Einstellungen\" Symbol drückst."

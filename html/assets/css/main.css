@@ -465,6 +465,11 @@ input[type="color"] {
     z-index: 100;
 }
 
+.cookie-footer > .res-separator {
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
 .cookie-btn {
     margin-top: 10px;
     margin-right: 10px;
