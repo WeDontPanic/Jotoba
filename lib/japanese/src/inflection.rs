@@ -22,6 +22,7 @@ pub struct SentencePart {
     pub furigana: Option<String>,
     pub pos: i32,
     pub add_class: Option<String>,
+    pub lexeme: String,
 }
 
 impl SentencePart {

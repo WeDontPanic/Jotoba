@@ -181,11 +181,28 @@ impl<'a> Search<'a> {
 
         // Request furigana for each kanji containing part
         for part in sentence_parts.iter_mut() {
-            if part.text.has_kanji() {
-                part.furigana = models::dict::furigana_by_reading(self.pool, &part.text)
-                    .await
-                    .ok()
-                    .and_then(|i| i);
+            if !part.text.has_kanji() {
+                continue;
+            }
+
+            let furigana = models::dict::furigana_by_reading(self.pool, &part.lexeme)
+                .await
+                .ok()
+                .and_then(|i| i);
+
+            part.furigana = furigana.clone();
+
+            if let Some(furigana) = furigana {
+                let furi_end = match japanese::furigana::last_kana_part(&furigana) {
+                    Some(s) => s,
+                    None => continue,
+                };
+                let text_end = match japanese::furigana::last_kana_part(&part.text) {
+                    Some(s) => s,
+                    None => continue,
+                };
+                let combined = format!("{}{}", &furigana[..furi_end], &part.text[text_end..]);
+                part.furigana = Some(combined.to_owned())
             }
         }
 

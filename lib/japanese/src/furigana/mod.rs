@@ -171,6 +171,26 @@ pub fn default_pair(kanji: &str, kana: &str) -> SentencePart {
     }
 }
 
+pub fn last_kana_part(input: &str) -> Option<usize> {
+    let mut iter = input.char_indices().rev();
+
+    let mut start_index = 0;
+
+    while let Some((po, las)) = iter.next() {
+        if !las.is_kana() {
+            break;
+        }
+
+        start_index = po;
+    }
+
+    if start_index == 0 {
+        return None;
+    }
+
+    Some(start_index)
+}
+
 /// Builds a `SentencePartRef` from kanji and kana values
 fn format_parts<'a>(kanji: Option<&'a str>, kana: &'a str) -> SentencePartRef<'a> {
     if let Some(kanji) = kanji {

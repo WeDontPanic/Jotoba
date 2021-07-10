@@ -79,13 +79,15 @@ impl<'dict, 'input> WordItem<'dict, 'input> {
     /// Converts a [`WordItem`] into a sentence part
     pub fn into_sentence_part(self, pos: i32) -> SentencePart {
         SentencePart {
-            text: self.get_lexeme().to_owned(),
+            //text: self.get_lexeme().to_owned(),
+            lexeme: self.get_lexeme().to_owned(),
             pos,
             info: self.word_class_to_str(),
             furigana: None,
             add_class: self
                 .word_class_to_str()
                 .map(|i| i.to_owned().to_lowercase()),
+            text: self.original_word,
         }
     }
 
