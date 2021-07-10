@@ -645,6 +645,11 @@ footer {
     overflow-y: auto;
 }
 
+.sentence-reader::-webkit-scrollbar, .rad-picker::-webkit-scrollbar {
+    width: 0px;
+}
+
+
 .sentence-part {
     color: var(--primaryTextColor) !important;
     border-bottom: 2px solid var(--lineColor);
