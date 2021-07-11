@@ -29,6 +29,9 @@ msgstr ""
 msgid "Search..."
 msgstr "Suche..."
 
+msgid "Search"
+msgstr "Suchen"
+
 msgid "Settings"
 msgstr "Einstellungen"
 
