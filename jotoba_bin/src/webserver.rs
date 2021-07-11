@@ -78,6 +78,7 @@ pub(super) async fn start(pool: Pool) -> std::io::Result<()> {
             // Static files
             .route("/index.html", actixweb::get().to(frontend::index::index))
             .route("/docs.html", actixweb::get().to(docs))
+            .route("/privacy", actixweb::get().to(privacy))
             .route("/", actixweb::get().to(frontend::index::index))
             .route(
                 "/search/{query}",
@@ -136,7 +137,11 @@ pub(super) async fn start(pool: Pool) -> std::io::Result<()> {
     .await
 }
 
-async fn docs(req: HttpRequest) -> actix_web::Result<NamedFile> {
+async fn privacy(_req: HttpRequest) -> actix_web::Result<NamedFile> {
+    Ok(NamedFile::open("html/privacypolicy.html")?)
+}
+
+async fn docs(_req: HttpRequest) -> actix_web::Result<NamedFile> {
     Ok(NamedFile::open("html/docs.html")?)
 }
 
