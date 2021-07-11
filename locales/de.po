@@ -373,6 +373,9 @@ msgstr "Wörter und Kanjis"
 msgid "{} could be an inflection of"
 msgstr "{} könnte eine Flexion sein von"
 
+msgid ", with these forms:"
+msgstr ", mit diesen Formen:"
+
 msgid "Taught in {} grade"
 msgstr "Beigebracht in der {}. Klasse"
 
