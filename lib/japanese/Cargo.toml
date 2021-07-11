@@ -8,6 +8,7 @@ edition = "2018"
 
 [dependencies]
 utils = { path = "../utils" }
+localization = { path = "../localization" }
 error = { path = "../error" }
 itertools = "0.10.1"
 romaji = "0.1.1"

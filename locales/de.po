@@ -13,7 +13,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"PO-Revision-Date: 2021-07-11 19:56+0200\n"
+"PO-Revision-Date: 2021-07-11 20:15+0200\n"
 "Last-Translator:  <>\n"
 "Language-Team: English\n"
 "Language: en\n"
@@ -373,10 +373,54 @@ msgstr "Wörter und Kanjis"
 msgid "{} could be an inflection of"
 msgstr "{} könnte eine Flexion sein von"
 
+msgctxt "inflection"
+msgid "Negative"
+msgstr "Negativ"
+
+msgctxt "inflection"
+msgid "Polite"
+msgstr "Höflichkeit"
+
+msgctxt "inflection"
+msgid "Present"
+msgstr "Gegenwart"
+
+msgctxt "inflection"
+msgid "Past"
+msgstr "Vergangenheit"
+
+msgctxt "inflection"
+msgid "TeForm"
+msgstr "Te-Form"
+
+msgctxt "inflection"
+msgid "Potential"
+msgstr "Möglichkeit"
+
+msgctxt "inflection"
+msgid "Passive"
+msgstr "Passiv"
+
+msgctxt "inflection"
+msgid "Causative"
+msgstr "Kausativ"
+
+msgctxt "inflection"
+msgid "CausativePassive"
+msgstr "Kausativ & Passiv"
+
+msgctxt "inflection"
+msgid "Imperative"
+msgstr "Imperativ"
+
+msgctxt "inflection"
+msgid "Tai"
+msgstr "Tai-form"
+
 msgid "Taught in {} grade"
 msgstr "Beigebracht in der {}. Klasse"
 
-msgid ", with these form:"
+msgid ", with this form:"
 msgid_plural ", with these forms:"
 msgstr[0] ", mit dieser Form:"
 msgstr[1] ", mit diesen Formen:"

@@ -28,7 +28,7 @@
           @data.gettext_fmt("{} could be an inflection of", &[&result.searched_query]) <a class="clickable no-align green" href="/search/@inflection.lexeme">@inflection.lexeme</a>@data.ngettext(", with this form:", inflection.forms.len() as u64)
           <br>
           @for form in inflection.forms.iter() {
-            @form.as_ref()
+            @data.gettext(*form)
             <br>
           }
         </span>

@@ -1829,6 +1829,7 @@ dependencies = [
  "error",
  "igo-unidic",
  "itertools",
+ "localization",
  "once_cell",
  "romaji",
  "strum",

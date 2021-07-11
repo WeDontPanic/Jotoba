@@ -13,7 +13,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"PO-Revision-Date: 2021-07-11 19:57+0200\n"
+"PO-Revision-Date: 2021-07-11 20:12+0200\n"
 "Last-Translator:  <jojii@gmx.net>\n"
 "Language-Team: English\n"
 "Language: en\n"
@@ -373,6 +373,50 @@ msgid "Words and kanji"
 msgstr ""
 
 msgid "{} could be an inflection of"
+msgstr ""
+
+msgctxt "inflection"
+msgid "Negative"
+msgstr ""
+
+msgctxt "inflection"
+msgid "Polite"
+msgstr ""
+
+msgctxt "inflection"
+msgid "Present"
+msgstr ""
+
+msgctxt "inflection"
+msgid "Past"
+msgstr ""
+
+msgctxt "inflection"
+msgid "TeForm"
+msgstr ""
+
+msgctxt "inflection"
+msgid "Potential"
+msgstr ""
+
+msgctxt "inflection"
+msgid "Passive"
+msgstr ""
+
+msgctxt "inflection"
+msgid "Causative"
+msgstr ""
+
+msgctxt "inflection"
+msgid "CausativePassive"
+msgstr ""
+
+msgctxt "inflection"
+msgid "Imperative"
+msgstr ""
+
+msgctxt "inflection"
+msgid "Tai"
 msgstr ""
 
 msgid ", with this form:"
