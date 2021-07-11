@@ -130,7 +130,7 @@
         border: 0;
         display: block;
         width: 88%;
-        padding: 25px 30px 27px 15px;
+        padding: 25px 0px 27px 15px;
         font-size: 1em;
         color: var(--searchTextcolor);
     }
