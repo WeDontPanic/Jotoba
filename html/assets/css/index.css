@@ -131,6 +131,11 @@ form {
         color: white !important;
     }
 
+    .searchDivInner form .inner-form .input-field.first-wrap .choices__inner .choices__list--single .choices__item {
+        display: unset !important;
+        margin-top: 4px;
+    }
+
     .input-field.first-wrap {
         background: var(--bgPrimaryColor);
         border-radius: 3px;
