@@ -105,7 +105,6 @@ impl From<PoolError> for RestError {
 
 impl From<tokio_postgres::Error> for RestError {
     fn from(e: tokio_postgres::Error) -> Self {
-        println!("{:?}", e);
         Self::Internal
     }
 }
