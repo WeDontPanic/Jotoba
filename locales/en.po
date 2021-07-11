@@ -13,7 +13,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"PO-Revision-Date: 2021-07-11 00:12+0200\n"
+"PO-Revision-Date: 2021-07-11 19:57+0200\n"
 "Last-Translator:  <jojii@gmx.net>\n"
 "Language-Team: English\n"
 "Language: en\n"
@@ -375,13 +375,12 @@ msgstr ""
 msgid "{} could be an inflection of"
 msgstr ""
 
-msgid ", with these forms:"
-msgstr ""
+msgid ", with this form:"
+msgid_plural ", with these forms:"
+msgstr[0] ", with this form:"
+msgstr[1] ", with these forms:"
 
 msgid "Taught in {} grade"
-msgstr ""
-
-msgid " with these forms:"
 msgstr ""
 
 msgid "Show Conjugations"
