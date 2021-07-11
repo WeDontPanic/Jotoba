@@ -299,7 +299,7 @@ msgid "Check out our"
 msgstr "Besuche unsere"
 
 msgid "Check out the"
-msgstr "Check die"
+msgstr "Besuche unsere"
 
 msgid "aswell if you are interested in upcoming features and what we are currently working on"
 msgstr ", wenn du an zukünftigen Features interessiert bist oder dich interessiert an welchen Features wir aktuell arbeiten"
