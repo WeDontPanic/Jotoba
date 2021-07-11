@@ -479,7 +479,7 @@
 
     .cookie-footer {
         z-index: 100;
-        height: 175px;
+        height: max-content;
         width: 90%;
         left: 5%;
     }
