@@ -43,6 +43,6 @@ For a guide on how to add translations please refer to the [wiki](https://github
 Please refer to the [wiki](https://github.com/WeDontPanic/Jotoba) for a guide on how to host Jotoba yourself.
 
 # License
-Jotoba itself is licensed under GPL 3.0 or later. 
+Jotoba itself is licensed under AGPL 3.0 or later. 
 Please refer to the [license file](https://github.com/WeDontPanic/Jotoba/blob/master/LICENSE) for further information.
 Joto-kun (including all of his variants) is licensed under [CC BY-NC-ND 4.0](https://creativecommons.org/licenses/by-nc-nd/4.0/).
