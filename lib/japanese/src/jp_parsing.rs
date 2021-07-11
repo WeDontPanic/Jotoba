@@ -56,7 +56,6 @@ impl<'dict, 'input> WordItem<'dict, 'input> {
         inflections: Vec<Inflection>,
         original_word: String,
     ) -> Self {
-        println!("{:#?}", m);
         WordItem {
             word_class: Some(m.word_class),
             lexeme: m.lexeme,

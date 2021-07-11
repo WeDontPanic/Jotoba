@@ -154,8 +154,6 @@ where
                     let tag =
                         Tag::from_str(str::from_utf8(start.name())?, Some(start.attributes()));
 
-                    println!("{}", tag);
-
                     // Clear necessary items for new usage
                     if tag == Tag::KEle || tag == Tag::REle {
                         element.clear();
