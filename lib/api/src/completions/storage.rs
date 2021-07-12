@@ -131,10 +131,11 @@ impl Parseable for WordSuggestionItem {
         let number: i32 = split.next().ok_or(error::Error::ParseError)?.parse()?;
 
         let text: String = split.rev().join(",");
+        let hash = eudex::Hash::new(&text);
 
         Ok(WordSuggestionItem {
             // generate hash here so lookups will be faster
-            hash: eudex::Hash::new(&text),
+            hash,
             text,
             occurences,
             sequence: number,
@@ -203,12 +204,15 @@ impl Into<WordPair> for &NameNative {
 }
 
 pub fn load_suggestions(config: &Config) -> Result<(), Box<dyn Error>> {
-    //
+    load_word_suggestions(&config)?;
+    load_meaning_suggestions(&config)?;
+    load_native_names(&config)?;
+    load_name_transcriptions(&config)?;
     Ok(())
 }
 
 /// Load Suggestions from suggestion folder into memory
-pub fn load_word_suggestions(config: &Config) -> Result<(), Box<dyn Error>> {
+fn load_word_suggestions(config: &Config) -> Result<(), Box<dyn Error>> {
     let mut map = HashMap::new();
 
     // All items within the configured suggestion directory
@@ -240,7 +244,7 @@ pub fn load_word_suggestions(config: &Config) -> Result<(), Box<dyn Error>> {
 }
 
 /// Load kanji meaning suggestion file into memory
-pub fn load_meaning_suggestions(config: &Config) -> Result<(), Box<dyn std::error::Error>> {
+fn load_meaning_suggestions(config: &Config) -> Result<(), Box<dyn std::error::Error>> {
     let file = Path::new(config.get_suggestion_sources()).join("kanji_meanings");
     if !file.exists() {
         info!("Kanji-meaning suggestion file does not exists");
@@ -257,7 +261,7 @@ pub fn load_meaning_suggestions(config: &Config) -> Result<(), Box<dyn std::erro
 }
 
 /// Load native name suggestions
-pub fn load_native_names(config: &Config) -> Result<(), Box<dyn std::error::Error>> {
+fn load_native_names(config: &Config) -> Result<(), Box<dyn std::error::Error>> {
     let file = Path::new(config.get_suggestion_sources()).join("names_native");
     if !file.exists() {
         info!("Native name suggestion file does not exists");
@@ -274,7 +278,7 @@ pub fn load_native_names(config: &Config) -> Result<(), Box<dyn std::error::Erro
 }
 
 /// Load name transcription suggestions
-pub fn load_name_transcriptions(config: &Config) -> Result<(), Box<dyn std::error::Error>> {
+fn load_name_transcriptions(config: &Config) -> Result<(), Box<dyn std::error::Error>> {
     let file = Path::new(config.get_suggestion_sources()).join("names_trans");
     if !file.exists() {
         info!("Name transcription suggestion file does not exists");

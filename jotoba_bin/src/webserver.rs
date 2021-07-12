@@ -49,20 +49,8 @@ pub(super) async fn start(pool: Pool) -> std::io::Result<()> {
 
     let config_clone = config.clone();
 
-    if let Err(err) = api::completions::load_word_suggestions(&config) {
+    if let Err(err) = api::completions::load_suggestions(&config) {
         log::error!("Failed loading suggestions: {}", err);
-    }
-
-    if let Err(err) = api::completions::load_meaning_suggestions(&config) {
-        log::error!("Failed loading kanji suggestions: {}", err);
-    }
-
-    if let Err(err) = api::completions::load_name_transcriptions(&config) {
-        log::error!("Failed loading name transcriptions suggestions: {}", err);
-    }
-
-    if let Err(err) = api::completions::load_native_names(&config) {
-        log::error!("Failed loading name transcriptions suggestions: {}", err);
     }
 
     HttpServer::new(move || {

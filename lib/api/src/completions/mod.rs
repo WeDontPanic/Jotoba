@@ -6,9 +6,7 @@ mod native;
 mod storage;
 
 use deadpool_postgres::Pool;
-pub use storage::{
-    load_meaning_suggestions, load_name_transcriptions, load_native_names, load_word_suggestions,
-};
+pub use storage::load_suggestions;
 
 use std::{cmp::Ordering, str::FromStr};
 

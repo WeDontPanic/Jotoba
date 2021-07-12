@@ -2,7 +2,6 @@ use std::{fs::read_to_string, path::Path, vec};
 
 use deadpool_postgres::Pool;
 use futures::try_join;
-use localization::TranslationDict;
 
 use super::super::word::{result::Word, WordSearch};
 use error::Error;
