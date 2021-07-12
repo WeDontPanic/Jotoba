@@ -272,6 +272,8 @@ svg {
     position: absolute;
     top: 10px;
     left: 15px;
+    padding-top: 12px;
+    padding-bottom: 0px;
 }
 
 #settingsSvg {
@@ -281,6 +283,7 @@ svg {
 @media only screen and (max-width: 1300px) {
     .settingsBtn {
         position: unset;
+        margin-right: -10px;
     }
 }
 
@@ -487,6 +490,7 @@ input[type="color"] {
 }
 
 .main-container {
+    width: 100%;
     max-width: 1150px;
     height: max-content;
 }
