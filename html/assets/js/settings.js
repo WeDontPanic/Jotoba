@@ -3,22 +3,26 @@
  */
 
 // Array containing all ids of color settings
-let colorIdentifiers = [
+const colorIdentifiers = [
     "background_value", "overlay_value", "primaryColor_value", "bgPrimaryColor_value", "secondaryColor_value",
     "primaryTextColor_value", "secondaryTextColor_value", "searchBackground_value", "searchTextColor_value", "shadowColor_value", "tagColor_value", 
     "itemBG_value"
 ];
 
 // Arrays for color coding
-let colorCodings = [
+const colorCodings = [
     "0gú*+q", "1hó&-r", "2ií$%s", "3jté.M", "4ku~,N", "5lv\\§O", "6mw}/P", "7nx]:Q", "8oy[;R", "9pz{?S",
     "AaG@)T", "BbH°(U", "CdI^_V", "DYJ´!W", "EeK'#X", "FfL=áZ",
 ];
 
 // Cookies that track the user
-let trackingCookies = [
+const trackingCookies = [
     "allow_cookies"
 ];
+
+// Analytics. Use your own or leave empty
+var analyticsUrl = '';
+var analyticsAttributes = null;
 
 /* ------------------------------------------------------------------- */
 
@@ -56,6 +60,8 @@ function cookiesAccepted() {
     $('#cookie-footer').addClass("hidden");
     $('#cookie-agreement-accept').addClass("hidden");
     $('#cookie-agreement-revoke').removeClass("hidden");
+
+    Util.loadScript(analyticsUrl, true, analyticsAttributes);
 }
 
 // Revokes the right to store user Cookies

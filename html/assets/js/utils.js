@@ -165,6 +165,30 @@ Util.awaitDocumentReady = function(callback) {
     }, 10);
 }
 
+// Loads a script dynamically
+Util.loadScript = function(url, async, attributes, callback) {
+    // Called without url? Return.
+    if (url.length == 0) {
+        return;
+    }
+
+    // Create the element
+    var s = document.createElement('script');
+    s.setAttribute('src', url);
+    s.onload = callback;
+    if (async) {
+        s.async = true;
+    }
+    
+    // Add specific attributes
+    for (let i = 0; i < attributes.length; i++) {
+        s.setAttribute(attributes[i][0], attributes[i][1]);
+    }
+
+    // Append and load
+    document.head.appendChild(s);
+}
+
 // Splits the input by " " and returns the last result
 Util.getLastWordOfString = function (s) {
     let inputSplit = s.split(" ");
