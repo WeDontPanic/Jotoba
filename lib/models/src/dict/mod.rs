@@ -8,11 +8,11 @@ use super::{
 };
 use crate::queryable::{
     prepared_execute, prepared_query, prepared_query_one, CheckAvailable, Deletable, FromRow,
-    Insertable, SQL, Queryable,
+    Insertable, Queryable, SQL,
 };
 use deadpool_postgres::{tokio_postgres::Row, Pool};
 use error::Error;
-use futures::future::try_join_all;
+use futures::{future::try_join_all, stream::FuturesUnordered, TryStreamExt};
 use itertools::Itertools;
 use japanese::{self, furigana, JapaneseExt};
 use parse::{
@@ -189,12 +189,12 @@ impl Dict {
             .collect();
 
         // Load senses to [`readings`]
-        let senses = try_join_all(
-            readings
-                .iter()
-                .map(|(seq, _)| sense::short_glosses(pool, *seq, language)),
-        )
-        .await?;
+        let senses: Vec<_> = readings
+            .iter()
+            .map(|(seq, _)| sense::short_glosses(pool, *seq, language))
+            .collect::<FuturesUnordered<_>>()
+            .try_collect()
+            .await?;
 
         // Merge both
         let res = senses

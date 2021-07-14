@@ -5,7 +5,7 @@ use super::{
     ResultData, Search, WordSearch,
 };
 use error::Error;
-use futures::future::try_join_all;
+use futures::{stream::FuturesUnordered, TryStreamExt};
 use itertools::Itertools;
 use japanese::JapaneseExt;
 use models::{
@@ -119,25 +119,31 @@ pub(super) async fn load_word_kanji_info(
         // Also show kanji even if no word was found
         // TODO make only one DB query for this
         if !kanji_words.is_empty() {
-            try_join_all(
-                kanji_words
-                    .iter()
-                    .map(|word| word.load_kanji_info(&search.pool)),
-            )
-            .await?
-            .into_iter()
-            .flatten()
-            .collect_vec()
+            kanji_words
+                .iter()
+                .map(|word| word.load_kanji_info(&search.pool))
+                .collect::<FuturesUnordered<_>>()
+                .try_collect::<Vec<_>>()
+                .await?
+                .into_iter()
+                .flatten()
+                .collect_vec()
         } else {
-            // No words found, search only for kanji appearing in the search query
-            try_join_all(search.query.query.chars().into_iter().filter_map(|i| {
-                i.is_kanji()
-                    .then(|| models::kanji::find_by_literalv2(&search.pool, i.to_string()))
-            }))
-            .await?
-            .into_iter()
-            .filter_map(|i| i)
-            .collect_vec()
+            search
+                .query
+                .query
+                .chars()
+                .into_iter()
+                .filter_map(|i| {
+                    i.is_kanji()
+                        .then(|| models::kanji::find_by_literalv2(&search.pool, i.to_string()))
+                })
+                .collect::<FuturesUnordered<_>>()
+                .try_collect::<Vec<_>>()
+                .await?
+                .into_iter()
+                .filter_map(|i| i)
+                .collect_vec()
         }
     };
 

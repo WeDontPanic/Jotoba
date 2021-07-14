@@ -2,6 +2,7 @@ mod order;
 pub mod result;
 
 use deadpool_postgres::Pool;
+use futures::{stream::FuturesUnordered, TryStreamExt};
 use result::Item;
 
 use error::Error;
@@ -9,7 +10,6 @@ use japanese::JapaneseExt;
 use models::kanji::{self, KanjiResult};
 
 use super::query::Query;
-use futures::future::try_join_all;
 use itertools::Itertools;
 
 fn format_query(query: &str) -> String {
@@ -62,11 +62,10 @@ async fn by_meaning(db: &Pool, meaning: &str) -> Result<Vec<KanjiResult>, Error>
 }
 
 async fn to_item(db: &Pool, items: Vec<KanjiResult>, query: &Query) -> Result<Vec<Item>, Error> {
-    Ok(try_join_all(
-        items
-            .into_iter()
-            .map(|i| Item::from_db(db, i, query.settings.user_lang, query.settings.show_english))
-            .collect::<Vec<_>>(),
-    )
-    .await?)
+    Ok(items
+        .into_iter()
+        .map(|i| Item::from_db(db, i, query.settings.user_lang, query.settings.show_english))
+        .collect::<FuturesUnordered<_>>()
+        .try_collect::<Vec<_>>()
+        .await?)
 }

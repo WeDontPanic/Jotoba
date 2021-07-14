@@ -5,6 +5,8 @@ use super::result::{Reading, Sense, Word};
 use super::super::{Search, SearchMode};
 use deadpool_postgres::{tokio_postgres::Row, Pool};
 use error::Error;
+use futures::stream::FuturesUnordered;
+use futures::TryStreamExt;
 use models::queryable::{prepared_query, FromRow, Queryable, SQL};
 use models::{dict::Dict, sense};
 use parse::jmdict::{
@@ -15,7 +17,6 @@ use parse::jmdict::{
 };
 use utils::to_option;
 
-use futures::future::try_join_all;
 use itertools::Itertools;
 
 const MAX_WORDS_TO_HANDLE: usize = 1000;
@@ -268,12 +269,12 @@ impl<'a> WordSearch<'a> {
         words: &mut Vec<Word>,
         language: Language,
     ) -> Result<(), Error> {
-        let collocations = try_join_all(
-            words
-                .iter()
-                .map(|i| i.get_reading().load_collocation(db, language)),
-        )
-        .await?;
+        let collocations: Vec<_> = words
+            .iter()
+            .map(|i| i.get_reading().load_collocation(db, language))
+            .collect::<FuturesUnordered<_>>()
+            .try_collect()
+            .await?;
 
         for collocation in collocations {
             let seq = collocation.0;
