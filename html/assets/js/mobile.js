@@ -9,6 +9,7 @@ function toggleMobileNav() {
 
 // On Start, check if mobile view is enabled. If yes, activate the btn
 Util.awaitDocumentReady(prepareMobilePageBtn);
+Util.awaitDocumentReady(scrollSentenceReaderIntoView);
 
 // Scrolls the sentence reader onto the selected element on mobile
 function scrollSentenceReaderIntoView() {
@@ -16,7 +17,6 @@ function scrollSentenceReaderIntoView() {
     let docWait = window.setInterval(() => {
         if (document.readyState == "complete") {
             let selected = $(".sentence-part.selected")[0];
-            console.log(selected);
             if (selected !== undefined) {
                 $(".sentence-reader")[0].scrollLeft = selected.offsetLeft - 150;
             }
