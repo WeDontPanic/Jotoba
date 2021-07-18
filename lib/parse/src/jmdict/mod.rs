@@ -75,9 +75,9 @@ where
     }
 
     /// Parse a jmdict xml file
-    fn parse<F>(mut self, f: F) -> Result<Self, Error>
+    fn parse<F>(mut self, mut f: F) -> Result<Self, Error>
     where
-        F: Fn(Entry, usize) -> bool,
+        F: FnMut(Entry, usize) -> bool,
     {
         self.reader.trim_text(true);
         let mut custom_entities: HashMap<Vec<u8>, Vec<u8>> = HashMap::new();

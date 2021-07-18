@@ -62,9 +62,9 @@ where
     }
 
     /// Parse a jmnedict xml file
-    fn parse<F>(mut self, f: F) -> Result<Self, Error>
+    fn parse<F>(mut self, mut f: F) -> Result<Self, Error>
     where
-        F: Fn(NameEntry, usize) -> bool,
+        F: FnMut(NameEntry, usize) -> bool,
     {
         self.reader.trim_text(true);
         let entity_re = Regex::new(r#"<!ENTITY\s+([^ \t\r\n]+)\s+"([^"]*)"\s*>"#).unwrap();

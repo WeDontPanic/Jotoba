@@ -54,9 +54,9 @@ where
     }
 
     /// Parse a kanjidict2 xml file
-    fn parse<F>(mut self, f: F) -> Result<Self, Error>
+    fn parse<F>(mut self, mut f: F) -> Result<Self, Error>
     where
-        F: Fn(Character, usize) -> bool,
+        F: FnMut(Character, usize) -> bool,
     {
         self.reader.trim_text(true);
         let mut counter: usize = 0;

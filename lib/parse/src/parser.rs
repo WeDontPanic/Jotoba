@@ -14,7 +14,7 @@ where
     /// Parse a given source
     fn parse<F>(self, f: F) -> Result<Self, Error>
     where
-        F: Fn(T, usize) -> bool;
+        F: FnMut(T, usize) -> bool;
 
     /// Return the amount of items, the parser would return on a full parse
     fn count(self) -> Result<usize, error::Error> {
