@@ -1,12 +1,17 @@
+mod foreign;
 mod kanji;
 mod order;
 pub mod result;
 mod wordsearch;
 
+use std::{cmp::Ordering, collections::HashMap, time::Instant};
+
+pub use foreign::load_index;
+pub use wordsearch::WordSearch;
+
 use deadpool_postgres::Pool;
 use parse::jmdict::part_of_speech::PosSimple;
 use result::{Item, Word};
-pub use wordsearch::WordSearch;
 
 use async_std::sync::Mutex;
 use itertools::Itertools;
@@ -389,51 +394,25 @@ impl<'a> Search<'a> {
             return Ok(ResultData::default());
         }
 
-        let mode = if real_string_len(&self.query.query) <= 2 {
-            SearchMode::Exact
-        } else {
-            SearchMode::Variable
-        };
+        let lang = self.query.settings.user_lang;
+        let res: Vec<_> = foreign::find(lang, &self.query.query).await;
 
-        let mut word_search = WordSearch::new(self.pool, &self.query.query);
-        word_search
-            .with_language(self.query.settings.user_lang)
-            .with_case_insensitivity(true)
-            .with_english_glosses(self.query.settings.show_english)
-            .with_mode(mode);
-
-        if self.query.has_part_of_speech_tags() {
-            word_search.with_pos_filter(&self.query.get_part_of_speech_tags());
+        let mut sort_map: HashMap<usize, f32> = HashMap::new();
+        for (seq_id, sim) in res.iter() {
+            sort_map.insert(*seq_id, *sim);
         }
 
-        let mut wordresults = word_search.search_by_glosses().await?;
-
-        // Do romaji search if no results were found
-        if wordresults.is_empty() && !self.query.query.is_japanese() {
-            return self
-                .native_results(&self.query.query.replace(" ", "").to_hiragana())
-                .await;
-        }
-
-        #[cfg(feature = "tokenizer")]
         let search_order = SearchOrder::new(self.query, &None);
-
-        #[cfg(not(feature = "tokenizer"))]
-        let search_order = SearchOrder::new(self.query);
-
-        // Sort the results based
-        //GlossWordOrder::new(&self.query.query).sort(&mut wordresults);
-        search_order.sort(&mut wordresults, order::foreign_search_order);
-        wordresults.dedup();
-
-        let count = wordresults.len();
-
-        // Limit search to 10 results
-        wordresults.truncate(10);
+        let seq_ids = res.iter().map(|i| i.0 as i32).collect::<Vec<_>>();
+        let wordresults =
+            WordSearch::load_words_by_seq(&self.pool, &seq_ids, lang, true, &None, |e| {
+                order::new_foreign_order(&sort_map, &search_order, e)
+            })
+            .await?;
 
         Ok(ResultData {
-            words: wordresults,
-            count,
+            count: wordresults.0.len(),
+            words: wordresults.0,
             ..Default::default()
         })
     }

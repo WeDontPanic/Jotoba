@@ -1,3 +1,6 @@
+use std::cmp::Ordering;
+use std::collections::HashMap;
+
 use japanese::JapaneseExt;
 use levenshtein::levenshtein;
 use once_cell::sync::Lazy;
@@ -11,10 +14,31 @@ use super::{super::search_order::SearchOrder, result::Word};
 use models::kanji;
 use models::search_mode::SearchMode;
 
+pub(super) fn new_foreign_order(
+    sort_map: &HashMap<usize, f32>,
+    search_order: &SearchOrder,
+    e: &mut Vec<Word>,
+) {
+    e.sort_by(|a, b| {
+        let a_sim = sort_map.get(&(a.sequence as usize)).unwrap();
+        let b_sim = sort_map.get(&(b.sequence as usize)).unwrap();
+
+        if a_sim == b_sim {
+            return foreign_search_order(a, search_order)
+                .cmp(&foreign_search_order(b, search_order))
+                .reverse();
+        }
+
+        a_sim
+            .partial_cmp(&b_sim)
+            .unwrap_or(Ordering::Equal)
+            .reverse()
+    })
+}
+
 pub(super) fn foreign_search_order(word: &Word, search_order: &SearchOrder) -> usize {
     let mut score = 0;
     let reading = word.get_reading();
-    //let query_str = &search_order.query.query;
 
     if word.is_common() {
         score += 5;

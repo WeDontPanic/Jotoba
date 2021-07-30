@@ -47,6 +47,8 @@ pub(super) async fn start(pool: Pool) -> std::io::Result<()> {
         std::env::set_var("RUST_BACKTRACE", "1");
     }
 
+    search::word::load_index().unwrap();
+
     let config_clone = config.clone();
 
     if let Err(err) = api::completions::load_suggestions(&config) {

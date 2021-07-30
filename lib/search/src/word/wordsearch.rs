@@ -1,5 +1,3 @@
-//use crate::search_order::SearchOrder;
-
 use super::result::{Reading, Sense, Word};
 
 use super::super::{Search, SearchMode};
