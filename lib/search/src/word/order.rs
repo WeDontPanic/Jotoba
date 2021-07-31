@@ -34,11 +34,11 @@ pub(super) fn foreign_search_order(
     similarity: f32,
     found_language: Language,
 ) -> usize {
-    let mut score: usize = (similarity * 40f32) as usize;
+    let mut score: usize = (similarity * 25f32) as usize;
     let reading = word.get_reading();
 
     if word.is_common() {
-        score += 5;
+        score += 10;
     }
 
     if let Some(jlpt) = reading.jlpt_lvl {
@@ -46,7 +46,7 @@ pub(super) fn foreign_search_order(
     }
 
     if !word.is_katakana_word() {
-        score += 7;
+        score += 8;
     }
 
     // Result found within users specified language
