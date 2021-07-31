@@ -1,4 +1,3 @@
-use std::cmp::Ordering;
 use std::collections::HashMap;
 
 use japanese::JapaneseExt;
@@ -15,29 +14,27 @@ use models::kanji;
 use models::search_mode::SearchMode;
 
 pub(super) fn new_foreign_order(
-    sort_map: &HashMap<usize, f32>,
+    sort_map: &HashMap<usize, (f32, Language)>,
     search_order: &SearchOrder,
     e: &mut Vec<Word>,
 ) {
     e.sort_by(|a, b| {
-        let a_sim = sort_map.get(&(a.sequence as usize)).unwrap();
-        let b_sim = sort_map.get(&(b.sequence as usize)).unwrap();
+        let (a_sim, a_lang) = sort_map.get(&(a.sequence as usize)).unwrap();
+        let (b_sim, b_lang) = sort_map.get(&(b.sequence as usize)).unwrap();
 
-        if a_sim == b_sim {
-            return foreign_search_order(a, search_order)
-                .cmp(&foreign_search_order(b, search_order))
-                .reverse();
-        }
-
-        a_sim
-            .partial_cmp(&b_sim)
-            .unwrap_or(Ordering::Equal)
+        foreign_search_order(a, search_order, *a_sim, *a_lang)
+            .cmp(&foreign_search_order(b, search_order, *b_sim, *b_lang))
             .reverse()
     })
 }
 
-pub(super) fn foreign_search_order(word: &Word, search_order: &SearchOrder) -> usize {
-    let mut score = 0;
+pub(super) fn foreign_search_order(
+    word: &Word,
+    search_order: &SearchOrder,
+    similarity: f32,
+    found_language: Language,
+) -> usize {
+    let mut score: usize = (similarity * 40f32) as usize;
     let reading = word.get_reading();
 
     if word.is_common() {
@@ -45,7 +42,16 @@ pub(super) fn foreign_search_order(word: &Word, search_order: &SearchOrder) -> u
     }
 
     if let Some(jlpt) = reading.jlpt_lvl {
-        score += jlpt as usize;
+        score += (jlpt as usize) * 2;
+    }
+
+    if !word.is_katakana_word() {
+        score += 7;
+    }
+
+    // Result found within users specified language
+    if found_language == search_order.query.settings.user_lang {
+        score += 12;
     }
 
     let found = match find_reading(word, &search_order.query) {
@@ -55,11 +61,6 @@ pub(super) fn foreign_search_order(word: &Word, search_order: &SearchOrder) -> u
         }
     };
 
-    // Result found within users specified language
-    if found.language == search_order.query.settings.user_lang {
-        score += 12;
-    }
-
     let divisor = match (found.mode, found.case_ignored) {
         (SearchMode::Exact, false) => 10,
         (SearchMode::Exact, true) => 30,
@@ -68,10 +69,6 @@ pub(super) fn foreign_search_order(word: &Word, search_order: &SearchOrder) -> u
     };
 
     score += (calc_likeliness(word, &found) / divisor) as usize;
-
-    if !word.is_katakana_word() {
-        score += 7;
-    }
 
     if found.in_parentheses {
         score = score - score.clamp(0, 10);

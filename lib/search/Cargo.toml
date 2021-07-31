@@ -11,10 +11,12 @@ parse = { path = "../parse" }
 japanese = { path = "../japanese" }
 models = { path = "../models" }
 cache = { path = "../cache" }
+config = { path = "../config" }
 error = { path = "../error" }
 utils = { path = "../utils" }
 localization = { path = "../localization" }
-serde = "1.0.126"
+serde = "1.0.127"
+log = "0.4.14"
 itertools = "0.10.1"
 futures = "0.3.16"
 async-std = "1.9.0"

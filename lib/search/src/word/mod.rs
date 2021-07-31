@@ -4,13 +4,13 @@ mod order;
 pub mod result;
 mod wordsearch;
 
-use std::{cmp::Ordering, collections::HashMap, time::Instant};
+use std::{collections::HashMap, time::Instant};
 
-pub use foreign::load_index;
+pub use foreign::load_indexes;
 pub use wordsearch::WordSearch;
 
 use deadpool_postgres::Pool;
-use parse::jmdict::part_of_speech::PosSimple;
+use parse::jmdict::{languages::Language, part_of_speech::PosSimple};
 use result::{Item, Word};
 
 use async_std::sync::Mutex;
@@ -394,21 +394,28 @@ impl<'a> Search<'a> {
             return Ok(ResultData::default());
         }
 
-        let lang = self.query.settings.user_lang;
-        let res: Vec<_> = foreign::find(lang, &self.query.query).await;
+        let start = Instant::now();
+        let res: Vec<_> = foreign::Find::new(&self.query, 10, 0).find().await?;
+        println!("\nsearch took: {:?}\n", start.elapsed());
 
-        let mut sort_map: HashMap<usize, f32> = HashMap::new();
-        for (seq_id, sim) in res.iter() {
-            sort_map.insert(*seq_id, *sim);
+        let mut sort_map: HashMap<usize, (f32, Language)> = HashMap::new();
+        for result_item in res.iter() {
+            let entry = sort_map.entry(result_item.seq_id).or_default();
+            if result_item.relevance > entry.0 {
+                entry.0 = result_item.relevance;
+            }
+            entry.1 = result_item.language;
         }
 
         let search_order = SearchOrder::new(self.query, &None);
-        let seq_ids = res.iter().map(|i| i.0 as i32).collect::<Vec<_>>();
-        let wordresults =
-            WordSearch::load_words_by_seq(&self.pool, &seq_ids, lang, true, &None, |e| {
-                order::new_foreign_order(&sort_map, &search_order, e)
-            })
-            .await?;
+        let seq_ids = res.iter().map(|i| i.seq_id as i32).collect::<Vec<_>>();
+        let lang = self.query.settings.user_lang;
+        let show_english = self.query.settings.show_english;
+        let mut wordresults =
+            WordSearch::load_words_by_seq(&self.pool, &seq_ids, lang, show_english, &None, |_e| {})
+                .await?;
+
+        order::new_foreign_order(&sort_map, &search_order, &mut wordresults.0);
 
         Ok(ResultData {
             count: wordresults.0.len(),

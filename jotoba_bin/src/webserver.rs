@@ -47,14 +47,13 @@ pub(super) async fn start(pool: Pool) -> std::io::Result<()> {
         std::env::set_var("RUST_BACKTRACE", "1");
     }
 
-    search::word::load_index().unwrap();
-
-    let config_clone = config.clone();
+    search::word::load_indexes(&config).expect("Failed to load index files");
 
     if let Err(err) = api::completions::load_suggestions(&config) {
         log::error!("Failed loading suggestions: {}", err);
     }
 
+    let config_clone = config.clone();
     HttpServer::new(move || {
         let app = App::new()
             // Data

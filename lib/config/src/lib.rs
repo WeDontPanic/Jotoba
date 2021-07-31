@@ -35,6 +35,7 @@ pub struct SentryConfig {
 pub struct SearchConfig {
     pub suggestion_timeout: Option<u64>,
     pub suggestion_sources: Option<String>,
+    pub indexes_source: Option<String>,
     pub report_queries_after: Option<u64>,
     pub search_timeout: Option<u64>,
 }
@@ -59,6 +60,14 @@ impl Config {
             .unwrap_or(100);
 
         Duration::from_millis(amount)
+    }
+
+    /// Returns the configured index source files or its default value if not set
+    pub fn get_indexes_source(&self) -> &str {
+        self.search
+            .as_ref()
+            .and_then(|i| i.indexes_source.as_ref().map(|i| i.as_str()))
+            .unwrap_or("./indexes")
     }
 
     /// Returns the configured suggestion source files or its default value if not set
