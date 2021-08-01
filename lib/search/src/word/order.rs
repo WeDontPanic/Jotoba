@@ -8,22 +8,23 @@ use regex::Regex;
 
 use crate::query::Query;
 
+use super::engine::result::ResultItem;
 use super::result::Sense;
 use super::{super::search_order::SearchOrder, result::Word};
 use models::kanji;
 use models::search_mode::SearchMode;
 
 pub(super) fn new_foreign_order(
-    sort_map: &HashMap<usize, (f32, Language)>,
+    sort_map: &HashMap<usize, ResultItem>,
     search_order: &SearchOrder,
     e: &mut Vec<Word>,
 ) {
     e.sort_by(|a, b| {
-        let (a_sim, a_lang) = sort_map.get(&(a.sequence as usize)).unwrap();
-        let (b_sim, b_lang) = sort_map.get(&(b.sequence as usize)).unwrap();
+        let a_item = sort_map.get(&(a.sequence as usize)).unwrap();
+        let b_item = sort_map.get(&(b.sequence as usize)).unwrap();
 
-        foreign_search_order(a, search_order, *a_sim, *a_lang)
-            .cmp(&foreign_search_order(b, search_order, *b_sim, *b_lang))
+        foreign_search_order(a, search_order, a_item)
+            .cmp(&foreign_search_order(b, search_order, b_item))
             .reverse()
     })
 }
@@ -31,10 +32,9 @@ pub(super) fn new_foreign_order(
 pub(super) fn foreign_search_order(
     word: &Word,
     search_order: &SearchOrder,
-    similarity: f32,
-    found_language: Language,
+    result_item: &ResultItem,
 ) -> usize {
-    let mut score: usize = (similarity * 25f32) as usize;
+    let mut score: usize = (result_item.relevance * 25f32) as usize;
     let reading = word.get_reading();
 
     if word.is_common() {
@@ -50,7 +50,7 @@ pub(super) fn foreign_search_order(
     }
 
     // Result found within users specified language
-    if found_language == search_order.query.settings.user_lang {
+    if result_item.language == search_order.query.settings.user_lang {
         score += 12;
     }
 

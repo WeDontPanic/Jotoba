@@ -1,7 +1,4 @@
-use std::path::Path;
-
-use super::super::query::Query;
-
+use crate::query::Query;
 use japanese::{
     accent::{AccentChar, Border},
     furigana::{self, SentencePartRef},
@@ -20,6 +17,7 @@ use parse::jmdict::{
     part_of_speech::{PartOfSpeech, PosSimple},
     priority::Priority,
 };
+use std::path::Path;
 
 use itertools::Itertools;
 use utils::to_option;
@@ -38,6 +36,7 @@ pub struct WordResult {
 }
 
 impl WordResult {
+    #[inline]
     pub fn has_word(&self) -> bool {
         self.items.iter().any(|i| i.is_word())
     }
@@ -57,23 +56,27 @@ pub enum Item {
 
 impl Item {
     /// Returns `true` if the item is [`Word`].
+    #[inline]
     pub fn is_word(&self) -> bool {
         matches!(self, Self::Word(..))
     }
 
     /// Returns `true` if the item is [`Kanji`].
+    #[inline]
     pub fn is_kanji(&self) -> bool {
         matches!(self, Self::Kanji(..))
     }
 }
 
 impl From<KanjiResult> for Item {
+    #[inline]
     fn from(k: KanjiResult) -> Self {
         Self::Kanji(k)
     }
 }
 
 impl From<Word> for Item {
+    #[inline]
     fn from(w: Word) -> Self {
         Self::Word(w)
     }
@@ -91,6 +94,7 @@ pub struct Word {
 }
 
 impl PartialEq for Word {
+    #[inline]
     fn eq(&self, other: &Self) -> bool {
         // At this state, the sequence is unique for each element
         self.sequence == other.sequence
@@ -171,11 +175,13 @@ impl Word {
     }
 
     /// Returns true if a word is common
+    #[inline]
     pub fn is_common(&self) -> bool {
         self.reading.get_reading().priorities.is_some()
     }
 
     /// Returns the reading of a word
+    #[inline]
     pub fn get_reading(&self) -> &Dict {
         self.reading.get_reading()
     }
@@ -203,6 +209,7 @@ impl Word {
     }
 
     /// Returns furigana reading-pairs of an Item
+    #[inline]
     pub fn get_furigana(&self) -> Option<Vec<SentencePartRef<'_>>> {
         let furi = self.get_reading().furigana.as_ref()?;
         Some(furigana::from_str(furi).collect_vec())
@@ -285,7 +292,6 @@ impl Word {
                 self.reading.kana.as_ref().unwrap().reading
             );
 
-            // TODO maybe we shouldn't block here
             Path::new(&format!("html/assets/audio/{}", file))
                 .exists()
                 .then(|| file)

@@ -95,29 +95,6 @@ impl<'a> WordSearch<'a> {
         self
     }
 
-    /// Searches by translations
-    pub async fn search_by_glosses(&mut self) -> Result<Vec<Word>, Error> {
-        // Load sequence ids to display
-        let seq_ids = self.get_sequence_ids_by_glosses().await?;
-        if seq_ids.is_empty() {
-            return Ok(vec![]);
-        }
-
-        // always search by a language.
-        let lang = self.language.unwrap_or_default();
-
-        Ok(Self::load_words_by_seq(
-            &self.pool,
-            &seq_ids,
-            lang,
-            self.english_glosses,
-            &self.p_o_s_filter,
-            |_| (),
-        )
-        .await?
-        .0)
-    }
-
     /// Searches by native
     pub async fn search_native<F>(&mut self, ordering: F) -> Result<(Vec<Word>, usize), Error>
     where
@@ -188,32 +165,6 @@ impl<'a> WordSearch<'a> {
             ),
             original_len,
         ))
-    }
-
-    /// Find the sequence ids of the results to load
-    async fn get_sequence_ids_by_glosses(&mut self) -> Result<Vec<i32>, Error> {
-        let filter = "SELECT sequence, length(gloss) as len FROM sense WHERE gloss &@ $1";
-
-        // Language filter
-        let lang = if self.is_default_language() || !self.english_glosses {
-            "AND language = $2"
-        } else {
-            "AND (language = $2 or language = 0)"
-        };
-
-        let filter = if self.search.limit > 0 {
-            format!("{} {} LIMIT {}", filter, lang, self.search.limit)
-        } else {
-            format!("{} {}", filter, lang)
-        };
-
-        let query = &self.search.query;
-        let language = self.language.unwrap_or_default();
-
-        let res: Vec<SearchItemsSql> =
-            SearchItemsSql::query(self.pool, filter, &[query, &language], 0).await?;
-
-        Ok(SearchItemsSql::order(res))
     }
 
     /// Find the sequence ids of the results to load
@@ -310,6 +261,11 @@ impl<'a> WordSearch<'a> {
     }
 }
 
+struct SearchItemsSql {
+    sequence: i32,
+    len: i32,
+}
+
 impl FromRow for SearchItemsSql {
     fn from_row(row: &Row, offset: usize) -> Self
     where
@@ -386,7 +342,7 @@ pub fn convert_dicts_to_words(dicts: Vec<Dict>) -> Vec<Word> {
         .collect_vec()
 }
 
-/// Merge word_items with its senses
+/// Merge words with their corresponding sense(s)
 pub fn merge_words_with_senses(
     words: Vec<Word>,
     senses: Vec<sense::Sense>,
@@ -448,16 +404,14 @@ pub fn merge_words_with_senses(
 }
 
 /// Returns true if a vec of senses has at least one Pos provided by the filter
+#[inline]
 fn has_pos(senses: &[Sense], pos_filter: &[PosSimple]) -> bool {
-    for sense in senses.iter() {
-        for p in sense.get_pos_simple() {
-            if pos_filter.contains(&p) {
-                return true;
-            }
-        }
+    if pos_filter.is_empty() {
+        return false;
     }
-
-    false
+    senses
+        .iter()
+        .any(|i| pos_filter.iter().any(|j| i.get_pos_simple().contains(j)))
 }
 
 /// Return true if all 'misc' items are of the same value
@@ -498,13 +452,4 @@ fn pos_unionized(senses: &[Sense]) -> Vec<PartOfSpeech> {
     }
 
     pos
-}
-
-pub struct SenqenceSelect {
-    pub sequence: i32,
-}
-
-struct SearchItemsSql {
-    sequence: i32,
-    len: i32,
 }

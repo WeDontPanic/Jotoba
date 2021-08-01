@@ -3,10 +3,10 @@ use std::io::Read;
 use byteorder::{ByteOrder, ReadBytesExt};
 use vector_space_model::traits::Decodable;
 
-/// A retrieved document containing seq_ids and optionally the text of the document for debugging
-/// purposes. This is retrieved from a `vector_store`
+/// A document belongs to a document-vector and contains the seq_ids of all words who represent
+/// this document
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub(super) struct Document {
+pub(crate) struct Document {
     pub seq_ids: Vec<usize>,
 }
 

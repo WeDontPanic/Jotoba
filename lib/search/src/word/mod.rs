@@ -1,41 +1,31 @@
-mod foreign;
+mod engine;
 mod kanji;
 mod order;
 pub mod result;
 mod wordsearch;
 
-use std::{collections::HashMap, time::Instant};
-
-pub use foreign::load_indexes;
+pub use engine::load_indexes;
 pub use wordsearch::WordSearch;
 
-use deadpool_postgres::Pool;
-use parse::jmdict::{languages::Language, part_of_speech::PosSimple};
-use result::{Item, Word};
-
-use async_std::sync::Mutex;
-use itertools::Itertools;
-use once_cell::sync::Lazy;
-
-use crate::query::Tag;
-
+use self::result::{InflectionInformation, WordResult};
 use super::{
-    query::{Query, QueryLang},
+    query::{Form, Query, QueryLang, Tag},
     search_order::SearchOrder,
 };
+use async_std::sync::Mutex;
 use cache::SharedCache;
+use deadpool_postgres::Pool;
 use error::Error;
+use itertools::Itertools;
 use japanese::{inflection::SentencePart, JapaneseExt};
-use models::kanji::KanjiResult;
-use models::search_mode::SearchMode;
+use models::{kanji::KanjiResult, search_mode::SearchMode};
+use once_cell::sync::Lazy;
+use parse::jmdict::part_of_speech::PosSimple;
+use result::{Item, Word};
 use utils::real_string_len;
-
-use self::result::{InflectionInformation, WordResult};
 
 #[cfg(feature = "tokenizer")]
 use japanese::jp_parsing::{igo_unidic::WordClass, InputTextParser, ParseResult, WordItem};
-
-use super::query::Form;
 
 /// An in memory Cache for word search results
 static SEARCH_CACHE: Lazy<Mutex<SharedCache<u64, WordResult>>> =
@@ -386,40 +376,39 @@ impl<'a> Search<'a> {
         })
     }
 
-    /// Search gloss readings
+    /// Search for words by their translations
     async fn gloss_results(&self) -> Result<ResultData, Error> {
-        if !(self.query.language == QueryLang::Foreign
-            || self.query.language == QueryLang::Undetected)
-        {
+        use engine::foreign::Find;
+
+        if !matches!(
+            self.query.language,
+            QueryLang::Foreign | QueryLang::Undetected
+        ) {
             return Ok(ResultData::default());
         }
 
-        let start = Instant::now();
-        let res: Vec<_> = foreign::Find::new(&self.query, 10, 0).find().await?;
-        println!("\nsearch took: {:?}\n", start.elapsed());
+        // Do the search
+        let search_result = Find::new(&self.query, 10, self.query.page).find().await?;
 
-        let mut sort_map: HashMap<usize, (f32, Language)> = HashMap::new();
-        for result_item in res.iter() {
-            let entry = sort_map.entry(result_item.seq_id).or_default();
-            if result_item.relevance > entry.0 {
-                entry.0 = result_item.relevance;
-            }
-            entry.1 = result_item.language;
-        }
-
-        let search_order = SearchOrder::new(self.query, &None);
-        let seq_ids = res.iter().map(|i| i.seq_id as i32).collect::<Vec<_>>();
         let lang = self.query.settings.user_lang;
         let show_english = self.query.settings.show_english;
-        let mut wordresults =
+        let seq_ids = search_result.sequence_ids();
+
+        // Load words by their sequence ids returned from search enigne
+        let (mut wordresults, word_count) =
             WordSearch::load_words_by_seq(&self.pool, &seq_ids, lang, show_english, &None, |_e| {})
                 .await?;
 
-        order::new_foreign_order(&sort_map, &search_order, &mut wordresults.0);
+        // Sort the result
+        order::new_foreign_order(
+            search_result.get_order_map(),
+            &SearchOrder::new(self.query, &None),
+            &mut wordresults,
+        );
 
         Ok(ResultData {
-            count: wordresults.0.len(),
-            words: wordresults.0,
+            count: word_count,
+            words: wordresults,
             ..Default::default()
         })
     }

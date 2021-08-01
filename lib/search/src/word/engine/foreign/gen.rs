@@ -43,6 +43,7 @@ impl Encodable for GenDoc {
 }
 
 impl document_vector::Document for GenDoc {
+    #[inline]
     fn get_terms(&self) -> Vec<String> {
         self.terms.clone()
     }
