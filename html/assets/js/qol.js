@@ -66,39 +66,42 @@ $(document).on("keydown", (event) => {
     }
 });
 
-// Copies Furigana to clipboard on click
-$('.furigana-kanji-container > .furigana-preview').on("click", (event) => {
-    Util.showMessage("success", "furigana copied to clipboard.");
-    Util.copyToClipboard($(event.target).html().trim());
-});
+// Enables Kanji / Furi copying. Disabled for Sentence searches
+if ($('.title-div > h1').html() !== "Sentences") {
+    // Copies Furigana to clipboard on click
+    $('.furigana-kanji-container > .furigana-preview').on("click", (event) => {
+        Util.showMessage("success", "furigana copied to clipboard.");
+        Util.copyToClipboard($(event.target).html().trim());
+    });
 
-// Copies full Furigana to clipboard on dblclick
-$('.furigana-kanji-container > .furigana-preview').on("dblclick", (event) => {
-    $('.ajs-message.ajs-success.ajs-visible').last().remove();
-    $('.ajs-message.ajs-success.ajs-visible').last().html("<b>full</b> furigana copied to clipboard");
+    // Copies full Furigana to clipboard on dblclick
+    $('.furigana-kanji-container > .furigana-preview').on("dblclick", (event) => {
+        $('.ajs-message.ajs-success.ajs-visible').last().remove();
+        $('.ajs-message.ajs-success.ajs-visible').last().html("<b>full</b> furigana copied to clipboard");
 
     // Find all furigana
     let parent = $(event.target.parentElement.parentElement);
-    let furi = "";
-    parent.find('.furigana-preview, .inline-kana-preview').each((i, element) => {
-        furi += element.innerHTML.trim();
+        let furi = "";
+        parent.find('.furigana-preview, .inline-kana-preview').each((i, element) => {
+            furi += element.innerHTML.trim();
+        });
+        Util.copyToClipboard(furi);
     });
-    Util.copyToClipboard(furi);
-});
 
-// Copies translations to clipboard on double click
-$('.furigana-kanji-container > .kanji-preview').on("dblclick copy", (event) => {
-	event.preventDefault();
-    Util.deleteSelection();
-    copyTranslationAndShowMessage(event.target.parentElement.parentElement);
-});
+    // Copies translations to clipboard on double click
+    $('.furigana-kanji-container > .kanji-preview').on("dblclick copy", (event) => {
+	    event.preventDefault();
+        Util.deleteSelection();
+        copyTranslationAndShowMessage(event.target.parentElement.parentElement);
+    });
 
-// Copies translations to clipboard on double click
-$('.inline-kana-preview').on("dblclick copy", (event) => {
-	event.preventDefault();
-    Util.deleteSelection();
-    copyTranslationAndShowMessage(event.target.parentElement);
-});
+    // Copies translations to clipboard on double click
+    $('.inline-kana-preview').on("dblclick copy", (event) => {
+	    event.preventDefault();
+        Util.deleteSelection();
+        copyTranslationAndShowMessage(event.target.parentElement);
+    });
+}
 
 // Used by kanji/kana copy to combine all parts, starts from the flex (parent)
 function copyTranslationAndShowMessage(textParent) {
