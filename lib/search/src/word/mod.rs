@@ -54,11 +54,11 @@ impl<'a> Search<'a> {
             _ => self.do_word_search().await?,
         };
 
-        // Load collocations
         let mut words = search_result.words;
 
         let words_cloned = words.clone();
 
+        // Load collocations
         let (kanji_results, _): (Vec<KanjiResult>, _) = futures::try_join!(
             kanji::load_word_kanji_info(&self, &words_cloned),
             WordSearch::load_collocations(self.pool, &mut words, self.query.settings.user_lang)

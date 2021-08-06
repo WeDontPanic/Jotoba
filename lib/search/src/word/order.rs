@@ -117,7 +117,7 @@ pub(super) fn japanese_search_order(
     //let mut score = 0;
 
     if reading.reading == *query_str || kana_reading.reading == *query_str {
-        score += 1035;
+        score += 100;
 
         // Show kana only readings on top if they match with query
         if word.reading.kanji.is_none() {

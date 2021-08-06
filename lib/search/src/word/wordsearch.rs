@@ -5,7 +5,7 @@ use deadpool_postgres::{tokio_postgres::Row, Pool};
 use error::Error;
 use futures::stream::FuturesUnordered;
 use futures::TryStreamExt;
-use models::queryable::{prepared_query, FromRow, Queryable, SQL};
+use models::queryable::{FromRow, Queryable, SQL};
 use models::{dict::Dict, sense};
 use parse::jmdict::{
     information::Information,
@@ -45,93 +45,6 @@ impl<'a> WordSearch<'a> {
         }
     }
 
-    /// Set the query of the search
-    pub fn with_query(&mut self, query: &'a str) -> &mut Self {
-        self.search.query = query;
-        self
-    }
-
-    /// Use a specific language for the search
-    pub fn with_case_insensitivity(&mut self, ignore_case: bool) -> &mut Self {
-        self.ignore_case = ignore_case;
-        self
-    }
-
-    /// Ignore the case of the input
-    pub fn with_language(&mut self, language: Language) -> &mut Self {
-        self.language = Some(language);
-        self
-    }
-
-    /// Use a specific mode for the search
-    pub fn with_mode(&mut self, mode: SearchMode) -> &mut Self {
-        self.search.mode = mode;
-        self
-    }
-
-    /// Use a specific limit for the search
-    pub fn with_limit(&mut self, limit: u16) -> &mut Self {
-        self.search.limit = limit;
-        self
-    }
-
-    /// Only search for kana words
-    pub fn with_kana_only(&mut self, kana_only: bool) -> &mut Self {
-        self.kana_only = kana_only;
-        self
-    }
-
-    /// Use a specific limit for the search
-    pub fn with_english_glosses(&mut self, english_glosses: bool) -> &mut Self {
-        self.english_glosses = english_glosses;
-        self
-    }
-
-    /// Use part of speech filtetr
-    pub fn with_pos_filter(&mut self, filter: &[PosSimple]) -> &mut Self {
-        if !filter.is_empty() {
-            self.p_o_s_filter = Some(filter.iter().copied().collect_vec());
-        }
-        self
-    }
-
-    /// Searches by native
-    pub async fn search_native<F>(&mut self, ordering: F) -> Result<(Vec<Word>, usize), Error>
-    where
-        F: Fn(&mut Vec<Word>),
-    {
-        // Load sequence ids to display
-        let seq_ids = self.get_sequence_ids_by_native().await?;
-
-        // always search by a language.
-        let lang = self.language.unwrap_or_default();
-
-        let (words, original_len) = Self::load_words_by_seq(
-            &self.pool,
-            &seq_ids,
-            lang,
-            self.english_glosses,
-            &self.p_o_s_filter,
-            ordering,
-        )
-        .await?;
-
-        let merged = words
-            .into_iter()
-            .filter(|i| self.post_search_check(&i))
-            .collect_vec();
-
-        Ok((merged, original_len))
-    }
-
-    fn post_search_check(&self, item: &Word) -> bool {
-        if self.kana_only && item.reading.kanji.is_some() {
-            return false;
-        }
-
-        true
-    }
-
     /// Get search results of seq_ids
     pub async fn load_words_by_seq<F>(
         db: &Pool,
@@ -165,24 +78,6 @@ impl<'a> WordSearch<'a> {
             ),
             original_len,
         ))
-    }
-
-    /// Find the sequence ids of the results to load
-    async fn get_sequence_ids_by_native(&mut self) -> Result<Vec<i32>, Error> {
-        let select = "SELECT sequence, LENGTH(reading) FROM dict";
-
-        let sql = if self.search.limit > 0 {
-            format!("{} WHERE reading &@ $1 LIMIT {}", select, self.search.limit)
-        } else if self.search.mode != SearchMode::Exact {
-            format!("{} WHERE reading &@ $1", select)
-        } else {
-            format!("{} WHERE reading = $1", select)
-        };
-
-        let res: Vec<SearchItemsSql> =
-            prepared_query(self.pool, &sql, &[&self.search.query]).await?;
-
-        Ok(SearchItemsSql::order(res))
     }
 
     /// Load all senses for the sequence ids

@@ -1,15 +1,8 @@
 use deadpool_postgres::Pool;
-use models::{dict, search_mode::SearchMode, sense};
-use parse::jmdict::{
-    languages::Language, part_of_speech::PartOfSpeech, Entry, EntryElement, EntrySense, GlossValue,
-};
-use search::word::WordSearch;
-use serde_json::Value;
-
-use futures::future::try_join_all;
 
 /// Import manga sfx items file
-pub async fn import(db: &Pool, path: &str) {
+pub async fn import(_db: &Pool, _path: &str) {
+    /*
     println!("Importing sfx patches...");
     let f = std::fs::File::open(path).expect("Error reading jlpt patch file!");
     let json: Value = serde_json::from_reader(f).expect("invalid json data");
@@ -21,15 +14,18 @@ pub async fn import(db: &Pool, path: &str) {
         if let Value::String(translation) = translation {
             let seq = min_seq - 100;
             min_seq = seq;
-            Some(import_sfx(db, seq, sfx_item.to_owned(), translation))
+            //Some(import_sfx(db, seq, sfx_item.to_owned(), translation))
+            None
         } else {
             None
         }
     }))
     .await
     .expect("db error");
+    */
 }
 
+/*
 /// Import a single sfx item
 async fn import_sfx(
     db: &Pool,
@@ -84,3 +80,4 @@ async fn import_sfx(
 
     Ok(())
 }
+    */
