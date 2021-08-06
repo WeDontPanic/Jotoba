@@ -1,7 +1,6 @@
 use std::{collections::HashMap, error::Error};
 
-use super::metadata::Metadata;
-use crate::word::engine::document::Document;
+use super::{document::Document, metadata::Metadata};
 use config::Config;
 use log::{error, info};
 use once_cell::sync::OnceCell;

@@ -1,3 +1,4 @@
+mod document;
 mod gen;
 pub(super) mod index;
 mod metadata;
@@ -9,7 +10,7 @@ use super::{
     result::{ResultItem, SearchResult},
     FindExt,
 };
-use crate::{query::Query, word::engine::document::Document};
+use crate::{query::Query, word::engine::CmpDocument};
 use error::Error;
 use gen::GenDoc;
 use parse::jmdict::languages::Language;
@@ -24,6 +25,7 @@ pub(crate) struct Find<'a> {
 impl<'a> FindExt for Find<'a> {
     type ResultItem = super::result::ResultItem;
     type GenDoc = gen::GenDoc;
+    type Document = document::Document;
 
     #[inline]
     fn get_limit(&self) -> usize {
@@ -98,17 +100,29 @@ impl<'a> Find<'a> {
             .await
             .map_err(|_| error::Error::NotFound)?;
 
-        let res_item_map = |seq, rel| ResultItem {
-            seq_id: seq,
-            relevance: rel,
-            language,
+        let sort = |a: &CmpDocument<_>, b: &CmpDocument<_>| {
+            a.relevance
+                .partial_cmp(&b.relevance)
+                .unwrap_or(Ordering::Equal)
+                .reverse()
         };
 
-        let sort = |a: &(&DocumentVector<Document>, f32), b: &(&DocumentVector<Document>, f32)| {
-            a.1.partial_cmp(&b.1).unwrap_or(Ordering::Equal).reverse()
-        };
+        let result = self
+            .vecs_to_result_items(&query_vec, &document_vectors, sort)
+            .into_iter()
+            .map(|i| {
+                let rel = i.relevance;
+                i.document.seq_ids.iter().map(move |j| (*j, rel))
+            })
+            .flatten()
+            .map(|(seq_id, rel)| ResultItem {
+                seq_id,
+                relevance: rel,
+                language,
+            })
+            .collect();
 
-        Ok(self.vecs_to_result_items(&query_vec, document_vectors, res_item_map, sort))
+        Ok(result)
     }
 
     #[inline]

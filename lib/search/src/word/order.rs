@@ -113,7 +113,6 @@ pub(super) fn native_search_order(
     let mut score: usize = (result_item.relevance * 25f32) as usize;
     //let mut score = 0;
 
-    /*
     if reading.reading == *query_str || kana_reading.reading == *query_str {
         score += 35;
 
@@ -124,7 +123,6 @@ pub(super) fn native_search_order(
     } else if reading.reading.starts_with(query_str) {
         score += 2;
     }
-    */
 
     if let Some(jlpt) = reading.jlpt_lvl {
         score += (jlpt as usize) * 2;
@@ -140,7 +138,6 @@ pub(super) fn native_search_order(
         score += 9;
     }
 
-    /*
     #[cfg(feature = "tokenizer")]
     if let Some(morpheme) = morpheme {
         let lexeme = morpheme.get_lexeme();
@@ -153,20 +150,10 @@ pub(super) fn native_search_order(
             score += 30;
         }
     }
-    */
 
     // Is common
-    /*
-    score += word
-        .priorities
-        .as_ref()
-        .map(|i| i.len())
-        .unwrap_or_default()
-        * 3;
-        */
-
     if word.is_common() {
-        score *= 3;
+        score += 15;
     }
 
     score

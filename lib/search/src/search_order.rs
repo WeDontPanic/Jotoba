@@ -32,7 +32,7 @@ impl<'a, 'parser> SearchOrder<'a, 'parser> {
 
 #[cfg(not(feature = "tokenizer"))]
 impl<'a, 'parser> SearchOrder<'a> {
-    pub fn new(query: &'a Query) -> Self {
+    pub fn new(query: &'a Query, _morpheme: &Option<u32>) -> Self {
         SearchOrder { query }
     }
 

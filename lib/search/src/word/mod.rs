@@ -280,97 +280,13 @@ impl<'a> Search<'a> {
         #[cfg(not(feature = "tokenizer"))]
         let infl_info: Option<InflectionInformation> = None;
 
-        /*
-            // Define basic search structure
-            let mut word_search = WordSearch::new(self.pool, &query);
-            word_search
-                .with_language(self.query.settings.user_lang)
-                .with_english_glosses(self.query.settings.show_english);
-
-            if !pos_filter_tags.is_empty() {
-                word_search.with_pos_filter(&pos_filter_tags);
-            }
-
-            // Perform the word search
-            let (wordresults, original_len) = if real_string_len(&query) == 1 && query.is_kana() {
-                // Search for exact matches only if query.len() <= 2
-
-                let res = word_search
-                    .with_mode(SearchMode::Exact)
-                    .with_language(self.query.settings.user_lang)
-                    .search_native(|s| self.ma_f(s, morpheme.clone()))
-                    .await?;
-
-                let r = if res.0.is_empty() {
-                    // Do another search if no exact result was found
-                    word_search
-                        .with_mode(SearchMode::RightVariable)
-                        .search_native(|s| self.ma_f(s, morpheme.clone()))
-                        .await?
-                } else {
-                    res
-                };
-
-                if query_modified {
-                    let origi_res = word_search
-                        .with_query(&self.query.query)
-                        .with_mode(SearchMode::Exact)
-                        .search_native(|s| self.ma_f(s, morpheme.clone()))
-                        .await?;
-
-                    (
-                        r.0.into_iter().chain(origi_res.0).collect(),
-                        r.1 + origi_res.1,
-                    )
-                } else {
-                    r
-                }
-            } else {
-                let results = word_search
-                    .with_mode(SearchMode::RightVariable)
-                    .search_native(|s| self.ma_f(s, morpheme.clone()))
-                    .await?;
-
-                // if query was modified search for the original term too
-                let mut results = if query_modified {
-                    let origi_res = word_search
-                        .with_query(&self.query.query)
-                        .with_mode(SearchMode::Exact)
-                        .search_native(|s| self.ma_f(s, morpheme.clone()))
-                        .await?;
-
-                    (
-                        results.0.into_iter().chain(origi_res.0).collect(),
-                        results.1 + origi_res.1,
-                    )
-                } else {
-                    results
-                };
-
-                #[cfg(feature = "tokenizer")]
-                let search_order = SearchOrder::new(self.query, &morpheme);
-
-                #[cfg(not(feature = "tokenizer"))]
-                let search_order = SearchOrder::new(self.query);
-
-                // Sort the results based
-                search_order.sort(&mut results.0, order::native_search_order);
-                results.0.dedup();
-
-                results
-            };
-        */
-
         use engine::japanese::Find;
 
-        let start = Instant::now();
-        let search_result = Find::new(&query, 10, 0).find().await?;
-
+        let mut search_result = Find::new(&query, 10000, 0).find().await?;
         if query_modified {
-            // TODO search for original query too
+            let original_res = Find::new(&self.query.query, 1000, 0).find().await?;
+            search_result.extend(original_res);
         }
-
-        println!("search took: {:?}", start.elapsed());
 
         let lang = self.query.settings.user_lang;
         let show_english = self.query.settings.show_english;
@@ -395,6 +311,8 @@ impl<'a> Search<'a> {
             &SearchOrder::new(self.query, &None),
             &mut wordresults,
         );
+
+        let wordresults = wordresults.into_iter().take(10).collect();
 
         #[cfg(feature = "tokenizer")]
         let searched_query = morpheme

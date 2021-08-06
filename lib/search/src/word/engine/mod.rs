@@ -1,4 +1,3 @@
-pub mod document;
 pub(crate) mod foreign;
 pub(crate) mod japanese;
 pub mod result;
@@ -6,9 +5,7 @@ pub mod result;
 use std::{cmp::Ordering, error};
 
 use config::Config;
-use vector_space_model::{document_vector, DocumentVector};
-
-use self::document::Document;
+use vector_space_model::{document_vector, traits::Decodable, DocumentVector};
 
 /// Load all indexes for word search engine
 pub fn load_indexes(config: &Config) -> Result<(), Box<dyn error::Error>> {
@@ -17,47 +14,73 @@ pub fn load_indexes(config: &Config) -> Result<(), Box<dyn error::Error>> {
     Ok(())
 }
 
+/// A `Document` wrapping structure where the document has been compared to a given query. The
+/// `relevance` field indicates the relevance compared to the query
+#[derive(Debug)]
+pub(crate) struct CmpDocument<'a, T: Decodable> {
+    relevance: f32,
+    document: &'a T,
+}
+
+impl<'a, T: Decodable + Clone + Copy> Copy for CmpDocument<'a, T> {}
+
+impl<'a, T: Decodable + Clone + Copy> Clone for CmpDocument<'a, T> {
+    #[inline]
+    fn clone(&self) -> Self {
+        CmpDocument {
+            document: self.document,
+            relevance: self.relevance,
+        }
+    }
+}
+
+impl<'a, T: Decodable> CmpDocument<'a, T> {
+    #[inline]
+    fn new(document: &'a T, relevance: f32) -> Self {
+        Self {
+            document,
+            relevance,
+        }
+    }
+}
+
 pub(crate) trait FindExt {
     type ResultItem;
     type GenDoc: document_vector::Document;
+    type Document: Decodable + Eq;
 
     fn get_limit(&self) -> usize;
     fn get_offset(&self) -> usize;
     fn get_query_str(&self) -> &str;
 
     /// Converts document vectors to result items
-    fn vecs_to_result_items<F, S>(
+    fn vecs_to_result_items<'a, S>(
         &self,
         query_vec: &DocumentVector<Self::GenDoc>,
-        document_vectors: Vec<DocumentVector<Document>>,
-        mut res_map: F,
+        document_vectors: &'a Vec<DocumentVector<Self::Document>>,
         mut sort_fn: S,
-    ) -> Vec<Self::ResultItem>
+    ) -> Vec<CmpDocument<'a, Self::Document>>
     where
-        F: FnMut(usize, f32) -> Self::ResultItem,
-        S: FnMut(&(&DocumentVector<Document>, f32), &(&DocumentVector<Document>, f32)) -> Ordering,
+        S: FnMut(&CmpDocument<Self::Document>, &CmpDocument<Self::Document>) -> Ordering,
     {
         // Sort by relevance
         let mut found: Vec<_> = document_vectors
             .iter()
             .filter_map(|i| {
                 let similarity = i.similarity(query_vec);
-                (similarity != 0f32).then(|| (i, similarity))
+                (similarity != 0f32).then(|| CmpDocument::new(&i.document, similarity))
             })
             .collect();
 
         // Sort by similarity to top
         found.sort_by(|a, b| sort_fn(a, b));
-        found.dedup_by(|a, b| a.0.document == b.0.document);
+        found.dedup_by(|a, b| a.document == b.document);
 
         // Convert DocumentVectors to ResultItems
         found
             .into_iter()
-            .map(|i| i.0.document.seq_ids.iter().copied().map(move |j| (j, i.1)))
             .skip(self.get_offset())
             .take(self.get_limit())
-            .flatten()
-            .map(|i| res_map(i.0, i.1))
             .collect::<Vec<_>>()
     }
 }

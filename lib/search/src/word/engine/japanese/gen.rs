@@ -5,18 +5,14 @@ use vector_space_model::{document_vector, traits::Encodable, Error};
 #[derive(Ord, Eq, PartialEq, PartialOrd, Clone)]
 pub struct GenDoc {
     terms: Vec<String>,
-    seq_ids: Vec<usize>,
+    seq_id: u32,
 }
 
 impl Encodable for GenDoc {
     fn encode<T: ByteOrder>(&self) -> Result<Vec<u8>, Error> {
         let mut encoded = vec![];
 
-        encoded.write_u16::<T>(self.seq_ids.len() as u16)?;
-
-        for seq_id in self.seq_ids.iter() {
-            encoded.write_u64::<T>(*seq_id as u64)?;
-        }
+        encoded.write_u32::<T>(self.seq_id)?;
 
         Ok(encoded)
     }
@@ -30,10 +26,10 @@ impl document_vector::Document for GenDoc {
 
 impl GenDoc {
     /// Create a new GenDoc Document
-    pub fn new<T: ToString>(terms: Vec<T>, seq_ids: Vec<usize>) -> Self {
+    pub fn new<T: ToString>(terms: Vec<T>, seq_id: u32) -> Self {
         GenDoc {
             terms: terms.into_iter().map(|i| i.to_string()).collect(),
-            seq_ids,
+            seq_id,
         }
     }
 }

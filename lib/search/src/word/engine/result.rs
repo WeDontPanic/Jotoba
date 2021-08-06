@@ -1,10 +1,10 @@
-use std::{cmp::Ordering, collections::HashMap};
+use std::{cmp::Ordering, collections::HashMap, vec::IntoIter};
 
 use parse::jmdict::languages::Language;
 
 /// A structure holding all inforamtion about the results of a search
 #[derive(Debug, Clone, Default)]
-pub struct SearchResult {
+pub(crate) struct SearchResult {
     items: Vec<ResultItem>,
     order_map: HashMap<usize, ResultItem>,
 }
@@ -62,6 +62,14 @@ impl SearchResult {
         &self.order_map
     }
 
+    /// Converts a SearchResult into a new one with max `limit` items
+    #[inline]
+    pub(crate) fn get_limit(self, limit: usize) -> Self {
+        let items = self.items.into_iter().take(limit).collect::<Vec<_>>();
+        let order_map = Self::build_order_map(&items);
+        Self { items, order_map }
+    }
+
     /// Builds a HashMap that maps sequence ids to the corresponding ResultItem
     fn build_order_map(items: &[ResultItem]) -> HashMap<usize, ResultItem> {
         let mut order_map: HashMap<usize, ResultItem> = HashMap::new();
@@ -77,5 +85,25 @@ impl SearchResult {
         }
 
         order_map
+    }
+}
+
+impl Extend<ResultItem> for SearchResult {
+    #[inline]
+    fn extend<T: IntoIterator<Item = ResultItem>>(&mut self, iter: T) {
+        self.items.extend(iter);
+        self.items.sort_unstable();
+        self.items.dedup();
+        self.order_map = Self::build_order_map(&self.items);
+    }
+}
+
+impl IntoIterator for SearchResult {
+    type Item = ResultItem;
+
+    type IntoIter = IntoIter<Self::Item>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        self.items.into_iter()
     }
 }

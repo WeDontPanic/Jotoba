@@ -75,13 +75,7 @@ pub(super) async fn by_reading(search: &Search<'_>) -> Result<ResultData, Error>
     )
     .await?;
 
-    #[cfg(feature = "tokenizer")]
-    let search_order = SearchOrder::new(search.query, &None);
-
-    #[cfg(not(feature = "tokenizer"))]
-    let search_order = SearchOrder::new(search.query);
-
-    search_order.sort(&mut w, order::kanji_reading_search);
+    SearchOrder::new(search.query, &None).sort(&mut w, order::kanji_reading_search);
 
     let count = w.len();
     w.truncate(10);

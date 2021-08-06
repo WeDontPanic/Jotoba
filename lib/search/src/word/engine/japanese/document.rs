@@ -7,21 +7,14 @@ use vector_space_model::traits::Decodable;
 /// this document
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(crate) struct Document {
-    pub seq_ids: Vec<usize>,
-    pub len: Option<u32>,
+    pub seq_id: u32,
 }
 
 impl Decodable for Document {
     #[inline(always)]
     fn decode<T: ByteOrder, R: Read>(mut data: R) -> Result<Self, vector_space_model::Error> {
-        let seq_id_count = data.read_u16::<T>()?;
-
-        let seq_ids = (0..seq_id_count)
-            .map(|_| data.read_u64::<T>().map(|i| i as usize))
-            .collect::<Result<_, _>>()?;
-
-        let len = data.read_u32::<T>().ok();
-
-        Ok(Self { seq_ids, len })
+        Ok(Self {
+            seq_id: data.read_u32::<T>()?,
+        })
     }
 }
