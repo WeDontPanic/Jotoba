@@ -19,7 +19,7 @@ const radicals = [
     ["龠"]
 ];
 
-var baseRadResult = $('.rad-results')[0].innerHTML;
+const baseRadResult = $('.rad-results')[0].innerHTML;
 
 function toggleRadicalOverlay() {
     $('.overlay.speech').addClass('hidden');
@@ -51,12 +51,13 @@ function resetRadPicker() {
         $(e).removeClass("disabled");
     });
 
-    $('.rad-results').addClass("hidden");
+    $('.rad-results').html(baseRadResult);
 }
 
 // Adds the selected Kanji to the search bar
 function handleKanjiSelect(event) {
     $('#search').val($('#search').val() + event.target.innerHTML);
+    toggleSearchIcon(200);
 }
 
 // Toggles Radicals on Input and loads the results
@@ -102,12 +103,11 @@ function loadRadicalResults(info) {
             kanjiBtns += '<span class="rad-btn result noselect" onClick="handleKanjiSelect(event)">'+possibleKanji[j]+'</span>';
         }
 
-        //$('.rad-results').append(kanjiBtns);
         rrHtml += kanjiBtns;
     }
 
 
-     $('.rad-results').html(rrHtml);
+    $('.rad-results').html(rrHtml);
 
     // Only activate possible radicals
     let radicals = $('.rad-btn.picker:not(.num)').toArray();
