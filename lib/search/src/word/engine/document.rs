@@ -8,6 +8,7 @@ use vector_space_model::traits::Decodable;
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(crate) struct Document {
     pub seq_ids: Vec<usize>,
+    pub len: Option<u32>,
 }
 
 impl Decodable for Document {
@@ -19,6 +20,8 @@ impl Decodable for Document {
             .map(|_| data.read_u64::<T>().map(|i| i as usize))
             .collect::<Result<_, _>>()?;
 
-        Ok(Self { seq_ids })
+        let len = data.read_u32::<T>().ok();
+
+        Ok(Self { seq_ids, len })
     }
 }

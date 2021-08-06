@@ -24,6 +24,11 @@ pub(crate) fn load(config: &Config) -> Result<(), Box<dyn Error>> {
     let mut map = HashMap::new();
 
     for index_file in index_files {
+        let file_name = index_file.file_name().and_then(|i| i.to_str()).unwrap();
+        if !file_name.starts_with("word_index") {
+            continue;
+        }
+
         let index = match Index::open(&index_file) {
             Ok(index) => index,
             Err(err) => {

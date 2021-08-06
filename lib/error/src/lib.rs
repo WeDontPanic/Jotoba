@@ -16,6 +16,7 @@ pub enum Error {
     IoError(std::io::Error),
     Checkout(r2d2::Error),
     PoolError(PoolError),
+    Unexpected,
     Postgres(tokio_postgres::Error), // new db error
 }
 

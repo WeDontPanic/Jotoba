@@ -2,22 +2,43 @@ mod gen;
 pub(super) mod index;
 mod metadata;
 
+use std::cmp::Ordering;
+
 use self::index::Index;
 use super::{
-    document::Document,
     result::{ResultItem, SearchResult},
+    FindExt,
 };
-use crate::query::Query;
+use crate::{query::Query, word::engine::document::Document};
 use error::Error;
 use gen::GenDoc;
 use parse::jmdict::languages::Language;
-use std::cmp::Ordering;
 use vector_space_model::{document_vector, DocumentVector};
 
 pub(crate) struct Find<'a> {
     limit: usize,
     offset: usize,
     query: &'a Query,
+}
+
+impl<'a> FindExt for Find<'a> {
+    type ResultItem = super::result::ResultItem;
+    type GenDoc = gen::GenDoc;
+
+    #[inline]
+    fn get_limit(&self) -> usize {
+        self.limit
+    }
+
+    #[inline]
+    fn get_offset(&self) -> usize {
+        self.offset
+    }
+
+    #[inline]
+    fn get_query_str(&self) -> &str {
+        &self.query.query
+    }
 }
 
 impl<'a> Find<'a> {
@@ -77,49 +98,17 @@ impl<'a> Find<'a> {
             .await
             .map_err(|_| error::Error::NotFound)?;
 
-        let res = self.vecs_to_result_items(&query_vec, document_vectors, language);
+        let res_item_map = |seq, rel| ResultItem {
+            seq_id: seq,
+            relevance: rel,
+            language,
+        };
 
-        Ok(res)
-    }
+        let sort = |a: &(&DocumentVector<Document>, f32), b: &(&DocumentVector<Document>, f32)| {
+            a.1.partial_cmp(&b.1).unwrap_or(Ordering::Equal).reverse()
+        };
 
-    /// Converts document vectors to result items
-    fn vecs_to_result_items(
-        &self,
-        query_vec: &DocumentVector<GenDoc>,
-        document_vectors: Vec<DocumentVector<Document>>,
-        language: Language,
-    ) -> Vec<ResultItem> {
-        // Sort by relevance
-        let mut found: Vec<_> = document_vectors
-            .iter()
-            .filter_map(|i| {
-                let similarity = i.similarity(query_vec);
-                (similarity != 0f32).then(|| (i, similarity))
-            })
-            .collect();
-
-        // Sort by similarity to top
-        found.sort_by(|a, b| a.1.partial_cmp(&b.1).unwrap_or(Ordering::Equal).reverse());
-        found.dedup_by(|a, b| a.0.document == b.0.document);
-
-        // Convert DocumentVectors to ResultItems
-        found
-            .into_iter()
-            .map(|i| i.0.document.seq_ids.iter().copied().map(move |j| (j, i.1)))
-            .skip(self.offset)
-            .take(self.limit)
-            .flatten()
-            .map(|i| ResultItem {
-                seq_id: i.0,
-                relevance: i.1,
-                language,
-            })
-            .collect::<Vec<_>>()
-    }
-
-    #[inline]
-    fn get_query_str(&self) -> &str {
-        &self.query.query
+        Ok(self.vecs_to_result_items(&query_vec, document_vectors, res_item_map, sort))
     }
 
     #[inline]

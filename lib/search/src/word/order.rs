@@ -79,8 +79,27 @@ pub(super) fn foreign_search_order(
     score
 }
 
+pub(super) fn new_native_order(
+    sort_map: &HashMap<usize, ResultItem>,
+    search_order: &SearchOrder,
+    e: &mut Vec<Word>,
+) {
+    e.sort_by(|a, b| {
+        let a_item = sort_map.get(&(a.sequence as usize)).unwrap();
+        let b_item = sort_map.get(&(b.sequence as usize)).unwrap();
+
+        native_search_order(a, search_order, a_item)
+            .cmp(&foreign_search_order(b, search_order, b_item))
+            .reverse()
+    })
+}
+
 /// Search order for words searched by japanese meaning/kanji/reading
-pub(super) fn native_search_order(word: &Word, search_order: &SearchOrder) -> usize {
+pub(super) fn native_search_order(
+    word: &Word,
+    search_order: &SearchOrder,
+    result_item: &ResultItem,
+) -> usize {
     #[cfg(feature = "tokenizer")]
     let morpheme = search_order.morpheme;
 
@@ -91,8 +110,10 @@ pub(super) fn native_search_order(word: &Word, search_order: &SearchOrder) -> us
     // The original query text
     let query_str = &query.query;
 
-    let mut score = 0;
+    let mut score: usize = (result_item.relevance * 25f32) as usize;
+    //let mut score = 0;
 
+    /*
     if reading.reading == *query_str || kana_reading.reading == *query_str {
         score += 35;
 
@@ -103,9 +124,10 @@ pub(super) fn native_search_order(word: &Word, search_order: &SearchOrder) -> us
     } else if reading.reading.starts_with(query_str) {
         score += 2;
     }
+    */
 
     if let Some(jlpt) = reading.jlpt_lvl {
-        score += jlpt as usize;
+        score += (jlpt as usize) * 2;
     }
 
     // If alternative reading matches query exactly
@@ -118,6 +140,7 @@ pub(super) fn native_search_order(word: &Word, search_order: &SearchOrder) -> us
         score += 9;
     }
 
+    /*
     #[cfg(feature = "tokenizer")]
     if let Some(morpheme) = morpheme {
         let lexeme = morpheme.get_lexeme();
@@ -130,14 +153,21 @@ pub(super) fn native_search_order(word: &Word, search_order: &SearchOrder) -> us
             score += 30;
         }
     }
+    */
 
     // Is common
+    /*
     score += word
         .priorities
         .as_ref()
         .map(|i| i.len())
         .unwrap_or_default()
-        * 2;
+        * 3;
+        */
+
+    if word.is_common() {
+        score *= 3;
+    }
 
     score
 }
