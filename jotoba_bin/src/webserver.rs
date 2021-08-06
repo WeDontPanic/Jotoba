@@ -61,8 +61,8 @@ pub(super) async fn start(pool: Pool) -> std::io::Result<()> {
             .app_data(Data::new(pool.clone()))
             .app_data(Data::new(locale_dict_arc.clone()))
             // Middlewares
+            .wrap(middleware::Compress::default())
             .wrap(middleware::Logger::default())
-            //.wrap(middleware::Compress::default())
             //.wrap(CookieSession::signed(&[0; 32]).secure(false))
             // Static files
             .route("/index.html", actixweb::get().to(frontend::index::index))

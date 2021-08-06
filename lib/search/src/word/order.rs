@@ -42,7 +42,7 @@ pub(super) fn foreign_search_order(
     }
 
     if let Some(jlpt) = reading.jlpt_lvl {
-        score += (jlpt as usize) * 2;
+        score += (jlpt as usize) * 1;
     }
 
     if !word.is_katakana_word() {
@@ -61,6 +61,7 @@ pub(super) fn foreign_search_order(
         }
     };
 
+    /*
     let divisor = match (found.mode, found.case_ignored) {
         (SearchMode::Exact, false) => 10,
         (SearchMode::Exact, true) => 30,
@@ -69,6 +70,7 @@ pub(super) fn foreign_search_order(
     };
 
     score += (calc_likeliness(word, &found) / divisor) as usize;
+    */
 
     if found.in_parentheses {
         score = score - score.clamp(0, 10);

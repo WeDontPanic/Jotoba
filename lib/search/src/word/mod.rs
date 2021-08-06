@@ -364,6 +364,8 @@ impl<'a> Search<'a> {
             &mut wordresults,
         );
 
+        let wordresults = wordresults.into_iter().take(10).collect();
+
         Ok(ResultData {
             count: word_count,
             words: wordresults,
