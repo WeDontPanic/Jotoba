@@ -72,7 +72,13 @@ impl<'a> Find<'a> {
     #[inline]
     fn gen_query(&self, index: &Index) -> Option<DocumentVector<GenDoc>> {
         let query_document = GenDoc::new(vec![self.query.to_string()], 0);
-        DocumentVector::new(index.get_indexer(), query_document.clone())
+        let mut doc = DocumentVector::new(index.get_indexer(), query_document.clone())?;
+
+        // TODO: look if this makes the results really better. If not, remove
+        let terms = tinysegmenter::tokenize(self.query);
+        doc.add_terms(index.get_indexer(), &terms, true, Some(0.03));
+
+        Some(doc)
     }
 }
 

@@ -2058,6 +2058,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "maplit"
+version = "1.0.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "3e2e65a1a2e43cfcb47a895c4c8b10d1f4a61097f9f254f183aee60cad9c651d"
+
+[[package]]
 name = "match_cfg"
 version = "0.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2946,6 +2952,7 @@ dependencies = [
  "regex",
  "serde",
  "strsim",
+ "tinysegmenter",
  "tokio-postgres",
  "utils",
  "vector_space_model",
@@ -3461,6 +3468,16 @@ dependencies = [
  "quote",
  "standback",
  "syn",
+]
+
+[[package]]
+name = "tinysegmenter"
+version = "0.1.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "1755695d17d470baf2d937a59ab4e86de3034b056fc8700e21411b0efca36497"
+dependencies = [
+ "lazy_static",
+ "maplit",
 ]
 
 [[package]]

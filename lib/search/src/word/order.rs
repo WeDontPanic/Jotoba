@@ -81,7 +81,7 @@ pub(super) fn foreign_search_order(
     score
 }
 
-pub(super) fn new_native_order(
+pub(super) fn new_japanese_order(
     sort_map: &HashMap<usize, ResultItem>,
     search_order: &SearchOrder,
     e: &mut Vec<Word>,
@@ -90,14 +90,14 @@ pub(super) fn new_native_order(
         let a_item = sort_map.get(&(a.sequence as usize)).unwrap();
         let b_item = sort_map.get(&(b.sequence as usize)).unwrap();
 
-        native_search_order(a, search_order, a_item)
+        japanese_search_order(a, search_order, a_item)
             .cmp(&foreign_search_order(b, search_order, b_item))
             .reverse()
     })
 }
 
 /// Search order for words searched by japanese meaning/kanji/reading
-pub(super) fn native_search_order(
+pub(super) fn japanese_search_order(
     word: &Word,
     search_order: &SearchOrder,
     result_item: &ResultItem,
@@ -107,6 +107,7 @@ pub(super) fn native_search_order(
 
     let reading = word.get_reading();
     let kana_reading = word.reading.kana.as_ref().unwrap();
+
     // Original query
     let query = search_order.query;
     // The original query text
@@ -116,14 +117,14 @@ pub(super) fn native_search_order(
     //let mut score = 0;
 
     if reading.reading == *query_str || kana_reading.reading == *query_str {
-        score += 35;
+        score += 1035;
 
         // Show kana only readings on top if they match with query
         if word.reading.kanji.is_none() {
-            score += 20;
+            score += 10;
         }
     } else if reading.reading.starts_with(query_str) {
-        score += 2;
+        score += 4;
     }
 
     if let Some(jlpt) = reading.jlpt_lvl {

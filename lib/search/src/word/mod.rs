@@ -14,23 +14,16 @@ use super::{
     query::{Form, Query, QueryLang, Tag},
     search_order::SearchOrder,
 };
-use async_std::sync::Mutex;
-use cache::SharedCache;
 use deadpool_postgres::Pool;
 use error::Error;
 use itertools::Itertools;
 use japanese::{inflection::SentencePart, JapaneseExt};
 use models::kanji::KanjiResult;
-use once_cell::sync::Lazy;
 use parse::jmdict::part_of_speech::PosSimple;
 use result::{Item, Word};
 
 #[cfg(feature = "tokenizer")]
 use japanese::jp_parsing::{igo_unidic::WordClass, InputTextParser, ParseResult, WordItem};
-
-/// An in memory Cache for word search results
-static SEARCH_CACHE: Lazy<Mutex<SharedCache<u64, WordResult>>> =
-    Lazy::new(|| Mutex::new(SharedCache::with_capacity(1000)));
 
 pub(self) struct Search<'a> {
     pool: &'a Pool,
@@ -38,19 +31,9 @@ pub(self) struct Search<'a> {
 }
 
 /// Search among all data based on the input query
+#[inline]
 pub async fn search(pool: &Pool, query: &Query) -> Result<WordResult, Error> {
-    let search = Search { pool, query };
-
-    // Try to use cache
-    if let Some(c_res) = search.get_cache().await {
-        return Ok(c_res);
-    }
-
-    // Perform the search
-    let results = search.do_search().await?;
-
-    search.save_cache(results.clone()).await;
-    Ok(results)
+    Ok(Search { pool, query }.do_search().await?)
 }
 
 #[derive(Default)]
@@ -120,8 +103,11 @@ impl<'a> Search<'a> {
     }
 
     #[cfg(not(feature = "tokenizer"))]
-    fn get_query(&self, query_str: &str) -> (String, Option<Vec<SentencePart>>) {
-        (query_str.to_owned(), None)
+    async fn get_query(
+        &self,
+        query_str: &str,
+    ) -> Result<(String, Option<()>, Option<Vec<SentencePart>>), Error> {
+        Ok((query_str.to_owned(), None, None))
     }
 
     #[cfg(feature = "tokenizer")]
@@ -223,54 +209,49 @@ impl<'a> Search<'a> {
         sentence: &Option<Vec<SentencePart>>,
         morpheme: &Option<WordItem>,
     ) -> Vec<PosSimple> {
-        if let Some(ref sentence) = sentence {
-            if let Some(ref morpheme) = morpheme {
-                if !sentence.is_empty() {
-                    if let Some(ref wc) = morpheme.word_class {
-                        if let Some(pos) = word_class_to_pos_s(wc) {
-                            return vec![pos];
-                        }
-                    }
-                }
+        if sentence.is_none()
+            || morpheme.is_none()
+            || (sentence.is_some() && sentence.as_ref().unwrap().is_empty())
+        {
+            return self.get_pos_filter_from_query();
+        }
 
-                // We don't want to allow tags in sentence reader
-                return vec![];
-            }
+        if let Some(ref pos) = morpheme
+            .as_ref()
+            .unwrap()
+            .word_class
+            .and_then(|i| word_class_to_pos_s(&i))
+        {
+            return vec![*pos];
         }
 
         self.get_pos_filter_from_query()
     }
 
     #[cfg(not(feature = "tokenizer"))]
-    fn get_pos_filter(&self) -> Vec<PosSimple> {
+    fn get_pos_filter(
+        &self,
+        _sentence: &Option<Vec<SentencePart>>,
+        _morpheme: &Option<()>,
+    ) -> Vec<PosSimple> {
         self.get_pos_filter_from_query()
     }
 
     /// Perform a native word search
     async fn native_results(&self, query_str: &str) -> Result<ResultData, Error> {
+        use engine::japanese::Find;
+
         if self.query.language != QueryLang::Japanese && !query_str.is_japanese() {
             return Ok(ResultData::default());
         }
 
-        #[cfg(feature = "tokenizer")]
-        let (query, morpheme, sentence) = self.get_query(query_str).await?;
-
-        #[cfg(not(feature = "tokenizer"))]
-        let (query, sentence) = self.get_query(query_str);
-
-        #[cfg(not(feature = "tokenizer"))]
-        let morpheme = true;
-
-        #[cfg(feature = "tokenizer")]
-        let pos_filter_tags = self.get_pos_filter(&sentence, &morpheme);
-
-        #[cfg(not(feature = "tokenizer"))]
-        let pos_filter_tags = self.get_pos_filter();
+        let (query, _morpheme, sentence) = self.get_query(query_str).await?;
 
         let query_modified = query != query_str;
+        let pos_filter_tags = self.get_pos_filter(&sentence, &_morpheme);
 
         #[cfg(feature = "tokenizer")]
-        let infl_info = morpheme.as_ref().and_then(|i| {
+        let infl_info = _morpheme.as_ref().and_then(|i| {
             (!i.inflections.is_empty()).then(|| InflectionInformation {
                 lexeme: i.lexeme.to_owned(),
                 forms: i.inflections.clone(),
@@ -279,8 +260,6 @@ impl<'a> Search<'a> {
 
         #[cfg(not(feature = "tokenizer"))]
         let infl_info: Option<InflectionInformation> = None;
-
-        use engine::japanese::Find;
 
         let mut search_result = Find::new(&query, 10000, 0).find().await?;
         if query_modified {
@@ -306,7 +285,7 @@ impl<'a> Search<'a> {
         .await?;
 
         // Sort the result
-        order::new_native_order(
+        order::new_japanese_order(
             search_result.get_order_map(),
             &SearchOrder::new(self.query, &None),
             &mut wordresults,
@@ -315,7 +294,7 @@ impl<'a> Search<'a> {
         let wordresults = wordresults.into_iter().take(10).collect();
 
         #[cfg(feature = "tokenizer")]
-        let searched_query = morpheme
+        let searched_query = _morpheme
             .map(|i| i.original_word.to_owned())
             .unwrap_or(query);
 
@@ -357,6 +336,13 @@ impl<'a> Search<'a> {
             WordSearch::load_words_by_seq(&self.pool, &seq_ids, lang, show_english, &None, |_e| {})
                 .await?;
 
+        // Do romaji search if no results were found
+        if wordresults.is_empty() && !self.query.query.is_japanese() {
+            return self
+                .native_results(&self.query.query.replace(" ", "").to_hiragana())
+                .await;
+        }
+
         // Sort the result
         order::new_foreign_order(
             search_result.get_order_map(),
@@ -373,63 +359,19 @@ impl<'a> Search<'a> {
         })
     }
 
+    #[inline]
     fn merge_words_with_kanji(words: Vec<Word>, kanji: Vec<KanjiResult>) -> Vec<Item> {
         kanji
             .into_iter()
             .map(|i| i.into())
-            .collect::<Vec<Item>>()
-            .into_iter()
             .chain(words.into_iter().map(|i| i.into()).collect_vec())
             .collect_vec()
     }
-
-    async fn get_cache(&self) -> Option<WordResult> {
-        SEARCH_CACHE
-            .lock()
-            .await
-            .cache_get(&self.query.get_hash())
-            .cloned()
-    }
-
-    async fn save_cache(&self, result: WordResult) {
-        SEARCH_CACHE
-            .lock()
-            .await
-            .cache_set(self.query.get_hash(), result);
-    }
-
-    /*
-    #[cfg(feature = "tokenizer")]
-    fn ma_f(&self, w: &mut Vec<Word>, morpheme: Option<WordItem>) {
-        #[cfg(feature = "tokenizer")]
-        let search_order = SearchOrder::new(self.query, &morpheme);
-
-        // Sort the results based
-        search_order.sort(w, order::native_search_order);
-        w.dedup();
-
-        // Limit search to 10 results
-        w.truncate(10);
-    }
-
-    #[cfg(not(feature = "tokenizer"))]
-    fn ma_f(&self, w: &mut Vec<Word>, _morpheme: bool) {
-        #[cfg(not(feature = "tokenizer"))]
-        let search_order = SearchOrder::new(self.query);
-
-        // Sort the results based
-        search_order.sort(w, order::native_search_order);
-        w.dedup();
-
-        // Limit search to 10 results
-        w.truncate(10);
-    }
-    */
 }
 
 #[cfg(feature = "tokenizer")]
 fn word_class_to_pos_s(class: &WordClass) -> Option<PosSimple> {
-    Some(match class {
+    let pos = match class {
         WordClass::Particle(_) => PosSimple::Particle,
         WordClass::Verb(_) => PosSimple::Verb,
         WordClass::Adjective(_) => PosSimple::Adjective,
@@ -440,5 +382,6 @@ fn word_class_to_pos_s(class: &WordClass) -> Option<PosSimple> {
         WordClass::Suffix => PosSimple::Suffix,
         WordClass::Prefix => PosSimple::Prefix,
         _ => return None,
-    })
+    };
+    Some(pos)
 }
