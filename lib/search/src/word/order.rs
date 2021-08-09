@@ -132,7 +132,7 @@ pub(super) fn japanese_search_order(
         .iter()
         .any(|i| i.reading == *query_str)
     {
-        score += 9;
+        score += 45;
     }
 
     score

@@ -1,39 +1,37 @@
+use crate::word::engine::{self, japanese::gen::GenDoc};
+
 use super::{
-    super::{query::Query, search_order::SearchOrder, SearchMode},
-    order, ResultData, Search,
+    super::{query::Query, SearchMode},
+    ResultData, Search,
 };
 use error::Error;
-use futures::{stream::FuturesUnordered, TryStreamExt};
 use itertools::Itertools;
 use japanese::{CharType, JapaneseExt};
-use models::{
-    dict::Dict,
-    kanji::{self, KanjiResult},
+use resources::models::{
+    kanji::{self, Kanji, ReadingType},
+    words::Word,
 };
-use resources::models::{kanji::Kanji, words::Word};
-use utils::{self, to_option};
-
-const MAX_KANJI_INFO_ITEMS: usize = 5;
+use vector_space_model::DocumentVector;
 
 /// Runs a kanji reading search
 pub(super) async fn by_reading(search: &Search<'_>) -> Result<ResultData, Error> {
-    /*
     let reading = search
         .query
         .form
         .as_kanji_reading()
         .ok_or(Error::Undefined)?;
 
-    let kanji = kanji::find_by_literalv2(&search.pool, reading.literal.to_string()).await?;
-    if kanji.is_none() {
-        return alternative_reading_search(search).await;
-    }
-    let kanji = kanji.unwrap();
+    let kanji_storage = resources::get().kanji();
 
-    let reading_type = kanji.kanji.get_reading_type(&reading.reading);
-    if !kanji.kanji.has_reading(&reading.reading) || reading_type.is_none() {
+    let kanji = kanji_storage
+        .by_literal(reading.literal)
+        .ok_or(Error::Undefined)?;
+
+    let reading_type = kanji.get_reading_type(&reading.reading);
+    if !kanji.has_reading(&reading.reading) || reading_type.is_none() {
         return alternative_reading_search(search).await;
     }
+    let reading_type = reading_type.unwrap();
 
     let mode = if reading.reading.starts_with('-') {
         SearchMode::LeftVariable
@@ -41,63 +39,66 @@ pub(super) async fn by_reading(search: &Search<'_>) -> Result<ResultData, Error>
         SearchMode::RightVariable
     };
 
-    let mut seq_ids = kanji
-        .kanji
-        .find_readings(search.pool, reading, reading_type.unwrap(), mode, true)
-        .await?;
+    let mut words = words_with_kanji_reading(kanji, reading_type, &reading.reading, mode).await?;
+    let count = words.len();
 
-    // Do 2nd search if 1st didn't return enough
-    if seq_ids.len() <= 2 {
-        seq_ids = kanji
-            .kanji
-            .find_readings(
-                search.pool,
-                reading,
-                reading_type.unwrap(),
-                SearchMode::Variable,
-                false,
-            )
-            .await?;
-    }
-
-    // If still nothing was found return
-    if seq_ids.is_empty() {
-        return alternative_reading_search(search).await;
-    }
-
-    let (mut w, _) = WordSearch::load_words_by_seq(
-        search.pool,
-        &seq_ids,
-        search.query.settings.user_lang,
-        search.query.settings.show_english,
-        &to_option(search.query.get_part_of_speech_tags()),
-        |_| (),
-    )
-    .await?;
-
-    SearchOrder::new(search.query, &None).sort(&mut w, order::kanji_reading_search);
-
-    let count = w.len();
-    w.truncate(10);
+    words.truncate(10);
 
     Ok(ResultData {
-        words: w,
         count,
+        words,
         ..Default::default()
     })
-    */
-    unimplemented!()
+}
+
+async fn words_with_kanji_reading(
+    kanji: &Kanji,
+    rt: ReadingType,
+    reading: &str,
+    mode: SearchMode,
+) -> Result<Vec<Word>, Error> {
+    use engine::japanese::Find;
+
+    // TODO: this doesn't work properly: '逸 そ.れる', '気 ケ'
+    // maybe we need to adjust the actual index to contain kanji readings too (should'nt it
+    // already?)
+
+    let query_document = GenDoc::new(vec![kanji.literal.to_string()], 0);
+
+    let index = engine::japanese::get_index();
+    let doc = match DocumentVector::new(index.get_indexer(), query_document.clone()) {
+        Some(s) => s,
+        None => return Ok(vec![]),
+    };
+
+    let res = Find::new("", 10, 0).find_by_vec(doc).await?;
+    let word_storage = resources::get().words();
+
+    let seq_ids = res.sequence_ids();
+    let wordresults = seq_ids
+        .iter()
+        .filter_map(|i| word_storage.by_sequence(*i).map(|i| i.to_owned()))
+        .filter(|i| {
+            let word_reading = &i.get_reading().reading;
+            let kana = &i.reading.kana.reading;
+            kana.to_hiragana().contains(&reading.to_hiragana())
+                && word_reading.contains(&kanji.literal.to_string())
+        })
+        // Prevent loading too many
+        .take(100);
+
+    Ok(wordresults.collect())
 }
 
 /// Do a search without the kanji literal or reading
-pub(super) async fn alternative_reading_search(search: &Search<'_>) -> Result<ResultData, Error> {
+async fn alternative_reading_search(search: &Search<'_>) -> Result<ResultData, Error> {
     let reading = search.query.form.as_kanji_reading().unwrap();
 
     // Modify search query
     Search {
         pool: search.pool,
         query: &Query {
-            query: kanji::gen_readings::literal_reading(&reading.reading),
+            query: kanji::literal_kun_reading(&reading.reading),
             ..search.query.to_owned()
         },
     }
@@ -123,5 +124,5 @@ pub(super) fn load_word_kanji_info(words: &[Word]) -> Result<Vec<Kanji>, Error> 
         .take(14)
         .collect::<Vec<_>>();
 
-    return Ok(kanji_literals);
+    Ok(kanji_literals)
 }

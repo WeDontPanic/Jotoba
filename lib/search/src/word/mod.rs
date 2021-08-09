@@ -7,6 +7,8 @@ use std::time::Instant;
 
 pub use engine::load_indexes;
 
+use crate::query::Form;
+
 use self::result::{InflectionInformation, WordResult};
 use super::{
     query::{Query, QueryLang, Tag},
@@ -50,7 +52,7 @@ impl<'a> Search<'a> {
     /// Do the search
     async fn do_search(&self) -> Result<WordResult, Error> {
         let search_result = match self.query.form {
-            /*Form::KanjiReading(_) => kanji::by_reading(self).await?,*/
+            Form::KanjiReading(_) => kanji::by_reading(self).await?,
             _ => self.do_word_search().await?,
         };
 

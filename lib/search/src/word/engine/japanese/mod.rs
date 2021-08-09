@@ -1,6 +1,7 @@
 mod document;
-mod gen;
+pub(crate) mod gen;
 pub(super) mod index;
+pub(crate) mod kanji;
 
 use self::{gen::GenDoc, index::Index};
 
@@ -37,6 +38,16 @@ impl<'a> Find<'a> {
             None => return Ok(SearchResult::default()),
         };
 
+        self.find_by_vec(query_vec).await
+    }
+
+    /// Do a foreign word search with a custom `query_vec`
+    pub(crate) async fn find_by_vec(
+        &self,
+        query_vec: DocumentVector<GenDoc>,
+    ) -> Result<SearchResult, Error> {
+        let index = index::INDEX.get().ok_or(Error::Unexpected)?;
+
         // VecStore is surrounded by an Arc
         let mut doc_store = index.get_vector_store().clone();
 
@@ -67,7 +78,6 @@ impl<'a> Find<'a> {
 
         Ok(SearchResult::new(items))
     }
-
     /// Generate a document vector out of `query_str`
     #[inline]
     fn gen_query(&self, index: &Index) -> Option<DocumentVector<GenDoc>> {
@@ -80,6 +90,12 @@ impl<'a> Find<'a> {
 
         Some(doc)
     }
+}
+
+/// Returns the loaded japanese index
+#[inline]
+pub(crate) fn get_index() -> &'static Index {
+    index::INDEX.get().unwrap()
 }
 
 impl<'a> FindExt for Find<'a> {

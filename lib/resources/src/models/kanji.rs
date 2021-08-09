@@ -97,8 +97,15 @@ impl Kanji {
 }
 
 /// Formats a kun/on reading to a kana entry
+#[inline]
 pub fn format_reading(reading: &str) -> String {
     reading.replace('-', "").replace('.', "")
+}
+
+/// Returns the reading of a kanjis literal, given the kun reading
+#[inline]
+pub fn literal_kun_reading(kun: &str) -> String {
+    kun.replace('-', "").split('.').next().unwrap().to_string()
 }
 
 /// Formats `literal` with `reading`, based on `ReadingType`
