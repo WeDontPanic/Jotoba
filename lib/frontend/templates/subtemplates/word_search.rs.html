@@ -160,7 +160,7 @@
                   @data.gettext("common word")
                 </div>
               }
-              @if let Some(lvl) =  word.reading.get_jplt_lvl() {
+              @if let Some(lvl) =  word.jlpt_lvl {
                 <div class="word-frequency">
                   @data.gettext("JLPT") n@lvl
                 </div>
@@ -202,7 +202,7 @@
                   }
                 </ul>
 
-                @for (spos, senses_compound) in word.get_senses_orderd(&query).iter().enumerate() { 
+                @for (spos, senses_compound) in word.get_senses_orderd(query.settings.english_on_top, query.settings.user_lang).iter().enumerate() { 
                   @for (pos, sense) in senses_compound.iter().enumerate() {
                     @if !sense.glosses.is_empty() {
                       <!-- Sense entry -->
@@ -393,19 +393,19 @@
           <div class="kanji-parent">
             <!-- Tags -->
             <div class="tags">
-              @kanji.kanji.stroke_count @data.gettext("strokes").
-              @if let Some(jplt_lvl) = kanji.kanji.jlpt {
+              @kanji.stroke_count @data.gettext("strokes").
+              @if let Some(jplt_lvl) = kanji.jlpt {
                 JLPT N@jplt_lvl.
               }
-              @if let Some(grade) = kanji.kanji.grade {
+              @if let Some(grade) = kanji.grade {
                 @data.gettext_fmt("Taught in {} grade", &[grade])
               }
             </div>
 
             <!-- Kanji and translation -->
             <div class="kanji-entry left d-flex flex-row">
-              <a class="kanji-preview large black" href="/search/@kanji.kanji.literal?t=1">
-                @kanji.kanji.literal
+              <a class="kanji-preview large black" href="/search/@kanji.literal?t=1">
+                @kanji.literal
               </a>
               <div class="translation kanji">
                 @kanji.meanings.join(", ")
@@ -413,27 +413,27 @@
             </div>
 
             <!-- Kun readings -->
-            @if let Some(ref kun) = kanji.kanji.kunyomi {
+            @if let Some(ref kun) = kanji.kunyomi {
               <div class="tags no-margin">@data.gettext("Kun")</div>
               <div class="d-flex flex-row wrap noselect">
                 @for (pos, reading) in kun.iter().enumerate() {
                   @if pos > 0 {
                     <span class="tags no-margin fat right-padding-10">,</span>
                   }
-                  <a class="clickable no-align green" href="/search/@kanji.kanji.literal @reading">@reading</a>
+                  <a class="clickable no-align green" href="/search/@kanji.literal @reading">@reading</a>
                 }
               </div>
             }
 
             <!-- On readings -->
-            @if let Some(ref on) = kanji.kanji.onyomi {
+            @if let Some(ref on) = kanji.onyomi {
               <div class="tags no-margin">@data.gettext("On")</div>
               <div class="d-flex flex-row wrap noselect">
                 @for (pos, reading) in on.iter().enumerate() {
                   @if pos > 0 {
                     <span class="tags no-margin fat right-padding-10">,</span>
                   }
-                  <a class="clickable no-align green" href="/search/@kanji.kanji.literal @reading">@reading</a>
+                  <a class="clickable no-align green" href="/search/@kanji.literal @reading">@reading</a>
                 }
               </div>
             }

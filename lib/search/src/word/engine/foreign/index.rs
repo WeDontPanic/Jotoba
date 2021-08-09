@@ -4,7 +4,7 @@ use super::{document::Document, metadata::Metadata};
 use config::Config;
 use log::{error, info};
 use once_cell::sync::OnceCell;
-use parse::jmdict::languages::Language;
+use resources::parse::jmdict::languages::Language;
 
 // Shortcut for type of index
 pub(super) type Index = vector_space_model::Index<Document, Metadata>;

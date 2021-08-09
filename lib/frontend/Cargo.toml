@@ -17,6 +17,7 @@ error = { path = "../error" }
 utils = { path = "../utils" }
 config = { path = "../config" }
 localization = { path = "../localization" }
+resources = { path = "../resources"}
 actix-web = "4.0.0-beta.8"
 ructe = "0.13.4"
 serde = "1.0.127"

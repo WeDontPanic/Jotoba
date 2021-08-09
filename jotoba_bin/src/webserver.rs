@@ -9,6 +9,7 @@ use actix_web::{
     App, HttpRequest, HttpServer,
 };
 use config::Config;
+use log::info;
 use std::sync::Arc;
 
 /// How long frontend assets are going to be cached by the clients. Currently 1 week
@@ -19,6 +20,10 @@ pub(super) async fn start(pool: Pool) -> std::io::Result<()> {
     setup_logger();
 
     let config = Config::new().await.expect("config failed");
+
+    info!("Loading resources");
+
+    resources::initialize_resources("./resources/storage_data").expect("Failed to load resources");
 
     #[cfg(feature = "tokenizer")]
     load_tokenizer();

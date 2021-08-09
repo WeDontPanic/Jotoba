@@ -1,7 +1,8 @@
-use parse::jmdict::{
+use resources::parse::jmdict::{
     dialect::Dialect, field::Field, languages::Language, misc::Misc, part_of_speech::PartOfSpeech,
 };
-use search::word::result::{self, Item, WordResult};
+
+use search::word::result::{Item, WordResult};
 use serde::Serialize;
 
 use crate::search::kanji::response::Kanji;
@@ -53,17 +54,9 @@ pub struct Sense {
     xref: Option<String>,
 }
 
-impl From<&result::Sense> for Sense {
-    fn from(sense: &result::Sense) -> Self {
-        let mut pos = sense
-            .glosses
-            .iter()
-            .map(|i| i.part_of_speech.clone())
-            .flatten()
-            .collect::<Vec<_>>();
-
-        pos.sort();
-        pos.dedup();
+impl From<&resources::models::words::Sense> for Sense {
+    fn from(sense: &resources::models::words::Sense) -> Self {
+        let pos = sense.part_of_speech.clone();
 
         let glosses = sense
             .glosses
@@ -85,11 +78,11 @@ impl From<&result::Sense> for Sense {
     }
 }
 
-impl From<&result::Word> for Word {
-    fn from(word: &result::Word) -> Self {
+impl From<&resources::models::words::Word> for Word {
+    fn from(word: &resources::models::words::Word) -> Self {
         let kanji = word.reading.kanji.as_ref().map(|i| i.reading.clone());
-        let kana = word.reading.kana.clone().unwrap().reading;
-        let furigana = word.reading.kanji.as_ref().and_then(|i| i.furigana.clone());
+        let kana = word.reading.kana.clone().reading;
+        let furigana = word.furigana.clone();
 
         let senses = word.senses.iter().map(|i| Sense::from(i)).collect();
 

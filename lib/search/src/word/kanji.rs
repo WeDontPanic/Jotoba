@@ -1,23 +1,23 @@
 use super::{
     super::{query::Query, search_order::SearchOrder, SearchMode},
-    order,
-    result::Word,
-    ResultData, Search, WordSearch,
+    order, ResultData, Search,
 };
 use error::Error;
 use futures::{stream::FuturesUnordered, TryStreamExt};
 use itertools::Itertools;
-use japanese::JapaneseExt;
+use japanese::{CharType, JapaneseExt};
 use models::{
     dict::Dict,
     kanji::{self, KanjiResult},
 };
+use resources::models::{kanji::Kanji, words::Word};
 use utils::{self, to_option};
 
 const MAX_KANJI_INFO_ITEMS: usize = 5;
 
 /// Runs a kanji reading search
 pub(super) async fn by_reading(search: &Search<'_>) -> Result<ResultData, Error> {
+    /*
     let reading = search
         .query
         .form
@@ -85,6 +85,8 @@ pub(super) async fn by_reading(search: &Search<'_>) -> Result<ResultData, Error>
         count,
         ..Default::default()
     })
+    */
+    unimplemented!()
 }
 
 /// Do a search without the kanji literal or reading
@@ -103,73 +105,23 @@ pub(super) async fn alternative_reading_search(search: &Search<'_>) -> Result<Re
     .await
 }
 
-/// load word assigned kanji
-pub(super) async fn load_word_kanji_info(
-    search: &Search<'_>,
-    words: &[Word],
-) -> Result<Vec<KanjiResult>, Error> {
-    let kanji_words = get_kanji_words(words);
-    let retrieved_kanji = {
-        // Also show kanji even if no word was found
-        // TODO make only one DB query for this
-        if !kanji_words.is_empty() {
-            kanji_words
-                .iter()
-                .map(|word| word.load_kanji_info(&search.pool))
-                .collect::<FuturesUnordered<_>>()
-                .try_collect::<Vec<_>>()
-                .await?
-                .into_iter()
-                .flatten()
-                .collect_vec()
-        } else {
-            search
-                .query
-                .query
-                .chars()
-                .into_iter()
-                .filter_map(|i| {
-                    i.is_kanji()
-                        .then(|| models::kanji::find_by_literalv2(&search.pool, i.to_string()))
-                })
-                .collect::<FuturesUnordered<_>>()
-                .try_collect::<Vec<_>>()
-                .await?
-                .into_iter()
-                .filter_map(|i| i)
-                .collect_vec()
-        }
-    };
+/// Load word assigned kanji
+pub(super) fn load_word_kanji_info(words: &[Word]) -> Result<Vec<Kanji>, Error> {
+    let kanji_resources = resources::get().kanji();
 
-    // If first word with kanji reading has more
-    // than MAX_KANJI_INFO_ITEMS kanji, display all of them only
-    let limit = {
-        if !kanji_words.is_empty() && kanji_words[0].reading.kanji_count() > words.len() {
-            kanji_words[0].reading.kanji_count()
-        } else {
-            words.len()
-        }
-    };
-
-    // Limit result and map to result::Item
-    Ok(utils::remove_dups(retrieved_kanji)
-        .into_iter()
-        .take(limit)
-        .collect())
-}
-
-/// Returns first 10 dicts of words which have a kanji
-fn get_kanji_words(words: &[Word]) -> Vec<&Dict> {
-    words
+    let kanji_literals = words
         .iter()
-        // Filter only words with kanji readings
         .filter_map(|i| {
-            i.reading
-                .kanji
-                .is_some()
-                .then(|| i.reading.kanji.as_ref().unwrap())
+            let kanji = &i.reading.kanji.as_ref()?.reading;
+            Some(japanese::all_words_with_ct(kanji, CharType::Kanji))
         })
-        // Don't load too much
-        .take(10)
-        .collect()
+        .flatten()
+        .map(|i| i.chars().collect::<Vec<_>>())
+        .flatten()
+        .filter_map(|i| kanji_resources.by_literal(i).cloned())
+        .unique_by(|i| i.literal)
+        .take(14)
+        .collect::<Vec<_>>();
+
+    return Ok(kanji_literals);
 }

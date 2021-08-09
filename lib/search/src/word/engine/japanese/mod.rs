@@ -9,7 +9,7 @@ use super::{
     CmpDocument, FindExt,
 };
 use error::Error;
-use parse::jmdict::languages::Language;
+use resources::parse::jmdict::languages::Language;
 use vector_space_model::DocumentVector;
 
 pub(crate) struct Find<'a> {
@@ -63,7 +63,7 @@ impl<'a> Find<'a> {
                 relevance: doc.relevance,
                 language: Language::English,
             })
-            .collect();
+            .collect::<Vec<_>>();
 
         Ok(SearchResult::new(items))
     }

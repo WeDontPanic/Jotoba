@@ -13,7 +13,7 @@ use super::{
 use crate::{query::Query, word::engine::CmpDocument};
 use error::Error;
 use gen::GenDoc;
-use parse::jmdict::languages::Language;
+use resources::parse::jmdict::languages::Language;
 use vector_space_model::{document_vector, DocumentVector};
 
 pub(crate) struct Find<'a> {

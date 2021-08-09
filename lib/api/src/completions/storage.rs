@@ -11,7 +11,7 @@ use config::Config;
 use itertools::Itertools;
 use log::info;
 use once_cell::sync::OnceCell;
-use parse::jmdict::languages::Language;
+use resources::parse::jmdict::languages::Language;
 use search::suggestions::{store_item, SuggestionSearch, TextSearch};
 
 use super::WordPair;

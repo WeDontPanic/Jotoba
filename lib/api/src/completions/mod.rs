@@ -14,8 +14,8 @@ use config::Config;
 use error::api_error::RestError;
 use japanese::JapaneseExt;
 use models::kanji::reading::KanjiReading;
-use parse::jmdict::languages::Language;
 use query_parser::{QueryParser, QueryType};
+use resources::parse::jmdict::languages::Language;
 use search::{
     query::{Form, Query, QueryLang, UserSettings},
     query_parser,

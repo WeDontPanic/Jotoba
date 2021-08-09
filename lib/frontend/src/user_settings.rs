@@ -1,7 +1,7 @@
 use std::str::FromStr;
 
 use actix_web::HttpRequest;
-use parse::jmdict::languages::Language;
+use resources::parse::jmdict::languages::Language;
 use search::query::UserSettings;
 
 /// Parses user settings from a `HttpRequest`

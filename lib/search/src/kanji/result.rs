@@ -3,10 +3,10 @@ use std::{fs::read_to_string, path::Path, vec};
 use deadpool_postgres::Pool;
 use futures::try_join;
 
-use super::super::word::{result::Word, WordSearch};
 use error::Error;
 use models::{kanji::KanjiResult, radical::Radical};
 use parse::jmdict::languages::Language;
+use resources::models::words::Word;
 use utils::{self, to_option};
 
 #[derive(Debug, PartialEq, Clone)]
@@ -29,6 +29,8 @@ impl Item {
         lang: Language,
         show_english: bool,
     ) -> Result<Self, Error> {
+        unimplemented!()
+        /*
         let kun_dicts = k.kanji.kun_dicts.clone().unwrap_or_default();
         let on_dicts = k.kanji.on_dicts.clone().unwrap_or_default();
 
@@ -62,6 +64,7 @@ impl Item {
             radical,
             parts: to_option(parts),
         })
+        */
     }
 }
 

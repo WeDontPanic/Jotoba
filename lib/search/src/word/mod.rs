@@ -2,25 +2,25 @@ mod engine;
 mod kanji;
 mod order;
 pub mod result;
-mod wordsearch;
 
 use std::time::Instant;
 
 pub use engine::load_indexes;
-pub use wordsearch::WordSearch;
 
 use self::result::{InflectionInformation, WordResult};
 use super::{
-    query::{Form, Query, QueryLang, Tag},
+    query::{Query, QueryLang, Tag},
     search_order::SearchOrder,
 };
 use deadpool_postgres::Pool;
 use error::Error;
 use itertools::Itertools;
 use japanese::{inflection::SentencePart, JapaneseExt};
-use models::kanji::KanjiResult;
-use parse::jmdict::part_of_speech::PosSimple;
-use result::{Item, Word};
+use resources::{
+    models::{kanji::Kanji, words::Word},
+    parse::jmdict::{languages::Language, part_of_speech::PosSimple},
+};
+use result::Item;
 
 #[cfg(feature = "tokenizer")]
 use japanese::jp_parsing::{igo_unidic::WordClass, InputTextParser, ParseResult, WordItem};
@@ -50,19 +50,16 @@ impl<'a> Search<'a> {
     /// Do the search
     async fn do_search(&self) -> Result<WordResult, Error> {
         let search_result = match self.query.form {
-            Form::KanjiReading(_) => kanji::by_reading(self).await?,
+            /*Form::KanjiReading(_) => kanji::by_reading(self).await?,*/
             _ => self.do_word_search().await?,
         };
 
-        let mut words = search_result.words;
+        let words = search_result.words;
 
-        let words_cloned = words.clone();
-
-        // Load collocations
-        let (kanji_results, _): (Vec<KanjiResult>, _) = futures::try_join!(
-            kanji::load_word_kanji_info(&self, &words_cloned),
-            WordSearch::load_collocations(self.pool, &mut words, self.query.settings.user_lang)
-        )?;
+        let start = Instant::now();
+        // TODO: implement loading collocations
+        let kanji_results = kanji::load_word_kanji_info(&words)?;
+        println!("loading kanji took: {:?}", start.elapsed());
 
         let kanji_items = kanji_results.len();
         return Ok(WordResult {
@@ -172,9 +169,9 @@ impl<'a> Search<'a> {
                 .ok()
                 .and_then(|i| i);
 
-            part.furigana = furigana.clone();
+            part.furigana = furigana;
 
-            if let Some(furigana) = furigana {
+            if let Some(ref furigana) = part.furigana {
                 let furi_end = match japanese::furigana::last_kana_part(&furigana) {
                     Some(s) => s,
                     None => continue,
@@ -245,6 +242,7 @@ impl<'a> Search<'a> {
             return Ok(ResultData::default());
         }
 
+        let start = Instant::now();
         let (query, _morpheme, sentence) = self.get_query(query_str).await?;
 
         let query_modified = query != query_str;
@@ -267,22 +265,19 @@ impl<'a> Search<'a> {
             search_result.extend(original_res);
         }
 
-        let lang = self.query.settings.user_lang;
-        let show_english = self.query.settings.show_english;
-        let seq_ids = search_result.sequence_ids();
-
+        // TODO: implement pos filter
         let pos_filter = (!pos_filter_tags.is_empty()).then(|| pos_filter_tags);
 
-        // Load words by their sequence ids returned from search enigne
-        let (mut wordresults, word_count) = WordSearch::load_words_by_seq(
-            &self.pool,
-            &seq_ids,
-            lang,
-            show_english,
-            &pos_filter,
-            |_e| {},
-        )
-        .await?;
+        let word_storage = resources::get().words();
+
+        let seq_ids = search_result.sequence_ids();
+        let wordresults = seq_ids
+            .iter()
+            .filter_map(|i| word_storage.by_sequence(*i).map(|i| i.to_owned()))
+            // Prevent loading too many
+            .take(100);
+
+        let mut wordresults = filter_languages(wordresults, &self.query).collect::<Vec<_>>();
 
         // Sort the result
         order::new_japanese_order(
@@ -291,7 +286,9 @@ impl<'a> Search<'a> {
             &mut wordresults,
         );
 
-        let wordresults = wordresults.into_iter().take(10).collect();
+        let wordresults: Vec<_> = wordresults.into_iter().take(10).collect();
+
+        println!("word search took: {:?}", start.elapsed());
 
         #[cfg(feature = "tokenizer")]
         let searched_query = _morpheme
@@ -302,9 +299,9 @@ impl<'a> Search<'a> {
         let searched_query = query;
 
         Ok(ResultData {
+            count: wordresults.len(),
             words: wordresults,
             infl_info,
-            count: word_count,
             sentence_parts: sentence,
             sentence_index: self.query.word_index as i32,
             searched_query,
@@ -325,16 +322,17 @@ impl<'a> Search<'a> {
         // Do the search
         let start = Instant::now();
         let search_result = Find::new(&self.query, 10, self.query.page).find().await?;
-        println!("search took: {:?}", start.elapsed());
 
-        let lang = self.query.settings.user_lang;
-        let show_english = self.query.settings.show_english;
         let seq_ids = search_result.sequence_ids();
 
-        // Load words by their sequence ids returned from search enigne
-        let (mut wordresults, word_count) =
-            WordSearch::load_words_by_seq(&self.pool, &seq_ids, lang, show_english, &None, |_e| {})
-                .await?;
+        let word_storage = resources::get().words();
+        let wordresults = seq_ids
+            .iter()
+            .filter_map(|i| word_storage.by_sequence(*i as u32).map(|i| i.to_owned()))
+            // Prevent loading too many
+            .take(100);
+
+        let mut wordresults = filter_languages(wordresults, &self.query).collect::<Vec<_>>();
 
         // Do romaji search if no results were found
         if wordresults.is_empty() && !self.query.query.is_japanese() {
@@ -350,17 +348,18 @@ impl<'a> Search<'a> {
             &mut wordresults,
         );
 
-        let wordresults = wordresults.into_iter().take(10).collect();
+        let wordresults: Vec<_> = wordresults.into_iter().take(10).collect();
+        println!("search took: {:?}", start.elapsed());
 
         Ok(ResultData {
-            count: word_count,
+            count: wordresults.len(),
             words: wordresults,
             ..Default::default()
         })
     }
 
     #[inline]
-    fn merge_words_with_kanji(words: Vec<Word>, kanji: Vec<KanjiResult>) -> Vec<Item> {
+    fn merge_words_with_kanji(words: Vec<Word>, kanji: Vec<Kanji>) -> Vec<Item> {
         kanji
             .into_iter()
             .map(|i| i.into())
@@ -384,4 +383,24 @@ fn word_class_to_pos_s(class: &WordClass) -> Option<PosSimple> {
         _ => return None,
     };
     Some(pos)
+}
+
+fn filter_languages<'a, I: 'a + Iterator<Item = Word>>(
+    iter: I,
+    query: &'a Query,
+) -> impl Iterator<Item = Word> + 'a {
+    iter.map(move |i| {
+        let mut word = i;
+        let senses = word
+            .senses
+            .into_iter()
+            .filter(|j| {
+                j.language == query.settings.user_lang
+                    || (j.language == Language::English && query.settings.show_english)
+            })
+            .collect();
+
+        word.senses = senses;
+        word
+    })
 }

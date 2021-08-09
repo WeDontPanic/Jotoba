@@ -2,7 +2,7 @@ use itertools::Itertools;
 use serde::Deserialize;
 
 use japanese::JapaneseExt;
-use parse::jmdict::part_of_speech::PosSimple;
+use resources::parse::jmdict::part_of_speech::PosSimple;
 
 use super::query::{Form, Query, QueryLang, SearchTypeTag, Tag, UserSettings};
 use models::kanji::reading::KanjiReading;

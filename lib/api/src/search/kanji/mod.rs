@@ -15,5 +15,7 @@ pub async fn kanji_search(
 ) -> Result<Json<Response>> {
     let query = SearchRequest::parse(payload, Kanji)?;
 
-    Ok(Json(search::kanji::search(&pool, &query).await?.into()))
+    // TODO: implement
+    unimplemented!()
+    //Ok(Json(search::kanji::search(&pool, &query).await?.into()))
 }

@@ -7,7 +7,7 @@ use std::{cmp::Ordering, collections::HashMap};
 
 use binary_search::Search as BinarySearch;
 use jaro_search::Search as JaroSearch;
-use parse::jmdict::languages::Language;
+use resources::parse::jmdict::languages::Language;
 use strsim::jaro_winkler;
 use text_store::TextStore;
 use utils::diff;

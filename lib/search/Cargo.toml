@@ -15,6 +15,7 @@ config = { path = "../config" }
 error = { path = "../error" }
 utils = { path = "../utils" }
 localization = { path = "../localization" }
+resources = { path = "../resources"}
 serde = "1.0.127"
 log = "0.4.14"
 itertools = "0.10.1"

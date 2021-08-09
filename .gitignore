@@ -7,7 +7,6 @@
 out
 *.old
 .env
-resources*
 ipadic/
 unidic/
 resources.tar.gz
@@ -19,3 +18,5 @@ data
 audio_old
 indexes/
 indexes_old
+resources/*
+massiv.out

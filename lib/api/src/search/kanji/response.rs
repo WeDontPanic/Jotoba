@@ -1,4 +1,3 @@
-use models::kanji::KanjiResult;
 use search::kanji::result;
 use serde::Serialize;
 
@@ -12,12 +11,12 @@ pub struct Kanji {
     literal: String,
     meanings: Vec<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    grade: Option<i32>,
-    stroke_count: i32,
+    grade: Option<u8>,
+    stroke_count: u8,
     #[serde(skip_serializing_if = "Option::is_none")]
-    frequency: Option<i32>,
+    frequency: Option<u16>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    jlpt: Option<i32>,
+    jlpt: Option<u8>,
     #[serde(skip_serializing_if = "Option::is_none")]
     variant: Option<Vec<String>>,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -38,21 +37,21 @@ pub struct Kanji {
     stroke_frames: Option<String>,
 }
 
-impl From<&KanjiResult> for Kanji {
-    fn from(kanji: &KanjiResult) -> Self {
+impl From<&resources::models::kanji::Kanji> for Kanji {
+    fn from(kanji: &resources::models::kanji::Kanji) -> Self {
         Self {
-            literal: kanji.kanji.literal.clone(),
+            literal: kanji.literal.to_string(),
             meanings: kanji.meanings.clone(),
-            grade: kanji.kanji.grade,
-            stroke_count: kanji.kanji.stroke_count,
-            frequency: kanji.kanji.frequency,
-            jlpt: kanji.kanji.jlpt,
-            variant: kanji.kanji.variant.clone(),
-            onyomi: kanji.kanji.onyomi.clone(),
-            kunyomi: kanji.kanji.kunyomi.clone(),
-            chinese: kanji.kanji.chinese.clone(),
-            korean_r: kanji.kanji.korean_r.clone(),
-            korean_h: kanji.kanji.korean_h.clone(),
+            grade: kanji.grade,
+            stroke_count: kanji.stroke_count,
+            frequency: kanji.frequency,
+            jlpt: kanji.jlpt,
+            variant: kanji.variant.clone(),
+            onyomi: kanji.onyomi.clone(),
+            kunyomi: kanji.kunyomi.clone(),
+            chinese: kanji.chinese.clone(),
+            korean_r: kanji.korean_r.clone(),
+            korean_h: kanji.korean_h.clone(),
             parts: None,
             radical: None,
             stroke_frames: None,
@@ -60,6 +59,7 @@ impl From<&KanjiResult> for Kanji {
     }
 }
 
+/*
 impl From<result::Item> for Kanji {
     fn from(item: result::Item) -> Self {
         Self {
@@ -77,3 +77,4 @@ impl From<Vec<result::Item>> for Response {
         Response { kanji }
     }
 }
+*/

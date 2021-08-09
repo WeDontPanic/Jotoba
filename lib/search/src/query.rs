@@ -8,7 +8,7 @@ use super::query_parser::QueryType;
 
 use itertools::Itertools;
 use models::kanji::reading::KanjiReading;
-use parse::jmdict::{languages::Language, part_of_speech::PosSimple};
+use resources::parse::jmdict::{languages::Language, part_of_speech::PosSimple};
 
 /// A single user provided query in a parsed format
 #[derive(Debug, Clone, PartialEq, Default, Hash)]

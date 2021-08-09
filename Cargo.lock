@@ -523,6 +523,7 @@ dependencies = [
  "models",
  "once_cell",
  "parse",
+ "resources",
  "romaji",
  "search",
  "serde",
@@ -1359,6 +1360,7 @@ dependencies = [
  "models",
  "parse",
  "percent-encoding",
+ "resources",
  "ructe",
  "search",
  "sentry",
@@ -1907,6 +1909,7 @@ dependencies = [
  "log",
  "models",
  "parse",
+ "resources",
  "search",
  "sentry",
  "sentry-actix",
@@ -2837,6 +2840,27 @@ dependencies = [
 ]
 
 [[package]]
+name = "resources"
+version = "0.1.0"
+dependencies = [
+ "itertools",
+ "japanese",
+ "jp_inflections",
+ "localization",
+ "once_cell",
+ "quick-xml",
+ "regex",
+ "romaji",
+ "serde",
+ "serde_derive",
+ "serde_json",
+ "strum",
+ "strum_macros",
+ "utils",
+ "utilsrs",
+]
+
+[[package]]
 name = "romaji"
 version = "0.1.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2950,6 +2974,7 @@ dependencies = [
  "once_cell",
  "parse",
  "regex",
+ "resources",
  "serde",
  "strsim",
  "tinysegmenter",
@@ -3778,6 +3803,10 @@ dependencies = [
  "itertools",
  "rand 0.8.4",
 ]
+
+[[package]]
+name = "utilsrs"
+version = "0.1.0"
 
 [[package]]
 name = "uuid"

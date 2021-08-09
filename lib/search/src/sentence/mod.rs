@@ -14,19 +14,25 @@ mod sentencesearch;
 
 /// Searches for sentences
 pub async fn search(db: &Pool, query: &Query) -> Result<Vec<result::Item>, Error> {
+    unimplemented!()
+    /*
     if query.language == QueryLang::Japanese {
         search_jp(db, query).await
     } else {
         search_foreign(db, query).await
     }
+    */
 }
 
+/*
 /// Searches for sentences (jp input)
 pub async fn search_jp(db: &Pool, query: &Query) -> Result<Vec<result::Item>, Error> {
+    /*
     let search = SentenceSearch::new(db, &query.query, query.settings.user_lang);
     let sentences = search.by_jp().await?;
 
     Ok(merge_results(sentences, query.settings.user_lang))
+    */
 }
 
 /// Searches for sentences (other input)
@@ -52,3 +58,4 @@ fn merge_results(results: Vec<Sentence>, user_lang: Language) -> Vec<Item> {
         })
         .collect_vec()
 }
+*/

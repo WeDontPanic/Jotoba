@@ -18,6 +18,8 @@ fn format_query(query: &str) -> String {
 
 /// The entry of a kanji search
 pub async fn search(db: &Pool, query: &Query) -> Result<Vec<Item>, Error> {
+    unimplemented!()
+    /*
     let q = format_query(&query.query);
 
     let res = if q.is_japanese() {
@@ -32,8 +34,10 @@ pub async fn search(db: &Pool, query: &Query) -> Result<Vec<Item>, Error> {
     }
 
     Ok(items)
+    */
 }
 
+/*
 /// Find a kanji by its literal
 async fn by_literals(db: &Pool, query: &str) -> Result<Vec<KanjiResult>, Error> {
     let kanji = query
@@ -69,3 +73,4 @@ async fn to_item(db: &Pool, items: Vec<KanjiResult>, query: &Query) -> Result<Ve
         .try_collect::<Vec<_>>()
         .await?)
 }
+*/

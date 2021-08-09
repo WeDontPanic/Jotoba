@@ -14,4 +14,5 @@ members = [
   "lib/import",
   "lib/localization",
   "lib/config",
+  "lib/resources",
 ]

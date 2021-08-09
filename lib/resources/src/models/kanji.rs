@@ -1,0 +1,125 @@
+use serde::{Deserialize, Serialize};
+
+/// A Kanji representing structure containing all available information about a single kanji
+/// character.
+#[derive(Clone, Debug, Default, PartialEq, Serialize, Deserialize)]
+pub struct Kanji {
+    pub literal: char,
+    pub grade: Option<u8>,
+    pub stroke_count: u8,
+    pub frequency: Option<u16>,
+    pub jlpt: Option<u8>,
+    pub variant: Option<Vec<String>>,
+    pub onyomi: Option<Vec<String>>,
+    pub kunyomi: Option<Vec<String>>,
+    pub chinese: Option<Vec<String>>,
+    pub korean_r: Option<Vec<String>>,
+    pub korean_h: Option<Vec<String>>,
+    pub natori: Option<Vec<String>>,
+    pub kun_dicts: Option<Vec<u32>>,
+    pub on_dicts: Option<Vec<u32>>,
+    pub similar_kanji: Option<Vec<char>>,
+    pub meanings: Vec<String>,
+    pub radical: Radical,
+    pub parts: Option<Vec<char>>,
+}
+
+/// A single radical representing structure
+#[derive(Clone, Debug, Default, PartialEq, Serialize, Deserialize)]
+pub struct Radical {
+    pub id: u16,
+    pub literal: char,
+    pub alternative: Option<char>,
+    pub stroke_count: u8,
+    pub readings: Vec<String>,
+    pub translations: Option<Vec<String>>,
+}
+
+/// Represents a radical which gets used for kanji-searches
+#[derive(Debug, Clone, PartialEq)]
+pub struct SearchRadical {
+    pub radical: char,
+    pub stroke_count: i32,
+}
+
+/// ReadingType of a kanji's reading. `Kunyomi` represents japanese readings and `Onyomi`
+/// represents original chinese readings.
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub enum ReadingType {
+    Kunyomi,
+    Onyomi,
+}
+
+impl Kanji {
+    /// Returns the `ReadingType` of `reading` within readings of a kanji
+    pub fn get_reading_type(&self, reading: &str) -> Option<ReadingType> {
+        let in_on = self.in_on_reading(reading);
+        let in_kun = self.in_kun_reading(reading);
+
+        if in_on && !in_kun {
+            return Some(ReadingType::Onyomi);
+        } else if !in_on && in_kun {
+            return Some(ReadingType::Kunyomi);
+        }
+
+        None
+    }
+
+    /// Returns `true` if the kanji has `reading` within the `kunyomi`
+    #[inline]
+    pub fn in_kun_reading(&self, reading: &str) -> bool {
+        self.kunyomi
+            .as_ref()
+            .map(|i| i.iter().any(|i| i.as_str() == reading))
+            .unwrap_or_default()
+    }
+
+    /// Returns `true` if the kanji has `reading` within the `onyomi`
+    #[inline]
+    pub fn in_on_reading(&self, reading: &str) -> bool {
+        self.onyomi
+            .as_ref()
+            .map(|i| i.iter().any(|i| i.as_str() == reading))
+            .unwrap_or_default()
+    }
+
+    /// Returns true if kanji has a given reading
+    #[inline]
+    pub fn has_reading(&self, reading: &str) -> bool {
+        self.in_on_reading(reading) || self.in_kun_reading(reading)
+    }
+
+    /// Returns the local path to stroke-frames svg
+    #[inline]
+    pub fn get_stroke_frames_url(&self) -> String {
+        format!("/assets/svg/{}_frames.svg", self.literal)
+    }
+}
+
+/// Formats a kun/on reading to a kana entry
+pub fn format_reading(reading: &str) -> String {
+    reading.replace('-', "").replace('.', "")
+}
+
+/// Formats `literal` with `reading`, based on `ReadingType`
+///
+/// Example:
+///
+/// literal: 捗
+/// reading: はかど.る
+/// r_type: ReadingType::Kunyomi
+/// returns: 捗る
+pub fn format_reading_with_literal(literal: &str, reading: &str, r_type: ReadingType) -> String {
+    match r_type {
+        ReadingType::Kunyomi => {
+            let r = if reading.contains('.') {
+                let right = reading.split('.').nth(1).unwrap_or_default();
+                format!("{}{}", literal, right)
+            } else {
+                literal.to_string()
+            };
+            r.replace("-", "")
+        }
+        ReadingType::Onyomi => literal.to_string(),
+    }
+}

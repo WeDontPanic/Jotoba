@@ -1,18 +1,13 @@
 use std::collections::HashMap;
 
+use super::{super::search_order::SearchOrder, engine::result::ResultItem};
+use crate::query::Query;
 use japanese::JapaneseExt;
 use levenshtein::levenshtein;
+use models::{kanji, search_mode::SearchMode};
 use once_cell::sync::Lazy;
-use parse::jmdict::languages::Language;
 use regex::Regex;
-
-use crate::query::Query;
-
-use super::engine::result::ResultItem;
-use super::result::Sense;
-use super::{super::search_order::SearchOrder, result::Word};
-use models::kanji;
-use models::search_mode::SearchMode;
+use resources::models::words::Word;
 
 pub(super) fn new_foreign_order(
     sort_map: &HashMap<usize, ResultItem>,
@@ -23,9 +18,10 @@ pub(super) fn new_foreign_order(
         let a_item = sort_map.get(&(a.sequence as usize)).unwrap();
         let b_item = sort_map.get(&(b.sequence as usize)).unwrap();
 
-        foreign_search_order(a, search_order, a_item)
-            .cmp(&foreign_search_order(b, search_order, b_item))
-            .reverse()
+        let a_score = foreign_search_order(a, search_order, a_item);
+        let b_score = foreign_search_order(b, search_order, b_item);
+
+        a_score.cmp(&b_score).reverse()
     })
 }
 
@@ -35,13 +31,12 @@ pub(super) fn foreign_search_order(
     result_item: &ResultItem,
 ) -> usize {
     let mut score: usize = (result_item.relevance * 25f32) as usize;
-    let reading = word.get_reading();
 
     if word.is_common() {
         score += 10;
     }
 
-    if let Some(jlpt) = reading.jlpt_lvl {
+    if let Some(jlpt) = word.jlpt_lvl {
         score += (jlpt as usize) * 1;
     }
 
@@ -61,16 +56,14 @@ pub(super) fn foreign_search_order(
         }
     };
 
-    /*
     let divisor = match (found.mode, found.case_ignored) {
         (SearchMode::Exact, false) => 10,
-        (SearchMode::Exact, true) => 30,
+        (SearchMode::Exact, true) => 20,
         (_, false) => 50,
         (_, true) => 80,
     };
 
     score += (calc_likeliness(word, &found) / divisor) as usize;
-    */
 
     if found.in_parentheses {
         score = score - score.clamp(0, 10);
@@ -90,9 +83,10 @@ pub(super) fn new_japanese_order(
         let a_item = sort_map.get(&(a.sequence as usize)).unwrap();
         let b_item = sort_map.get(&(b.sequence as usize)).unwrap();
 
-        japanese_search_order(a, search_order, a_item)
-            .cmp(&foreign_search_order(b, search_order, b_item))
-            .reverse()
+        let a_score = japanese_search_order(a, search_order, a_item);
+        let b_score = japanese_search_order(b, search_order, b_item);
+
+        a_score.cmp(&b_score).reverse()
     })
 }
 
@@ -102,22 +96,17 @@ pub(super) fn japanese_search_order(
     search_order: &SearchOrder,
     result_item: &ResultItem,
 ) -> usize {
-    #[cfg(feature = "tokenizer")]
-    let morpheme = search_order.morpheme;
+    let mut score: usize = (result_item.relevance * 10f32) as usize;
 
     let reading = word.get_reading();
-    let kana_reading = word.reading.kana.as_ref().unwrap();
 
     // Original query
     let query = search_order.query;
     // The original query text
     let query_str = &query.query;
 
-    let mut score: usize = (result_item.relevance * 25f32) as usize;
-    //let mut score = 0;
-
-    if reading.reading == *query_str || kana_reading.reading == *query_str {
-        score += 100;
+    if reading.reading == *query_str || word.reading.kana.reading == *query_str {
+        score += 50;
 
         // Show kana only readings on top if they match with query
         if word.reading.kanji.is_none() {
@@ -127,8 +116,13 @@ pub(super) fn japanese_search_order(
         score += 4;
     }
 
-    if let Some(jlpt) = reading.jlpt_lvl {
+    if let Some(jlpt) = word.jlpt_lvl {
         score += (jlpt as usize) * 2;
+    }
+
+    // Is common
+    if word.is_common() {
+        score += 20;
     }
 
     // If alternative reading matches query exactly
@@ -141,24 +135,6 @@ pub(super) fn japanese_search_order(
         score += 9;
     }
 
-    #[cfg(feature = "tokenizer")]
-    if let Some(morpheme) = morpheme {
-        let lexeme = morpheme.get_lexeme();
-        if reading.reading == lexeme || kana_reading.reading == lexeme {
-            score += 15;
-        }
-
-        // Show kana only readings on top if they match with lexeme
-        if word.reading.kanji.is_none() {
-            score += 30;
-        }
-    }
-
-    // Is common
-    if word.is_common() {
-        score += 15;
-    }
-
     score
 }
 
@@ -168,7 +144,7 @@ pub(super) fn kanji_reading_search(word: &Word, search_order: &SearchOrder) -> u
     debug_assert!(search_order.query.form.as_kanji_reading().is_some());
     let kanji_reading = search_order.query.form.as_kanji_reading().unwrap();
     let formatted_reading = kanji::format_reading(&kanji_reading.reading);
-    let kana_reading = &word.reading.kana.as_ref().unwrap().reading;
+    let kana_reading = &word.reading.kana.reading;
 
     if formatted_reading.is_hiragana() {
         // Kun reading
@@ -199,7 +175,7 @@ pub(super) fn kanji_reading_search(word: &Word, search_order: &SearchOrder) -> u
         score += 8;
     }
 
-    if let Some(jlpt) = word.get_reading().jlpt_lvl {
+    if let Some(jlpt) = word.jlpt_lvl {
         score += jlpt as usize;
     }
 
@@ -237,11 +213,11 @@ pub fn get_query_pos_in_gloss(
 struct FindResult {
     mode: SearchMode,
     case_ignored: bool,
-    language: Language,
+    language: resources::parse::jmdict::languages::Language,
     pos: usize,
     gloss: String,
     in_parentheses: bool,
-    sense: Sense,
+    sense: resources::models::words::Sense,
     sense_pos: usize,
 }
 
@@ -265,7 +241,7 @@ pub(crate) static REMOVE_PARENTHESES: Lazy<Regex> =
     Lazy::new(|| regex::Regex::new("\\(.*\\)").unwrap());
 
 fn find_in_senses(
-    senses: &[Sense],
+    senses: &[resources::models::words::Sense],
     query_str: &str,
     mode: SearchMode,
     ign_case: bool,
@@ -299,7 +275,7 @@ fn find_in_senses(
 }
 
 fn try_find_in_sense(
-    sense: &Sense,
+    sense: &resources::models::words::Sense,
     query_str: &str,
     mode: SearchMode,
     ign_case: bool,
