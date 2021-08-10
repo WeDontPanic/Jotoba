@@ -112,7 +112,7 @@ impl<'a> Search<'a> {
     #[cfg(feature = "tokenizer")]
     async fn get_query<'b>(
         &'b self,
-        query_str: &'b str,
+        query_str: &'a str,
     ) -> Result<
         (
             String,
