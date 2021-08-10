@@ -3807,6 +3807,7 @@ dependencies = [
 [[package]]
 name = "utilsrs"
 version = "0.1.0"
+source = "git+https://github.com/JojiiOfficial/utilsrs#b0b019f328216bae7ad55faba599eb266cdc4001"
 
 [[package]]
 name = "uuid"
@@ -3837,6 +3838,7 @@ checksum = "accd4ea62f7bb7a82fe23066fb0957d48ef677f6eeb8215f372f52e48bb32426"
 [[package]]
 name = "vector_space_model"
 version = "0.1.0"
+source = "git+https://github.com/JojiiOfficial/VectorSpaceModel#2bcc2d369bf3469600590e1c56ae9331a77310b6"
 dependencies = [
  "byteorder",
  "compressed_vec",
