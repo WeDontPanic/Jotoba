@@ -21,6 +21,7 @@ once_cell = "1.8.0"
 utils = { path = "../utils"}
 localization = { path = "../localization" }
 jp_inflections = "0.1.1"
+eudex = { git = "https://github.com/JojiiOfficial/eudex"}
 
 [lib]
 name = "resources"

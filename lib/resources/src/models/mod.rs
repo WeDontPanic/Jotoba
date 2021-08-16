@@ -3,6 +3,7 @@ pub mod kanji;
 pub mod names;
 pub mod sentences;
 pub mod storage;
+pub mod suggestions;
 pub mod words;
 
 use std::io::{BufReader, Read, Write};

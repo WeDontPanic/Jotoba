@@ -1265,8 +1265,7 @@ dependencies = [
 [[package]]
 name = "eudex"
 version = "0.1.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "95cb9bf0969366245682aedd5197be1491f2a044fc99c45564710b22b0e9ac87"
+source = "git+https://github.com/JojiiOfficial/eudex#b97f002b10dfe21047d130acf2e4f6d3f77779c4"
 
 [[package]]
 name = "event-listener"
@@ -2843,6 +2842,7 @@ dependencies = [
 name = "resources"
 version = "0.1.0"
 dependencies = [
+ "eudex",
  "itertools",
  "japanese",
  "jp_inflections",

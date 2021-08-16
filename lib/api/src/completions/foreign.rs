@@ -1,3 +1,4 @@
+use resources::models::suggestions::native_words::ForeignSuggestion;
 use utils::remove_dups;
 
 use super::*;
@@ -25,4 +26,14 @@ pub(super) async fn suggestions(query: &Query, query_str: &str) -> Option<Vec<Wo
     let res = remove_dups(res);
 
     Some(res)
+}
+
+impl From<ForeignSuggestion> for WordPair {
+    #[inline]
+    fn from(suggestion: ForeignSuggestion) -> Self {
+        WordPair {
+            primary: suggestion.text.to_owned(),
+            secondary: None,
+        }
+    }
 }
