@@ -1,4 +1,4 @@
-use resources::models::suggestions::native_words::ForeignSuggestion;
+use resources::models::suggestions::foreign_words::ForeignSuggestion;
 use utils::remove_dups;
 
 use super::*;
