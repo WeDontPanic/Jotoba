@@ -17,7 +17,7 @@ fn format_query(query: &str) -> String {
 }
 
 /// The entry of a kanji search
-pub async fn search(db: &Pool, query: &Query) -> Result<Vec<Item>, Error> {
+pub async fn search(query: &Query) -> Result<Vec<Item>, Error> {
     unimplemented!()
     /*
     let q = format_query(&query.query);

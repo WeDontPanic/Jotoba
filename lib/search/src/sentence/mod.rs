@@ -13,7 +13,7 @@ pub mod result;
 mod sentencesearch;
 
 /// Searches for sentences
-pub async fn search(db: &Pool, query: &Query) -> Result<Vec<result::Item>, Error> {
+pub async fn search(query: &Query) -> Result<Vec<result::Item>, Error> {
     unimplemented!()
     /*
     if query.language == QueryLang::Japanese {
