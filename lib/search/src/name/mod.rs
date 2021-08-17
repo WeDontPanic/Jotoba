@@ -19,7 +19,8 @@ static NAME_SEARCH_CACHE: Lazy<Mutex<SharedCache<String, Vec<Name>>>> =
     Lazy::new(|| Mutex::new(SharedCache::with_capacity(1000)));
 
 /// Search for names
-pub async fn search(db: &Pool, query: &Query) -> Result<Vec<Name>, Error> {
+pub async fn search(query: &Query) -> Result<Vec<Name>, Error> {
+    /*
     let mut ns_cache = NAME_SEARCH_CACHE.lock().await;
 
     if let Some(cached) = ns_cache.cache_get(&query.query.clone()) {
@@ -35,10 +36,12 @@ pub async fn search(db: &Pool, query: &Query) -> Result<Vec<Name>, Error> {
     };
 
     ns_cache.cache_set(query.query.clone(), res.clone());
+    */
 
-    Ok(res)
+    Ok(vec![])
 }
 
+/*
 /// Search by transcription
 async fn search_transcription(db: &Pool, query: &Query) -> Result<Vec<Name>, Error> {
     let search = NameSearch::new(&db, &query.query);
@@ -85,3 +88,4 @@ async fn search_kanji(db: &Pool, query: &Query) -> Result<Vec<Name>, Error> {
 
     Ok(items)
 }
+*/

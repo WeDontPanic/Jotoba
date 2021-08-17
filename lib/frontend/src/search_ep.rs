@@ -63,7 +63,6 @@ impl QueryStruct {
 
 /// Endpoint to perform a search
 pub async fn search(
-    pool: web::Data<Pool>,
     query: web::Path<String>,
     query_data: web::Query<QueryStruct>,
     locale_dict: web::Data<Arc<TranslationDict>>,
@@ -94,7 +93,7 @@ pub async fn search(
     // Log search duration if too long and available
     let search_result = timeout(
         config.get_search_timeout(),
-        do_search(query.type_, &pool, &locale_dict, settings, &query),
+        do_search(query.type_, &locale_dict, settings, &query),
     )
     .await
     .map_err(|_| {
@@ -114,16 +113,15 @@ pub async fn search(
 /// Run the search and return the `BaseData` for the result page to render
 async fn do_search<'a>(
     querytype_: QueryType,
-    pool: &Pool,
     locale_dict: &'a TranslationDict,
     settings: UserSettings,
     query: &'a Query,
 ) -> Result<BaseData<'a>, web_error::Error> {
     match querytype_ {
-        QueryType::Kanji => kanji_search(&pool, &locale_dict, settings, &query).await,
-        QueryType::Sentences => sentence_search(&pool, &locale_dict, settings, &query).await,
-        QueryType::Names => name_search(&pool, &locale_dict, settings, &query).await,
-        QueryType::Words => word_search(&pool, &locale_dict, settings, &query).await,
+        QueryType::Kanji => kanji_search(&locale_dict, settings, &query).await,
+        QueryType::Sentences => sentence_search(&locale_dict, settings, &query).await,
+        QueryType::Names => name_search(&locale_dict, settings, &query).await,
+        QueryType::Words => word_search(&locale_dict, settings, &query).await,
     }
 }
 
@@ -143,12 +141,11 @@ fn log_duration(search_type: QueryType, duration: Duration) {
 
 /// Perform a sentence search
 async fn sentence_search<'a>(
-    pool: &Pool,
     locale_dict: &'a TranslationDict,
     user_settings: UserSettings,
     query: &'a Query,
 ) -> Result<BaseData<'a>, web_error::Error> {
-    let result = search::sentence::search(&pool, &query).await?;
+    let result = search::sentence::search(&query).await?;
     Ok(BaseData::new_sentence_search(
         &query,
         result,
@@ -159,12 +156,11 @@ async fn sentence_search<'a>(
 
 /// Perform a kanji search
 async fn kanji_search<'a>(
-    pool: &Pool,
     locale_dict: &'a TranslationDict,
     user_settings: UserSettings,
     query: &'a Query,
 ) -> Result<BaseData<'a>, web_error::Error> {
-    let kanji = search::kanji::search(&pool, &query).await?;
+    let kanji = search::kanji::search(&query).await?;
     Ok(BaseData::new_kanji_search(
         &query,
         kanji,
@@ -175,12 +171,11 @@ async fn kanji_search<'a>(
 
 /// Perform a name search
 async fn name_search<'a>(
-    pool: &Pool,
     locale_dict: &'a TranslationDict,
     user_settings: UserSettings,
     query: &'a Query,
 ) -> Result<BaseData<'a>, web_error::Error> {
-    let names = search::name::search(&pool, &query).await?;
+    let names = search::name::search(&query).await?;
     Ok(BaseData::new_name_search(
         &query,
         names,
@@ -191,12 +186,11 @@ async fn name_search<'a>(
 
 /// Perform a word search
 async fn word_search<'a>(
-    pool: &Pool,
     locale_dict: &'a TranslationDict,
     user_settings: UserSettings,
     query: &'a Query,
 ) -> Result<BaseData<'a>, web_error::Error> {
-    let result = search::word::search(&pool, &query).await?;
+    let result = search::word::search(&query).await?;
     Ok(BaseData::new_word_search(
         &query,
         result,

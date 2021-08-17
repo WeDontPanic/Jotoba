@@ -14,7 +14,6 @@ use super::{
     query::{Query, QueryLang, Tag},
     search_order::SearchOrder,
 };
-use deadpool_postgres::Pool;
 use error::Error;
 use itertools::Itertools;
 use japanese::{inflection::SentencePart, JapaneseExt};
@@ -28,14 +27,13 @@ use result::Item;
 use japanese::jp_parsing::{igo_unidic::WordClass, InputTextParser, ParseResult, WordItem};
 
 pub(self) struct Search<'a> {
-    pool: &'a Pool,
     query: &'a Query,
 }
 
 /// Search among all data based on the input query
 #[inline]
-pub async fn search(pool: &Pool, query: &Query) -> Result<WordResult, Error> {
-    Ok(Search { pool, query }.do_search().await?)
+pub async fn search(query: &Query) -> Result<WordResult, Error> {
+    Ok(Search { query }.do_search().await?)
 }
 
 #[derive(Default)]
@@ -125,7 +123,8 @@ impl<'a> Search<'a> {
             return Ok((query_str.to_owned(), None, None));
         }
 
-        let in_db = models::dict::reading_existsv2(&self.pool, query_str).await?;
+        // TODO: implement
+        let in_db = true; //models::dict::reading_existsv2(&self.pool, query_str).await?;
         let parser = InputTextParser::new(query_str, &japanese::jp_parsing::JA_NL_PARSER, in_db)?;
 
         if let Some(parsed) = parser.parse() {
@@ -166,10 +165,14 @@ impl<'a> Search<'a> {
                 continue;
             }
 
+            // TODO: implement
+            /*
             let furigana = models::dict::furigana_by_reading(self.pool, &part.lexeme)
                 .await
                 .ok()
                 .and_then(|i| i);
+                */
+            let furigana = None;
 
             part.furigana = furigana;
 

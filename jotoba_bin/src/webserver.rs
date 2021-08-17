@@ -16,7 +16,7 @@ use std::sync::Arc;
 const ASSET_CACHE_MAX_AGE: u64 = 604800;
 
 /// Start the webserver
-pub(super) async fn start(pool: Pool) -> std::io::Result<()> {
+pub(super) async fn start() -> std::io::Result<()> {
     setup_logger();
 
     let config = Config::new().await.expect("config failed");
@@ -63,7 +63,7 @@ pub(super) async fn start(pool: Pool) -> std::io::Result<()> {
         let app = App::new()
             // Data
             .app_data(Data::new(config_clone.clone()))
-            .app_data(Data::new(pool.clone()))
+            // .app_data(Data::new(pool.clone()))
             .app_data(Data::new(locale_dict_arc.clone()))
             // Middlewares
             .wrap(middleware::Compress::default())

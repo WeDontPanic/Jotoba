@@ -96,7 +96,6 @@ async fn alternative_reading_search(search: &Search<'_>) -> Result<ResultData, E
 
     // Modify search query
     Search {
-        pool: search.pool,
         query: &Query {
             query: kanji::literal_kun_reading(&reading.reading),
             ..search.query.to_owned()
