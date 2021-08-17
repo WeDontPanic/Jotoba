@@ -12,13 +12,13 @@ use self::{kanji::Kanji, names::Name, storage::ResourceStorage, words::Word};
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Serialize, Deserialize)]
-pub struct Resources {
+pub struct DictResources {
     pub words: Vec<Word>,
     pub kanji: Vec<Kanji>,
     pub names: Vec<Name>,
 }
 
-impl Resources {
+impl DictResources {
     /// Writes the resource storage into `out`
     #[inline]
     pub fn build<W: Write>(self, out: &mut W) -> Result<(), std::io::Error> {
@@ -37,6 +37,9 @@ impl Resources {
 }
 
 /// Load a resource storage from a BufReader
-pub fn load_stoarge<R: Read>(reader: BufReader<R>) -> Result<ResourceStorage, std::io::Error> {
-    Ok(ResourceStorage::new(Resources::read(reader)?))
+pub fn load_stoarge<R: Read>(dict_data: BufReader<R>) -> Result<ResourceStorage, std::io::Error> {
+    let dict_data = DictResources::read(dict_data)?;
+    let suggestion_data = None;
+
+    Ok(ResourceStorage::new(dict_data, suggestion_data))
 }

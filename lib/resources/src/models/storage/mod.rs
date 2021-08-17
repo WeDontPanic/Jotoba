@@ -1,10 +1,15 @@
 pub mod kanji;
 pub mod name;
-pub mod suggestion;
+mod suggestion;
+pub mod suggestion_provider;
 pub mod word;
 
-use self::{kanji::KanjiRetrieve, name::NameRetrieve, word::WordRetrieve};
-use super::{kanji::Kanji, names::Name, words::Word, Resources};
+use crate::parse::jmdict::languages::Language;
+
+use self::{
+    kanji::KanjiRetrieve, name::NameRetrieve, suggestion::SuggestionItem, word::WordRetrieve,
+};
+use super::{kanji::Kanji, names::Name, words::Word, DictResources};
 use std::collections::HashMap;
 
 type WordStorage = HashMap<u32, Word>;
@@ -13,19 +18,53 @@ type KanjiStorage = HashMap<char, Kanji>;
 
 #[derive(Default)]
 pub struct ResourceStorage {
+    dict_data: DictionaryData,
+    suggestions: Option<SuggestionData>,
+}
+
+#[derive(Default)]
+struct DictionaryData {
     words: WordStorage,
     names: NameStorage,
     kanji: KanjiStorage,
 }
 
+#[derive(Default)]
+pub(super) struct SuggestionData {
+    foregin: HashMap<Language, SuggestionItem>,
+    japanese: Option<SuggestionItem>,
+}
+
+impl DictionaryData {
+    #[inline]
+    fn new(words: WordStorage, names: NameStorage, kanji: KanjiStorage) -> Self {
+        Self {
+            words,
+            names,
+            kanji,
+        }
+    }
+}
+
+impl SuggestionData {
+    #[inline]
+    pub(super) fn new() -> Self {
+        Self::default()
+    }
+}
+
 impl ResourceStorage {
     /// Create a new `ResourceStorage` by `Resources`
     #[inline]
-    pub fn new(resources: Resources) -> Self {
+    pub(super) fn new(resources: DictResources, suggestions: Option<SuggestionData>) -> Self {
+        let words = build_words(resources.words);
+        let names = build_names(resources.names);
+        let kanji = build_kanji(resources.kanji);
+        let dict_data = DictionaryData::new(words, names, kanji);
+
         Self {
-            words: build_words(resources.words),
-            names: build_names(resources.names),
-            kanji: build_kanji(resources.kanji),
+            dict_data,
+            suggestions,
         }
     }
 
@@ -61,11 +100,4 @@ fn build_names(names: Vec<Name>) -> NameStorage {
 #[inline]
 fn build_kanji(kanji: Vec<Kanji>) -> KanjiStorage {
     kanji.into_iter().map(|i| (i.literal, i)).collect()
-}
-
-impl From<Resources> for ResourceStorage {
-    #[inline]
-    fn from(resources: Resources) -> Self {
-        ResourceStorage::new(resources)
-    }
 }

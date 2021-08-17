@@ -18,13 +18,14 @@ impl<'a> KanjiRetrieve<'a> {
     /// Get a kanji by its sequence id
     #[inline]
     pub fn by_literal(&self, literal: char) -> Option<&Kanji> {
-        self.storage.kanji.get(&literal)
+        self.storage.dict_data.kanji.get(&literal)
     }
 
     /// Returns all kanji with the given radicals
     #[inline]
     pub fn by_radicals(&self, radicals: &[char]) -> Vec<&Kanji> {
         self.storage
+            .dict_data
             .kanji
             .iter()
             .filter(|i| {

@@ -1,3 +1,4 @@
-pub struct SuggestionStorage {
+#[derive(Default)]
+pub struct SuggestionItem {
     //
 }
