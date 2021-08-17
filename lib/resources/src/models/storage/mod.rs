@@ -1,5 +1,6 @@
 pub mod kanji;
 pub mod name;
+pub mod suggestion;
 pub mod word;
 
 use self::{kanji::KanjiRetrieve, name::NameRetrieve, word::WordRetrieve};

@@ -92,7 +92,7 @@ impl Kanji {
     /// Returns the local path to stroke-frames svg
     #[inline]
     pub fn get_stroke_frames_url(&self) -> String {
-        format!("/assets/svg/{}_frames.svg", self.literal)
+        format!("/assets/svg/kanji/{}_frames.svg", self.literal)
     }
 }
 
