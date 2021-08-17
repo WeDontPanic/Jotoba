@@ -9,6 +9,7 @@ use import::has_required_data;
 #[actix_web::main]
 pub async fn main() {
     let options = cli::parse();
+    /*
     let (pool, db_dsn) = models::connect().await;
 
     if !options.skip_migration {
@@ -28,9 +29,11 @@ pub async fn main() {
         return;
     }
 
+    */
+
     // Start the werbserver on --stat/-s
     if options.start {
-        webserver::start(pool).await.expect("webserver failed");
+        webserver::start().await.expect("webserver failed");
         return;
     }
 
