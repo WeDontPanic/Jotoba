@@ -1,13 +1,15 @@
 pub mod kanji;
 pub mod name;
-mod suggestion;
-pub mod suggestion_provider;
+pub mod suggestion;
 pub mod word;
 
 use crate::parse::jmdict::languages::Language;
 
 use self::{
-    kanji::KanjiRetrieve, name::NameRetrieve, suggestion::SuggestionItem, word::WordRetrieve,
+    kanji::KanjiRetrieve,
+    name::NameRetrieve,
+    suggestion::{provider::SuggestionProvider, SuggestionDictionary},
+    word::WordRetrieve,
 };
 use super::{kanji::Kanji, names::Name, words::Word, DictResources};
 use std::collections::HashMap;
@@ -31,8 +33,8 @@ struct DictionaryData {
 
 #[derive(Default)]
 pub(super) struct SuggestionData {
-    foregin: HashMap<Language, SuggestionItem>,
-    japanese: Option<SuggestionItem>,
+    foregin: HashMap<Language, SuggestionDictionary>,
+    japanese: Option<SuggestionDictionary>,
 }
 
 impl DictionaryData {
@@ -84,6 +86,12 @@ impl ResourceStorage {
     #[inline]
     pub fn kanji(&self) -> KanjiRetrieve<'_> {
         KanjiRetrieve::new(self)
+    }
+
+    /// Returns a `SuggestionProvider` which can be used to retrieve suggestions from the `ResourceStorage`
+    #[inline]
+    pub fn suggestions(&self) -> SuggestionProvider<'_> {
+        SuggestionProvider::new(self)
     }
 }
 

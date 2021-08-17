@@ -1,5 +1,4 @@
 use actix_files::NamedFile;
-use deadpool_postgres::Pool;
 use localization::TranslationDict;
 
 use actix_web::{

@@ -8,7 +8,12 @@ pub mod words;
 
 use std::io::{BufReader, Read, Write};
 
-use self::{kanji::Kanji, names::Name, storage::ResourceStorage, words::Word};
+use self::{
+    kanji::Kanji,
+    names::Name,
+    storage::{ResourceStorage, SuggestionData},
+    words::Word,
+};
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -39,7 +44,11 @@ impl DictResources {
 /// Load a resource storage from a BufReader
 pub fn load_stoarge<R: Read>(dict_data: BufReader<R>) -> Result<ResourceStorage, std::io::Error> {
     let dict_data = DictResources::read(dict_data)?;
-    let suggestion_data = None;
+    let suggestion_data = load_suggestions();
 
     Ok(ResourceStorage::new(dict_data, suggestion_data))
+}
+
+fn load_suggestions() -> Option<SuggestionData> {
+    None
 }

@@ -3,8 +3,6 @@
 mod cli;
 mod webserver;
 
-use import::has_required_data;
-
 //#[tokio::main]
 #[actix_web::main]
 pub async fn main() {
