@@ -1,3 +1,5 @@
+pub mod binary_search;
+
 use itertools::Itertools;
 use rand::{distributions::Alphanumeric, thread_rng, Rng};
 use std::{cmp::Ordering, ops::Sub};

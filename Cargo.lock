@@ -513,7 +513,6 @@ dependencies = [
  "actix-web 4.0.0-beta.8",
  "cache",
  "config 0.1.0",
- "deadpool-postgres",
  "error",
  "eudex",
  "futures",
@@ -527,6 +526,7 @@ dependencies = [
  "romaji",
  "search",
  "serde",
+ "strsim",
  "tokio 1.10.0",
  "utils",
 ]

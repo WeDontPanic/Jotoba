@@ -1,23 +1,6 @@
-use std::collections::HashMap;
-
-use actix_web::web::{self, Json};
-use deadpool_postgres::{tokio_postgres::Row, Pool};
-use itertools::Itertools;
+use actix_web::web::Json;
 use serde::{Deserialize, Serialize};
-
-use cache::SharedCache;
-use error::api_error::RestError;
-use japanese::JapaneseExt;
-use once_cell::sync::Lazy;
-use tokio::sync::Mutex;
-use utils::{part_of, remove_dups};
-
-/// Max radicals to allow per request
-const MAX_REQUEST_RADICALS: usize = 12;
-
-/// An in memory Cache for kanji items
-static RADICAL_CACHE: Lazy<Mutex<SharedCache<Vec<char>, RadicalsResponse>>> =
-    Lazy::new(|| Mutex::new(SharedCache::with_capacity(5000)));
+use std::collections::HashMap;
 
 /// Request struct for kanji_by_radicals endpoint
 #[derive(Clone, Debug, Deserialize, PartialEq)]
@@ -34,9 +17,9 @@ pub struct RadicalsResponse {
 
 /// Get kanji by its radicals
 pub async fn kanji_by_radicals(
-    poolv2: web::Data<Pool>,
-    payload: Json<RadicalsRequest>,
+    _payload: Json<RadicalsRequest>,
 ) -> Result<Json<RadicalsResponse>, actix_web::Error> {
+    /*
     // Validate an adjust request
     let payload = validate_request(&payload)?;
 
@@ -46,7 +29,7 @@ pub async fn kanji_by_radicals(
     }
 
     // Kanji by search-radicals from DB
-    let kanji = find_by_radicals(&poolv2, &payload.radicals).await?;
+    let kanji = find_by_radicals(&payload.radicals).await?;
 
     // IDs of [`kanji`]
     let kanji_ids = kanji.iter().map(|i| i.id).collect_vec();
@@ -58,10 +41,12 @@ pub async fn kanji_by_radicals(
     };
 
     set_cache(payload.radicals, response.clone()).await;
+    */
 
-    Ok(Json(response))
+    Ok(Json(RadicalsResponse::default()))
 }
 
+/*
 /// Finds all kanji which are constructed used the passing radicals
 async fn find_by_radicals(pool: &Pool, radicals: &[char]) -> Result<Vec<SqlFindResult>, RestError> {
     if radicals.is_empty() {
@@ -69,10 +54,10 @@ async fn find_by_radicals(pool: &Pool, radicals: &[char]) -> Result<Vec<SqlFindR
     }
 
     let pool = pool.get().await?;
-    let prepared = pool.prepare_cached("SELECT kanji_element.kanji_id, search_radical.literal FROM kanji_element 
-              JOIN search_radical ON search_radical.id = kanji_element.search_radical_id 
-                WHERE kanji_element.kanji_id in 
-                  (SELECT kanji_element.kanji_id FROM search_radical JOIN kanji_element 
+    let prepared = pool.prepare_cached("SELECT kanji_element.kanji_id, search_radical.literal FROM kanji_element
+              JOIN search_radical ON search_radical.id = kanji_element.search_radical_id
+                WHERE kanji_element.kanji_id in
+                  (SELECT kanji_element.kanji_id FROM search_radical JOIN kanji_element
                     ON kanji_element.search_radical_id = search_radical.id where search_radical.literal = $1)").await?;
 
     let kanji_ids: Vec<SqlKanjiLiteralResult> = pool
@@ -217,3 +202,4 @@ async fn get_cache(payload: &Vec<char>) -> Option<RadicalsResponse> {
 async fn set_cache(payload: Vec<char>, response: RadicalsResponse) {
     RADICAL_CACHE.lock().await.cache_set(payload, response);
 }
+*/

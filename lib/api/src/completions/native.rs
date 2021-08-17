@@ -1,65 +1,74 @@
-use std::iter::FromIterator;
-
-use futures::{stream::FuturesOrdered, TryStreamExt};
-use itertools::Itertools;
-use models::queryable::prepared_query;
+use resources::models::{suggestions::native_words::NativeSuggestion, words::Word};
+use utils::binary_search::BinarySearchable;
 
 use super::*;
 
-const MAX_RESULTS: i64 = 10;
-
 /// Get suggestions for foreign search input
-pub(super) async fn suggestions(query_str: &str) -> Result<Vec<WordPair>, RestError> {
-    /*
-    get_sequence_ids(client, &query_str).await
-    */
-    Ok(vec![])
-}
+pub(super) async fn suggestions(query_str: &str) -> Option<Vec<WordPair>> {
+    let suggestion_provider = resources::get().suggestions();
+    let dict = suggestion_provider.japanese_words()?;
+    let word_storage = resources::get().words();
 
-/*
-async fn get_sequence_ids(client: &Pool, query_str: &str) -> Result<Vec<WordPair>, RestError> {
-    let seq_query = "SELECT sequence FROM dict WHERE reading LIKE $1 ORDER BY jlpt_lvl DESC NULLS LAST, ARRAY_LENGTH(priorities,1) DESC NULLS LAST, LENGTH(reading) LIMIT $2";
-
-    let mut sequences: Vec<i32> = prepared_query(
-        &client,
-        seq_query,
-        &[&format!("{}%", query_str).as_str(), &MAX_RESULTS],
-    )
-    .await?;
-
-    sequences.dedup();
-
-    Ok(load_words(&client, &sequences).await?)
-}
-
-async fn load_words(client: &Pool, sequences: &[i32]) -> Result<Vec<WordPair>, RestError> {
-    let word_query =
-        "select reading, kanji from dict where sequence = $1 and (is_main or kanji = false)";
-
-    let client = client.get().await?;
-
-    let prepared = client.prepare_cached(word_query).await?;
-
-    let client = &client;
-    Ok(FuturesOrdered::from_iter(sequences.into_iter().map(|i| {
-        let cloned = prepared.clone();
-        async move { client.query(&cloned, &[&i]).await }
-    }))
-    .try_collect::<Vec<_>>()
-    .await?
-    .into_iter()
-    .filter_map(|word| {
-        let words: Vec<(String, bool)> =
-            word.into_iter().map(|i| (i.get(0), i.get(1))).collect_vec();
-
-        let kana = words.iter().find(|i| !i.1)?.0.to_owned();
-        let kanji = words.iter().find(|i| i.1).map(|i| i.0.to_owned());
-
-        Some(WordPair {
-            primary: kana,
-            secondary: kanji,
+    let mut items: Vec<(WordPair, u32)> = dict
+        .search(|e: &NativeSuggestion| search_cmp(e, query_str))
+        // Fetch a few more to allow sort-function to give better results
+        .take(40)
+        .filter_map(|i| {
+            word_storage.by_sequence(i.sequence).map(|i| {
+                let score = score(i, query_str);
+                (i.into(), score)
+            })
         })
-    })
-    .collect())
+        .collect();
+
+    items.sort_by(|a, b| a.1.cmp(&b.1).reverse());
+
+    Some(items.into_iter().take(10).map(|i| i.0).collect())
 }
-*/
+
+#[inline]
+fn search_cmp(e: &NativeSuggestion, query_str: &str) -> Ordering {
+    if e.text.starts_with(query_str) {
+        Ordering::Equal
+    } else {
+        e.text.as_str().cmp(&query_str)
+    }
+}
+
+/// Calculate a score for each word result to give better suggestion results
+#[inline]
+fn score(word: &Word, query_str: &str) -> u32 {
+    let mut score = 0;
+
+    if word.reading.get_reading().reading == query_str || word.reading.kana.reading == query_str {
+        score += 100;
+    }
+
+    if word.is_common() {
+        score += 10;
+    }
+
+    if let Some(jlpt) = word.get_jlpt_lvl() {
+        score += jlpt as u32;
+    }
+
+    score
+}
+
+impl From<&Word> for WordPair {
+    #[inline]
+    fn from(word: &Word) -> Self {
+        let main_reading = word.get_reading().reading.to_owned();
+        if word.reading.kanji.is_some() {
+            WordPair {
+                secondary: Some(main_reading),
+                primary: word.reading.kana.reading.clone(),
+            }
+        } else {
+            WordPair {
+                primary: main_reading,
+                secondary: None,
+            }
+        }
+    }
+}

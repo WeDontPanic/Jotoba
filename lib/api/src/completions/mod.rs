@@ -160,7 +160,7 @@ async fn get_suggestions(query: Query) -> Result<Response, RestError> {
             if let Some(kanji_reading) = as_kanji_reading(&query) {
                 kanji_reading::suggestions(kanji_reading).await
             } else {
-                get_word_suggestions(query).await
+                Ok(get_word_suggestions(query).await.unwrap_or_default())
             }
         }
         QueryType::Kanji => kanji_suggestions(query).await,
@@ -208,7 +208,7 @@ fn as_kanji_reading(query: &Query) -> Option<KanjiReading> {
 }
 
 /// Returns word suggestions based on the query. Applies various approaches to give better results
-async fn get_word_suggestions(query: Query) -> Result<Response, RestError> {
+async fn get_word_suggestions(query: Query) -> Option<Response> {
     let response = try_word_suggestions(&query).await?;
 
     // Tries to do a katakana search if nothing was found
@@ -218,14 +218,14 @@ async fn get_word_suggestions(query: Query) -> Result<Response, RestError> {
         response
     };
 
-    Ok(Response {
+    Some(Response {
         suggestions: result,
         ..Default::default()
     })
 }
 
 /// Returns Ok(suggestions) for the given query ordered and ready to display
-async fn try_word_suggestions(query: &Query) -> Result<Vec<WordPair>, RestError> {
+async fn try_word_suggestions(query: &Query) -> Option<Vec<WordPair>> {
     // Get sugesstions for matching language
     let mut word_pairs = match query.language {
         QueryLang::Japanese => native::suggestions(&query.query).await?,
@@ -237,7 +237,7 @@ async fn try_word_suggestions(query: &Query) -> Result<Vec<WordPair>, RestError>
     // Order: put exact matches to top
     word_pairs.sort_by(|a, b| word_pair_order(a, b, &query.query));
 
-    Ok(word_pairs)
+    Some(word_pairs)
 }
 
 /// Ordering for [`WordPair`]s which puts the exact matches to top

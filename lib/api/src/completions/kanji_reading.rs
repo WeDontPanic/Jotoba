@@ -1,5 +1,3 @@
-use deadpool_postgres::tokio_postgres::Row;
-
 use super::*;
 
 /// Reading response (onyomi, kunyomi)
@@ -56,15 +54,6 @@ impl ReadingsRes {
             primary: i,
             secondary: Some(literal.to_string()),
         })
-    }
-}
-
-impl From<Row> for ReadingsRes {
-    fn from(row: Row) -> Self {
-        Self {
-            0: row.get(0),
-            1: row.get(1),
-        }
     }
 }
 

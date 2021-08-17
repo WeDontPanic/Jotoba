@@ -1,5 +1,4 @@
 use std::{
-    cmp::Ordering,
     fs::File,
     io::{BufReader, Read},
     marker::PhantomData,
@@ -7,6 +6,7 @@ use std::{
 };
 
 use indexed_file::{any::IndexedReader, Indexable, ReadByLine};
+use utils::binary_search::BinarySearchable;
 
 pub mod provider;
 
@@ -40,85 +40,18 @@ impl<I: From<Vec<u8>>> SuggestionDictionary<I> {
         self.data.clone().read_line_raw(pos, &mut data).ok()?;
         Some(I::from(data))
     }
+}
 
-    /// Returns an iterator over each matching result
-    pub fn search<'a, C>(&'a self, mut cmp: C) -> impl Iterator<Item = I> + 'a
-    where
-        C: FnMut(&I) -> Ordering + 'a + Copy,
-    {
-        let first_item = self.find_first(cmp);
+impl<T: From<Vec<u8>>> BinarySearchable for SuggestionDictionary<T> {
+    type Item = T;
 
-        let mut item_pos = 0;
-        std::iter::from_fn(move || {
-            let first_item = first_item?;
-            let curr_item_pos = first_item + item_pos;
-
-            if curr_item_pos >= self.len() {
-                return None;
-            }
-
-            let item = self.get(curr_item_pos)?;
-            if cmp(&item) == Ordering::Equal {
-                item_pos += 1;
-                return Some(item);
-            }
-
-            None
-        })
+    #[inline]
+    fn get(&self, pos: usize) -> Self::Item {
+        self.get(pos).unwrap()
     }
 
-    fn binary_search_by<'a, F>(&'a self, mut f: F) -> Option<usize>
-    where
-        F: FnMut(I) -> Ordering,
-    {
-        let mut size = self.len();
-        let mut left = 0;
-        let mut right = size;
-
-        while left < right {
-            let mid = left + size / 2;
-
-            let cmp = f(self.get(mid).unwrap());
-
-            if cmp == Ordering::Less {
-                left = mid + 1;
-            } else if cmp == Ordering::Greater {
-                right = mid;
-            } else {
-                return Some(mid);
-            }
-
-            size = right - left;
-        }
-        None
-    }
-
-    /// Finds first matching item
-    fn find_first<C>(&self, mut cmp: C) -> Option<usize>
-    where
-        C: FnMut(&I) -> Ordering,
-    {
-        // Find using binary search. If multiple results found (which is very likely the case in
-        // our implementation), a random item of the matching ones will be found
-        let random_index = self.binary_search_by(|a| cmp(&a))?;
-
-        let mut curr_pos = random_index.saturating_sub(100);
-
-        loop {
-            if cmp(&self.get(curr_pos)?) != Ordering::Equal {
-                loop {
-                    curr_pos += 1;
-                    if cmp(&self.get(curr_pos)?) == Ordering::Equal {
-                        break;
-                    }
-                }
-                break Some(curr_pos);
-            }
-
-            if curr_pos == 0 {
-                break None;
-            }
-            curr_pos = curr_pos.saturating_sub(200);
-        }
+    #[inline]
+    fn len(&self) -> usize {
+        self.len()
     }
 }
