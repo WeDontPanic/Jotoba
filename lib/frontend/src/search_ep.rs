@@ -6,7 +6,6 @@ use std::{
 use super::user_settings;
 
 use actix_web::{rt::time::timeout, web, HttpRequest, HttpResponse};
-use deadpool_postgres::Pool;
 use localization::TranslationDict;
 use percent_encoding::percent_decode;
 use serde::Deserialize;

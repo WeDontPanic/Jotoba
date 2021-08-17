@@ -1,3 +1,5 @@
+use std::time::Instant;
+
 use resources::models::suggestions::foreign_words::ForeignSuggestion;
 use utils::remove_dups;
 
@@ -7,6 +9,26 @@ use super::*;
 pub(super) async fn suggestions(query: &Query, query_str: &str) -> Option<Vec<WordPair>> {
     let lang = query.settings.user_lang;
 
+    let start = Instant::now();
+
+    let suggestion_provider = resources::get().suggestions();
+    let suggestion_dict = suggestion_provider.foreign_words(lang)?;
+
+    let res: Vec<WordPair> = suggestion_dict
+        .search(|e| {
+            if e.text.starts_with(query_str) {
+                Ordering::Equal
+            } else {
+                e.text.as_str().cmp(query_str)
+            }
+        })
+        .take(10)
+        .map(|i| i.into())
+        .collect();
+
+    println!("suggestions took {:?}", start.elapsed());
+
+    /*
     // Get suggestion DB
     let suggestion_db = WORD_SUGGESTIONS.get()?;
 
@@ -24,6 +46,7 @@ pub(super) async fn suggestions(query: &Query, query_str: &str) -> Option<Vec<Wo
         .collect();
 
     let res = remove_dups(res);
+    */
 
     Some(res)
 }

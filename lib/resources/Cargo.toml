@@ -22,6 +22,7 @@ utils = { path = "../utils"}
 localization = { path = "../localization" }
 jp_inflections = "0.1.1"
 eudex = { git = "https://github.com/JojiiOfficial/eudex"}
+indexed_file = { git = "https://github.com/JojiiOfficial/IndexedFile"}
 
 [lib]
 name = "resources"

@@ -22,7 +22,8 @@ pub(super) async fn start() -> std::io::Result<()> {
 
     info!("Loading resources");
 
-    resources::initialize_resources("./resources/storage_data").expect("Failed to load resources");
+    resources::initialize_resources("./resources/storage_data", config.get_suggestion_sources())
+        .expect("Failed to load resources");
 
     #[cfg(feature = "tokenizer")]
     load_tokenizer();
@@ -52,10 +53,6 @@ pub(super) async fn start() -> std::io::Result<()> {
     }
 
     search::word::load_indexes(&config).expect("Failed to load index files");
-
-    if let Err(err) = api::completions::load_suggestions(&config) {
-        log::error!("Failed loading suggestions: {}", err);
-    }
 
     let config_clone = config.clone();
     HttpServer::new(move || {

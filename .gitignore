@@ -1,5 +1,5 @@
 /html/assets/js/loadAnalytics.js
-/html/assets/svg
+/html/assets/*
 /html/assets/audio
 /html/*.html
 !/html/docs.html
@@ -9,14 +9,13 @@ out
 .env
 ipadic/
 unidic/
-resources.tar.gz
 unidic-mecab/
 data/
 data
+/resources/
 /suggestions
 /suggestions_
 audio_old
 indexes/
 indexes_old
-/resources
 massiv.out

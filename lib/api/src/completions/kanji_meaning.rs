@@ -1,11 +1,10 @@
-use deadpool_postgres::Pool;
 use error::api_error::{Origin, RestError};
 use search::{query::Query, suggestions};
 
 use super::{storage::K_MEANING_SUGGESTIONS, Response, WordPair};
 
 /// Returns kanji meaning suggestions
-pub async fn suggestions(_client: &Pool, query: &Query) -> Result<Response, RestError> {
+pub async fn suggestions(query: &Query) -> Result<Response, RestError> {
     let dict = K_MEANING_SUGGESTIONS
         .get()
         .ok_or(RestError::Missing(Origin::Suggestions))?;

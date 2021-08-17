@@ -1,4 +1,10 @@
-use crate::{models::storage::ResourceStorage, parse::jmdict::languages::Language};
+use crate::{
+    models::{
+        storage::ResourceStorage,
+        suggestions::{foreign_words::ForeignSuggestion, native_words::NativeSuggestion},
+    },
+    parse::jmdict::languages::Language,
+};
 
 use super::SuggestionDictionary;
 
@@ -16,13 +22,16 @@ impl<'a> SuggestionProvider<'a> {
 
     /// Get the suggestion dictionary for japanese words, if available
     #[inline]
-    pub fn japanese_words(&self) -> Option<&SuggestionDictionary> {
+    pub fn japanese_words(&self) -> Option<&SuggestionDictionary<NativeSuggestion>> {
         self.data.suggestions.as_ref()?.japanese.as_ref()
     }
 
     /// Get the suggestion dictionary for the given language
     #[inline]
-    pub fn foreign_words(&self, lang: Language) -> Option<&SuggestionDictionary> {
+    pub fn foreign_words(
+        &self,
+        lang: Language,
+    ) -> Option<&SuggestionDictionary<ForeignSuggestion>> {
         self.data.suggestions.as_ref()?.foregin.get(&lang)
     }
 }

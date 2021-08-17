@@ -9,13 +9,14 @@ use super::*;
 const MAX_RESULTS: i64 = 10;
 
 /// Get suggestions for foreign search input
-pub(super) async fn suggestions(
-    client: &Pool,
-    query_str: &str,
-) -> Result<Vec<WordPair>, RestError> {
+pub(super) async fn suggestions(query_str: &str) -> Result<Vec<WordPair>, RestError> {
+    /*
     get_sequence_ids(client, &query_str).await
+    */
+    Ok(vec![])
 }
 
+/*
 async fn get_sequence_ids(client: &Pool, query_str: &str) -> Result<Vec<WordPair>, RestError> {
     let seq_query = "SELECT sequence FROM dict WHERE reading LIKE $1 ORDER BY jlpt_lvl DESC NULLS LAST, ARRAY_LENGTH(priorities,1) DESC NULLS LAST, LENGTH(reading) LIMIT $2";
 
@@ -61,3 +62,4 @@ async fn load_words(client: &Pool, sequences: &[i32]) -> Result<Vec<WordPair>, R
     })
     .collect())
 }
+*/

@@ -11,7 +11,13 @@ use self::{
     suggestion::{provider::SuggestionProvider, SuggestionDictionary},
     word::WordRetrieve,
 };
-use super::{kanji::Kanji, names::Name, words::Word, DictResources};
+use super::{
+    kanji::Kanji,
+    names::Name,
+    suggestions::{foreign_words::ForeignSuggestion, native_words::NativeSuggestion},
+    words::Word,
+    DictResources,
+};
 use std::collections::HashMap;
 
 type WordStorage = HashMap<u32, Word>;
@@ -33,8 +39,8 @@ struct DictionaryData {
 
 #[derive(Default)]
 pub(super) struct SuggestionData {
-    foregin: HashMap<Language, SuggestionDictionary>,
-    japanese: Option<SuggestionDictionary>,
+    foregin: HashMap<Language, SuggestionDictionary<ForeignSuggestion>>,
+    japanese: Option<SuggestionDictionary<NativeSuggestion>>,
 }
 
 impl DictionaryData {
@@ -52,6 +58,23 @@ impl SuggestionData {
     #[inline]
     pub(super) fn new() -> Self {
         Self::default()
+    }
+
+    #[inline]
+    pub(super) fn is_empty(&self) -> bool {
+        self.japanese.is_none() && self.foregin.is_empty()
+    }
+
+    pub(super) fn add_foreign(
+        &mut self,
+        lang: Language,
+        dict: SuggestionDictionary<ForeignSuggestion>,
+    ) {
+        self.foregin.insert(lang, dict);
+    }
+
+    pub(super) fn add_jp(&mut self, dict: SuggestionDictionary<NativeSuggestion>) {
+        self.japanese = Some(dict);
     }
 }
 

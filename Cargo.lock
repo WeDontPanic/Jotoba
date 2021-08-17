@@ -2844,6 +2844,7 @@ name = "resources"
 version = "0.1.0"
 dependencies = [
  "eudex",
+ "indexed_file",
  "itertools",
  "japanese",
  "jp_inflections",

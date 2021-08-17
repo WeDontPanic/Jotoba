@@ -1,4 +1,3 @@
-use deadpool_postgres::Pool;
 use error::api_error::RestError;
 use search::query::Query;
 
@@ -8,10 +7,7 @@ use super::{
 };
 
 /// Returns trascripted name suggestions based on the input query
-pub async fn transcription_suggestions(
-    _client: &Pool,
-    query: &Query,
-) -> Result<Response, RestError> {
+pub async fn transcription_suggestions(query: &Query) -> Result<Response, RestError> {
     let dict = match NAME_TRANSCRIPTIONS.get() {
         Some(v) => v,
         None => return Ok(Response::default()),
@@ -30,7 +26,7 @@ pub async fn transcription_suggestions(
 }
 
 /// Returns native name suggestions based on the input query
-pub async fn native_suggestions(_client: &Pool, query: &Query) -> Result<Response, RestError> {
+pub async fn native_suggestions(query: &Query) -> Result<Response, RestError> {
     let query_str = &query.query;
 
     let dict = match NAME_NATIVE.get() {

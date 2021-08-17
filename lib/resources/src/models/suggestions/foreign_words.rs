@@ -9,6 +9,13 @@ pub struct ForeignSuggestion {
     pub hash: eudex::Hash,
 }
 
+impl From<Vec<u8>> for ForeignSuggestion {
+    #[inline]
+    fn from(data: Vec<u8>) -> Self {
+        ForeignSuggestion::try_from(data.as_slice()).unwrap()
+    }
+}
+
 impl TryFrom<&[u8]> for ForeignSuggestion {
     type Error = ();
 

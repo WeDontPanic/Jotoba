@@ -7,6 +7,13 @@ pub struct NativeSuggestion {
     pub sequence: u32,
 }
 
+impl From<Vec<u8>> for NativeSuggestion {
+    #[inline]
+    fn from(data: Vec<u8>) -> Self {
+        NativeSuggestion::try_from(data.as_slice()).unwrap()
+    }
+}
+
 impl TryFrom<&[u8]> for NativeSuggestion {
     type Error = ();
 

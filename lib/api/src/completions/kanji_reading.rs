@@ -6,10 +6,8 @@ use super::*;
 pub(crate) struct ReadingsRes(Vec<String>, Vec<String>);
 
 /// Gets suggestions for kanji reading search eg: "痛 いた.い"
-pub(crate) async fn suggestions(
-    client: &Pool,
-    kanji_reading: KanjiReading,
-) -> Result<Response, RestError> {
+pub(crate) async fn suggestions(kanji_reading: KanjiReading) -> Result<Response, RestError> {
+    /*
     let literal = kanji_reading.literal;
     let reading = kanji_reading.reading.replace("。", "").replace(".", "");
 
@@ -32,6 +30,8 @@ pub(crate) async fn suggestions(
         suggestions: readings,
         suggestion_type: SuggestionType::KanjiReading,
     })
+    */
+    Err(RestError::Internal)
 }
 
 fn order(a: &WordPair, b: &WordPair, reading: &str) -> Ordering {
@@ -69,7 +69,8 @@ impl From<Row> for ReadingsRes {
 }
 
 /// Returns a single item of [`ReadingsRes`] for the kanji identified by its literal
-async fn readings_by_lit(client: &Pool, literal: char) -> Result<Option<ReadingsRes>, RestError> {
+async fn readings_by_lit(literal: char) -> Result<Option<ReadingsRes>, RestError> {
+    /*
     let client = client.get().await?;
 
     let query = "SELECT onyomi, kunyomi FROM kanji WHERE literal = $1 LIMIT 1";
@@ -82,4 +83,6 @@ async fn readings_by_lit(client: &Pool, literal: char) -> Result<Option<Readings
         .map(|i| ReadingsRes::from(i));
 
     Ok(res)
+    */
+    Ok(None)
 }
