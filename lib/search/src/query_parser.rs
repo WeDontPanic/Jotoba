@@ -47,7 +47,11 @@ impl QueryParser {
     ) -> QueryParser {
         // Split query into the actual query and possibly available tags
         let (parsed_query, tags) = Self::partition_tags_query(&query, trim);
-        let parsed_query = Self::format_query(parsed_query, trim);
+        let parsed_query: String = Self::format_query(parsed_query, trim)
+            .chars()
+            .into_iter()
+            .take(80)
+            .collect();
 
         QueryParser {
             q_type,

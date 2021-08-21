@@ -6,7 +6,7 @@ edition = "2018"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-quick-xml = "0.23.0-alpha2"
+quick-xml = "0.23.0-alpha3"
 strum = { version = "0.21.0", features = ["derive"] }
 strum_macros = "0.21.1"
 regex = "1.5.4"
@@ -22,7 +22,8 @@ utils = { path = "../utils"}
 localization = { path = "../localization" }
 jp_inflections = "0.1.1"
 eudex = { git = "https://github.com/JojiiOfficial/eudex"}
-indexed_file = { git = "https://github.com/JojiiOfficial/IndexedFile"}
+indexed_file = { path = "../../../indexed_file"}
+#indexed_file = { git = "https://github.com/JojiiOfficial/IndexedFile"}
 
 [lib]
 name = "resources"

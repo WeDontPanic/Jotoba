@@ -89,7 +89,12 @@ fn search_by_lang<'a>(
                 break true;
             }
 
-            substr = &substr[0..substr.len() - 2];
+            let end = substr.char_indices().rev().nth(1);
+            if end.is_none() {
+                break false;
+            }
+            let end = end.unwrap();
+            substr = &substr[0..end.0];
         };
 
         if found {
