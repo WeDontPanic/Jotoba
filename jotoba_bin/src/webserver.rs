@@ -22,8 +22,12 @@ pub(super) async fn start() -> std::io::Result<()> {
 
     info!("Loading resources");
 
-    resources::initialize_resources("./resources/storage_data", config.get_suggestion_sources())
-        .expect("Failed to load resources");
+    resources::initialize_resources(
+        "./resources/storage_data",
+        config.get_suggestion_sources(),
+        "resources/radical_map",
+    )
+    .expect("Failed to load resources");
 
     #[cfg(feature = "tokenizer")]
     load_tokenizer();

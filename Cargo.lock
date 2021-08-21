@@ -2862,6 +2862,7 @@ dependencies = [
  "serde",
  "serde_derive",
  "serde_json",
+ "sorted_intersection",
  "strum",
  "strum_macros",
  "utils",
@@ -3267,6 +3268,12 @@ dependencies = [
  "libc",
  "winapi 0.3.9",
 ]
+
+[[package]]
+name = "sorted_intersection"
+version = "1.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "43448dcec88f2dc525e8c5b1f5e5a116d3b250879fff04f90c6691dd6865a28b"
 
 [[package]]
 name = "standback"

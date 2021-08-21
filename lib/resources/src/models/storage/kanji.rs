@@ -1,8 +1,7 @@
-use utilsrs::vectools::part_of;
-
 use crate::models::kanji::Kanji;
 
 use super::ResourceStorage;
+use sorted_intersection::SortedIntersection;
 
 #[derive(Clone, Copy)]
 pub struct KanjiRetrieve<'a> {
@@ -24,17 +23,19 @@ impl<'a> KanjiRetrieve<'a> {
     /// Returns all kanji with the given radicals
     #[inline]
     pub fn by_radicals(&self, radicals: &[char]) -> Vec<&Kanji> {
-        self.storage
-            .dict_data
-            .kanji
+        let rad_map = &self.storage.dict_data.rad_map;
+
+        let mut maps = radicals
             .iter()
-            .filter(|i| {
-                i.1.parts
-                    .as_ref()
-                    .map(|i| part_of(radicals, i))
-                    .unwrap_or(false)
-            })
-            .map(|i| i.1)
+            .filter_map(|i| rad_map.get(i).map(|i| i.iter()))
+            .collect::<Vec<_>>();
+
+        if maps.is_empty() {
+            return vec![];
+        }
+
+        SortedIntersection::new(&mut maps)
+            .filter_map(|i| self.by_literal(*i))
             .collect::<Vec<_>>()
     }
 }

@@ -7,21 +7,17 @@ pub mod suggestions;
 pub mod words;
 
 use std::{
+    collections::HashMap,
     error::Error,
     fs::File,
-    io::{BufReader, Read, Write},
+    io::{BufRead, BufReader, Read, Write},
     path::Path,
-    str::FromStr,
-};
-
-use crate::{
-    models::storage::suggestion::SuggestionDictionary, parse::jmdict::languages::Language,
 };
 
 use self::{
     kanji::Kanji,
     names::Name,
-    storage::{ResourceStorage, SuggestionData},
+    storage::{RadicalStorage, ResourceStorage},
     words::Word,
 };
 use serde::{Deserialize, Serialize};
@@ -52,65 +48,35 @@ impl DictResources {
 pub fn load_storage<P: AsRef<Path>>(
     dict_data_path: P,
     suggestion_path: P,
+    rad_mapc_path: P,
 ) -> Result<ResourceStorage, Box<dyn Error>> {
     let dict_data = load_dict_data(dict_data_path)?;
-    let suggestion_data = load_suggestions(suggestion_path)?;
-    Ok(ResourceStorage::new(dict_data, suggestion_data))
+    let suggestion_data = suggestions::parse::load(suggestion_path)?;
+    let radical_map = load_rad_map(rad_mapc_path)?;
+    Ok(ResourceStorage::new(
+        dict_data,
+        suggestion_data,
+        radical_map,
+    ))
 }
 
 fn load_dict_data<P: AsRef<Path>>(dict_data_path: P) -> Result<DictResources, Box<dyn Error>> {
-    let data_reader = BufReader::new(File::open(dict_data_path)?);
-    DictResources::read(data_reader)
+    DictResources::read(BufReader::new(File::open(dict_data_path)?))
 }
 
-fn load_suggestions<P: AsRef<Path>>(
-    suggestion_path: P,
-) -> Result<Option<SuggestionData>, Box<dyn Error>> {
-    let suggestion_path = suggestion_path.as_ref();
-    if !suggestion_path.exists() || !suggestion_path.is_dir() {
-        return Ok(None);
+fn load_rad_map<P: AsRef<Path>>(rad_map_file: P) -> Result<RadicalStorage, Box<dyn Error>> {
+    let reader = BufReader::new(File::open(rad_map_file)?);
+    let mut map = HashMap::new();
+    for line in reader.lines() {
+        let line = line?;
+        if line.chars().count() < 2 {
+            continue;
+        }
+        let mut chars = line.chars();
+        let rad_literal = chars.next().unwrap();
+        let kanji_literals = chars.collect::<Vec<_>>();
+        map.insert(rad_literal, kanji_literals);
     }
 
-    // All items within the configured suggestion directory
-    let dir_entries = std::fs::read_dir(suggestion_path).and_then(|i| {
-        i.map(|res| res.map(|e| e.path()))
-            .collect::<Result<Vec<_>, std::io::Error>>()
-    })?;
-
-    let mut suggestion_data = SuggestionData::new();
-
-    // Load each file and add to `suggestion_data`
-    for entry in dir_entries {
-        load_suggestion_file(entry, &mut suggestion_data)?;
-    }
-
-    Ok((!suggestion_data.is_empty()).then(|| suggestion_data))
-}
-
-fn load_suggestion_file<P: AsRef<Path>>(
-    suggestion_file: P,
-    suggestion_data: &mut SuggestionData,
-) -> Result<(), Box<dyn Error>> {
-    let file_name = suggestion_file
-        .as_ref()
-        .file_name()
-        .and_then(|i| i.to_str().map(|i| i.to_owned()))
-        .unwrap();
-
-    if file_name == "words_ja-JP" {
-        let dict = SuggestionDictionary::load(suggestion_file)?;
-        suggestion_data.add_jp(dict);
-        println!("loaded jp suggestions");
-        return Ok(());
-    }
-
-    if let Some(lang_str) = file_name.strip_prefix("words_") {
-        let lang = Language::from_str(lang_str)?;
-        let dict = SuggestionDictionary::load(suggestion_file)?;
-        suggestion_data.add_foreign(lang, dict);
-        println!("loaded {} suggestions", lang);
-        return Ok(());
-    }
-
-    Ok(())
+    Ok(map)
 }
