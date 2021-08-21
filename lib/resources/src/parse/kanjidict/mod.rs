@@ -283,7 +283,6 @@ impl Tag {
             "codepoint" => Tag::Codepoint,
             "radical" => Tag::Radical,
             "rad_value" => {
-                // TODO fix this shit
                 let val = if let Some(attr) = attributes {
                     attr.filter_map(|i| i.is_ok().then(|| i.unwrap())).any(|i| {
                         i.key == b"rad_type"
