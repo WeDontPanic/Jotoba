@@ -8,7 +8,7 @@ use actix_web::{
     App, HttpRequest, HttpServer,
 };
 use config::Config;
-use log::info;
+use log::{info, warn};
 use std::sync::Arc;
 
 /// How long frontend assets are going to be cached by the clients. Currently 1 week
@@ -28,6 +28,10 @@ pub(super) async fn start() -> std::io::Result<()> {
         "resources/radical_map",
     )
     .expect("Failed to load resources");
+
+    if let Err(err) = api::completions::load_suggestions(&config) {
+        warn!("Failed to load suggestions: {}", err);
+    }
 
     #[cfg(feature = "tokenizer")]
     load_tokenizer();
@@ -115,10 +119,10 @@ pub(super) async fn start() -> std::io::Result<()> {
                         middleware::DefaultHeaders::new()
                             .header(CACHE_CONTROL, format!("max-age={}", ASSET_CACHE_MAX_AGE)),
                     )
-                    .service(actix_files::Files::new(
-                        "",
-                        config_clone.server.get_html_files(),
-                    )),
+                    .service(
+                        actix_files::Files::new("", config_clone.server.get_html_files())
+                            .show_files_listing(),
+                    ),
             );
 
         //#[cfg(feature = "sentry_error")]

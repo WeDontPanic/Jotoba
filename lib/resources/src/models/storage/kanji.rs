@@ -38,4 +38,9 @@ impl<'a> KanjiRetrieve<'a> {
             .filter_map(|i| self.by_literal(*i))
             .collect::<Vec<_>>()
     }
+
+    #[inline]
+    pub fn iter(&self) -> impl Iterator<Item = &Kanji> {
+        self.storage.dict_data.kanji.iter().map(|i| i.1)
+    }
 }

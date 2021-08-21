@@ -34,14 +34,17 @@ pub struct KanjiMeaningSuggestionItem {
 }
 
 impl store_item::Item for KanjiMeaningSuggestionItem {
+    #[inline]
     fn get_text(&self) -> &str {
         &self.meaning
     }
 
+    #[inline]
     fn get_hash(&self) -> eudex::Hash {
         self.hash
     }
 
+    #[inline]
     fn ord(&self) -> usize {
         self.score as usize
     }
@@ -70,6 +73,7 @@ impl Parseable for KanjiMeaningSuggestionItem {
 }
 
 impl Into<WordPair> for &KanjiMeaningSuggestionItem {
+    #[inline]
     fn into(self) -> WordPair {
         WordPair {
             primary: self.meaning.clone(),
@@ -95,6 +99,7 @@ pub struct NameTranscription {
 }
 
 impl Parseable for NameTranscription {
+    #[inline]
     fn parse(s: &str, _version: SuggestionVersion) -> Result<Self, error::Error> {
         Ok(NameTranscription {
             name: s.to_owned(),
@@ -104,16 +109,19 @@ impl Parseable for NameTranscription {
 }
 
 impl store_item::Item for NameTranscription {
+    #[inline]
     fn get_text(&self) -> &str {
         &self.name
     }
 
+    #[inline]
     fn get_hash(&self) -> eudex::Hash {
         self.hash
     }
 }
 
 impl Into<WordPair> for &NameTranscription {
+    #[inline]
     fn into(self) -> WordPair {
         WordPair {
             primary: self.name.clone(),
@@ -128,18 +136,21 @@ pub struct NameNative {
 }
 
 impl Parseable for NameNative {
+    #[inline]
     fn parse(s: &str, _version: SuggestionVersion) -> Result<Self, error::Error> {
         Ok(NameNative { name: s.to_owned() })
     }
 }
 
 impl store_item::Item for NameNative {
+    #[inline]
     fn get_text(&self) -> &str {
         &self.name
     }
 }
 
 impl Into<WordPair> for &NameNative {
+    #[inline]
     fn into(self) -> WordPair {
         WordPair {
             primary: self.name.clone(),
