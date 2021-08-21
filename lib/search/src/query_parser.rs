@@ -2,7 +2,7 @@ use itertools::Itertools;
 use serde::Deserialize;
 
 use japanese::JapaneseExt;
-use resources::parse::jmdict::part_of_speech::PosSimple;
+use resources::{models::kanji, parse::jmdict::part_of_speech::PosSimple};
 
 use super::query::{Form, Query, QueryLang, SearchTypeTag, Tag, UserSettings};
 use models::kanji::reading::KanjiReading;
@@ -171,14 +171,14 @@ impl QueryParser {
     }
 
     /// Returns Some(KanjiReading) if the query is a kanji reading query
-    fn parse_kanji_reading(&self) -> Option<KanjiReading> {
+    fn parse_kanji_reading(&self) -> Option<kanji::Reading> {
         // Format of kanji query: '<Kanji> <reading>'
         if utils::real_string_len(&self.query) >= 3 && self.query.contains(' ') {
             let split: Vec<_> = self.query.split(' ').collect();
 
             if split[0].trim().is_kanji() && format_kanji_reading(split[1]).is_japanese() {
                 // Kanji detected
-                return Some(KanjiReading {
+                return Some(kanji::Reading {
                     literal: split[0].chars().next().unwrap(),
                     reading: split[1].to_string(),
                 });

@@ -7,8 +7,10 @@ use std::{
 use super::query_parser::QueryType;
 
 use itertools::Itertools;
-use models::kanji::reading::KanjiReading;
-use resources::parse::jmdict::{languages::Language, part_of_speech::PosSimple};
+use resources::{
+    models::kanji,
+    parse::jmdict::{languages::Language, part_of_speech::PosSimple},
+};
 
 /// A single user provided query in a parsed format
 #[derive(Debug, Clone, PartialEq, Default, Hash)]
@@ -92,13 +94,13 @@ pub enum Form {
     /// Multiple words were provided
     MultiWords,
     /// Kanji reading based search eg. '気 ケ'
-    KanjiReading(KanjiReading),
+    KanjiReading(kanji::Reading),
     /// Form was not recognized
     Undetected,
 }
 
 impl Form {
-    pub fn as_kanji_reading(&self) -> Option<&KanjiReading> {
+    pub fn as_kanji_reading(&self) -> Option<&kanji::Reading> {
         if let Self::KanjiReading(v) = self {
             Some(v)
         } else {

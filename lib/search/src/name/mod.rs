@@ -7,10 +7,10 @@ use cache::SharedCache;
 use deadpool_postgres::Pool;
 use error::Error;
 use japanese::JapaneseExt;
-use models::name::Name;
 
 use async_std::sync::Mutex;
 use once_cell::sync::Lazy;
+use resources::models::names::Name;
 
 use super::SearchMode;
 

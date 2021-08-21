@@ -1,9 +1,7 @@
-mod foreign;
-mod kanji_meaning;
-mod kanji_reading;
+mod kanji;
 mod names;
-mod native;
 mod storage;
+mod words;
 
 pub use storage::load_suggestions;
 
@@ -12,9 +10,8 @@ use std::{cmp::Ordering, str::FromStr};
 use config::Config;
 use error::api_error::RestError;
 use japanese::JapaneseExt;
-use models::kanji::reading::KanjiReading;
 use query_parser::{QueryParser, QueryType};
-use resources::parse::jmdict::languages::Language;
+use resources::{models, parse::jmdict::languages::Language};
 use search::{
     query::{Form, Query, QueryLang, UserSettings},
     query_parser,
@@ -158,7 +155,7 @@ async fn get_suggestions(query: Query) -> Result<Response, RestError> {
     match query.type_ {
         QueryType::Sentences | QueryType::Words => {
             if let Some(kanji_reading) = as_kanji_reading(&query) {
-                kanji_reading::suggestions(kanji_reading).await
+                kanji::reading::suggestions(kanji_reading).await
             } else {
                 Ok(get_word_suggestions(query).await.unwrap_or_default())
             }
@@ -180,14 +177,14 @@ async fn name_suggestions(query: Query) -> Result<Response, RestError> {
 /// Returns kanji suggestions
 async fn kanji_suggestions(query: Query) -> Result<Response, RestError> {
     if query.language == QueryLang::Foreign {
-        kanji_meaning::suggestions(&query).await
+        kanji::meaning::suggestions(&query).await
     } else {
         Ok(Response::default())
     }
 }
 
 /// Returns Some(KanjiReading) if query is or 'could be' a kanji reading query
-fn as_kanji_reading(query: &Query) -> Option<KanjiReading> {
+fn as_kanji_reading(query: &Query) -> Option<models::kanji::Reading> {
     match &query.form {
         Form::KanjiReading(r) => Some(r.clone()),
         _ => {
@@ -196,7 +193,7 @@ fn as_kanji_reading(query: &Query) -> Option<KanjiReading> {
             let second = query_str.next()?;
 
             if first.is_kanji() && second == ' ' {
-                Some(KanjiReading {
+                Some(models::kanji::Reading {
                     reading: String::new(),
                     literal: first,
                 })
@@ -228,10 +225,12 @@ async fn get_word_suggestions(query: Query) -> Option<Response> {
 async fn try_word_suggestions(query: &Query) -> Option<Vec<WordPair>> {
     // Get sugesstions for matching language
     let mut word_pairs = match query.language {
-        QueryLang::Japanese => native::suggestions(&query.query).await?,
-        QueryLang::Foreign | QueryLang::Undetected => foreign::suggestions(&query, &query.query)
-            .await
-            .unwrap_or_default(),
+        QueryLang::Japanese => words::native::suggestions(&query.query).await?,
+        QueryLang::Foreign | QueryLang::Undetected => {
+            words::foreign::suggestions(&query, &query.query)
+                .await
+                .unwrap_or_default()
+        }
     };
 
     // Order: put exact matches to top

@@ -1,10 +1,10 @@
 use resources::models::{suggestions::native_words::NativeSuggestion, words::Word};
 use utils::binary_search::BinarySearchable;
 
-use super::*;
+use super::super::*;
 
 /// Get suggestions for foreign search input
-pub(super) async fn suggestions(query_str: &str) -> Option<Vec<WordPair>> {
+pub async fn suggestions(query_str: &str) -> Option<Vec<WordPair>> {
     let suggestion_provider = resources::get().suggestions();
     let dict = suggestion_provider.japanese_words()?;
     let word_storage = resources::get().words();

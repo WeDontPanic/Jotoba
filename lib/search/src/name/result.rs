@@ -1,6 +1,6 @@
 use itertools::Itertools;
 use localization::{language::Language, traits::Translatable, TranslationDict};
-use models::name::Name;
+use resources::models::names::Name;
 
 /// Returns the Name's types in an human readable way
 pub fn get_types_humanized(name: &Name, dict: &TranslationDict, lang: Language) -> String {

@@ -1,10 +1,15 @@
-use super::*;
+use std::cmp::Ordering;
+
+use error::api_error::RestError;
+use resources::models::kanji;
+
+use crate::completions::{Response, WordPair};
 
 /// Reading response (onyomi, kunyomi)
 pub(crate) struct ReadingsRes(Vec<String>, Vec<String>);
 
 /// Gets suggestions for kanji reading search eg: "痛 いた.い"
-pub(crate) async fn suggestions(kanji_reading: KanjiReading) -> Result<Response, RestError> {
+pub async fn suggestions(kanji_reading: kanji::Reading) -> Result<Response, RestError> {
     /*
     let literal = kanji_reading.literal;
     let reading = kanji_reading.reading.replace("。", "").replace(".", "");

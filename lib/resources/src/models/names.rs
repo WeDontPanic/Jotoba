@@ -10,3 +10,28 @@ pub struct Name {
     pub name_type: Option<Vec<NameType>>,
     pub xref: Option<String>,
 }
+
+impl Name {
+    /// Return `true` if name is gendered
+    pub fn is_gendered(&self) -> bool {
+        self.name_type
+            .as_ref()
+            .map(|i| i.iter().any(|i| i.is_gender()))
+            .unwrap_or(false)
+    }
+
+    /// Get the gender name-type if exists
+    pub fn get_gender(&self) -> Option<NameType> {
+        self.name_type
+            .as_ref()
+            .and_then(|i| i.iter().find(|i| i.is_gender()).copied())
+    }
+
+    /// Returns `true` if name has at least one non-gender tag
+    pub fn has_non_gender_tags(&self) -> bool {
+        self.name_type
+            .as_ref()
+            .map(|i| i.iter().any(|j| !j.is_gender()))
+            .unwrap_or(false)
+    }
+}

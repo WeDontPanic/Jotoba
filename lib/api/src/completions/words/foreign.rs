@@ -1,10 +1,10 @@
 use resources::models::suggestions::foreign_words::ForeignSuggestion;
 use utils::binary_search::BinarySearchable;
 
-use super::*;
+use super::super::*;
 
 /// Returns suggestions based on non japanese input
-pub(super) async fn suggestions(query: &Query, query_str: &str) -> Option<Vec<WordPair>> {
+pub async fn suggestions(query: &Query, query_str: &str) -> Option<Vec<WordPair>> {
     let lang = query.settings.user_lang;
 
     // Check if suggestions are available for the given language

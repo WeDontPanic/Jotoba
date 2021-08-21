@@ -17,7 +17,7 @@ use localization::{
     traits::{Translatable, TranslatablePlural},
     TranslationDict,
 };
-use models::name::Name;
+use resources::models::names::Name;
 use search::query::Query;
 
 use search::{

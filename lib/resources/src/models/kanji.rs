@@ -50,6 +50,25 @@ pub enum ReadingType {
     Onyomi,
 }
 
+/// A kanji-reading search item
+#[derive(Debug, Clone, PartialEq, Hash)]
+pub struct Reading {
+    /// The provided kanji literal
+    pub literal: char,
+    /// The provided kanji reading
+    pub reading: String,
+}
+
+impl Reading {
+    #[inline]
+    pub fn new(literal: &str, reading: &str) -> Self {
+        Reading {
+            literal: literal.chars().next().unwrap(),
+            reading: reading.to_string(),
+        }
+    }
+}
+
 impl Kanji {
     /// Returns the `ReadingType` of `reading` within readings of a kanji
     pub fn get_reading_type(&self, reading: &str) -> Option<ReadingType> {

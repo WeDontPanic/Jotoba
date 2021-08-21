@@ -8,7 +8,6 @@ edition = "2018"
 
 [dependencies]
 japanese = { path = "../japanese" }
-models = { path = "../models" }
 cache = { path = "../cache" }
 error = { path = "../error" }
 search = { path = "../search" }
