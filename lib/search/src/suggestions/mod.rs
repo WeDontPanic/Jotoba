@@ -3,16 +3,13 @@ mod jaro_search;
 pub mod store_item;
 pub mod text_store;
 
-use std::{cmp::Ordering, collections::HashMap};
-
+use self::{jaro_search::AsyncSearch, store_item::Item};
 use binary_search::Search as BinarySearch;
 use jaro_search::Search as JaroSearch;
-use resources::parse::jmdict::languages::Language;
+use std::cmp::Ordering;
 use strsim::jaro_winkler;
 use text_store::TextStore;
 use utils::diff;
-
-use self::{jaro_search::AsyncSearch, store_item::Item};
 
 /// Searches for japanese suggestions
 pub async fn japanese<'a, T: TextStore>(

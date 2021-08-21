@@ -1,22 +1,10 @@
-mod namesearch;
 mod order;
 pub mod result;
 
-use super::{name::namesearch::NameSearch, query::Query};
-use cache::SharedCache;
-use deadpool_postgres::Pool;
+use super::query::Query;
 use error::Error;
-use japanese::JapaneseExt;
 
-use async_std::sync::Mutex;
-use once_cell::sync::Lazy;
 use resources::models::names::Name;
-
-use super::SearchMode;
-
-/// An in memory Cache for namesearch results
-static NAME_SEARCH_CACHE: Lazy<Mutex<SharedCache<String, Vec<Name>>>> =
-    Lazy::new(|| Mutex::new(SharedCache::with_capacity(1000)));
 
 /// Search for names
 pub async fn search(query: &Query) -> Result<Vec<Name>, Error> {

@@ -1,13 +1,13 @@
 use std::collections::HashMap;
 
 use super::{super::search_order::SearchOrder, engine::result::ResultItem};
-use crate::query::Query;
+use crate::{query::Query, SearchMode};
 use japanese::JapaneseExt;
 use levenshtein::levenshtein;
-use models::{kanji, search_mode::SearchMode};
+//use models::search_mode::SearchMode;
 use once_cell::sync::Lazy;
 use regex::Regex;
-use resources::models::words::Word;
+use resources::models::{kanji, words::Word};
 
 pub(super) fn new_foreign_order(
     sort_map: &HashMap<usize, ResultItem>,

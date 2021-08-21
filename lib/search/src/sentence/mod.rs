@@ -1,16 +1,9 @@
-use deadpool_postgres::Pool;
 use error::Error;
-use parse::jmdict::languages::Language;
-use sentencesearch::SentenceSearch;
 
-use self::result::{Item, Sentence};
-
-use super::query::{Query, QueryLang};
-use itertools::Itertools;
+use super::query::Query;
 
 mod order;
 pub mod result;
-mod sentencesearch;
 
 /// Searches for sentences
 pub async fn search(query: &Query) -> Result<Vec<result::Item>, Error> {

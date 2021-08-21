@@ -1,5 +1,5 @@
 use japanese::{furigana, furigana::SentencePartRef};
-use parse::jmdict::languages::Language;
+use resources::parse::jmdict::languages::Language;
 
 #[derive(Debug, PartialEq, Clone)]
 pub struct Sentence {

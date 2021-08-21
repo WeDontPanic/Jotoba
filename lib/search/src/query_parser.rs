@@ -5,7 +5,6 @@ use japanese::JapaneseExt;
 use resources::{models::kanji, parse::jmdict::part_of_speech::PosSimple};
 
 use super::query::{Form, Query, QueryLang, SearchTypeTag, Tag, UserSettings};
-use models::kanji::reading::KanjiReading;
 
 /// Represents a query
 pub struct QueryParser {

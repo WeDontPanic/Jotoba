@@ -7,10 +7,7 @@ edition = "2018"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-parse = { path = "../parse" }
 japanese = { path = "../japanese" }
-models = { path = "../models" }
-cache = { path = "../cache" }
 config = { path = "../config" }
 error = { path = "../error" }
 utils = { path = "../utils" }
@@ -20,14 +17,11 @@ serde = "1.0.127"
 log = "0.4.14"
 itertools = "0.10.1"
 futures = "0.3.16"
-async-std = "1.9.0"
 once_cell = "1.8.0"
 levenshtein = "1.0.5"
 jp_inflections = "0.1.1"
 strsim = "0.10.0"
 eudex = { git = "https://github.com/JojiiOfficial/eudex"}
-deadpool-postgres = "0.9.0"
-tokio-postgres = "0.7.2"
 regex = "1.5.4"
 vector_space_model = { git = "https://github.com/JojiiOfficial/VectorSpaceModel" }
 byteorder = "1.4.3"
