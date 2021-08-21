@@ -1,5 +1,6 @@
 use std::{cmp::Ordering, collections::HashMap, vec::IntoIter};
 
+use itertools::Itertools;
 use resources::parse::jmdict::languages::Language;
 
 /// A structure holding all inforamtion about the results of a search
@@ -52,7 +53,11 @@ impl SearchResult {
     /// Returns a vec of all sequence ids in the results
     #[inline]
     pub(crate) fn sequence_ids(&self) -> Vec<u32> {
-        self.items.iter().map(|i| i.seq_id as u32).collect()
+        self.items
+            .iter()
+            .map(|i| i.seq_id as u32)
+            .unique()
+            .collect()
     }
 
     /// Returns the searchresults order map
