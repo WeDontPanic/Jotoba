@@ -123,13 +123,13 @@
         </div>
 
          <!-- Second Part -->
-         @if k_item.has_stroke_frames() {
+         @if k_item.kanji.has_stroke_frames() {
            <hr/>
            <div class="stroke-container">
-                <img src="@k_item.get_stroke_frames_url()">
+                <img src="@k_item.kanji.get_stroke_frames_url()">
            </div>
          }
-         @if k_item.has_animation_file() {
+         @if k_item.kanji.has_animation_file() {
            <div class="animation-container d-flex flex-row">
               <div class="d-flex flex-column slider-parent">
                  <div class="slidecontainer">

@@ -1,12 +1,12 @@
 use search::kanji::result;
 use serde::Serialize;
 
-#[derive(Debug, Serialize, Default)]
+#[derive(Serialize)]
 pub struct Response {
     kanji: Vec<Kanji>,
 }
 
-#[derive(Debug, Serialize, Default)]
+#[derive(Serialize)]
 pub struct Kanji {
     literal: String,
     meanings: Vec<String>,
@@ -31,14 +31,18 @@ pub struct Kanji {
     korean_h: Option<Vec<String>>,
     #[serde(skip_serializing_if = "Option::is_none")]
     parts: Option<Vec<String>>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    radical: Option<String>,
+    radical: String,
     #[serde(skip_serializing_if = "Option::is_none")]
     stroke_frames: Option<String>,
 }
 
 impl From<&resources::models::kanji::Kanji> for Kanji {
+    #[inline]
     fn from(kanji: &resources::models::kanji::Kanji) -> Self {
+        let frames = kanji
+            .has_stroke_frames()
+            .then(|| kanji.get_stroke_frames_url());
+
         Self {
             literal: kanji.literal.to_string(),
             meanings: kanji.meanings.clone(),
@@ -52,29 +56,27 @@ impl From<&resources::models::kanji::Kanji> for Kanji {
             chinese: kanji.chinese.clone(),
             korean_r: kanji.korean_r.clone(),
             korean_h: kanji.korean_h.clone(),
-            parts: None,
-            radical: None,
-            stroke_frames: None,
+            parts: kanji
+                .parts
+                .as_ref()
+                .map(|i| i.iter().map(|i| i.to_string()).collect()),
+            radical: kanji.radical.literal.to_string(),
+            stroke_frames: frames,
         }
     }
 }
 
-/*
 impl From<result::Item> for Kanji {
+    #[inline]
     fn from(item: result::Item) -> Self {
-        Self {
-            parts: item.parts.clone(),
-            radical: Some(item.radical.literal),
-            stroke_frames: Some(item.kanji.kanji.get_stroke_frames_url()),
-            ..(&item.kanji).into()
-        }
+        Kanji::from(&item.kanji)
     }
 }
 
 impl From<Vec<result::Item>> for Response {
+    #[inline]
     fn from(items: Vec<result::Item>) -> Self {
         let kanji = items.into_iter().map(|i| Kanji::from(i)).collect();
         Response { kanji }
     }
 }
-*/

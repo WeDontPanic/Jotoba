@@ -1,8 +1,10 @@
+use std::path::Path;
+
 use serde::{Deserialize, Serialize};
 
 /// A Kanji representing structure containing all available information about a single kanji
 /// character.
-#[derive(Clone, Debug, Default, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct Kanji {
     pub literal: char,
     pub grade: Option<u8>,
@@ -108,10 +110,28 @@ impl Kanji {
         self.in_on_reading(reading) || self.in_kun_reading(reading)
     }
 
+    /// Returns `true` if the kanji has stroke frames
+    #[inline]
+    pub fn has_stroke_frames(&self) -> bool {
+        Path::new(&self.get_animation_path()).exists()
+    }
+
     /// Returns the local path to stroke-frames svg
     #[inline]
     pub fn get_stroke_frames_url(&self) -> String {
         format!("/assets/svg/kanji/{}_frames.svg", self.literal)
+    }
+
+    /// Returns `true` if the kanji has a stroke animation file
+    #[inline]
+    pub fn has_animation_file(&self) -> bool {
+        Path::new(&self.get_animation_path()).exists()
+    }
+
+    /// Returns the local path of the kanjis stroke-animation
+    #[inline]
+    pub fn get_animation_path(&self) -> String {
+        format!("html/assets/svg/kanji/{}_animated.svgs", self.literal)
     }
 }
 

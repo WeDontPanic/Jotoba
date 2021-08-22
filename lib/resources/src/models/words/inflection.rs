@@ -1,6 +1,6 @@
 use super::Word;
 
-use jp_inflections::{Verb, VerbType, WordForm};
+use jp_inflections::{Verb, VerbType};
 
 /// A set of different inflections which will be displayed for vebs
 pub struct Inflections {
