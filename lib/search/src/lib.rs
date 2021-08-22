@@ -10,6 +10,8 @@ pub mod sentence;
 pub mod suggestions;
 pub mod word;
 
+pub use engine::load_indexes;
+
 /// Predefines data, required for
 /// each type of search
 #[derive(Clone)]

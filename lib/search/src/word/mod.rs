@@ -4,7 +4,7 @@ pub mod result;
 
 use std::time::Instant;
 
-use crate::query::Form;
+use crate::{engine, query::Form};
 
 use self::result::{InflectionInformation, WordResult};
 use super::{
@@ -22,6 +22,7 @@ use result::Item;
 
 #[cfg(feature = "tokenizer")]
 use japanese::jp_parsing::{igo_unidic::WordClass, InputTextParser, ParseResult, WordItem};
+use utils::to_option;
 
 pub(self) struct Search<'a> {
     query: &'a Query,
@@ -120,8 +121,9 @@ impl<'a> Search<'a> {
             return Ok((query_str.to_owned(), None, None));
         }
 
-        // TODO: implement
-        let in_db = true; //models::dict::reading_existsv2(&self.pool, query_str).await?;
+        let index = engine::word::japanese::get_index();
+        let in_db = index.get_indexer().clone().find_term(query_str).is_some();
+
         let parser = InputTextParser::new(query_str, &japanese::jp_parsing::JA_NL_PARSER, in_db)?;
 
         if let Some(parsed) = parser.parse() {
@@ -238,7 +240,7 @@ impl<'a> Search<'a> {
 
     /// Perform a native word search
     async fn native_results(&self, query_str: &str) -> Result<ResultData, Error> {
-        use crate::engine::word::japanese::Find;
+        use engine::word::japanese::Find;
 
         if self.query.language != QueryLang::Japanese && !query_str.is_japanese() {
             return Ok(ResultData::default());
@@ -267,7 +269,6 @@ impl<'a> Search<'a> {
             search_result.extend(original_res);
         }
 
-        // TODO: implement pos filter
         let pos_filter = (!pos_filter_tags.is_empty()).then(|| pos_filter_tags);
 
         let word_storage = resources::get().words();
@@ -276,6 +277,12 @@ impl<'a> Search<'a> {
         let wordresults = seq_ids
             .iter()
             .filter_map(|i| word_storage.by_sequence(*i).map(|i| i.to_owned()))
+            .filter(|word| {
+                pos_filter
+                    .as_ref()
+                    .map(|filter| has_pos(word, filter))
+                    .unwrap_or(true)
+            })
             // Prevent loading too many
             .take(100);
 
@@ -321,6 +328,8 @@ impl<'a> Search<'a> {
             return Ok(ResultData::default());
         }
 
+        let pos_filter = to_option(self.get_pos_filter_from_query());
+
         // Do the search
         let start = Instant::now();
         let search_result = Find::new(&self.query, 10, self.query.page).find().await?;
@@ -331,7 +340,12 @@ impl<'a> Search<'a> {
         let wordresults = seq_ids
             .iter()
             .filter_map(|i| word_storage.by_sequence(*i as u32).map(|i| i.to_owned()))
-            // Prevent loading too many
+            .filter(|word| {
+                pos_filter
+                    .as_ref()
+                    .map(|filter| has_pos(word, filter))
+                    .unwrap_or(true)
+            }) // Prevent loading too many
             .take(100);
 
         let mut wordresults = filter_languages(wordresults, &self.query).collect::<Vec<_>>();
@@ -405,4 +419,17 @@ fn filter_languages<'a, I: 'a + Iterator<Item = Word>>(
         word.senses = senses;
         word
     })
+}
+
+/// Returns true if a vec of senses has at least one Pos provided by the filter
+fn has_pos(word: &Word, pos_filter: &[PosSimple]) -> bool {
+    for sense in word.senses.iter() {
+        for p in sense.get_pos_simple() {
+            if pos_filter.contains(&p) {
+                return true;
+            }
+        }
+    }
+
+    false
 }

@@ -60,7 +60,7 @@ pub(super) async fn start() -> std::io::Result<()> {
         std::env::set_var("RUST_BACKTRACE", "1");
     }
 
-    search::word::load_indexes(&config).expect("Failed to load index files");
+    search::load_indexes(&config).expect("Failed to load index files");
 
     let config_clone = config.clone();
     HttpServer::new(move || {
