@@ -2,10 +2,14 @@
  * This JS-File contains some Quality of Life improvements for the website
  */
 
+var shiftPressed = false;
+
 // Prevent random dragging of <a> elements
 $('a').mousedown((event) => {
     event.preventDefault();
 });
+
+$(document).on('keyup keydown keypress', function(e){ shiftPressed = e.shiftKey} );
 
 // Key Events, or how I like to call 'em: The Jojii-Only events
 $(document).on("keypress", (event) => {
@@ -176,3 +180,7 @@ $(".input-field.first-wrap").one("click", (event) => {
     $('.choices__list.choices__list--dropdown.index').addClass('animate');
 })
 
+// Does this % thingy but only within signed value range: mod(-6,4) == 2 instead of -2
+function mod(n, m) {
+  return ((n % m) + m) % m;
+}
