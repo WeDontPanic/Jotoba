@@ -5,7 +5,7 @@ use vector_space_model::traits::Decodable;
 
 /// A document belongs to a document-vector and contains the seq_ids of all words who represent
 /// this document
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Clone, PartialEq, Eq, Debug)]
 pub(crate) struct Document {
     pub seq_id: u32,
 }

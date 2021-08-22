@@ -4,14 +4,14 @@ use itertools::Itertools;
 use resources::parse::jmdict::languages::Language;
 
 /// A structure holding all inforamtion about the results of a search
-#[derive(Debug, Clone, Default)]
+#[derive(Clone, Default)]
 pub(crate) struct SearchResult {
     items: Vec<ResultItem>,
     order_map: HashMap<usize, ResultItem>,
 }
 
 /// A single result item for `find`
-#[derive(Debug, Clone, Copy, Default)]
+#[derive(Clone, Copy, Default)]
 pub(crate) struct ResultItem {
     pub(crate) seq_id: usize,
     pub(crate) relevance: f32,
@@ -19,6 +19,7 @@ pub(crate) struct ResultItem {
 }
 
 impl PartialEq for ResultItem {
+    #[inline]
     fn eq(&self, other: &Self) -> bool {
         self.relevance.eq(&other.relevance) && self.seq_id == other.seq_id
     }
@@ -107,6 +108,7 @@ impl IntoIterator for SearchResult {
 
     type IntoIter = IntoIter<Self::Item>;
 
+    #[inline]
     fn into_iter(self) -> Self::IntoIter {
         self.items.into_iter()
     }

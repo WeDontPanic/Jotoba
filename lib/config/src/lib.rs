@@ -1,9 +1,4 @@
-#![allow(dead_code)]
-
 use std::{io::Write, time::Duration};
-
-#[cfg(not(feature = "sentry_error"))]
-use log::warn;
 
 use serde::{Deserialize, Serialize};
 

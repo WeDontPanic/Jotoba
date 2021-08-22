@@ -1,5 +1,6 @@
 #![allow(dead_code)]
 
+mod engine;
 pub mod kanji;
 pub mod name;
 pub mod query;
@@ -11,7 +12,7 @@ pub mod word;
 
 /// Predefines data, required for
 /// each type of search
-#[derive(Clone, PartialEq, Debug)]
+#[derive(Clone)]
 pub struct Search<'a> {
     pub query: &'a str,
     pub limit: u16,
@@ -19,6 +20,7 @@ pub struct Search<'a> {
 }
 
 impl<'a> Search<'a> {
+    #[inline]
     pub fn new(query: &'a str, mode: SearchMode) -> Self {
         Self {
             query,
@@ -28,6 +30,7 @@ impl<'a> Search<'a> {
     }
 
     /// Add a limit to the search
+    #[inline]
     pub fn with_limit(&mut self, limit: u16) -> &mut Self {
         self.limit = limit;
         self
@@ -37,6 +40,7 @@ impl<'a> Search<'a> {
 /// How items should be matched with
 /// the query in order to be valid as result
 #[derive(Clone, Copy, PartialEq, Debug)]
+#[repr(u8)]
 pub enum SearchMode {
     Exact,
     Variable,
@@ -58,16 +62,6 @@ impl SearchMode {
             SearchMode::Variable => a.contains(&b),
             SearchMode::LeftVariable => a.starts_with(&b),
             SearchMode::RightVariable => a.ends_with(&b),
-        }
-    }
-
-    /// Returns a string which can be placed inside a like query
-    pub fn to_like<S: AsRef<str>>(&self, a: S) -> String {
-        match self {
-            SearchMode::Exact => a.as_ref().to_owned(),
-            SearchMode::Variable => format!("%{}%", a.as_ref()),
-            SearchMode::LeftVariable => format!("%{}", a.as_ref()),
-            SearchMode::RightVariable => format!("{}%", a.as_ref()),
         }
     }
 

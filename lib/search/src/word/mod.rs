@@ -1,11 +1,8 @@
-mod engine;
 mod kanji;
 mod order;
 pub mod result;
 
 use std::time::Instant;
-
-pub use engine::load_indexes;
 
 use crate::query::Form;
 
@@ -241,7 +238,7 @@ impl<'a> Search<'a> {
 
     /// Perform a native word search
     async fn native_results(&self, query_str: &str) -> Result<ResultData, Error> {
-        use engine::japanese::Find;
+        use crate::engine::word::japanese::Find;
 
         if self.query.language != QueryLang::Japanese && !query_str.is_japanese() {
             return Ok(ResultData::default());
@@ -315,7 +312,7 @@ impl<'a> Search<'a> {
 
     /// Search for words by their translations
     async fn gloss_results(&self) -> Result<ResultData, Error> {
-        use engine::foreign::Find;
+        use crate::engine::word::foreign::Find;
 
         if !matches!(
             self.query.language,

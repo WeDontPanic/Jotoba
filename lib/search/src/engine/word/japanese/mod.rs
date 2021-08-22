@@ -1,11 +1,10 @@
 mod document;
 pub(crate) mod gen;
-pub(super) mod index;
-pub(crate) mod kanji;
+pub(crate) mod index;
 
 use self::{gen::GenDoc, index::Index};
 
-use super::{
+use crate::engine::{
     result::{ResultItem, SearchResult},
     CmpDocument, FindExt,
 };
@@ -99,7 +98,7 @@ pub(crate) fn get_index() -> &'static Index {
 }
 
 impl<'a> FindExt for Find<'a> {
-    type ResultItem = super::result::ResultItem;
+    type ResultItem = ResultItem;
     type GenDoc = gen::GenDoc;
     type Document = document::Document;
 

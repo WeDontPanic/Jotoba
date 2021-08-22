@@ -1,4 +1,4 @@
-use crate::word::engine::{self, japanese::gen::GenDoc};
+use crate::engine::{self, word::japanese::gen::GenDoc};
 
 use super::{
     super::{query::Query, SearchMode},
@@ -57,7 +57,7 @@ async fn words_with_kanji_reading(
     reading: &str,
     mode: SearchMode,
 ) -> Result<Vec<Word>, Error> {
-    use engine::japanese::Find;
+    use engine::word::japanese::Find;
 
     // TODO: this doesn't work properly: '逸 そ.れる', '気 ケ'
     // maybe we need to adjust the actual index to contain kanji readings too (should'nt it
@@ -65,7 +65,7 @@ async fn words_with_kanji_reading(
 
     let query_document = GenDoc::new(vec![kanji.literal.to_string()], 0);
 
-    let index = engine::japanese::get_index();
+    let index = engine::word::japanese::get_index();
     let doc = match DocumentVector::new(index.get_indexer(), query_document.clone()) {
         Some(s) => s,
         None => return Ok(vec![]),

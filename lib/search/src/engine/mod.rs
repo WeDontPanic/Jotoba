@@ -1,6 +1,6 @@
-pub(crate) mod foreign;
-pub(crate) mod japanese;
+pub(crate) mod name;
 pub mod result;
+pub(crate) mod word;
 
 use std::{cmp::Ordering, error};
 
@@ -9,8 +9,8 @@ use vector_space_model::{document_vector, traits::Decodable, DocumentVector};
 
 /// Load all indexes for word search engine
 pub fn load_indexes(config: &Config) -> Result<(), Box<dyn error::Error>> {
-    foreign::index::load(config)?;
-    japanese::index::load(config);
+    word::foreign::index::load(config)?;
+    word::japanese::index::load(config);
     Ok(())
 }
 

@@ -1,16 +1,18 @@
 mod document;
 mod gen;
-pub(super) mod index;
+pub(crate) mod index;
 mod metadata;
 
 use std::cmp::Ordering;
 
 use self::index::Index;
-use super::{
-    result::{ResultItem, SearchResult},
-    FindExt,
+use crate::{
+    engine::{
+        result::{ResultItem, SearchResult},
+        CmpDocument, FindExt,
+    },
+    query::Query,
 };
-use crate::{query::Query, word::engine::CmpDocument};
 use error::Error;
 use gen::GenDoc;
 use resources::parse::jmdict::languages::Language;
@@ -23,7 +25,7 @@ pub(crate) struct Find<'a> {
 }
 
 impl<'a> FindExt for Find<'a> {
-    type ResultItem = super::result::ResultItem;
+    type ResultItem = ResultItem;
     type GenDoc = gen::GenDoc;
     type Document = document::Document;
 

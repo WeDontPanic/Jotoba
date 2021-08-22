@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 
-use super::{super::search_order::SearchOrder, engine::result::ResultItem};
-use crate::{query::Query, SearchMode};
+use super::super::search_order::SearchOrder;
+use crate::{engine::result::ResultItem, query::Query, SearchMode};
 use japanese::JapaneseExt;
 use levenshtein::levenshtein;
 //use models::search_mode::SearchMode;
