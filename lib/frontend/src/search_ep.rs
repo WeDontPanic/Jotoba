@@ -20,7 +20,7 @@ use search::{
 
 use super::web_error;
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize)]
 pub struct QueryStruct {
     #[serde(rename = "t")]
     pub search_type: Option<QueryType>,

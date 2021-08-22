@@ -1,9 +1,9 @@
-use std::io::BufRead;
-use std::str;
+use std::{io::BufRead, str};
 
-use quick_xml::events::{attributes::Attributes, Event};
-use quick_xml::Reader;
-use strum_macros::Display;
+use quick_xml::{
+    events::{attributes::Attributes, Event},
+    Reader,
+};
 
 use crate::parse::{error::Error, parser::Parse};
 
@@ -149,7 +149,7 @@ where
 }
 
 /// An kanji character. Represents one Kanji
-#[derive(Debug, Default, Clone)]
+#[derive(Default, Clone)]
 pub struct Character {
     pub literal: char,
     pub on_readings: Vec<String>,
@@ -207,7 +207,7 @@ impl Character {
 }
 
 /// An XML tag
-#[derive(Debug, Clone, Display, PartialEq)]
+#[derive(PartialEq)]
 enum Tag {
     Character,
     Literal,
@@ -233,7 +233,7 @@ enum Tag {
     QCode,
 }
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(PartialEq)]
 enum ReadingType {
     JapaneseOn,
     JapaneseKun,

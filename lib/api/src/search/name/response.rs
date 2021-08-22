@@ -1,12 +1,12 @@
 use resources::{models::names, parse::jmnedict::name_type::NameType};
 use serde::Serialize;
 
-#[derive(Debug, Serialize, Default)]
+#[derive(Serialize)]
 pub struct Response {
     names: Vec<Name>,
 }
 
-#[derive(Debug, Serialize)]
+#[derive(Serialize)]
 pub struct Name {
     pub kana: String,
     #[serde(skip_serializing_if = "Option::is_none")]

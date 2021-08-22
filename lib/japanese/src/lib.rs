@@ -289,7 +289,7 @@ impl JapaneseExt for str {
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq)]
+#[derive(Clone, Copy, PartialEq, Eq)]
 pub enum CharType {
     Kana,
     Kanji,

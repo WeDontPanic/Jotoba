@@ -8,7 +8,7 @@ use serde::Serialize;
 use crate::search::kanji::response::Kanji;
 
 /// The API response struct for a word search
-#[derive(Serialize, Default)]
+#[derive(Serialize)]
 pub struct Response {
     kanji: Vec<Kanji>,
     words: Vec<Word>,
@@ -26,7 +26,7 @@ pub struct Word {
     audio: Option<String>,
 }
 
-#[derive(Serialize, Default)]
+#[derive(Serialize)]
 pub struct Reading {
     kana: String,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -79,6 +79,7 @@ impl From<&resources::models::words::Sense> for Sense {
 }
 
 impl From<&resources::models::words::Word> for Word {
+    #[inline]
     fn from(word: &resources::models::words::Word) -> Self {
         let kanji = word.reading.kanji.as_ref().map(|i| i.reading.clone());
         let kana = word.reading.kana.clone().reading;
@@ -104,6 +105,7 @@ impl From<&resources::models::words::Word> for Word {
 }
 
 impl From<WordResult> for Response {
+    #[inline]
     fn from(wres: WordResult) -> Self {
         let kanji = convert_kanji(&wres);
         let words = convert_words(&wres);
@@ -112,6 +114,7 @@ impl From<WordResult> for Response {
     }
 }
 
+#[inline]
 fn convert_kanji(wres: &WordResult) -> Vec<Kanji> {
     wres.items
         .iter()
@@ -122,6 +125,7 @@ fn convert_kanji(wres: &WordResult) -> Vec<Kanji> {
         .collect()
 }
 
+#[inline]
 fn convert_words(wres: &WordResult) -> Vec<Word> {
     wres.items
         .iter()

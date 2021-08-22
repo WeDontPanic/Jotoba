@@ -28,5 +28,5 @@ sentry = { version = "0.23.0", optional = true }
 
 [features]
 tokenizer = [ "search/tokenizer", "japanese/tokenizer" ]
-sentry_error = [ "sentry", "frontend/sentry_error", "config/sentry_error" ]
+sentry_error = [ "sentry", "frontend/sentry_error" ]
 default = [ "tokenizer", "sentry_error" ]

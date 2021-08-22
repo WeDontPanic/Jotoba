@@ -1,8 +1,8 @@
 use localization::traits::Translatable;
 use serde::{Deserialize, Serialize};
-use strum_macros::{AsRefStr, EnumString};
+use strum_macros::EnumString;
 
-#[derive(Debug, PartialEq, Clone, Copy, AsRefStr, EnumString, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, EnumString, Serialize, Deserialize)]
 #[repr(u8)]
 pub enum NameType {
     #[strum(serialize = "company")]

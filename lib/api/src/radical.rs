@@ -3,13 +3,13 @@ use serde::{Deserialize, Serialize};
 use std::collections::{HashMap, HashSet};
 
 /// Request struct for kanji_by_radicals endpoint
-#[derive(Clone, Debug, Deserialize, PartialEq)]
+#[derive(Deserialize)]
 pub struct RadicalsRequest {
     pub radicals: Vec<char>,
 }
 
 /// Response struct for kanji_by_radicals endpoint
-#[derive(Clone, Debug, Serialize, Default)]
+#[derive(Serialize)]
 pub struct RadicalsResponse {
     pub kanji: HashMap<i32, Vec<char>>,
     pub possible_radicals: Vec<char>,

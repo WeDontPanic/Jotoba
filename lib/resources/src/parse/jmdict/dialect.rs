@@ -1,11 +1,11 @@
 use std::fmt::Display;
 
 use localization::{language::Language, traits::Translatable, TranslationDict};
-use strum_macros::{AsRefStr, EnumString};
+use strum_macros::EnumString;
 
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, PartialEq, Clone, Copy, AsRefStr, EnumString, Serialize, Deserialize)]
+#[derive(Debug, PartialEq, Clone, Copy, EnumString, Serialize, Deserialize)]
 #[repr(u8)]
 pub enum Dialect {
     #[strum(serialize = "bra")]

@@ -1,7 +1,8 @@
 use strum_macros::{AsRefStr, Display, EnumString};
 
 /// Supported languages for translation
-#[derive(Copy, Clone, AsRefStr, EnumString, Display, Eq, PartialEq, Debug, Hash)]
+#[derive(Copy, Clone, AsRefStr, EnumString, Display, Eq, PartialEq, Hash, Debug)]
+#[repr(u8)]
 pub enum Language {
     #[strum(serialize = "en", serialize = "en-US")]
     English,
@@ -26,6 +27,7 @@ pub enum Language {
 }
 
 impl Default for Language {
+    #[inline]
     fn default() -> Self {
         Self::English
     }

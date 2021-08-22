@@ -18,7 +18,7 @@ const ASSET_CACHE_MAX_AGE: u64 = 604800;
 pub(super) async fn start() -> std::io::Result<()> {
     setup_logger();
 
-    let config = Config::new().await.expect("config failed");
+    let config = Config::new().expect("config failed");
 
     info!("Loading resources");
 

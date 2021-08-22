@@ -25,7 +25,7 @@ use actix_web::{
 use serde::{Deserialize, Serialize};
 
 /// Request struct for suggestion endpoint
-#[derive(Clone, Debug, Deserialize, PartialEq)]
+#[derive(Deserialize)]
 pub struct Request {
     /// The search query to find suggestions for
     pub input: String,
@@ -82,20 +82,21 @@ impl Request {
     }
 
     // Returns the user configured language of the [`Request`]
+    #[inline]
     fn get_language(&self) -> Language {
         Language::from_str(&self.lang).unwrap_or_default()
     }
 }
 
 /// Response struct for suggestion endpoint
-#[derive(Clone, Debug, Serialize, Default)]
+#[derive(Serialize, Default)]
 pub struct Response {
     pub suggestions: Vec<WordPair>,
     pub suggestion_type: SuggestionType,
 }
 
 /// The type of suggestion. `Default` in most cases
-#[derive(Clone, Debug, Serialize)]
+#[derive(Serialize)]
 #[serde(rename_all = "snake_case")]
 pub enum SuggestionType {
     /// Default suggestion type
@@ -111,7 +112,7 @@ impl Default for SuggestionType {
 }
 
 /// A word with kana and kanji reading used within [`SuggestionResponse`]
-#[derive(Clone, Debug, Serialize, Default, PartialEq)]
+#[derive(Serialize, Default)]
 pub struct WordPair {
     pub primary: String,
     #[serde(skip_serializing_if = "Option::is_none")]

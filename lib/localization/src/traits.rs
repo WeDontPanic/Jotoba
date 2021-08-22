@@ -4,12 +4,14 @@ use super::language::Language;
 use super::TranslationDict;
 
 impl Translatable for &'static str {
+    #[inline]
     fn get_id(&self) -> &'static str {
         self
     }
 }
 
 impl TranslatablePlural for &'static str {
+    #[inline]
     fn get_plural_id(&self) -> &'static str {
         self
     }

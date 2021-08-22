@@ -168,7 +168,7 @@ where
 }
 
 /// An dict entry. Represents one word, phrase or expression
-#[derive(Debug, Default, Clone)]
+#[derive(Default)]
 pub struct NameEntry {
     pub sequence: i32,
     pub kana_element: String,

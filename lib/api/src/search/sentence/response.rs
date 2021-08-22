@@ -3,12 +3,12 @@ use search::sentence;
 use sentence::result;
 use serde::Serialize;
 
-#[derive(Serialize, Default)]
+#[derive(Serialize)]
 pub struct Response {
     sentences: Vec<Sentence>,
 }
 
-#[derive(Serialize, Default)]
+#[derive(Serialize)]
 pub struct Sentence {
     pub content: String,
     pub furigana: String,
@@ -19,6 +19,7 @@ pub struct Sentence {
 }
 
 impl From<result::Sentence> for Sentence {
+    #[inline]
     fn from(sentence: result::Sentence) -> Self {
         Self {
             eng: sentence.get_english().map(|i| i.to_owned()),
@@ -31,6 +32,7 @@ impl From<result::Sentence> for Sentence {
 }
 
 impl From<Vec<result::Sentence>> for Response {
+    #[inline]
     fn from(sentences: Vec<result::Sentence>) -> Self {
         let sentences = sentences.into_iter().map(|i| Sentence::from(i)).collect();
         Self { sentences }
