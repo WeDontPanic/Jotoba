@@ -1098,3 +1098,12 @@ td {
 table tr:last-child > td {
     border-bottom: 2px solid var(--lineColor) !important;
 }
+
+/* Colors */
+
+.searchSvg {
+    height: 20px;
+    background-color: var(--primaryColor);
+    -webkit-mask: url("/assets/svg/ui/search.svg") no-repeat center;
+    mask: url("/assets/svg/ui/search.svg") no-repeat center;
+ }
