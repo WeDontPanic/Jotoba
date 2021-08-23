@@ -7,7 +7,6 @@
 <html lang="en">
    @:head_html(&data)
    <link rel="stylesheet" type="text/css" href="assets/css/index.css">
-   <script defer src="/assets/js/index.js"></script>
 
    <body>
 
@@ -36,9 +35,7 @@
                                  <input id="search" name="search" type="text" value="" placeholder='@data.gettext("Search...")' tabindex="1" lang="ja" autocapitalize="off" autocomplete="off" data-autoload="false" data-effective-keyword="">
                                  <span id="shadow-text"></span>
                                  <button type="button" class="btn bg-transparent search-embedded-btn" onclick="toggleSpeakOverlay()">
-                                    <svg class="index-search-svg" height="30" width="30" viewBox="0 0 24 24">
-                                      <path d="M12,2A3,3 0 0,1 15,5V11A3,3 0 0,1 12,14A3,3 0 0,1 9,11V5A3,3 0 0,1 12,2M19,11C19,14.53 16.39,17.44 13,17.93V21H11V17.93C7.61,17.44 5,14.53 5,11H7A5,5 0 0,0 12,16A5,5 0 0,0 17,11H19Z"></path>
-                                    </svg>
+                                    <div class="voiceSvg index"></div> 
                                  </button>
                               </div>
                            </div>
@@ -59,17 +56,15 @@
          <!-- Special Buttons -->
          <div class="index-btn-container">
             <div class="btn-container settingsBtn index" data-toggle="modal" data-target="#settingsModal">
-               <svg id="settingsSvg" class="index" height="30" viewBox="0 0 100 100">
-                  <path d="m50.011 0c-2.8839 0-5.7139 0.25936-8.4642 0.7281l-1.3424 14.221c-2.8444 0.79287-5.5365 1.9015-8.0546 3.322l-10.99-9.0785c-4.6419 3.286-8.7054 7.3259-11.991 11.968l9.1012 10.99c-1.4188 2.5151-2.552 5.214-3.3447 8.0546l-14.197 1.35c-0.46893 2.75-0.728 5.58-0.728 8.49 0 2.8897 0.25747 5.7085 0.7281 8.4641l14.198 1.3425c0.79274 2.8406 1.926 5.5395 3.3447 8.0546l-9.0785 10.99c3.2796 4.6294 7.3161 8.6885 11.945 11.968l11.013-9.1013c2.5197 1.4217 5.2082 2.5515 8.0546 3.3447l1.3424 14.221c2.7503 0.4688 5.5803 0.7054 8.4642 0.7054 2.8838 0 5.6911-0.2366 8.4414-0.7054l1.3424-14.221c2.8465-0.7932 5.5349-1.923 8.0546-3.3447l11.013 9.1013c4.6293-3.2797 8.6658-7.3388 11.945-11.968l-9.0785-10.99c1.4188-2.5151 2.552-5.214 3.3447-8.0546l14.198-1.3425c0.47063-2.7556 0.7281-5.5744 0.7281-8.4641 0-2.8848-0.25907-5.7131-0.7281-8.4642l-14.198-1.3424c-0.79274-2.8406-1.926-5.5395-3.3447-8.0546l9.1012-10.99c-3.2855-4.6423-7.349-8.6821-11.991-11.968l-10.99 9.0785c-2.5181-1.4205-5.2102-2.5291-8.0546-3.322l-1.3424-14.221c-2.7503-0.46874-5.5576-0.7281-8.4414-0.7281zm0 30.967c10.516 0 19.022 8.528 19.022 19.044s-8.5053 19.044-19.022 19.044c-10.516 0-19.044-8.528-19.044-19.044s8.528-19.044 19.044-19.044z"></path>
-               </svg>
+               <div class="settingsSvg"></div>
             </div>
    
             <div class="input-field third-wrap index">
                <button id="searchBtn" class="btn-search" onclick="onSearchStart()">
-                  <span>@data.gettext("Search")</span>
-                  <svg class="svg-inline--fa fa-search fa-w-16" aria-hidden="true" data-prefix="fas" data-icon="search" role="img" viewBox="0 0 512 512">
-                     <path fill="white" d="M505 442.7L405.3 343c-4.5-4.5-10.6-7-17-7H372c27.6-35.3 44-79.7 44-128C416 93.1 322.9 0 208 0S0 93.1 0 208s93.1 208 208 208c48.3 0 92.7-16.4 128-44v16.3c0 6.4 2.5 12.5 7 17l99.7 99.7c9.4 9.4 24.6 9.4 33.9 0l28.3-28.3c9.4-9.4 9.4-24.6.1-34zM208 336c-70.7 0-128-57.2-128-128 0-70.7 57.2-128 128-128 70.7 0 128 57.2 128 128 0 70.7-57.2 128-128 128z"></path>
-                  </svg>
+                  <div class="flex-center">
+                     <div>@data.gettext("Search")</div>
+                     <div class="searchSvg index"></div>
+                  </div>
                </button>
             </div>
    

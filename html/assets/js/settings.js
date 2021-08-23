@@ -231,8 +231,6 @@ function setColorFromCookie() {
     });
 
     setSpecialColorVars();
-    if (typeof colorSvgElements === "function")
-        colorSvgElements();
 }
 
 // Check if the current browsers doesn't want the user to be tracked
@@ -268,7 +266,6 @@ function setColorFromArray(array) {
     });
 
     setSpecialColorVars();
-    colorSvgElements();
 }
 
 // Sets variables with (e.g.) lower opacity

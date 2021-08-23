@@ -280,10 +280,6 @@ svg {
     padding-bottom: 0px;
 }
 
-#settingsSvg {
-    fill: var(--tagColor);
-}
-
 @media only screen and (max-width: 1300px) {
     .settingsBtn {
         position: unset;
@@ -1099,11 +1095,92 @@ table tr:last-child > td {
     border-bottom: 2px solid var(--lineColor) !important;
 }
 
-/* Colors */
+/* Useful stuff */
+
+.flex-center {
+    display: flex;
+    place-content: center;    
+}
+
+/* SVG Colors */
+
+.searchSvg, .settingsSvg, .clearSvg, .voiceSvg {
+    -webkit-mask-size: cover !important;
+    mask-size: cover !important;
+}
 
 .searchSvg {
-    height: 20px;
+    height: 18px;
+    width: 18px;
     background-color: var(--primaryColor);
     -webkit-mask: url("/assets/svg/ui/search.svg") no-repeat center;
     mask: url("/assets/svg/ui/search.svg") no-repeat center;
- }
+}
+
+.searchSvg.index {
+    height: 16px;
+    width: 16px;
+    margin-top: 3px;
+    margin-left: 5px;
+    background-color: var(--secondaryTextColor);
+}
+
+.settingsSvg {
+    height: 30px;
+    width: 30px;
+    background-color: var(--tagColor);
+    -webkit-mask: url("/assets/svg/ui/settings.svg") no-repeat center;
+    mask: url("/assets/svg/ui/settings.svg") no-repeat center;
+}
+
+.settingsSvg.mobile {
+    margin-left: 4px;
+    height: 26px;
+    width: 26px;
+}
+
+.clearSvg {
+    height: 20px;
+    width: 20px;
+    margin-top: 2px;
+    background-color: var(--tagColor);
+    -webkit-mask: url("/assets/svg/ui/clear.svg") no-repeat center;
+    mask: url("/assets/svg/ui/clear.svg") no-repeat center;
+}
+
+.voiceSvg {
+    height: 24px;
+    width: 24px;
+    background-color: var(--tagColor);
+    -webkit-mask: url("/assets/svg/ui/voice.svg") no-repeat center;
+    mask: url("/assets/svg/ui/voice.svg") no-repeat center;
+}
+
+.voiceSvg.mobile {
+    margin-left: 2px;
+    height: 30px;
+    width: 30px;
+}
+
+.voiceSvg.index {
+    margin-top: -7px;
+    height: 30px;
+    width: 30px;
+}
+
+.jumpSvg {
+    margin-left: 4px;
+    height: 26px;
+    width: 26px;
+    background-color: var(--primaryColor);
+    -webkit-mask: url("/assets/svg/ui/jump.svg") no-repeat center;
+    mask: url("/assets/svg/ui/jump.svg") no-repeat center;
+}
+
+.menuSvg {
+    height: 28px;
+    width: 28px;
+    background-color: var(--tagColor);
+    -webkit-mask: url("/assets/svg/ui/menu.svg") no-repeat center;
+    mask: url("/assets/svg/ui/menu.svg") no-repeat center;
+}
