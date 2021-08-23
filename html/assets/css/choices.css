@@ -352,7 +352,7 @@
   transition: all .2s ease-out, color .2s ease-out;
 }
 
-.btn-search img {
+.btn-search svg {
   width: 16px;
 }
 

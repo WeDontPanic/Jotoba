@@ -67,6 +67,10 @@ footer {
     user-select: none; /* Non-prefixed version, currently supported by Chrome, Edge, Opera and Firefox */;
 }
 
+object {
+    pointer-events: none;
+}
+
 .vl {
     border-left: 1px solid var(--searchTextColor);
 }
