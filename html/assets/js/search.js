@@ -477,3 +477,11 @@ function onSearchStart() {
 
     return false;
 }
+
+// When opening an overlay, scroll it into view
+function scrollSearchIntoView() {
+    if (document.location.origin+"/" === document.location.href) {
+        var top = $('#search').offset().top;
+        Util.scrollTo(top, 500);
+    }
+}

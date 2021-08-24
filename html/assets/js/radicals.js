@@ -57,6 +57,7 @@ function resetRadPicker() {
 // Adds the selected Kanji to the search bar
 function handleKanjiSelect(event) {
     $('#search').val($('#search').val() + event.target.innerHTML);
+    toggleSearchIcon(200);
 }
 
 // Toggles Radicals on Input and loads the results
