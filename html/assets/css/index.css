@@ -52,11 +52,6 @@ form {
     position: absolute !important;
 }
 
-.index-search-svg {
-    margin-top: -7px; 
-    fill: var(--tagColor);
-}
-
 .inner-form {
     border-radius: 20px !important;
 }
@@ -173,12 +168,6 @@ form {
     .settingsBtn {
         display: unset !important;
         left: 10px !important;
-    }
-
-    .index-search-svg {
-        width: 24px;
-        height: 24px;
-        margin-top: -1px;
     }
 
     .input-field.third-wrap:not(.rad) {

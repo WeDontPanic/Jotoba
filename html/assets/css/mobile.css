@@ -25,6 +25,10 @@
         padding-right: 1em;
     }
 
+    .voiceSvg.index {
+        margin-top: -4px;
+    }
+
 	/* -------- Word Search -------- */
     
     .search-embedded-btn {
@@ -60,7 +64,6 @@
     }
 
     .searchDivInner form .inner-form .input-field.first-wrap .choices__list.choices__list--dropdown {
-        width: max-content;
         padding-right: 20px;
     }
 
