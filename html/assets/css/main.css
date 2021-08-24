@@ -1149,9 +1149,10 @@ table tr:last-child > td {
 }
 
 .voiceSvg {
+    margin-top: 2px;
     height: 24px;
     width: 24px;
-    background-color: var(--tagColor);
+    background-color: var(--primaryColor);
     -webkit-mask: url("/assets/svg/ui/voice.svg") no-repeat center;
     mask: url("/assets/svg/ui/voice.svg") no-repeat center;
 }
@@ -1166,6 +1167,7 @@ table tr:last-child > td {
     margin-top: -7px;
     height: 30px;
     width: 30px;
+    background-color: var(--tagColor);
 }
 
 .jumpSvg {
