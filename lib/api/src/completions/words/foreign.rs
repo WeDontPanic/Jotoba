@@ -23,20 +23,22 @@ pub async fn suggestions(query: &Query, query_str: &str) -> Option<Vec<WordPair>
 fn search<'a>(main_lang: Language, query_str: &'a str) -> Vec<WordPair> {
     let mut res: Vec<_> = search_by_lang(main_lang, query_str, true)
         .map(|i| {
-            let similarity = (strsim::jaro(&i.text, query_str) * 100f64) as u32;
+            let similarity =
+                (strsim::jaro(&i.text.to_lowercase(), &query_str.to_lowercase()) * 100f64) as u32;
             (i, main_lang, similarity)
         })
         .take(50)
         .chain(
             search_by_lang(main_lang, &query_str.to_lowercase(), true).map(|i| {
-                let similarity = (strsim::jaro(&i.text, &query_str.to_lowercase()) * 100f64) as u32;
+                let similarity = (strsim::jaro(&i.text.to_lowercase(), &query_str.to_lowercase())
+                    * 100f64) as u32;
                 (i, main_lang, similarity)
             }),
         )
         .chain(
             search_by_lang(main_lang, &utils::first_letter_upper(query_str), true).map(|i| {
-                let similarity =
-                    (strsim::jaro(&i.text, &utils::first_letter_upper(query_str)) * 100f64) as u32;
+                let similarity = (strsim::jaro(&i.text.to_lowercase(), &query_str.to_lowercase())
+                    * 100f64) as u32;
                 (i, main_lang, similarity)
             }),
         )
