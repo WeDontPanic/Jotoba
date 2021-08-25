@@ -1,0 +1,31 @@
+.ripple {
+  font-family: 'Roboto';
+  font-size: 24px;
+  padding: 1em 2em;
+  margin: 2px;
+  border: 0;
+  outline: 0;
+  color: white;
+  background-color: #2196f3;
+  text-transform: uppercase;
+  border-radius: 0.15em;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.3 );
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.ripple .rippleAnim {
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.7);
+  position: absolute;
+  transform: scale(0);
+  animation: rippleEffect 0.6s linear;
+}
+
+@keyframes rippleEffect {
+  to{
+    transform: scale(2.5);
+    opacity: 0;
+  }
+}

@@ -26,7 +26,7 @@ pub struct QueryStruct {
     pub search_type: Option<QueryType>,
     #[serde(rename = "i")]
     pub word_index: Option<usize>,
-    #[serde(rename = "page")]
+    #[serde(rename = "p")]
     pub page: Option<usize>,
 
     #[serde(skip_serializing, skip_deserializing)]

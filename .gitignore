@@ -1,5 +1,5 @@
 /html/assets/js/loadAnalytics.js
-/html/assets/*
+/html/assets/svg
 /html/assets/audio
 /html/*.html
 !/html/docs.html
@@ -19,3 +19,4 @@ audio_old
 indexes/
 indexes_old
 massiv.out
+*/*/target
