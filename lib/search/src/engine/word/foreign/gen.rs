@@ -12,6 +12,7 @@ pub struct GenDoc {
 
 impl GenDoc {
     /// Create a new GenDoc Document
+    #[inline]
     pub fn new<T: ToString>(term: T, seq_ids: Vec<usize>) -> Self {
         let terms = split_to_words(&term.to_string());
         GenDoc { terms, seq_ids }

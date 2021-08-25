@@ -4,7 +4,7 @@ use itertools::Itertools;
 use resources::parse::jmdict::languages::Language;
 
 /// A structure holding all inforamtion about the results of a search
-#[derive(Clone, Default)]
+#[derive(Clone, Default, Debug)]
 pub(crate) struct SearchResult {
     items: Vec<ResultItem>,
     order_map: HashMap<usize, ResultItem>,
@@ -73,6 +73,24 @@ impl SearchResult {
         let items = self.items.into_iter().take(limit).collect::<Vec<_>>();
         let order_map = Self::build_order_map(&items);
         Self { items, order_map }
+    }
+
+    /// Returns the length of results
+    #[inline]
+    pub(crate) fn len(&self) -> usize {
+        self.items.len()
+    }
+
+    /// Returns `true` if there is no item in the result
+    #[inline]
+    pub(crate) fn is_empty(&self) -> bool {
+        self.len() == 0
+    }
+
+    /// Gets a result at `pos`
+    #[inline]
+    pub(crate) fn get(&self, pos: usize) -> Option<&ResultItem> {
+        self.items.get(pos)
     }
 
     /// Builds a HashMap that maps sequence ids to the corresponding ResultItem

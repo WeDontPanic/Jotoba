@@ -164,16 +164,7 @@ impl<'a> Search<'a> {
                 continue;
             }
 
-            // TODO: implement
-            /*
-            let furigana = models::dict::furigana_by_reading(self.pool, &part.lexeme)
-                .await
-                .ok()
-                .and_then(|i| i);
-                */
-            let furigana = None;
-
-            part.furigana = furigana;
+            part.furigana = furigana_by_reading(&part.lexeme).await;
 
             if let Some(ref furigana) = part.furigana {
                 let furi_end = match japanese::furigana::last_kana_part(&furigana) {
@@ -185,7 +176,7 @@ impl<'a> Search<'a> {
                     None => continue,
                 };
                 let combined = format!("{}{}", &furigana[..furi_end], &part.text[text_end..]);
-                part.furigana = Some(combined.to_owned())
+                part.furigana = Some(combined)
             }
         }
 
@@ -432,4 +423,36 @@ fn has_pos(word: &Word, pos_filter: &[PosSimple]) -> bool {
     }
 
     false
+}
+
+/// Returns furigana of the given `morpheme` if available
+async fn furigana_by_reading(morpheme: &str) -> Option<String> {
+    use engine::word::japanese::Find;
+    let word_storage = resources::get().words();
+
+    let found = Find::new(morpheme, 2, 0).find().await.ok()?;
+
+    let exact_matches = found
+        .into_iter()
+        .filter(|i| i.relevance > 0.7)
+        .filter(|i| {
+            let eq = morpheme
+                == word_storage
+                    .by_sequence(i.seq_id as u32)
+                    .unwrap()
+                    .get_reading()
+                    .reading;
+            eq
+        })
+        .collect::<Vec<_>>();
+
+    if exact_matches.len() != 1 {
+        return None;
+    }
+
+    let seq_id = exact_matches[0].seq_id;
+
+    let word = word_storage.by_sequence(seq_id as u32)?;
+
+    word.furigana.as_ref().map(|i| i.clone())
 }
