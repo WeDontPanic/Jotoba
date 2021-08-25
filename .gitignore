@@ -1,5 +1,5 @@
 /html/assets/js/loadAnalytics.js
-/html/assets/*
+/html/assets/svg
 /html/assets/audio
 /html/*.html
 !/html/docs.html
