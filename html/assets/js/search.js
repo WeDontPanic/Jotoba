@@ -486,7 +486,7 @@ function scrollSearchIntoView() {
 }
 
 // Initialize Pagination Buttons
-$('.pagination-item > button').on("click", (e) => {
+$('.pagination-item:not(.disabled) > button').on("click", (e) => {
 
     var pressedBtn = $(e.target).contents()[0].nodeValue; 
     var targetPage = 1;
