@@ -1,6 +1,6 @@
 use super::Word;
 
-use jp_inflections::{Verb, VerbType};
+use jp_inflections::{Verb, VerbType, WordForm};
 
 /// A set of different inflections which will be displayed for vebs
 pub struct Inflections {
@@ -22,8 +22,49 @@ pub struct InflectionPair {
     pub negative: String,
 }
 
+/// Returns the inflections of `word` if its a verb
 pub(super) fn of_word(word: &Word) -> Option<Inflections> {
-    None
+    let verb = get_jp_verb(word)?;
+    let build = || -> Result<Inflections, jp_inflections::error::Error> {
+        Ok(Inflections {
+            present: InflectionPair {
+                positive: verb.dictionary(WordForm::Short)?.get_reading(),
+                negative: verb.negative(WordForm::Short)?.get_reading(),
+            },
+            present_polite: InflectionPair {
+                positive: verb.dictionary(WordForm::Long)?.get_reading(),
+                negative: verb.negative(WordForm::Long)?.get_reading(),
+            },
+
+            past: InflectionPair {
+                positive: verb.past(WordForm::Short)?.get_reading(),
+                negative: verb.negative_past(WordForm::Short)?.get_reading(),
+            },
+            past_polite: InflectionPair {
+                positive: verb.past(WordForm::Long)?.get_reading(),
+                negative: verb.negative_past(WordForm::Long)?.get_reading(),
+            },
+            te_form: InflectionPair {
+                positive: verb.te_form()?.get_reading(),
+                negative: verb.negative_te_form()?.get_reading(),
+            },
+            potential: InflectionPair {
+                positive: verb.potential(WordForm::Short)?.get_reading(),
+                negative: verb.negative_potential(WordForm::Short)?.get_reading(),
+            },
+            passive: InflectionPair {
+                positive: verb.passive()?.get_reading(),
+                negative: verb.negative_passive()?.get_reading(),
+            },
+            causative: InflectionPair {
+                positive: verb.causative()?.get_reading(),
+                negative: verb.negative_causative()?.get_reading(),
+            },
+        })
+    }()
+    .ok()?;
+
+    Some(build)
 }
 
 /// Returns a jp_inflections::Verb if [`self`] is a verb

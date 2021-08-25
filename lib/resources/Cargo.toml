@@ -10,8 +10,8 @@ quick-xml = "0.23.0-alpha3"
 strum = { version = "0.21.0", features = ["derive"] }
 strum_macros = "0.21.1"
 regex = "1.5.4"
-serde = { version = "1.0.128", features = ["derive"] }
-serde_derive = "1.0.128"
+serde = { version = "1.0.129", features = ["derive"] }
+serde_derive = "1.0.129"
 itertools = "0.10.1"
 romaji = "0.1.1"
 serde_json = "1.0.66"
