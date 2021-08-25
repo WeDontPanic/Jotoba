@@ -11,7 +11,7 @@ pub(crate) struct SearchResult {
 }
 
 /// A single result item for `find`
-#[derive(Clone, Copy, Default)]
+#[derive(Clone, Copy, Default, Debug)]
 pub(crate) struct ResultItem {
     pub(crate) seq_id: usize,
     pub(crate) relevance: f32,
