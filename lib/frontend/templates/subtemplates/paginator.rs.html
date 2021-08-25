@@ -1,0 +1,34 @@
+@use crate::BaseData;
+@(data: &BaseData)
+
+<nav>
+    <ul class="pagination noselect">
+       <li class="pagination-item disabled">
+          <button class="pagination-circle ripple">First</button>
+       </li>
+       <li class="pagination-item disabled">
+          <button class="pagination-circle ripple">&laquo;</button>
+       </li>
+       <li class="pagination-item">
+          <button class="pagination-circle ripple active">1</button>
+       </li>
+       <li class="pagination-item">
+          <button class="pagination-circle ripple">2</button>
+       </li>
+       <li class="pagination-item">
+          <button class="pagination-circle ripple">3</button>
+       </li>
+       <li class="pagination-item">
+          <button class="pagination-circle ripple">4</button>
+       </li>
+       <li class="pagination-item">
+          <button class="pagination-circle ripple">5</button>
+       </li>
+       <li class="pagination-item">
+          <button class="pagination-circle ripple">&raquo;</button>
+       </li>
+       <li class="pagination-item">
+          <button class="pagination-circle ripple" last-page="69">Last</button>
+       </li>
+    </ul>
+ </nav>

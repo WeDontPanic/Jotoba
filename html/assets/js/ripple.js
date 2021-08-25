@@ -11,13 +11,12 @@ function createRipple(e)
   var d = Math.max(this.clientWidth, this.clientHeight);
   circle.style.width = circle.style.height = d + 'px';
   
-  circle.style.left = e.clientX - this.offsetLeft - d / 2 + 'px';
+  circle.style.left = e.clientX - this.offsetLeft - 10 - d / 2 + 'px';
   circle.style.top = e.pageY - this.offsetTop - d / 2 + 'px';
   
   circle.classList.add('rippleAnim');
 }
 
 document.querySelectorAll(".ripple").forEach((e) => {
-	console.log(e);
   e.addEventListener('click', createRipple);
 });

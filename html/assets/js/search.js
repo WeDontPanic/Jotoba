@@ -97,7 +97,6 @@ window.addEventListener("resize", e => {
 // Marks the current search's type, so it can be displayed in another color
 function markCurrentSearchType() {
     let searchType = $('#search-type').val();
-    console.log(searchType);
 
     for (let i = 0; i < 4; i ++) {
         if (i == searchType) {
@@ -485,3 +484,32 @@ function scrollSearchIntoView() {
         Util.scrollTo(top, 500);
     }
 }
+
+// Initialize Pagination Buttons
+$('.pagination-item > button').on("click", (e) => {
+
+    var pressedBtn = $(e.target).contents()[0].nodeValue; 
+    var targetPage = 1;
+
+    switch(pressedBtn) {
+        case "First":
+            targetPage = 1; 
+            break;
+        case "Last":
+            targetPage = e.target.getAttribute("last-page");
+            break;
+        case "«":
+            targetPage = Number($('.pagination-item .active').contents()[0].nodeValue) - 1;
+            break;
+        case "»":
+            targetPage = Number($('.pagination-item .active').contents()[0].nodeValue) + 1;
+            break;
+        default:
+            targetPage = pressedBtn;
+            break;
+    }
+
+    var search_value = $('#search').val();
+    var search_type = $('#search-type').val();
+    window.location = window.location.origin + "/search/" + encodeURIComponent(search_value) + "?t=" + search_type + "?p=" + targetPage;
+});
