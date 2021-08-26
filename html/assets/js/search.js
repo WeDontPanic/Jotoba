@@ -94,6 +94,11 @@ window.addEventListener("resize", e => {
     setShadowText();
 });
 
+// Scroll sentence-reader to display selected index
+Util.awaitDocumentReady(() => {
+    $('#sr')[0].scrollTop = ($('.sentence-part.selected').offset().top);
+});
+
 // Marks the current search's type, so it can be displayed in another color
 function markCurrentSearchType() {
     let searchType = $('#search-type').val();
