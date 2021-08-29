@@ -46,8 +46,9 @@ impl Ord for ResultItem {
 impl SearchResult {
     /// Creates a new `SearchResult` from items of the results
     #[inline]
-    pub(crate) fn new(items: Vec<ResultItem>) -> SearchResult {
+    pub(crate) fn new(mut items: Vec<ResultItem>) -> SearchResult {
         let order_map = Self::build_order_map(&items);
+        items.sort_by(|a, b| a.relevance.partial_cmp(&b.relevance).unwrap().reverse());
         Self { items, order_map }
     }
 
@@ -91,6 +92,16 @@ impl SearchResult {
     #[inline]
     pub(crate) fn get(&self, pos: usize) -> Option<&ResultItem> {
         self.items.get(pos)
+    }
+
+    /// Returns an iterator over each item loaded by `f(seq_id)` ordered by their relevance (1
+    /// first)
+    #[inline]
+    pub(crate) fn retrieve_ordered<'a, T, F: 'a>(&'a self, mut f: F) -> impl Iterator<Item = T> + 'a
+    where
+        F: FnMut(usize) -> Option<T>,
+    {
+        self.items.iter().filter_map(move |i| f(i.seq_id))
     }
 
     /// Builds a HashMap that maps sequence ids to the corresponding ResultItem

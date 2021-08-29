@@ -85,7 +85,7 @@ impl<'a> Find<'a> {
 
     /// Generate a document vector out of `query_str`
     fn gen_query(&self, index: &Index) -> Option<DocumentVector<GenDoc>> {
-        let query_document = GenDoc::new(vec![self.query.to_string()], 0);
+        let query_document = GenDoc::new(vec![self.query.to_string()]);
         let mut doc = DocumentVector::new(index.get_indexer(), query_document.clone())?;
 
         // TODO: look if this makes the results really better. If not, remove

@@ -4,76 +4,43 @@ pub mod result;
 use super::query::Query;
 use error::Error;
 
+use japanese::JapaneseExt;
 use resources::models::names::Name;
 
 /// Search for names
 pub async fn search(query: &Query) -> Result<Vec<Name>, Error> {
-    /*
-    let mut ns_cache = NAME_SEARCH_CACHE.lock().await;
-
-    if let Some(cached) = ns_cache.cache_get(&query.query.clone()) {
-        return Ok(cached.clone());
-    }
-
     let res = if query.form.is_kanji_reading() {
-        search_kanji(db, &query).await?
+        search_kanji(&query).await?
     } else if query.query.is_japanese() {
-        search_native(db, &query).await?
+        search_native(&query).await?
     } else {
-        search_transcription(db, &query).await?
+        search_transcription(&query).await?
     };
 
-    ns_cache.cache_set(query.query.clone(), res.clone());
-    */
-
-    Ok(vec![])
+    Ok(res)
 }
 
-/*
 /// Search by transcription
-async fn search_transcription(db: &Pool, query: &Query) -> Result<Vec<Name>, Error> {
-    let search = NameSearch::new(&db, &query.query);
-
-    let mut items = search.search_transcription().await?;
-
-    // Sort the results based
-    order::ByTranscription::new(&query.query).sort(&mut items);
-
-    // Limit search to 10 results
-    items.truncate(10);
-
-    Ok(items)
+async fn search_transcription(query: &Query) -> Result<Vec<Name>, Error> {
+    unimplemented!()
 }
 
 /// Search by japanese input
-async fn search_native(db: &Pool, query: &Query) -> Result<Vec<Name>, Error> {
-    let search = NameSearch::new(&db, &query.query);
+async fn search_native(query: &Query) -> Result<Vec<Name>, Error> {
+    let resources = resources::get().names();
 
-    let mut items = search.search_native(&query.query).await?;
+    use crate::engine::name::japanese::Find;
 
-    // Sort the results based
-    order::ByNative::new(&query.query).sort(&mut items);
+    let names = Find::new(&query.query, 10, 0)
+        .find()
+        .await?
+        .retrieve_ordered(|seq_id| resources.by_sequence(seq_id as u32).cloned())
+        .collect();
 
-    // Limit search to 10 results
-    items.truncate(10);
-
-    Ok(items)
+    Ok(names)
 }
 
 /// Search by japanese input
-async fn search_kanji(db: &Pool, query: &Query) -> Result<Vec<Name>, Error> {
-    let search = NameSearch::new(&db, &query.query);
-
-    let kanji = query.form.as_kanji_reading().unwrap();
-
-    let mut items = search.kanji_search(kanji).await?;
-
-    // Sort the results based
-    order::ByKanji::new(&query.query, &kanji).sort(&mut items);
-
-    // Limit search to 10 results
-    items.truncate(10);
-
-    Ok(items)
+async fn search_kanji(query: &Query) -> Result<Vec<Name>, Error> {
+    unimplemented!()
 }
-*/

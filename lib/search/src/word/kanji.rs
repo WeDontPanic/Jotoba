@@ -63,7 +63,7 @@ async fn words_with_kanji_reading(
     // maybe we need to adjust the actual index to contain kanji readings too (should'nt it
     // already?)
 
-    let query_document = GenDoc::new(vec![kanji.literal.to_string()], 0);
+    let query_document = GenDoc::new(vec![kanji.literal.to_string()]);
 
     let index = engine::word::japanese::index::get();
     let doc = match DocumentVector::new(index.get_indexer(), query_document.clone()) {
