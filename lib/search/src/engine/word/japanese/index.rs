@@ -20,3 +20,9 @@ pub(crate) fn load(config: &Config) {
     info!("Loaded japanese index");
     INDEX.set(index).unwrap();
 }
+
+/// Returns the loaded japanese index
+#[inline]
+pub(crate) fn get() -> &'static Index {
+    INDEX.get().unwrap()
+}

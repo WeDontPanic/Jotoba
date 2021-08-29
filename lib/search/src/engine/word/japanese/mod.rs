@@ -84,7 +84,6 @@ impl<'a> Find<'a> {
     }
 
     /// Generate a document vector out of `query_str`
-    #[inline]
     fn gen_query(&self, index: &Index) -> Option<DocumentVector<GenDoc>> {
         let query_document = GenDoc::new(vec![self.query.to_string()], 0);
         let mut doc = DocumentVector::new(index.get_indexer(), query_document.clone())?;
@@ -95,12 +94,6 @@ impl<'a> Find<'a> {
 
         Some(doc)
     }
-}
-
-/// Returns the loaded japanese index
-#[inline]
-pub(crate) fn get_index() -> &'static Index {
-    index::INDEX.get().unwrap()
 }
 
 impl<'a> FindExt for Find<'a> {

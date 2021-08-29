@@ -65,7 +65,7 @@ async fn words_with_kanji_reading(
 
     let query_document = GenDoc::new(vec![kanji.literal.to_string()], 0);
 
-    let index = engine::word::japanese::get_index();
+    let index = engine::word::japanese::index::get();
     let doc = match DocumentVector::new(index.get_indexer(), query_document.clone()) {
         Some(s) => s,
         None => return Ok(vec![]),

@@ -59,16 +59,16 @@ impl<'a> Search<'a> {
         let kanji_results = kanji::load_word_kanji_info(&words)?;
         println!("loading kanji took: {:?}", start.elapsed());
 
-        let kanji_items = kanji_results.len();
-        return Ok(WordResult {
+        let res = WordResult {
+            contains_kanji: kanji_results.len() > 0,
             items: Self::merge_words_with_kanji(words, kanji_results),
-            contains_kanji: kanji_items > 0,
             inflection_info: search_result.infl_info,
             count: search_result.count,
             sentence_parts: search_result.sentence_parts,
             sentence_index: search_result.sentence_index,
             searched_query: search_result.searched_query,
-        });
+        };
+        Ok(res)
     }
 
     /// Search by a word
@@ -121,7 +121,7 @@ impl<'a> Search<'a> {
             return Ok((query_str.to_owned(), None, None));
         }
 
-        let index = engine::word::japanese::get_index();
+        let index = engine::word::japanese::index::get();
         let in_db = index.get_indexer().clone().find_term(query_str).is_some();
 
         let parser = InputTextParser::new(query_str, &japanese::jp_parsing::JA_NL_PARSER, in_db)?;
@@ -184,6 +184,7 @@ impl<'a> Search<'a> {
     }
 
     /// Returns a vec of all PartOfSpeech to filter  
+    #[inline]
     fn get_pos_filter_from_query(&self) -> Vec<PosSimple> {
         self.query
             .tags
@@ -193,40 +194,6 @@ impl<'a> Search<'a> {
                 _ => None,
             })
             .collect_vec()
-    }
-
-    #[cfg(feature = "tokenizer")]
-    fn get_pos_filter(
-        &self,
-        sentence: &Option<Vec<SentencePart>>,
-        morpheme: &Option<WordItem>,
-    ) -> Vec<PosSimple> {
-        if sentence.is_none()
-            || morpheme.is_none()
-            || (sentence.is_some() && sentence.as_ref().unwrap().is_empty())
-        {
-            return self.get_pos_filter_from_query();
-        }
-
-        if let Some(ref pos) = morpheme
-            .as_ref()
-            .unwrap()
-            .word_class
-            .and_then(|i| word_class_to_pos_s(&i))
-        {
-            return vec![*pos];
-        }
-
-        self.get_pos_filter_from_query()
-    }
-
-    #[cfg(not(feature = "tokenizer"))]
-    fn get_pos_filter(
-        &self,
-        _sentence: &Option<Vec<SentencePart>>,
-        _morpheme: &Option<()>,
-    ) -> Vec<PosSimple> {
-        self.get_pos_filter_from_query()
     }
 
     /// Perform a native word search
@@ -241,7 +208,7 @@ impl<'a> Search<'a> {
         let (query, _morpheme, sentence) = self.get_query(query_str).await?;
 
         let query_modified = query != query_str;
-        let pos_filter_tags = self.get_pos_filter(&sentence, &_morpheme);
+        let pos_filter_tags = self.get_pos_filter_from_query();
 
         #[cfg(feature = "tokenizer")]
         let infl_info = _morpheme.as_ref().and_then(|i| {
@@ -260,7 +227,8 @@ impl<'a> Search<'a> {
             search_result.extend(original_res);
         }
 
-        let pos_filter = (!pos_filter_tags.is_empty()).then(|| pos_filter_tags);
+        let pos_filter =
+            (!pos_filter_tags.is_empty() && sentence.is_none()).then(|| pos_filter_tags);
 
         let word_storage = resources::get().words();
 
@@ -413,12 +381,11 @@ fn filter_languages<'a, I: 'a + Iterator<Item = Word>>(
 }
 
 /// Returns true if a vec of senses has at least one Pos provided by the filter
+#[inline]
 fn has_pos(word: &Word, pos_filter: &[PosSimple]) -> bool {
-    for sense in word.senses.iter() {
-        for p in sense.get_pos_simple() {
-            if pos_filter.contains(&p) {
-                return true;
-            }
+    for sense in word.senses.iter().map(|i| i.get_pos_simple()) {
+        if sense.iter().any(|i| pos_filter.contains(i)) {
+            return true;
         }
     }
 
@@ -446,13 +413,13 @@ async fn furigana_by_reading(morpheme: &str) -> Option<String> {
         })
         .collect::<Vec<_>>();
 
+    // Don't produce potentially wrong furigana if multiple readings are available
+    // TODO: guess furigana based on language parser part of speech tag and return it anyways. Let
+    // the frontend know that its guessed so it can be previewed differently
     if exact_matches.len() != 1 {
         return None;
     }
 
-    let seq_id = exact_matches[0].seq_id;
-
-    let word = word_storage.by_sequence(seq_id as u32)?;
-
+    let word = word_storage.by_sequence(exact_matches[0].seq_id as u32)?;
     word.furigana.as_ref().map(|i| i.clone())
 }
