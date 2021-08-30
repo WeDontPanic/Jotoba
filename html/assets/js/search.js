@@ -451,7 +451,7 @@ function loadApiData(result) {
 
     // Activate first suggestion
     if (!suggestionChosen) {
-        changeSuggestionIndex(1, true);
+        //changeSuggestionIndex(1, true);
     }
 
     // Load Container if there is text present
