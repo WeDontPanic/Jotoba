@@ -1,4 +1,8 @@
-use crate::engine::{self, word::japanese::gen::GenDoc};
+use crate::{
+    engine::{self, word::japanese::gen::GenDoc},
+    search_order::SearchOrder,
+    word::order,
+};
 
 use super::{
     super::{query::Query, SearchMode},
@@ -33,13 +37,16 @@ pub(super) async fn by_reading(search: &Search<'_>) -> Result<ResultData, Error>
     }
     let reading_type = reading_type.unwrap();
 
+    /*
     let mode = if reading.reading.starts_with('-') {
         SearchMode::LeftVariable
     } else {
         SearchMode::RightVariable
     };
+    */
 
-    let mut words = words_with_kanji_reading(kanji, reading_type, &reading.reading, mode).await?;
+    let mut words =
+        words_with_kanji_reading(kanji, reading_type, &reading.reading, search.query).await?;
     let count = words.len();
 
     words.truncate(10);
@@ -53,41 +60,66 @@ pub(super) async fn by_reading(search: &Search<'_>) -> Result<ResultData, Error>
 
 async fn words_with_kanji_reading(
     kanji: &Kanji,
-    rt: ReadingType,
+    _rt: ReadingType,
     reading: &str,
-    mode: SearchMode,
+    query: &Query,
 ) -> Result<Vec<Word>, Error> {
     use engine::word::japanese::Find;
 
-    // TODO: this doesn't work properly: '逸 そ.れる', '気 ケ'
-    // maybe we need to adjust the actual index to contain kanji readings too (should'nt it
-    // already?)
-
-    let query_document = GenDoc::new(vec![kanji.literal.to_string()]);
-
-    let index = engine::word::japanese::index::get();
-    let doc = match DocumentVector::new(index.get_indexer(), query_document.clone()) {
-        Some(s) => s,
-        None => return Ok(vec![]),
-    };
-
-    let res = Find::new("", 10, 0).find_by_vec(doc).await?;
+    let res = Find::new(&kanji.literal.to_string(), 1000, 0)
+        .find()
+        .await?;
     let word_storage = resources::get().words();
 
     let seq_ids = res.sequence_ids();
-    let wordresults = seq_ids
+    let mut wordresults = seq_ids
         .iter()
         .filter_map(|i| word_storage.by_sequence(*i).map(|i| i.to_owned()))
-        .filter(|i| {
-            let word_reading = &i.get_reading().reading;
-            let kana = &i.reading.kana.reading;
-            kana.to_hiragana().contains(&reading.to_hiragana())
-                && word_reading.contains(&kanji.literal.to_string())
-        })
-        // Prevent loading too many
-        .take(100);
+        .filter(|word| {
+            //TODO: also check for alternative readings
+            if word.reading.kanji.is_none() {
+                return false;
+            }
+            let kanji_reading = word.reading.kanji.as_ref().unwrap().reading.clone();
+            let kana = &word.reading.kana.reading;
+            let readings = japanese::furigana::generate::retrieve_readings(
+                &mut |i: String| {
+                    let retrieve = resources::get().kanji();
+                    let kanji = retrieve.by_literal(i.chars().next()?)?;
+                    if kanji.onyomi.is_none() && kanji.kunyomi.is_none() {
+                        return None;
+                    }
 
-    Ok(wordresults.collect())
+                    Some((kanji.kunyomi.clone(), kanji.onyomi.clone()))
+                },
+                &kanji_reading,
+                kana,
+            );
+            if readings.is_none() {
+                return false;
+            }
+
+            readings.unwrap().iter().any(|i| {
+                i.0.contains(&kanji.literal.to_string())
+                    && i.1
+                        .to_hiragana()
+                        .contains(&kanji.get_literal_reading(&reading).unwrap().to_hiragana())
+                    && kana
+                        .to_hiragana()
+                        .contains(&kanji::format_reading(&reading.to_hiragana()))
+            })
+        })
+        .take(1000)
+        .collect::<Vec<_>>();
+
+    // Sort the result
+    order::new_kanji_reading_search_order(
+        res.get_order_map(),
+        &SearchOrder::new(query, &None),
+        &mut wordresults,
+    );
+
+    Ok(super::filter_languages(wordresults.into_iter().take(10), query).collect())
 }
 
 /// Do a search without the kanji literal or reading

@@ -47,6 +47,7 @@ pub(crate) struct ResultData {
 impl<'a> Search<'a> {
     /// Do the search
     async fn do_search(&self) -> Result<WordResult, Error> {
+        let start = Instant::now();
         let search_result = match self.query.form {
             Form::KanjiReading(_) => kanji::by_reading(self).await?,
             _ => self.do_word_search().await?,
@@ -54,10 +55,8 @@ impl<'a> Search<'a> {
 
         let words = search_result.words;
 
-        let start = Instant::now();
         // TODO: implement loading collocations
         let kanji_results = kanji::load_word_kanji_info(&words)?;
-        println!("loading kanji took: {:?}", start.elapsed());
 
         let res = WordResult {
             contains_kanji: kanji_results.len() > 0,
@@ -68,6 +67,7 @@ impl<'a> Search<'a> {
             sentence_index: search_result.sentence_index,
             searched_query: search_result.searched_query,
         };
+        println!("search took: {:?}", start.elapsed());
         Ok(res)
     }
 
@@ -204,7 +204,6 @@ impl<'a> Search<'a> {
             return Ok(ResultData::default());
         }
 
-        let start = Instant::now();
         let (query, _morpheme, sentence) = self.get_query(query_str).await?;
 
         let query_modified = query != query_str;
@@ -256,8 +255,6 @@ impl<'a> Search<'a> {
 
         let wordresults: Vec<_> = wordresults.into_iter().take(10).collect();
 
-        println!("word search took: {:?}", start.elapsed());
-
         #[cfg(feature = "tokenizer")]
         let searched_query = _morpheme
             .map(|i| i.original_word.to_owned())
@@ -290,7 +287,6 @@ impl<'a> Search<'a> {
         let pos_filter = to_option(self.get_pos_filter_from_query());
 
         // Do the search
-        let start = Instant::now();
         let search_result = Find::new(&self.query, 10, self.query.page).find().await?;
 
         let seq_ids = search_result.sequence_ids();
@@ -324,7 +320,6 @@ impl<'a> Search<'a> {
         );
 
         let wordresults: Vec<_> = wordresults.into_iter().take(10).collect();
-        println!("search took: {:?}", start.elapsed());
 
         Ok(ResultData {
             count: wordresults.len(),
@@ -360,7 +355,7 @@ fn word_class_to_pos_s(class: &WordClass) -> Option<PosSimple> {
     Some(pos)
 }
 
-fn filter_languages<'a, I: 'a + Iterator<Item = Word>>(
+pub(crate) fn filter_languages<'a, I: 'a + Iterator<Item = Word>>(
     iter: I,
     query: &'a Query,
 ) -> impl Iterator<Item = Word> + 'a {

@@ -104,6 +104,14 @@ impl Kanji {
             .unwrap_or_default()
     }
 
+    #[inline]
+    pub fn get_literal_reading(&self, reading: &str) -> Option<String> {
+        Some(match self.get_reading_type(reading)? {
+            ReadingType::Kunyomi => literal_kun_reading(reading),
+            ReadingType::Onyomi => format_reading(reading),
+        })
+    }
+
     /// Returns true if kanji has a given reading
     #[inline]
     pub fn has_reading(&self, reading: &str) -> bool {
@@ -155,7 +163,7 @@ pub fn literal_kun_reading(kun: &str) -> String {
 /// reading: はかど.る
 /// r_type: ReadingType::Kunyomi
 /// returns: 捗る
-pub fn format_reading_with_literal(literal: &str, reading: &str, r_type: ReadingType) -> String {
+pub fn format_reading_with_literal(literal: char, reading: &str, r_type: ReadingType) -> String {
     match r_type {
         ReadingType::Kunyomi => {
             let r = if reading.contains('.') {
