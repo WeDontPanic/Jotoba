@@ -40,7 +40,7 @@ pub fn unchecked<R: RetrieveKanji>(mut retrieve: R, kanji: &str, kana: &str) -> 
 
 /// Takes a kanji(compound) and the assigned kana reading and returns (hopefully) a list of the
 /// provided kanji with the
-fn retrieve_readings<R: RetrieveKanji>(
+pub fn retrieve_readings<R: RetrieveKanji>(
     retrieve: &mut R,
     kanji: &str,
     kana: &str,

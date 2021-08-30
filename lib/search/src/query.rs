@@ -38,12 +38,14 @@ pub struct UserSettings {
 }
 
 impl PartialEq for UserSettings {
+    #[inline]
     fn eq(&self, other: &Self) -> bool {
         self.user_lang == other.user_lang && self.show_english == other.show_english
     }
 }
 
 impl Hash for UserSettings {
+    #[inline]
     fn hash<H: Hasher>(&self, state: &mut H) {
         self.user_lang.hash(state);
         self.show_english.hash(state);
@@ -51,6 +53,7 @@ impl Hash for UserSettings {
 }
 
 impl Default for UserSettings {
+    #[inline]
     fn default() -> Self {
         Self {
             show_english: true,
@@ -100,6 +103,7 @@ pub enum Form {
 }
 
 impl Form {
+    #[inline]
     pub fn as_kanji_reading(&self) -> Option<&kanji::Reading> {
         if let Self::KanjiReading(v) = self {
             Some(v)
@@ -115,12 +119,14 @@ impl Form {
 }
 
 impl Default for Form {
+    #[inline]
     fn default() -> Self {
         Self::Undetected
     }
 }
 
 impl Default for QueryLang {
+    #[inline]
     fn default() -> Self {
         Self::Undetected
     }
@@ -151,15 +157,18 @@ impl Tag {
     }
 
     /// Returns `true` if the tag is [`SearchType`].
+    #[inline]
     pub fn is_search_type(&self) -> bool {
         matches!(self, Self::SearchType(..))
     }
 
     /// Returns `true` if the tag is [`PartOfSpeech`].
+    #[inline]
     pub fn is_part_of_speech(&self) -> bool {
         matches!(self, Self::PartOfSpeech(..))
     }
 
+    #[inline]
     pub fn as_search_type(&self) -> Option<&SearchTypeTag> {
         if let Self::SearchType(v) = self {
             Some(v)
@@ -168,6 +177,7 @@ impl Tag {
         }
     }
 
+    #[inline]
     pub fn as_part_of_speech(&self) -> Option<&PosSimple> {
         if let Self::PartOfSpeech(v) = self {
             Some(v)
@@ -178,10 +188,12 @@ impl Tag {
 }
 
 impl Query {
+    #[inline]
     pub fn is_valid(&self) -> bool {
         !self.query.is_empty()
     }
 
+    #[inline]
     pub fn get_hash(&self) -> u64 {
         let mut hash = DefaultHasher::new();
         self.hash(&mut hash);
@@ -189,11 +201,13 @@ impl Query {
     }
 
     /// Returns true if the query has at least one pos tag
+    #[inline]
     pub fn has_part_of_speech_tags(&self) -> bool {
         !self.get_part_of_speech_tags().is_empty()
     }
 
     /// Returns all search type tags
+    #[inline]
     pub fn get_search_type_tags(&self) -> Vec<SearchTypeTag> {
         self.tags
             .iter()
@@ -204,6 +218,7 @@ impl Query {
     }
 
     /// Returns all PosSimple tags
+    #[inline]
     pub fn get_part_of_speech_tags(&self) -> Vec<PosSimple> {
         self.tags
             .iter()
@@ -214,6 +229,7 @@ impl Query {
     }
 
     /// Returns the original_query with search type tags omitted
+    #[inline]
     pub fn without_search_type_tags(&self) -> String {
         self.original_query
             .clone()
