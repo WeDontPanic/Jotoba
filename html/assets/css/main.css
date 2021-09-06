@@ -66,6 +66,12 @@ footer {
     user-select: none; /* Non-prefixed version, currently supported by Chrome, Edge, Opera and Firefox */;
 }
 
+button {
+    display: flex;
+    place-content: center;
+    place-items: center;
+}
+
 object {
     pointer-events: none;
 }
@@ -1160,7 +1166,6 @@ table tr:last-child > td {
 }
 
 .settingsSvg.mobile {
-    margin-left: 4px;
     height: 26px;
     width: 26px;
 }
@@ -1184,9 +1189,9 @@ table tr:last-child > td {
 }
 
 .voiceSvg.mobile {
-    margin-left: 2px;
     height: 30px;
     width: 30px;
+    background-color: var(--tagColor);
 }
 
 .voiceSvg.index {
@@ -1197,7 +1202,7 @@ table tr:last-child > td {
 }
 
 .jumpSvg {
-    margin-left: 4px;
+    margin-left: -1px;
     height: 26px;
     width: 26px;
     background-color: var(--primaryColor);

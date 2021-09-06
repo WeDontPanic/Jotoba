@@ -416,6 +416,9 @@
     }
 
     .mobile-nav-btn {
+        place-content: center;
+        place-items: center;
+        display: flex;
         position: fixed;
         bottom: 20px;
         right: 30px; 
@@ -426,6 +429,7 @@
         border-radius: 50%;
         width: 50px;
         height: 50px;
+        text-align: center;
         text-align: -webkit-center;
     }
 
