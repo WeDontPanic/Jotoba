@@ -138,8 +138,28 @@ pub(super) fn japanese_search_order(
     score
 }
 
-pub(super) fn kanji_reading_search(word: &Word, search_order: &SearchOrder) -> usize {
-    let mut score = 0;
+pub(super) fn new_kanji_reading_search_order(
+    sort_map: &HashMap<usize, ResultItem>,
+    search_order: &SearchOrder,
+    e: &mut Vec<Word>,
+) {
+    e.sort_by(|a, b| {
+        let a_item = sort_map.get(&(a.sequence as usize)).unwrap();
+        let b_item = sort_map.get(&(b.sequence as usize)).unwrap();
+
+        let a_score = kanji_reading_search(a, search_order, a_item);
+        let b_score = kanji_reading_search(b, search_order, b_item);
+
+        a_score.cmp(&b_score).reverse()
+    })
+}
+pub(super) fn kanji_reading_search(
+    word: &Word,
+    search_order: &SearchOrder,
+    result_item: &ResultItem,
+) -> usize {
+    let mut score: usize = (result_item.relevance * 25f32) as usize;
+
     // This function should only be called for kanji reading search queries!
     debug_assert!(search_order.query.form.as_kanji_reading().is_some());
     let kanji_reading = search_order.query.form.as_kanji_reading().unwrap();

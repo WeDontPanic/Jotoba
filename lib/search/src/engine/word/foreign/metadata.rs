@@ -9,7 +9,7 @@ use vector_space_model::{
 };
 
 /// Various metadata for the given Index
-#[derive(Debug, Clone, Copy, Default)]
+#[derive(Debug)]
 pub struct Metadata {
     pub version: IndexVersion,
     pub document_count: usize,
@@ -18,6 +18,7 @@ pub struct Metadata {
 
 impl Metadata {
     /// Creates a new `Metadata` with the given values
+    #[inline]
     pub fn new(version: IndexVersion, document_count: usize, language: Language) -> Self {
         Self {
             version,
@@ -28,10 +29,12 @@ impl Metadata {
 }
 
 impl vector_space_model::metadata::Metadata for Metadata {
+    #[inline]
     fn get_version(&self) -> IndexVersion {
         self.version
     }
 
+    #[inline]
     fn get_document_count(&self) -> usize {
         self.document_count
     }

@@ -32,15 +32,15 @@ pub struct DictResources {
 impl DictResources {
     /// Writes the resource storage into `out`
     #[inline]
-    pub fn build<W: Write>(&self, out: &mut W) -> Result<(), serde_json::Error> {
-        serde_json::to_writer(out, self)
+    pub fn build<W: Write>(&self, out: &mut W) -> Result<(), bincode::Error> {
+        bincode::serialize_into(out, &self)
     }
 
-    /// Builds a new `ResourceStorage` from a reader containing json encoded data of all resources.
+    /// Builds a new `ResourceStorage` from a reader containing encoded data of all resources.
     /// This file can be create by `build`
     #[inline]
-    pub fn read<R: Read>(reader: R) -> Result<Self, Box<dyn Error>> {
-        Ok(serde_json::from_reader(reader)?)
+    pub fn read<R: Read>(reader: R) -> Result<Self, bincode::Error> {
+        bincode::deserialize_from(reader)
     }
 }
 
@@ -60,8 +60,11 @@ pub fn load_storage<P: AsRef<Path>>(
     ))
 }
 
+#[inline]
 fn load_dict_data<P: AsRef<Path>>(dict_data_path: P) -> Result<DictResources, Box<dyn Error>> {
-    DictResources::read(BufReader::new(File::open(dict_data_path)?))
+    Ok(DictResources::read(BufReader::new(File::open(
+        dict_data_path,
+    )?))?)
 }
 
 fn load_rad_map<P: AsRef<Path>>(rad_map_file: P) -> Result<RadicalStorage, Box<dyn Error>> {

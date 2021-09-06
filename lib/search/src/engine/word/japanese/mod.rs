@@ -65,7 +65,7 @@ impl<'a> Find<'a> {
             a_rev.cmp(&b_rev).reverse()
         };
 
-        let items = self
+        let mut items = self
             .vecs_to_result_items(&query_vec, &document_vectors, sort)
             .into_iter()
             .map(|doc| ResultItem {
@@ -75,12 +75,17 @@ impl<'a> Find<'a> {
             })
             .collect::<Vec<_>>();
 
+        let has_relevant = items.iter().any(|i| i.relevance > 0.1);
+        if has_relevant {
+            items.retain(|i| i.relevance > 0.1);
+        }
+
         Ok(SearchResult::new(items))
     }
+
     /// Generate a document vector out of `query_str`
-    #[inline]
     fn gen_query(&self, index: &Index) -> Option<DocumentVector<GenDoc>> {
-        let query_document = GenDoc::new(vec![self.query.to_string()], 0);
+        let query_document = GenDoc::new(vec![self.query.to_string()]);
         let mut doc = DocumentVector::new(index.get_indexer(), query_document.clone())?;
 
         // TODO: look if this makes the results really better. If not, remove
@@ -89,12 +94,6 @@ impl<'a> Find<'a> {
 
         Some(doc)
     }
-}
-
-/// Returns the loaded japanese index
-#[inline]
-pub(crate) fn get_index() -> &'static Index {
-    index::INDEX.get().unwrap()
 }
 
 impl<'a> FindExt for Find<'a> {

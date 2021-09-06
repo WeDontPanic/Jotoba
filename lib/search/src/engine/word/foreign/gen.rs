@@ -12,12 +12,14 @@ pub struct GenDoc {
 
 impl GenDoc {
     /// Create a new GenDoc Document
+    #[inline]
     pub fn new<T: ToString>(term: T, seq_ids: Vec<usize>) -> Self {
         let terms = split_to_words(&term.to_string());
         GenDoc { terms, seq_ids }
     }
 
     /// Calculate sub_documents which represent substring or similar meanings
+    #[inline]
     pub(crate) fn sub_documents(document: &Self) -> impl Iterator<Item = GenDoc> + '_ {
         document
             .terms
@@ -81,6 +83,7 @@ pub(crate) fn split_to_words(i: &str) -> Vec<String> {
 }
 
 /// Replaces all special characters into spaces so we can split it down into words
+#[inline]
 fn format_word(inp: &str) -> String {
     let mut out = String::from(inp);
     for i in ".,[]() \t\"'\\/-;:".chars() {

@@ -4,14 +4,14 @@ use itertools::Itertools;
 use resources::parse::jmdict::languages::Language;
 
 /// A structure holding all inforamtion about the results of a search
-#[derive(Clone, Default)]
+#[derive(Clone, Default, Debug)]
 pub(crate) struct SearchResult {
     items: Vec<ResultItem>,
     order_map: HashMap<usize, ResultItem>,
 }
 
 /// A single result item for `find`
-#[derive(Clone, Copy, Default)]
+#[derive(Clone, Copy, Default, Debug)]
 pub(crate) struct ResultItem {
     pub(crate) seq_id: usize,
     pub(crate) relevance: f32,
@@ -46,8 +46,9 @@ impl Ord for ResultItem {
 impl SearchResult {
     /// Creates a new `SearchResult` from items of the results
     #[inline]
-    pub(crate) fn new(items: Vec<ResultItem>) -> SearchResult {
+    pub(crate) fn new(mut items: Vec<ResultItem>) -> SearchResult {
         let order_map = Self::build_order_map(&items);
+        items.sort_by(|a, b| a.relevance.partial_cmp(&b.relevance).unwrap().reverse());
         Self { items, order_map }
     }
 
@@ -73,6 +74,34 @@ impl SearchResult {
         let items = self.items.into_iter().take(limit).collect::<Vec<_>>();
         let order_map = Self::build_order_map(&items);
         Self { items, order_map }
+    }
+
+    /// Returns the length of results
+    #[inline]
+    pub(crate) fn len(&self) -> usize {
+        self.items.len()
+    }
+
+    /// Returns `true` if there is no item in the result
+    #[inline]
+    pub(crate) fn is_empty(&self) -> bool {
+        self.len() == 0
+    }
+
+    /// Gets a result at `pos`
+    #[inline]
+    pub(crate) fn get(&self, pos: usize) -> Option<&ResultItem> {
+        self.items.get(pos)
+    }
+
+    /// Returns an iterator over each item loaded by `f(seq_id)` ordered by their relevance (1
+    /// first)
+    #[inline]
+    pub(crate) fn retrieve_ordered<'a, T, F: 'a>(&'a self, mut f: F) -> impl Iterator<Item = T> + 'a
+    where
+        F: FnMut(usize) -> Option<T>,
+    {
+        self.items.iter().filter_map(move |i| f(i.seq_id))
     }
 
     /// Builds a HashMap that maps sequence ids to the corresponding ResultItem

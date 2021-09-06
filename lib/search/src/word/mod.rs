@@ -47,6 +47,7 @@ pub(crate) struct ResultData {
 impl<'a> Search<'a> {
     /// Do the search
     async fn do_search(&self) -> Result<WordResult, Error> {
+        let start = Instant::now();
         let search_result = match self.query.form {
             Form::KanjiReading(_) => kanji::by_reading(self).await?,
             _ => self.do_word_search().await?,
@@ -54,21 +55,20 @@ impl<'a> Search<'a> {
 
         let words = search_result.words;
 
-        let start = Instant::now();
         // TODO: implement loading collocations
         let kanji_results = kanji::load_word_kanji_info(&words)?;
-        println!("loading kanji took: {:?}", start.elapsed());
 
-        let kanji_items = kanji_results.len();
-        return Ok(WordResult {
+        let res = WordResult {
+            contains_kanji: kanji_results.len() > 0,
             items: Self::merge_words_with_kanji(words, kanji_results),
-            contains_kanji: kanji_items > 0,
             inflection_info: search_result.infl_info,
             count: search_result.count,
             sentence_parts: search_result.sentence_parts,
             sentence_index: search_result.sentence_index,
             searched_query: search_result.searched_query,
-        });
+        };
+        println!("search took: {:?}", start.elapsed());
+        Ok(res)
     }
 
     /// Search by a word
@@ -121,7 +121,7 @@ impl<'a> Search<'a> {
             return Ok((query_str.to_owned(), None, None));
         }
 
-        let index = engine::word::japanese::get_index();
+        let index = engine::word::japanese::index::get();
         let in_db = index.get_indexer().clone().find_term(query_str).is_some();
 
         let parser = InputTextParser::new(query_str, &japanese::jp_parsing::JA_NL_PARSER, in_db)?;
@@ -164,16 +164,7 @@ impl<'a> Search<'a> {
                 continue;
             }
 
-            // TODO: implement
-            /*
-            let furigana = models::dict::furigana_by_reading(self.pool, &part.lexeme)
-                .await
-                .ok()
-                .and_then(|i| i);
-                */
-            let furigana = None;
-
-            part.furigana = furigana;
+            part.furigana = furigana_by_reading(&part.lexeme).await;
 
             if let Some(ref furigana) = part.furigana {
                 let furi_end = match japanese::furigana::last_kana_part(&furigana) {
@@ -185,7 +176,7 @@ impl<'a> Search<'a> {
                     None => continue,
                 };
                 let combined = format!("{}{}", &furigana[..furi_end], &part.text[text_end..]);
-                part.furigana = Some(combined.to_owned())
+                part.furigana = Some(combined)
             }
         }
 
@@ -193,6 +184,7 @@ impl<'a> Search<'a> {
     }
 
     /// Returns a vec of all PartOfSpeech to filter  
+    #[inline]
     fn get_pos_filter_from_query(&self) -> Vec<PosSimple> {
         self.query
             .tags
@@ -204,40 +196,6 @@ impl<'a> Search<'a> {
             .collect_vec()
     }
 
-    #[cfg(feature = "tokenizer")]
-    fn get_pos_filter(
-        &self,
-        sentence: &Option<Vec<SentencePart>>,
-        morpheme: &Option<WordItem>,
-    ) -> Vec<PosSimple> {
-        if sentence.is_none()
-            || morpheme.is_none()
-            || (sentence.is_some() && sentence.as_ref().unwrap().is_empty())
-        {
-            return self.get_pos_filter_from_query();
-        }
-
-        if let Some(ref pos) = morpheme
-            .as_ref()
-            .unwrap()
-            .word_class
-            .and_then(|i| word_class_to_pos_s(&i))
-        {
-            return vec![*pos];
-        }
-
-        self.get_pos_filter_from_query()
-    }
-
-    #[cfg(not(feature = "tokenizer"))]
-    fn get_pos_filter(
-        &self,
-        _sentence: &Option<Vec<SentencePart>>,
-        _morpheme: &Option<()>,
-    ) -> Vec<PosSimple> {
-        self.get_pos_filter_from_query()
-    }
-
     /// Perform a native word search
     async fn native_results(&self, query_str: &str) -> Result<ResultData, Error> {
         use engine::word::japanese::Find;
@@ -246,11 +204,10 @@ impl<'a> Search<'a> {
             return Ok(ResultData::default());
         }
 
-        let start = Instant::now();
         let (query, _morpheme, sentence) = self.get_query(query_str).await?;
 
         let query_modified = query != query_str;
-        let pos_filter_tags = self.get_pos_filter(&sentence, &_morpheme);
+        let pos_filter_tags = self.get_pos_filter_from_query();
 
         #[cfg(feature = "tokenizer")]
         let infl_info = _morpheme.as_ref().and_then(|i| {
@@ -269,7 +226,8 @@ impl<'a> Search<'a> {
             search_result.extend(original_res);
         }
 
-        let pos_filter = (!pos_filter_tags.is_empty()).then(|| pos_filter_tags);
+        let pos_filter =
+            (!pos_filter_tags.is_empty() && sentence.is_none()).then(|| pos_filter_tags);
 
         let word_storage = resources::get().words();
 
@@ -296,8 +254,6 @@ impl<'a> Search<'a> {
         );
 
         let wordresults: Vec<_> = wordresults.into_iter().take(10).collect();
-
-        println!("word search took: {:?}", start.elapsed());
 
         #[cfg(feature = "tokenizer")]
         let searched_query = _morpheme
@@ -331,7 +287,6 @@ impl<'a> Search<'a> {
         let pos_filter = to_option(self.get_pos_filter_from_query());
 
         // Do the search
-        let start = Instant::now();
         let search_result = Find::new(&self.query, 10, self.query.page).find().await?;
 
         let seq_ids = search_result.sequence_ids();
@@ -365,7 +320,6 @@ impl<'a> Search<'a> {
         );
 
         let wordresults: Vec<_> = wordresults.into_iter().take(10).collect();
-        println!("search took: {:?}", start.elapsed());
 
         Ok(ResultData {
             count: wordresults.len(),
@@ -401,7 +355,7 @@ fn word_class_to_pos_s(class: &WordClass) -> Option<PosSimple> {
     Some(pos)
 }
 
-fn filter_languages<'a, I: 'a + Iterator<Item = Word>>(
+pub(crate) fn filter_languages<'a, I: 'a + Iterator<Item = Word>>(
     iter: I,
     query: &'a Query,
 ) -> impl Iterator<Item = Word> + 'a {
@@ -422,14 +376,45 @@ fn filter_languages<'a, I: 'a + Iterator<Item = Word>>(
 }
 
 /// Returns true if a vec of senses has at least one Pos provided by the filter
+#[inline]
 fn has_pos(word: &Word, pos_filter: &[PosSimple]) -> bool {
-    for sense in word.senses.iter() {
-        for p in sense.get_pos_simple() {
-            if pos_filter.contains(&p) {
-                return true;
-            }
+    for sense in word.senses.iter().map(|i| i.get_pos_simple()) {
+        if sense.iter().any(|i| pos_filter.contains(i)) {
+            return true;
         }
     }
 
     false
+}
+
+/// Returns furigana of the given `morpheme` if available
+async fn furigana_by_reading(morpheme: &str) -> Option<String> {
+    use engine::word::japanese::Find;
+    let word_storage = resources::get().words();
+
+    let found = Find::new(morpheme, 2, 0).find().await.ok()?;
+
+    let exact_matches = found
+        .into_iter()
+        .filter(|i| i.relevance > 0.7)
+        .filter(|i| {
+            let eq = morpheme
+                == word_storage
+                    .by_sequence(i.seq_id as u32)
+                    .unwrap()
+                    .get_reading()
+                    .reading;
+            eq
+        })
+        .collect::<Vec<_>>();
+
+    // Don't produce potentially wrong furigana if multiple readings are available
+    // TODO: guess furigana based on language parser part of speech tag and return it anyways. Let
+    // the frontend know that its guessed so it can be previewed differently
+    if exact_matches.len() != 1 {
+        return None;
+    }
+
+    let word = word_storage.by_sequence(exact_matches[0].seq_id as u32)?;
+    word.furigana.as_ref().map(|i| i.clone())
 }

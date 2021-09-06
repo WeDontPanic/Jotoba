@@ -11,6 +11,8 @@ use vector_space_model::{document_vector, traits::Decodable, DocumentVector};
 pub fn load_indexes(config: &Config) -> Result<(), Box<dyn error::Error>> {
     word::foreign::index::load(config)?;
     word::japanese::index::load(config);
+    name::japanese::index::load(config);
+    // name::foreign::index::load(config);
     Ok(())
 }
 
