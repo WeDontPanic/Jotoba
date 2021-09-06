@@ -22,6 +22,7 @@
 
 .pagination-item.disabled .pagination-circle:not(.active):hover {
     animation: none !important;
+    -webkit-animation: none !important;
 }
 
 .pagination-circle {
@@ -38,7 +39,8 @@
 
 .pagination-circle:not(.active):hover {
     border-radius: 50%;
-    animation: hoverEffect 0.5s forwards;
+    -webkit-animation: hoverEffect 0.5s forwards;
+            animation: hoverEffect 0.5s forwards;
 }
 
 .pagination-circle.active {
@@ -46,6 +48,12 @@
     background: var(--bgPrimaryColor);
     border-radius: 50%;
     box-shadow: 0 2px 5px 0 rgb(0 0 0 / 16%), 0 2px 10px 0 rgb(0 0 0 / 12%);
+}
+
+@-webkit-keyframes hoverEffect {
+    to {
+        background-color: var(--lineColor);
+    }
 }
 
 @keyframes hoverEffect {

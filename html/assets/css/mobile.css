@@ -64,6 +64,8 @@
     }
     
     .form-main > div > div > div > div .choices__list.choices__list--dropdown {
+        width: -webkit-max-content;
+        width: -moz-max-content;
         width: max-content;
     }
 
@@ -104,17 +106,20 @@
     }
 
     .sentence-part {
+        min-width: -webkit-max-content;
+        min-width: -moz-max-content;
         min-width: max-content;
         margin-right: 20px;
     }
     
 
     #content-container {
-        -ms-flex-direction: column!important;
         flex-direction: column!important;
     }
     
     body {
+        height: -webkit-max-content;
+        height: -moz-max-content;
         height: max-content;
     }
 
@@ -165,6 +170,8 @@
     }
     
     .main-info {
+        height: -webkit-max-content;
+        height: -moz-max-content;
         height: max-content;
         width: 100%;
     }
@@ -174,8 +181,7 @@
     }
 	
 	.main-info > .d-flex.center {
-		-ms-flex-direction: column!important;
-        flex-direction: column!important;
+  flex-direction: column!important;
 		align-self: center;
 		align-items: center;
         width: 100%;
@@ -192,6 +198,8 @@
     }
     
     .secondary-info {
+        height: -webkit-max-content;
+        height: -moz-max-content;
         height: max-content;
         align-self: center;
         width: 100%;
@@ -485,6 +493,8 @@
 
     .cookie-footer {
         z-index: 100;
+        height: -webkit-max-content;
+        height: -moz-max-content;
         height: max-content;
         width: 90%;
         left: 5%;

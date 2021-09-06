@@ -59,8 +59,7 @@ footer {
 
 .noselect, .tags, .clickable, .entry-count, .no-drag {
     -webkit-touch-callout: none; /* iOS Safari */
-    -webkit-user-select: none; /* Safari */
-    -khtml-user-select: none; /* Konqueror HTML */
+    -webkit-user-select: none; /* Safari */ /* Konqueror HTML */
     -moz-user-select: none; /* Old versions of Firefox */
     -ms-user-select: none; /* Internet Explorer/Edge */
     -o-user-select:none; /* Opera */
@@ -319,6 +318,8 @@ svg {
     margin-top: 2px;
     position: absolute;
     width: 100%;
+    height: -webkit-max-content;
+    height: -moz-max-content;
     height: max-content;
     border: 2px solid var(--searchBackground);
     border-radius: 20px;
@@ -342,6 +343,11 @@ svg {
 }
 
 /* ----------------- Search Suggestion ----------------- */
+
+#search::-moz-selection {
+    color: var(--primaryTextColor);
+    background-color: var(--secondaryColor);
+}
 
 #search::selection {
     color: var(--primaryTextColor);
@@ -492,6 +498,8 @@ input[type="color"] {
 .main-container {
     width: 100%;
     max-width: 1150px;
+    height: -webkit-max-content;
+    height: -moz-max-content;
     height: max-content;
 }
 
@@ -535,16 +543,22 @@ input[type="color"] {
 
 .tab-btn {
     cursor: pointer;
+    width: -webkit-max-content;
+    width: -moz-max-content;
     width: max-content;
 }
 
 .main-info {
     width: 100%;
+    height: -webkit-max-content;
+    height: -moz-max-content;
     height: max-content;
     padding-bottom: 10px;
 }
 
 .secondary-info {
+    height: -webkit-max-content;
+    height: -moz-max-content;
     height: max-content;
     width: 35%;
     padding-bottom: 10px;
@@ -562,6 +576,8 @@ footer {
     padding-bottom: 15px;
     max-width: 1150px;
     width: 100%;
+    height: -webkit-max-content;
+    height: -moz-max-content;
     height: max-content;
 }
 
@@ -628,6 +644,8 @@ footer {
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    height: -webkit-fit-content;
+    height: -moz-fit-content;
     height: fit-content;
     padding-right: 75px;
     padding-left: 75px;
@@ -640,6 +658,8 @@ footer {
     border-style: solid;
     border-color: var(--searchTextColor);
     border-radius: 5px;
+    width: -webkit-fit-content;
+    width: -moz-fit-content;
     width: fit-content;
     color: var(--primaryTextColor);
 }
@@ -745,6 +765,8 @@ footer {
 }
 
 .kanji-entry {
+    height: -webkit-fit-content;
+    height: -moz-fit-content;
     height: fit-content;
     padding-bottom: 10px;
 }
@@ -943,11 +965,16 @@ footer {
 .draw2 {
     stroke-dasharray: 1000;
     stroke-dashoffset: 1000;
-    animation: dash2 10s linear forwards;
+    -webkit-animation: dash2 10s linear forwards;
+            animation: dash2 10s linear forwards;
 }
 
 .kanjisvg:hover {
     cursor: pointer;
+}
+
+@-webkit-keyframes dash2 {
+    to { stroke-dashoffset: 0;}
 }
 
 @keyframes dash2 {
@@ -977,7 +1004,6 @@ footer {
     background: var(--itemBG);
     outline: none;
     opacity: 0.7;
-    -webkit-transition: .2s;
     transition: opacity .2s;
 }
   
