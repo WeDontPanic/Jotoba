@@ -13,7 +13,7 @@ search = { path = "../search" }
 utils = { path = "../utils" }
 config = { path = "../config" }
 resources = { path = "../resources"}
-actix-web = "4.0.0-beta.8"
+actix-web = "4.0.0-beta.9"
 itertools = "0.10.1"
 once_cell = "1.8.0"
 serde = "1.0.130"
