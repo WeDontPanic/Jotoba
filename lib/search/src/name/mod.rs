@@ -21,43 +21,51 @@ pub async fn search(query: &Query) -> Result<NameResult, Error> {
     };
 
     Ok(NameResult {
-        // TODO: set correct length
-        total_count: res.len() as u32,
-        items: res,
+        items: res.0,
+        total_count: res.1 as u32,
     })
 }
 
 /// Search by transcription
-async fn search_transcription(query: &Query) -> Result<Vec<Name>, Error> {
+async fn search_transcription(query: &Query) -> Result<(Vec<Name>, usize), Error> {
     unimplemented!()
 }
 
 /// Search by japanese input
-async fn search_native(query: &Query) -> Result<Vec<Name>, Error> {
+async fn search_native(query: &Query) -> Result<(Vec<Name>, usize), Error> {
     let resources = resources::get().names();
 
     use crate::engine::name::japanese::Find;
 
-    let names = Find::new(&query.query, 10, 0)
-        .find()
-        .await?
-        .retrieve_ordered(|seq_id| resources.by_sequence(seq_id as u32).cloned())
+    let res = Find::new(&query.query, 1000, 0).find().await?;
+
+    let len = res.len();
+
+    let names = res
+        .retrieve_ordered(|seq_id| resources.by_sequence(seq_id as u32))
+        .skip(query.page_offset)
+        .take(query.settings.items_per_page as usize)
+        .cloned()
         .collect();
 
-    Ok(names)
+    Ok((names, len))
 }
 
 /// Search by kanji reading
-async fn search_kanji(query: &Query) -> Result<Vec<Name>, Error> {
+async fn search_kanji(query: &Query) -> Result<(Vec<Name>, usize), Error> {
     let kanji_reading = query.form.as_kanji_reading().ok_or(Error::Unexpected)?;
     let resources = resources::get().names();
 
     use crate::engine::name::japanese::Find;
 
-    let names = Find::new(&kanji_reading.literal.to_string(), 1000, 0)
+    let res = Find::new(&kanji_reading.literal.to_string(), 1000, 0)
         .find()
-        .await?
-        .retrieve_ordered(|seq_id| resources.by_sequence(seq_id as u32).cloned())
+        .await?;
+
+    let len = res.len();
+
+    let names = res
+        .retrieve_ordered(|seq_id| resources.by_sequence(seq_id as u32))
         .filter(|name| {
             if name.kanji.is_none() {
                 return false;
@@ -95,8 +103,10 @@ async fn search_kanji(query: &Query) -> Result<Vec<Name>, Error> {
                     && i.1.contains(&kanji_reading.reading)
             })
         })
-        .take(10)
+        .skip(query.page_offset)
+        .take(query.settings.items_per_page as usize)
+        .cloned()
         .collect();
 
-    Ok(names)
+    Ok((names, len))
 }

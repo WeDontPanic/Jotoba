@@ -54,7 +54,7 @@ impl QueryParser {
             .collect();
 
         // Pages start at 1. First offset has to be 0
-        let page_offset = (page - 1) * user_settings.items_per_page as usize;
+        let page_offset = (page.saturating_sub(1)) * user_settings.items_per_page as usize;
         println!("page_offset: {}", page_offset);
 
         QueryParser {
