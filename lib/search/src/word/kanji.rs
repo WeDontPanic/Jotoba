@@ -152,7 +152,7 @@ pub(super) fn load_word_kanji_info(words: &[Word]) -> Result<Vec<Kanji>, Error> 
         .flatten()
         .filter_map(|i| kanji_resources.by_literal(i).cloned())
         .unique_by(|i| i.literal)
-        .take(14)
+        .take(10)
         .collect::<Vec<_>>();
 
     Ok(kanji_literals)

@@ -1,6 +1,8 @@
 mod order;
 pub mod result;
 
+use self::result::NameResult;
+
 use super::query::Query;
 use error::Error;
 
@@ -9,7 +11,7 @@ use resources::models::names::Name;
 use utils::to_option;
 
 /// Search for names
-pub async fn search(query: &Query) -> Result<Vec<Name>, Error> {
+pub async fn search(query: &Query) -> Result<NameResult, Error> {
     let res = if query.form.is_kanji_reading() {
         search_kanji(&query).await?
     } else if query.query.is_japanese() {
@@ -18,7 +20,11 @@ pub async fn search(query: &Query) -> Result<Vec<Name>, Error> {
         search_transcription(&query).await?
     };
 
-    Ok(res)
+    Ok(NameResult {
+        // TODO: set correct length
+        total_count: res.len() as u32,
+        items: res,
+    })
 }
 
 /// Search by transcription

@@ -5,8 +5,10 @@ mod actix_ructe;
 
 pub mod about;
 pub mod index;
+mod pagination;
 pub mod search_ep;
 mod session;
+mod url_query;
 pub mod user_settings;
 pub mod web_error;
 
@@ -17,6 +19,7 @@ use localization::{
     traits::{Translatable, TranslatablePlural},
     TranslationDict,
 };
+use pagination::Pagination;
 use resources::models::names::Name;
 use search::query::Query;
 
@@ -30,6 +33,7 @@ pub struct BaseData<'a> {
     pub site: Site<'a>,
     pub dict: &'a TranslationDict,
     pub user_settings: UserSettings,
+    pub pagination: Option<Pagination>,
 }
 
 /// The site to display
@@ -47,8 +51,8 @@ pub struct SearchResult<'a> {
     pub result: ResultData,
 }
 
-#[derive(Clone)]
 /// The particular search result items
+#[derive(Clone)]
 pub enum ResultData {
     Word(WordResult),
     KanjiInfo(Vec<KanjiItem>),
@@ -57,14 +61,38 @@ pub enum ResultData {
 }
 
 impl<'a> BaseData<'a> {
-    pub fn new(site: Site<'a>, dict: &'a TranslationDict, user_settings: UserSettings) -> Self {
+    #[inline]
+    pub fn new(dict: &'a TranslationDict, user_settings: UserSettings) -> Self {
         Self {
-            site,
+            site: Site::Index,
             dict,
             user_settings,
+            pagination: None,
         }
     }
 
+    #[inline]
+    pub fn with_site(mut self, site: Site<'a>) -> Self {
+        self.site = site;
+        self
+    }
+
+    #[inline]
+    pub fn with_pages(&mut self, items: u32, curr_page: u32) {
+        let mut pagination = Pagination {
+            items,
+            curr_page,
+            items_per_page: self.user_settings.items_per_page,
+        };
+
+        if curr_page > pagination.get_last() {
+            pagination.curr_page = pagination.get_last();
+        }
+
+        self.pagination = Some(pagination);
+    }
+
+    #[inline]
     pub fn get_search_site_id(&self) -> u8 {
         if let Site::SearchResult(ref res) = self.site {
             return match res.result {
@@ -78,6 +106,7 @@ impl<'a> BaseData<'a> {
         0
     }
 
+    #[inline]
     pub fn get_search_site_name(&self) -> &str {
         if let Site::SearchResult(ref res) = self.site {
             return match res.result {
@@ -91,50 +120,10 @@ impl<'a> BaseData<'a> {
         self.gettext("Words")
     }
 
-    pub fn new_word_search(
-        query: &'a Query,
-        result: WordResult,
-        locale_dict: &'a TranslationDict,
-        user_settings: UserSettings,
-    ) -> Self {
-        Self::new_search_result(query, ResultData::Word(result), locale_dict, user_settings)
-    }
-
-    pub fn new_kanji_search(
-        query: &'a Query,
-        result: Vec<KanjiItem>,
-        locale_dict: &'a TranslationDict,
-        user_settings: UserSettings,
-    ) -> Self {
-        Self::new_search_result(
-            query,
-            ResultData::KanjiInfo(result),
-            locale_dict,
-            user_settings,
-        )
-    }
-
-    pub fn new_name_search(
-        query: &'a Query,
-        result: Vec<Name>,
-        locale_dict: &'a TranslationDict,
-        user_settings: UserSettings,
-    ) -> Self {
-        Self::new_search_result(query, ResultData::Name(result), locale_dict, user_settings)
-    }
-
-    pub fn new_sentence_search(
-        query: &'a Query,
-        result: Vec<SentenceItem>,
-        locale_dict: &'a TranslationDict,
-        user_settings: UserSettings,
-    ) -> Self {
-        Self::new_search_result(
-            query,
-            ResultData::Sentence(result),
-            locale_dict,
-            user_settings,
-        )
+    #[inline]
+    pub fn with_search_result(self, query: &'a Query, result: ResultData) -> Self {
+        let search_result = SearchResult { query, result };
+        self.with_site(Site::SearchResult(search_result))
     }
 
     /// Gets an owned String of the query
@@ -161,54 +150,48 @@ impl<'a> BaseData<'a> {
             ""
         }
     }
-
-    fn new_search_result(
-        query: &'a Query,
-        result: ResultData,
-        locale_dict: &'a TranslationDict,
-        user_settings: UserSettings,
-    ) -> Self {
-        let search_result = SearchResult { query, result };
-        Self::new(
-            Site::SearchResult(search_result),
-            locale_dict,
-            user_settings,
-        )
-    }
 }
 
 /// Translation helper
 impl<'a> BaseData<'a> {
+    #[inline]
     pub fn get_lang(&self) -> Language {
         self.user_settings.page_lang
     }
 
+    #[inline]
     pub fn gettext<T: Translatable>(&self, t: T) -> &'a str {
         t.gettext(&self.dict, Some(self.get_lang()))
     }
 
+    #[inline]
     pub fn gettext_custom<T: Translatable>(&self, t: T) -> String {
         t.gettext_custom(&self.dict, Some(self.get_lang()))
     }
 
+    #[inline]
     pub fn pgettext<T: Translatable>(&self, t: T, context: &'a str) -> &'a str {
         t.pgettext(&self.dict, context, Some(self.get_lang()))
     }
 
+    #[inline]
     pub fn ngettext<T: TranslatablePlural>(&self, t: T, n: u64) -> &'a str {
         t.ngettext(&self.dict, n, Some(self.get_lang()))
     }
 
+    #[inline]
     pub fn pngettext<T: TranslatablePlural>(&self, t: T, context: &'a str, n: u64) -> &'a str {
         t.npgettext(&self.dict, context, n, Some(self.get_lang()))
     }
 
     // Format functions
 
+    #[inline]
     pub fn gettext_fmt<T: Translatable, V: Display + Sized>(&self, t: T, values: &[V]) -> String {
         t.gettext_fmt(&self.dict, values, Some(self.get_lang()))
     }
 
+    #[inline]
     pub fn pgettext_fmt<T: Translatable, V: Display + Sized>(
         &self,
         t: T,
@@ -218,6 +201,7 @@ impl<'a> BaseData<'a> {
         t.pgettext_fmt(&self.dict, context, values, Some(self.get_lang()))
     }
 
+    #[inline]
     pub fn ngettext_fmt<T: TranslatablePlural, V: Display + Sized>(
         &self,
         t: T,
@@ -227,6 +211,7 @@ impl<'a> BaseData<'a> {
         t.ngettext_fmt(&self.dict, n, values, Some(self.get_lang()))
     }
 
+    #[inline]
     pub fn pngettext_fmt<T: TranslatablePlural, V: Display + Sized>(
         &self,
         t: T,

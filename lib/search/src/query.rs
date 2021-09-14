@@ -22,6 +22,7 @@ pub struct Query {
     pub form: Form,
     pub language: QueryLang,
     pub settings: UserSettings,
+    pub page_offset: usize,
     pub page: usize,
     pub word_index: usize,
     pub parse_japanese: bool,
@@ -35,6 +36,7 @@ pub struct UserSettings {
     pub show_english: bool,
     pub english_on_top: bool,
     pub cookies_enabled: bool,
+    pub items_per_page: u32,
 }
 
 impl PartialEq for UserSettings {
@@ -61,6 +63,7 @@ impl Default for UserSettings {
             page_lang: localization::language::Language::default(),
             english_on_top: false,
             cookies_enabled: false,
+            items_per_page: 10,
         }
     }
 }

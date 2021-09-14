@@ -220,7 +220,7 @@ impl<'a> Search<'a> {
         #[cfg(not(feature = "tokenizer"))]
         let infl_info: Option<InflectionInformation> = None;
 
-        let mut search_result = Find::new(&query, 10000, 0).find().await?;
+        let mut search_result = Find::new(&query, 1000, 0).find().await?;
         if query_modified {
             let original_res = Find::new(&self.query.query, 1000, 0).find().await?;
             search_result.extend(original_res);
@@ -234,6 +234,8 @@ impl<'a> Search<'a> {
         let seq_ids = search_result.sequence_ids();
         let wordresults = seq_ids
             .iter()
+            // TODO: don't clone words here. Take it by reference and clone them after sorting and
+            // selecting
             .filter_map(|i| word_storage.by_sequence(*i).map(|i| i.to_owned()))
             .filter(|word| {
                 pos_filter
@@ -242,9 +244,10 @@ impl<'a> Search<'a> {
                     .unwrap_or(true)
             })
             // Prevent loading too many
-            .take(100);
+            .take(1000);
 
         let mut wordresults = filter_languages(wordresults, &self.query).collect::<Vec<_>>();
+        let count = wordresults.len();
 
         // Sort the result
         order::new_japanese_order(
@@ -253,7 +256,11 @@ impl<'a> Search<'a> {
             &mut wordresults,
         );
 
-        let wordresults: Vec<_> = wordresults.into_iter().take(10).collect();
+        let wordresults: Vec<_> = wordresults
+            .into_iter()
+            .skip(self.query.page_offset)
+            .take(10)
+            .collect();
 
         #[cfg(feature = "tokenizer")]
         let searched_query = _morpheme
@@ -264,7 +271,7 @@ impl<'a> Search<'a> {
         let searched_query = query;
 
         Ok(ResultData {
-            count: wordresults.len(),
+            count,
             words: wordresults,
             infl_info,
             sentence_parts: sentence,
@@ -287,13 +294,15 @@ impl<'a> Search<'a> {
         let pos_filter = to_option(self.get_pos_filter_from_query());
 
         // Do the search
-        let search_result = Find::new(&self.query, 10, self.query.page).find().await?;
+        let search_result = Find::new(&self.query, 1000, 0).find().await?;
 
         let seq_ids = search_result.sequence_ids();
 
         let word_storage = resources::get().words();
         let wordresults = seq_ids
             .iter()
+            // TODO: don't clone words here. Take it by reference and clone them after sorting and
+            // selecting
             .filter_map(|i| word_storage.by_sequence(*i as u32).map(|i| i.to_owned()))
             .filter(|word| {
                 pos_filter
@@ -301,7 +310,7 @@ impl<'a> Search<'a> {
                     .map(|filter| has_pos(word, filter))
                     .unwrap_or(true)
             }) // Prevent loading too many
-            .take(100);
+            .take(1000);
 
         let mut wordresults = filter_languages(wordresults, &self.query).collect::<Vec<_>>();
 
@@ -312,6 +321,8 @@ impl<'a> Search<'a> {
                 .await;
         }
 
+        let count = wordresults.len();
+
         // Sort the result
         order::new_foreign_order(
             search_result.get_order_map(),
@@ -319,10 +330,14 @@ impl<'a> Search<'a> {
             &mut wordresults,
         );
 
-        let wordresults: Vec<_> = wordresults.into_iter().take(10).collect();
+        let wordresults: Vec<_> = wordresults
+            .into_iter()
+            .skip(self.query.page_offset)
+            .take(10)
+            .collect();
 
         Ok(ResultData {
-            count: wordresults.len(),
+            count,
             words: wordresults,
             ..Default::default()
         })
@@ -359,8 +374,7 @@ pub(crate) fn filter_languages<'a, I: 'a + Iterator<Item = Word>>(
     iter: I,
     query: &'a Query,
 ) -> impl Iterator<Item = Word> + 'a {
-    iter.map(move |i| {
-        let mut word = i;
+    iter.map(move |mut word| {
         let senses = word
             .senses
             .into_iter()

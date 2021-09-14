@@ -8,57 +8,16 @@ use super::user_settings;
 use actix_web::{rt::time::timeout, web, HttpRequest, HttpResponse};
 use localization::TranslationDict;
 use percent_encoding::percent_decode;
-use serde::Deserialize;
 
-use crate::{templates, BaseData};
+use crate::{templates, url_query::QueryStruct, BaseData, ResultData};
 use config::Config;
 use search::{
     self,
     query::{Query, UserSettings},
-    query_parser::{QueryParser, QueryType},
+    query_parser::QueryType,
 };
 
 use super::web_error;
-
-#[derive(Deserialize)]
-pub struct QueryStruct {
-    #[serde(rename = "t")]
-    pub search_type: Option<QueryType>,
-    #[serde(rename = "i")]
-    pub word_index: Option<usize>,
-    #[serde(rename = "p")]
-    pub page: Option<usize>,
-
-    #[serde(skip_serializing, skip_deserializing)]
-    pub query_str: String,
-}
-
-impl QueryStruct {
-    /// Adjusts the search query trim and map empty search queries to Option::None.
-    /// Ensures `search_type` is always 'Some()'
-    fn adjust(&self, query_str: String) -> Self {
-        let query_str = query_str.trim().to_string();
-
-        QueryStruct {
-            query_str,
-            search_type: Some(self.search_type.unwrap_or_default()),
-            page: self.page,
-            word_index: self.word_index,
-        }
-    }
-
-    /// Returns a [`QueryParser`] of the query
-    fn as_query_parser(&self, user_settings: UserSettings) -> QueryParser {
-        QueryParser::new(
-            self.query_str.clone(),
-            self.search_type.unwrap_or_default(),
-            user_settings,
-            self.page.unwrap_or_default(),
-            self.word_index.unwrap_or_default(),
-            true,
-        )
-    }
-}
 
 /// Endpoint to perform a search
 pub async fn search(
@@ -71,8 +30,6 @@ pub async fn search(
     let settings = user_settings::parse(&request);
 
     let query = percent_decode(query.as_bytes()).decode_utf8()?;
-
-    //session::init(&session, &settings);
 
     // Parse query and redirect to home on error
     let query = match query_data
@@ -89,9 +46,11 @@ pub async fn search(
     // Perform the requested type of search and return base-data to display
     let search_duration = start.elapsed();
 
+    let search_timeout = config.get_search_timeout();
+
     // Log search duration if too long and available
     let search_result = timeout(
-        config.get_search_timeout(),
+        search_timeout,
         do_search(query.type_, &locale_dict, settings, &query),
     )
     .await
@@ -116,92 +75,43 @@ async fn do_search<'a>(
     settings: UserSettings,
     query: &'a Query,
 ) -> Result<BaseData<'a>, web_error::Error> {
-    match querytype_ {
-        QueryType::Kanji => kanji_search(&locale_dict, settings, &query).await,
-        QueryType::Sentences => sentence_search(&locale_dict, settings, &query).await,
-        QueryType::Names => name_search(&locale_dict, settings, &query).await,
-        QueryType::Words => word_search(&locale_dict, settings, &query).await,
-    }
+    let mut base_data = BaseData::new(locale_dict, settings);
+    let result_data = match querytype_ {
+        QueryType::Kanji => kanji_search(&query).await,
+        QueryType::Sentences => sentence_search(&query).await,
+        QueryType::Names => name_search(&mut base_data, &query).await,
+        QueryType::Words => word_search(&mut base_data, &query).await,
+    }?;
+
+    Ok(base_data.with_search_result(query, result_data))
 }
 
-#[cfg(not(feature = "sentry_error"))]
-fn log_duration(search_type: QueryType, duration: Duration) {
-    use log::warn;
-    warn!("{:?}-search took: {:?}", search_type, duration);
-}
-
-#[cfg(feature = "sentry_error")]
-fn log_duration(search_type: QueryType, duration: Duration) {
-    sentry::capture_message(
-        format!("{:?}-search took: {:?}", search_type, duration).as_str(),
-        sentry::Level::Warning,
-    );
-}
+type SResult = Result<ResultData, web_error::Error>;
 
 /// Perform a sentence search
-async fn sentence_search<'a>(
-    locale_dict: &'a TranslationDict,
-    user_settings: UserSettings,
-    query: &'a Query,
-) -> Result<BaseData<'a>, web_error::Error> {
+async fn sentence_search<'a>(query: &'a Query) -> SResult {
     let result = search::sentence::search(&query).await?;
-    Ok(BaseData::new_sentence_search(
-        &query,
-        result,
-        locale_dict,
-        user_settings,
-    ))
+    Ok(ResultData::Sentence(result))
 }
 
 /// Perform a kanji search
-async fn kanji_search<'a>(
-    locale_dict: &'a TranslationDict,
-    user_settings: UserSettings,
-    query: &'a Query,
-) -> Result<BaseData<'a>, web_error::Error> {
-    let kanji = search::kanji::search(&query).await?;
-    Ok(BaseData::new_kanji_search(
-        &query,
-        kanji,
-        locale_dict,
-        user_settings,
-    ))
+async fn kanji_search<'a>(query: &'a Query) -> SResult {
+    let result = search::kanji::search(&query).await?;
+    Ok(ResultData::KanjiInfo(result))
 }
 
 /// Perform a name search
-async fn name_search<'a>(
-    locale_dict: &'a TranslationDict,
-    user_settings: UserSettings,
-    query: &'a Query,
-) -> Result<BaseData<'a>, web_error::Error> {
-    let names = search::name::search(&query).await?;
-    Ok(BaseData::new_name_search(
-        &query,
-        names,
-        locale_dict,
-        user_settings,
-    ))
+async fn name_search<'a>(base_data: &mut BaseData<'a>, query: &'a Query) -> SResult {
+    let result = search::name::search(&query).await?;
+    base_data.with_pages(result.total_count, query.page as u32);
+    Ok(ResultData::Name(result.items))
 }
 
 /// Perform a word search
-async fn word_search<'a>(
-    locale_dict: &'a TranslationDict,
-    user_settings: UserSettings,
-    query: &'a Query,
-) -> Result<BaseData<'a>, web_error::Error> {
+async fn word_search<'a>(base_data: &mut BaseData<'a>, query: &'a Query) -> SResult {
     let result = search::word::search(&query).await?;
-    Ok(BaseData::new_word_search(
-        &query,
-        result,
-        locale_dict,
-        user_settings,
-    ))
-}
-
-fn redirect_home() -> HttpResponse {
-    HttpResponse::MovedPermanently()
-        .append_header(("Location", "/"))
-        .finish()
+    base_data.with_pages(result.count as u32, query.page as u32);
+    Ok(ResultData::Word(result))
 }
 
 /// Reports a search timeout to sentry
@@ -248,4 +158,24 @@ fn sentry_request_from_http(request: &HttpRequest) -> sentry::protocol::Request 
     };
 
     sentry_req
+}
+
+fn redirect_home() -> HttpResponse {
+    HttpResponse::MovedPermanently()
+        .append_header(("Location", "/"))
+        .finish()
+}
+
+#[cfg(not(feature = "sentry_error"))]
+fn log_duration(search_type: QueryType, duration: Duration) {
+    use log::warn;
+    warn!("{:?}-search took: {:?}", search_type, duration);
+}
+
+#[cfg(feature = "sentry_error")]
+fn log_duration(search_type: QueryType, duration: Duration) {
+    sentry::capture_message(
+        format!("{:?}-search took: {:?}", search_type, duration).as_str(),
+        sentry::Level::Warning,
+    );
 }

@@ -13,6 +13,7 @@ pub struct QueryParser {
     original_query: String,
     tags: Vec<Tag>,
     user_settings: UserSettings,
+    page_offset: usize,
     page: usize,
     word_index: usize,
 }
@@ -52,12 +53,17 @@ impl QueryParser {
             .take(80)
             .collect();
 
+        // Pages start at 1. First offset has to be 0
+        let page_offset = (page - 1) * user_settings.items_per_page as usize;
+        println!("page_offset: {}", page_offset);
+
         QueryParser {
             q_type,
             query: parsed_query,
             original_query: query,
             tags,
             user_settings,
+            page_offset,
             page,
             word_index,
         }
@@ -100,6 +106,7 @@ impl QueryParser {
             query: self.query,
             original_query: self.original_query,
             settings: self.user_settings,
+            page_offset: self.page_offset,
             page: self.page,
             word_index: self.word_index,
             parse_japanese,

@@ -1,34 +1,28 @@
 @use crate::BaseData;
 @(data: &BaseData)
 
-<nav>
-    <ul class="pagination noselect">
-       <li class="pagination-item disabled">
-          <button class="pagination-circle ripple">First</button>
-       </li>
-       <li class="pagination-item disabled">
-          <button class="pagination-circle ripple">&laquo;</button>
-       </li>
-       <li class="pagination-item">
-          <button class="pagination-circle ripple active">1</button>
-       </li>
-       <li class="pagination-item">
-          <button class="pagination-circle ripple">2</button>
-       </li>
-       <li class="pagination-item">
-          <button class="pagination-circle ripple">3</button>
-       </li>
-       <li class="pagination-item">
-          <button class="pagination-circle ripple">4</button>
-       </li>
-       <li class="pagination-item">
-          <button class="pagination-circle ripple">5</button>
-       </li>
-       <li class="pagination-item">
-          <button class="pagination-circle ripple">&raquo;</button>
-       </li>
-       <li class="pagination-item">
-          <button class="pagination-circle ripple" last-page="69">Last</button>
-       </li>
-    </ul>
- </nav>
+@if let Some(pagination) = data.pagination {
+  <nav>
+      <ul class="pagination noselect">
+         <li class="pagination-item @if pagination.is_first() { disabled }">
+            <button class="pagination-circle ripple">@data.gettext("First")</button>
+         </li>
+         <li class="pagination-item @if pagination.is_first() { disabled }">
+            <button class="pagination-circle ripple">&laquo;</button>
+         </li>
+
+         @for button in pagination.gen_page_buttons() {
+           <li class="pagination-item">
+             <button class="pagination-circle ripple @if button.active { active }">@button.page_nr</button>
+           </li>
+         }
+
+         <li class="pagination-item @if pagination.is_last() { disabled }">
+            <button class="pagination-circle ripple">&raquo;</button>
+         </li>
+         <li class="pagination-item @if pagination.is_last() { disabled }">
+           <button class="pagination-circle ripple" last-page="@pagination.get_last()">@data.gettext("Last")</button>
+         </li>
+      </ul>
+   </nav>
+ }

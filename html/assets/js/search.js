@@ -520,5 +520,5 @@ $('.pagination-item:not(.disabled) > button').on("click", (e) => {
 
     var search_value = $('#search').val();
     var search_type = $('#search-type').val();
-    window.location = window.location.origin + "/search/" + encodeURIComponent(search_value) + "?t=" + search_type + "?p=" + targetPage;
+    window.location = window.location.origin + "/search/" + encodeURIComponent(search_value) + "?t=" + search_type + "&p=" + targetPage;
 });
