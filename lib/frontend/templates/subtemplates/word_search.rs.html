@@ -6,19 +6,6 @@
 
 @(data: &BaseData, query: &Query, result: WordResult)
 
-  <!-- Inner Top Row -->
-  <div class="d-flex center no-drag">
-    <div class="main-tab-select l">
-      <h2 id="previousTabBtn" onclick="changeSearchType(null, 2)" class="tab-btn">&larr; @data.gettext("Sentences")</h2>
-    </div>
-    <div class="title-div">
-      <h1>@data.gettext("Words and kanji")</h1>
-    </div>
-    <div class="main-tab-select r">
-      <h2 id="nextTabBtn" onclick="changeSearchType(null, 3)" class="tab-btn">@data.gettext("Names") &rarr;</h2>
-    </div>
-  </div>
-
   @if let Some(ref inflection) = result.inflection_info {
     <div class="search-annotation">
 

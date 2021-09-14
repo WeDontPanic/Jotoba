@@ -3,24 +3,6 @@
 @use crate::BaseData;
 @(data: &BaseData, sentences: Vec<Item>)
 
-<!-- Inner Top Row -->
-<div class="d-flex center no-drag">
-  <div class="main-tab-select l">
-    <h2 id="previousTabBtn" onclick="changeSearchType(null, 3)" class="tab-btn">&larr; @data.gettext("Names")</h2>
-  </div>
-
-  @if !sentences.is_empty() {
-      <div class="title-div">
-        <h1>@data.gettext("Sentences")</h1>
-      </div>
-  }
-
-  <div class="main-tab-select r">
-    <h2 id="nextTabBtn" onclick="changeSearchType(null, 0)" class="tab-btn">@data.gettext("Words") &rarr;</h2>
-  </div>
-</div>
-<br>
-
 <!-- Inner Main Body -->
 <div class="d-flex center">
   <div class="main-info d-flex flex-column">
