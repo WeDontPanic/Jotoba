@@ -1,13 +1,6 @@
-use crate::{
-    engine::{self, word::japanese::gen::GenDoc},
-    search_order::SearchOrder,
-    word::order,
-};
+use super::{super::query::Query, ResultData, Search};
+use crate::{engine, search_order::SearchOrder, word::order};
 
-use super::{
-    super::{query::Query, SearchMode},
-    ResultData, Search,
-};
 use error::Error;
 use itertools::Itertools;
 use japanese::{CharType, JapaneseExt};
@@ -15,7 +8,6 @@ use resources::models::{
     kanji::{self, Kanji, ReadingType},
     words::Word,
 };
-use vector_space_model::DocumentVector;
 
 /// Runs a kanji reading search
 pub(super) async fn by_reading(search: &Search<'_>) -> Result<ResultData, Error> {
@@ -37,19 +29,8 @@ pub(super) async fn by_reading(search: &Search<'_>) -> Result<ResultData, Error>
     }
     let reading_type = reading_type.unwrap();
 
-    /*
-    let mode = if reading.reading.starts_with('-') {
-        SearchMode::LeftVariable
-    } else {
-        SearchMode::RightVariable
-    };
-    */
-
-    let mut words =
+    let (mut words, count) =
         words_with_kanji_reading(kanji, reading_type, &reading.reading, search.query).await?;
-    let count = words.len();
-
-    words.truncate(10);
 
     Ok(ResultData {
         count,
@@ -63,7 +44,7 @@ async fn words_with_kanji_reading(
     _rt: ReadingType,
     reading: &str,
     query: &Query,
-) -> Result<Vec<Word>, Error> {
+) -> Result<(Vec<Word>, usize), Error> {
     use engine::word::japanese::Find;
 
     let res = Find::new(&kanji.literal.to_string(), 1000, 0)
@@ -119,7 +100,13 @@ async fn words_with_kanji_reading(
         &mut wordresults,
     );
 
-    Ok(super::filter_languages(wordresults.into_iter().take(10), query).collect())
+    let len = wordresults.len();
+    let words = super::filter_languages(
+        wordresults.into_iter().skip(query.page_offset).take(10),
+        query,
+    )
+    .collect();
+    Ok((words, len))
 }
 
 /// Do a search without the kanji literal or reading
