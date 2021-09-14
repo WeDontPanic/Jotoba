@@ -102,6 +102,7 @@
   position: relative;
   max-height: 300px;
   overflow: auto;
+  overflow: -moz-hidden-unscrollable;
   -webkit-overflow-scrolling: touch;
   will-change: scroll-position;
 }
@@ -139,7 +140,8 @@
   cursor: not-allowed;
   -webkit-user-select: none;
       -ms-user-select: none;
-          user-select: none;
+          -moz-user-select: none;
+       user-select: none;
   opacity: 0.5;
 }
 
@@ -169,7 +171,9 @@
 }
 
 .modal-body .choices__inner {
+  width: -webkit-fit-content;
   width: fit-content;
+  width: -moz-fit-content;
 }
 
 .modal-body .choices__list.choices__list--single {
@@ -184,6 +188,8 @@
 }
 
 .modal-body .choices__list.choices__list--dropdown {
+  width: -webkit-max-content;
+  width: -moz-max-content;
   width: max-content;
   border: 0;
   margin-top: 2px;
@@ -197,6 +203,9 @@
 
 @media (min-width: 640px) {
   .modal-body .choices__list--dropdown .choices__item--selectable {
+    width: -webkit-max-content;
+    width: -moz-max-content;
+    width: max-content;
     padding-right: 10px;
   }
 
@@ -223,12 +232,9 @@
 
 .searchDivInner form .inner-form {
   background: var(--searchBackground);
-  display: -ms-flexbox;
   display: flex;
   width: 100%;
-  -ms-flex-pack: justify;
   justify-content: space-between;
-  -ms-flex-align: center;
   align-items: center;
   box-shadow: 0px 8px 20px 0px var(--backgroundShadow);
   border-radius: 20px;
@@ -275,26 +281,20 @@
   border-radius: 0;
   border: 0;
   height: 100%;
-  display: -ms-flexbox;
   display: flex;
-  -ms-flex-align: center;
   align-items: center;
   padding: 10px 30px;
 }
 
 .searchDivInner form .inner-form .input-field.first-wrap .choices__inner .choices__list.choices__list--single {
-  display: -ms-flexbox;
   display: flex;
   padding: 0;
-  -ms-flex-align: center;
   align-items: center;
   height: 100%;
 }
 
 .searchDivInner form .inner-form .input-field.first-wrap .choices__inner .choices__item.choices__item--selectable.choices__placeholder {
-  display: -ms-flexbox;
   display: flex;
-  -ms-flex-align: center;
   align-items: center;
   height: 100%;
   opacity: 1;
@@ -302,9 +302,7 @@
 }
 
 .searchDivInner form .inner-form .input-field.first-wrap .choices__inner .choices__list--single .choices__item {
-  display: -ms-flexbox;
   display: flex;
-  -ms-flex-align: center;
   align-items: center;
   height: 100%;
   color: var(--searchTextColor);
@@ -332,8 +330,7 @@
 }
 
 .searchDivInner form .inner-form .input-field.second-wrap {
-  -ms-flex-positive: 1;
-      flex-grow: 1;
+  flex-grow: 1;
 }
 
 .searchDivInner form .inner-form .input-field.third-wrap {
@@ -386,17 +383,29 @@
 }
 
 .choices__list.choices__list--dropdown.index.is-active {
-  animation: dropdownAnim 0.2s linear forwards;
+  -webkit-animation: dropdownAnim 0.2s linear forwards;
+          animation: dropdownAnim 0.2s linear forwards;
 }
 
 .choices__list.choices__list--dropdown.index.animate:not(.is-active) {
   display: unset !important;
-  animation: dropdownAnimClose 0.2s linear forwards;
+  -webkit-animation: dropdownAnimClose 0.2s linear forwards;
+          animation: dropdownAnimClose 0.2s linear forwards;
+}
+
+@-webkit-keyframes dropdownAnim {
+  from {height: 0px;}
+  to { height: 330%;}
 }
 
 @keyframes dropdownAnim {
   from {height: 0px;}
   to { height: 330%;}
+}
+
+@-webkit-keyframes dropdownAnimClose {
+  from {height: 330%; }
+  to { height: 0%; display:hidden !important;}
 }
 
 @keyframes dropdownAnimClose {
