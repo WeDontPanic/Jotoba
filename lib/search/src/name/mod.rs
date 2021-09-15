@@ -7,67 +7,45 @@ use super::query::Query;
 use error::Error;
 
 use japanese::JapaneseExt;
-use resources::models::names::Name;
 use utils::to_option;
 
 /// Search for names
+#[inline]
 pub async fn search(query: &Query) -> Result<NameResult, Error> {
-    let res = if query.form.is_kanji_reading() {
-        search_kanji(&query).await?
-    } else if query.query.is_japanese() {
-        search_native(&query).await?
+    if query.form.is_kanji_reading() {
+        search_kanji(&query).await
     } else {
-        search_transcription(&query).await?
+        do_search(query).await
+    }
+}
+
+/// Do a name search
+async fn do_search(query: &Query) -> Result<NameResult, Error> {
+    use crate::engine::name::{foreign, japanese};
+
+    let res = if query.query.is_japanese() {
+        japanese::Find::new(&query.query, 1000, 0).find().await?
+    } else {
+        foreign::Find::new(&query.query, 1000, 0).find().await?
     };
 
+    let resources = resources::get().names();
+
+    let names = res
+        .retrieve_ordered(|seq_id| resources.by_sequence(seq_id as u32))
+        .skip(query.page_offset)
+        .take(query.settings.items_per_page as usize)
+        .cloned()
+        .collect();
+
     Ok(NameResult {
-        items: res.0,
-        total_count: res.1 as u32,
+        items: names,
+        total_count: res.len() as u32,
     })
 }
 
-/// Search by transcription
-async fn search_transcription(query: &Query) -> Result<(Vec<Name>, usize), Error> {
-    let resources = resources::get().names();
-
-    use crate::engine::name::foreign::Find;
-
-    let res = Find::new(&query.query, 1000, 0).find().await?;
-
-    let len = res.len();
-
-    let names = res
-        .retrieve_ordered(|seq_id| resources.by_sequence(seq_id as u32))
-        .skip(query.page_offset)
-        .take(query.settings.items_per_page as usize)
-        .cloned()
-        .collect();
-
-    Ok((names, len))
-}
-
-/// Search by japanese input
-async fn search_native(query: &Query) -> Result<(Vec<Name>, usize), Error> {
-    let resources = resources::get().names();
-
-    use crate::engine::name::japanese::Find;
-
-    let res = Find::new(&query.query, 1000, 0).find().await?;
-
-    let len = res.len();
-
-    let names = res
-        .retrieve_ordered(|seq_id| resources.by_sequence(seq_id as u32))
-        .skip(query.page_offset)
-        .take(query.settings.items_per_page as usize)
-        .cloned()
-        .collect();
-
-    Ok((names, len))
-}
-
 /// Search by kanji reading
-async fn search_kanji(query: &Query) -> Result<(Vec<Name>, usize), Error> {
+async fn search_kanji(query: &Query) -> Result<NameResult, Error> {
     let kanji_reading = query.form.as_kanji_reading().ok_or(Error::Unexpected)?;
     let resources = resources::get().names();
 
@@ -76,8 +54,6 @@ async fn search_kanji(query: &Query) -> Result<(Vec<Name>, usize), Error> {
     let res = Find::new(&kanji_reading.literal.to_string(), 1000, 0)
         .find()
         .await?;
-
-    let len = res.len();
 
     let names = res
         .retrieve_ordered(|seq_id| resources.by_sequence(seq_id as u32))
@@ -123,5 +99,8 @@ async fn search_kanji(query: &Query) -> Result<(Vec<Name>, usize), Error> {
         .cloned()
         .collect();
 
-    Ok((names, len))
+    Ok(NameResult {
+        items: names,
+        total_count: res.len() as u32,
+    })
 }

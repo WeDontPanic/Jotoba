@@ -48,7 +48,12 @@ impl SearchResult {
     #[inline]
     pub(crate) fn new(mut items: Vec<ResultItem>) -> SearchResult {
         let order_map = Self::build_order_map(&items);
-        items.sort_by(|a, b| a.relevance.partial_cmp(&b.relevance).unwrap().reverse());
+        items.sort_by(|a, b| {
+            a.relevance
+                .partial_cmp(&b.relevance)
+                .unwrap_or(Ordering::Equal)
+                .reverse()
+        });
         Self { items, order_map }
     }
 
