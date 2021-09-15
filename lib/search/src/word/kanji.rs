@@ -29,7 +29,7 @@ pub(super) async fn by_reading(search: &Search<'_>) -> Result<ResultData, Error>
     }
     let reading_type = reading_type.unwrap();
 
-    let (mut words, count) =
+    let (words, count) =
         words_with_kanji_reading(kanji, reading_type, &reading.reading, search.query).await?;
 
     Ok(ResultData {

@@ -1,4 +1,4 @@
-use std::{fs::read_to_string, path::Path, vec};
+use std::{fs::read_to_string, vec};
 
 use resources::{
     models::{kanji::Kanji, words::Word},
@@ -14,7 +14,7 @@ pub struct Item {
 
 impl Item {
     #[inline]
-    pub fn from_db(k: Kanji, lang: Language, show_english: bool) -> Self {
+    pub fn from_db(k: Kanji, _lang: Language, _show_english: bool) -> Self {
         // TODO: Load on & kun dictionaries here
         Self {
             kun_dicts: None,
