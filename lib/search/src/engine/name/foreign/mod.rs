@@ -1,9 +1,10 @@
 use error::Error;
+use resources::parse::jmdict::languages::Language;
 use vector_space_model::DocumentVector;
 
 use crate::engine::{
     result::{ResultItem, SearchResult},
-    FindExt,
+    CmpDocument, FindExt,
 };
 
 use self::{gen::GenDoc, index::Index};
@@ -66,11 +67,47 @@ impl<'a> Find<'a> {
         &self,
         query_vec: DocumentVector<GenDoc>,
     ) -> Result<SearchResult, Error> {
-        todo!()
+        let index = index::INDEX.get().ok_or(Error::Unexpected)?;
+
+        // VecStore is surrounded by an Arc
+        let mut doc_store = index.get_vector_store().clone();
+
+        // All vectors in queries dimensions
+        let dimensions = query_vec.vector().vec_indices().collect::<Vec<_>>();
+
+        // Retrieve all matching vectors
+        let document_vectors = doc_store
+            .get_all_async(&dimensions)
+            .await
+            .map_err(|_| error::Error::NotFound)?;
+
+        let sort = |a: &CmpDocument<_>, b: &CmpDocument<_>| {
+            let a_rev = (a.relevance * 1000f32) as u32;
+            let b_rev = (b.relevance * 1000f32) as u32;
+            a_rev.cmp(&b_rev).reverse()
+        };
+
+        let result = self
+            .vecs_to_result_items(&query_vec, &document_vectors, sort)
+            .into_iter()
+            .map(|i| {
+                let rel = i.relevance;
+                i.document.seq_ids.iter().map(move |j| (*j, rel))
+            })
+            .flatten()
+            .map(|(seq_id, rel)| ResultItem {
+                seq_id: seq_id as usize,
+                relevance: rel,
+                language: Language::English,
+            })
+            .collect();
+
+        Ok(SearchResult::new(result))
     }
 
     /// Generate a document vector out of `query_str`
     fn gen_query(&self, index: &Index) -> Option<DocumentVector<GenDoc>> {
-        todo!()
+        let query_document = GenDoc::new(vec![self.query.to_string()]);
+        DocumentVector::new(index.get_indexer(), query_document.clone())
     }
 }

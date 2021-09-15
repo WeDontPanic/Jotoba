@@ -28,7 +28,22 @@ pub async fn search(query: &Query) -> Result<NameResult, Error> {
 
 /// Search by transcription
 async fn search_transcription(query: &Query) -> Result<(Vec<Name>, usize), Error> {
-    unimplemented!()
+    let resources = resources::get().names();
+
+    use crate::engine::name::foreign::Find;
+
+    let res = Find::new(&query.query, 1000, 0).find().await?;
+
+    let len = res.len();
+
+    let names = res
+        .retrieve_ordered(|seq_id| resources.by_sequence(seq_id as u32))
+        .skip(query.page_offset)
+        .take(query.settings.items_per_page as usize)
+        .cloned()
+        .collect();
+
+    Ok((names, len))
 }
 
 /// Search by japanese input
