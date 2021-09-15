@@ -22,10 +22,12 @@ pub(super) async fn start() -> std::io::Result<()> {
 
     info!("Loading resources");
 
+    // TODO: make configurable
     resources::initialize_resources(
         "./resources/storage_data",
         config.get_suggestion_sources(),
         "resources/radical_map",
+        "resources/sentences.bin",
     )
     .expect("Failed to load resources");
 

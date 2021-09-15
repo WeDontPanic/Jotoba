@@ -1,5 +1,6 @@
 pub mod kanji;
 pub mod name;
+pub mod sentence;
 pub mod suggestion;
 pub mod word;
 
@@ -8,12 +9,14 @@ use crate::parse::jmdict::languages::Language;
 use self::{
     kanji::KanjiRetrieve,
     name::NameRetrieve,
+    sentence::SentenceRetrieve,
     suggestion::{provider::SuggestionProvider, SuggestionDictionary},
     word::WordRetrieve,
 };
 use super::{
     kanji::Kanji,
     names::Name,
+    sentences::Sentence,
     suggestions::{foreign_words::ForeignSuggestion, native_words::NativeSuggestion},
     words::Word,
     DictResources,
@@ -23,6 +26,7 @@ use std::collections::HashMap;
 type WordStorage = HashMap<u32, Word>;
 type NameStorage = HashMap<u32, Name>;
 type KanjiStorage = HashMap<char, Kanji>;
+pub(super) type SentenceStorage = HashMap<u32, Sentence>;
 pub(super) type RadicalStorage = HashMap<char, Vec<char>>;
 
 #[derive(Default)]
@@ -37,6 +41,7 @@ struct DictionaryData {
     names: NameStorage,
     kanji: KanjiStorage,
     rad_map: RadicalStorage,
+    sentences: SentenceStorage,
 }
 
 #[derive(Default)]
@@ -52,12 +57,14 @@ impl DictionaryData {
         names: NameStorage,
         kanji: KanjiStorage,
         rad_map: RadicalStorage,
+        sentences: SentenceStorage,
     ) -> Self {
         Self {
             words,
             names,
             kanji,
             rad_map,
+            sentences,
         }
     }
 }
@@ -93,11 +100,12 @@ impl ResourceStorage {
         resources: DictResources,
         suggestions: Option<SuggestionData>,
         rad_map: RadicalStorage,
+        sentences: SentenceStorage,
     ) -> Self {
         let words = build_words(resources.words);
         let names = build_names(resources.names);
         let kanji = build_kanji(resources.kanji);
-        let dict_data = DictionaryData::new(words, names, kanji, rad_map);
+        let dict_data = DictionaryData::new(words, names, kanji, rad_map, sentences);
 
         Self {
             dict_data,
@@ -127,6 +135,12 @@ impl ResourceStorage {
     #[inline]
     pub fn suggestions(&self) -> SuggestionProvider<'_> {
         SuggestionProvider::new(self)
+    }
+
+    /// Returns a `SentenceRetrieve` which can be used to retrieve sentences from the `ResourceStorage`
+    #[inline]
+    pub fn sentences(&self) -> SentenceRetrieve<'_> {
+        SentenceRetrieve::new(self)
     }
 }
 

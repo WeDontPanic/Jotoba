@@ -17,7 +17,7 @@ use std::{
 use self::{
     kanji::Kanji,
     names::Name,
-    storage::{RadicalStorage, ResourceStorage},
+    storage::{RadicalStorage, ResourceStorage, SentenceStorage},
     words::Word,
 };
 use serde::{Deserialize, Serialize};
@@ -49,14 +49,18 @@ pub fn load_storage<P: AsRef<Path>>(
     dict_data_path: P,
     suggestion_path: P,
     rad_mapc_path: P,
+    sentences_path: P,
 ) -> Result<ResourceStorage, Box<dyn Error>> {
     let dict_data = load_dict_data(dict_data_path)?;
     let suggestion_data = suggestions::parse::load(suggestion_path)?;
     let radical_map = load_rad_map(rad_mapc_path)?;
+    let sentences = load_sentences(sentences_path)?;
+
     Ok(ResourceStorage::new(
         dict_data,
         suggestion_data,
         radical_map,
+        sentences,
     ))
 }
 
@@ -82,4 +86,9 @@ fn load_rad_map<P: AsRef<Path>>(rad_map_file: P) -> Result<RadicalStorage, Box<d
     }
 
     Ok(map)
+}
+
+/// Load sentences from sentence file
+fn load_sentences<P: AsRef<Path>>(sentences: P) -> Result<SentenceStorage, Box<dyn Error>> {
+    Ok(bincode::deserialize_from(File::open(sentences)?)?)
 }
