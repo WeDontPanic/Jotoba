@@ -1,28 +1,30 @@
+pub(crate) mod document;
+pub(crate) mod index;
+
 use error::Error;
 use resources::parse::jmdict::languages::Language;
 use vector_space_model::DocumentVector;
 
 use crate::engine::{
-    document::MultiDocument,
     result::{ResultItem, SearchResult},
     simple_gen_doc::GenDoc,
-    CmpDocument, FindExt,
+    FindExt,
 };
 
-use self::index::Index;
-
-pub(crate) mod index;
+use self::{document::SentenceDocument, index::Index};
 
 pub(crate) struct Find<'a> {
     limit: usize,
     offset: usize,
     query: &'a str,
+    language_filter: Option<Language>,
+    show_english: bool,
 }
 
 impl<'a> FindExt for Find<'a> {
     type ResultItem = ResultItem;
     type GenDoc = GenDoc;
-    type Document = MultiDocument;
+    type Document = SentenceDocument;
 
     #[inline]
     fn get_limit(&self) -> usize {
@@ -47,7 +49,21 @@ impl<'a> Find<'a> {
             limit,
             offset,
             query,
+            language_filter: None,
+            show_english: false,
         }
+    }
+
+    /// Only find sentences which have a certain language
+    #[inline]
+    pub(crate) fn with_language_filter(&mut self, lanuage: Language) {
+        self.language_filter = Some(lanuage);
+    }
+
+    /// Also show english translations, next to potentially filtered languages
+    #[inline]
+    pub(crate) fn find_engish(&mut self) {
+        self.show_english = true;
     }
 
     /// Do a foreign word search
@@ -76,29 +92,29 @@ impl<'a> Find<'a> {
         let dimensions = query_vec.vector().vec_indices().collect::<Vec<_>>();
 
         // Retrieve all matching vectors
-        let document_vectors = doc_store
+        let mut document_vectors = doc_store
             .get_all_async(&dimensions)
             .await
             .map_err(|_| error::Error::NotFound)?;
 
-        let sort = |a: &CmpDocument<_>, b: &CmpDocument<_>| {
-            let a_rev = (a.relevance * 1000f32) as u32;
-            let b_rev = (b.relevance * 1000f32) as u32;
-            a_rev.cmp(&b_rev).reverse()
-        };
+        if let Some(language_filter) = self.language_filter {
+            document_vectors.retain(|item| {
+                item.document.has_language(language_filter)
+                    || (self.show_english && item.document.has_language(Language::English))
+            });
+        }
 
         let result = self
-            .vecs_to_result_items(&query_vec, &document_vectors, sort)
+            .vecs_to_result_items(&query_vec, &document_vectors)
             .into_iter()
             .map(|i| {
-                let rel = i.relevance;
-                i.document.seq_ids.iter().map(move |j| (*j, rel))
-            })
-            .flatten()
-            .map(|(seq_id, rel)| ResultItem {
-                seq_id: seq_id as usize,
-                relevance: rel,
-                language: Language::English,
+                let seq_id = i.document.seq_id as usize;
+                let relevance = i.relevance;
+                ResultItem {
+                    seq_id,
+                    relevance,
+                    language: Language::English,
+                }
             })
             .collect();
 
@@ -106,14 +122,10 @@ impl<'a> Find<'a> {
     }
 
     /// Generate a document vector out of `query_str`
+    #[inline]
     fn gen_query(&self, index: &Index) -> Option<DocumentVector<GenDoc>> {
-        let query_document = GenDoc::new(vec![self.query.to_string()]);
-        let mut doc = DocumentVector::new(index.get_indexer(), query_document.clone())?;
-
-        // TODO: look if this makes the results really better. If not, remove
         let terms = tinysegmenter::tokenize(self.query);
-        doc.add_terms(index.get_indexer(), &terms, true, Some(0.03));
-
-        Some(doc)
+        let query_document = GenDoc::new(terms);
+        DocumentVector::new(index.get_indexer(), query_document.clone())
     }
 }

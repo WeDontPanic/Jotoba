@@ -34,9 +34,14 @@ impl Sentence {
     pub fn from_m_sentence(
         s: resources::models::sentences::Sentence,
         language: Language,
+        allow_english: bool,
     ) -> Option<Self> {
+        let mut translation = s.get_translations(language);
+        if translation.is_none() && allow_english {
+            translation = s.get_translations(Language::English);
+        }
         Some(Self {
-            translation: s.get_translations(language)?.to_string(),
+            translation: translation?.to_string(),
             content: s.japanese,
             furigana: s.furigana,
             eng: String::from("-"),

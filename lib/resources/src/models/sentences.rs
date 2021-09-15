@@ -1,4 +1,5 @@
 use crate::parse::jmdict::languages::Language;
+use bitflags::BitFlag;
 use serde::{Deserialize, Serialize};
 
 /// A single Sentence with multiple translations.
@@ -48,6 +49,16 @@ impl Sentence {
             .iter()
             .find(|i| i.language == language)
             .map(|i| i.text.as_str())
+    }
+
+    /// Calculates a bitmask to efficiently determine the supported languages of a sentence
+    pub fn calc_lang_mask(&self) -> u16 {
+        let mut lang_mask = BitFlag::<u16>::new();
+        for translation in &self.translations {
+            let lang: i32 = translation.language.into();
+            lang_mask.set_unchecked(lang as u16, true);
+        }
+        lang_mask.raw()
     }
 }
 

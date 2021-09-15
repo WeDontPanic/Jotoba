@@ -2,14 +2,12 @@ mod gen;
 pub(crate) mod index;
 mod metadata;
 
-use std::cmp::Ordering;
-
 use self::index::Index;
 use crate::{
     engine::{
         document::MultiDocument,
         result::{ResultItem, SearchResult},
-        CmpDocument, FindExt,
+        FindExt,
     },
     query::Query,
 };
@@ -102,15 +100,8 @@ impl<'a> Find<'a> {
             .await
             .map_err(|_| error::Error::NotFound)?;
 
-        let sort = |a: &CmpDocument<_>, b: &CmpDocument<_>| {
-            a.relevance
-                .partial_cmp(&b.relevance)
-                .unwrap_or(Ordering::Equal)
-                .reverse()
-        };
-
         let result = self
-            .vecs_to_result_items(&query_vec, &document_vectors, sort)
+            .vecs_to_result_items(&query_vec, &document_vectors)
             .into_iter()
             .map(|i| {
                 let rel = i.relevance;

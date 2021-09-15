@@ -40,6 +40,14 @@ impl<'a, T: Decodable + Clone + Copy> Clone for CmpDocument<'a, T> {
     }
 }
 
+impl<'a, T: Decodable> Eq for CmpDocument<'a, T> {}
+impl<'a, T: Decodable> Ord for CmpDocument<'a, T> {
+    #[inline]
+    fn cmp(&self, other: &Self) -> Ordering {
+        self.partial_cmp(other).unwrap()
+    }
+}
+
 impl<'a, T: Decodable> PartialEq for CmpDocument<'a, T> {
     #[inline]
     fn eq(&self, other: &Self) -> bool {
@@ -76,26 +84,25 @@ pub(crate) trait FindExt {
     fn get_query_str(&self) -> &str;
 
     /// Converts document vectors to result items
-    fn vecs_to_result_items<'a, S>(
+    fn vecs_to_result_items<'a>(
         &self,
         query_vec: &DocumentVector<Self::GenDoc>,
         document_vectors: &'a Vec<DocumentVector<Self::Document>>,
-        mut sort_fn: S,
-    ) -> Vec<CmpDocument<'a, Self::Document>>
-    where
-        S: FnMut(&CmpDocument<Self::Document>, &CmpDocument<Self::Document>) -> Ordering,
-    {
+    ) -> Vec<CmpDocument<'a, Self::Document>> {
         // Sort by relevance
         let mut found: Vec<_> = document_vectors
             .iter()
             .filter_map(|i| {
                 let similarity = i.similarity(query_vec);
-                (similarity != 0f32).then(|| CmpDocument::new(&i.document, similarity))
+
+                // Our threshold
+                (similarity >= 0.01f32).then(|| CmpDocument::new(&i.document, similarity))
             })
             .collect();
 
         // Sort by similarity to top
-        found.sort_by(|a, b| sort_fn(a, b));
+        //found.sort_by(|a, b| sort_fn(a, b));
+        found.sort();
         found.dedup_by(|a, b| a.document == b.document);
 
         // Convert DocumentVectors to ResultItems

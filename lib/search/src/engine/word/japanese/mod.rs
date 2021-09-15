@@ -6,7 +6,7 @@ use crate::engine::{
     document::SingleDocument,
     result::{ResultItem, SearchResult},
     simple_gen_doc::GenDoc,
-    CmpDocument, FindExt,
+    FindExt,
 };
 use error::Error;
 use resources::parse::jmdict::languages::Language;
@@ -59,14 +59,8 @@ impl<'a> Find<'a> {
             .await
             .map_err(|_| error::Error::NotFound)?;
 
-        let sort = |a: &CmpDocument<_>, b: &CmpDocument<_>| {
-            let a_rev = (a.relevance * 1000f32) as u32;
-            let b_rev = (b.relevance * 1000f32) as u32;
-            a_rev.cmp(&b_rev).reverse()
-        };
-
         let mut items = self
-            .vecs_to_result_items(&query_vec, &document_vectors, sort)
+            .vecs_to_result_items(&query_vec, &document_vectors)
             .into_iter()
             .map(|doc| ResultItem {
                 seq_id: doc.document.seq_id as usize,

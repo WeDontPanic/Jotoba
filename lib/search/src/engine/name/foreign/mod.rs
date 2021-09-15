@@ -6,7 +6,7 @@ use crate::engine::{
     document::MultiDocument,
     result::{ResultItem, SearchResult},
     simple_gen_doc::GenDoc,
-    CmpDocument, FindExt,
+    FindExt,
 };
 
 use self::index::Index;
@@ -81,14 +81,8 @@ impl<'a> Find<'a> {
             .await
             .map_err(|_| error::Error::NotFound)?;
 
-        let sort = |a: &CmpDocument<_>, b: &CmpDocument<_>| {
-            let a_rev = (a.relevance * 1000f32) as u32;
-            let b_rev = (b.relevance * 1000f32) as u32;
-            a_rev.cmp(&b_rev).reverse()
-        };
-
         let result = self
-            .vecs_to_result_items(&query_vec, &document_vectors, sort)
+            .vecs_to_result_items(&query_vec, &document_vectors)
             .into_iter()
             .map(|i| {
                 let rel = i.relevance;

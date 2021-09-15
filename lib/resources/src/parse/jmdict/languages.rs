@@ -31,6 +31,7 @@ pub enum Language {
 }
 
 impl Default for Language {
+    #[inline]
     fn default() -> Self {
         Self::English
     }
@@ -38,6 +39,7 @@ impl Default for Language {
 
 impl TryFrom<i32> for Language {
     type Error = error::Error;
+    #[inline]
     fn try_from(i: i32) -> Result<Self, Self::Error> {
         Ok(match i {
             0 => Self::English,
@@ -55,6 +57,7 @@ impl TryFrom<i32> for Language {
 }
 
 impl Into<i32> for Language {
+    #[inline]
     fn into(self) -> i32 {
         match self {
             Self::English => 0,

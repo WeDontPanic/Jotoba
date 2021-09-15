@@ -26,6 +26,7 @@ regex = "1.5.4"
 vector_space_model = { git = "https://github.com/JojiiOfficial/VectorSpaceModel" }
 byteorder = "1.4.3"
 tinysegmenter = "0.1.1"
+bitflags = {git = "https://github.com/JojiiOfficial/BitFlags"}
 
 [features]
 tokenizer = []
