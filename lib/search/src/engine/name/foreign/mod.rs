@@ -3,14 +3,14 @@ use resources::parse::jmdict::languages::Language;
 use vector_space_model::DocumentVector;
 
 use crate::engine::{
+    document::MultiDocument,
     result::{ResultItem, SearchResult},
+    simple_gen_doc::GenDoc,
     CmpDocument, FindExt,
 };
 
-use self::{gen::GenDoc, index::Index};
+use self::index::Index;
 
-pub(crate) mod document;
-mod gen;
 pub(crate) mod index;
 
 pub(crate) struct Find<'a> {
@@ -21,8 +21,8 @@ pub(crate) struct Find<'a> {
 
 impl<'a> FindExt for Find<'a> {
     type ResultItem = ResultItem;
-    type GenDoc = gen::GenDoc;
-    type Document = document::Document;
+    type GenDoc = GenDoc;
+    type Document = MultiDocument;
 
     #[inline]
     fn get_limit(&self) -> usize {

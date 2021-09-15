@@ -1,5 +1,8 @@
+pub(crate) mod document;
 pub(crate) mod name;
 pub mod result;
+pub(crate) mod sentences;
+pub(crate) mod simple_gen_doc;
 pub(crate) mod word;
 
 use std::{cmp::Ordering, error};

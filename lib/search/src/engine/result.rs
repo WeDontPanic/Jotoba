@@ -13,6 +13,7 @@ pub(crate) struct SearchResult {
 /// A single result item for `find`
 #[derive(Clone, Copy, Default, Debug)]
 pub(crate) struct ResultItem {
+    // TODO: u32 is sufficient and more efficient here
     pub(crate) seq_id: usize,
     pub(crate) relevance: f32,
     pub(crate) language: Language,

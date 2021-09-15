@@ -1,13 +1,15 @@
 use std::{collections::HashMap, error::Error};
 
-use super::{document::Document, metadata::Metadata};
+use crate::engine::document::MultiDocument;
+
+use super::metadata::Metadata;
 use config::Config;
 use log::{error, info};
 use once_cell::sync::OnceCell;
 use resources::parse::jmdict::languages::Language;
 
 // Shortcut for type of index
-pub(super) type Index = vector_space_model::Index<Document, Metadata>;
+pub(super) type Index = vector_space_model::Index<MultiDocument, Metadata>;
 
 // In-memory storage for all loaded indexes
 pub(super) static INDEXES: OnceCell<HashMap<Language, Index>> = OnceCell::new();

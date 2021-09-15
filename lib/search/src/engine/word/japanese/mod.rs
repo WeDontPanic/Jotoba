@@ -1,11 +1,11 @@
-mod document;
-pub(crate) mod gen;
 pub(crate) mod index;
 
-use self::{gen::GenDoc, index::Index};
+use self::index::Index;
 
 use crate::engine::{
+    document::SingleDocument,
     result::{ResultItem, SearchResult},
+    simple_gen_doc::GenDoc,
     CmpDocument, FindExt,
 };
 use error::Error;
@@ -98,8 +98,8 @@ impl<'a> Find<'a> {
 
 impl<'a> FindExt for Find<'a> {
     type ResultItem = ResultItem;
-    type GenDoc = gen::GenDoc;
-    type Document = document::Document;
+    type GenDoc = GenDoc;
+    type Document = SingleDocument;
 
     #[inline]
     fn get_limit(&self) -> usize {

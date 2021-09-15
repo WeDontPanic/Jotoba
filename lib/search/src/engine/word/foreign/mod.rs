@@ -1,4 +1,3 @@
-mod document;
 mod gen;
 pub(crate) mod index;
 mod metadata;
@@ -8,6 +7,7 @@ use std::cmp::Ordering;
 use self::index::Index;
 use crate::{
     engine::{
+        document::MultiDocument,
         result::{ResultItem, SearchResult},
         CmpDocument, FindExt,
     },
@@ -27,7 +27,7 @@ pub(crate) struct Find<'a> {
 impl<'a> FindExt for Find<'a> {
     type ResultItem = ResultItem;
     type GenDoc = gen::GenDoc;
-    type Document = document::Document;
+    type Document = MultiDocument;
 
     #[inline]
     fn get_limit(&self) -> usize {
@@ -118,7 +118,7 @@ impl<'a> Find<'a> {
             })
             .flatten()
             .map(|(seq_id, rel)| ResultItem {
-                seq_id,
+                seq_id: seq_id as usize,
                 relevance: rel,
                 language,
             })

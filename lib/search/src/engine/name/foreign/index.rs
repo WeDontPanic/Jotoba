@@ -5,10 +5,10 @@ use log::info;
 use once_cell::sync::OnceCell;
 use vector_space_model::DefaultMetadata;
 
-use super::document::Document;
+use crate::engine::document::MultiDocument;
 
 // Shortcut for type of index
-pub(super) type Index = vector_space_model::Index<Document, DefaultMetadata>;
+pub(super) type Index = vector_space_model::Index<MultiDocument, DefaultMetadata>;
 
 // In-memory storage for foreign name index
 pub(super) static INDEX: OnceCell<Index> = OnceCell::new();
