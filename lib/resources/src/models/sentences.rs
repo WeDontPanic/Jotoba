@@ -40,6 +40,15 @@ impl Sentence {
     pub fn has_translation(&self, language: Language) -> bool {
         self.translations.iter().any(|tr| tr.language == language)
     }
+
+    /// Returns the translation for a given language if exists
+    #[inline]
+    pub fn get_translations(&self, language: Language) -> Option<&str> {
+        self.translations
+            .iter()
+            .find(|i| i.language == language)
+            .map(|i| i.text.as_str())
+    }
 }
 
 impl From<(String, Language)> for Translation {

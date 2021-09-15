@@ -16,6 +16,7 @@ pub fn load_indexes(config: &Config) -> Result<(), Box<dyn error::Error>> {
     word::japanese::index::load(config);
     name::japanese::index::load(config);
     name::foreign::index::load(config);
+    sentences::japanese::index::load(config);
     Ok(())
 }
 
@@ -36,6 +37,22 @@ impl<'a, T: Decodable + Clone + Copy> Clone for CmpDocument<'a, T> {
             document: self.document,
             relevance: self.relevance,
         }
+    }
+}
+
+impl<'a, T: Decodable> PartialEq for CmpDocument<'a, T> {
+    #[inline]
+    fn eq(&self, other: &Self) -> bool {
+        self.relevance == other.relevance
+    }
+}
+
+impl<'a, T: Decodable> PartialOrd for CmpDocument<'a, T> {
+    #[inline]
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        let a_rev = (self.relevance * 1000f32) as u32;
+        let b_rev = (other.relevance * 1000f32) as u32;
+        Some(a_rev.cmp(&b_rev).reverse())
     }
 }
 

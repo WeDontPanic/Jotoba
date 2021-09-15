@@ -15,6 +15,7 @@ pub async fn sentence_search(payload: Json<SearchRequest>) -> Result<Json<Respon
     Ok(Json(
         search::sentence::search(&query)
             .await?
+            .0
             .into_iter()
             .map(|i| i.sentence)
             .collect_vec()

@@ -78,7 +78,7 @@ async fn do_search<'a>(
     let mut base_data = BaseData::new(locale_dict, settings);
     let result_data = match querytype_ {
         QueryType::Kanji => kanji_search(&query).await,
-        QueryType::Sentences => sentence_search(&query).await,
+        QueryType::Sentences => sentence_search(&mut base_data, &query).await,
         QueryType::Names => name_search(&mut base_data, &query).await,
         QueryType::Words => word_search(&mut base_data, &query).await,
     }?;
@@ -89,8 +89,9 @@ async fn do_search<'a>(
 type SResult = Result<ResultData, web_error::Error>;
 
 /// Perform a sentence search
-async fn sentence_search<'a>(query: &'a Query) -> SResult {
-    let result = search::sentence::search(&query).await?;
+async fn sentence_search<'a>(base_data: &mut BaseData<'a>, query: &'a Query) -> SResult {
+    let (result, total_count) = search::sentence::search(&query).await?;
+    base_data.with_pages(total_count as u32, query.page as u32);
     Ok(ResultData::Sentence(result))
 }
 
