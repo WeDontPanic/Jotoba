@@ -624,9 +624,13 @@ footer {
 
 #info-dropdown {
     background-color: var(--background);
-    border-radius: 4px;
     width: 170px;
     cursor: pointer;
+}
+
+.dot-menu {
+    width: 200%;
+    margin-left: -50%;
 }
 
 .info-entry {
@@ -635,6 +639,7 @@ footer {
     font-size: 18px;
     line-height: 1.4;
     cursor: pointer;
+    text-align: center;
 }
 
 .info-entry:hover {

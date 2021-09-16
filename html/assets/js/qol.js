@@ -72,12 +72,17 @@ $(document).on("keydown", (event) => {
 
 // Copies Furigana to clipboard on click
 $('.furigana-kanji-container > .furigana-preview').on("click", (event) => {
+    preventDefaultHighlight(event, 100, true, false);
     Util.showMessage("success", "furigana copied to clipboard.");
     Util.copyToClipboard($(event.target).html().trim());
 });
 
 // Copies full Furigana to clipboard on dblclick
 $('.furigana-kanji-container > .furigana-preview').on("dblclick", (event) => {
+    // Disable Events for a short time
+    preventDefaultHighlight(event, 100, false);
+
+    // Show the correct message
     $('.ajs-message.ajs-success.ajs-visible').last().remove();
     $('.ajs-message.ajs-success.ajs-visible').last().html("<b>full</b> furigana copied to clipboard");
 
@@ -91,18 +96,46 @@ $('.furigana-kanji-container > .furigana-preview').on("dblclick", (event) => {
 });
 
 // Copies translations to clipboard on double click
-$('.furigana-kanji-container > .kanji-preview').on("dblclick copy", (event) => {
-	event.preventDefault();
-    Util.deleteSelection();
+$('.furigana-kanji-container > .kanji-preview').on("dblclick", (event) => {
+    preventDefaultHighlight(event, 500, false);
     copyTranslationAndShowMessage(event.target.parentElement.parentElement);
 });
 
 // Copies translations to clipboard on double click
-$('.inline-kana-preview').on("dblclick copy", (event) => {
-	event.preventDefault();
-    Util.deleteSelection();
+$('.inline-kana-preview').on("dblclick", (event) => {
+    preventDefaultHighlight(event, 500, false);
     copyTranslationAndShowMessage(event.target.parentElement);
 });
+
+// Prevents the default User highlighting
+function preventDefaultHighlight(event, timeoutDurationMs, disableClick, disableDoubleClick) {
+    startEventTimeout(event.target, timeoutDurationMs, disableClick, disableDoubleClick);
+	event.preventDefault();
+    Util.deleteSelection();
+}
+
+// Disbaled onclick events for a short period of time
+function startEventTimeout(targetElement, durationMs, disableClick = true, disableDoubleClick = true) {
+    // Disbale events for single clicks
+    if (disableClick) {
+        let eventFunc = $._data(targetElement, "events").click[0].handler;
+        $._data(targetElement, "events").click[0].handler = () => {};    
+        setTimeout(() => {
+            $._data(targetElement, "events").click[0].handler = eventFunc;
+        }, durationMs);
+    }
+
+    // Disable events for double clicks
+    if (disableDoubleClick) {
+        console.log("x");
+        let eventFuncDbl = $._data(targetElement, "events").dblclick[0].handler;
+        $._data(targetElement, "events").dblclick[0].handler = () => {};
+    
+        setTimeout(() => {
+            $._data(targetElement, "events").dblclick[0].handler = eventFuncDbl;
+        }, durationMs);
+    }    
+}
 
 // Used by kanji/kana copy to combine all parts, starts from the flex (parent)
 function copyTranslationAndShowMessage(textParent) {
