@@ -6,10 +6,10 @@ use std::{
 };
 
 use config::Config;
-use itertools::Itertools;
 use log::info;
 use once_cell::sync::OnceCell;
 use search::suggestions::{store_item, TextSearch};
+use serde::{Deserialize, Deserializer};
 
 use super::WordPair;
 
@@ -24,13 +24,29 @@ pub(crate) static NAME_TRANSCRIPTIONS: OnceCell<TextSearch<Vec<NameTranscription
 pub(crate) static K_MEANING_SUGGESTIONS: OnceCell<TextSearch<Vec<KanjiMeaningSuggestionItem>>> =
     OnceCell::new();
 
+pub fn load_suggestions(config: &Config) -> Result<(), Box<dyn Error>> {
+    load_meaning_suggestions(&config)?;
+    load_native_names(&config)?;
+    load_name_transcriptions(&config)?;
+    Ok(())
+}
+
 /// A single suggestion item for kanji meanings
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Deserialize)]
 pub struct KanjiMeaningSuggestionItem {
     pub meaning: String,
     pub literal: char,
+    #[serde(deserialize_with = "eudex_deser")]
     pub hash: eudex::Hash,
     pub score: i32,
+}
+
+fn eudex_deser<'de, D>(deserializer: D) -> Result<eudex::Hash, D::Error>
+where
+    D: Deserializer<'de>,
+{
+    let s: u64 = Deserialize::deserialize(deserializer)?;
+    Ok(eudex::Hash::from(s))
 }
 
 impl store_item::Item for KanjiMeaningSuggestionItem {
@@ -47,28 +63,6 @@ impl store_item::Item for KanjiMeaningSuggestionItem {
     #[inline]
     fn ord(&self) -> usize {
         self.score as usize
-    }
-}
-
-impl Parseable for KanjiMeaningSuggestionItem {
-    fn parse(s: &str, _version: SuggestionVersion) -> Result<Self, error::Error> {
-        let mut split = s.split(',').rev();
-        let score: i32 = split.next().ok_or(error::Error::ParseError)?.parse()?;
-        let literal: char = split
-            .next()
-            .ok_or(error::Error::ParseError)?
-            .chars()
-            .next()
-            .ok_or(error::Error::ParseError)?;
-        let meaning: String = split.rev().join(",");
-
-        Ok(KanjiMeaningSuggestionItem {
-            // generate hash here so lookups will be faster
-            hash: eudex::Hash::new(&meaning),
-            meaning,
-            literal,
-            score,
-        })
     }
 }
 
@@ -158,14 +152,6 @@ impl Into<WordPair> for &NameNative {
         }
     }
 }
-
-pub fn load_suggestions(config: &Config) -> Result<(), Box<dyn Error>> {
-    load_meaning_suggestions(&config)?;
-    load_native_names(&config)?;
-    load_name_transcriptions(&config)?;
-    Ok(())
-}
-
 /// Load kanji meaning suggestion file into memory
 fn load_meaning_suggestions(config: &Config) -> Result<(), Box<dyn std::error::Error>> {
     let file = Path::new(config.get_suggestion_sources()).join("kanji_meanings");
@@ -174,9 +160,10 @@ fn load_meaning_suggestions(config: &Config) -> Result<(), Box<dyn std::error::E
         return Ok(());
     }
 
-    let items: Vec<KanjiMeaningSuggestionItem> = load_file(&file)?;
+    let kanji_items: Vec<KanjiMeaningSuggestionItem> =
+        bincode::deserialize_from(File::open(file)?)?;
 
-    K_MEANING_SUGGESTIONS.set(TextSearch::new(items)).ok();
+    K_MEANING_SUGGESTIONS.set(TextSearch::new(kanji_items)).ok();
 
     info!("Loaded kanji meaning suggestion file");
 

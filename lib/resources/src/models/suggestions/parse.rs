@@ -42,7 +42,6 @@ fn load_suggestion_file<P: AsRef<Path>>(
     if file_name == "words_ja-JP" {
         let dict = SuggestionDictionary::load(suggestion_file)?;
         suggestion_data.add_jp(dict);
-        println!("loaded jp suggestions");
         return Ok(());
     }
 
@@ -50,7 +49,6 @@ fn load_suggestion_file<P: AsRef<Path>>(
         let lang = Language::from_str(lang_str)?;
         let dict = SuggestionDictionary::load(suggestion_file)?;
         suggestion_data.add_foreign(lang, dict);
-        println!("loaded {} suggestions", lang);
         return Ok(());
     }
 

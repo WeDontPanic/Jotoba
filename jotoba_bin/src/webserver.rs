@@ -8,8 +8,8 @@ use actix_web::{
     App, HttpRequest, HttpServer,
 };
 use config::Config;
-use log::{info, warn};
-use std::sync::Arc;
+use log::{debug, warn};
+use std::{sync::Arc, thread, time::Instant};
 
 /// How long frontend assets are going to be cached by the clients. Currently 1 week
 const ASSET_CACHE_MAX_AGE: u64 = 604800;
@@ -18,33 +18,27 @@ const ASSET_CACHE_MAX_AGE: u64 = 604800;
 pub(super) async fn start() -> std::io::Result<()> {
     setup_logger();
 
+    let start = Instant::now();
+
+    let mut threads = Vec::with_capacity(4);
+
     let config = Config::new().expect("config failed");
 
-    info!("Loading resources");
+    let c2 = config.clone();
+    threads.push(thread::spawn(move || load_resources(c2)));
 
-    // TODO: make configurable
-    resources::initialize_resources(
-        "./resources/storage_data",
-        config.get_suggestion_sources(),
-        "resources/radical_map",
-        "resources/sentences.bin",
-    )
-    .expect("Failed to load resources");
+    let c2 = config.clone();
+    threads.push(thread::spawn(move || load_suggestions(c2)));
 
-    if let Err(err) = api::completions::load_suggestions(&config) {
-        warn!("Failed to load suggestions: {}", err);
-    }
+    let c2 = config.clone();
+    threads.push(thread::spawn(move || load_indexes(c2)));
 
     #[cfg(feature = "tokenizer")]
-    load_tokenizer();
+    threads.push(thread::spawn(move || {
+        load_tokenizer();
+    }));
 
-    let locale_dict = TranslationDict::new(
-        config.server.get_locale_path(),
-        localization::language::Language::English,
-    )
-    .expect("Failed to load localization files");
-
-    let locale_dict_arc = Arc::new(locale_dict);
+    let locale_dict_arc = load_translations(&config);
 
     #[cfg(feature = "sentry_error")]
     if let Some(ref sentry_config) = config.sentry {
@@ -62,13 +56,18 @@ pub(super) async fn start() -> std::io::Result<()> {
         std::env::set_var("RUST_BACKTRACE", "1");
     }
 
-    search::load_indexes(&config).expect("Failed to load index files");
+    for thr in threads {
+        thr.join().expect("Failed to join threads");
+    }
 
-    let config_clone = config.clone();
+    let address = config.server.listen_address.clone();
+
+    debug!("Resource loading took {:?}", start.elapsed());
+
     HttpServer::new(move || {
         let app = App::new()
             // Data
-            .app_data(Data::new(config_clone.clone()))
+            .app_data(Data::new(config.clone()))
             // .app_data(Data::new(pool.clone()))
             .app_data(Data::new(locale_dict_arc.clone()))
             // Middlewares
@@ -122,7 +121,7 @@ pub(super) async fn start() -> std::io::Result<()> {
                             .header(CACHE_CONTROL, format!("max-age={}", ASSET_CACHE_MAX_AGE)),
                     )
                     .service(
-                        actix_files::Files::new("", config_clone.server.get_html_files())
+                        actix_files::Files::new("", config.server.get_html_files())
                             .show_files_listing(),
                     ),
             );
@@ -132,7 +131,7 @@ pub(super) async fn start() -> std::io::Result<()> {
 
         app
     })
-    .bind(&config.server.listen_address)?
+    .bind(&address)?
     .run()
     .await
 }
@@ -161,4 +160,35 @@ fn load_tokenizer() {
     // Force parser to parse something to
     // prevent 1. search after launch taking up several seconds
     JA_NL_PARSER.parse("");
+}
+
+fn load_resources(config: Config) {
+    // TODO: make configurable
+    resources::initialize_resources(
+        "./resources/storage_data",
+        config.get_suggestion_sources(),
+        "resources/radical_map",
+        "resources/sentences.bin",
+    )
+    .expect("Failed to load resources");
+}
+
+fn load_suggestions(config: Config) {
+    if let Err(err) = api::completions::load_suggestions(&config) {
+        warn!("Failed to load suggestions: {}", err);
+    }
+}
+
+fn load_translations(config: &Config) -> Arc<TranslationDict> {
+    let locale_dict = TranslationDict::new(
+        config.server.get_locale_path(),
+        localization::language::Language::English,
+    )
+    .expect("Failed to load localization files");
+
+    Arc::new(locale_dict)
+}
+
+fn load_indexes(config: Config) {
+    search::load_indexes(&config).expect("Failed to load index files");
 }
