@@ -496,29 +496,9 @@ function scrollSearchIntoView() {
 
 // Initialize Pagination Buttons
 $('.pagination-item:not(.disabled) > button').on("click", (e) => {
-
-    var pressedBtn = $(e.target).contents()[0].nodeValue; 
-    var targetPage = 1;
-
-    switch(pressedBtn) {
-        case "First":
-            targetPage = 1; 
-            break;
-        case "Last":
-            targetPage = e.target.getAttribute("last-page");
-            break;
-        case "«":
-            targetPage = Number($('.pagination-item .active').contents()[0].nodeValue) - 1;
-            break;
-        case "»":
-            targetPage = Number($('.pagination-item .active').contents()[0].nodeValue) + 1;
-            break;
-        default:
-            targetPage = pressedBtn;
-            break;
-    }
-
     var search_value = $('#search').val();
     var search_type = $('#search-type').val();
+    var targetPage = $(e.target.parentNode).attr("target-page");
+    console.log(targetPage);
     window.location = window.location.origin + "/search/" + encodeURIComponent(search_value) + "?t=" + search_type + "&p=" + targetPage;
 });
