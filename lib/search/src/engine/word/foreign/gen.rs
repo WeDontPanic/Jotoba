@@ -28,6 +28,11 @@ impl GenDoc {
             .flatten()
             .map(|i| GenDoc::new(&i, vec![]))
     }
+
+    #[inline]
+    pub fn get_terms(&self) -> &Vec<String> {
+        &self.terms
+    }
 }
 
 impl Encodable for GenDoc {

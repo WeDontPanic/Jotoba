@@ -16,6 +16,7 @@ pub(crate) struct Find<'a> {
     limit: usize,
     offset: usize,
     query: &'a str,
+    treshold: f32,
 }
 
 impl<'a> Find<'a> {
@@ -25,7 +26,14 @@ impl<'a> Find<'a> {
             limit,
             offset,
             query,
+            treshold: 0f32,
         }
+    }
+
+    #[inline]
+    pub fn with_treshold(mut self, treshold: f32) -> Self {
+        self.treshold = treshold;
+        self
     }
 
     /// Do a foreign word search
@@ -60,7 +68,7 @@ impl<'a> Find<'a> {
             .map_err(|_| error::Error::NotFound)?;
 
         let mut items = self
-            .vecs_to_result_items(&query_vec, &document_vectors)
+            .vecs_to_result_items(&query_vec, &document_vectors, self.treshold)
             .into_iter()
             .map(|doc| ResultItem {
                 seq_id: doc.document.seq_id as usize,

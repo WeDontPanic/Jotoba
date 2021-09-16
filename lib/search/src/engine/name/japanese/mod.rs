@@ -82,7 +82,7 @@ impl<'a> Find<'a> {
             .map_err(|_| error::Error::NotFound)?;
 
         let result = self
-            .vecs_to_result_items(&query_vec, &document_vectors)
+            .vecs_to_result_items(&query_vec, &document_vectors, 0f32)
             .into_iter()
             .map(|i| {
                 let rel = i.relevance;

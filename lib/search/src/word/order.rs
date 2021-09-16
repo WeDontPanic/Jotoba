@@ -49,6 +49,7 @@ pub(super) fn foreign_search_order(
         score += 12;
     }
 
+    /*
     let found = match find_reading(word, &search_order.query) {
         Some(v) => v,
         None => {
@@ -70,6 +71,7 @@ pub(super) fn foreign_search_order(
     } else {
         score += 30;
     }
+    */
 
     score
 }

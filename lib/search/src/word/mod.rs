@@ -249,6 +249,8 @@ impl<'a> Search<'a> {
         let mut wordresults = filter_languages(wordresults, &self.query).collect::<Vec<_>>();
         let count = wordresults.len();
 
+        wordresults.truncate(self.query.page_offset + 10);
+
         // Sort the result
         order::new_japanese_order(
             search_result.get_order_map(),
@@ -294,7 +296,10 @@ impl<'a> Search<'a> {
         let pos_filter = to_option(self.get_pos_filter_from_query());
 
         // Do the search
-        let search_result = Find::new(&self.query, 1000, 0).find().await?;
+        let search_result = Find::new(&self.query, 1000, 0)
+            .with_treshold(0.3)
+            .find()
+            .await?;
 
         let seq_ids = search_result.sequence_ids();
 
@@ -322,6 +327,8 @@ impl<'a> Search<'a> {
         }
 
         let count = wordresults.len();
+
+        wordresults.truncate(self.query.page_offset + 10);
 
         // Sort the result
         order::new_foreign_order(

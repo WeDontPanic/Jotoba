@@ -13,7 +13,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"PO-Revision-Date: 2021-08-16 21:02+0200\n"
+"PO-Revision-Date: 2021-09-16 11:39+0200\n"
 "Last-Translator:  <jojii@gmx.net>\n"
 "Language-Team: English\n"
 "Language: en\n"
@@ -1288,4 +1288,11 @@ msgid "Also check our"
 msgstr ""
 
 msgid "since we might be working on it!"
+msgstr ""
+ 
+# Paginator
+msgid "First"
+msgstr ""
+ 
+msgid "Last"
 msgstr ""

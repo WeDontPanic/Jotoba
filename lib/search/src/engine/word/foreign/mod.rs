@@ -20,6 +20,7 @@ pub(crate) struct Find<'a> {
     limit: usize,
     offset: usize,
     query: &'a Query,
+    treshold: f32,
 }
 
 impl<'a> FindExt for Find<'a> {
@@ -50,7 +51,15 @@ impl<'a> Find<'a> {
             limit,
             offset,
             query,
+            treshold: 0f32,
         }
+    }
+
+    /// Set the treshold for this query
+    #[inline]
+    pub fn with_treshold(mut self, treshold: f32) -> Self {
+        self.treshold = treshold;
+        self
     }
 
     /// Do a foreign word search
@@ -100,8 +109,8 @@ impl<'a> Find<'a> {
             .await
             .map_err(|_| error::Error::NotFound)?;
 
-        let result = self
-            .vecs_to_result_items(&query_vec, &document_vectors)
+        let result: Vec<_> = self
+            .vecs_to_result_items(&query_vec, &document_vectors, self.treshold)
             .into_iter()
             .map(|i| {
                 let rel = i.relevance;

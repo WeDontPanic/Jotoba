@@ -88,15 +88,14 @@ pub(crate) trait FindExt {
         &self,
         query_vec: &DocumentVector<Self::GenDoc>,
         document_vectors: &'a Vec<DocumentVector<Self::Document>>,
+        treshold: f32,
     ) -> Vec<CmpDocument<'a, Self::Document>> {
         // Sort by relevance
         let mut found: Vec<_> = document_vectors
             .iter()
             .filter_map(|i| {
                 let similarity = i.similarity(query_vec);
-
-                // Our threshold
-                (similarity >= 0.01f32).then(|| CmpDocument::new(&i.document, similarity))
+                (similarity >= treshold).then(|| CmpDocument::new(&i.document, similarity))
             })
             .collect();
 
