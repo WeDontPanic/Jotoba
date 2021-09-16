@@ -41,6 +41,12 @@ pub struct KanjiMeaningSuggestionItem {
     pub score: i32,
 }
 
+#[derive(Clone, Debug)]
+pub struct NameTranscription {
+    pub name: String,
+    pub hash: eudex::Hash,
+}
+
 fn eudex_deser<'de, D>(deserializer: D) -> Result<eudex::Hash, D::Error>
 where
     D: Deserializer<'de>,
@@ -84,12 +90,6 @@ pub enum SuggestionVersion {
 
 trait Parseable: Sized {
     fn parse(s: &str, version: SuggestionVersion) -> Result<Self, error::Error>;
-}
-
-#[derive(Clone, Debug)]
-pub struct NameTranscription {
-    pub name: String,
-    pub hash: eudex::Hash,
 }
 
 impl Parseable for NameTranscription {
