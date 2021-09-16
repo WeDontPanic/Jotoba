@@ -499,6 +499,5 @@ $('.pagination-item:not(.disabled) > button').on("click", (e) => {
     var search_value = $('#search').val();
     var search_type = $('#search-type').val();
     var targetPage = $(e.target.parentNode).attr("target-page");
-    console.log(targetPage);
     window.location = window.location.origin + "/search/" + encodeURIComponent(search_value) + "?t=" + search_type + "&p=" + targetPage;
 });
