@@ -6,6 +6,7 @@ use std::time::Instant;
 use super::query::Query;
 use crate::query::QueryLang;
 use error::Error;
+use resources::parse::jmdict::languages::Language;
 
 /// Searches for sentences
 pub async fn search(query: &Query) -> Result<(Vec<result::Item>, usize), Error> {
@@ -19,20 +20,27 @@ pub async fn search(query: &Query) -> Result<(Vec<result::Item>, usize), Error> 
     let res = if query.language == QueryLang::Japanese {
         japanese::Find::new(&query.query, 1000, 0)
             .with_language_filter(query.settings.user_lang)
-            .find_engish(show_english)
             .find()
             .await?
     } else {
-        foreign::Find::new(&query.query, query.settings.user_lang, 1000, 0)
+        let mut res = foreign::Find::new(&query.query, query.settings.user_lang, 1000, 0)
             .find_engish(show_english)
             .find()
-            .await?
+            .await?;
+
+        if res.len() < 20 && show_english {
+            res.extend(foreign::Find::new(&query.query, Language::English, 1000, 0)
+                .find()
+                .await?);
+        }
+
+        res
     };
 
-    let sentence = resources::get().sentences();
+    let sentence_storage = resources::get().sentences();
 
     let sentences = res
-        .retrieve_ordered(|i| sentence.by_id(i as u32))
+        .retrieve_ordered(|i| sentence_storage.by_id(i as u32))
         .collect::<Vec<_>>();
 
     let len = sentences.len();

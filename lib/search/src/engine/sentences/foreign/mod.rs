@@ -88,15 +88,10 @@ impl<'a> Find<'a> {
         let dimensions = query_vec.vector().vec_indices().collect::<Vec<_>>();
 
         // Retrieve all matching vectors
-        let mut document_vectors = doc_store
+        let document_vectors = doc_store
             .get_all_async(&dimensions)
             .await
             .map_err(|_| error::Error::NotFound)?;
-
-        document_vectors.retain(|item| {
-            item.document.has_language(self.language)
-                || (self.in_english && item.document.has_language(Language::English))
-        });
 
         let result = self
             .vecs_to_result_items(&query_vec, &document_vectors, 0.05f32)
