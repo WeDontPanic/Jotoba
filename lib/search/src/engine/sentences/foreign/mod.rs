@@ -67,13 +67,6 @@ impl<'a> Find<'a> {
         self.find_by_vec(query_vec).await
     }
 
-    /// Also show english translations, next to potentially filtered languages
-    #[inline]
-    pub(crate) fn find_engish(mut self, find_engish: bool) -> Self {
-        self.in_english = find_engish;
-        self
-    }
-
     /// Do a foreign word search with a custom `query_vec`
     pub(crate) async fn find_by_vec(
         &self,
