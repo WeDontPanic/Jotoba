@@ -1,6 +1,5 @@
 mod gen;
 pub(crate) mod index;
-mod metadata;
 
 use self::index::Index;
 use crate::{

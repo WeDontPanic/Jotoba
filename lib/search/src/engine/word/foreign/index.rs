@@ -1,8 +1,7 @@
 use std::{collections::HashMap, error::Error};
 
-use crate::engine::document::MultiDocument;
+use crate::engine::{document::MultiDocument, lang_metadata::Metadata};
 
-use super::metadata::Metadata;
 use config::Config;
 use log::{error, info};
 use once_cell::sync::OnceCell;
@@ -55,6 +54,11 @@ pub(crate) fn load(config: &Config) -> Result<(), Box<dyn Error>> {
 }
 
 /// Retrieve an index of the given language. Returns `None` if there is no index loaded
+#[inline]
 pub(super) fn get(lang: Language) -> Option<&'static Index> {
-    INDEXES.get().and_then(|indexes| indexes.get(&lang))
+    // Safety:
+    // We don't write to `INDEX` after loading it one time at the startup. Jotoba panics if it
+    // can't load this index, so until a `get()` call gets reached, `INDEX` is always set to a
+    // value.
+    unsafe { INDEXES.get_unchecked() }.get(&lang)
 }

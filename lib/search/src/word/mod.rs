@@ -249,7 +249,7 @@ impl<'a> Search<'a> {
         let mut wordresults = filter_languages(wordresults, &self.query).collect::<Vec<_>>();
         let count = wordresults.len();
 
-        wordresults.truncate(self.query.page_offset + 10);
+        wordresults.truncate(self.query.page_offset + 100);
 
         // Sort the result
         order::new_japanese_order(
@@ -328,7 +328,7 @@ impl<'a> Search<'a> {
 
         let count = wordresults.len();
 
-        wordresults.truncate(self.query.page_offset + 10);
+        wordresults.truncate(self.query.page_offset + 100);
 
         // Sort the result
         order::new_foreign_order(

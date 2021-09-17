@@ -1,4 +1,5 @@
 pub(crate) mod document;
+pub(crate) mod lang_metadata;
 pub(crate) mod name;
 pub mod result;
 pub(crate) mod sentences;
@@ -17,6 +18,7 @@ pub fn load_indexes(config: &Config) -> Result<(), Box<dyn error::Error>> {
     name::japanese::index::load(config);
     name::foreign::index::load(config);
     sentences::japanese::index::load(config);
+    sentences::foreign::index::load(config)?;
     Ok(())
 }
 

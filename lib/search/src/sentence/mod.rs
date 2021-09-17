@@ -9,33 +9,25 @@ use error::Error;
 
 /// Searches for sentences
 pub async fn search(query: &Query) -> Result<(Vec<result::Item>, usize), Error> {
-    if query.language == QueryLang::Japanese {
-        search_jp(query).await
-    } else {
-        // search_foreign(db, query).await
-        unimplemented!()
-    }
-}
+    use crate::engine::sentences::{foreign, japanese};
 
-/// Searches for sentences (jp input)
-pub async fn search_jp(query: &Query) -> Result<(Vec<result::Item>, usize), Error> {
-    use crate::engine::sentences::japanese::Find;
     let start = Instant::now();
 
     let lang = query.settings.user_lang;
     let show_english = query.settings.show_english;
 
-    let mut find = Find::new(&query.query, 1000, 0);
-
-    find.with_language_filter(query.settings.user_lang);
-
-    if show_english {
-        find.find_engish();
-    }
-
-    let res = find.find().await?;
-
-    println!("found {} after: {:?}", res.len(), start.elapsed());
+    let res = if query.language == QueryLang::Japanese {
+        japanese::Find::new(&query.query, 1000, 0)
+            .with_language_filter(query.settings.user_lang)
+            .find_engish(show_english)
+            .find()
+            .await?
+    } else {
+        foreign::Find::new(&query.query, query.settings.user_lang, 1000, 0)
+            .find_engish(show_english)
+            .find()
+            .await?
+    };
 
     let sentence = resources::get().sentences();
 

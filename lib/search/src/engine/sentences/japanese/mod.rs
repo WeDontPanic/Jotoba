@@ -56,14 +56,16 @@ impl<'a> Find<'a> {
 
     /// Only find sentences which have a certain language
     #[inline]
-    pub(crate) fn with_language_filter(&mut self, lanuage: Language) {
+    pub(crate) fn with_language_filter(mut self, lanuage: Language) -> Self {
         self.language_filter = Some(lanuage);
+        self
     }
 
     /// Also show english translations, next to potentially filtered languages
     #[inline]
-    pub(crate) fn find_engish(&mut self) {
-        self.show_english = true;
+    pub(crate) fn find_engish(mut self, show_english: bool) -> Self {
+        self.show_english = show_english;
+        self
     }
 
     /// Do a foreign word search
