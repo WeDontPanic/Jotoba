@@ -1,4 +1,3 @@
-pub(crate) mod document;
 pub(crate) mod index;
 
 use error::Error;
@@ -6,12 +5,13 @@ use resources::parse::jmdict::languages::Language;
 use vector_space_model::DocumentVector;
 
 use crate::engine::{
+    document::SentenceDocument,
     result::{ResultItem, SearchResult},
     simple_gen_doc::GenDoc,
     FindExt,
 };
 
-use self::{document::SentenceDocument, index::Index};
+use self::index::Index;
 
 pub(crate) struct Find<'a> {
     limit: usize,

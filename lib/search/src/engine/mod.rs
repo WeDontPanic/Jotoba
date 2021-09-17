@@ -1,5 +1,5 @@
-pub(crate) mod document;
-pub(crate) mod lang_metadata;
+pub mod document;
+pub mod lang_metadata;
 pub(crate) mod name;
 pub mod result;
 pub(crate) mod sentences;

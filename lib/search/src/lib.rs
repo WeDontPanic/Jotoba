@@ -1,6 +1,6 @@
 #![allow(dead_code)]
 
-mod engine;
+pub mod engine;
 pub mod kanji;
 pub mod name;
 pub mod query;

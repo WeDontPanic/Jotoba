@@ -3,14 +3,13 @@ use resources::parse::jmdict::languages::Language;
 use vector_space_model::DocumentVector;
 
 use crate::engine::{
+    document::SentenceDocument,
     result::{ResultItem, SearchResult},
     simple_gen_doc::GenDoc,
     FindExt,
 };
 
 use self::index::Index;
-
-use super::japanese::document::SentenceDocument;
 
 pub(crate) mod index;
 
