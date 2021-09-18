@@ -3,28 +3,28 @@
 
 @if let Some(pagination) = data.pagination {
    @if pagination.get_last() > 1 {
-  <nav>
-      <ul class="pagination noselect">
-         <li target-page="1" class="pagination-item @if pagination.is_first() { disabled }">
-            <button class="pagination-circle ripple">@data.gettext("First")</button>
-         </li>
-         <li target-page="@(pagination.curr_page - 1)" class="pagination-item @if pagination.is_first() { disabled }">
-            <button class="pagination-circle ripple">&laquo;</button>
-         </li>
+      <nav>
+         <ul class="pagination noselect">
+            <li target-page="1" class="pagination-item @if pagination.is_first() { disabled }">
+               <button class="pagination-circle ripple">@data.gettext("First")</button>
+            </li>
+            <li target-page="@(pagination.curr_page - 1)" class="pagination-item @if pagination.is_first() { disabled }">
+               <button class="pagination-circle ripple">&laquo;</button>
+            </li>
 
-         @for button in pagination.gen_page_buttons() {
-           <li target-page="@button.page_nr" class="pagination-item">
-             <button class="pagination-circle ripple @if button.active { active }">@button.page_nr</button>
-           </li>
-         }
+            @for button in pagination.gen_page_buttons() {
+            <li target-page="@button.page_nr" class="pagination-item">
+               <button class="pagination-circle ripple @if button.active { active }">@button.page_nr</button>
+            </li>
+            }
 
-         <li target-page="@(pagination.curr_page + 1)" class="pagination-item @if pagination.is_last() { disabled }">
-            <button class="pagination-circle ripple">&raquo;</button>
-         </li>
-         <li target-page="@pagination.get_last()" class="pagination-item @if pagination.is_last() { disabled }">
-           <button class="pagination-circle ripple" last-page="@pagination.get_last()">@data.gettext("Last")</button>
-         </li>
-      </ul>
-   </nav>
+            <li target-page="@(pagination.curr_page + 1)" class="pagination-item @if pagination.is_last() { disabled }">
+               <button class="pagination-circle ripple">&raquo;</button>
+            </li>
+            <li target-page="@pagination.get_last()" class="pagination-item @if pagination.is_last() { disabled }">
+               <button class="pagination-circle ripple" last-page="@pagination.get_last()">@data.gettext("Last")</button>
+            </li>
+         </ul>
+      </nav>
    }
 }
