@@ -1,8 +1,12 @@
+@use super::{paginator};
 @use crate::BaseData;
 @(data: &BaseData)
 
 <!-- Footer -->
 <footer>
+
+   @:paginator(data)
+
     <div class="center-text">
        <hr class="footer-hr">
        <span>

@@ -2,6 +2,7 @@
 @(data: &BaseData)
 
 @if let Some(pagination) = data.pagination {
+   @if pagination.get_last() > 1 {
   <nav>
       <ul class="pagination noselect">
          <li target-page="1" class="pagination-item @if pagination.is_first() { disabled }">
@@ -25,4 +26,5 @@
          </li>
       </ul>
    </nav>
- }
+   }
+}

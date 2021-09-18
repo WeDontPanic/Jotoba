@@ -1,4 +1,4 @@
-@use super::{word_search_html, kanji_details, name_search, sentence_search, about_html, paginator};
+@use super::{word_search_html, kanji_details, name_search, sentence_search, about_html};
 @use crate::{BaseData, ResultData, Site};
 @(data: &BaseData)
 
@@ -32,8 +32,6 @@
               @:about_html(&data)
            }
         }
-
-        @:paginator(data)
 
       </div>
     </div>
