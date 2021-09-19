@@ -26,7 +26,6 @@ var oldInputValue = "";
 var lastRequest = undefined;
 var preventApiCallUntilDelete = false;
 var textToPrevent = "";
-var isUsingSearchBtn = false;
 
 // Key Events focussing on the search
 $(document).on("keydown", (event) => {
@@ -130,14 +129,12 @@ function showContainer() {
 
 // Shows the Voice / Search Icon when possible
 function toggleSearchIcon(duration) {
-    if (isUsingSearchBtn && input.value.length == 0) {
+    if (input.value.length == 0) {
         $('#searchBtn.search-embedded-btn').hide(duration);
         $('#voiceBtn.search-embedded-btn').show(duration);
-        isUsingSearchBtn = false;
-    } else if (!isUsingSearchBtn && input.value.length > 0) {
+    } else {
         $('#searchBtn.search-embedded-btn').show(duration);
         $('#voiceBtn.search-embedded-btn').hide(duration);
-        isUsingSearchBtn = true;
     }
 }
 

@@ -31,7 +31,10 @@ function recognitionSetup() {
                 Util.showMessage("error", "Need permissions to perform speech recognition!");
                 break;
             case "aborted":
+                Util.showMessage("info", "Speech recognition aborted.");
+                break;
             case "no-speech":
+                Util.showMessage("info", "No voice input received!");
                 break;
             default:
                 Util.showMessage("error", "Your browser does not support speech recognition!");

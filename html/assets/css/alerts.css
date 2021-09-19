@@ -1,12 +1,11 @@
 /* ----------------- Alerts Color Design ----------------- */
-.ajs-message {
+.msg-message {
     border: none !important;
     border-radius: 15px !important;  
     text-shadow: none !important;
 }
 
-
-.ajs-warning {
+.msg-warning {
     background-color: rgba(195,195,195,0.95) !important; 
     border-color: rgba(195,195,195,0.95) !important;
 } 

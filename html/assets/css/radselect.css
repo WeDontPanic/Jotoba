@@ -14,7 +14,7 @@
     width: 99%;
     padding-left: 5px;
     padding-top: 10px;
-    min-height: 85px;
+    min-height: 90px;
     max-height: 85px;
     overflow-y: scroll;
 }
@@ -95,11 +95,11 @@
 /* ---------- Scrollbar changes ---------- */
 
 /* Firefox */
-.rad-results, .rad-picker {
-    scrollbar-width: 0px;
+.rad-results, .rad-picker, .overlay.radical {
+    scrollbar-width: none;
 }
 
-/* Literally every one else */
+/* Literally everyone else */
 .rad-results::-webkit-scrollbar, .rad-picker::-webkit-scrollbar {
     width: 0px;
 }

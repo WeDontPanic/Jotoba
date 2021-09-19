@@ -79,6 +79,7 @@ form {
 .rad-picker-icon {
     color: white;
     font-size: 22px;
+    margin-left: 5px;
 }
 
 .searchDivInner form .inner-form .input-field input {

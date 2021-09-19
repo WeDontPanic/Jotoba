@@ -127,7 +127,6 @@ function startEventTimeout(targetElement, durationMs, disableClick = true, disab
 
     // Disable events for double clicks
     if (disableDoubleClick) {
-        console.log("x");
         let eventFuncDbl = $._data(targetElement, "events").dblclick[0].handler;
         $._data(targetElement, "events").dblclick[0].handler = () => {};
     
