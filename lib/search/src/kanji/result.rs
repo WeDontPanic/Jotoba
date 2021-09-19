@@ -76,21 +76,14 @@ impl Item {
         }
     }
 
-    // TODO translate this one
+    /// Returns the amount of parts a kanji is bulit with
     #[inline]
-    pub fn get_parts_title(&self) -> &'static str {
-        if self
-            .kanji
+    pub fn get_parts_count(&self) -> usize {
+        self.kanji
             .parts
             .as_ref()
             .map(|i| i.len())
             .unwrap_or_default()
-            > 1
-        {
-            "Parts"
-        } else {
-            "Part"
-        }
     }
 
     #[inline]

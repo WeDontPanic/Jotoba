@@ -55,7 +55,6 @@ impl<'a> Search<'a> {
 
         let words = search_result.words;
 
-        // TODO: implement loading collocations
         let kanji_results = kanji::load_word_kanji_info(&words)?;
 
         let res = WordResult {

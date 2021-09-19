@@ -13,7 +13,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"PO-Revision-Date: 2021-09-16 11:39+0200\n"
+"PO-Revision-Date: 2021-09-19 15:35+0200\n"
 "Last-Translator:  <jojii@gmx.net>\n"
 "Language-Team: English\n"
 "Language: en\n"
@@ -334,6 +334,11 @@ msgstr ""
 ## Kanji results
 
 # strokes suffix
+
+msgid "Part"
+msgid_plural "Parts"
+msgstr[0] "Part"
+msgstr[1] "Parts"
 
 msgid "strokes"
 msgstr ""

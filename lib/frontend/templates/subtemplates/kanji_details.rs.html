@@ -34,7 +34,7 @@
                 }
             </div>
             @if let Some(ref parts) = k_item.kanji.parts {
-              <div class="notes parts"><b>@k_item.get_parts_title():</b>
+              <div class="notes parts"><b>@data.ngettext("Part", k_item.get_parts_count() as u64):</b>
                 <br>
                 @for (pos, part) in parts.iter().enumerate() {
                   @if pos > 0 {
