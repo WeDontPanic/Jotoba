@@ -10,13 +10,13 @@ use regex::Regex;
 use resources::models::{kanji, words::Word};
 
 pub(super) fn new_foreign_order(
-    sort_map: &HashMap<usize, ResultItem>,
+    sort_map: &HashMap<u32, ResultItem>,
     search_order: &SearchOrder,
     e: &mut Vec<Word>,
 ) {
     e.sort_by(|a, b| {
-        let a_item = sort_map.get(&(a.sequence as usize)).unwrap();
-        let b_item = sort_map.get(&(b.sequence as usize)).unwrap();
+        let a_item = sort_map.get(&a.sequence).unwrap();
+        let b_item = sort_map.get(&b.sequence).unwrap();
 
         let a_score = foreign_search_order(a, search_order, a_item);
         let b_score = foreign_search_order(b, search_order, b_item);
@@ -75,13 +75,13 @@ pub(super) fn foreign_search_order(
 }
 
 pub(super) fn new_japanese_order(
-    sort_map: &HashMap<usize, ResultItem>,
+    sort_map: &HashMap<u32, ResultItem>,
     search_order: &SearchOrder,
     e: &mut Vec<Word>,
 ) {
     e.sort_by(|a, b| {
-        let a_item = sort_map.get(&(a.sequence as usize)).unwrap();
-        let b_item = sort_map.get(&(b.sequence as usize)).unwrap();
+        let a_item = sort_map.get(&a.sequence).unwrap();
+        let b_item = sort_map.get(&b.sequence).unwrap();
 
         let a_score = japanese_search_order(a, search_order, a_item);
         let b_score = japanese_search_order(b, search_order, b_item);
@@ -139,13 +139,13 @@ pub(super) fn japanese_search_order(
 }
 
 pub(super) fn new_kanji_reading_search_order(
-    sort_map: &HashMap<usize, ResultItem>,
+    sort_map: &HashMap<u32, ResultItem>,
     search_order: &SearchOrder,
     e: &mut Vec<Word>,
 ) {
     e.sort_by(|a, b| {
-        let a_item = sort_map.get(&(a.sequence as usize)).unwrap();
-        let b_item = sort_map.get(&(b.sequence as usize)).unwrap();
+        let a_item = sort_map.get(&a.sequence).unwrap();
+        let b_item = sort_map.get(&b.sequence).unwrap();
 
         let a_score = kanji_reading_search(a, search_order, a_item);
         let b_score = kanji_reading_search(b, search_order, b_item);

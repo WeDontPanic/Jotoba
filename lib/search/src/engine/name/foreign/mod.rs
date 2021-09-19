@@ -90,7 +90,7 @@ impl<'a> Find<'a> {
             })
             .flatten()
             .map(|(seq_id, rel)| ResultItem {
-                seq_id: seq_id as usize,
+                seq_id,
                 relevance: rel,
                 language: Language::English,
             })

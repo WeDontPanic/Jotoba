@@ -71,7 +71,7 @@ impl<'a> Find<'a> {
             .vecs_to_result_items(&query_vec, &document_vectors, self.treshold)
             .into_iter()
             .map(|doc| ResultItem {
-                seq_id: doc.document.seq_id as usize,
+                seq_id: doc.document.seq_id,
                 relevance: doc.relevance,
                 language: Language::English,
             })

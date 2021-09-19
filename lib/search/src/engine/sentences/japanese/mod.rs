@@ -110,7 +110,7 @@ impl<'a> Find<'a> {
             .vecs_to_result_items(&query_vec, &document_vectors, 0f32)
             .into_iter()
             .map(|i| {
-                let seq_id = i.document.seq_id as usize;
+                let seq_id = i.document.seq_id;
                 let relevance = i.relevance;
                 ResultItem {
                     seq_id,

@@ -7,14 +7,13 @@ use resources::parse::jmdict::languages::Language;
 #[derive(Clone, Default, Debug)]
 pub struct SearchResult {
     items: Vec<ResultItem>,
-    order_map: HashMap<usize, ResultItem>,
+    order_map: HashMap<u32, ResultItem>,
 }
 
 /// A single result item for `find`
 #[derive(Clone, Copy, Default, Debug)]
 pub struct ResultItem {
-    // TODO: u32 is sufficient and more efficient here
-    pub seq_id: usize,
+    pub seq_id: u32,
     pub relevance: f32,
     pub language: Language,
 }
@@ -70,7 +69,7 @@ impl SearchResult {
 
     /// Returns the searchresults order map
     #[inline]
-    pub fn get_order_map(&self) -> &HashMap<usize, ResultItem> {
+    pub fn get_order_map(&self) -> &HashMap<u32, ResultItem> {
         &self.order_map
     }
 
@@ -105,14 +104,14 @@ impl SearchResult {
     #[inline]
     pub fn retrieve_ordered<'a, T, F: 'a>(&'a self, mut f: F) -> impl Iterator<Item = T> + 'a
     where
-        F: FnMut(usize) -> Option<T>,
+        F: FnMut(u32) -> Option<T>,
     {
         self.items.iter().filter_map(move |i| f(i.seq_id))
     }
 
     /// Builds a HashMap that maps sequence ids to the corresponding ResultItem
-    fn build_order_map(items: &[ResultItem]) -> HashMap<usize, ResultItem> {
-        let mut order_map: HashMap<usize, ResultItem> = HashMap::new();
+    fn build_order_map(items: &[ResultItem]) -> HashMap<u32, ResultItem> {
+        let mut order_map: HashMap<u32, ResultItem> = HashMap::new();
 
         for result_item in items.iter() {
             let entry = order_map

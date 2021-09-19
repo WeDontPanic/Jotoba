@@ -89,7 +89,7 @@ impl<'a> Find<'a> {
             .vecs_to_result_items(&query_vec, &document_vectors, 0.05f32)
             .into_iter()
             .map(|i| ResultItem {
-                seq_id: i.document.seq_id as usize,
+                seq_id: i.document.seq_id,
                 relevance: i.relevance,
                 language: Language::English,
             })
