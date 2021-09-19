@@ -7,8 +7,10 @@ use std::{
 use super::query_parser::QueryType;
 
 use itertools::Itertools;
-use models::kanji::reading::KanjiReading;
-use parse::jmdict::{languages::Language, part_of_speech::PosSimple};
+use resources::{
+    models::kanji,
+    parse::jmdict::{languages::Language, part_of_speech::PosSimple},
+};
 
 /// A single user provided query in a parsed format
 #[derive(Debug, Clone, PartialEq, Default, Hash)]
@@ -20,6 +22,7 @@ pub struct Query {
     pub form: Form,
     pub language: QueryLang,
     pub settings: UserSettings,
+    pub page_offset: usize,
     pub page: usize,
     pub word_index: usize,
     pub parse_japanese: bool,
@@ -33,15 +36,18 @@ pub struct UserSettings {
     pub show_english: bool,
     pub english_on_top: bool,
     pub cookies_enabled: bool,
+    pub items_per_page: u32,
 }
 
 impl PartialEq for UserSettings {
+    #[inline]
     fn eq(&self, other: &Self) -> bool {
         self.user_lang == other.user_lang && self.show_english == other.show_english
     }
 }
 
 impl Hash for UserSettings {
+    #[inline]
     fn hash<H: Hasher>(&self, state: &mut H) {
         self.user_lang.hash(state);
         self.show_english.hash(state);
@@ -49,6 +55,7 @@ impl Hash for UserSettings {
 }
 
 impl Default for UserSettings {
+    #[inline]
     fn default() -> Self {
         Self {
             show_english: true,
@@ -56,6 +63,7 @@ impl Default for UserSettings {
             page_lang: localization::language::Language::default(),
             english_on_top: false,
             cookies_enabled: false,
+            items_per_page: 10,
         }
     }
 }
@@ -92,13 +100,14 @@ pub enum Form {
     /// Multiple words were provided
     MultiWords,
     /// Kanji reading based search eg. '気 ケ'
-    KanjiReading(KanjiReading),
+    KanjiReading(kanji::Reading),
     /// Form was not recognized
     Undetected,
 }
 
 impl Form {
-    pub fn as_kanji_reading(&self) -> Option<&KanjiReading> {
+    #[inline]
+    pub fn as_kanji_reading(&self) -> Option<&kanji::Reading> {
         if let Self::KanjiReading(v) = self {
             Some(v)
         } else {
@@ -113,12 +122,14 @@ impl Form {
 }
 
 impl Default for Form {
+    #[inline]
     fn default() -> Self {
         Self::Undetected
     }
 }
 
 impl Default for QueryLang {
+    #[inline]
     fn default() -> Self {
         Self::Undetected
     }
@@ -149,15 +160,18 @@ impl Tag {
     }
 
     /// Returns `true` if the tag is [`SearchType`].
+    #[inline]
     pub fn is_search_type(&self) -> bool {
         matches!(self, Self::SearchType(..))
     }
 
     /// Returns `true` if the tag is [`PartOfSpeech`].
+    #[inline]
     pub fn is_part_of_speech(&self) -> bool {
         matches!(self, Self::PartOfSpeech(..))
     }
 
+    #[inline]
     pub fn as_search_type(&self) -> Option<&SearchTypeTag> {
         if let Self::SearchType(v) = self {
             Some(v)
@@ -166,6 +180,7 @@ impl Tag {
         }
     }
 
+    #[inline]
     pub fn as_part_of_speech(&self) -> Option<&PosSimple> {
         if let Self::PartOfSpeech(v) = self {
             Some(v)
@@ -176,10 +191,12 @@ impl Tag {
 }
 
 impl Query {
+    #[inline]
     pub fn is_valid(&self) -> bool {
         !self.query.is_empty()
     }
 
+    #[inline]
     pub fn get_hash(&self) -> u64 {
         let mut hash = DefaultHasher::new();
         self.hash(&mut hash);
@@ -187,11 +204,13 @@ impl Query {
     }
 
     /// Returns true if the query has at least one pos tag
+    #[inline]
     pub fn has_part_of_speech_tags(&self) -> bool {
         !self.get_part_of_speech_tags().is_empty()
     }
 
     /// Returns all search type tags
+    #[inline]
     pub fn get_search_type_tags(&self) -> Vec<SearchTypeTag> {
         self.tags
             .iter()
@@ -202,6 +221,7 @@ impl Query {
     }
 
     /// Returns all PosSimple tags
+    #[inline]
     pub fn get_part_of_speech_tags(&self) -> Vec<PosSimple> {
         self.tags
             .iter()
@@ -212,6 +232,7 @@ impl Query {
     }
 
     /// Returns the original_query with search type tags omitted
+    #[inline]
     pub fn without_search_type_tags(&self) -> String {
         self.original_query
             .clone()

@@ -12,7 +12,6 @@ use log::{debug, error};
 
 /// A Dictionary of multiple catalogs assigned to its languages. Requires at least one cataloge
 /// for the defined [`default_lang`]
-#[derive(Debug)]
 pub struct TranslationDict {
     catalogs: HashMap<Language, Catalog>,
     default_lang: Language,

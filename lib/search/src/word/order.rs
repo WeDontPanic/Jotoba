@@ -1,27 +1,52 @@
+use std::collections::HashMap;
+
+use super::super::search_order::SearchOrder;
+use crate::{engine::result::ResultItem, query::Query, SearchMode};
 use japanese::JapaneseExt;
 use levenshtein::levenshtein;
+//use models::search_mode::SearchMode;
 use once_cell::sync::Lazy;
-use parse::jmdict::languages::Language;
 use regex::Regex;
+use resources::models::{kanji, words::Word};
 
-use crate::query::Query;
+pub(super) fn new_foreign_order(
+    sort_map: &HashMap<u32, ResultItem>,
+    search_order: &SearchOrder,
+    e: &mut Vec<Word>,
+) {
+    e.sort_by(|a, b| {
+        let a_item = sort_map.get(&a.sequence).unwrap();
+        let b_item = sort_map.get(&b.sequence).unwrap();
 
-use super::result::Sense;
-use super::{super::search_order::SearchOrder, result::Word};
-use models::kanji;
-use models::search_mode::SearchMode;
+        let a_score = foreign_search_order(a, search_order, a_item);
+        let b_score = foreign_search_order(b, search_order, b_item);
 
-pub(super) fn foreign_search_order(word: &Word, search_order: &SearchOrder) -> usize {
-    let mut score = 0;
-    let reading = word.get_reading();
-    //let query_str = &search_order.query.query;
+        a_score.cmp(&b_score).reverse()
+    })
+}
+
+pub(super) fn foreign_search_order(
+    word: &Word,
+    search_order: &SearchOrder,
+    result_item: &ResultItem,
+) -> usize {
+    let mut score: usize = (result_item.relevance * 25f32) as usize;
 
     if word.is_common() {
-        score += 5;
+        score += 10;
     }
 
-    if let Some(jlpt) = reading.jlpt_lvl {
-        score += jlpt as usize;
+    if let Some(jlpt) = word.jlpt_lvl {
+        score += (jlpt as usize) * 1;
+    }
+
+    if !word.is_katakana_word() {
+        score += 8;
+    }
+
+    // Result found within users specified language
+    if result_item.language == search_order.query.settings.user_lang {
+        score += 12;
     }
 
     let found = match find_reading(word, &search_order.query) {
@@ -31,23 +56,14 @@ pub(super) fn foreign_search_order(word: &Word, search_order: &SearchOrder) -> u
         }
     };
 
-    // Result found within users specified language
-    if found.language == search_order.query.settings.user_lang {
-        score += 12;
-    }
-
     let divisor = match (found.mode, found.case_ignored) {
         (SearchMode::Exact, false) => 10,
-        (SearchMode::Exact, true) => 30,
+        (SearchMode::Exact, true) => 20,
         (_, false) => 50,
         (_, true) => 80,
     };
 
     score += (calc_likeliness(word, &found) / divisor) as usize;
-
-    if !word.is_katakana_word() {
-        score += 7;
-    }
 
     if found.in_parentheses {
         score = score - score.clamp(0, 10);
@@ -58,33 +74,55 @@ pub(super) fn foreign_search_order(word: &Word, search_order: &SearchOrder) -> u
     score
 }
 
+pub(super) fn new_japanese_order(
+    sort_map: &HashMap<u32, ResultItem>,
+    search_order: &SearchOrder,
+    e: &mut Vec<Word>,
+) {
+    e.sort_by(|a, b| {
+        let a_item = sort_map.get(&a.sequence).unwrap();
+        let b_item = sort_map.get(&b.sequence).unwrap();
+
+        let a_score = japanese_search_order(a, search_order, a_item);
+        let b_score = japanese_search_order(b, search_order, b_item);
+
+        a_score.cmp(&b_score).reverse()
+    })
+}
+
 /// Search order for words searched by japanese meaning/kanji/reading
-pub(super) fn native_search_order(word: &Word, search_order: &SearchOrder) -> usize {
-    #[cfg(feature = "tokenizer")]
-    let morpheme = search_order.morpheme;
+pub(super) fn japanese_search_order(
+    word: &Word,
+    search_order: &SearchOrder,
+    result_item: &ResultItem,
+) -> usize {
+    let mut score: usize = (result_item.relevance * 10f32) as usize;
 
     let reading = word.get_reading();
-    let kana_reading = word.reading.kana.as_ref().unwrap();
+
     // Original query
     let query = search_order.query;
     // The original query text
     let query_str = &query.query;
 
-    let mut score = 0;
-
-    if reading.reading == *query_str || kana_reading.reading == *query_str {
-        score += 35;
+    if reading.reading == *query_str || word.reading.kana.reading == *query_str {
+        score += 50;
 
         // Show kana only readings on top if they match with query
         if word.reading.kanji.is_none() {
-            score += 20;
+            score += 10;
         }
     } else if reading.reading.starts_with(query_str) {
-        score += 2;
+        score += 4;
     }
 
-    if let Some(jlpt) = reading.jlpt_lvl {
-        score += jlpt as usize;
+    if let Some(jlpt) = word.jlpt_lvl {
+        score += (jlpt as usize) * 2;
+    }
+
+    // Is common
+    if word.is_common() {
+        score += 20;
     }
 
     // If alternative reading matches query exactly
@@ -94,40 +132,39 @@ pub(super) fn native_search_order(word: &Word, search_order: &SearchOrder) -> us
         .iter()
         .any(|i| i.reading == *query_str)
     {
-        score += 9;
+        score += 45;
     }
-
-    #[cfg(feature = "tokenizer")]
-    if let Some(morpheme) = morpheme {
-        let lexeme = morpheme.get_lexeme();
-        if reading.reading == lexeme || kana_reading.reading == lexeme {
-            score += 15;
-        }
-
-        // Show kana only readings on top if they match with lexeme
-        if word.reading.kanji.is_none() {
-            score += 30;
-        }
-    }
-
-    // Is common
-    score += word
-        .priorities
-        .as_ref()
-        .map(|i| i.len())
-        .unwrap_or_default()
-        * 2;
 
     score
 }
 
-pub(super) fn kanji_reading_search(word: &Word, search_order: &SearchOrder) -> usize {
-    let mut score = 0;
+pub(super) fn new_kanji_reading_search_order(
+    sort_map: &HashMap<u32, ResultItem>,
+    search_order: &SearchOrder,
+    e: &mut Vec<Word>,
+) {
+    e.sort_by(|a, b| {
+        let a_item = sort_map.get(&a.sequence).unwrap();
+        let b_item = sort_map.get(&b.sequence).unwrap();
+
+        let a_score = kanji_reading_search(a, search_order, a_item);
+        let b_score = kanji_reading_search(b, search_order, b_item);
+
+        a_score.cmp(&b_score).reverse()
+    })
+}
+pub(super) fn kanji_reading_search(
+    word: &Word,
+    search_order: &SearchOrder,
+    result_item: &ResultItem,
+) -> usize {
+    let mut score: usize = (result_item.relevance * 25f32) as usize;
+
     // This function should only be called for kanji reading search queries!
     debug_assert!(search_order.query.form.as_kanji_reading().is_some());
     let kanji_reading = search_order.query.form.as_kanji_reading().unwrap();
     let formatted_reading = kanji::format_reading(&kanji_reading.reading);
-    let kana_reading = &word.reading.kana.as_ref().unwrap().reading;
+    let kana_reading = &word.reading.kana.reading;
 
     if formatted_reading.is_hiragana() {
         // Kun reading
@@ -158,7 +195,7 @@ pub(super) fn kanji_reading_search(word: &Word, search_order: &SearchOrder) -> u
         score += 8;
     }
 
-    if let Some(jlpt) = word.get_reading().jlpt_lvl {
+    if let Some(jlpt) = word.jlpt_lvl {
         score += jlpt as usize;
     }
 
@@ -196,11 +233,11 @@ pub fn get_query_pos_in_gloss(
 struct FindResult {
     mode: SearchMode,
     case_ignored: bool,
-    language: Language,
+    language: resources::parse::jmdict::languages::Language,
     pos: usize,
     gloss: String,
     in_parentheses: bool,
-    sense: Sense,
+    sense: resources::models::words::Sense,
     sense_pos: usize,
 }
 
@@ -224,7 +261,7 @@ pub(crate) static REMOVE_PARENTHESES: Lazy<Regex> =
     Lazy::new(|| regex::Regex::new("\\(.*\\)").unwrap());
 
 fn find_in_senses(
-    senses: &[Sense],
+    senses: &[resources::models::words::Sense],
     query_str: &str,
     mode: SearchMode,
     ign_case: bool,
@@ -258,7 +295,7 @@ fn find_in_senses(
 }
 
 fn try_find_in_sense(
-    sense: &Sense,
+    sense: &resources::models::words::Sense,
     query_str: &str,
     mode: SearchMode,
     ign_case: bool,

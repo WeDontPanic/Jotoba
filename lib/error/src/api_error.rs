@@ -1,7 +1,6 @@
 #![allow(dead_code, unreachable_patterns)]
 
 use actix_web::{http::StatusCode, HttpResponse, ResponseError};
-use deadpool_postgres::PoolError;
 use serde::Serialize;
 use thiserror::Error;
 
@@ -89,22 +88,7 @@ impl From<super::Error> for RestError {
     fn from(err: super::Error) -> Self {
         match err {
             crate::Error::NotFound => Self::NotFound,
-            crate::Error::PoolError(pool_err) => pool_err.into(),
             _ => Self::Internal,
         }
-    }
-}
-
-impl From<PoolError> for RestError {
-    fn from(e: PoolError) -> Self {
-        match e {
-            _ => Self::Internal,
-        }
-    }
-}
-
-impl From<tokio_postgres::Error> for RestError {
-    fn from(_: tokio_postgres::Error) -> Self {
-        Self::Internal
     }
 }

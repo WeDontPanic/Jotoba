@@ -1,92 +1,50 @@
-use std::{fs::read_to_string, path::Path, vec};
+use std::{fs::read_to_string, vec};
 
-use deadpool_postgres::Pool;
-use futures::try_join;
-
-use super::super::word::{result::Word, WordSearch};
-use error::Error;
-use models::{kanji::KanjiResult, radical::Radical};
-use parse::jmdict::languages::Language;
-use utils::{self, to_option};
+use resources::{
+    models::{kanji::Kanji, words::Word},
+    parse::jmdict::languages::Language,
+};
 
 #[derive(Debug, PartialEq, Clone)]
 pub struct Item {
-    pub kanji: KanjiResult,
+    pub kanji: Kanji,
     pub kun_dicts: Option<Vec<Word>>,
     pub on_dicts: Option<Vec<Word>>,
-    pub radical: Radical,
-    pub parts: Option<Vec<String>>,
 }
 
 impl Item {
-    /// Convert a DbKanji to Item
-    ///
-    /// Required because the kanji's reading-componds
-    /// aren't loaded by default due it being an array
-    pub async fn from_db(
-        pool: &Pool,
-        k: KanjiResult,
-        lang: Language,
-        show_english: bool,
-    ) -> Result<Self, Error> {
-        let kun_dicts = k.kanji.kun_dicts.clone().unwrap_or_default();
-        let on_dicts = k.kanji.on_dicts.clone().unwrap_or_default();
+    #[inline]
+    pub fn from_db(k: Kanji, lang: Language, show_english: bool) -> Self {
+        let kun_dicts = load_dicts(&k.kun_dicts, lang, show_english);
+        let on_dicts = load_dicts(&k.on_dicts, lang, show_english);
 
-        let (radical, parts): (Option<Radical>, Vec<String>) =
-            try_join!(k.kanji.load_radical(&pool), k.kanji.load_parts(&pool))?;
-
-        // TODO handle non existing radicals properly. None = radial not found in DB
-        let radical = radical.unwrap();
-
-        let ((kun_words, _), (on_words, _)): ((Vec<Word>, _), (Vec<Word>, _)) = try_join!(
-            WordSearch::load_words_by_seq(&pool, &kun_dicts, lang, show_english, &None, |_| ()),
-            WordSearch::load_words_by_seq(&pool, &on_dicts, lang, show_english, &None, |_| ())
-        )?;
-
-        let loaded_kd = kun_words
-            .into_iter()
-            // Filter english items if user don't want to se them
-            .filter(|i| show_english || !i.senses.is_empty())
-            .collect();
-
-        let loaded_ond = on_words
-            .into_iter()
-            // Filter english items if user don't want to se them
-            .filter(|i| show_english || !i.senses.is_empty())
-            .collect();
-
-        Ok(Self {
+        Self {
+            kun_dicts,
+            on_dicts,
             kanji: k,
-            kun_dicts: utils::to_option(loaded_kd),
-            on_dicts: utils::to_option(loaded_ond),
-            radical,
-            parts: to_option(parts),
-        })
+        }
     }
 }
 
+fn load_dicts(dicts: &Option<Vec<u32>>, lang: Language, show_english: bool) -> Option<Vec<Word>> {
+    let word_storage = resources::get().words();
+
+    let loaded_dicts = dicts.as_ref().map(|i| {
+        let words = i
+            .iter()
+            .filter_map(|j| word_storage.by_sequence(*j))
+            .cloned();
+
+        filter_languages(words, lang, show_english).collect::<Vec<_>>()
+    });
+
+    loaded_dicts
+}
+
 impl Item {
-    pub fn get_animation_path(&self) -> String {
-        format!("html/assets/svg/{}_animated.svgs", self.kanji.kanji.literal)
-    }
-
-    pub fn get_stroke_frames_url(&self) -> String {
-        self.kanji.kanji.get_stroke_frames_url()
-    }
-
-    // Returns true if the kanji has a stroke animation file
-    pub fn has_animation_file(&self) -> bool {
-        Path::new(&self.get_animation_path()).exists()
-    }
-
-    // Returns true if the kanji has stroke frames
-    pub fn has_stroke_frames(&self) -> bool {
-        Path::new(&self.get_animation_path()).exists()
-    }
-
     /// Return the animation entries for the template
     pub fn get_animation_entries(&self) -> Vec<(String, String)> {
-        if let Ok(content) = read_to_string(self.get_animation_path()) {
+        if let Ok(content) = read_to_string(self.kanji.get_animation_path()) {
             content
                 .split('\n')
                 .into_iter()
@@ -102,9 +60,9 @@ impl Item {
 
     /// Get a list of korean readings, formatted as: "<Hangul> (<romanized>)"
     pub fn get_korean(&self) -> Option<Vec<String>> {
-        if self.kanji.kanji.korean_r.is_some() && self.kanji.kanji.korean_h.is_some() {
-            let korean_h = self.kanji.kanji.korean_h.as_ref().unwrap();
-            let korean_r = self.kanji.kanji.korean_r.as_ref().unwrap();
+        if self.kanji.korean_r.is_some() && self.kanji.korean_h.is_some() {
+            let korean_h = self.kanji.korean_h.as_ref().unwrap();
+            let korean_r = self.kanji.korean_r.as_ref().unwrap();
 
             Some(
                 korean_h
@@ -118,36 +76,56 @@ impl Item {
         }
     }
 
-    // TODO translate this one
-    pub fn get_parts_title(&self) -> &'static str {
-        if self.parts.as_ref().map(|i| i.len()).unwrap_or_default() > 1 {
-            "Parts"
-        } else {
-            "Part"
-        }
+    /// Returns the amount of parts a kanji is bulit with
+    #[inline]
+    pub fn get_parts_count(&self) -> usize {
+        self.kanji
+            .parts
+            .as_ref()
+            .map(|i| i.len())
+            .unwrap_or_default()
     }
 
+    #[inline]
     pub fn get_radical(&self) -> String {
-        if let Some(ref alternative) = self.radical.alternative {
-            format!("{} ({})", self.radical.literal, alternative)
+        if let Some(ref alternative) = self.kanji.radical.alternative {
+            format!("{} ({})", self.kanji.radical.literal, alternative)
         } else {
-            self.radical.literal.clone()
+            self.kanji.radical.literal.clone().to_string()
         }
     }
 
+    #[inline]
     pub fn get_rad_len(&self) -> usize {
-        self.radical.literal.len()
+        self.kanji
+            .radical
+            .alternative
+            .as_ref()
+            .map(|_| 1)
+            .unwrap_or_default()
             + self
-                .radical
-                .alternative
-                .as_ref()
-                .map(|i| i.len())
-                .unwrap_or_default()
-            + self
+                .kanji
                 .radical
                 .translations
                 .as_ref()
                 .map(|i| i.join(", ").len())
                 .unwrap_or_default()
     }
+}
+
+pub fn filter_languages<'a, I: 'a + Iterator<Item = Word>>(
+    iter: I,
+    lang: Language,
+    show_english: bool,
+) -> impl Iterator<Item = Word> + 'a {
+    iter.map(move |mut word| {
+        let senses = word
+            .senses
+            .into_iter()
+            .filter(|j| j.language == lang || (j.language == Language::English && show_english))
+            .collect();
+
+        word.senses = senses;
+        word
+    })
 }

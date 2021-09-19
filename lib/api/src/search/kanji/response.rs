@@ -1,23 +1,22 @@
-use models::kanji::KanjiResult;
 use search::kanji::result;
 use serde::Serialize;
 
-#[derive(Debug, Serialize, Default)]
+#[derive(Serialize)]
 pub struct Response {
     kanji: Vec<Kanji>,
 }
 
-#[derive(Debug, Serialize, Default)]
+#[derive(Serialize)]
 pub struct Kanji {
     literal: String,
     meanings: Vec<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    grade: Option<i32>,
-    stroke_count: i32,
+    grade: Option<u8>,
+    stroke_count: u8,
     #[serde(skip_serializing_if = "Option::is_none")]
-    frequency: Option<i32>,
+    frequency: Option<u16>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    jlpt: Option<i32>,
+    jlpt: Option<u8>,
     #[serde(skip_serializing_if = "Option::is_none")]
     variant: Option<Vec<String>>,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -32,46 +31,50 @@ pub struct Kanji {
     korean_h: Option<Vec<String>>,
     #[serde(skip_serializing_if = "Option::is_none")]
     parts: Option<Vec<String>>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    radical: Option<String>,
+    radical: String,
     #[serde(skip_serializing_if = "Option::is_none")]
     stroke_frames: Option<String>,
 }
 
-impl From<&KanjiResult> for Kanji {
-    fn from(kanji: &KanjiResult) -> Self {
+impl From<&resources::models::kanji::Kanji> for Kanji {
+    #[inline]
+    fn from(kanji: &resources::models::kanji::Kanji) -> Self {
+        let frames = kanji
+            .has_stroke_frames()
+            .then(|| kanji.get_stroke_frames_url());
+
         Self {
-            literal: kanji.kanji.literal.clone(),
+            literal: kanji.literal.to_string(),
             meanings: kanji.meanings.clone(),
-            grade: kanji.kanji.grade,
-            stroke_count: kanji.kanji.stroke_count,
-            frequency: kanji.kanji.frequency,
-            jlpt: kanji.kanji.jlpt,
-            variant: kanji.kanji.variant.clone(),
-            onyomi: kanji.kanji.onyomi.clone(),
-            kunyomi: kanji.kanji.kunyomi.clone(),
-            chinese: kanji.kanji.chinese.clone(),
-            korean_r: kanji.kanji.korean_r.clone(),
-            korean_h: kanji.kanji.korean_h.clone(),
-            parts: None,
-            radical: None,
-            stroke_frames: None,
+            grade: kanji.grade,
+            stroke_count: kanji.stroke_count,
+            frequency: kanji.frequency,
+            jlpt: kanji.jlpt,
+            variant: kanji.variant.clone(),
+            onyomi: kanji.onyomi.clone(),
+            kunyomi: kanji.kunyomi.clone(),
+            chinese: kanji.chinese.clone(),
+            korean_r: kanji.korean_r.clone(),
+            korean_h: kanji.korean_h.clone(),
+            parts: kanji
+                .parts
+                .as_ref()
+                .map(|i| i.iter().map(|i| i.to_string()).collect()),
+            radical: kanji.radical.literal.to_string(),
+            stroke_frames: frames,
         }
     }
 }
 
 impl From<result::Item> for Kanji {
+    #[inline]
     fn from(item: result::Item) -> Self {
-        Self {
-            parts: item.parts.clone(),
-            radical: Some(item.radical.literal),
-            stroke_frames: Some(item.kanji.kanji.get_stroke_frames_url()),
-            ..(&item.kanji).into()
-        }
+        Kanji::from(&item.kanji)
     }
 }
 
 impl From<Vec<result::Item>> for Response {
+    #[inline]
     fn from(items: Vec<result::Item>) -> Self {
         let kanji = items.into_iter().map(|i| Kanji::from(i)).collect();
         Response { kanji }

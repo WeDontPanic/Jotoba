@@ -1,28 +1,9 @@
-@use models::name::Name;
+@use resources::models::names::Name;
 @use super::search_help;
 @use search::name::result::get_types_humanized;
 @use crate::BaseData;
 
 @(data: &BaseData, names: Vec<Name>)
-
-<!-- Inner Top Row -->
-<div class="d-flex center no-drag">
-  <div class="main-tab-select l">
-    <h2 id="previousTabBtn" onclick="changeSearchType(null, 0)" class="tab-btn">&larr; @data.gettext("Words")</h2>
-  </div>
-
-  <!-- Only shown when results were found -->
-  @if !names.is_empty() {
-    <div class="title-div">
-      <h1>@data.gettext("Names")</h1>
-    </div>
-  }
-
-  <div class="main-tab-select r">
-    <h2 id="nextTabBtn" onclick="changeSearchType(null, 2)" class="tab-btn">@data.gettext("Sentences") &rarr;</h2>
-  </div>
-</div>
-<br>
 
 <div class="d-flex center">
   <div class="main-info d-flex flex-column">

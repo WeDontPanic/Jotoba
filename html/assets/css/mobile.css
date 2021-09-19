@@ -25,6 +25,10 @@
         padding-right: 1em;
     }
 
+    .voiceSvg.index {
+        margin-top: -4px;
+    }
+
 	/* -------- Word Search -------- */
     
     .search-embedded-btn {
@@ -58,9 +62,14 @@
     .choices__item--selectable.selected {
         color: var(--primaryColor) !important;
     }
+    
+    .form-main > div > div > div > div .choices__list.choices__list--dropdown {
+        width: -webkit-max-content;
+        width: -moz-max-content;
+        width: max-content;
+    }
 
     .searchDivInner form .inner-form .input-field.first-wrap .choices__list.choices__list--dropdown {
-        width: max-content;
         padding-right: 20px;
     }
 
@@ -97,17 +106,20 @@
     }
 
     .sentence-part {
+        min-width: -webkit-max-content;
+        min-width: -moz-max-content;
         min-width: max-content;
         margin-right: 20px;
     }
     
 
     #content-container {
-        -ms-flex-direction: column!important;
         flex-direction: column!important;
     }
     
     body {
+        height: -webkit-max-content;
+        height: -moz-max-content;
         height: max-content;
     }
 
@@ -158,6 +170,8 @@
     }
     
     .main-info {
+        height: -webkit-max-content;
+        height: -moz-max-content;
         height: max-content;
         width: 100%;
     }
@@ -167,8 +181,7 @@
     }
 	
 	.main-info > .d-flex.center {
-		-ms-flex-direction: column!important;
-        flex-direction: column!important;
+  flex-direction: column!important;
 		align-self: center;
 		align-items: center;
         width: 100%;
@@ -185,6 +198,8 @@
     }
     
     .secondary-info {
+        height: -webkit-max-content;
+        height: -moz-max-content;
         height: max-content;
         align-self: center;
         width: 100%;
@@ -401,6 +416,9 @@
     }
 
     .mobile-nav-btn {
+        place-content: center;
+        place-items: center;
+        display: flex;
         position: fixed;
         bottom: 20px;
         right: 30px; 
@@ -411,6 +429,7 @@
         border-radius: 50%;
         width: 50px;
         height: 50px;
+        text-align: center;
         text-align: -webkit-center;
     }
 
@@ -478,6 +497,8 @@
 
     .cookie-footer {
         z-index: 100;
+        height: -webkit-max-content;
+        height: -moz-max-content;
         height: max-content;
         width: 90%;
         left: 5%;

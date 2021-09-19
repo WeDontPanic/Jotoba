@@ -1,0 +1,30 @@
+[package]
+name = "resources"
+version = "0.1.0"
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+quick-xml = "0.23.0-alpha3"
+strum = { version = "0.21.0", features = ["derive"] }
+strum_macros = "0.21.1"
+regex = "1.5.4"
+serde = { version = "1.0.130", features = ["derive"] }
+bincode = "1.3.3"
+itertools = "0.10.1"
+romaji = "0.1.1"
+japanese = { path = "../japanese", default-features = false }
+utilsrs = { git = "https://github.com/JojiiOfficial/utilsrs", features = ["vectools"]}
+once_cell = "1.8.0"
+utils = { path = "../utils"}
+localization = { path = "../localization" }
+jp_inflections = "0.1.1"
+eudex = { git = "https://github.com/JojiiOfficial/eudex"}
+indexed_file = { git = "https://github.com/JojiiOfficial/IndexedFile"}
+sorted_intersection = "1.2.0"
+bitflags = {git = "https://github.com/JojiiOfficial/BitFlags"}
+
+[lib]
+name = "resources"
+path = "src/lib.rs"

@@ -8,14 +8,14 @@ use super::JapaneseExt;
 
 /// Represents a single sentence part which either consisting of kana only or kanji and a kana reading
 /// assigned
-#[derive(Debug, Clone, PartialEq, Default)]
+#[derive(Clone)]
 pub struct SentencePart {
     pub kana: String,
     pub kanji: Option<String>,
 }
 
 /// Same as [`SentencePart`] but with referenced substrings instead of an owned String
-#[derive(Debug, Clone, PartialEq, Default)]
+#[derive(Clone)]
 pub struct SentencePartRef<'a> {
     pub kana: &'a str,
     pub kanji: Option<&'a str>,

@@ -6,19 +6,6 @@
 
 @(data: &BaseData, query: &Query, result: WordResult)
 
-  <!-- Inner Top Row -->
-  <div class="d-flex center no-drag">
-    <div class="main-tab-select l">
-      <h2 id="previousTabBtn" onclick="changeSearchType(null, 2)" class="tab-btn">&larr; @data.gettext("Sentences")</h2>
-    </div>
-    <div class="title-div">
-      <h1>@data.gettext("Words and kanji")</h1>
-    </div>
-    <div class="main-tab-select r">
-      <h2 id="nextTabBtn" onclick="changeSearchType(null, 3)" class="tab-btn">@data.gettext("Names") &rarr;</h2>
-    </div>
-  </div>
-
   @if let Some(ref inflection) = result.inflection_info {
     <div class="search-annotation">
 
@@ -44,7 +31,7 @@
   @if let Some(ref sentence_parts) = result.sentence_parts {
     <div class="search-annotation">
       <!-- Sentence Info -->
-      <div class="d-flex flex-row wrap sentence-reader">
+      <div id="sr" class="d-flex flex-row wrap sentence-reader">
         @for part in sentence_parts {
           @if let Some(ref furigana) = part.furigana {
             <a id="p@part.pos" href="/search/@query.query?i=@part.pos" class="@part.get_add_class() d-flex flex-row sentence-part @selected(part.pos, result.sentence_index)">
@@ -160,7 +147,7 @@
                   @data.gettext("common word")
                 </div>
               }
-              @if let Some(lvl) =  word.reading.get_jplt_lvl() {
+              @if let Some(lvl) =  word.jlpt_lvl {
                 <div class="word-frequency">
                   @data.gettext("JLPT") n@lvl
                 </div>
@@ -193,7 +180,7 @@
                   
                   @if let Some(ref collocations) = word.collocations {
                     <li id="collocationBtn" class="info-entry noselect" data-toggle="modal" data-target="#coll@word.sequence" class="mdl-menu__item">@data.ngettext("Show collocation", collocations.len() as u64)</li>
-                    <li disabled class="mdl-menu__item" style="height: 10px;"><hr style="margin: 0px; margin-top: 5px;"></li>
+                    <li disabled class="mdl-menu__item dot-menu" style="height: 10px;"><hr style="margin: 0px; margin-top: 5px;"></li>
                   }
                   <li id="SentenceSearchBtn" class="info-entry noselect" class="mdl-menu__item"><a class="no-highlight" draggable="false" href="/search/@word.get_reading().reading?t=2">@data.gettext("Sentence search")</a></li>
                   @if let Some(audio) = word.audio_file() {
@@ -202,7 +189,7 @@
                   }
                 </ul>
 
-                @for (spos, senses_compound) in word.get_senses_orderd(&query).iter().enumerate() { 
+                @for (spos, senses_compound) in word.get_senses_orderd(query.settings.english_on_top, query.settings.user_lang).iter().enumerate() { 
                   @for (pos, sense) in senses_compound.iter().enumerate() {
                     @if !sense.glosses.is_empty() {
                       <!-- Sense entry -->
@@ -263,7 +250,7 @@
               </div>
 
               <!-- !!! START OF COLLOCATION OVERLAY !!! -->
-              @if let Some(ref collocations) = word.collocations {
+              @if word.has_collocations() {
                 <div class="modal fade" id="coll@word.sequence" style="display: none;" aria-hidden="true">
                   <div class="modal-dialog  modal-lg">
                     <div class="modal-content">
@@ -275,7 +262,7 @@
                         <h3 class="info-h3">@data.gettext("Collocations")</h3>
                         <table class="table collocation">
                           <tbody>
-                            @for collocation in collocations {
+                            @for collocation in word.get_collocations(data.user_settings.user_lang, data.user_settings.show_english) {
                               <tr>
                                   <th scope="row"><a class="clickable no-align green" href="/search/@collocation.0">@collocation.0</a></th>
                                   <td>@collocation.1</td>
@@ -393,19 +380,19 @@
           <div class="kanji-parent">
             <!-- Tags -->
             <div class="tags">
-              @kanji.kanji.stroke_count @data.gettext("strokes").
-              @if let Some(jplt_lvl) = kanji.kanji.jlpt {
+              @kanji.stroke_count @data.gettext("strokes").
+              @if let Some(jplt_lvl) = kanji.jlpt {
                 JLPT N@jplt_lvl.
               }
-              @if let Some(grade) = kanji.kanji.grade {
+              @if let Some(grade) = kanji.grade {
                 @data.gettext_fmt("Taught in {} grade", &[grade])
               }
             </div>
 
             <!-- Kanji and translation -->
             <div class="kanji-entry left d-flex flex-row">
-              <a class="kanji-preview large black" href="/search/@kanji.kanji.literal?t=1">
-                @kanji.kanji.literal
+              <a class="kanji-preview large black" href="/search/@kanji.literal?t=1">
+                @kanji.literal
               </a>
               <div class="translation kanji">
                 @kanji.meanings.join(", ")
@@ -413,27 +400,27 @@
             </div>
 
             <!-- Kun readings -->
-            @if let Some(ref kun) = kanji.kanji.kunyomi {
+            @if let Some(ref kun) = kanji.kunyomi {
               <div class="tags no-margin">@data.gettext("Kun")</div>
               <div class="d-flex flex-row wrap noselect">
                 @for (pos, reading) in kun.iter().enumerate() {
                   @if pos > 0 {
                     <span class="tags no-margin fat right-padding-10">,</span>
                   }
-                  <a class="clickable no-align green" href="/search/@kanji.kanji.literal @reading">@reading</a>
+                  <a class="clickable no-align green" href="/search/@kanji.literal @reading">@reading</a>
                 }
               </div>
             }
 
             <!-- On readings -->
-            @if let Some(ref on) = kanji.kanji.onyomi {
+            @if let Some(ref on) = kanji.onyomi {
               <div class="tags no-margin">@data.gettext("On")</div>
               <div class="d-flex flex-row wrap noselect">
                 @for (pos, reading) in on.iter().enumerate() {
                   @if pos > 0 {
                     <span class="tags no-margin fat right-padding-10">,</span>
                   }
-                  <a class="clickable no-align green" href="/search/@kanji.kanji.literal @reading">@reading</a>
+                  <a class="clickable no-align green" href="/search/@kanji.literal @reading">@reading</a>
                 }
               </div>
             }

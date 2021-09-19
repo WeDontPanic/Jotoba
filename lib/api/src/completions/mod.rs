@@ -1,11 +1,8 @@
-mod foreign;
-mod kanji_meaning;
-mod kanji_reading;
+mod kanji;
 mod names;
-mod native;
 mod storage;
+mod words;
 
-use deadpool_postgres::Pool;
 pub use storage::load_suggestions;
 
 use std::{cmp::Ordering, str::FromStr};
@@ -13,14 +10,12 @@ use std::{cmp::Ordering, str::FromStr};
 use config::Config;
 use error::api_error::RestError;
 use japanese::JapaneseExt;
-use models::kanji::reading::KanjiReading;
-use parse::jmdict::languages::Language;
 use query_parser::{QueryParser, QueryType};
+use resources::{models, parse::jmdict::languages::Language};
 use search::{
     query::{Form, Query, QueryLang, UserSettings},
     query_parser,
 };
-use storage::WORD_SUGGESTIONS;
 use utils::{bool_ord, real_string_len};
 
 use actix_web::{
@@ -30,7 +25,7 @@ use actix_web::{
 use serde::{Deserialize, Serialize};
 
 /// Request struct for suggestion endpoint
-#[derive(Clone, Debug, Deserialize, PartialEq)]
+#[derive(Deserialize)]
 pub struct Request {
     /// The search query to find suggestions for
     pub input: String,
@@ -87,20 +82,21 @@ impl Request {
     }
 
     // Returns the user configured language of the [`Request`]
+    #[inline]
     fn get_language(&self) -> Language {
         Language::from_str(&self.lang).unwrap_or_default()
     }
 }
 
 /// Response struct for suggestion endpoint
-#[derive(Clone, Debug, Serialize, Default)]
+#[derive(Serialize, Default)]
 pub struct Response {
     pub suggestions: Vec<WordPair>,
     pub suggestion_type: SuggestionType,
 }
 
 /// The type of suggestion. `Default` in most cases
-#[derive(Clone, Debug, Serialize)]
+#[derive(Serialize)]
 #[serde(rename_all = "snake_case")]
 pub enum SuggestionType {
     /// Default suggestion type
@@ -116,7 +112,7 @@ impl Default for SuggestionType {
 }
 
 /// A word with kana and kanji reading used within [`SuggestionResponse`]
-#[derive(Clone, Debug, Serialize, Default, PartialEq)]
+#[derive(Serialize, Default)]
 pub struct WordPair {
     pub primary: String,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -137,7 +133,6 @@ impl WordPair {
 
 /// Get search suggestions endpoint
 pub async fn suggestion_ep(
-    pool: web::Data<Pool>,
     config: web::Data<Config>,
     payload: Json<Request>,
 ) -> Result<Json<Response>, actix_web::Error> {
@@ -149,7 +144,7 @@ pub async fn suggestion_ep(
     // time we allow the suggestion to use in total loaded from the configuration file
     let timeout = config.get_suggestion_timeout();
 
-    let result = time::timeout(timeout, get_suggestions(&pool, query))
+    let result = time::timeout(timeout, get_suggestions(query))
         .await
         .map_err(|_| RestError::Timeout)??;
 
@@ -157,40 +152,40 @@ pub async fn suggestion_ep(
 }
 
 /// Returns best matching suggestions for the given query
-async fn get_suggestions(pool: &Pool, query: Query) -> Result<Response, RestError> {
+async fn get_suggestions(query: Query) -> Result<Response, RestError> {
     match query.type_ {
         QueryType::Sentences | QueryType::Words => {
             if let Some(kanji_reading) = as_kanji_reading(&query) {
-                kanji_reading::suggestions(pool, kanji_reading).await
+                kanji::reading::suggestions(kanji_reading).await
             } else {
-                get_word_suggestions(pool, query).await
+                Ok(get_word_suggestions(query).await.unwrap_or_default())
             }
         }
-        QueryType::Kanji => kanji_suggestions(pool, query).await,
-        QueryType::Names => name_suggestions(pool, query).await,
+        QueryType::Kanji => kanji_suggestions(query).await,
+        QueryType::Names => name_suggestions(query).await,
     }
 }
 
 /// Returns name suggestions for the matching input language
-async fn name_suggestions(client: &Pool, query: Query) -> Result<Response, RestError> {
+async fn name_suggestions(query: Query) -> Result<Response, RestError> {
     Ok(match query.language {
-        QueryLang::Japanese => names::native_suggestions(client, &query).await?,
-        QueryLang::Foreign => names::transcription_suggestions(client, &query).await?,
+        QueryLang::Japanese => names::native_suggestions(&query).await?,
+        QueryLang::Foreign => names::transcription_suggestions(&query).await?,
         _ => Response::default(),
     })
 }
 
 /// Returns kanji suggestions
-async fn kanji_suggestions(client: &Pool, query: Query) -> Result<Response, RestError> {
+async fn kanji_suggestions(query: Query) -> Result<Response, RestError> {
     if query.language == QueryLang::Foreign {
-        kanji_meaning::suggestions(client, &query).await
+        kanji::meaning::suggestions(&query).await
     } else {
         Ok(Response::default())
     }
 }
 
 /// Returns Some(KanjiReading) if query is or 'could be' a kanji reading query
-fn as_kanji_reading(query: &Query) -> Option<KanjiReading> {
+fn as_kanji_reading(query: &Query) -> Option<models::kanji::Reading> {
     match &query.form {
         Form::KanjiReading(r) => Some(r.clone()),
         _ => {
@@ -199,7 +194,7 @@ fn as_kanji_reading(query: &Query) -> Option<KanjiReading> {
             let second = query_str.next()?;
 
             if first.is_kanji() && second == ' ' {
-                Some(KanjiReading {
+                Some(models::kanji::Reading {
                     reading: String::new(),
                     literal: first,
                 })
@@ -211,36 +206,38 @@ fn as_kanji_reading(query: &Query) -> Option<KanjiReading> {
 }
 
 /// Returns word suggestions based on the query. Applies various approaches to give better results
-async fn get_word_suggestions(pool: &Pool, query: Query) -> Result<Response, RestError> {
-    let response = try_word_suggestions(pool, &query).await?;
+async fn get_word_suggestions(query: Query) -> Option<Response> {
+    let response = try_word_suggestions(&query).await?;
 
     // Tries to do a katakana search if nothing was found
     let result = if response.is_empty() && query.query.is_hiragana() {
-        try_word_suggestions(pool, &get_katakana_query(&query)).await?
+        try_word_suggestions(&get_katakana_query(&query)).await?
     } else {
         response
     };
 
-    Ok(Response {
+    Some(Response {
         suggestions: result,
         ..Default::default()
     })
 }
 
 /// Returns Ok(suggestions) for the given query ordered and ready to display
-async fn try_word_suggestions(pool: &Pool, query: &Query) -> Result<Vec<WordPair>, RestError> {
+async fn try_word_suggestions(query: &Query) -> Option<Vec<WordPair>> {
     // Get sugesstions for matching language
     let mut word_pairs = match query.language {
-        QueryLang::Japanese => native::suggestions(&pool, &query.query).await?,
-        QueryLang::Foreign | QueryLang::Undetected => foreign::suggestions(&query, &query.query)
-            .await
-            .unwrap_or_default(),
+        QueryLang::Japanese => words::native::suggestions(&query.query).await?,
+        QueryLang::Foreign | QueryLang::Undetected => {
+            words::foreign::suggestions(&query, &query.query)
+                .await
+                .unwrap_or_default()
+        }
     };
 
     // Order: put exact matches to top
     word_pairs.sort_by(|a, b| word_pair_order(a, b, &query.query));
 
-    Ok(word_pairs)
+    Some(word_pairs)
 }
 
 /// Ordering for [`WordPair`]s which puts the exact matches to top

@@ -2,8 +2,7 @@
 
 .index-noselect {
     -webkit-touch-callout: none; /* iOS Safari */
-    -webkit-user-select: none; /* Safari */
-    -khtml-user-select: none; /* Konqueror HTML */
+    -webkit-user-select: none; /* Safari */ /* Konqueror HTML */
     -moz-user-select: none; /* Old versions of Firefox */
     -ms-user-select: none; /* Internet Explorer/Edge */
     -o-user-select:none; /* Opera */
@@ -22,7 +21,8 @@
 }
 
 form {
-    margin-block-end: 1em;
+    -webkit-margin-after: 1em;
+            margin-block-end: 1em;
 }
 
 #searchDiv {
@@ -50,11 +50,6 @@ form {
 .settingsBtn {
     top: 15px;
     position: absolute !important;
-}
-
-.index-search-svg {
-    margin-top: -7px; 
-    fill: var(--tagColor);
 }
 
 .inner-form {
@@ -96,6 +91,11 @@ form {
   
 /* Mobile View */
 @media only screen and (max-width: 600px) {
+
+    @-webkit-keyframes dropdownAnim {
+        from {height: 0px;}
+        to { height: 360%;}
+    }
 
     @keyframes dropdownAnim {
         from {height: 0px;}
@@ -175,17 +175,13 @@ form {
         left: 10px !important;
     }
 
-    .index-search-svg {
-        width: 24px;
-        height: 24px;
-        margin-top: -1px;
-    }
-
     .input-field.third-wrap:not(.rad) {
         display: none;
     }
     
     .input-field.third-wrap.rad {
+        width: -webkit-max-content;
+        width: -moz-max-content;
         width: max-content;
         margin-top: 9px;
         padding-right: 15px;

@@ -2,10 +2,9 @@ use itertools::Itertools;
 use serde::Deserialize;
 
 use japanese::JapaneseExt;
-use parse::jmdict::part_of_speech::PosSimple;
+use resources::{models::kanji, parse::jmdict::part_of_speech::PosSimple};
 
 use super::query::{Form, Query, QueryLang, SearchTypeTag, Tag, UserSettings};
-use models::kanji::reading::KanjiReading;
 
 /// Represents a query
 pub struct QueryParser {
@@ -14,6 +13,7 @@ pub struct QueryParser {
     original_query: String,
     tags: Vec<Tag>,
     user_settings: UserSettings,
+    page_offset: usize,
     page: usize,
     word_index: usize,
 }
@@ -47,7 +47,15 @@ impl QueryParser {
     ) -> QueryParser {
         // Split query into the actual query and possibly available tags
         let (parsed_query, tags) = Self::partition_tags_query(&query, trim);
-        let parsed_query = Self::format_query(parsed_query, trim);
+        let parsed_query: String = Self::format_query(parsed_query, trim)
+            .chars()
+            .into_iter()
+            .take(80)
+            .collect();
+
+        // Pages start at 1. First offset has to be 0
+        let page_offset = (page.saturating_sub(1)) * user_settings.items_per_page as usize;
+        println!("page_offset: {}", page_offset);
 
         QueryParser {
             q_type,
@@ -55,6 +63,7 @@ impl QueryParser {
             original_query: query,
             tags,
             user_settings,
+            page_offset,
             page,
             word_index,
         }
@@ -97,6 +106,7 @@ impl QueryParser {
             query: self.query,
             original_query: self.original_query,
             settings: self.user_settings,
+            page_offset: self.page_offset,
             page: self.page,
             word_index: self.word_index,
             parse_japanese,
@@ -167,14 +177,14 @@ impl QueryParser {
     }
 
     /// Returns Some(KanjiReading) if the query is a kanji reading query
-    fn parse_kanji_reading(&self) -> Option<KanjiReading> {
+    fn parse_kanji_reading(&self) -> Option<kanji::Reading> {
         // Format of kanji query: '<Kanji> <reading>'
         if utils::real_string_len(&self.query) >= 3 && self.query.contains(' ') {
             let split: Vec<_> = self.query.split(' ').collect();
 
             if split[0].trim().is_kanji() && format_kanji_reading(split[1]).is_japanese() {
                 // Kanji detected
-                return Some(KanjiReading {
+                return Some(kanji::Reading {
                     literal: split[0].chars().next().unwrap(),
                     reading: split[1].to_string(),
                 });

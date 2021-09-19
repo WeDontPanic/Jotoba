@@ -3,16 +3,13 @@ mod jaro_search;
 pub mod store_item;
 pub mod text_store;
 
-use std::{cmp::Ordering, collections::HashMap};
-
+use self::{jaro_search::AsyncSearch, store_item::Item};
 use binary_search::Search as BinarySearch;
 use jaro_search::Search as JaroSearch;
-use parse::jmdict::languages::Language;
+use std::cmp::Ordering;
 use strsim::jaro_winkler;
 use text_store::TextStore;
 use utils::diff;
-
-use self::{jaro_search::AsyncSearch, store_item::Item};
 
 /// Searches for japanese suggestions
 pub async fn japanese<'a, T: TextStore>(
@@ -57,64 +54,6 @@ pub async fn kanji_meaning<'a, T: TextStore>(
     items.sort_by(|a, b| result_order::<T>(a, b, query));
 
     items
-}
-
-#[derive(Clone)]
-pub struct SuggestionSearch<T: TextStore> {
-    dicts: HashMap<Language, TextSearch<T>>,
-}
-
-impl<T: TextStore> SuggestionSearch<T> {
-    pub fn new(text_store: HashMap<Language, TextSearch<T>>) -> Self {
-        Self { dicts: text_store }
-    }
-
-    /// Searches for suggestions in the provided language and uses english as fallback
-    pub async fn search<'a>(&'a self, query: &'a str, lang: Language) -> Option<Vec<&'a T::Item>> {
-        if query.is_empty() {
-            return None;
-        }
-
-        let mut res: Vec<&T::Item> = self.do_search(query, lang).unwrap_or_default();
-
-        if res.len() < 5 {
-            // Search for english
-            res.extend(self.do_search(query, Language::English).unwrap_or_default());
-
-            // Do jaro search
-            if query.len() > 3 {
-                let dict = self.dicts.get(&lang)?;
-                res.extend(dict.find_jaro_async(query, 3).await);
-            }
-        }
-
-        res.sort_by(|a, b| result_order::<T>(a, b, query));
-
-        // Try to remove completely trash results
-        let mut res: Vec<_> = res
-            .into_iter()
-            .filter(|i| result_order_value(query, i.get_text()) >= 55)
-            .collect();
-
-        // Remove duplicates
-        res.dedup_by(|a, b| a.get_hash() == b.get_hash() || a.get_text() == b.get_text());
-
-        Some(res)
-    }
-
-    /// Searches for one language
-    fn do_search<'a>(&'a self, query: &'a str, lang: Language) -> Option<Vec<&'a T::Item>> {
-        let dict = self.dicts.get(&lang)?;
-
-        let mut res: Vec<_> = dict.find_binary(query.to_owned()).take(100).collect();
-
-        // Also search for 1st one with uppercase
-        if query.chars().next().unwrap().is_lowercase() {
-            res.extend(dict.find_binary(utils::first_letter_upper(query)).take(100));
-        }
-
-        Some(res)
-    }
 }
 
 // Order by best match against `query`

@@ -1,5 +1,4 @@
-use actix_web::web::{Data, Json};
-use deadpool_postgres::Pool;
+use actix_web::web::Json;
 use itertools::Itertools;
 use search::query_parser::QueryType::Kanji;
 
@@ -10,15 +9,13 @@ use super::{Result, SearchRequest};
 pub mod response;
 
 /// Do a Sentence search via API
-pub async fn sentence_search(
-    payload: Json<SearchRequest>,
-    pool: Data<Pool>,
-) -> Result<Json<Response>> {
+pub async fn sentence_search(payload: Json<SearchRequest>) -> Result<Json<Response>> {
     let query = SearchRequest::parse(payload, Kanji)?;
 
     Ok(Json(
-        search::sentence::search(&pool, &query)
+        search::sentence::search(&query)
             .await?
+            .0
             .into_iter()
             .map(|i| i.sentence)
             .collect_vec()

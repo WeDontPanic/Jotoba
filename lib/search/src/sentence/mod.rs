@@ -1,54 +1,70 @@
-use deadpool_postgres::Pool;
-use error::Error;
-use parse::jmdict::languages::Language;
-use sentencesearch::SentenceSearch;
-
-use self::result::{Item, Sentence};
-
-use super::query::{Query, QueryLang};
-use itertools::Itertools;
-
 mod order;
 pub mod result;
-mod sentencesearch;
+
+use std::time::Instant;
+
+use super::query::Query;
+use crate::engine::result::SearchResult;
+use crate::engine::sentences::{foreign as foreign_engine, japanese as japanese_engine};
+use crate::query::QueryLang;
+use error::Error;
+use resources::parse::jmdict::languages::Language;
 
 /// Searches for sentences
-pub async fn search(db: &Pool, query: &Query) -> Result<Vec<result::Item>, Error> {
-    if query.language == QueryLang::Japanese {
-        search_jp(db, query).await
-    } else {
-        search_foreign(db, query).await
-    }
-}
+pub async fn search(query: &Query) -> Result<(Vec<result::Item>, usize), Error> {
+    let start = Instant::now();
 
-/// Searches for sentences (jp input)
-pub async fn search_jp(db: &Pool, query: &Query) -> Result<Vec<result::Item>, Error> {
-    let search = SentenceSearch::new(db, &query.query, query.settings.user_lang);
-    let sentences = search.by_jp().await?;
+    let lang = query.settings.user_lang;
 
-    Ok(merge_results(sentences, query.settings.user_lang))
-}
+    let res = match query.language {
+        QueryLang::Japanese => japanese_documents(query).await,
+        _ => foreign_documents(query).await,
+    }?;
 
-/// Searches for sentences (other input)
-pub async fn search_foreign(db: &Pool, query: &Query) -> Result<Vec<result::Item>, Error> {
-    let search = SentenceSearch::new(db, &query.query, query.settings.user_lang);
-    let sentences = search.by_foreign().await?;
-    Ok(merge_results(sentences, query.settings.user_lang))
-}
+    let sentence_storage = resources::get().sentences();
 
-fn merge_results(results: Vec<Sentence>, user_lang: Language) -> Vec<Item> {
-    results
+    let sentences = res
+        .retrieve_ordered(|i| sentence_storage.by_id(i as u32))
+        .collect::<Vec<_>>();
+
+    let len = sentences.len();
+
+    let sentences = sentences
         .into_iter()
-        .group_by(|i| i.id)
-        .into_iter()
-        .filter_map(|(_, i)| {
-            let mut sentence = i.into_iter().next()?;
-
-            if user_lang == Language::English {
-                sentence.eng = String::from("-");
-            }
-
-            Some(Item { sentence })
+        .filter_map(|i| {
+            result::Sentence::from_m_sentence(i.clone(), lang, query.settings.show_english)
         })
-        .collect_vec()
+        .map(|i| result::Item { sentence: i })
+        .skip(query.page_offset)
+        .take(10)
+        .collect::<Vec<_>>();
+
+    println!("Sentence search took: {:?}", start.elapsed());
+
+    Ok((sentences, len))
+}
+
+/// Find sentences by foreign query
+async fn foreign_documents(query: &Query) -> Result<SearchResult, error::Error> {
+    let mut res = foreign_engine::Find::new(&query.query, query.settings.user_lang, 1000, 0)
+        .find()
+        .await?;
+
+    if res.len() < 20 && query.settings.show_english {
+        res.extend(
+            foreign_engine::Find::new(&query.query, Language::English, 1000, 0)
+                .find()
+                .await?,
+        );
+    }
+
+    Ok(res)
+}
+
+/// Find sentences by native query
+async fn japanese_documents(query: &Query) -> Result<SearchResult, error::Error> {
+    japanese_engine::Find::new(&query.query, 1000, 0)
+        .with_language_filter(query.settings.user_lang)
+        .find()
+        .await
 }

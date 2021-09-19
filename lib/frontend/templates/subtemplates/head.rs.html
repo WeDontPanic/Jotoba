@@ -3,8 +3,8 @@
 
 <head>
     <!-- Meta Info -->
-    <title>Jotoba</title>
-    <link rel="icon" type="image/svg+xml" href="/assets/jotokun/JotoHead.svg">
+    <title>@data.gettext("Jotoba")</title>
+    <link rel="shortcut icon" type="image/png" href="/assets/jotokun/favicon.png">
     <meta http-equiv="Content-type" content="text/html; charset=utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="Jotoba is a powerful and free Japanese dictionary supporting words, kanji, sentences, and many different languages.">
@@ -19,8 +19,13 @@
     <!-- Internal Stylesheets -->
     <link rel="preload" href="/assets/css/alerts.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
        <noscript><link rel="stylesheet" href="/assets/css/alerts.css"></noscript>
+   
+    <link rel="preload" href="/assets/css/ripple.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+      <noscript><link rel="stylesheet" href="/assets/css/ripple.css"></noscript>
+
     <link rel="stylesheet" type="text/css" href="/assets/css/main.css">
     <link rel="stylesheet" type="text/css" href="/assets/css/choices.css">
+    <link rel="stylesheet"type="text/css"href="/assets/css/pagination.css">
     <link rel="preload" href="/assets/css/radselect.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
       <noscript><link rel="stylesheet" href="/assets/css/radselect.css"></noscript>
     <link rel="stylesheet" type="text/css" href="/assets/css/mobile.css">
@@ -30,10 +35,11 @@
     <script async defer src="/assets/js/lib/material.min.js"></script>
     <script async defer src="/assets/js/lib/alertify.min.js"></script>
     <script defer src ="/assets/js/lib/jc.js"></script>
-    <script async defer src="/assets/js/lib/jotobaChoices.js"></script>
+    <script defer src="/assets/js/lib/jotobaChoices.js"></script>
     <!-- Internal JS -->
     <script src="/assets/js/utils.js"></script>
-     <script async defer src="/assets/js/qol.js"></script>
+    <script async defer src="/assets/js/ripple.js"></script>
+    <script async defer src="/assets/js/qol.js"></script>
     <script defer src="/assets/js/search.js"></script>
     <script async defer src="/assets/js/stt.js"></script>
     <script async defer src="/assets/js/radicals.js"></script>

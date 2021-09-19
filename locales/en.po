@@ -13,7 +13,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"PO-Revision-Date: 2021-07-11 20:12+0200\n"
+"PO-Revision-Date: 2021-09-19 15:35+0200\n"
 "Last-Translator:  <jojii@gmx.net>\n"
 "Language-Team: English\n"
 "Language: en\n"
@@ -335,6 +335,11 @@ msgstr ""
 
 # strokes suffix
 
+msgid "Part"
+msgid_plural "Parts"
+msgstr[0] "Part"
+msgstr[1] "Parts"
+
 msgid "strokes"
 msgstr ""
 
@@ -412,7 +417,7 @@ msgstr ""
 
 msgctxt "inflection"
 msgid "CausativePassive"
-msgstr ""
+msgstr "Causative or Passive"
 
 msgctxt "inflection"
 msgid "Imperative"
@@ -1288,4 +1293,11 @@ msgid "Also check our"
 msgstr ""
 
 msgid "since we might be working on it!"
+msgstr ""
+ 
+# Paginator
+msgid "First"
+msgstr ""
+ 
+msgid "Last"
 msgstr ""

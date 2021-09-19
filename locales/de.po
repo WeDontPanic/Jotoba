@@ -13,7 +13,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"PO-Revision-Date: 2021-07-11 20:15+0200\n"
+"PO-Revision-Date: 2021-09-19 15:35+0200\n"
 "Last-Translator:  <>\n"
 "Language-Team: English\n"
 "Language: en\n"
@@ -333,6 +333,12 @@ msgstr "Namensherkunft"
 ## Kanji results
 
 # strokes suffix
+
+msgid "Part"
+msgid_plural "Parts"
+msgstr[0] "Bestandteil"
+msgstr[1] "Bestandteile"
+
 msgid "strokes"
 msgstr "Striche"
 
@@ -410,7 +416,7 @@ msgstr "Kausativ"
 
 msgctxt "inflection"
 msgid "CausativePassive"
-msgstr "Kausativ & Passiv"
+msgstr "Kausativ oder Passiv"
 
 msgctxt "inflection"
 msgid "Imperative"
@@ -1290,3 +1296,11 @@ msgstr "Außerdem besuche unser"
 
 msgid "since we might be working on it!"
 msgstr ", denn es kann sein, dass wir bereits daran arbeiten!"
+
+ 
+# Paginator
+msgid "First"
+msgstr "Erste"
+ 
+msgid "Last"
+msgstr "Letzte"

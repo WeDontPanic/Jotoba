@@ -19,7 +19,7 @@ const kanjiRegEx = '([一-龯|々|𥝱|𩺊])';
 // Global variables used
 var currentSuggestion = "";
 var currentSuggestionType = "default";
-var currentSuggestionIndex = -1;
+var currentSuggestionIndex = 0;
 var availableSuggestions = 0;
 var keepSuggestions = false;
 var oldInputValue = "";
@@ -39,20 +39,16 @@ $(document).on("keydown", (event) => {
             changeSuggestionIndex(-1);
             break;
         case "ArrowDown": // Use suggestion beneath current
+        case "Tab":
             event.preventDefault();
-            changeSuggestionIndex(1);
-            break;
-        case "Tab": // Append current suggestion
-            if (currentSuggestionIndex > -1) {
-                activateSelection();
-                showContainer();
-            } else {
-                changeSuggestionIndex(1);
+            var direction = 1;
+            if (event.key == "Tab" && shiftPressed) {
+              direction = -1;
             }
-            event.preventDefault();
+            changeSuggestionIndex(direction);
             break;
         case "Enter": // Start the search
-            if (currentSuggestionIndex > -1) {
+            if (currentSuggestionIndex > 0) {
                 event.preventDefault();
                 activateSelection();
             }
@@ -98,10 +94,18 @@ window.addEventListener("resize", e => {
     setShadowText();
 });
 
+// Scroll sentence-reader to display selected index
+Util.awaitDocumentReady(() => {
+    let sentencePart = $('.sentence-part.selected');
+
+    if (sentencePart.length > 0) {
+        $('#sr')[0].scrollTop = (sentencePart.offset().top);
+    }
+});
+
 // Marks the current search's type, so it can be displayed in another color
 function markCurrentSearchType() {
     let searchType = $('#search-type').val();
-    console.log(searchType);
 
     for (let i = 0; i < 4; i ++) {
         if (i == searchType) {
@@ -210,23 +214,15 @@ function getSuggestion(index) {
 function changeSuggestionIndex(direction, setDirectly) {
     let oldIndex = currentSuggestionIndex;
 
-    // Set directly
     if (setDirectly) {
-        currentSuggestionIndex = direction;
-    }
-    // Scroll up or down
-    else if (currentSuggestionIndex + direction < -1) {
-        currentSuggestionIndex = availableSuggestions - 1;
-    } 
-    else if (currentSuggestionIndex + direction == availableSuggestions) {
-        currentSuggestionIndex = -1;
+      currentSuggestionIndex = direction;
     } else {
-        currentSuggestionIndex += direction;
+      currentSuggestionIndex = mod(currentSuggestionIndex + direction, availableSuggestions + 1);
     }
 
     // Get newly selected suggestion
-    if (currentSuggestionIndex != -1) { 
-        let suggestion = getSuggestion(currentSuggestionIndex);
+    if (currentSuggestionIndex != 0) { 
+        let suggestion = getSuggestion(currentSuggestionIndex-1);
     
         // Add Furigana. If Kanji are used, select the secondary suggestion. If user types kanji, show him kanji instead
         if (suggestion[1].innerHTML.length > 0 && input.value.match(kanjiRegEx) === null) {
@@ -240,13 +236,12 @@ function changeSuggestionIndex(direction, setDirectly) {
     }
    
     // Remove mark on old row
-    let oldSuggestion = (oldIndex < 0 ? undefined : getSuggestion(oldIndex));
-    if (oldSuggestion != undefined) {
-        oldSuggestion[2].classList.remove("selected");
+    if (oldIndex != 0) {
+        getSuggestion(oldIndex-1)[2].classList.remove("selected");
     }
 
     // Update shadow text
-    setShadowText();
+  setShadowText();
 }
 
 // Adds the currently selected suggestion to the search input
@@ -270,11 +265,11 @@ function activateSelection(element) {
     else {
         switch (currentSuggestionType) {
             case "kanji_reading":
-                let s = getSuggestion(currentSuggestionIndex);
+                let s = getSuggestion(currentSuggestionIndex - 1);
                 suggestion = s[0].innerHTML + " " + s[1].innerHTML.substring(1, s[1].innerHTML.length - 1);
                 break;
             default:
-                suggestion = getSuggestion(currentSuggestionIndex)[0].innerHTML;
+                suggestion = getSuggestion(currentSuggestionIndex - 1)[0].innerHTML;
         }
     }
 
@@ -305,10 +300,9 @@ function getCurrentSubstring(target) {
         target = currentSuggestion;
     }
 
-    for (let i = target.length; i > 0; i--) {
-
-        currentSubstr = target.substring(0, i);
-        let index = input.value.lastIndexOf(currentSubstr)
+  for (let i = target.length; i > 0; i--) {
+        currentSubstr = target.substring(0, i).toLowerCase();
+        let index = input.value.toLowerCase().lastIndexOf(currentSubstr)
 
         if (index == -1) {
             continue;
@@ -328,7 +322,7 @@ function removeSuggestions() {
     shadowText.innerHTML = "";
     container.innerHTML = "";
     currentSuggestion = "";
-    currentSuggestionIndex = -2;
+    currentSuggestionIndex = 0;
     availableSuggestions = 0;
     showContainer();
 }
@@ -452,16 +446,20 @@ function loadApiData(result) {
         '   <span class="secondary-suggestion">'+secondaryResult+'</span> ' +
         ' </div> ';      
 
-        // Activate suggestion, if available again
-        if (oldSuggestion == primaryResult) {
-            changeSuggestionIndex(i, true);
+      /*
+       * Note: this should only be done if the `oldSuggestion` was selected intentionally, otherwise the selected suggestion jumps around like a frog on cocaine
+       *
+      // Activate suggestion, if available again
+      if (oldSuggestion == primaryResult) {
+            changeSuggestionIndex(i+1, true);
             suggestionChosen = true;
-        }
+      }
+      */
     }
 
     // Activate first suggestion
     if (!suggestionChosen) {
-        changeSuggestionIndex(1);
+        //changeSuggestionIndex(1, true);
     }
 
     // Load Container if there is text present
@@ -487,3 +485,19 @@ function onSearchStart() {
 
     return false;
 }
+
+// When opening an overlay, scroll it into view
+function scrollSearchIntoView() {
+    if (document.location.origin+"/" === document.location.href) {
+        var top = $('#search').offset().top;
+        Util.scrollTo(top, 500);
+    }
+}
+
+// Initialize Pagination Buttons
+$('.pagination-item:not(.disabled) > button').on("click", (e) => {
+    var search_value = $('#search').val();
+    var search_type = $('#search-type').val();
+    var targetPage = $(e.target.parentNode).attr("target-page");
+    window.location = window.location.origin + "/search/" + encodeURIComponent(search_value) + "?t=" + search_type + "&p=" + targetPage;
+});

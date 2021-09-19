@@ -1,87 +1,106 @@
-mod namesearch;
 mod order;
 pub mod result;
 
-use super::{name::namesearch::NameSearch, query::Query};
-use cache::SharedCache;
-use deadpool_postgres::Pool;
+use self::result::NameResult;
+
+use super::query::Query;
 use error::Error;
+
 use japanese::JapaneseExt;
-use models::name::Name;
-
-use async_std::sync::Mutex;
-use once_cell::sync::Lazy;
-
-use super::SearchMode;
-
-/// An in memory Cache for namesearch results
-static NAME_SEARCH_CACHE: Lazy<Mutex<SharedCache<String, Vec<Name>>>> =
-    Lazy::new(|| Mutex::new(SharedCache::with_capacity(1000)));
+use utils::to_option;
 
 /// Search for names
-pub async fn search(db: &Pool, query: &Query) -> Result<Vec<Name>, Error> {
-    let mut ns_cache = NAME_SEARCH_CACHE.lock().await;
-
-    if let Some(cached) = ns_cache.cache_get(&query.query.clone()) {
-        return Ok(cached.clone());
-    }
-
-    let res = if query.form.is_kanji_reading() {
-        search_kanji(db, &query).await?
-    } else if query.query.is_japanese() {
-        search_native(db, &query).await?
+#[inline]
+pub async fn search(query: &Query) -> Result<NameResult, Error> {
+    if query.form.is_kanji_reading() {
+        search_kanji(&query).await
     } else {
-        search_transcription(db, &query).await?
+        do_search(query).await
+    }
+}
+
+/// Do a name search
+async fn do_search(query: &Query) -> Result<NameResult, Error> {
+    use crate::engine::name::{foreign, japanese};
+
+    let res = if query.query.is_japanese() {
+        japanese::Find::new(&query.query, 1000, 0).find().await?
+    } else {
+        foreign::Find::new(&query.query, 1000, 0).find().await?
     };
 
-    ns_cache.cache_set(query.query.clone(), res.clone());
+    let resources = resources::get().names();
 
-    Ok(res)
+    let names = res
+        .retrieve_ordered(|seq_id| resources.by_sequence(seq_id as u32))
+        .skip(query.page_offset)
+        .take(query.settings.items_per_page as usize)
+        .cloned()
+        .collect();
+
+    Ok(NameResult {
+        items: names,
+        total_count: res.len() as u32,
+    })
 }
 
-/// Search by transcription
-async fn search_transcription(db: &Pool, query: &Query) -> Result<Vec<Name>, Error> {
-    let search = NameSearch::new(&db, &query.query);
+/// Search by kanji reading
+async fn search_kanji(query: &Query) -> Result<NameResult, Error> {
+    let kanji_reading = query.form.as_kanji_reading().ok_or(Error::Unexpected)?;
+    let resources = resources::get().names();
 
-    let mut items = search.search_transcription().await?;
+    use crate::engine::name::japanese::Find;
 
-    // Sort the results based
-    order::ByTranscription::new(&query.query).sort(&mut items);
+    let res = Find::new(&kanji_reading.literal.to_string(), 1000, 0)
+        .find()
+        .await?;
 
-    // Limit search to 10 results
-    items.truncate(10);
+    let names = res
+        .retrieve_ordered(|seq_id| resources.by_sequence(seq_id as u32))
+        .filter(|name| {
+            if name.kanji.is_none() {
+                return false;
+            }
+            let kanji = name.kanji.as_ref().unwrap();
+            let kana = &name.kana;
+            let readings = japanese::furigana::generate::retrieve_readings(
+                &mut |i: String| {
+                    let retrieve = resources::get().kanji();
+                    let kanji = retrieve.by_literal(i.chars().next()?)?;
+                    if kanji.onyomi.is_none() && kanji.kunyomi.is_none() {
+                        return None;
+                    }
 
-    Ok(items)
-}
+                    let kun = kanji
+                        .clone()
+                        .kunyomi
+                        .unwrap_or_default()
+                        .into_iter()
+                        .chain(kanji.natori.clone().unwrap_or_default().into_iter())
+                        .collect::<Vec<_>>();
+                    let kun = to_option(kun);
 
-/// Search by japanese input
-async fn search_native(db: &Pool, query: &Query) -> Result<Vec<Name>, Error> {
-    let search = NameSearch::new(&db, &query.query);
+                    Some((kun, kanji.onyomi.clone()))
+                },
+                kanji,
+                kana,
+            );
+            if readings.is_none() {
+                return false;
+            }
 
-    let mut items = search.search_native(&query.query).await?;
+            readings.unwrap().iter().any(|i| {
+                i.0.contains(&kanji_reading.literal.to_string())
+                    && i.1.contains(&kanji_reading.reading)
+            })
+        })
+        .skip(query.page_offset)
+        .take(query.settings.items_per_page as usize)
+        .cloned()
+        .collect();
 
-    // Sort the results based
-    order::ByNative::new(&query.query).sort(&mut items);
-
-    // Limit search to 10 results
-    items.truncate(10);
-
-    Ok(items)
-}
-
-/// Search by japanese input
-async fn search_kanji(db: &Pool, query: &Query) -> Result<Vec<Name>, Error> {
-    let search = NameSearch::new(&db, &query.query);
-
-    let kanji = query.form.as_kanji_reading().unwrap();
-
-    let mut items = search.kanji_search(kanji).await?;
-
-    // Sort the results based
-    order::ByKanji::new(&query.query, &kanji).sort(&mut items);
-
-    // Limit search to 10 results
-    items.truncate(10);
-
-    Ok(items)
+    Ok(NameResult {
+        items: names,
+        total_count: res.len() as u32,
+    })
 }
