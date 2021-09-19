@@ -160,7 +160,7 @@ Util.awaitDocumentReady = function(callback) {
     let readyWait = window.setInterval(() => {
         if (document.readyState == "complete") {
             callback();
-            window.clearTimeout(readyWait);
+            window.clearInterval(readyWait);
         }
     }, 10);
 }

@@ -150,6 +150,8 @@ function onSettingsChange_AnimationSpeed(event) {
 // Load the cookie's data into important stuff
 function loadCookieData() {
 
+    console.log("a");
+
     // User agreement on using Cookies
     let allow_cookies = Cookies.get("allow_cookies");
     if (!checkTrackingAllowed()) {
@@ -157,6 +159,8 @@ function loadCookieData() {
         Cookies.set("allow_cookies", 0);
     }
     prepareCookieSettings(allow_cookies);
+
+    console.log("b");
 
     // Load search language
     let default_lang = Cookies.get("default_lang");
@@ -169,23 +173,39 @@ function loadCookieData() {
     // Load display settings
     let anim_speed = Cookies.get("anim_speed");
 
+    console.log("c");
+
     // Set Default_Lang 
     let userLang = default_lang || navigator.language || navigator.userLanguage || "en-US";
     if (!isSupportedSearchLang(userLang)) {
          userLang = "en-US";
     }
+
+    console.log("d");
+    
     // Activate by finding the correct 
-    document.querySelectorAll("#search-lang-select > .choices__item--choice").forEach((e) => {
-        if (e.dataset.value == userLang) {
-            let choicesInner = e.parentElement.parentElement.parentElement.children[0].children;
-            
-            choicesInner[0].children[0].innerHTML = e.innerHTML;
-            choicesInner[1].children[0].innerHTML = e.innerHTML;
-        }
+    Util.awaitDocumentReady(() => {
+        
+        console.log("e");
+
+        document.querySelectorAll("#search-lang-select > .choices__item--choice").forEach((e) => {
+            console.log(e);
+            if (e.dataset.value == userLang) {
+                let choicesInner = e.parentElement.parentElement.parentElement.children[0].children;
+                
+                choicesInner[0].children[0].innerHTML = e.innerHTML;
+                choicesInner[1].children[0].innerHTML = e.innerHTML;
+            }
+        });
     });
+
+    console.log("f");
 
     // Set in cookie selected language
     document.querySelectorAll("#page-lang-select > .choices__item--choice").forEach((e) => {
+
+        console.log("g");
+
         if (e.dataset.value == page_lang) {
             let choicesInner = e.parentElement.parentElement.parentElement.children[0].children;
             
@@ -193,6 +213,8 @@ function loadCookieData() {
             choicesInner[1].children[0].innerHTML = e.innerHTML;
         }
     });
+
+    console.log("h");
        
     // Set English results
     if (show_english === "false") {
@@ -235,13 +257,17 @@ function setColorFromCookie() {
 
 // Check if the current browsers doesn't want the user to be tracked
 function checkTrackingAllowed() {
-    if (window.doNotTrack || navigator.doNotTrack || navigator.msDoNotTrack || 'msTrackingProtectionEnabled' in window.external) {
-        if (window.doNotTrack == "1" || navigator.doNotTrack == "yes" || navigator.doNotTrack == "1" || navigator.msDoNotTrack == "1" || window.external.msTrackingProtectionEnabled()) {
-            return false;
+    try {
+        if (window.doNotTrack || navigator.doNotTrack || navigator.msDoNotTrack || 'msTrackingProtectionEnabled' in window.external) {
+            if (window.doNotTrack == "1" || navigator.doNotTrack == "yes" || navigator.doNotTrack == "1" || navigator.msDoNotTrack == "1") {
+                return false;
+            } else {
+                return true;
+            }
         } else {
             return true;
         }
-    } else {
+    } catch (e) {
         return true;
     }
 }
