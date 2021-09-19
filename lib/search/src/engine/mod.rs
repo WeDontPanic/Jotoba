@@ -4,7 +4,7 @@ pub(crate) mod name;
 pub mod result;
 pub(crate) mod sentences;
 pub(crate) mod simple_gen_doc;
-pub(crate) mod word;
+pub mod word;
 
 use std::{cmp::Ordering, error};
 
@@ -14,7 +14,7 @@ use vector_space_model::{document_vector, traits::Decodable, DocumentVector};
 /// Load all indexes for word search engine
 pub fn load_indexes(config: &Config) -> Result<(), Box<dyn error::Error>> {
     word::foreign::index::load(config)?;
-    word::japanese::index::load(config);
+    word::japanese::index::load(config.get_indexes_source());
     name::japanese::index::load(config);
     name::foreign::index::load(config);
     sentences::japanese::index::load(config);
@@ -25,7 +25,7 @@ pub fn load_indexes(config: &Config) -> Result<(), Box<dyn error::Error>> {
 /// A `Document` wrapping structure where the document has been compared to a given query. The
 /// `relevance` field indicates the relevance compared to the query
 #[derive(Debug)]
-pub(crate) struct CmpDocument<'a, T: Decodable> {
+pub struct CmpDocument<'a, T: Decodable> {
     relevance: f32,
     document: &'a T,
 }
@@ -76,7 +76,7 @@ impl<'a, T: Decodable> CmpDocument<'a, T> {
     }
 }
 
-pub(crate) trait FindExt {
+pub trait FindExt {
     type ResultItem;
     type GenDoc: document_vector::Document;
     type Document: Decodable + Eq;

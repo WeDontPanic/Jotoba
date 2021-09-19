@@ -1,4 +1,4 @@
-pub(crate) mod index;
+pub mod index;
 
 use self::index::Index;
 
@@ -12,7 +12,7 @@ use error::Error;
 use resources::parse::jmdict::languages::Language;
 use vector_space_model::DocumentVector;
 
-pub(crate) struct Find<'a> {
+pub struct Find<'a> {
     limit: usize,
     offset: usize,
     query: &'a str,
@@ -21,7 +21,7 @@ pub(crate) struct Find<'a> {
 
 impl<'a> Find<'a> {
     #[inline]
-    pub(crate) fn new(query: &'a str, limit: usize, offset: usize) -> Self {
+    pub fn new(query: &'a str, limit: usize, offset: usize) -> Self {
         Self {
             limit,
             offset,
@@ -37,7 +37,7 @@ impl<'a> Find<'a> {
     }
 
     /// Do a foreign word search
-    pub(crate) async fn find(&self) -> Result<SearchResult, Error> {
+    pub async fn find(&self) -> Result<SearchResult, Error> {
         let index = index::INDEX.get().ok_or(Error::Unexpected)?;
 
         let query_vec = match self.gen_query(&index) {
@@ -49,7 +49,7 @@ impl<'a> Find<'a> {
     }
 
     /// Do a foreign word search with a custom `query_vec`
-    pub(crate) async fn find_by_vec(
+    pub async fn find_by_vec(
         &self,
         query_vec: DocumentVector<GenDoc>,
     ) -> Result<SearchResult, Error> {

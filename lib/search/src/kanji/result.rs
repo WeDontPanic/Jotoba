@@ -14,14 +14,31 @@ pub struct Item {
 
 impl Item {
     #[inline]
-    pub fn from_db(k: Kanji, _lang: Language, _show_english: bool) -> Self {
-        // TODO: Load on & kun dictionaries here
+    pub fn from_db(k: Kanji, lang: Language, show_english: bool) -> Self {
+        let kun_dicts = load_dicts(&k.kun_dicts, lang, show_english);
+        let on_dicts = load_dicts(&k.on_dicts, lang, show_english);
+
         Self {
-            kun_dicts: None,
-            on_dicts: None,
+            kun_dicts,
+            on_dicts,
             kanji: k,
         }
     }
+}
+
+fn load_dicts(dicts: &Option<Vec<u32>>, lang: Language, show_english: bool) -> Option<Vec<Word>> {
+    let word_storage = resources::get().words();
+
+    let loaded_dicts = dicts.as_ref().map(|i| {
+        let words = i
+            .iter()
+            .filter_map(|j| word_storage.by_sequence(*j))
+            .cloned();
+
+        filter_languages(words, lang, show_english).collect::<Vec<_>>()
+    });
+
+    loaded_dicts
 }
 
 impl Item {
@@ -101,4 +118,21 @@ impl Item {
                 .map(|i| i.join(", ").len())
                 .unwrap_or_default()
     }
+}
+
+pub fn filter_languages<'a, I: 'a + Iterator<Item = Word>>(
+    iter: I,
+    lang: Language,
+    show_english: bool,
+) -> impl Iterator<Item = Word> + 'a {
+    iter.map(move |mut word| {
+        let senses = word
+            .senses
+            .into_iter()
+            .filter(|j| j.language == lang || (j.language == Language::English && show_english))
+            .collect();
+
+        word.senses = senses;
+        word
+    })
 }

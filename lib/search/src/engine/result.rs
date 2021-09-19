@@ -5,18 +5,18 @@ use resources::parse::jmdict::languages::Language;
 
 /// A structure holding all inforamtion about the results of a search
 #[derive(Clone, Default, Debug)]
-pub(crate) struct SearchResult {
+pub struct SearchResult {
     items: Vec<ResultItem>,
     order_map: HashMap<usize, ResultItem>,
 }
 
 /// A single result item for `find`
 #[derive(Clone, Copy, Default, Debug)]
-pub(crate) struct ResultItem {
+pub struct ResultItem {
     // TODO: u32 is sufficient and more efficient here
-    pub(crate) seq_id: usize,
-    pub(crate) relevance: f32,
-    pub(crate) language: Language,
+    pub seq_id: usize,
+    pub relevance: f32,
+    pub language: Language,
 }
 
 impl PartialEq for ResultItem {
@@ -47,7 +47,7 @@ impl Ord for ResultItem {
 impl SearchResult {
     /// Creates a new `SearchResult` from items of the results
     #[inline]
-    pub(crate) fn new(mut items: Vec<ResultItem>) -> SearchResult {
+    pub fn new(mut items: Vec<ResultItem>) -> SearchResult {
         let order_map = Self::build_order_map(&items);
         items.sort_by(|a, b| {
             a.relevance
@@ -60,7 +60,7 @@ impl SearchResult {
 
     /// Returns a vec of all sequence ids in the results
     #[inline]
-    pub(crate) fn sequence_ids(&self) -> Vec<u32> {
+    pub fn sequence_ids(&self) -> Vec<u32> {
         self.items
             .iter()
             .map(|i| i.seq_id as u32)
@@ -70,13 +70,13 @@ impl SearchResult {
 
     /// Returns the searchresults order map
     #[inline]
-    pub(crate) fn get_order_map(&self) -> &HashMap<usize, ResultItem> {
+    pub fn get_order_map(&self) -> &HashMap<usize, ResultItem> {
         &self.order_map
     }
 
     /// Converts a SearchResult into a new one with max `limit` items
     #[inline]
-    pub(crate) fn get_limit(self, limit: usize) -> Self {
+    pub fn get_limit(self, limit: usize) -> Self {
         let items = self.items.into_iter().take(limit).collect::<Vec<_>>();
         let order_map = Self::build_order_map(&items);
         Self { items, order_map }
@@ -84,26 +84,26 @@ impl SearchResult {
 
     /// Returns the length of results
     #[inline]
-    pub(crate) fn len(&self) -> usize {
+    pub fn len(&self) -> usize {
         self.items.len()
     }
 
     /// Returns `true` if there is no item in the result
     #[inline]
-    pub(crate) fn is_empty(&self) -> bool {
+    pub fn is_empty(&self) -> bool {
         self.len() == 0
     }
 
     /// Gets a result at `pos`
     #[inline]
-    pub(crate) fn get(&self, pos: usize) -> Option<&ResultItem> {
+    pub fn get(&self, pos: usize) -> Option<&ResultItem> {
         self.items.get(pos)
     }
 
     /// Returns an iterator over each item loaded by `f(seq_id)` ordered by their relevance (1
     /// first)
     #[inline]
-    pub(crate) fn retrieve_ordered<'a, T, F: 'a>(&'a self, mut f: F) -> impl Iterator<Item = T> + 'a
+    pub fn retrieve_ordered<'a, T, F: 'a>(&'a self, mut f: F) -> impl Iterator<Item = T> + 'a
     where
         F: FnMut(usize) -> Option<T>,
     {

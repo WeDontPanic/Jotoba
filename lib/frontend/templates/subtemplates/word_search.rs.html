@@ -250,7 +250,7 @@
               </div>
 
               <!-- !!! START OF COLLOCATION OVERLAY !!! -->
-              @if let Some(ref collocations) = word.collocations {
+              @if word.has_collocations() {
                 <div class="modal fade" id="coll@word.sequence" style="display: none;" aria-hidden="true">
                   <div class="modal-dialog  modal-lg">
                     <div class="modal-content">
@@ -262,7 +262,7 @@
                         <h3 class="info-h3">@data.gettext("Collocations")</h3>
                         <table class="table collocation">
                           <tbody>
-                            @for collocation in collocations {
+                            @for collocation in word.get_collocations(data.user_settings.user_lang, data.user_settings.show_english) {
                               <tr>
                                   <th scope="row"><a class="clickable no-align green" href="/search/@collocation.0">@collocation.0</a></th>
                                   <td>@collocation.1</td>

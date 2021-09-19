@@ -28,7 +28,7 @@ pub struct Word {
     pub accents: Option<Vec<u8>>,
     pub furigana: Option<String>,
     pub jlpt_lvl: Option<u8>,
-    pub collocations: Option<Vec<(String, String)>>,
+    pub collocations: Option<Vec<u32>>,
 }
 
 /// Various readings of a word
@@ -182,6 +182,52 @@ impl Word {
         }
     }
 
+    /// Returns `true` if a word has collocations
+    #[inline]
+    pub fn has_collocations(&self) -> bool {
+        self.collocations.is_some()
+    }
+
+    /// Returns a list of all collocations of a word
+    pub fn get_collocations(
+        &self,
+        language: Language,
+        show_english: bool,
+    ) -> Vec<(String, String)> {
+        if !self.has_collocations() {
+            return vec![];
+        }
+
+        let word_storage = crate::get().words();
+        let iter = self
+            .collocations
+            .as_ref()
+            .unwrap()
+            .iter()
+            .filter_map(|i| word_storage.by_sequence(*i))
+            .cloned();
+
+        let words: Vec<_> = filter_languages(iter, language, show_english)
+            .map(|word| {
+                let senses: Vec<String> = word
+                    .get_senses()
+                    .into_iter()
+                    .flatten()
+                    .take(5)
+                    .map(|i| i.glosses)
+                    .flatten()
+                    .map(|i| i.gloss)
+                    .collect();
+
+                let reading = word.reading.kanji.unwrap_or(word.reading.kana).reading;
+
+                (reading, senses.join(", "))
+            })
+            .collect();
+
+        words
+    }
+
     fn pretty_print_senses(senses: &[Sense]) -> String {
         senses
             .iter()
@@ -214,4 +260,21 @@ impl Reading {
     pub fn get_reading(&self) -> &Dict {
         self.kanji.as_ref().unwrap_or(&self.kana)
     }
+}
+
+pub fn filter_languages<'a, I: 'a + Iterator<Item = Word>>(
+    iter: I,
+    language: Language,
+    show_english: bool,
+) -> impl Iterator<Item = Word> + 'a {
+    iter.map(move |mut word| {
+        let senses = word
+            .senses
+            .into_iter()
+            .filter(|j| j.language == language || (j.language == Language::English && show_english))
+            .collect();
+
+        word.senses = senses;
+        word
+    })
 }

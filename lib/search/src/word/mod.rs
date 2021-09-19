@@ -377,7 +377,7 @@ fn word_class_to_pos_s(class: &WordClass) -> Option<PosSimple> {
     Some(pos)
 }
 
-pub(crate) fn filter_languages<'a, I: 'a + Iterator<Item = Word>>(
+pub fn filter_languages<'a, I: 'a + Iterator<Item = Word>>(
     iter: I,
     query: &'a Query,
 ) -> impl Iterator<Item = Word> + 'a {
