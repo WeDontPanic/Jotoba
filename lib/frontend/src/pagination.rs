@@ -33,7 +33,7 @@ impl Pagination {
     }
 
     /// Generates the pagination buttons
-    pub fn gen_page_buttons(&self) -> Vec<PaginationButton> {
+    pub fn gen_page_buttons(&self) -> impl Iterator<Item = PaginationButton> + '_ {
         let btn_count = min(BUTTONS_TO_DISPLAY as u32, self.get_last());
         let h_btns = btn_count / 2;
 
@@ -46,9 +46,7 @@ impl Pagination {
 
         let end = min(start + btn_count, self.get_last() + 1);
 
-        (start..end)
-            .map(|page| PaginationButton::new(page, page == self.curr_page))
-            .collect()
+        (start..end).map(move |page| PaginationButton::new(page, page == self.curr_page))
     }
 }
 
