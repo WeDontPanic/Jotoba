@@ -85,6 +85,11 @@ impl<'a> BaseData<'a> {
             items_per_page: self.user_settings.items_per_page,
         };
 
+        // Don't show paginator if there is only one page
+        if pagination.get_last() == 1 {
+            return;
+        }
+
         if curr_page > pagination.get_last() {
             pagination.curr_page = pagination.get_last();
         }
