@@ -22,3 +22,5 @@ indexes/
 indexes_old
 massiv.out
 */*/target
+tmp/
+img_scan_tmp/

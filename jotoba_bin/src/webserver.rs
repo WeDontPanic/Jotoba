@@ -9,7 +9,7 @@ use actix_web::{
 };
 use config::Config;
 use log::{debug, warn};
-use std::{sync::Arc, thread, time::Instant};
+use std::{path::Path, sync::Arc, thread, time::Instant};
 
 /// How long frontend assets are going to be cached by the clients. Currently 1 week
 const ASSET_CACHE_MAX_AGE: u64 = 604800;
@@ -55,6 +55,8 @@ pub(super) async fn start() -> std::io::Result<()> {
 
         std::env::set_var("RUST_BACKTRACE", "1");
     }
+
+    clean_img_scan_dir(&config);
 
     for thr in threads {
         thr.join().expect("Failed to join threads");
@@ -112,7 +114,8 @@ pub(super) async fn start() -> std::io::Result<()> {
                     .route(
                         "/suggestion",
                         actixweb::post().to(api::completions::suggestion_ep),
-                    ), //.route("/deineOma", actixweb::put().to(api::)),
+                    )
+                    .route("/img_scan", actixweb::post().to(api::img::scan_ep)),
             )
             // Static files
             .service(
@@ -152,7 +155,6 @@ fn setup_logger() {
 #[cfg(feature = "tokenizer")]
 fn load_tokenizer() {
     use japanese::jp_parsing::{JA_NL_PARSER, NL_PARSER_PATH};
-    use std::path::Path;
 
     if !Path::new(NL_PARSER_PATH).exists() {
         panic!("No NL dict was found! Place the following folder in he binaries root dir: ./unidic-mecab");
@@ -161,6 +163,16 @@ fn load_tokenizer() {
     // Force parser to parse something to
     // prevent 1. search after launch taking up several seconds
     JA_NL_PARSER.parse("");
+}
+
+/// Clears uploaded images which haven't been cleared yet
+fn clean_img_scan_dir(config: &Config) {
+    let path = config.get_img_scan_upload_path();
+    let path = Path::new(&path);
+    if !path.exists() || !path.is_dir() {
+        return;
+    }
+    std::fs::remove_dir_all(&path).expect("Failed to clear img scan director");
 }
 
 fn load_resources(config: Config) {

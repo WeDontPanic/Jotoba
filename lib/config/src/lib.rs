@@ -21,6 +21,8 @@ pub struct ServerConfig {
     pub storage_data: Option<String>,
     pub radical_map: Option<String>,
     pub sentences: Option<String>,
+    pub img_upload_dir: Option<String>,
+    pub tess_data: Option<String>,
 }
 
 #[derive(Serialize, Deserialize, Clone)]
@@ -112,6 +114,15 @@ impl Config {
             .cloned()
             .unwrap_or(ServerConfig::default().radical_map.unwrap())
     }
+
+    /// Returns the configured (or default) path for the radical map
+    pub fn get_img_scan_upload_path(&self) -> String {
+        self.server
+            .img_upload_dir
+            .as_ref()
+            .cloned()
+            .unwrap_or(ServerConfig::default().img_upload_dir.unwrap())
+    }
 }
 
 impl Default for ServerConfig {
@@ -123,6 +134,8 @@ impl Default for ServerConfig {
             sentences: Some(String::from("./resources/sentences.bin")),
             storage_data: Some(String::from("./resources/storage_data")),
             radical_map: Some(String::from("./resources/radical_map")),
+            img_upload_dir: Some(String::from("./img_scan_tmp")),
+            tess_data: None,
         }
     }
 }
