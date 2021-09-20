@@ -7,7 +7,12 @@ use itertools::Itertools;
 pub use sense::{Gloss, Sense};
 use utils::to_option;
 
-use crate::parse::jmdict::{languages::Language, part_of_speech::PartOfSpeech, priority::Priority};
+use crate::parse::jmdict::{
+    languages::Language,
+    misc::Misc,
+    part_of_speech::{PartOfSpeech, PosSimple},
+    priority::Priority,
+};
 use japanese::{
     accent::{AccentChar, Border},
     furigana::{self, SentencePartRef},
@@ -151,12 +156,14 @@ impl Word {
     }
 
     /// Returns furigana reading-pairs of an Item
+    #[inline]
     pub fn get_furigana(&self) -> Option<Vec<SentencePartRef<'_>>> {
         let furi = self.furigana.as_ref()?;
         Some(furigana::from_str(furi).collect::<Vec<_>>())
     }
 
     /// Get alternative readings in a beautified, print-ready format
+    #[inline]
     pub fn alt_readings_beautified(&self) -> String {
         self.reading
             .alternative
@@ -166,6 +173,7 @@ impl Word {
     }
 
     /// Returns an [`Inflections`] value if [`self`] is a valid verb
+    #[inline]
     pub fn get_inflections(&self) -> Option<Inflections> {
         inflection::of_word(self)
     }
@@ -180,6 +188,25 @@ impl Word {
             // Fallback use english gloses
             Self::pretty_print_senses(&senses[1])
         }
+    }
+
+    /// Returns true if word has a misc information matching `misc`. This requires english glosses
+    /// to be available since they're the only one holding misc information
+    #[inline]
+    pub fn has_misc(&self, misc: Misc) -> bool {
+        self.senses.iter().filter_map(|i| i.misc).any(|i| i == misc)
+    }
+
+    /// Returns `true` if word has at least one of the provided part of speech
+    #[inline]
+    pub fn has_pos(&self, pos_filter: &[PosSimple]) -> bool {
+        for sense in self.senses.iter().map(|i| i.get_pos_simple()) {
+            if sense.iter().any(|i| pos_filter.contains(i)) {
+                return true;
+            }
+        }
+
+        false
     }
 
     /// Returns `true` if a word has collocations
@@ -199,15 +226,20 @@ impl Word {
         }
 
         let word_storage = crate::get().words();
-        let iter = self
+
+        let mut words = self
             .collocations
             .as_ref()
             .unwrap()
             .iter()
             .filter_map(|i| word_storage.by_sequence(*i))
-            .cloned();
+            .cloned()
+            .collect::<Vec<_>>();
 
-        let words: Vec<_> = filter_languages(iter, language, show_english)
+        filter_languages(words.iter_mut(), language, show_english);
+
+        let words = words
+            .into_iter()
             .map(|word| {
                 let senses: Vec<String> = word
                     .get_senses()
@@ -262,19 +294,16 @@ impl Reading {
     }
 }
 
-pub fn filter_languages<'a, I: 'a + Iterator<Item = Word>>(
+/// Removes all senses which ain't in the provided language or english in case `show_english` is
+/// `true`
+pub fn filter_languages<'a, I: 'a + Iterator<Item = &'a mut Word>>(
     iter: I,
     language: Language,
     show_english: bool,
-) -> impl Iterator<Item = Word> + 'a {
-    iter.map(move |mut word| {
-        let senses = word
-            .senses
-            .into_iter()
-            .filter(|j| j.language == language || (j.language == Language::English && show_english))
-            .collect();
-
-        word.senses = senses;
-        word
-    })
+) {
+    for word in iter {
+        word.senses.retain(|j| {
+            j.language == language || (j.language == Language::English && show_english)
+        });
+    }
 }

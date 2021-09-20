@@ -23,7 +23,10 @@ pub async fn suggestions(query_str: &str) -> Option<Vec<WordPair>> {
 
     items.sort_by(|a, b| a.1.cmp(&b.1).reverse());
 
-    Some(items.into_iter().take(10).map(|i| i.0).collect())
+    let mut results: Vec<_> = items.into_iter().take(10).map(|i| i.0).collect();
+    results.dedup();
+
+    Some(results)
 }
 
 #[inline]

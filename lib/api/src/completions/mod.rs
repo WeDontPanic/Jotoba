@@ -112,7 +112,7 @@ impl Default for SuggestionType {
 }
 
 /// A word with kana and kanji reading used within [`SuggestionResponse`]
-#[derive(Serialize, Default)]
+#[derive(Serialize, Default, PartialEq, Eq)]
 pub struct WordPair {
     pub primary: String,
     #[serde(skip_serializing_if = "Option::is_none")]

@@ -15,13 +15,16 @@ use error::Error;
 use itertools::Itertools;
 use japanese::{inflection::SentencePart, JapaneseExt};
 use resources::{
-    models::{kanji::Kanji, words::Word},
-    parse::jmdict::{languages::Language, part_of_speech::PosSimple},
+    models::{
+        kanji::Kanji,
+        words::{filter_languages, Word},
+    },
+    parse::jmdict::part_of_speech::PosSimple,
 };
 use result::Item;
 
 #[cfg(feature = "tokenizer")]
-use japanese::jp_parsing::{igo_unidic::WordClass, InputTextParser, ParseResult, WordItem};
+use japanese::jp_parsing::{InputTextParser, ParseResult, WordItem};
 use utils::to_option;
 
 pub(self) struct Search<'a> {
@@ -234,12 +237,7 @@ impl<'a> Search<'a> {
             .sequence_ids()
             .into_iter()
             .filter_map(|i| word_storage.by_sequence(i))
-            .filter(|word| {
-                pos_filter
-                    .as_ref()
-                    .map(|filter| has_pos(word, filter))
-                    .unwrap_or(true)
-            })
+            .filter(|word| self.word_filter(word, &pos_filter))
             // We're only showing 1000 items max
             .take(1000)
             .collect::<Vec<_>>();
@@ -252,7 +250,7 @@ impl<'a> Search<'a> {
             .cloned()
             .collect();
 
-        filter_languages_v2(
+        filter_languages(
             wordresults.iter_mut(),
             self.query.settings.user_lang,
             self.query.settings.show_english,
@@ -268,7 +266,7 @@ impl<'a> Search<'a> {
         let wordresults: Vec<_> = wordresults
             .into_iter()
             .skip(self.query.page_offset)
-            .take(10)
+            .take(self.query.settings.items_per_page as usize)
             .collect();
 
         #[cfg(feature = "tokenizer")]
@@ -314,12 +312,7 @@ impl<'a> Search<'a> {
             .sequence_ids()
             .into_iter()
             .filter_map(|i| word_storage.by_sequence(i))
-            .filter(|word| {
-                pos_filter
-                    .as_ref()
-                    .map(|filter| has_pos(word, filter))
-                    .unwrap_or(true)
-            })
+            .filter(|word| self.word_filter(word, &pos_filter))
             // We're only showing 1000 items max
             .take(1000)
             .collect::<Vec<_>>();
@@ -339,7 +332,7 @@ impl<'a> Search<'a> {
             .cloned()
             .collect::<Vec<_>>();
 
-        filter_languages_v2(
+        filter_languages(
             wordresults.iter_mut(),
             self.query.settings.user_lang,
             self.query.settings.show_english,
@@ -355,7 +348,7 @@ impl<'a> Search<'a> {
         let wordresults: Vec<_> = wordresults
             .into_iter()
             .skip(self.query.page_offset)
-            .take(10)
+            .take(self.query.settings.items_per_page as usize)
             .collect();
 
         Ok(ResultData {
@@ -373,66 +366,27 @@ impl<'a> Search<'a> {
             .chain(words.into_iter().map(|i| i.into()).collect_vec())
             .collect_vec()
     }
-}
 
-#[cfg(feature = "tokenizer")]
-fn word_class_to_pos_s(class: &WordClass) -> Option<PosSimple> {
-    let pos = match class {
-        WordClass::Particle(_) => PosSimple::Particle,
-        WordClass::Verb(_) => PosSimple::Verb,
-        WordClass::Adjective(_) => PosSimple::Adjective,
-        WordClass::Adverb => PosSimple::Adverb,
-        WordClass::Noun(_) => PosSimple::Noun,
-        WordClass::Pronoun => PosSimple::Pronoun,
-        WordClass::Interjection => PosSimple::Interjection,
-        WordClass::Suffix => PosSimple::Suffix,
-        WordClass::Prefix => PosSimple::Prefix,
-        _ => return None,
-    };
-    Some(pos)
-}
-
-pub fn filter_languages_v2<'a, I: 'a + Iterator<Item = &'a mut Word>>(
-    iter: I,
-    language: Language,
-    show_english: bool,
-) {
-    for word in iter {
-        word.senses.retain(|j| {
-            j.language == language || (j.language == Language::English && show_english)
-        });
-    }
-}
-
-pub fn filter_languages<'a, I: 'a + Iterator<Item = Word>>(
-    iter: I,
-    query: &'a Query,
-) -> impl Iterator<Item = Word> + 'a {
-    iter.map(move |mut word| {
-        let senses = word
-            .senses
-            .into_iter()
-            .filter(|j| {
-                j.language == query.settings.user_lang
-                    || (j.language == Language::English && query.settings.show_english)
-            })
-            .collect();
-
-        word.senses = senses;
-        word
-    })
-}
-
-/// Returns true if a vec of senses has at least one Pos provided by the filter
-#[inline]
-fn has_pos(word: &Word, pos_filter: &[PosSimple]) -> bool {
-    for sense in word.senses.iter().map(|i| i.get_pos_simple()) {
-        if sense.iter().any(|i| pos_filter.contains(i)) {
-            return true;
+    /// Returns false if a word doesn't match a search-query given filter
+    fn word_filter(&self, word: &Word, pos_filter: &Option<Vec<PosSimple>>) -> bool {
+        // Apply pos tag filter
+        if !pos_filter
+            .as_ref()
+            .map(|filter| word.has_pos(&filter))
+            .unwrap_or(true)
+        {
+            return false;
         }
-    }
 
-    false
+        // Apply misc filter
+        for misc_filter in self.query.get_misc_tags() {
+            if !word.has_misc(*misc_filter) {
+                return false;
+            }
+        }
+
+        true
+    }
 }
 
 /// Returns furigana of the given `morpheme` if available

@@ -1,5 +1,4 @@
 use std::{
-    collections::hash_map::DefaultHasher,
     hash::{Hash, Hasher},
     str::FromStr,
 };
@@ -9,7 +8,7 @@ use super::query_parser::QueryType;
 use itertools::Itertools;
 use resources::{
     models::kanji,
-    parse::jmdict::{languages::Language, part_of_speech::PosSimple},
+    parse::jmdict::{languages::Language, misc::Misc, part_of_speech::PosSimple},
 };
 
 /// A single user provided query in a parsed format
@@ -73,6 +72,7 @@ impl Default for UserSettings {
 pub enum Tag {
     SearchType(SearchTypeTag),
     PartOfSpeech(PosSimple),
+    Misc(Misc),
 }
 
 /// Hashtag based search tags
@@ -116,6 +116,7 @@ impl Form {
     }
 
     /// Returns `true` if the form is [`KanjiReading`].
+    #[inline]
     pub fn is_kanji_reading(&self) -> bool {
         matches!(self, Self::KanjiReading(..))
     }
@@ -149,12 +150,13 @@ impl Tag {
     }
 
     /// Parse only search type
-    pub fn parse_search_type(s: &str) -> Option<Tag> {
+    fn parse_search_type(s: &str) -> Option<Tag> {
         Some(match s[1..].to_lowercase().as_str() {
             "kanji" => Self::SearchType(SearchTypeTag::Kanji),
             "sentence" | "sentences" => Self::SearchType(SearchTypeTag::Sentence),
             "name" | "names" => Self::SearchType(SearchTypeTag::Name),
             "word" | "words" => Self::SearchType(SearchTypeTag::Word),
+            "abbreviation" | "abbrev" => Self::Misc(Misc::Abbreviation),
             _ => return None,
         })
     }
@@ -188,6 +190,23 @@ impl Tag {
             None
         }
     }
+
+    /// Returns `true` if the tag is [`Misc`].
+    ///
+    /// [`Misc`]: Tag::Misc
+    #[inline]
+    pub fn is_misc(&self) -> bool {
+        matches!(self, Self::Misc(..))
+    }
+
+    #[inline]
+    pub fn as_misc(&self) -> Option<&Misc> {
+        if let Self::Misc(v) = self {
+            Some(v)
+        } else {
+            None
+        }
+    }
 }
 
 impl Query {
@@ -196,39 +215,28 @@ impl Query {
         !self.query.is_empty()
     }
 
-    #[inline]
-    pub fn get_hash(&self) -> u64 {
-        let mut hash = DefaultHasher::new();
-        self.hash(&mut hash);
-        hash.finish()
-    }
-
     /// Returns true if the query has at least one pos tag
     #[inline]
     pub fn has_part_of_speech_tags(&self) -> bool {
-        !self.get_part_of_speech_tags().is_empty()
+        self.get_part_of_speech_tags().next().is_some()
     }
 
-    /// Returns all search type tags
+    /// Returns an iterator over all search type tags
     #[inline]
-    pub fn get_search_type_tags(&self) -> Vec<SearchTypeTag> {
-        self.tags
-            .iter()
-            .filter(|i| i.is_search_type())
-            .map(|i| i.as_search_type().unwrap())
-            .copied()
-            .collect()
+    pub fn get_search_type_tags(&self) -> impl Iterator<Item = &SearchTypeTag> + '_ {
+        self.tags.iter().filter_map(|i| i.as_search_type())
     }
 
-    /// Returns all PosSimple tags
+    /// Returns an iterator over all PosSimple tags
     #[inline]
-    pub fn get_part_of_speech_tags(&self) -> Vec<PosSimple> {
-        self.tags
-            .iter()
-            .filter(|i| i.is_part_of_speech())
-            .map(|i| i.as_part_of_speech().unwrap())
-            .copied()
-            .collect()
+    pub fn get_part_of_speech_tags(&self) -> impl Iterator<Item = &PosSimple> + '_ {
+        self.tags.iter().filter_map(|i| i.as_part_of_speech())
+    }
+
+    /// Returns an iterator over all Misc tags
+    #[inline]
+    pub fn get_misc_tags(&self) -> impl Iterator<Item = &Misc> + '_ {
+        self.tags.iter().filter_map(|i| i.as_misc())
     }
 
     /// Returns the original_query with search type tags omitted
@@ -239,8 +247,15 @@ impl Query {
             .split(' ')
             .into_iter()
             .filter(|i| {
+                let is_tag = i.starts_with('#');
+
+                let is_search_type_tag = is_tag
+                    .then(|| Tag::parse_from_str(i).map(|i| Tag::is_search_type(&i)))
+                    .flatten()
+                    .unwrap_or_default();
+
                 // Filter out all search type tags
-                (i.starts_with('#') && Tag::parse_search_type(i).is_none()) || !i.starts_with('#')
+                (is_tag && !is_search_type_tag) || !is_tag
             })
             .join(" ")
     }

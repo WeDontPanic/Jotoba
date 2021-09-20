@@ -101,11 +101,19 @@ async fn words_with_kanji_reading(
     );
 
     let len = wordresults.len();
-    let words = super::filter_languages(
-        wordresults.into_iter().skip(query.page_offset).take(10),
-        query,
-    )
-    .collect();
+
+    let mut words = wordresults
+        .into_iter()
+        .skip(query.page_offset)
+        .take(10)
+        .collect::<Vec<_>>();
+
+    super::filter_languages(
+        words.iter_mut(),
+        query.settings.user_lang,
+        query.settings.show_english,
+    );
+
     Ok((words, len))
 }
 

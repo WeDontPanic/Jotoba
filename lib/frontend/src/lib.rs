@@ -133,13 +133,15 @@ impl<'a> BaseData<'a> {
 
     /// Gets an owned String of the query
     pub fn get_query_str(&self) -> String {
-        match &self.site {
+        let query = match &self.site {
             Site::SearchResult(search_result) => {
                 Some(search_result.query.without_search_type_tags())
             }
             _ => None,
         }
-        .unwrap_or_default()
+        .unwrap_or_default();
+        println!("query_str: {}", query);
+        query
     }
 
     /// Return a string 'selected' if the query_type in qs is equal to i

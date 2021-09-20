@@ -1,7 +1,10 @@
 use std::{fs::read_to_string, vec};
 
 use resources::{
-    models::{kanji::Kanji, words::Word},
+    models::{
+        kanji::Kanji,
+        words::{filter_languages, Word},
+    },
     parse::jmdict::languages::Language,
 };
 
@@ -30,12 +33,15 @@ fn load_dicts(dicts: &Option<Vec<u32>>, lang: Language, show_english: bool) -> O
     let word_storage = resources::get().words();
 
     let loaded_dicts = dicts.as_ref().map(|i| {
-        let words = i
+        let mut words: Vec<_> = i
             .iter()
             .filter_map(|j| word_storage.by_sequence(*j))
-            .cloned();
+            .cloned()
+            .collect();
 
-        filter_languages(words, lang, show_english).collect::<Vec<_>>()
+        filter_languages(words.iter_mut(), lang, show_english);
+
+        words
     });
 
     loaded_dicts
@@ -111,21 +117,4 @@ impl Item {
                 .map(|i| i.join(", ").len())
                 .unwrap_or_default()
     }
-}
-
-pub fn filter_languages<'a, I: 'a + Iterator<Item = Word>>(
-    iter: I,
-    lang: Language,
-    show_english: bool,
-) -> impl Iterator<Item = Word> + 'a {
-    iter.map(move |mut word| {
-        let senses = word
-            .senses
-            .into_iter()
-            .filter(|j| j.language == lang || (j.language == Language::English && show_english))
-            .collect();
-
-        word.senses = senses;
-        word
-    })
 }
