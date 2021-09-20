@@ -40,6 +40,10 @@
       "description": "Search endpoints to address jotoba from own applications"
     },
     {
+      "name": "Image",
+      "description": "Image text detection"
+    },
+    {
       "name": "Radicals",
       "description": "Radical API"
     },
@@ -49,6 +53,49 @@
     }
   ],
   "paths": {
+    "/api/img_scan": {
+      "post": {
+        "tags": [
+          "Image"
+        ],
+        "summary": "Get japanese text from an image",
+        "consumes": [
+          "multipart/form-data"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "upfile",
+            "in": "formData",
+            "description": "The image to scan. Can be either jpg or png. Max 2MB.",
+            "required": false,
+            "type": "file"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success response",
+            "schema": {
+              "$ref": "#/definitions/ImgScanResponse"
+            }
+          },
+          "400": {
+            "description": "Bad request. Might occur if the query is empty or the provided image is malformed",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
     "/api/search/words": {
       "post": {
         "tags": [
@@ -771,6 +818,16 @@
       },
       "description": "A single suggestion item"
     },
+    "ImgScanResponse": {
+      "type": "object",
+      "properties": {
+        "text": {
+          "type": "string",
+          "example": "音楽が大好き"
+        }
+      },
+      "description": "Sucess response for retrieving text from an image"
+    },
     "SearchType": {
       "type": "string",
       "description": "Type of search (Words, Kanji, Sentences, Names)",
@@ -782,8 +839,7 @@
       ]
     }
   }
-}
-`;
+}`;
         let objSpec = JSON.parse(strSpec);
         docEl.loadSpec(objSpec);
       })
