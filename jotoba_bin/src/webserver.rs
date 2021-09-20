@@ -112,7 +112,7 @@ pub(super) async fn start() -> std::io::Result<()> {
                     .route(
                         "/suggestion",
                         actixweb::post().to(api::completions::suggestion_ep),
-                    ),
+                    ), //.route("/deineOma", actixweb::put().to(api::)),
             )
             // Static files
             .service(
@@ -164,12 +164,11 @@ fn load_tokenizer() {
 }
 
 fn load_resources(config: Config) {
-    // TODO: make configurable
     resources::initialize_resources(
-        "./resources/storage_data",
+        config.get_storage_data_path().as_str(),
         config.get_suggestion_sources(),
-        "resources/radical_map",
-        "resources/sentences.bin",
+        config.get_radical_map_path().as_str(),
+        config.get_sentences_path().as_str(),
     )
     .expect("Failed to load resources");
 }

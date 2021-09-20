@@ -18,6 +18,9 @@ pub struct Config {
 pub struct ServerConfig {
     pub html_files: Option<String>,
     pub listen_address: String,
+    pub storage_data: Option<String>,
+    pub radical_map: Option<String>,
+    pub sentences: Option<String>,
 }
 
 #[derive(Serialize, Deserialize, Clone)]
@@ -82,13 +85,44 @@ impl Config {
 
         Duration::from_secs(timeout)
     }
+
+    /// Returns the configured (or default) path for storage data
+    pub fn get_storage_data_path(&self) -> String {
+        self.server
+            .storage_data
+            .as_ref()
+            .cloned()
+            .unwrap_or(ServerConfig::default().storage_data.unwrap())
+    }
+
+    /// Returns the configured (or default) path for the sentences resource file
+    pub fn get_sentences_path(&self) -> String {
+        self.server
+            .sentences
+            .as_ref()
+            .cloned()
+            .unwrap_or(ServerConfig::default().sentences.unwrap())
+    }
+
+    /// Returns the configured (or default) path for the radical map
+    pub fn get_radical_map_path(&self) -> String {
+        self.server
+            .radical_map
+            .as_ref()
+            .cloned()
+            .unwrap_or(ServerConfig::default().radical_map.unwrap())
+    }
 }
 
 impl Default for ServerConfig {
+    #[inline]
     fn default() -> Self {
         Self {
             html_files: Some(String::from("html/assets")),
             listen_address: String::from("127.0.0.1:8080"),
+            sentences: Some(String::from("./resources/sentences.bin")),
+            storage_data: Some(String::from("./resources/storage_data")),
+            radical_map: Some(String::from("./resources/radical_map")),
         }
     }
 }
