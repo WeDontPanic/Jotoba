@@ -230,25 +230,33 @@ impl<'a> Search<'a> {
 
         let word_storage = resources::get().words();
 
-        let seq_ids = search_result.sequence_ids();
-        let wordresults = seq_ids
-            .iter()
-            // TODO: don't clone words here. Take it by reference and clone them after sorting and
-            // selecting
-            .filter_map(|i| word_storage.by_sequence(*i).map(|i| i.to_owned()))
+        let wordresults = search_result
+            .sequence_ids()
+            .into_iter()
+            .filter_map(|i| word_storage.by_sequence(i))
             .filter(|word| {
                 pos_filter
                     .as_ref()
                     .map(|filter| has_pos(word, filter))
                     .unwrap_or(true)
             })
-            // Prevent loading too many
-            .take(1000);
+            // We're only showing 1000 items max
+            .take(1000)
+            .collect::<Vec<_>>();
 
-        let mut wordresults = filter_languages(wordresults, &self.query).collect::<Vec<_>>();
         let count = wordresults.len();
 
-        wordresults.truncate(self.query.page_offset + 100);
+        let mut wordresults: Vec<_> = wordresults
+            .into_iter()
+            .take(self.query.page_offset + 100)
+            .cloned()
+            .collect();
+
+        filter_languages_v2(
+            wordresults.iter_mut(),
+            self.query.settings.user_lang,
+            self.query.settings.show_english,
+        );
 
         // Sort the result
         order::new_japanese_order(
@@ -300,23 +308,21 @@ impl<'a> Search<'a> {
             .find()
             .await?;
 
-        let seq_ids = search_result.sequence_ids();
-
         let word_storage = resources::get().words();
-        let wordresults = seq_ids
-            .iter()
-            // TODO: don't clone words here. Take it by reference and clone them after sorting and
-            // selecting
-            .filter_map(|i| word_storage.by_sequence(*i as u32).map(|i| i.to_owned()))
+
+        let wordresults = search_result
+            .sequence_ids()
+            .into_iter()
+            .filter_map(|i| word_storage.by_sequence(i))
             .filter(|word| {
                 pos_filter
                     .as_ref()
                     .map(|filter| has_pos(word, filter))
                     .unwrap_or(true)
-            }) // Prevent loading too many
-            .take(1000);
-
-        let mut wordresults = filter_languages(wordresults, &self.query).collect::<Vec<_>>();
+            })
+            // We're only showing 1000 items max
+            .take(1000)
+            .collect::<Vec<_>>();
 
         // Do romaji search if no results were found
         if wordresults.is_empty() && !self.query.query.is_japanese() {
@@ -327,7 +333,17 @@ impl<'a> Search<'a> {
 
         let count = wordresults.len();
 
-        wordresults.truncate(self.query.page_offset + 100);
+        let mut wordresults = wordresults
+            .into_iter()
+            .take(self.query.page_offset + 100)
+            .cloned()
+            .collect::<Vec<_>>();
+
+        filter_languages_v2(
+            wordresults.iter_mut(),
+            self.query.settings.user_lang,
+            self.query.settings.show_english,
+        );
 
         // Sort the result
         order::new_foreign_order(
@@ -374,6 +390,18 @@ fn word_class_to_pos_s(class: &WordClass) -> Option<PosSimple> {
         _ => return None,
     };
     Some(pos)
+}
+
+pub fn filter_languages_v2<'a, I: 'a + Iterator<Item = &'a mut Word>>(
+    iter: I,
+    language: Language,
+    show_english: bool,
+) {
+    for word in iter {
+        word.senses.retain(|j| {
+            j.language == language || (j.language == Language::English && show_english)
+        });
+    }
 }
 
 pub fn filter_languages<'a, I: 'a + Iterator<Item = Word>>(

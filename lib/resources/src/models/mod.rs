@@ -65,7 +65,7 @@ pub fn load_storage<P: AsRef<Path>>(
 }
 
 #[inline]
-fn load_dict_data<P: AsRef<Path>>(dict_data_path: P) -> Result<DictResources, Box<dyn Error>> {
+pub fn load_dict_data<P: AsRef<Path>>(dict_data_path: P) -> Result<DictResources, Box<dyn Error>> {
     Ok(DictResources::read(BufReader::new(File::open(
         dict_data_path,
     )?))?)

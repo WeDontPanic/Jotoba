@@ -71,6 +71,7 @@ pub(super) async fn start() -> std::io::Result<()> {
             // .app_data(Data::new(pool.clone()))
             .app_data(Data::new(locale_dict_arc.clone()))
             // Middlewares
+            // TODO: Don't send audio files compressed
             .wrap(middleware::Compress::default())
             .wrap(middleware::Logger::default())
             //.wrap(CookieSession::signed(&[0; 32]).secure(false))

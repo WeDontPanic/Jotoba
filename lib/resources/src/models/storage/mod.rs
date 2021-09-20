@@ -4,6 +4,8 @@ pub mod sentence;
 pub mod suggestion;
 pub mod word;
 
+use intmap::IntMap;
+
 use crate::parse::jmdict::languages::Language;
 
 use self::{
@@ -23,10 +25,10 @@ use super::{
 };
 use std::collections::HashMap;
 
-type WordStorage = HashMap<u32, Word>;
-type NameStorage = HashMap<u32, Name>;
+type WordStorage = IntMap<Word>;
+type NameStorage = IntMap<Name>;
 type KanjiStorage = HashMap<char, Kanji>;
-pub(super) type SentenceStorage = HashMap<u32, Sentence>;
+pub(super) type SentenceStorage = IntMap<Sentence>;
 pub(super) type RadicalStorage = HashMap<char, Vec<char>>;
 
 #[derive(Default)]
@@ -146,12 +148,12 @@ impl ResourceStorage {
 
 #[inline]
 fn build_words(words: Vec<Word>) -> WordStorage {
-    words.into_iter().map(|i| (i.sequence, i)).collect()
+    words.into_iter().map(|i| (i.sequence as u64, i)).collect()
 }
 
 #[inline]
 fn build_names(names: Vec<Name>) -> NameStorage {
-    names.into_iter().map(|i| (i.sequence, i)).collect()
+    names.into_iter().map(|i| (i.sequence as u64, i)).collect()
 }
 
 #[inline]

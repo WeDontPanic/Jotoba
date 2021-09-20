@@ -149,7 +149,7 @@ where
 }
 
 /// An kanji character. Represents one Kanji
-#[derive(Default, Clone)]
+#[derive(Default, Clone, Debug)]
 pub struct Character {
     pub literal: char,
     pub on_readings: Vec<String>,

@@ -24,6 +24,7 @@ eudex = { git = "https://github.com/JojiiOfficial/eudex"}
 indexed_file = { git = "https://github.com/JojiiOfficial/IndexedFile"}
 sorted_intersection = "1.2.0"
 bitflags = {git = "https://github.com/JojiiOfficial/BitFlags"}
+intmap = { git = "https://github.com/JojiiOfficial/rust-intmap"}
 
 [lib]
 name = "resources"

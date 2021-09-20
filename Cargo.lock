@@ -1144,6 +1144,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "intmap"
+version = "0.7.0"
+source = "git+https://github.com/JojiiOfficial/rust-intmap#20554b87c88c08a5f26e48e2cdad606f5df03379"
+dependencies = [
+ "serde",
+]
+
+[[package]]
 name = "ipnet"
 version = "2.3.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1763,6 +1771,7 @@ dependencies = [
  "bitflags 0.1.0",
  "eudex",
  "indexed_file",
+ "intmap",
  "itertools",
  "japanese",
  "jp_inflections",

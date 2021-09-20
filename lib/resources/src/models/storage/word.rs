@@ -16,6 +16,6 @@ impl<'a> WordRetrieve<'a> {
     /// Get a word by its sequence id
     #[inline]
     pub fn by_sequence(&self, seq_id: u32) -> Option<&Word> {
-        self.storage.dict_data.words.get(&seq_id)
+        self.storage.dict_data.words.get(seq_id as u64)
     }
 }

@@ -16,6 +16,6 @@ impl<'a> SentenceRetrieve<'a> {
     /// Returns a sentence by its id or `None` if no sentence for the given ID exists
     #[inline]
     pub fn by_id(&self, id: u32) -> Option<&Sentence> {
-        self.storage.dict_data.sentences.get(&id)
+        self.storage.dict_data.sentences.get(id as u64)
     }
 }
