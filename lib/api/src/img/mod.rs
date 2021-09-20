@@ -59,17 +59,17 @@ fn scan_image<P: AsRef<Path>>(
 ) -> Result<Response, RestError> {
     let tess_data = config.server.tess_data.as_ref().map(|i| i.as_str());
     let mut lt = leptess::LepTess::new(tess_data, "jpn").map_err(|_| RestError::Internal)?;
-    lt.set_image(file).map_err(|_| RestError::NotFound)?;
+    lt.set_image(file).map_err(|_| RestError::NoTextFound)?;
 
     if lt.mean_text_conf() < req.threshold {
-        return Err(RestError::NotFound);
+        return Err(RestError::NoTextFound);
     }
 
     let text = lt
         .get_utf8_text()
         .ok()
         .and_then(|text| format_text(text))
-        .ok_or(RestError::NotFound)?;
+        .ok_or(RestError::NoTextFound)?;
 
     Ok(Response { text })
 }
