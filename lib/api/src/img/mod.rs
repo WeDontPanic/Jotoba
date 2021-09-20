@@ -61,6 +61,10 @@ fn scan_image<P: AsRef<Path>>(
     let mut lt = leptess::LepTess::new(tess_data, "jpn").map_err(|_| RestError::Internal)?;
     lt.set_image(file).map_err(|_| RestError::NoTextFound)?;
 
+    if lt.get_source_y_resolution() <= 0 {
+        lt.set_source_resolution(70)
+    }
+
     if lt.mean_text_conf() < req.threshold {
         return Err(RestError::NoTextFound);
     }
