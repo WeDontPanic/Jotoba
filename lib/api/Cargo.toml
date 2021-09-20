@@ -24,5 +24,9 @@ strsim = "0.10.0"
 bincode = "1.3.3"
 actix-multipart = "0.4.0-beta.6"
 futures = "0.3.17"
-leptess = "*"
+leptess = { version = "*", optional = true }
 regex = "*"
+
+[features]
+default = []
+img_scan = ["leptess"]

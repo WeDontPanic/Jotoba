@@ -1,3 +1,4 @@
+#![allow(dead_code)]
 pub mod request;
 
 use std::path::Path;
@@ -52,6 +53,7 @@ pub async fn scan_ep(
 }
 
 /// Scans an image and returns a `Response` with the recognized text or an error
+#[cfg(feature = "img_scan")]
 fn scan_image<P: AsRef<Path>>(
     file: P,
     req: &Request,
@@ -98,4 +100,16 @@ fn format_text(text: String) -> Option<String> {
 #[inline]
 fn default_conf_threshold() -> i32 {
     75
+}
+
+/// Scans an image and returns a `Response` with the recognized text or an error
+#[cfg(not(feature = "img_scan"))]
+fn scan_image<P: AsRef<Path>>(
+    _file: P,
+    _req: &Request,
+    _config: &Config,
+) -> Result<Response, RestError> {
+    Ok(Response {
+        text: String::from("unsupported"),
+    })
 }

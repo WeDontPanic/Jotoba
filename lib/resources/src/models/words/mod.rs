@@ -52,6 +52,7 @@ impl Word {
     }
 
     /// Returns the jlpt level of a word. `None` if a word doesn't have a JLPT lvl assigned
+    #[inline]
     pub fn get_jlpt_lvl(&self) -> Option<u8> {
         self.jlpt_lvl
     }
