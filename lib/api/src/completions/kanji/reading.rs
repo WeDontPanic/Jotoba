@@ -3,7 +3,10 @@ use std::cmp::Ordering;
 use error::api_error::RestError;
 use resources::models::kanji;
 
-use crate::completions::{Response, SuggestionType, WordPair};
+use crate::completions::{
+    response::{SuggestionType, WordPair},
+    Response,
+};
 
 /// Gets suggestions for kanji reading search eg: "痛 いた.い"
 pub async fn suggestions(kanji_reading: kanji::Reading) -> Result<Response, RestError> {

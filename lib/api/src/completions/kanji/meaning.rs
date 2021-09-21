@@ -1,7 +1,9 @@
 use error::api_error::{Origin, RestError};
 use search::{query::Query, suggestions};
 
-use super::super::{storage::K_MEANING_SUGGESTIONS, Response, WordPair};
+use crate::completions::response::WordPair;
+
+use super::super::{storage::K_MEANING_SUGGESTIONS, Response};
 
 /// Returns kanji meaning suggestions
 pub async fn suggestions(query: &Query) -> Result<Response, RestError> {

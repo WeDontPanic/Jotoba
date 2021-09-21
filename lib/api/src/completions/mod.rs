@@ -1,142 +1,40 @@
 mod kanji;
 mod names;
+mod request;
+mod response;
 mod storage;
 mod words;
 
 pub use storage::load_suggestions;
 
-use std::{cmp::Ordering, str::FromStr};
+use std::cmp::Ordering;
 
 use config::Config;
 use error::api_error::RestError;
 use japanese::JapaneseExt;
-use query_parser::{QueryParser, QueryType};
+use query_parser::QueryType;
 use resources::{models, parse::jmdict::languages::Language};
+use response::Response;
 use search::{
-    query::{Form, Query, QueryLang, UserSettings},
+    query::{Form, Query, QueryLang},
     query_parser,
 };
-use utils::{bool_ord, real_string_len};
+use utils::bool_ord;
 
 use actix_web::{
     rt::time,
     web::{self, Json},
 };
-use serde::{Deserialize, Serialize};
+use response::WordPair;
 
-/// Request struct for suggestion endpoint
-#[derive(Deserialize)]
-pub struct Request {
-    /// The search query to find suggestions for
-    pub input: String,
-
-    /// The user configured language
-    #[serde(default)]
-    pub lang: String,
-
-    /// The search type the input is designed for
-    #[serde(default)]
-    pub search_type: QueryType,
-}
-
-impl Request {
-    /// Adjust the query and returns a newly allocated one
-    fn adjust(&self) -> Self {
-        let mut query_str = self.input.as_str();
-        let query_len = real_string_len(&self.input);
-
-        // Some inputs place the roman letter of the japanese text while typing with romanized input.
-        // If input is japanese but last character is a romanized letter, strip it off
-        let last_char = query_str.chars().rev().next().unwrap();
-        if query_parser::parse_language(query_str) == QueryLang::Japanese
-            && last_char.is_roman_letter()
-            && query_len > 1
-        {
-            query_str = &query_str[..query_str.bytes().count() - last_char.len_utf8()];
-        }
-
-        Self {
-            input: query_str.to_owned(),
-            lang: self.lang.to_owned(),
-            search_type: self.search_type,
-        }
-    }
-
-    // Returns a [`Query`] based on the [`Request`]
-    fn get_query(&self) -> Result<Query, RestError> {
-        let query_str = self.input.trim_start().to_string();
-
-        let search_type = self.search_type;
-
-        let settings = UserSettings {
-            user_lang: self.get_language(),
-            ..UserSettings::default()
-        };
-
-        // Build and parse the query
-        let query = QueryParser::new(query_str, search_type, settings, 0, 0, false)
-            .parse()
-            .ok_or(RestError::BadRequest)?;
-
-        Ok(query)
-    }
-
-    // Returns the user configured language of the [`Request`]
-    #[inline]
-    fn get_language(&self) -> Language {
-        Language::from_str(&self.lang).unwrap_or_default()
-    }
-}
-
-/// Response struct for suggestion endpoint
-#[derive(Serialize, Default)]
-pub struct Response {
-    pub suggestions: Vec<WordPair>,
-    pub suggestion_type: SuggestionType,
-}
-
-/// The type of suggestion. `Default` in most cases
-#[derive(Serialize)]
-#[serde(rename_all = "snake_case")]
-pub enum SuggestionType {
-    /// Default suggestion type
-    Default,
-    /// Special suggestion type for kanji readings
-    KanjiReading,
-}
-
-impl Default for SuggestionType {
-    fn default() -> Self {
-        Self::Default
-    }
-}
-
-/// A word with kana and kanji reading used within [`SuggestionResponse`]
-#[derive(Serialize, Default, PartialEq, Eq)]
-pub struct WordPair {
-    pub primary: String,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub secondary: Option<String>,
-}
-
-impl WordPair {
-    /// Returns true if [`self`] contains [`reading`]
-    fn has_reading(&self, reading: &str) -> bool {
-        self.primary == reading
-            || self
-                .secondary
-                .as_ref()
-                .map(|i| i == reading)
-                .unwrap_or_default()
-    }
-}
+use self::request::Request;
 
 /// Get search suggestions endpoint
 pub async fn suggestion_ep(
     config: web::Data<Config>,
     payload: Json<Request>,
 ) -> Result<Json<Response>, actix_web::Error> {
-    validate_request(&payload)?;
+    request::validate(&payload)?;
 
     // Adjust payload and parse to query
     let query = payload.adjust().get_query()?;
@@ -251,14 +149,4 @@ fn get_katakana_query(query: &Query) -> Query {
         query: romaji::RomajiExt::to_katakana(query.query.as_str()),
         ..query.clone()
     }
-}
-
-/// Validates the API request payload
-fn validate_request(payload: &Request) -> Result<(), RestError> {
-    let query_len = real_string_len(&payload.input);
-    if query_len < 1 || query_len > 37 {
-        return Err(RestError::BadRequest.into());
-    }
-
-    Ok(())
 }

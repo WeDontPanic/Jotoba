@@ -2,8 +2,9 @@ use error::api_error::RestError;
 use search::query::Query;
 
 use super::{
+    response::WordPair,
     storage::{NAME_NATIVE, NAME_TRANSCRIPTIONS},
-    Response, WordPair,
+    Response,
 };
 
 /// Returns trascripted name suggestions based on the input query
