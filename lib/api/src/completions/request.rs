@@ -33,12 +33,21 @@ impl Request {
 
         // Some inputs place the roman letter of the japanese text while typing with romanized input.
         // If input is japanese but last character is a romanized letter, strip it off
-        let last_char = query_str.chars().rev().next().unwrap();
+
+        let last_chars = query_str.chars().rev().take(2).collect::<Vec<_>>();
         if query_parser::parse_language(query_str) == QueryLang::Japanese
-            && last_char.is_roman_letter()
+            && !last_chars
+                .iter()
+                .any(|i| !i.is_roman_letter() && !i.is_japanese())
             && query_len > 1
+            && !last_chars.is_empty()
         {
-            query_str = &query_str[..query_str.bytes().count() - last_char.len_utf8()];
+            let len: usize = last_chars
+                .into_iter()
+                .filter(|i| i.is_roman_letter())
+                .map(|i| i.len_utf8())
+                .sum();
+            query_str = &query_str[..query_str.len() - len];
         }
 
         Self {

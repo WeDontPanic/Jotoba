@@ -9,14 +9,18 @@ pub async fn suggestions(query_str: &str) -> Option<Vec<WordPair>> {
     let dict = suggestion_provider.japanese_words()?;
     let word_storage = resources::get().words();
 
+    let query_romaji = query_str
+        .is_kana()
+        .then(|| romaji::RomajiExt::to_romaji(query_str));
+
     let mut items: Vec<(WordPair, u32)> = dict
         .search(|e: &NativeSuggestion| search_cmp(e, query_str))
         // Fetch a few more to allow sort-function to give better results
-        .take(40)
-        .filter_map(|i| {
-            word_storage.by_sequence(i.sequence).map(|i| {
-                let score = score(i, query_str);
-                (i.into(), score)
+        .take(100)
+        .filter_map(|sugg_item| {
+            word_storage.by_sequence(sugg_item.sequence).map(|word| {
+                let score = score(word, query_str, &query_romaji);
+                (word.into(), score)
             })
         })
         .collect();
@@ -29,6 +33,30 @@ pub async fn suggestions(query_str: &str) -> Option<Vec<WordPair>> {
     Some(results)
 }
 
+/// Calculate a score for each word result to give better suggestion results
+fn score(word: &Word, query_str: &str, query_romaji: &Option<String>) -> u32 {
+    let mut score = 0;
+
+    if word.is_common() {
+        score += 10;
+    }
+
+    if let Some(jlpt) = word.get_jlpt_lvl() {
+        score += (jlpt as u32 + 2) * 10u32;
+    }
+
+    if let Some(query_romaji) = query_romaji {
+        score += (strsim::jaro(
+            &romaji::RomajiExt::to_romaji(word.reading.kana.reading.as_str()),
+            &query_romaji,
+        ) * 100f64) as u32;
+    } else {
+        score += (strsim::jaro(&word.reading.get_reading().reading, query_str) * 70f64) as u32;
+    }
+
+    score
+}
+
 #[inline]
 fn search_cmp(e: &NativeSuggestion, query_str: &str) -> Ordering {
     if e.text.starts_with(query_str) {
@@ -36,26 +64,6 @@ fn search_cmp(e: &NativeSuggestion, query_str: &str) -> Ordering {
     } else {
         e.text.as_str().cmp(&query_str)
     }
-}
-
-/// Calculate a score for each word result to give better suggestion results
-#[inline]
-fn score(word: &Word, query_str: &str) -> u32 {
-    let mut score = 0;
-
-    if word.reading.get_reading().reading == query_str || word.reading.kana.reading == query_str {
-        score += 100;
-    }
-
-    if word.is_common() {
-        score += 10;
-    }
-
-    if let Some(jlpt) = word.get_jlpt_lvl() {
-        score += jlpt as u32;
-    }
-
-    score
 }
 
 impl From<&Word> for WordPair {
