@@ -1,3 +1,5 @@
+use std::{cmp::min, collections::BinaryHeap, time::Instant};
+
 use resources::models::{suggestions::native_words::NativeSuggestion, words::Word};
 use utils::binary_search::BinarySearchable;
 
@@ -5,32 +7,49 @@ use super::super::*;
 
 /// Get suggestions for foreign search input
 pub async fn suggestions(query_str: &str) -> Option<Vec<WordPair>> {
-    let suggestion_provider = resources::get().suggestions();
-    let dict = suggestion_provider.japanese_words()?;
-    let word_storage = resources::get().words();
-
-    let query_romaji = query_str
-        .is_kana()
-        .then(|| romaji::RomajiExt::to_romaji(query_str));
-
-    let mut items: Vec<(WordPair, u32)> = dict
-        .search(|e: &NativeSuggestion| search_cmp(e, query_str))
-        // Fetch a few more to allow sort-function to give better results
-        .take(100)
-        .filter_map(|sugg_item| {
-            word_storage.by_sequence(sugg_item.sequence).map(|word| {
-                let score = score(word, query_str, &query_romaji);
-                (word.into(), score)
-            })
-        })
-        .collect();
-
-    items.sort_by(|a, b| a.1.cmp(&b.1).reverse());
+    let start = Instant::now();
+    let items = suggest_words(query_str)?;
+    println!("suggesting took: {:?}", start.elapsed());
 
     let mut results: Vec<_> = items.into_iter().take(10).map(|i| i.0).collect();
     results.dedup();
 
     Some(results)
+}
+
+#[derive(PartialEq, Eq)]
+struct WordPairOrder((WordPair, u32));
+
+fn suggest_words(query_str: &str) -> Option<Vec<(WordPair, u32)>> {
+    let query_romaji = query_str
+        .is_kana()
+        .then(|| romaji::RomajiExt::to_romaji(query_str));
+
+    let suggestion_provider = resources::get().suggestions();
+    let dict = suggestion_provider.japanese_words()?;
+    let word_storage = resources::get().words();
+
+    let mut heap: BinaryHeap<WordPairOrder> = BinaryHeap::with_capacity(50);
+
+    heap.extend(
+        dict.search(|e: &NativeSuggestion| search_cmp(e, query_str))
+            // Fetch a few more to allow sort-function to give better results
+            .take(50)
+            .filter_map(|sugg_item| {
+                word_storage.by_sequence(sugg_item.sequence).map(|word| {
+                    let score = score(word, query_str, &query_romaji);
+                    WordPairOrder((word.into(), score))
+                })
+            }),
+    );
+
+    let res_size = min(heap.len(), 10);
+    let mut items = Vec::with_capacity(res_size);
+    for _ in 0..res_size {
+        items.push(heap.pop()?.0);
+    }
+
+    Some(items)
 }
 
 /// Calculate a score for each word result to give better suggestion results
@@ -81,5 +100,19 @@ impl From<&Word> for WordPair {
                 secondary: None,
             }
         }
+    }
+}
+
+impl Ord for WordPairOrder {
+    #[inline]
+    fn cmp(&self, other: &Self) -> Ordering {
+        self.0 .1.cmp(&other.0 .1)
+    }
+}
+
+impl PartialOrd for WordPairOrder {
+    #[inline]
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        Some(self.0 .1.cmp(&other.0 .1))
     }
 }

@@ -82,14 +82,18 @@ fn search_by_lang<'a>(
     if res.len() < 10 && query_str.len() > 1 && tryhard {
         let mut substr = query_str;
 
+        let mut last_search = substr;
+
         let found = loop {
             if substr.len() < 2 {
                 break false;
             }
+            let end = substr.len() - (substr.len() % 2);
             if dict
-                .binary_search_by(move |e: &ForeignSuggestion| beg_match(e, substr))
+                .binary_search_by(move |e: &ForeignSuggestion| beg_match(e, &substr[0..end]))
                 .is_some()
             {
+                last_search = &substr[0..end];
                 break true;
             }
 
@@ -103,7 +107,7 @@ fn search_by_lang<'a>(
 
         if found {
             res.extend(
-                dict.search(move |e: &ForeignSuggestion| beg_match(e, substr))
+                dict.search(move |e: &ForeignSuggestion| beg_match(e, last_search))
                     .take(100),
             );
         }
