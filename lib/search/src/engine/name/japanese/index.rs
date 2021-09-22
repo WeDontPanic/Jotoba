@@ -18,7 +18,7 @@ pub(crate) fn load(config: &Config) {
     let file = Path::new(config.get_indexes_source()).join("name_jp_index");
     let index = Index::open(file).expect("Could not load japanese name index");
     info!("Loaded japanese name index");
-    INDEX.set(index).unwrap();
+    INDEX.set(index).ok();
 }
 
 /// Returns the loaded japanese name index

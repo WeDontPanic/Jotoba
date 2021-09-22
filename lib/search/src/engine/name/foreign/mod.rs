@@ -101,7 +101,31 @@ impl<'a> Find<'a> {
 
     /// Generate a document vector out of `query_str`
     fn gen_query(&self, index: &Index) -> Option<DocumentVector<GenDoc>> {
-        let query_document = GenDoc::new(vec![self.query.to_string()]);
+        let query = self
+            .fixed_term(index)
+            .unwrap_or(self.get_query_str())
+            .to_string();
+
+        let query_document = GenDoc::new(vec![query]);
         DocumentVector::new(index.get_indexer(), query_document.clone())
+    }
+
+    /// Returns Some(&str) with an alternative search-term in case original query does not exist as
+    /// term. None if no alternative term was found, there was no tree loaded or the query is
+    /// already in term list
+    fn fixed_term(&self, index: &Index) -> Option<&str> {
+        let query_str = self.get_query_str();
+
+        let has_term = index.get_indexer().clone().find_term(&query_str).is_some();
+        if has_term {
+            return None;
+        }
+
+        let mut res = index::get_term_tree().find(&query_str.to_string(), 1);
+        if res.is_empty() {
+            res = index::get_term_tree().find(&query_str.to_string(), 2);
+        }
+        res.sort_by(|a, b| a.1.cmp(&b.1));
+        res.get(0).map(|i| i.0.as_str())
     }
 }

@@ -5,7 +5,6 @@
 @use japanese::furigana::from_str as furi_from_str;
 
 @(data: &BaseData, query: &Query, result: WordResult)
-
   @if let Some(ref inflection) = result.inflection_info {
     <div class="search-annotation">
 

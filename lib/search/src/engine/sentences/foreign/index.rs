@@ -48,7 +48,7 @@ pub(crate) fn load(config: &Config) -> Result<(), Box<dyn std::error::Error>> {
         panic!("No index file loaded");
     }
 
-    INDEXES.set(map).unwrap();
+    INDEXES.set(map).ok();
 
     Ok(())
 }

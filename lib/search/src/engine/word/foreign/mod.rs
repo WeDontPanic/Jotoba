@@ -1,5 +1,5 @@
 mod gen;
-pub(crate) mod index;
+pub mod index;
 
 use self::index::Index;
 use crate::{
@@ -133,14 +133,15 @@ impl<'a> Find<'a> {
 
     /// Generates a `DocumentVector<GenDoc>` for the given query
     fn gen_query_vec(&self, index: &Index) -> Option<DocumentVector<GenDoc>> {
-        let query_str = self.get_query_str();
+        let query_str = self.fixed_term(index).unwrap_or(self.get_query_str());
 
         let term_indexer = index.get_indexer();
-        let doc_store = index.get_vector_store();
 
         // search query to document vector
         let query_document = GenDoc::new(query_str, vec![]);
         let mut query = document_vector::DocumentVector::new(term_indexer, query_document.clone())?;
+
+        let doc_store = index.get_vector_store();
 
         let result_count = query
             .vector()
@@ -160,5 +161,25 @@ impl<'a> Find<'a> {
         }
 
         Some(query)
+    }
+
+    /// Returns Some(&str) with an alternative search-term in case original query does not exist as
+    /// term. None if no alternative term was found, there was no tree loaded or the query is
+    /// already in term list
+    fn fixed_term(&self, index: &Index) -> Option<&str> {
+        let query_str = self.get_query_str();
+
+        let has_term = index.get_indexer().clone().find_term(&query_str).is_some();
+        if has_term {
+            return None;
+        }
+
+        let tree = index::get_term_tree(self.get_lang())?;
+        let mut res = tree.find(&query_str.to_string(), 1);
+        if res.is_empty() {
+            res = tree.find(&query_str.to_string(), 2);
+        }
+        res.sort_by(|a, b| a.1.cmp(&b.1));
+        res.get(0).map(|i| i.0.as_str())
     }
 }

@@ -18,7 +18,7 @@ pub(crate) fn load(config: &Config) {
     let file = Path::new(config.get_indexes_source()).join("sentences_jp_index");
     let index = Index::open(file).expect("Could not load japanese sentence index");
     info!("Loaded japanese sentence index");
-    INDEX.set(index).unwrap();
+    INDEX.set(index).ok();
 }
 
 /// Returns the loaded japanese sentence index

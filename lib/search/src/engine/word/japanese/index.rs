@@ -1,5 +1,6 @@
 use std::path::Path;
 
+use bktree::BkTree;
 use log::info;
 use once_cell::sync::OnceCell;
 use vector_space_model::DefaultMetadata;
@@ -12,16 +13,36 @@ pub(super) type Index = vector_space_model::Index<SingleDocument, DefaultMetadat
 // In-memory storage for japanese index
 pub(super) static INDEX: OnceCell<Index> = OnceCell::new();
 
+// In-memory storage for all loaded term trees
+pub(super) static TERM_TREE: OnceCell<BkTree<String>> = OnceCell::new();
+
 /// Load japanese index
 pub fn load<P: AsRef<Path>>(path: P) {
+    load_index(path.as_ref());
+    load_term_tree(path);
+}
+
+/// Load japanese index
+pub fn load_index<P: AsRef<Path>>(path: P) {
     let file = path.as_ref().join("jp_index");
     let index = Index::open(file).expect("Could not load japanese index");
     info!("Loaded japanese index");
-    INDEX.set(index).unwrap();
+    INDEX.set(index).ok();
+}
+
+/// Load japanese index
+pub fn load_term_tree<P: AsRef<Path>>(_path: P) {
+    // let file = path.as_ref().join("jp_index.tree");
+
+    //let file = File::open(file).expect("Failed to parse japanese term tree");
+    //let tt = bincode::deserialize_from(file).expect("Failed to parse japanese term tree");
+    //info!("Loaded japanese term tree");
+
+    //TERM_TREE.set(tt).ok();
 }
 
 /// Returns the loaded japanese index
 #[inline]
 pub(crate) fn get() -> &'static Index {
-    INDEX.get().unwrap()
+    unsafe { INDEX.get_unchecked() }
 }
