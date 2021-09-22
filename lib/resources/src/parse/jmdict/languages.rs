@@ -6,7 +6,7 @@ use crate::parse::error;
 use serde::{Deserialize, Serialize};
 
 #[derive(
-    Debug, PartialEq, Clone, Copy, AsRefStr, EnumString, Display, Hash, Eq, Deserialize, Serialize,
+    Debug, Display, PartialEq, Eq, Clone, Copy, AsRefStr, EnumString, Hash, Deserialize, Serialize,
 )]
 #[repr(u8)]
 pub enum Language {
@@ -28,6 +28,8 @@ pub enum Language {
     Hungarian,
     #[strum(serialize = "slv", serialize = "sl-SL", serialize = "svl")]
     Slovenian,
+    #[strum(serialize = "jpn", serialize = "ja", serialize = "jp")]
+    Japanese,
 }
 
 impl Default for Language {
@@ -51,6 +53,7 @@ impl TryFrom<i32> for Language {
             6 => Self::Dutch,
             7 => Self::Hungarian,
             8 => Self::Slovenian,
+            9 => Self::Japanese,
             _ => return Err(error::Error::ParseError),
         })
     }
@@ -69,6 +72,7 @@ impl Into<i32> for Language {
             Self::Dutch => 6,
             Self::Hungarian => 7,
             Self::Slovenian => 8,
+            Self::Japanese => 9,
         }
     }
 }

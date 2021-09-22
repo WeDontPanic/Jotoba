@@ -23,6 +23,7 @@ use languages::Language;
 use misc::Misc;
 use part_of_speech::PartOfSpeech;
 use priority::Priority;
+use serde::{Deserialize, Serialize};
 
 use crate::parse::{error::Error, parser::Parse};
 
@@ -60,6 +61,21 @@ pub struct EntrySense {
     pub xref: Option<String>,
     pub dialect: Option<Dialect>,
     pub information: Option<String>,
+    pub example_sentence: Option<ExampleSentence>,
+}
+
+/// An example sentence for a word
+#[derive(Debug, Default, Clone, PartialEq, Deserialize, Serialize)]
+pub struct ExampleSentence {
+    pub text: String,
+    pub japanese: String,
+    pub translations: Vec<Translation>,
+}
+
+#[derive(Debug, Default, Clone, PartialEq, Deserialize, Serialize)]
+pub struct Translation {
+    pub language: Language,
+    pub value: String,
 }
 
 /// A single gloss entry.
@@ -183,6 +199,7 @@ where
         let mut entry = Entry::default();
         let mut element = EntryElement::default();
         let mut sense = EntrySense::default();
+        let mut example_sentence = ExampleSentence::default();
 
         /*
          * The stack represents the current 'history' of tags which have
@@ -204,6 +221,9 @@ where
                     if tag == Tag::Sense {
                         sense.clear();
                     }
+                    if tag == Tag::Example {
+                        example_sentence.clear();
+                    }
 
                     stack.push(tag);
                 }
@@ -223,6 +243,7 @@ where
                                 entry.senses.push(sense.clone())
                             }
                         }
+                        Tag::Example => sense.example_sentence = Some(example_sentence.clone()),
                         _ => (),
                     }
 
@@ -280,6 +301,17 @@ where
                             Tag::Xref => sense.xref = Some(value),
                             Tag::Dialect => sense.dialect = Some(Dialect::from_str(&value)?),
                             Tag::SInf => sense.information = Some(value),
+                            Tag::ExampleText => example_sentence.text = value,
+                            Tag::ExampleSentence(lang) => {
+                                if *lang == Language::Japanese {
+                                    example_sentence.japanese = value;
+                                } else {
+                                    example_sentence.translations.push(Translation {
+                                        value,
+                                        language: *lang,
+                                    });
+                                }
+                            }
 
                             // Other
                             _ => entry.apply_tag(tag, value)?,
@@ -317,6 +349,7 @@ impl Entry {
 }
 
 impl EntryElement {
+    #[inline]
     fn clear(&mut self) {
         self.kanji = false;
         self.value.clear();
@@ -348,13 +381,24 @@ impl EntrySense {
         self.dialect = None;
         self.misc = None;
         self.part_of_speech.clear();
+        self.example_sentence = None;
     }
 }
+
+impl ExampleSentence {
+    #[inline]
+    fn clear(&mut self) {
+        self.japanese.clear();
+        self.translations.clear();
+        self.text.clear();
+    }
+}
+
 /// An XML tag
 #[derive(Debug, Clone, PartialEq)]
 enum Tag {
-    EntSeq,            // ent_seq Unique sequence of an entry
-    KEle,              // k_ele Kanji element. This is the Entry
+    EntSeq,                    // ent_seq Unique sequence of an entry
+    KEle,                      // k_ele Kanji element. This is the Entry
     REle,      // r_ele reading element. This is the Entry if a word is written entirely in kana
     Keb,       // keb Contains a word or short phrase with at least one kanji
     Reb,       // reb
@@ -377,7 +421,9 @@ enum Tag {
     Gloss(GlossValue), // gloss Represents trans language words
     Pri, // pri Highlights patricular target-language words which are strongly associated with the japanese word
     SInf, // s_inf sense information, for additional sense info
-    Example,
+    Example, // Example sentence for a sense
+    ExampleText, // Form of the term in the example sentence
+    ExampleSentence(Language), // The actual example sentence in any language
 
     Unknown, // Parsing error
 }
@@ -446,10 +492,27 @@ impl Tag {
             "gloss" => Tag::Gloss(GlossValue::new(attributes)),
             "pri" => Tag::Pri,
             "example" => Tag::Example,
+            "ex_text" => Tag::ExampleText,
+            "ex_sent" => Tag::ExampleSentence(get_language(attributes)),
             "s_inf" => Tag::SInf,
             _ => Tag::Unknown,
         }
     }
+}
+
+fn get_language(attributes: Option<Attributes>) -> Language {
+    attributes
+        .and_then(|attributes| {
+            attributes
+                .into_iter()
+                .filter_map(|i| i.is_ok().then(|| i.unwrap()))
+                .find(|i| str::from_utf8(i.key.as_ref()).unwrap() == "xml:lang")
+                .and_then(|i| {
+                    let val = str::from_utf8(i.value.as_ref()).unwrap();
+                    Language::from_str(val).ok()
+                })
+        })
+        .unwrap_or_default()
 }
 
 impl Display for Tag {

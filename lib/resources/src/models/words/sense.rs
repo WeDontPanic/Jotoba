@@ -5,6 +5,7 @@ use crate::parse::jmdict::{
     languages::Language,
     misc::Misc,
     part_of_speech::{PartOfSpeech, PosSimple},
+    ExampleSentence,
 };
 use itertools::Itertools;
 use localization::{language::Language as LocLanguage, traits::Translatable, TranslationDict};
@@ -23,6 +24,7 @@ pub struct Sense {
     pub information: Option<String>,
     pub part_of_speech: Vec<PartOfSpeech>,
     pub language: Language,
+    pub example_sentence: Option<ExampleSentence>,
 }
 
 /// A gloss value represents one word in the
