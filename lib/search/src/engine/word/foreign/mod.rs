@@ -168,8 +168,11 @@ impl<'a> Find<'a> {
     /// already in term list
     fn fixed_term(&self, index: &Index) -> Option<&str> {
         let query_str = self.get_query_str();
+        let mut indexer = index.get_indexer().clone();
 
-        let has_term = index.get_indexer().clone().find_term(&query_str).is_some();
+        let has_term = indexer.find_term(&query_str).is_some()
+            || indexer.find_term(&query_str.to_lowercase()).is_some();
+
         if has_term {
             return None;
         }
