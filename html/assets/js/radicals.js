@@ -22,7 +22,7 @@ const radicals = [
 const baseRadResult = $('.rad-results')[0].innerHTML;
 
 function toggleRadicalOverlay() {
-    $('.overlay.speech').addClass('hidden');
+    closeAllSubSearchbarOverlays("radical");
 
     let overlay = $('.overlay.radical');
     overlay.toggleClass('hidden');
