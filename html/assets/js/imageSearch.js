@@ -36,6 +36,7 @@ function imgSearchFileSelected() {
     let fileInput = document.getElementById("imgUploadFile").files[0];
     if (fileInput !== undefined) {
         disableUploadUrlInput(fileInput.name);
+        openImageCropOverlay();
     } else {
         resetUploadUrlInput();
     }
