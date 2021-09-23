@@ -442,16 +442,6 @@ function loadApiData(result) {
         '   <span class="primary-suggestion">'+primaryResult+'</span> ' +
         '   <span class="secondary-suggestion">'+secondaryResult+'</span> ' +
         ' </div> ';      
-
-      /*
-       * Note: this should only be done if the `oldSuggestion` was selected intentionally, otherwise the selected suggestion jumps around like a frog on cocaine
-       *
-      // Activate suggestion, if available again
-      if (oldSuggestion == primaryResult) {
-            changeSuggestionIndex(i+1, true);
-            suggestionChosen = true;
-      }
-      */
     }
 
     // Activate first suggestion
@@ -489,6 +479,16 @@ function scrollSearchIntoView() {
         var top = $('#search').offset().top;
         Util.scrollTo(top, 500);
     }
+}
+
+// Closes all overlays connected to the search bar
+function closeAllSubSearchbarOverlays(overlayToIgnore) {
+    if (overlayToIgnore !== "speech")
+        $('.overlay.speech').addClass('hidden');
+    if (overlayToIgnore !== "radical") 
+        $('.overlay.radical').addClass('hidden');
+    if (overlayToIgnore !== "image")
+        $('.overlay.image').addClass('hidden');
 }
 
 // Initialize Pagination Buttons

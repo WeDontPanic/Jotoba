@@ -104,6 +104,17 @@ msgstr ""
 msgid "To change your language, select one of the following"
 msgstr ""
 
+# Image search overlay
+
+msgid "Enter a URL or upload your image directly and Jotoba will try to search for japanese words contained in the picture."
+msgstr ""
+
+msgid "Enter Image URL..."
+msgstr ""
+
+msgid "Search"
+msgstr ""
+
 # Languages
 
 msgid "English"

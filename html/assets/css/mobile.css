@@ -77,6 +77,10 @@
         width: 98%;
         margin-left: 1%;
     }
+    
+    .image-search-input {
+        width: 100%;
+    }
 
     .search-annotation {
         width: 80%;

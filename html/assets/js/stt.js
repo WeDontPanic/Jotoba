@@ -62,7 +62,7 @@ function toggleSpeakOverlay() {
         return;
     }
 
-    $('.overlay.radical').addClass('hidden');
+    closeAllSubSearchbarOverlays("speech");
 
     let overlay = $('.overlay.speech');
     overlay.toggleClass('hidden');
