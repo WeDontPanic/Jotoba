@@ -99,7 +99,7 @@ function uploadCroppedImage() {
         let generatedFile = Util.convertDataURLtoFile(croppedImage.crop("image/png", 1), "upload.png");
         
         // Send the Request and handle it
-        Util.sendFilePostRequest(generatedFile, "https://beta.jotoba.de/api/img_scan", function(responseText) {
+        Util.sendFilePostRequest(generatedFile, "/api/img_scan", function(responseText) {
             let response = JSON.parse(responseText);
             if (response.code !== undefined) { // JSON doesnt have a code when the text is given
                 Util.showMessage("error", response.message);
