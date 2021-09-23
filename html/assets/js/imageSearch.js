@@ -94,8 +94,72 @@ function openImageCropOverlay() {
 
 function uploadCroppedImage() {
     if (croppedImage !== null) {
-        console.log(croppedImage.crop("image/png", 1));
+        // Generate a file from the Base64 String
+        let generatedFile = Util.convertdataURLtoFile(croppedImage.crop("image/png", 1), "upload.png");
+        
+        // Send the Request and handle it
+        Util.sendFilePostRequest(generatedFile, "/api/img_scan", function(responseText) {
+            let response = JSON.parse(responseText);
+            if (response.code !== undefined) { // JSON doesnt have a code when the text is given
+                Util.showMessage("error", response.message);
+                $("#loading-screen").toggleClass("show", false);
+            } else {
+                window.location = window.location.origin + "/search/" + encodeURIComponent(response.text)
+            }
+        });
+
+        // Block Screen until Server responded
+        $("#loading-screen").toggleClass("show", true);
+
     }
 
     resetUploadUrlInput();
 }
+
+
+/*
+
+1. Convert base64 to Image File
+2. Send Image file and receive response
+
+
+
+1.
+
+ function dataURLtoFile(dataurl, filename) {
+ 
+        var arr = dataurl.split(','),
+            mime = arr[0].match(/:(.*?);/)[1],
+            bstr = atob(arr[1]), 
+            n = bstr.length, 
+            u8arr = new Uint8Array(n);
+            
+        while(n--){
+            u8arr[n] = bstr.charCodeAt(n);
+        }
+        
+        return new File([u8arr], filename, {type:mime});
+    }
+    
+    //Usage example:
+    var file = dataURLtoFile('data:text/plain;base64,aGVsbG8gd29ybGQ=','hello.txt');
+    console.log(file);
+
+
+2. 
+
+var formData = new FormData();
+formData.append("test.png", file);
+
+var xhr = new XMLHttpRequest();
+xhr.onreadystatechange = function() {
+    if (xhr.readyState == XMLHttpRequest.DONE) {
+        alert(xhr.responseText);    <--- Server response Message
+    }
+}
+
+xhr.open("POST", "/api/img_scan");
+xhr.send(formData);
+
+
+*/

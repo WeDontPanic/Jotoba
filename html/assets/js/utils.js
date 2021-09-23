@@ -190,9 +190,39 @@ Util.loadScript = function(url, async, attributes, callback) {
 }
 
 // Splits the input by " " and returns the last result
-Util.getLastWordOfString = function (s) {
+Util.getLastWordOfString = function(s) {
     let inputSplit = s.split(" ");
     return inputSplit[inputSplit.length-1];
+}
+
+Util.convertdataURLtoFile = function(dataUrl, fileName) {
+    var arr = dataUrl.split(','),
+            mime = arr[0].match(/:(.*?);/)[1],
+            bstr = atob(arr[1]), 
+            n = bstr.length, 
+            u8arr = new Uint8Array(n);
+            
+    while(n--){
+        u8arr[n] = bstr.charCodeAt(n);
+    }
+        
+    return new File([u8arr], fileName, {type:mime});
+}
+
+// Sends a file to the given API endpoint; callback => function
+Util.sendFilePostRequest = function(file, api, callback) {
+    var formData = new FormData();
+    formData.append(file.name, file);
+
+    var xhr = new XMLHttpRequest();
+    xhr.onreadystatechange = function() {
+        if (xhr.readyState == XMLHttpRequest.DONE) {
+            callback(xhr.responseText); 
+        }
+    }
+
+    xhr.open("POST", api);
+    xhr.send(formData);
 }
 
 // Used for animation curves
