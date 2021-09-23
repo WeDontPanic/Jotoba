@@ -1,7 +1,31 @@
 @use crate::BaseData;
 @(data: &BaseData)
 
-<!-- Start of Settings Overlay -->
+<!-- Start of Image Search Modal -->
+<div class="modal fade" id="imageCroppingModal">
+   <div class="modal-dialog">
+       <div class="modal-content">
+           <!-- Modal Header -->
+           <div class="modal-header">
+               <h3 class="modal-title">@data.gettext("Crop your image")</h4>
+               <button type="button" class="close" data-dismiss="modal" onclick="resetUploadUrlInput()">&times;</button>
+           </div>
+   
+           <!-- Modal body -->
+           <div class="modal-body">
+               <div id="croppingTarget"></div>
+           </div>
+
+           <!-- Modal footer -->
+           <div class="modal-footer">
+               <button type="button" class="btn btn-success" data-dismiss="modal" onclick="uploadCroppedImage()">@data.gettext("Search")</button>
+               <button type="button" class="btn btn-danger" data-dismiss="modal" onclick="resetUploadUrlInput()">@data.gettext("Close")</button>
+           </div>
+       </div>
+   </div>
+</div>
+
+<!-- Start of Settings Modal -->
 <div class="modal fade" id="settingsModal">
     <div class="modal-dialog">
        <div class="modal-content">
