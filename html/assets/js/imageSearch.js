@@ -95,7 +95,7 @@ function openImageCropOverlay() {
 function uploadCroppedImage() {
     if (croppedImage !== null) {
         // Generate a file from the Base64 String
-        let generatedFile = Util.convertdataURLtoFile(croppedImage.crop("image/png", 1), "upload.png");
+        let generatedFile = Util.convertDataURLtoFile(croppedImage.crop("image/png", 1), "upload.png");
         
         // Send the Request and handle it
         Util.sendFilePostRequest(generatedFile, "/api/img_scan", function(responseText) {

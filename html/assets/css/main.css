@@ -492,6 +492,10 @@ input[type="color"] {
     margin-right: 10px;
 }
 
+.cropping-target-body {
+    align-self: center;
+}
+
 .image-upload-parent {
     margin-top: -10px;
 }

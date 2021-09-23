@@ -195,7 +195,8 @@ Util.getLastWordOfString = function(s) {
     return inputSplit[inputSplit.length-1];
 }
 
-Util.convertdataURLtoFile = function(dataUrl, fileName) {
+// Converts a Base64 Url to a JS File
+Util.convertDataURLtoFile = function(dataUrl, fileName) {
     var arr = dataUrl.split(','),
             mime = arr[0].match(/:(.*?);/)[1],
             bstr = atob(arr[1]), 
