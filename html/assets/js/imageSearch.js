@@ -99,13 +99,18 @@ function uploadCroppedImage() {
         let generatedFile = Util.convertDataURLtoFile(croppedImage.crop("image/png", 1), "upload.png");
         
         // Send the Request and handle it
-        Util.sendFilePostRequest(generatedFile, "/api/img_scan", function(responseText) {
+        Util.sendFilePostRequest(generatedFile, "https://beta.jotoba.de/api/img_scan", function(responseText) {
             let response = JSON.parse(responseText);
             if (response.code !== undefined) { // JSON doesnt have a code when the text is given
                 Util.showMessage("error", response.message);
                 $("#loading-screen").toggleClass("show", false);
             } else {
-                window.location = window.location.origin + "/search/" + encodeURIComponent(response.text)
+                if (response.text.length == 1 && response.text.match(kanjiRegEx)) {
+                    window.location = window.location.origin + "/search/" + encodeURIComponent(response.text) + "?t=1"
+                } else {
+                    window.location = window.location.origin + "/search/" + encodeURIComponent(response.text)
+                }
+                
             }
         });
 
