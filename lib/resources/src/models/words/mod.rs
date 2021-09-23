@@ -34,6 +34,8 @@ pub struct Word {
     pub furigana: Option<String>,
     pub jlpt_lvl: Option<u8>,
     pub collocations: Option<Vec<u32>>,
+    pub transive_verion: Option<u32>,
+    pub intransive_verion: Option<u32>,
 }
 
 /// Various readings of a word
@@ -177,6 +179,18 @@ impl Word {
     #[inline]
     pub fn get_inflections(&self) -> Option<Inflections> {
         inflection::of_word(self)
+    }
+
+    #[inline]
+    pub fn get_transitive_counterpart(&self) -> Option<Word> {
+        let seq_id = self.transive_verion.as_ref()?;
+        crate::get().words().by_sequence(*seq_id).cloned()
+    }
+
+    #[inline]
+    pub fn get_intransitive_counterpart(&self) -> Option<Word> {
+        let seq_id = self.intransive_verion.as_ref()?;
+        crate::get().words().by_sequence(*seq_id).cloned()
     }
 
     pub fn glosses_pretty(&self) -> String {

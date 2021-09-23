@@ -181,7 +181,19 @@
                     <li id="collocationBtn" class="info-entry noselect" data-toggle="modal" data-target="#coll@word.sequence" class="mdl-menu__item">@data.ngettext("Show collocation", collocations.len() as u64)</li>
                     <li disabled class="mdl-menu__item dot-menu" style="height: 10px;"><hr style="margin: 0px; margin-top: 5px;"></li>
                   }
+
+                  @if let Some(intransitive) = word.get_intransitive_counterpart() {
+                    <li id="SentenceSearchBtn" class="info-entry noselect" class="mdl-menu__item"><a class="no-highlight" draggable="false" href="/search/@intransitive.get_reading().reading">@data.gettext("Intransitive word")</a></li>
+                    <li disabled class="mdl-menu__item dot-menu" style="height: 10px;"><hr style="margin: 0px; margin-top: 5px;"></li>
+                  }
+
+                  @if let Some(transitive) = word.get_transitive_counterpart() {
+                    <li id="SentenceSearchBtn" class="info-entry noselect" class="mdl-menu__item"><a class="no-highlight" draggable="false" href="/search/@transitive.get_reading().reading">@data.gettext("Transitive word")</a></li>
+                    <li disabled class="mdl-menu__item dot-menu" style="height: 10px;"><hr style="margin: 0px; margin-top: 5px;"></li>
+                  }
+
                   <li id="SentenceSearchBtn" class="info-entry noselect" class="mdl-menu__item"><a class="no-highlight" draggable="false" href="/search/@word.get_reading().reading?t=2">@data.gettext("Sentence search")</a></li>
+
                   @if let Some(audio) = word.audio_file() {
                     <li disabled class="mdl-menu__item" style="height: 10px;"><hr style="margin: 0px; margin-top: 5px;"></li>
                     <li id="AudioDlBtn" class="info-entry noselect" class="mdl-menu__item"><a class="no-highlight" draggable="false" href="/assets/audio/@audio">@data.gettext("Download audio")</a></li>
