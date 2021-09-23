@@ -506,6 +506,7 @@ input[type="color"] {
     margin-top: 4px;
     display: block;
     border: 1px solid var(--lineColor);
+    background-color: var(--searchBackground);
 }
 
 .image-search-input.disabled {
