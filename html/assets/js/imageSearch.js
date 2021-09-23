@@ -80,13 +80,13 @@ function openImageCropOverlay() {
     if (selectedFiles.length > 0) {
         let reader = new FileReader();
         reader.onload = function(e) {
-            croppedImage = new ImageCropper("#croppingTarget", e.target.result, {max_width:300,max_height:300}) 
+            croppedImage = new ImageCropper("#croppingTarget", e.target.result, {max_width:300,max_height:300, min_crop_width:10, min_crop_height:10}) 
         }
         reader.readAsDataURL(selectedFiles[0]);
         $("#imageCroppingModal").modal();
     }
-    else if (inputUrl.length > 0 && /\.(jpg|jpeg|png)$/.test(inputUrl)) {  
-        croppedImage = new ImageCropper("#croppingTarget", document.getElementById("imgUploadUrl").value, {max_width:300,max_height:300}) 
+    else if (inputUrl.length > 0 && /\.(jpg|jpeg|png)/.test(inputUrl)) {  
+        croppedImage = new ImageCropper("#croppingTarget", document.getElementById("imgUploadUrl").value, {max_width:300,max_height:300, min_crop_width:10, min_crop_height:10}) 
         $("#imageCroppingModal").modal();
     } else {
         Util.showMessage("error", "You need to enter a URL or upload a file!");
