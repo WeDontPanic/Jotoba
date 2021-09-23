@@ -226,6 +226,20 @@ Util.sendFilePostRequest = function(file, api, callback) {
     xhr.send(formData);
 }
 
+// Checks if a given URL contains an image and call the corresponding callback function
+Util.checkUrlIsImage = function(url, successCallback, errorCallback) {
+    var image = new Image();
+    image.onload = function() {
+      if (this.width > 0) {
+        successCallback();
+      }
+    }
+    image.onerror = function() {
+        errorCallback();
+    }
+    image.src = url;
+}
+
 // Used for animation curves
 Math.easeInOutQuad = function (t, b, c, d) {
     t /= d/2;
