@@ -1,3 +1,4 @@
+// TODO: remove duplicate code if everything is properly implemented
 #![allow(dead_code)]
 
 pub mod engine;
@@ -12,35 +13,7 @@ pub mod word;
 
 pub use engine::load_indexes;
 
-/// Predefines data, required for
-/// each type of search
-#[derive(Clone)]
-pub struct Search<'a> {
-    pub query: &'a str,
-    pub limit: u16,
-    pub mode: SearchMode,
-}
-
-impl<'a> Search<'a> {
-    #[inline]
-    pub fn new(query: &'a str, mode: SearchMode) -> Self {
-        Self {
-            query,
-            limit: 0,
-            mode,
-        }
-    }
-
-    /// Add a limit to the search
-    #[inline]
-    pub fn with_limit(&mut self, limit: u16) -> &mut Self {
-        self.limit = limit;
-        self
-    }
-}
-
-/// How items should be matched with
-/// the query in order to be valid as result
+/// How string items should be matched with each other
 #[derive(Clone, Copy, PartialEq, Debug)]
 #[repr(u8)]
 pub enum SearchMode {

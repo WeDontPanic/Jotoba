@@ -23,7 +23,6 @@ use resources::{
 };
 use result::Item;
 
-#[cfg(feature = "tokenizer")]
 use japanese::jp_parsing::{InputTextParser, ParseResult, WordItem};
 use utils::to_option;
 
@@ -99,15 +98,6 @@ impl<'a> Search<'a> {
         })
     }
 
-    #[cfg(not(feature = "tokenizer"))]
-    async fn get_query(
-        &self,
-        query_str: &str,
-    ) -> Result<(String, Option<()>, Option<Vec<SentencePart>>), Error> {
-        Ok((query_str.to_owned(), None, None))
-    }
-
-    #[cfg(feature = "tokenizer")]
     async fn get_query<'b>(
         &'b self,
         query_str: &'a str,
@@ -143,7 +133,6 @@ impl<'a> Search<'a> {
         }
     }
 
-    #[cfg(feature = "tokenizer")]
     async fn format_setence_parts(
         &self,
         parsed: ParseResult<'static, 'a>,
@@ -211,16 +200,12 @@ impl<'a> Search<'a> {
         let query_modified = query != query_str;
         let pos_filter_tags = self.get_pos_filter_from_query();
 
-        #[cfg(feature = "tokenizer")]
         let infl_info = _morpheme.as_ref().and_then(|i| {
             (!i.inflections.is_empty()).then(|| InflectionInformation {
                 lexeme: i.lexeme.to_owned(),
                 forms: i.inflections.clone(),
             })
         });
-
-        #[cfg(not(feature = "tokenizer"))]
-        let infl_info: Option<InflectionInformation> = None;
 
         let mut search_result = Find::new(&query, 1000, 0).find().await?;
         if query_modified {
@@ -269,13 +254,9 @@ impl<'a> Search<'a> {
             .take(self.query.settings.items_per_page as usize)
             .collect();
 
-        #[cfg(feature = "tokenizer")]
         let searched_query = _morpheme
             .map(|i| i.original_word.to_owned())
             .unwrap_or(query);
-
-        #[cfg(not(feature = "tokenizer"))]
-        let searched_query = query;
 
         Ok(ResultData {
             count,

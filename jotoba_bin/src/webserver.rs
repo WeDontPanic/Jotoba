@@ -33,7 +33,6 @@ pub(super) async fn start() -> std::io::Result<()> {
     let c2 = config.clone();
     threads.push(thread::spawn(move || load_indexes(c2)));
 
-    #[cfg(feature = "tokenizer")]
     threads.push(thread::spawn(move || {
         load_tokenizer();
     }));
@@ -152,7 +151,6 @@ fn setup_logger() {
     env_logger::init_from_env(env_logger::Env::new().default_filter_or("debug"));
 }
 
-#[cfg(feature = "tokenizer")]
 fn load_tokenizer() {
     use japanese::jp_parsing::{JA_NL_PARSER, NL_PARSER_PATH};
 

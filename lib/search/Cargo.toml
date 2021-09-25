@@ -31,5 +31,4 @@ bktree = { git = "https://github.com/JojiiOfficial/bktree"}
 bincode = "*"
 
 [features]
-tokenizer = []
 default = []

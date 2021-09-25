@@ -31,6 +31,7 @@ pub enum QueryType {
 }
 
 impl Default for QueryType {
+    #[inline]
     fn default() -> Self {
         Self::Words
     }

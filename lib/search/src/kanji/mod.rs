@@ -33,20 +33,13 @@ pub async fn search(query: &Query) -> Result<Vec<Item>, Error> {
 fn by_literals(query: &str) -> Vec<Kanji> {
     let kanji_storage = resources::get().kanji();
 
-    let kanji_literals = query
+    query
         .chars()
         .into_iter()
-        .filter_map(|i| i.is_kanji().then(|| i))
-        .collect::<Vec<_>>();
-
-    let mut items = kanji_literals
-        .iter()
-        .filter_map(|literal| kanji_storage.by_literal(*literal).map(|i| i.clone()))
-        .collect::<Vec<_>>();
-
-    items.sort_by(|a, b| utils::get_item_order(&kanji_literals, &a.literal, &b.literal).unwrap());
-
-    items
+        .filter(|i| i.is_kanji())
+        .filter_map(|literal| kanji_storage.by_literal(literal))
+        .cloned()
+        .collect()
 }
 
 /// Find kanji by mits meaning
@@ -65,10 +58,11 @@ fn by_meaning(meaning: &str) -> Vec<Kanji> {
     out
 }
 
+#[inline]
 fn to_item(items: Vec<Kanji>, query: &Query) -> Vec<Item> {
     items
         .into_iter()
-        .map(|i| Item::from_db(i, query.settings.user_lang, query.settings.show_english))
+        .map(|i| Item::load_words(i, query.settings.user_lang, query.settings.show_english))
         .collect()
 }
 

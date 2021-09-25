@@ -16,8 +16,7 @@ pub struct Item {
 }
 
 impl Item {
-    #[inline]
-    pub fn from_db(k: Kanji, lang: Language, show_english: bool) -> Self {
+    pub fn load_words(k: Kanji, lang: Language, show_english: bool) -> Self {
         let kun_dicts = load_dicts(&k.kun_dicts, lang, show_english);
         let on_dicts = load_dicts(&k.on_dicts, lang, show_english);
 

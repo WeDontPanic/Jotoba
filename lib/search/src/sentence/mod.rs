@@ -1,14 +1,16 @@
-mod order;
 pub mod result;
 
-use std::time::Instant;
-
 use super::query::Query;
-use crate::engine::result::SearchResult;
-use crate::engine::sentences::{foreign as foreign_engine, japanese as japanese_engine};
-use crate::query::QueryLang;
+use crate::{
+    engine::{
+        result::SearchResult,
+        sentences::{foreign as foreign_engine, japanese as japanese_engine},
+    },
+    query::QueryLang,
+};
 use error::Error;
 use resources::parse::jmdict::languages::Language;
+use std::time::Instant;
 
 /// Searches for sentences
 pub async fn search(query: &Query) -> Result<(Vec<result::Item>, usize), Error> {
@@ -24,24 +26,19 @@ pub async fn search(query: &Query) -> Result<(Vec<result::Item>, usize), Error> 
     let sentence_storage = resources::get().sentences();
 
     let sentences = res
-        .retrieve_ordered(|i| sentence_storage.by_id(i as u32))
-        .collect::<Vec<_>>();
-
-    let len = sentences.len();
-
-    let sentences = sentences
-        .into_iter()
+        .retrieve_ordered(|i| sentence_storage.by_id(i))
         .filter_map(|i| {
-            result::Sentence::from_m_sentence(i.clone(), lang, query.settings.show_english)
+            let sentence =
+                result::Sentence::from_m_sentence(i.clone(), lang, query.settings.show_english)?;
+            Some(result::Item { sentence })
         })
-        .map(|i| result::Item { sentence: i })
         .skip(query.page_offset)
-        .take(10)
+        .take(query.settings.items_per_page as usize)
         .collect::<Vec<_>>();
 
     println!("Sentence search took: {:?}", start.elapsed());
 
-    Ok((sentences, len))
+    Ok((sentences, res.len()))
 }
 
 /// Find sentences by foreign query

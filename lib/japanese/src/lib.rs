@@ -1,4 +1,3 @@
-#[cfg(feature = "tokenizer")]
 pub mod jp_parsing;
 
 pub mod accent;
