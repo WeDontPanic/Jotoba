@@ -662,20 +662,25 @@ footer {
     height: 10px;
     width: 10px;
     background: var(--bgPrimaryColor);
-    /* left: 50%; */
     margin: -5px;
     box-shadow: inherit
 }
 
 #info-dropdown {
     background-color: var(--background);
-    width: 170px;
+    width: -webkit-max-content;
+    width: -moz-max-content;
+    width: max-content;
     cursor: pointer;
 }
 
+.info-dropdown-txt {
+    padding-left: 10px;
+    margin-right: 5px;
+}
+
 .dot-menu {
-    width: 200%;
-    margin-left: -50%;
+    width: 100%;
 }
 
 .info-entry {
@@ -685,6 +690,12 @@ footer {
     line-height: 1.4;
     cursor: pointer;
     text-align: center;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    width: -webkit-max-content;
+    width: -moz-max-content;
+    width: max-content;
 }
 
 .info-entry:hover {
@@ -1331,4 +1342,44 @@ table tr:last-child > td {
     -webkit-mask: url("/assets/svg/ui/upload.svg") no-repeat center;
     mask: url("/assets/svg/ui/upload.svg") no-repeat center;
     cursor: pointer;
+}
+
+.downloadSvg {
+    height: 20px;
+    width: 20px;
+    background-color: var(--tagColor);
+    -webkit-mask: url("/assets/svg/ui/download.svg") no-repeat center;
+    mask: url("/assets/svg/ui/download.svg") no-repeat center;
+    cursor: pointer;
+    pointer-events: none;
+}
+
+.conjugationSvg {
+    height: 20px;
+    width: 20px;
+    background-color: var(--tagColor);
+    -webkit-mask: url("/assets/svg/ui/conjugation.svg") no-repeat center;
+    mask: url("/assets/svg/ui/conjugation.svg") no-repeat center;
+    cursor: pointer;
+    pointer-events: none;
+}
+
+.sentenceSvg {
+    height: 20px;
+    width: 20px;
+    background-color: var(--tagColor);
+    -webkit-mask: url("/assets/svg/ui/sentence.svg") no-repeat center;
+    mask: url("/assets/svg/ui/sentence.svg") no-repeat center;
+    cursor: pointer;
+    pointer-events: none;
+}
+
+.transitivitySvg {
+    height: 20px;
+    width: 20px;
+    background-color: var(--tagColor);
+    -webkit-mask: url("/assets/svg/ui/transitivity.svg") no-repeat center;
+    mask: url("/assets/svg/ui/transitivity.svg") no-repeat center;
+    cursor: pointer;
+    pointer-events: none;
 }
