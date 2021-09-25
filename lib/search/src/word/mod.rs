@@ -318,7 +318,7 @@ impl<'a> Search<'a> {
             .collect::<Vec<_>>();
 
         // Do romaji search if no results were found
-        if wordresults.is_empty() && !self.query.query.is_japanese() {
+        if wordresults.len() <= 15 && !self.query.query.is_japanese() {
             return self
                 .native_results(&self.query.query.replace(" ", "").to_hiragana())
                 .await;

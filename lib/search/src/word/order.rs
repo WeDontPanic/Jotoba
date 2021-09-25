@@ -37,7 +37,7 @@ pub(super) fn foreign_search_order(
     }
 
     if let Some(jlpt) = word.jlpt_lvl {
-        score += (jlpt as usize) * 1;
+        score += jlpt as usize;
     }
 
     if !word.is_katakana_word() {
@@ -117,7 +117,7 @@ pub(super) fn japanese_search_order(
     }
 
     if let Some(jlpt) = word.jlpt_lvl {
-        score += (jlpt as usize) * 2;
+        score += jlpt as usize;
     }
 
     // Is common
