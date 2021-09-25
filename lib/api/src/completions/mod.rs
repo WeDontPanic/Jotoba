@@ -123,17 +123,18 @@ async fn get_word_suggestions(query: Query) -> Option<Response> {
 /// Returns Ok(suggestions) for the given query ordered and ready to display
 async fn try_word_suggestions(query: &Query) -> Option<Vec<WordPair>> {
     // Get sugesstions for matching language
-    let mut word_pairs = match query.language {
+    let word_pairs = match query.language {
         QueryLang::Japanese => words::native::suggestions(&query.query).await?,
         QueryLang::Foreign | QueryLang::Undetected => {
-            words::foreign::suggestions(&query, &query.query)
+            let mut res = words::foreign::suggestions(&query, &query.query)
                 .await
-                .unwrap_or_default()
+                .unwrap_or_default();
+
+            // Order: put exact matches to top
+            res.sort_by(|a, b| word_pair_order(a, b, &query.query));
+            res
         }
     };
-
-    // Order: put exact matches to top
-    word_pairs.sort_by(|a, b| word_pair_order(a, b, &query.query));
 
     Some(word_pairs)
 }

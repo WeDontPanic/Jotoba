@@ -5,6 +5,7 @@ use std::convert::{TryFrom, TryInto};
 pub struct NativeSuggestion {
     pub text: String,
     pub sequence: u32,
+    pub frequency: u32,
 }
 
 impl From<Vec<u8>> for NativeSuggestion {
@@ -20,10 +21,13 @@ impl TryFrom<&[u8]> for NativeSuggestion {
     #[inline]
     fn try_from(value: &[u8]) -> Result<Self, Self::Error> {
         let sequence_bytes: [u8; 4] = value[0..4].try_into().map_err(|_| ())?;
-        let text = String::from_utf8(value[4..].to_vec()).map_err(|_| ())?;
+        let frequency_bytes: [u8; 4] = value[4..8].try_into().map_err(|_| ())?;
+        let text = String::from_utf8(value[8..].to_vec()).map_err(|_| ())?;
+
         Ok(Self {
             text,
             sequence: u32::from_le_bytes(sequence_bytes),
+            frequency: u32::from_le_bytes(frequency_bytes),
         })
     }
 }
@@ -31,8 +35,9 @@ impl TryFrom<&[u8]> for NativeSuggestion {
 impl From<NativeSuggestion> for Vec<u8> {
     #[inline]
     fn from(item: NativeSuggestion) -> Self {
-        let mut out = Vec::with_capacity(4 + item.text.len());
+        let mut out = Vec::with_capacity(8 + item.text.len());
         out.extend(item.sequence.to_le_bytes());
+        out.extend(item.frequency.to_le_bytes());
         out.extend(item.text.as_bytes());
         out
     }

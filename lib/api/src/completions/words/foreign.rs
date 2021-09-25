@@ -12,7 +12,7 @@ pub async fn suggestions(query: &Query, query_str: &str) -> Option<Vec<WordPair>
         return None;
     }
 
-    let query_str = query_str.to_owned();
+    let query_str = query_str.trim().to_owned();
     let mut res = actix_web::web::block(move || search(lang, &query_str))
         .await
         .ok()?;
