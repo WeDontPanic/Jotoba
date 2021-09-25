@@ -8,7 +8,7 @@ use crate::{engine, query::Form};
 
 use self::result::{InflectionInformation, WordResult};
 use super::{
-    query::{Query, QueryLang, Tag},
+    query::{Query, QueryLang},
     search_order::SearchOrder,
 };
 use error::Error;
@@ -174,19 +174,6 @@ impl<'a> Search<'a> {
         Some(sentence_parts)
     }
 
-    /// Returns a vec of all PartOfSpeech to filter  
-    #[inline]
-    fn get_pos_filter_from_query(&self) -> Vec<PosSimple> {
-        self.query
-            .tags
-            .iter()
-            .filter_map(|i| match i {
-                Tag::PartOfSpeech(i) => Some(*i),
-                _ => None,
-            })
-            .collect_vec()
-    }
-
     /// Perform a native word search
     async fn native_results(&self, query_str: &str) -> Result<ResultData, Error> {
         use engine::word::japanese::Find;
@@ -195,12 +182,16 @@ impl<'a> Search<'a> {
             return Ok(ResultData::default());
         }
 
-        let (query, _morpheme, sentence) = self.get_query(query_str).await?;
+        let (query, morpheme, sentence) = self.get_query(query_str).await?;
 
         let query_modified = query != query_str;
-        let pos_filter_tags = self.get_pos_filter_from_query();
+        let pos_filter_tags = self
+            .query
+            .get_part_of_speech_tags()
+            .copied()
+            .collect::<Vec<_>>();
 
-        let infl_info = _morpheme.as_ref().and_then(|i| {
+        let infl_info = morpheme.as_ref().and_then(|i| {
             (!i.inflections.is_empty()).then(|| InflectionInformation {
                 lexeme: i.lexeme.to_owned(),
                 forms: i.inflections.clone(),
@@ -254,7 +245,7 @@ impl<'a> Search<'a> {
             .take(self.query.settings.items_per_page as usize)
             .collect();
 
-        let searched_query = _morpheme
+        let searched_query = morpheme
             .map(|i| i.original_word.to_owned())
             .unwrap_or(query);
 
@@ -279,7 +270,7 @@ impl<'a> Search<'a> {
             return Ok(ResultData::default());
         }
 
-        let pos_filter = to_option(self.get_pos_filter_from_query());
+        let pos_filter = to_option(self.query.get_part_of_speech_tags().copied().collect());
 
         // Do the search
         let search_result = Find::new(&self.query, 1000, 0)
