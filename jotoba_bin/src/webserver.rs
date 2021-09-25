@@ -3,7 +3,7 @@ use localization::TranslationDict;
 
 use actix_web::{
     http::header::{ACCESS_CONTROL_ALLOW_ORIGIN, CACHE_CONTROL},
-    middleware,
+    middleware::{self, Compat, Compress},
     web::{self as actixweb, Data},
     App, HttpRequest, HttpServer,
 };
@@ -69,23 +69,34 @@ pub(super) async fn start() -> std::io::Result<()> {
         let app = App::new()
             // Data
             .app_data(Data::new(config.clone()))
-            // .app_data(Data::new(pool.clone()))
             .app_data(Data::new(locale_dict_arc.clone()))
             // Middlewares
-            // TODO: Don't send audio files compressed
-            .wrap(middleware::Compress::default())
             .wrap(middleware::Logger::default())
-            //.wrap(CookieSession::signed(&[0; 32]).secure(false))
-            // Static files
-            .route("/index.html", actixweb::get().to(frontend::index::index))
-            .route("/docs.html", actixweb::get().to(docs))
-            .route("/privacy", actixweb::get().to(privacy))
-            .route("/", actixweb::get().to(frontend::index::index))
-            .route(
-                "/search/{query}",
-                actixweb::get().to(frontend::search_ep::search),
+            .service(
+                actixweb::resource("/")
+                    .wrap(Compat::new(middleware::Compress::default()))
+                    .route(actixweb::get().to(frontend::index::index)),
             )
-            .route("/about", actixweb::get().to(frontend::about::about))
+            .service(
+                actixweb::resource("/docs.html")
+                    .wrap(Compat::new(middleware::Compress::default()))
+                    .route(actixweb::get().to(docs)),
+            )
+            .service(
+                actixweb::resource("/privacy")
+                    .wrap(Compat::new(middleware::Compress::default()))
+                    .route(actixweb::get().to(privacy)),
+            )
+            .service(
+                actixweb::resource("/search/{query}")
+                    .wrap(Compat::new(middleware::Compress::default()))
+                    .route(actixweb::get().to(frontend::search_ep::search)),
+            )
+            .service(
+                actixweb::resource("/about")
+                    .wrap(Compat::new(middleware::Compress::default()))
+                    .route(actixweb::get().to(frontend::about::about)),
+            )
             .default_service(actix_web::Route::new().to(frontend::web_error::not_found))
             // API
             .service(
@@ -93,6 +104,7 @@ pub(super) async fn start() -> std::io::Result<()> {
                     .wrap(
                         middleware::DefaultHeaders::new().header(ACCESS_CONTROL_ALLOW_ORIGIN, "*"),
                     )
+                    .wrap(Compat::new(Compress::default()))
                     .service(
                         actixweb::scope("search")
                             .route("words", actixweb::post().to(api::search::word::word_search))
