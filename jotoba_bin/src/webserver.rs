@@ -130,11 +130,23 @@ pub(super) async fn start() -> std::io::Result<()> {
             )
             // Static files
             .service(
+                actixweb::scope("/audio")
+                    .wrap(
+                        middleware::DefaultHeaders::new()
+                            .header(CACHE_CONTROL, format!("max-age={}", ASSET_CACHE_MAX_AGE)),
+                    )
+                    .service(
+                        actix_files::Files::new("", config.server.get_audio_files())
+                            .show_files_listing(),
+                    ),
+            )
+            .service(
                 actixweb::scope("/assets")
                     .wrap(
                         middleware::DefaultHeaders::new()
                             .header(CACHE_CONTROL, format!("max-age={}", ASSET_CACHE_MAX_AGE)),
                     )
+                    .wrap(Compat::new(Compress::default()))
                     .service(
                         actix_files::Files::new("", config.server.get_html_files())
                             .show_files_listing(),

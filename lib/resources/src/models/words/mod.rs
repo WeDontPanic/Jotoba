@@ -124,7 +124,7 @@ impl Word {
     pub fn audio_file(&self) -> Option<String> {
         self.reading.kanji.as_ref().and_then(|kanji| {
             let file = format!("{}【{}】.ogg", kanji.reading, self.reading.kana.reading);
-            Path::new(&format!("html/assets/audio/{}", file))
+            Path::new(&format!("html/audio/{}", file))
                 .exists()
                 .then(|| file)
         })

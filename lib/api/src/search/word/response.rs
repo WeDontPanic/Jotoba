@@ -99,7 +99,7 @@ impl From<&resources::models::words::Word> for Word {
             audio: word
                 .audio_file()
                 .as_ref()
-                .map(|i| format!("/assets/audio/{}", i)),
+                .map(|i| format!("/audio/{}", i)),
         }
     }
 }

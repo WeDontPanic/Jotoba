@@ -17,6 +17,7 @@ pub struct Config {
 #[derive(Serialize, Deserialize, Clone)]
 pub struct ServerConfig {
     pub html_files: Option<String>,
+    pub audio_files: Option<String>,
     pub listen_address: String,
     pub storage_data: Option<String>,
     pub radical_map: Option<String>,
@@ -130,6 +131,7 @@ impl Default for ServerConfig {
     fn default() -> Self {
         Self {
             html_files: Some(String::from("html/assets")),
+            audio_files: Some(String::from("html/audio")),
             listen_address: String::from("127.0.0.1:8080"),
             sentences: Some(String::from("./resources/sentences.bin")),
             storage_data: Some(String::from("./resources/storage_data")),
@@ -141,6 +143,10 @@ impl Default for ServerConfig {
 }
 
 impl ServerConfig {
+    pub fn get_audio_files(&self) -> &str {
+        self.audio_files.as_deref().unwrap_or("html/audio")
+    }
+
     pub fn get_html_files(&self) -> &str {
         self.html_files.as_deref().unwrap_or("html/assets")
     }

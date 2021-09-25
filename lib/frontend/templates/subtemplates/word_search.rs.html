@@ -152,9 +152,9 @@
                 </div>
               }
               @if let Some(audio) = word.audio_file() {
-                <span class="clickable audioBtn" data="/assets/audio/@audio">@data.gettext("Play audio")
+                <span class="clickable audioBtn" data="/audio/@audio">@data.gettext("Play audio")
                   <audio preload="none">
-                    <source src="/assets/audio/@audio" type="audio/ogg">
+                    <source src="/audio/@audio" type="audio/ogg">
                   </audio>
                 </span>
               }
@@ -196,7 +196,7 @@
 
                   @if let Some(audio) = word.audio_file() {
                     <li disabled class="mdl-menu__item" style="height: 10px;"><hr style="margin: 0px; margin-top: 5px;"></li>
-                    <li id="AudioDlBtn" class="info-entry noselect" class="mdl-menu__item"><a class="no-highlight" draggable="false" href="/assets/audio/@audio">@data.gettext("Download audio")</a></li>
+                    <li id="AudioDlBtn" class="info-entry noselect" class="mdl-menu__item"><a class="no-highlight" draggable="false" href="/audio/@audio">@data.gettext("Download audio")</a></li>
                   }
                 </ul>
 
