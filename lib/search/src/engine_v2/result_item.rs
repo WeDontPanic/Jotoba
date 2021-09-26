@@ -22,9 +22,7 @@ impl<T: PartialEq> PartialEq for ResultItem<T> {
 impl<T: PartialEq> PartialOrd for ResultItem<T> {
     #[inline]
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
-        self.relevance
-            .partial_cmp(&other.relevance)
-            .map(|i| i.reverse())
+        self.relevance.partial_cmp(&other.relevance)
     }
 }
 

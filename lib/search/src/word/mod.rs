@@ -4,7 +4,7 @@ pub mod result;
 
 use std::time::Instant;
 
-use crate::{engine, engine_v2, query::Form};
+use crate::{engine, query::Form};
 
 use self::result::{InflectionInformation, WordResult};
 use super::{

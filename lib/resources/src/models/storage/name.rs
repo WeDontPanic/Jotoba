@@ -15,7 +15,7 @@ impl<'a> NameRetrieve<'a> {
 
     /// Get a name by its sequence id
     #[inline]
-    pub fn by_sequence(&self, seq_id: u32) -> Option<&Name> {
+    pub fn by_sequence(&self, seq_id: u32) -> Option<&'a Name> {
         self.storage.dict_data.names.get(seq_id as u64)
     }
 }

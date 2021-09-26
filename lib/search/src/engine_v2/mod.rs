@@ -1,9 +1,11 @@
+pub mod names;
 pub mod result_item;
 pub mod words;
 
-use std::{cmp::Ordering, marker::PhantomData, thread};
+use std::{cmp::min, collections::BinaryHeap, marker::PhantomData, thread};
 
 use config::Config;
+use error::Error;
 use resources::{models::storage::ResourceStorage, parse::jmdict::languages::Language};
 use vector_space_model::{
     document_vector, metadata::Metadata, traits::Decodable, DocumentVector, Index,
@@ -20,17 +22,22 @@ pub fn load_indexes(config: &Config) -> Result<(), Box<dyn std::error::Error>> {
         words::native::index::load(config1.get_indexes_source());
     }));
 
+    let config1 = config.clone();
+    joins.push(thread::spawn(move || {
+        names::native::index::load(&config1);
+    }));
+
     for j in joins {
         j.join().map_err(|_| error::Error::Unexpected)?;
     }
 
     /*
     word::japanese::index::load(config.get_indexes_source());
-    name::japanese::index::load(config);
     name::foreign::index::load(config);
     sentences::japanese::index::load(config);
     sentences::foreign::index::load(config)?;
     */
+
     Ok(())
 }
 
@@ -42,11 +49,10 @@ pub trait SearchEngine: Indexable {
     fn doc_to_output<'a>(
         storage: &'a ResourceStorage,
         input: &Self::Document,
-    ) -> Option<&'a Self::Output>;
+    ) -> Option<Vec<&'a Self::Output>>;
 
     /// Generates a vector for a query, in order to be able to compare results with a vector
     fn gen_query_vector(
-        &self,
         index: &Index<Self::Document, Self::Metadata>,
         query: &str,
     ) -> Option<DocumentVector<Self::GenDoc>>;
@@ -79,7 +85,9 @@ where
     vec_filter: Option<Box<dyn Fn(&T::Document) -> bool>>,
     res_filter: Option<Box<dyn Fn(&T::Output) -> bool>>,
     threshold: f32,
-    total_limit: u32,
+    limit: usize,
+    total_limit: usize,
+    offset: usize,
     phantom: PhantomData<T>,
 }
 
@@ -97,14 +105,27 @@ where
 
     /// Set the language to search in. This'll only have an effect if the used SearchEngine
     /// supports languages
-    pub fn with_language(&mut self, language: Language) -> &mut Self {
+    pub fn language(mut self, language: Language) -> Self {
         self.language = Some(language);
         self
     }
 
     /// Set the total limit. This is the max amount of vectors which will be loaded and processed
-    pub fn with_total_limit(&mut self, total_limit: u32) -> &mut Self {
-        self.total_limit = total_limit;
+    pub fn limit(mut self, total_limit: usize) -> Self {
+        self.limit = total_limit;
+        self
+    }
+
+    /// Sets the search task's threshold
+    pub fn threshold(mut self, threshold: f32) -> Self {
+        self.threshold = threshold;
+        self
+    }
+
+    /// Sets the offeset of the search. Can be used for pagination. Requires output of search being
+    /// directly used and not manually reordered
+    pub fn offset(mut self, offset: usize) -> Self {
+        self.offset = offset;
         self
     }
 
@@ -124,20 +145,35 @@ where
         self.res_filter = Some(Box::new(res_filter));
     }
 
-    /// Sets the search task's threshold
-    pub fn with_threshold(&mut self, threshold: f32) -> &mut Self {
-        self.threshold = threshold;
-        self
+    /// Returns `true` if the search task's query is a term in the corresponding index
+    #[inline]
+    pub fn has_term(&self) -> bool {
+        T::get_index(self.language)
+            .map(|i| i.get_indexer().clone().find_term(self.query).is_some())
+            .unwrap_or(false)
     }
 
-    pub fn find_by_vec(
-        &self,
-        vec: DocumentVector<T::GenDoc>,
-    ) -> Result<Vec<ResultItem<&T::Output>>, Box<dyn std::error::Error>> {
+    /// Runs the search task and returns the result.
+    pub fn find(&self) -> Result<(Vec<ResultItem<&T::Output>>, usize), Error> {
         let index = match T::get_index(self.language) {
             Some(index) => index,
-            None => return Ok(vec![]),
+            None => return Ok((vec![], 0)),
         };
+
+        let vec = T::gen_query_vector(index, self.query).ok_or(error::Error::NotFound)?;
+        self.find_by_vec(vec)
+    }
+
+    fn find_by_vec(
+        &self,
+        vec: DocumentVector<T::GenDoc>,
+    ) -> Result<(Vec<ResultItem<&T::Output>>, usize), Error> {
+        let index = T::get_index(self.language);
+        if index.is_none() {
+            log::error!("Failed to retrieve {:?} index with language", self.language);
+            return Err(Error::Unexpected);
+        }
+        let index = index.unwrap();
 
         // Retrieve all document vectors that share at least one dimension with the query vector
         let document_vectors = index
@@ -146,45 +182,62 @@ where
             .get_all(&vec.vector().vec_indices().collect::<Vec<_>>())
             .ok_or(error::Error::NotFound)?;
 
-        // Sort by relevance
-        let mut found: Vec<_> = document_vectors
-            .iter()
-            .filter(|i| self.filter_vector(&i.document))
-            .filter_map(|i| {
-                let similarity = i.similarity(&vec);
-                (similarity >= self.threshold).then(|| (&i.document, similarity))
-            })
-            .collect();
-
-        // Sort by similarity to top
-        //found.sort_by(|a, b| sort_fn(a, b));
-        found.sort_by(|a, b| a.1.partial_cmp(&b.1).unwrap_or(Ordering::Equal).reverse());
-        //found.dedup_by(|a, b| a.document == b.document);
-
         let storage = resources::get();
 
-        // Convert DocumentVectors to ResultItems
-        let res = found
+        let items = document_vectors
             .into_iter()
-            .take(self.total_limit as usize)
-            .filter_map(|(doc, rel)| {
-                let item = T::doc_to_output(storage, doc)?;
-
-                // Filter results
-                if !self.filter_result(item) {
+            .filter_map(|i| {
+                if !self.filter_vector(&i.document) {
                     return None;
                 }
 
-                let res = self
-                    .language
-                    .map(|i| ResultItem::with_language(item, rel, i))
-                    .unwrap_or(ResultItem::new(item, rel));
+                let similarity = i.similarity(&vec);
+                if similarity <= self.threshold {
+                    return None;
+                }
+
+                // Retrieve `Output` values for given documents
+                let res = T::doc_to_output(storage, &i.document)?
+                    .into_iter()
+                    .map(move |i| (similarity, i));
 
                 Some(res)
             })
+            .flatten()
+            .filter(|i| self.filter_result(&i.1))
+            .map(|(rel, item)| {
+                self.language
+                    .map(|i| ResultItem::with_language(item, rel, i))
+                    .unwrap_or(ResultItem::new(item, rel))
+            })
+            .take(self.total_limit)
             .collect::<Vec<_>>();
 
-        Ok(res)
+        let mut heap: BinaryHeap<ResultItem<&T::Output>> = BinaryHeap::from(items);
+
+        let len = heap.len();
+        let out = self.get_items_from_heap(&mut heap);
+        Ok((out, len))
+    }
+
+    /// Returns the correct items from the heap. This includes `offset` and `limit`. The length of
+    /// the returned vector is always equal or smaler than `limit`
+    fn get_items_from_heap<O: Ord>(&self, heap: &mut BinaryHeap<O>) -> Vec<O> {
+        if self.offset >= heap.len() {
+            return vec![];
+        }
+        let item_count = min(heap.len() - self.offset, self.limit);
+        let mut out = Vec::with_capacity(item_count);
+
+        for _ in 0..self.offset {
+            heap.pop();
+        }
+
+        for _ in 0..item_count {
+            out.push(heap.pop().unwrap());
+        }
+
+        out
     }
 
     #[inline]
@@ -207,7 +260,9 @@ impl<'a, T: SearchEngine> Default for SerachTask<'a, T> {
             vec_filter: None,
             res_filter: None,
             threshold: 0.2,
+            limit: 1000,
             total_limit: 2000,
+            offset: 0,
             phantom: PhantomData::default(),
         }
     }

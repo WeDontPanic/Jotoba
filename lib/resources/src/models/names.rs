@@ -1,7 +1,7 @@
 use crate::parse::jmnedict::name_type::NameType;
 use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
 pub struct Name {
     pub sequence: u32,
     pub kana: String,

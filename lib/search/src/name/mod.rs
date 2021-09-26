@@ -1,6 +1,10 @@
 mod order;
 pub mod result;
 
+use std::time::Instant;
+
+use crate::engine_v2::{self, SerachTask};
+
 use self::result::NameResult;
 
 use super::query::Query;
@@ -12,6 +16,10 @@ use utils::to_option;
 /// Search for names
 #[inline]
 pub async fn search(query: &Query) -> Result<NameResult, Error> {
+    if query.query.is_japanese() {
+        return do_jp(query);
+    }
+
     if query.form.is_kanji_reading() {
         search_kanji(&query).await
     } else {
@@ -19,9 +27,38 @@ pub async fn search(query: &Query) -> Result<NameResult, Error> {
     }
 }
 
+fn do_jp(query: &Query) -> Result<NameResult, Error> {
+    let start = Instant::now();
+
+    let search_task: SerachTask<engine_v2::names::native::NativeEngine> =
+        SerachTask::new(&query.query)
+            .threshold(0f32)
+            .offset(query.page_offset)
+            .limit(query.settings.items_per_page as usize);
+
+    let (res, len) = search_task.find()?;
+    let res: Vec<_> = res
+        .into_iter()
+        /*
+        .skip(query.page_offset)
+        .take(query.settings.items_per_page as usize)
+        */
+        .map(|i| i.item.clone())
+        .collect();
+
+    println!("search took: {:?}", start.elapsed());
+
+    Ok(NameResult {
+        total_count: len as u32,
+        items: res,
+    })
+}
+
 /// Do a name search
 async fn do_search(query: &Query) -> Result<NameResult, Error> {
     use crate::engine::name::{foreign, japanese};
+
+    let start = Instant::now();
 
     let res = if query.query.is_japanese() {
         japanese::Find::new(&query.query, 1000, 0).find().await?
@@ -37,6 +74,8 @@ async fn do_search(query: &Query) -> Result<NameResult, Error> {
         .take(query.settings.items_per_page as usize)
         .cloned()
         .collect();
+
+    println!("search took: {:?}", start.elapsed());
 
     Ok(NameResult {
         items: names,

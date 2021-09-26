@@ -1,20 +1,21 @@
 pub mod index;
 
 use crate::{
-    engine::{document::SingleDocument, simple_gen_doc::GenDoc},
+    engine::{document::MultiDocument, simple_gen_doc::GenDoc},
     engine_v2::{Indexable, SearchEngine},
 };
 use resources::{
-    models::{storage::ResourceStorage, words::Word},
+    models::{names::Name, storage::ResourceStorage},
     parse::jmdict::languages::Language,
 };
+use utils::to_option;
 use vector_space_model::{DefaultMetadata, DocumentVector};
 
 pub struct NativeEngine {}
 
 impl Indexable for NativeEngine {
     type Metadata = DefaultMetadata;
-    type Document = SingleDocument;
+    type Document = MultiDocument;
 
     #[inline]
     fn get_index(
@@ -26,21 +27,26 @@ impl Indexable for NativeEngine {
 
 impl SearchEngine for NativeEngine {
     type GenDoc = GenDoc;
-    type Output = Word;
+    type Output = Name;
 
     #[inline]
     fn doc_to_output<'a>(
         storage: &'a ResourceStorage,
         inp: &Self::Document,
     ) -> Option<Vec<&'a Self::Output>> {
-        storage.words().by_sequence(inp.seq_id).map(|i| vec![i])
+        to_option(
+            inp.seq_ids
+                .iter()
+                .map(|i| storage.names().by_sequence(*i).unwrap())
+                .collect(),
+        )
     }
 
     fn gen_query_vector(
         index: &vector_space_model::Index<Self::Document, Self::Metadata>,
         query: &str,
     ) -> Option<DocumentVector<Self::GenDoc>> {
-        let query_document = GenDoc::new(vec![query]);
+        let query_document = GenDoc::new(vec![query.to_string()]);
         let mut doc = DocumentVector::new(index.get_indexer(), query_document.clone())?;
 
         // TODO: look if this makes the results really better. If not, remove
