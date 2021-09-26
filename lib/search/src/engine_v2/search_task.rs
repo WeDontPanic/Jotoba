@@ -20,7 +20,7 @@ where
     /// Min relevance returned from vector space algo
     threshold: f32,
     limit: usize,
-    total_limit: usize,
+    vector_limit: usize,
     offset: usize,
     phantom: PhantomData<T>,
 }
@@ -109,7 +109,7 @@ where
 
     fn find_by_vec(
         &self,
-        vec: DocumentVector<T::GenDoc>,
+        q_vec: DocumentVector<T::GenDoc>,
     ) -> Result<SearchResult<&T::Output>, Error> {
         let index = T::get_index(self.language);
         if index.is_none() {
@@ -118,23 +118,31 @@ where
         }
         let index = index.unwrap();
 
-        // Retrieve all document vectors that share at least one dimension with the query vector
-        let document_vectors = index
-            .get_vector_store()
-            .clone()
-            .get_all(&vec.vector().vec_indices().collect::<Vec<_>>())
-            .ok_or(error::Error::NotFound)?;
+        let mut vec_store = index.get_vector_store().clone();
+        let query_dimensions: Vec<_> = q_vec.vector().vec_indices().collect();
 
+        // Retrieve all document vectors that share at least one dimension with the query vector
+        let document_vectors = vec_store
+            .get_all_iter(&query_dimensions)
+            .take(self.vector_limit);
+
+        self.result_from_doc_vectors(document_vectors, &q_vec)
+    }
+
+    fn result_from_doc_vectors(
+        &self,
+        document_vectors: impl Iterator<Item = DocumentVector<T::Document>>,
+        q_vec: &DocumentVector<T::GenDoc>,
+    ) -> Result<SearchResult<&T::Output>, Error> {
         let storage = resources::get();
 
         let items = document_vectors
-            .into_iter()
             .filter_map(|i| {
                 if !self.filter_vector(&i.document) {
                     return None;
                 }
 
-                let similarity = i.similarity(&vec);
+                let similarity = i.similarity(&q_vec);
                 if similarity <= self.threshold {
                     return None;
                 }
@@ -155,7 +163,6 @@ where
                     .map(|i| ResultItem::with_language(item, relevance, i))
                     .unwrap_or(ResultItem::new(item, relevance))
             })
-            .take(self.total_limit)
             .collect::<Vec<_>>();
 
         let heap: BinaryHeap<ResultItem<&T::Output>> = BinaryHeap::from(items);
@@ -198,7 +205,7 @@ impl<'a, T: SearchEngine> Default for SearchTask<'a, T> {
             order: None,
             threshold: 0.2,
             limit: 1000,
-            total_limit: 2000,
+            vector_limit: 20000,
             offset: 0,
             phantom: PhantomData::default(),
         }

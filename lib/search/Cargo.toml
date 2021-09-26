@@ -28,7 +28,7 @@ byteorder = "1.4.3"
 tinysegmenter = "0.1.1"
 bitflags = {git = "https://github.com/JojiiOfficial/BitFlags"}
 bktree = { git = "https://github.com/JojiiOfficial/bktree"}
-bincode = "*"
+bincode = "1.3.3"
 
 [features]
 default = []

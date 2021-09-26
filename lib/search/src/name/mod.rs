@@ -32,20 +32,12 @@ fn do_jp(query: &Query) -> Result<NameResult, Error> {
 
     let search_task: SearchTask<engine_v2::names::native::NativeEngine> =
         SearchTask::new(&query.query)
-            .threshold(0f32)
+            .threshold(0.05f32)
             .offset(query.page_offset)
             .limit(query.settings.items_per_page as usize);
 
     let res = search_task.find()?;
-    let items: Vec<_> = res
-        .items
-        .into_iter()
-        /*
-        .skip(query.page_offset)
-        .take(query.settings.items_per_page as usize)
-        */
-        .map(|i| i.item.clone())
-        .collect();
+    let items: Vec<_> = res.items.into_iter().map(|i| i.item.clone()).collect();
 
     println!("search took: {:?}", start.elapsed());
 
