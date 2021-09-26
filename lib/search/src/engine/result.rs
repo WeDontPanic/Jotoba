@@ -10,7 +10,7 @@ pub struct SearchResult {
     order_map: HashMap<u32, ResultItem>,
 }
 
-/// A single result item for `find`
+/// A single item in a set of search resulted items
 #[derive(Clone, Copy, Default, Debug)]
 pub struct ResultItem {
     pub seq_id: u32,
@@ -48,12 +48,7 @@ impl SearchResult {
     #[inline]
     pub fn new(mut items: Vec<ResultItem>) -> SearchResult {
         let order_map = Self::build_order_map(&items);
-        items.sort_by(|a, b| {
-            a.relevance
-                .partial_cmp(&b.relevance)
-                .unwrap_or(Ordering::Equal)
-                .reverse()
-        });
+        items.sort();
         Self { items, order_map }
     }
 

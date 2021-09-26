@@ -75,7 +75,7 @@ impl<'a> Find<'a> {
         // Chain custom and english results
         let mut result = native_results
             .into_iter()
-            .chain(english_results.into_iter())
+            .chain(english_results)
             .collect::<Vec<_>>();
 
         result.sort();

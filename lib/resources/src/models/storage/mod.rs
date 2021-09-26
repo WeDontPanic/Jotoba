@@ -117,7 +117,7 @@ impl ResourceStorage {
 
     /// Returns a `WordRetrieve` which can be used to retrieve words from the `ResourceStorage`
     #[inline]
-    pub fn words(&self) -> WordRetrieve<'_> {
+    pub fn words<'a>(&'a self) -> WordRetrieve<'a> {
         WordRetrieve::new(self)
     }
 

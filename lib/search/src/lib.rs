@@ -2,6 +2,7 @@
 #![allow(dead_code)]
 
 pub mod engine;
+pub mod engine_v2;
 pub mod kanji;
 pub mod name;
 pub mod query;
