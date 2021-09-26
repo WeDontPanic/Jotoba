@@ -2,16 +2,6 @@
  *  This file handles everything related to image-search requests
  */ 
 
-// Prepare to correctly close the Modal when clicking on the darkened parts
-Util.awaitDocumentReady(() => {
-    var target = $("#imageCroppingModal")[0];
-    $(target).on("click", (e) => {
-        if (e.target == target) {
-            resetUploadUrlInput();
-        }
-    });
-});
-
 // Shows / Hides the image search overlay
 function toggleImageSearchOverlay() {
     let overlay = $('.overlay.image');
@@ -45,6 +35,7 @@ function imgSearchFileSelected() {
 // Toggles the URL input active / disabled
 var urlInputDisabled = false;
 var originalMsg = document.getElementById("imgUploadUrl").placeholder;
+var cropTarget;
 
 function resetUploadUrlInput() {
     let urlInput = document.getElementById("imgUploadUrl")
@@ -55,10 +46,10 @@ function resetUploadUrlInput() {
 
     document.getElementById("imgUploadFile").value = null;
 
-    if (croppedImage !== null) {
-        document.getElementById("croppingTarget").innerHTML = "";
-        croppedImage = null;
+    if (cropTarget !== null) {
+        cropTarget.croppie("destroy");
     }
+    toggleCroppingModal();
 }
 
 function disableUploadUrlInput(newMessage) {
@@ -72,7 +63,6 @@ function disableUploadUrlInput(newMessage) {
 }
 
 // Opens the Image Cropping Overlay
-var croppedImage = null;
 function openImageCropOverlay() {
     var selectedFiles = document.getElementById("imgUploadFile").files;
     var inputUrl = document.getElementById("imgUploadUrl").value;
@@ -80,30 +70,35 @@ function openImageCropOverlay() {
     if (selectedFiles.length > 0) {
         let reader = new FileReader();
         reader.onload = function(e) {
-            croppedImage = new ImageCropper("#croppingTarget", e.target.result, {max_width:300,max_height:300, min_crop_width:10, min_crop_height:10}) 
+            initCroppie(e.target.result);
         }
         reader.readAsDataURL(selectedFiles[0]);
-        $("#imageCroppingModal").modal();
+        toggleCroppingModal();
     }
     else if (inputUrl.length > 0) {  
-
         Util.checkUrlIsImage(inputUrl, () => {
-                croppedImage = new ImageCropper("#croppingTarget", inputUrl, {max_width:300,max_height:300, min_crop_width:10, min_crop_height:10}) 
-                $("#imageCroppingModal").modal();
-            }, () => {
-                Util.showMessage("error", "You need to enter a URL or upload a file!");
-            }
-        );
+            initCroppie(inputUrl);
+        });
+        toggleCroppingModal();
     } else {
         Util.showMessage("error", "You need to enter a URL or upload a file!");
     }
 }
 
-function uploadCroppedImage() {
-    if (croppedImage !== null) {
+// Receives the image from Croppie, sends it to the server and starts the search
+function uploadCroppedImage(dataUrl) {
+
+    cropTarget.croppie('result', {
+        type: 'canvas',
+        size: 'viewport'
+    }).then(function (resp) {
+
         // Generate a file from the Base64 String
-        let generatedFile = Util.convertDataURLtoFile(croppedImage.crop("image/png", 1), "upload.png");
-        
+        let generatedFile = Util.convertDataURLtoFile(resp);
+
+        // Block Screen until Server responded
+        $("#loading-screen").toggleClass("show", true);
+
         // Send the Request and handle it
         Util.sendFilePostRequest(generatedFile, "/api/img_scan", function(responseText) {
             let response = JSON.parse(responseText);
@@ -116,14 +111,39 @@ function uploadCroppedImage() {
                 } else {
                     window.location = window.location.origin + "/search/" + encodeURIComponent(response.text)
                 }
-                
             }
         });
+    });
+    
+    resetUploadUrlInput();
+}
 
-        // Block Screen until Server responded
-        $("#loading-screen").toggleClass("show", true);
+// Loads the Image Cropper
+function initCroppie(inputUrl) {
+    cropTarget = $('#croppingTarget').croppie({
+        mouseWheelZoom: 'ctrl',
+        enableResize: true,
+    });
+    cropTarget.croppie('bind', {
+            url: inputUrl,
+            zoom: 0,
+        });
 
+    cropTarget.croppie('result', 'html').then(function(html) { });
+}
+
+// Custom Modal Toggle function for the custom Modal
+var modalIsVisible = false;
+function toggleCroppingModal() {
+    if (modalIsVisible) {
+        $(".modal-backdrop").remove();
+        $("#imageCroppingModal").css("display", "none");
+    } else {
+        $("body").append('<div class="modal-backdrop fade show"></div>');
+        $("#imageCroppingModal").css("display", "block");
     }
 
-    resetUploadUrlInput();
+    modalIsVisible = !modalIsVisible;
+    $("#imageCroppingModal").modal();
+    $("#imageCroppingModal").toggleClass("show");
 }

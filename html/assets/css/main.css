@@ -18,6 +18,9 @@
     --tagColor: #808080;
     --itemBG: #d3d3d3;
 
+    --danger: #dc3545;
+    --danger2: #dd4c5b;
+
     /* Special */
     --itemBG_075: rgb(211, 211, 211, 0.75);
     --langSep: rgba(50,103,51,.1);
@@ -70,6 +73,20 @@ button {
     display: flex;
     place-content: center;
     place-items: center;
+}
+
+.btn-danger {
+    color: var(--secondaryTextColor) !important;
+    background-color: var(--danger) !important;
+    border-color: var(--danger) !important;
+}
+
+.btn-danger:not(:disabled):not(.disabled).active:focus, .btn-danger:not(:disabled):not(.disabled):active:focus {
+    box-shadow: unset;
+}
+
+.btn-danger:hover {
+    background-color: var(--danger2) !important;
 }
 
 object {
@@ -492,9 +509,91 @@ input[type="color"] {
     margin-right: 10px;
 }
 
-.cropping-target-body {
-    align-self: center;
+/* Cropping Overlay */
+
+.modal.fade .modal-dialog.crop {
+    transition: unset;
+    transform: unset;
 }
+
+.cropping-target-border {
+    position: fixed;
+    width: 52vw;
+    height: 596px;
+    background: var(--itemBG);
+    left: 25%;
+    top: 25px;
+}
+
+.croppie-container {
+    position: fixed;
+    width: 50%;
+    height: 500px;
+    left: 26%;
+    top: 50px
+}
+
+.croppie-container .cr-boundary {
+    height: 525px;
+}
+
+.btn-search.crop {
+    width: 110px;
+    height: 30px;
+    display: inline;
+    position: absolute;
+    right: 25px;
+    top: 93.75%;
+    background: var(--bgPrimaryColor);
+}
+
+.btn-danger.crop {
+    left: 25px;
+}
+
+.croppie-container .cr-slider-wrap {
+    margin: 10px auto;
+}
+
+.cr-slider {
+    padding: 0;
+}
+
+.cr-slider::-webkit-slider-thumb {
+    -webkit-appearance: none; 
+    appearance: none;
+    margin-top: -9px;
+    width: 25px; 
+    height: 25px; 
+    background: var(--primaryColor); 
+    cursor: pointer;
+}
+
+.cr-slider::-moz-range-thumb {
+    width: 25px;
+    height: 25px; 
+    margin-top: -9px;
+    background: var(--primaryColor); 
+    cursor: pointer; 
+}
+
+.cr-slider::-webkit-slider-runnable-track{
+	width:100%;
+	height:7px;
+	background:rgba(0,0,0,.5);
+	border:0;
+	border-radius:3px
+}
+
+.cr-slider::-moz-range-track{
+	width:100%;
+	height:7px;
+	background:rgba(0,0,0,.5);
+	border:0;
+	border-radius:3px
+}
+
+/* Image Upload Overlay */
 
 .image-upload-parent {
     margin-top: -10px;
