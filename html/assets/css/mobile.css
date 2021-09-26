@@ -401,6 +401,22 @@
         font-size: 30px;
     }
 
+    /* -------- Image Upload -------- */
+
+    .cropping-target-border {
+        width: calc(100% - 30px);
+        left: 15px;
+    }
+
+    .croppie-container {
+        width: calc(100% - 60px);
+        left: 30px;
+    }
+
+    .croppie-container .cr-boundary {
+        height: 485px;
+    }
+
     /* -------- Help Page --------- */
 
     .help-joto {

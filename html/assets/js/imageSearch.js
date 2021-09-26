@@ -126,7 +126,6 @@ function initCroppie(inputUrl) {
     });
     cropTarget.croppie('bind', {
             url: inputUrl,
-            zoom: 0,
         });
 
     cropTarget.croppie('result', 'html').then(function(html) { });

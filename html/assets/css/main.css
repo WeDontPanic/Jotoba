@@ -535,6 +535,7 @@ input[type="color"] {
 
 .croppie-container .cr-boundary {
     height: 525px;
+    overflow: scroll;
 }
 
 .btn-search.crop {
