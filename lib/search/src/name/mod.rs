@@ -3,7 +3,7 @@ pub mod result;
 
 use std::time::Instant;
 
-use crate::engine_v2::{self, SerachTask};
+use crate::engine_v2::{self, SearchTask};
 
 use self::result::NameResult;
 
@@ -30,14 +30,15 @@ pub async fn search(query: &Query) -> Result<NameResult, Error> {
 fn do_jp(query: &Query) -> Result<NameResult, Error> {
     let start = Instant::now();
 
-    let search_task: SerachTask<engine_v2::names::native::NativeEngine> =
-        SerachTask::new(&query.query)
+    let search_task: SearchTask<engine_v2::names::native::NativeEngine> =
+        SearchTask::new(&query.query)
             .threshold(0f32)
             .offset(query.page_offset)
             .limit(query.settings.items_per_page as usize);
 
-    let (res, len) = search_task.find()?;
-    let res: Vec<_> = res
+    let res = search_task.find()?;
+    let items: Vec<_> = res
+        .items
         .into_iter()
         /*
         .skip(query.page_offset)
@@ -49,8 +50,8 @@ fn do_jp(query: &Query) -> Result<NameResult, Error> {
     println!("search took: {:?}", start.elapsed());
 
     Ok(NameResult {
-        total_count: len as u32,
-        items: res,
+        total_count: res.total_items as u32,
+        items,
     })
 }
 
