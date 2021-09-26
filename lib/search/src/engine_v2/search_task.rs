@@ -9,8 +9,7 @@ where
     T: SearchEngine,
 {
     /// Search query
-    query: &'a str,
-    language: Option<Language>, // To pick the correct index to search in
+    queries: Vec<(&'a str, Option<Language>)>,
     /// filter out vectors
     vec_filter: Option<Box<dyn Fn(&T::Document) -> bool>>,
     /// Filter out results
@@ -29,19 +28,19 @@ impl<'a, T> SearchTask<'a, T>
 where
     T: SearchEngine,
 {
-    /// Creates a new Search engine
+    /// Creates a new Search task
     #[inline]
     pub fn new(query: &'a str) -> Self {
         let mut task = Self::default();
-        task.query = query;
+        task.queries.push((query, None));
         task
     }
 
-    /// Set the language to search in. This'll only have an effect if the used SearchEngine
-    /// supports languages
-    pub fn language(mut self, language: Language) -> Self {
-        self.language = Some(language);
-        self
+    /// Creates a new Search task with a query assigned language
+    pub fn with_language(query: &'a str, language: Language) -> Self {
+        let mut task = Self::default();
+        task.queries.push((query, Some(language)));
+        task
     }
 
     /// Set the total limit. This is the max amount of vectors which will be loaded and processed
@@ -88,32 +87,60 @@ where
         self.order = Some(Box::new(res_filter));
     }
 
+    /// Returns the amount of queries, this search task is going to look out for
+    #[inline]
+    pub fn query_count(&self) -> usize {
+        self.queries.len()
+    }
+
     /// Returns `true` if the search task's query is a term in the corresponding index
     #[inline]
     pub fn has_term(&self) -> bool {
-        T::get_index(self.language)
-            .map(|i| i.get_indexer().clone().find_term(self.query).is_some())
-            .unwrap_or(false)
+        self.queries.iter().any(|(query, language)| {
+            T::get_index(*language)
+                .map(|i| i.get_indexer().clone().find_term(query).is_some())
+                .unwrap_or(false)
+        })
     }
 
     /// Runs the search task and returns the result.
     pub fn find(&self) -> Result<SearchResult<&T::Output>, Error> {
-        let index = match T::get_index(self.language) {
-            Some(index) => index,
-            None => return Ok(SearchResult::default()),
-        };
+        let items = self
+            .get_queries()
+            .map(|(vec, lang)| self.find_by_vec(vec, lang))
+            .collect::<Result<Vec<_>, Error>>()?
+            .into_iter()
+            .flatten()
+            .collect::<Vec<_>>();
 
-        let vec = T::gen_query_vector(index, self.query).ok_or(error::Error::NotFound)?;
-        self.find_by_vec(vec)
+        let heap: BinaryHeap<ResultItem<&T::Output>> = BinaryHeap::from(items);
+
+        Ok(SearchResult::from_binary_heap(
+            heap,
+            self.offset,
+            self.limit,
+        ))
+    }
+
+    /// Returns an iterator over all queries in form of document vectors and its assigned language
+    fn get_queries<'b>(
+        &'b self,
+    ) -> impl Iterator<Item = (DocumentVector<T::GenDoc>, Option<Language>)> + 'b {
+        self.queries.iter().filter_map(|(q_str, lang)| {
+            let index = T::get_index(*lang)?;
+            let vec = T::gen_query_vector(index, q_str)?;
+            Some((vec, *lang))
+        })
     }
 
     fn find_by_vec(
         &self,
         q_vec: DocumentVector<T::GenDoc>,
-    ) -> Result<SearchResult<&T::Output>, Error> {
-        let index = T::get_index(self.language);
+        language: Option<Language>,
+    ) -> Result<Vec<ResultItem<&T::Output>>, Error> {
+        let index = T::get_index(language);
         if index.is_none() {
-            log::error!("Failed to retrieve {:?} index with language", self.language);
+            log::error!("Failed to retrieve {:?} index with language", language);
             return Err(Error::Unexpected);
         }
         let index = index.unwrap();
@@ -124,19 +151,20 @@ where
         // Retrieve all document vectors that share at least one dimension with the query vector
         let document_vectors = vec_store
             .get_all_iter(&query_dimensions)
-            .take(self.vector_limit);
+            .take(self.vector_limit / self.query_count());
 
-        self.result_from_doc_vectors(document_vectors, &q_vec)
+        self.result_from_doc_vectors(document_vectors, &q_vec, language)
     }
 
     fn result_from_doc_vectors(
         &self,
         document_vectors: impl Iterator<Item = DocumentVector<T::Document>>,
         q_vec: &DocumentVector<T::GenDoc>,
-    ) -> Result<SearchResult<&T::Output>, Error> {
+        language: Option<Language>,
+    ) -> Result<Vec<ResultItem<&T::Output>>, Error> {
         let storage = resources::get();
 
-        let items = document_vectors
+        let res = document_vectors
             .filter_map(|i| {
                 if !self.filter_vector(&i.document) {
                     return None;
@@ -159,19 +187,12 @@ where
             .map(|(rel, item)| {
                 let relevance = self.calculate_score(item, rel);
 
-                self.language
+                language
                     .map(|i| ResultItem::with_language(item, relevance, i))
                     .unwrap_or(ResultItem::new(item, relevance))
             })
             .collect::<Vec<_>>();
-
-        let heap: BinaryHeap<ResultItem<&T::Output>> = BinaryHeap::from(items);
-
-        Ok(SearchResult::from_binary_heap(
-            heap,
-            self.offset,
-            self.limit,
-        ))
+        Ok(res)
     }
 
     /// Calculates the score using a custom function if provided or just `rel` otherwise
@@ -198,8 +219,7 @@ impl<'a, T: SearchEngine> Default for SearchTask<'a, T> {
     #[inline]
     fn default() -> Self {
         Self {
-            query: "",
-            language: None,
+            queries: Vec::with_capacity(1),
             vec_filter: None,
             res_filter: None,
             order: None,
