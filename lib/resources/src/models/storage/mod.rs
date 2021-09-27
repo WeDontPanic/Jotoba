@@ -141,7 +141,7 @@ impl ResourceStorage {
 
     /// Returns a `SentenceRetrieve` which can be used to retrieve sentences from the `ResourceStorage`
     #[inline]
-    pub fn sentences(&self) -> SentenceRetrieve<'_> {
+    pub fn sentences<'a>(&'a self) -> SentenceRetrieve<'a> {
         SentenceRetrieve::new(self)
     }
 }

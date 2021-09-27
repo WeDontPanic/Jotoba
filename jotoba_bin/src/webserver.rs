@@ -224,6 +224,5 @@ fn load_translations(config: &Config) -> Arc<TranslationDict> {
 }
 
 fn load_indexes(config: Config) {
-    search::load_indexes(&config).expect("Failed to load index files");
     search::engine_v2::load_indexes(&config).expect("Failed to load v2 index files");
 }

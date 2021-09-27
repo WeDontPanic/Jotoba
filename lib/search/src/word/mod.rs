@@ -246,7 +246,7 @@ impl<'a> Search<'a> {
                 .offset(self.query.page_offset)
                 .threshold(0.3f32);
 
-        if self.query.settings.show_english {
+        if self.query.settings.show_english && self.query.settings.user_lang != Language::English {
             search_task.add_language_query(&self.query.query, Language::English);
         }
 

@@ -3,7 +3,7 @@ use bitflags::BitFlag;
 use serde::{Deserialize, Serialize};
 
 /// A single Sentence with multiple translations.
-#[derive(Debug, Clone, Deserialize, Serialize)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, Eq, Hash)]
 pub struct Sentence {
     pub japanese: String,
     pub furigana: String,
@@ -11,7 +11,7 @@ pub struct Sentence {
 }
 
 /// A Translation for a sentence
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, Hash)]
 pub struct Translation {
     pub text: String,
     pub language: Language,

@@ -1,7 +1,6 @@
 // TODO: remove duplicate code if everything is properly implemented
 #![allow(dead_code)]
 
-pub mod engine;
 pub mod engine_v2;
 pub mod kanji;
 pub mod name;
@@ -11,8 +10,6 @@ pub mod search_order;
 pub mod sentence;
 pub mod suggestions;
 pub mod word;
-
-pub use engine::load_indexes;
 
 /// How string items should be matched with each other
 #[derive(Clone, Copy, PartialEq, Debug)]

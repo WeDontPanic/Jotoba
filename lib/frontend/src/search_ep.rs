@@ -90,9 +90,9 @@ type SResult = Result<ResultData, web_error::Error>;
 
 /// Perform a sentence search
 async fn sentence_search<'a>(base_data: &mut BaseData<'a>, query: &'a Query) -> SResult {
-    let (result, total_count) = search::sentence::search(&query).await?;
-    base_data.with_pages(total_count as u32, query.page as u32);
-    Ok(ResultData::Sentence(result))
+    let result = search::sentence::search(&query).await?;
+    base_data.with_pages(result.len as u32, query.page as u32);
+    Ok(ResultData::Sentence(result.items))
 }
 
 /// Perform a kanji search

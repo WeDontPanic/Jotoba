@@ -1,18 +1,24 @@
 use japanese::{furigana, furigana::SentencePartRef};
 use resources::parse::jmdict::languages::Language;
 
-#[derive(Debug, PartialEq, Clone)]
+#[derive(PartialEq, Clone, Default)]
+pub struct SentenceResult {
+    pub items: Vec<Item>,
+    pub len: usize,
+}
+
+#[derive(PartialEq, Clone)]
+pub struct Item {
+    pub sentence: Sentence,
+}
+
+#[derive(PartialEq, Clone)]
 pub struct Sentence {
     pub content: String,
     pub furigana: String,
     pub translation: String,
     pub language: Language,
     pub eng: String,
-}
-
-#[derive(Debug, PartialEq, Clone)]
-pub struct Item {
-    pub sentence: Sentence,
 }
 
 impl Sentence {
@@ -47,5 +53,11 @@ impl Sentence {
             eng: String::from("-"),
             language,
         })
+    }
+}
+
+impl From<(Vec<Item>, usize)> for SentenceResult {
+    fn from((items, len): (Vec<Item>, usize)) -> Self {
+        Self { items, len }
     }
 }

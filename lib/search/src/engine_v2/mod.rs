@@ -42,14 +42,19 @@ pub fn load_indexes(config: &Config) -> Result<(), Box<dyn std::error::Error>> {
         names::native::index::load(&config1);
     }));
 
+    let config1 = config.clone();
+    joins.push(thread::spawn(move || {
+        sentences::native::index::load(&config1);
+    }));
+
+    let config1 = config.clone();
+    joins.push(thread::spawn(move || {
+        sentences::foreign::index::load(&config1).expect("Failed to load index");
+    }));
+
     for j in joins {
         j.join().map_err(|_| error::Error::Unexpected)?;
     }
-
-    /*
-    sentences::japanese::index::load(config);
-    sentences::foreign::index::load(config)?;
-    */
 
     Ok(())
 }

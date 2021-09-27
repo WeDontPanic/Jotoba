@@ -1,67 +1,62 @@
 pub mod result;
 
+use self::result::SentenceResult;
+
 use super::query::Query;
 use crate::{
-    engine::{
-        result::SearchResult,
-        sentences::{foreign as foreign_engine, japanese as japanese_engine},
-    },
+    engine_v2::{sentences::foreign, sentences::native, SearchEngine, SearchTask},
     query::QueryLang,
 };
 use error::Error;
-use resources::parse::jmdict::languages::Language;
-use std::time::Instant;
+use resources::{models::sentences::Sentence, parse::jmdict::languages::Language};
 
 /// Searches for sentences
-pub async fn search(query: &Query) -> Result<(Vec<result::Item>, usize), Error> {
-    let start = Instant::now();
+pub async fn search(query: &Query) -> Result<SentenceResult, Error> {
+    if query.language == QueryLang::Japanese {
+        jp_search(query)
+    } else {
+        foreign_search(query)
+    }
+}
 
+fn foreign_search(query: &Query) -> Result<SentenceResult, Error> {
+    let mut search_task =
+        SearchTask::<foreign::Engine>::with_language(&query.query, query.settings.user_lang)
+            .limit(query.settings.items_per_page as usize)
+            .offset(query.page_offset)
+            .threshold(0.0);
+
+    if query.settings.show_english && query.settings.user_lang != Language::English {
+        search_task.add_language_query(&query.query, Language::English)
+    }
+
+    get_result(search_task, query)
+}
+
+fn jp_search(query: &Query) -> Result<SentenceResult, Error> {
+    let search_task = SearchTask::<native::Engine>::new(&query.query)
+        .limit(query.settings.items_per_page as usize)
+        .offset(query.page_offset)
+        .threshold(0.0);
+
+    get_result(search_task, query)
+}
+
+fn get_result<T: SearchEngine<Output = Sentence>>(
+    search: SearchTask<T>,
+    query: &Query,
+) -> Result<SentenceResult, Error> {
     let lang = query.settings.user_lang;
-
-    let res = match query.language {
-        QueryLang::Japanese => japanese_documents(query).await,
-        _ => foreign_documents(query).await,
-    }?;
-
-    let sentence_storage = resources::get().sentences();
-
-    let sentences = res
-        .retrieve_ordered(|i| sentence_storage.by_id(i))
+    let found = search.find()?;
+    let len = found.len();
+    let items = found
+        .item_iter()
         .filter_map(|i| {
             let sentence =
                 result::Sentence::from_m_sentence(i.clone(), lang, query.settings.show_english)?;
             Some(result::Item { sentence })
         })
-        .skip(query.page_offset)
-        .take(query.settings.items_per_page as usize)
         .collect::<Vec<_>>();
 
-    println!("Sentence search took: {:?}", start.elapsed());
-
-    Ok((sentences, res.len()))
-}
-
-/// Find sentences by foreign query
-async fn foreign_documents(query: &Query) -> Result<SearchResult, error::Error> {
-    let mut res = foreign_engine::Find::new(&query.query, query.settings.user_lang, 1000, 0)
-        .find()
-        .await?;
-
-    if res.len() < 20 && query.settings.show_english {
-        res.extend(
-            foreign_engine::Find::new(&query.query, Language::English, 1000, 0)
-                .find()
-                .await?,
-        );
-    }
-
-    Ok(res)
-}
-
-/// Find sentences by native query
-async fn japanese_documents(query: &Query) -> Result<SearchResult, error::Error> {
-    japanese_engine::Find::new(&query.query, 1000, 0)
-        .with_language_filter(query.settings.user_lang)
-        .find()
-        .await
+    Ok(SentenceResult { len, items })
 }
