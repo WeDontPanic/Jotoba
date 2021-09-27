@@ -1,6 +1,8 @@
 use byteorder::{ByteOrder, WriteBytesExt};
 use vector_space_model::{document_vector, traits::Encodable};
 
+use crate::engine::DocumentGenerateable;
+
 const MIN_W_LEN: usize = 4;
 
 /// A `document_vector::Document` implementing type for generating new vectors
@@ -32,6 +34,16 @@ impl GenDoc {
     #[inline]
     pub fn get_terms(&self) -> &Vec<String> {
         &self.terms
+    }
+}
+
+impl DocumentGenerateable for GenDoc {
+    fn new<T: ToString>(terms: Vec<T>) -> Self {
+        let terms = terms.into_iter().map(|i| i.to_string()).collect::<Vec<_>>();
+        GenDoc {
+            terms,
+            seq_ids: vec![],
+        }
     }
 }
 

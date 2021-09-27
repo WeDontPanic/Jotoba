@@ -1,5 +1,7 @@
 use vector_space_model::document_vector;
 
+use super::DocumentGenerateable;
+
 /// A `document_vector::Document` implementing type for generating new vectors
 #[derive(Ord, Eq, PartialEq, PartialOrd, Clone)]
 pub struct GenDoc {
@@ -20,5 +22,11 @@ impl GenDoc {
         GenDoc {
             terms: terms.into_iter().map(|i| i.to_string()).collect(),
         }
+    }
+}
+
+impl DocumentGenerateable for GenDoc {
+    fn new<T: ToString>(terms: Vec<T>) -> Self {
+        Self::new(terms)
     }
 }

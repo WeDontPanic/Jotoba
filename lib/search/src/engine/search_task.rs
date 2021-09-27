@@ -1,4 +1,5 @@
 use super::{result::SearchResult, result_item::ResultItem, SearchEngine};
+use crate::engine::DocumentGenerateable;
 use error::Error;
 use itertools::Itertools;
 use resources::parse::jmdict::languages::Language;
@@ -113,6 +114,19 @@ where
                 .map(|i| i.get_indexer().clone().find_term(query).is_some())
                 .unwrap_or(false)
         })
+    }
+
+    pub fn find_exact(&self) -> Result<Vec<ResultItem<&T::Output>>, Error> {
+        let (query, lang) = self.queries.get(0).unwrap();
+        let index = T::get_index(*lang).expect("Lang not loaded");
+
+        let extact_query = T::GenDoc::new(vec![query]);
+        let document =
+            DocumentVector::new(index.get_indexer(), extact_query).ok_or(Error::Unexpected)?;
+
+        let res = self.find_by_vec(document, query, *lang)?;
+
+        Ok(res)
     }
 
     /// Estimates the amount of results efficiently. This 'guess' is defined as follows:

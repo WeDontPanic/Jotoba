@@ -68,8 +68,12 @@ pub trait Indexable {
     ) -> Option<&'static Index<Self::Document, Self::Metadata>>;
 }
 
+pub trait DocumentGenerateable {
+    fn new<T: ToString>(terms: Vec<T>) -> Self;
+}
+
 pub trait SearchEngine: Indexable {
-    type GenDoc: document_vector::Document;
+    type GenDoc: document_vector::Document + DocumentGenerateable;
     type Output: PartialEq + Eq + Hash;
 
     /// Loads the corresponding Output type from a document

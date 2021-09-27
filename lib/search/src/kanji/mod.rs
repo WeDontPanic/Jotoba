@@ -1,11 +1,14 @@
 mod order;
 pub mod result;
 
+use itertools::Itertools;
 use resources::models::kanji::Kanji;
 use result::Item;
 
 use error::Error;
 use japanese::JapaneseExt;
+
+use crate::engine::{words::native, SearchTask};
 
 use super::query::Query;
 
@@ -31,14 +34,40 @@ pub fn search(query: &Query) -> Result<Vec<Item>, Error> {
 
 /// Find a kanji by its literal
 fn by_literals(query: &str) -> Vec<Kanji> {
+    let kanji = all_kanji_from_text(query);
+    if !kanji.is_empty() || query.is_kanji() {
+        return kanji;
+    }
+
+    // kana search
+
+    let search = SearchTask::<native::Engine>::new(query).threshold(0.89);
+    let res = search.find_exact().unwrap_or_default();
+    if res.is_empty() {
+        return vec![];
+    }
+
+    let text = res
+        .into_iter()
+        .filter(|i| i.item.reading.kana.reading == query)
+        .map(|i| i.item.get_reading().reading.chars().collect::<Vec<_>>())
+        .flatten()
+        .take(8)
+        .unique()
+        .join("");
+
+    all_kanji_from_text(&text)
+}
+
+fn all_kanji_from_text(text: &str) -> Vec<Kanji> {
     let kanji_storage = resources::get().kanji();
 
-    query
-        .chars()
+    text.chars()
         .into_iter()
         .filter(|i| i.is_kanji())
         .filter_map(|literal| kanji_storage.by_literal(literal))
         .cloned()
+        .take(15)
         .collect()
 }
 
