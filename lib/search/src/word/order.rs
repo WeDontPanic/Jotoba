@@ -12,7 +12,6 @@ use resources::{
 pub(crate) static REMOVE_PARENTHESES: Lazy<Regex> =
     Lazy::new(|| regex::Regex::new("\\(.*\\)").unwrap());
 
-
 /// Search order for words searched by japanese meaning/kanji/reading
 pub(super) fn japanese_search_order(word: &Word, relevance: f32, query_str: &str) -> usize {
     let mut score: usize = (relevance * 10f32) as usize;

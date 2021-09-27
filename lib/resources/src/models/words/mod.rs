@@ -275,6 +275,12 @@ impl Word {
         words
     }
 
+    /// Returns an iterator over all reading elements
+    #[inline]
+    pub fn reading_iter(&self, allow_kana: bool) -> ReadingIter<'_> {
+        self.reading.iter(allow_kana)
+    }
+
     fn pretty_print_senses(senses: &[Sense]) -> String {
         senses
             .iter()
@@ -306,6 +312,51 @@ impl Reading {
     #[inline]
     pub fn get_reading(&self) -> &Dict {
         self.kanji.as_ref().unwrap_or(&self.kana)
+    }
+
+    /// Returns an iterator over all reading elements
+    #[inline]
+    pub fn iter(&self, allow_kana: bool) -> ReadingIter<'_> {
+        ReadingIter::new(self, allow_kana)
+    }
+}
+
+pub struct ReadingIter<'a> {
+    reading: &'a Reading,
+    allow_kana: bool,
+    did_kanji: bool,
+    did_kana: bool,
+    alternative_pos: usize,
+}
+
+impl<'a> ReadingIter<'a> {
+    #[inline]
+    fn new(reading: &'a Reading, allow_kana: bool) -> Self {
+        Self {
+            reading,
+            allow_kana,
+            did_kana: false,
+            did_kanji: false,
+            alternative_pos: 0,
+        }
+    }
+}
+
+impl<'a> Iterator for ReadingIter<'a> {
+    type Item = &'a Dict;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        if !self.did_kana && self.allow_kana {
+            self.did_kana = true;
+            return Some(&self.reading.kana);
+        }
+        if !self.did_kanji && self.reading.kanji.is_some() {
+            self.did_kanji = true;
+            return Some(&self.reading.kanji.as_ref().unwrap());
+        }
+        let i = self.reading.alternative.get(self.alternative_pos)?;
+        self.alternative_pos += 1;
+        Some(i)
     }
 }
 

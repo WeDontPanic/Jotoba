@@ -59,39 +59,49 @@ fn words_with_kanji_reading(
     let reading = reading.to_string();
     let literal_reading = kanji.get_literal_reading(&reading);
     search_task.set_result_filter(move |word| {
-        //TODO: also check for alternative readings (eg. 止 とど.める)
         if word.reading.kanji.is_none() {
             return false;
         }
-        let kanji_reading = word.reading.kanji.as_ref().unwrap().reading.clone();
+
         let kana = &word.reading.kana.reading;
-        let readings = japanese::furigana::generate::retrieve_readings(
-            &mut |i: String| {
-                let retrieve = resources::get().kanji();
-                let kanji = retrieve.by_literal(i.chars().next()?)?;
-                if kanji.onyomi.is_none() && kanji.kunyomi.is_none() {
-                    return None;
-                }
 
-                Some((kanji.kunyomi.clone(), kanji.onyomi.clone()))
-            },
-            &kanji_reading,
-            kana,
-        );
+        for kanji_reading in word.reading_iter(false) {
+            let kanji_reading = kanji_reading.reading.clone();
 
-        if readings.is_none() {
-            return false;
+            let readings = japanese::furigana::generate::retrieve_readings(
+                &mut |i: String| {
+                    let retrieve = resources::get().kanji();
+                    let kanji = retrieve.by_literal(i.chars().next()?)?;
+                    if kanji.onyomi.is_none() && kanji.kunyomi.is_none() {
+                        return None;
+                    }
+
+                    Some((kanji.kunyomi.clone(), kanji.onyomi.clone()))
+                },
+                &kanji_reading,
+                kana,
+            );
+
+            if readings.is_none() {
+                return false;
+            }
+
+            let e = readings.unwrap().iter().any(|i| {
+                i.0.contains(&literal)
+                    && i.1
+                        .to_hiragana()
+                        .contains(&literal_reading.as_ref().unwrap().to_hiragana())
+                    && kana
+                        .to_hiragana()
+                        .contains(&kanji::format_reading(&reading.to_hiragana()))
+            });
+
+            if e {
+                return true;
+            }
         }
 
-        readings.unwrap().iter().any(|i| {
-            i.0.contains(&literal)
-                && i.1
-                    .to_hiragana()
-                    .contains(&literal_reading.as_ref().unwrap().to_hiragana())
-                && kana
-                    .to_hiragana()
-                    .contains(&kanji::format_reading(&reading.to_hiragana()))
-        })
+        false
     });
 
     let kanji_reading = query.form.as_kanji_reading().unwrap().clone();
