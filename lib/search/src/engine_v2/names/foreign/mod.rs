@@ -44,11 +44,30 @@ impl SearchEngine for Engine {
         query: &str,
     ) -> Option<DocumentVector<Self::GenDoc>> {
         let query_document = GenDoc::new(vec![query]);
-        let mut doc = DocumentVector::new(index.get_indexer(), query_document.clone())?;
+        DocumentVector::new(index.get_indexer(), query_document.clone())
+    }
 
-        let terms = tinysegmenter::tokenize(query);
-        doc.add_terms(index.get_indexer(), &terms, true, Some(0.4));
+    fn align_query<'b>(
+        original: &'b str,
+        index: &vector_space_model::Index<Self::Document, Self::Metadata>,
+        _language: Option<Language>,
+    ) -> Option<&'b str> {
+        let query_str = original;
 
-        Some(doc)
+        let mut indexer = index.get_indexer().clone();
+
+        let has_term = indexer.find_term(&query_str).is_some()
+            || indexer.find_term(&query_str.to_lowercase()).is_some();
+
+        if has_term {
+            return None;
+        }
+
+        let mut res = index::get_term_tree().find(&query_str.to_string(), 1);
+        if res.is_empty() {
+            res = index::get_term_tree().find(&query_str.to_string(), 2);
+        }
+        res.sort_by(|a, b| a.1.cmp(&b.1));
+        res.get(0).map(|i| i.0.as_str())
     }
 }

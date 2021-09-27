@@ -5,10 +5,10 @@ pub mod result;
 use std::time::Instant;
 
 use crate::{
-    engine,
     engine_v2::{self, SearchTask},
     query::Form,
 };
+use engine_v2::words::{foreign, native};
 
 use self::result::{InflectionInformation, WordResult};
 use super::query::{Query, QueryLang};
@@ -114,8 +114,7 @@ impl<'a> Search<'a> {
             return Ok((query_str.to_owned(), None, None));
         }
 
-        let index = engine::word::japanese::index::get();
-        let in_db = index.get_indexer().clone().find_term(query_str).is_some();
+        let in_db = SearchTask::<native::Engine>::new(query_str).has_term();
 
         let parser = InputTextParser::new(query_str, &japanese::jp_parsing::JA_NL_PARSER, in_db)?;
 
@@ -177,15 +176,13 @@ impl<'a> Search<'a> {
 
     /// Perform a native word search
     async fn native_results(&self, query_str: &str) -> Result<ResultData, Error> {
-        use engine_v2::words::native::NativeEngine;
-
         if self.query.language != QueryLang::Japanese && !query_str.is_japanese() {
             return Ok(ResultData::default());
         }
 
         let (query, morpheme, sentence) = self.get_query(query_str).await?;
 
-        let mut search_task: SearchTask<NativeEngine> = SearchTask::new(&query)
+        let mut search_task: SearchTask<native::Engine> = SearchTask::new(&query)
             .limit(self.query.settings.items_per_page as usize)
             .offset(self.query.page_offset)
             .threshold(0.04f32);
@@ -202,7 +199,7 @@ impl<'a> Search<'a> {
 
         // Set order function
         search_task.set_order_fn(move |word, rel, q_str, _| {
-            order::japanese_search_order_v2(word, rel, q_str)
+            order::japanese_search_order(word, rel, q_str)
         });
 
         let res = search_task.find()?;
@@ -241,10 +238,7 @@ impl<'a> Search<'a> {
             return Ok(ResultData::default());
         }
 
-        use engine_v2::words::foreign::Engine;
-        println!("lol");
-
-        let mut search_task: SearchTask<Engine> =
+        let mut search_task: SearchTask<foreign::Engine> =
             SearchTask::with_language(&self.query.query, self.query.settings.user_lang)
                 .limit(self.query.settings.items_per_page as usize)
                 .offset(self.query.page_offset)
@@ -258,7 +252,7 @@ impl<'a> Search<'a> {
         // Set order function
         let user_lang = self.query.settings.user_lang;
         search_task.set_order_fn(move |word, relevance, query, language| {
-            order::foreign_search_order_v2(word, relevance, query, language.unwrap(), user_lang)
+            order::foreign_search_order(word, relevance, query, language.unwrap(), user_lang)
         });
 
         // Do the search
@@ -340,32 +334,21 @@ fn inflection_info(morpheme: &Option<WordItem>) -> Option<InflectionInformation>
 
 /// Returns furigana of the given `morpheme` if available
 async fn furigana_by_reading(morpheme: &str) -> Option<String> {
-    use engine::word::japanese::Find;
     let word_storage = resources::get().words();
 
-    let found = Find::new(morpheme, 2, 0).find().await.ok()?;
+    let st = SearchTask::<native::Engine>::new(morpheme)
+        .threshold(0.7)
+        .limit(2);
 
-    let exact_matches = found
-        .into_iter()
-        .filter(|i| i.relevance > 0.7)
-        .filter(|i| {
-            let eq = morpheme
-                == word_storage
-                    .by_sequence(i.seq_id as u32)
-                    .unwrap()
-                    .get_reading()
-                    .reading;
-            eq
-        })
-        .collect::<Vec<_>>();
+    let found = st.find().ok()?;
 
     // Don't produce potentially wrong furigana if multiple readings are available
     // TODO: guess furigana based on language parser part of speech tag and return it anyways. Let
     // the frontend know that its guessed so it can be previewed differently
-    if exact_matches.len() != 1 {
+    if found.len() != 1 {
         return None;
     }
 
-    let word = word_storage.by_sequence(exact_matches[0].seq_id as u32)?;
+    let word = word_storage.by_sequence(found[0].item.sequence as u32)?;
     word.furigana.as_ref().map(|i| i.clone())
 }

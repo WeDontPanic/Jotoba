@@ -1,9 +1,10 @@
 mod order;
 pub mod result;
 
-use std::time::Instant;
-
-use crate::engine_v2::{self, SearchTask};
+use crate::engine_v2::{
+    names::{foreign, native},
+    SearchEngine, SearchTask,
+};
 
 use self::result::NameResult;
 
@@ -11,128 +12,93 @@ use super::query::Query;
 use error::Error;
 
 use japanese::JapaneseExt;
+use resources::models::names::Name;
 use utils::to_option;
 
 /// Search for names
 #[inline]
 pub async fn search(query: &Query) -> Result<NameResult, Error> {
-    if query.query.is_japanese() {
-        return do_jp(query);
-    }
-
     if query.form.is_kanji_reading() {
         search_kanji(&query).await
     } else {
-        do_search(query).await
+        if query.query.is_japanese() {
+            do_jp(query)
+        } else {
+            do_foreign(query)
+        }
     }
 }
 
 fn do_jp(query: &Query) -> Result<NameResult, Error> {
-    let start = Instant::now();
-
-    let search_task: SearchTask<engine_v2::names::native::NativeEngine> =
-        SearchTask::new(&query.query)
+    handle_search(
+        SearchTask::<native::Engine>::new(&query.query)
             .threshold(0.05f32)
             .offset(query.page_offset)
-            .limit(query.settings.items_per_page as usize);
-
-    let res = search_task.find()?;
-    let items: Vec<_> = res.items.into_iter().map(|i| i.item.clone()).collect();
-
-    println!("search took: {:?}", start.elapsed());
-
-    Ok(NameResult {
-        total_count: res.total_items as u32,
-        items,
-    })
+            .limit(query.settings.items_per_page as usize),
+    )
 }
 
-/// Do a name search
-async fn do_search(query: &Query) -> Result<NameResult, Error> {
-    use crate::engine::name::{foreign, japanese};
+fn do_foreign(query: &Query) -> Result<NameResult, Error> {
+    handle_search(
+        SearchTask::<foreign::Engine>::new(&query.query)
+            .threshold(0.05f32)
+            .offset(query.page_offset)
+            .limit(query.settings.items_per_page as usize),
+    )
+}
 
-    let start = Instant::now();
-
-    let res = if query.query.is_japanese() {
-        japanese::Find::new(&query.query, 1000, 0).find().await?
-    } else {
-        foreign::Find::new(&query.query, 1000, 0).find().await?
-    };
-
-    let resources = resources::get().names();
-
-    let names = res
-        .retrieve_ordered(|seq_id| resources.by_sequence(seq_id as u32))
-        .skip(query.page_offset)
-        .take(query.settings.items_per_page as usize)
-        .cloned()
-        .collect();
-
-    println!("search took: {:?}", start.elapsed());
-
-    Ok(NameResult {
-        items: names,
-        total_count: res.len() as u32,
-    })
+fn handle_search<T: SearchEngine<Output = Name>>(task: SearchTask<T>) -> Result<NameResult, Error> {
+    Ok(NameResult::from(task.find()?))
 }
 
 /// Search by kanji reading
 async fn search_kanji(query: &Query) -> Result<NameResult, Error> {
     let kanji_reading = query.form.as_kanji_reading().ok_or(Error::Unexpected)?;
-    let resources = resources::get().names();
 
-    use crate::engine::name::japanese::Find;
+    let query_str = kanji_reading.literal.to_string();
+    let mut task = SearchTask::<native::Engine>::new(&query_str)
+        .limit(query.settings.items_per_page as usize)
+        .offset(query.page_offset);
 
-    let res = Find::new(&kanji_reading.literal.to_string(), 1000, 0)
-        .find()
-        .await?;
+    let literal = kanji_reading.literal;
+    let reading = kanji_reading.reading.clone();
+    task.set_result_filter(move |name| {
+        if name.kanji.is_none() {
+            return false;
+        }
+        let kanji = name.kanji.as_ref().unwrap();
+        let kana = &name.kana;
+        let readings = japanese::furigana::generate::retrieve_readings(
+            &mut |i: String| {
+                let retrieve = resources::get().kanji();
+                let kanji = retrieve.by_literal(i.chars().next()?)?;
+                if kanji.onyomi.is_none() && kanji.kunyomi.is_none() {
+                    return None;
+                }
 
-    let names = res
-        .retrieve_ordered(|seq_id| resources.by_sequence(seq_id as u32))
-        .filter(|name| {
-            if name.kanji.is_none() {
-                return false;
-            }
-            let kanji = name.kanji.as_ref().unwrap();
-            let kana = &name.kana;
-            let readings = japanese::furigana::generate::retrieve_readings(
-                &mut |i: String| {
-                    let retrieve = resources::get().kanji();
-                    let kanji = retrieve.by_literal(i.chars().next()?)?;
-                    if kanji.onyomi.is_none() && kanji.kunyomi.is_none() {
-                        return None;
-                    }
+                let kun = kanji
+                    .clone()
+                    .kunyomi
+                    .unwrap_or_default()
+                    .into_iter()
+                    .chain(kanji.natori.clone().unwrap_or_default().into_iter())
+                    .collect::<Vec<_>>();
+                let kun = to_option(kun);
 
-                    let kun = kanji
-                        .clone()
-                        .kunyomi
-                        .unwrap_or_default()
-                        .into_iter()
-                        .chain(kanji.natori.clone().unwrap_or_default().into_iter())
-                        .collect::<Vec<_>>();
-                    let kun = to_option(kun);
+                Some((kun, kanji.onyomi.clone()))
+            },
+            kanji,
+            kana,
+        );
+        if readings.is_none() {
+            return false;
+        }
 
-                    Some((kun, kanji.onyomi.clone()))
-                },
-                kanji,
-                kana,
-            );
-            if readings.is_none() {
-                return false;
-            }
+        readings
+            .unwrap()
+            .iter()
+            .any(|i| i.0.contains(&literal.to_string()) && i.1.contains(&reading))
+    });
 
-            readings.unwrap().iter().any(|i| {
-                i.0.contains(&kanji_reading.literal.to_string())
-                    && i.1.contains(&kanji_reading.reading)
-            })
-        })
-        .skip(query.page_offset)
-        .take(query.settings.items_per_page as usize)
-        .cloned()
-        .collect();
-
-    Ok(NameResult {
-        items: names,
-        total_count: res.len() as u32,
-    })
+    Ok(NameResult::from(task.find()?))
 }

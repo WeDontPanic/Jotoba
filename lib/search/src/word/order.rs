@@ -1,148 +1,17 @@
-use std::collections::HashMap;
-
 use super::super::search_order::SearchOrder;
-use crate::{engine::result::ResultItem, query::Query, SearchMode};
+use crate::{engine::result::ResultItem, SearchMode};
 use japanese::JapaneseExt;
 use levenshtein::levenshtein;
-//use models::search_mode::SearchMode;
 use once_cell::sync::Lazy;
 use regex::Regex;
 use resources::{
     models::{kanji, words::Word},
     parse::jmdict::languages::Language,
 };
-
-pub(super) fn new_foreign_order(
-    sort_map: &HashMap<u32, ResultItem>,
-    search_order: &SearchOrder,
-    e: &mut Vec<Word>,
-) {
-    e.sort_by(|a, b| {
-        let a_item = sort_map.get(&a.sequence).unwrap();
-        let b_item = sort_map.get(&b.sequence).unwrap();
-
-        let a_score = foreign_search_order(a, search_order, a_item);
-        let b_score = foreign_search_order(b, search_order, b_item);
-
-        a_score.cmp(&b_score).reverse()
-    })
-}
-
-pub(super) fn foreign_search_order(
-    word: &Word,
-    search_order: &SearchOrder,
-    result_item: &ResultItem,
-) -> usize {
-    let mut score: usize = (result_item.relevance * 25f32) as usize;
-
-    if word.is_common() {
-        score += 10;
-    }
-
-    if let Some(jlpt) = word.jlpt_lvl {
-        score += jlpt as usize;
-    }
-
-    if !word.is_katakana_word() {
-        score += 8;
-    }
-
-    // Result found within users specified language
-    if result_item.language == search_order.query.settings.user_lang {
-        score += 12;
-    }
-
-    let found = match find_reading(word, &search_order.query.query) {
-        Some(v) => v,
-        None => {
-            return score;
-        }
-    };
-
-    let divisor = match (found.mode, found.case_ignored) {
-        (SearchMode::Exact, false) => 10,
-        (SearchMode::Exact, true) => 20,
-        (_, false) => 50,
-        (_, true) => 80,
-    };
-
-    score += (calc_likeliness(word, &found) / divisor) as usize;
-
-    if found.in_parentheses {
-        score = score - score.clamp(0, 10);
-    } else {
-        score += 30;
-    }
-
-    score
-}
-
-pub(super) fn new_japanese_order(
-    sort_map: &HashMap<u32, ResultItem>,
-    search_order: &SearchOrder,
-    e: &mut Vec<Word>,
-) {
-    e.sort_by(|a, b| {
-        let a_item = sort_map.get(&a.sequence).unwrap();
-        let b_item = sort_map.get(&b.sequence).unwrap();
-
-        let a_score = japanese_search_order(a, search_order, a_item);
-        let b_score = japanese_search_order(b, search_order, b_item);
-
-        a_score.cmp(&b_score).reverse()
-    })
-}
+use std::collections::HashMap;
 
 /// Search order for words searched by japanese meaning/kanji/reading
-pub(super) fn japanese_search_order(
-    word: &Word,
-    search_order: &SearchOrder,
-    result_item: &ResultItem,
-) -> usize {
-    let mut score: usize = (result_item.relevance * 10f32) as usize;
-
-    let reading = word.get_reading();
-
-    // Original query
-    let query = search_order.query;
-    // The original query text
-    let query_str = &query.query;
-
-    if reading.reading == *query_str || word.reading.kana.reading == *query_str {
-        score += 50;
-
-        // Show kana only readings on top if they match with query
-        if word.reading.kanji.is_none() {
-            score += 10;
-        }
-    } else if reading.reading.starts_with(query_str) {
-        score += 4;
-    }
-
-    if let Some(jlpt) = word.jlpt_lvl {
-        score += jlpt as usize;
-    }
-
-    // Is common
-    if word.is_common() {
-        score += 20;
-    }
-
-    // If alternative reading matches query exactly
-    if word
-        .reading
-        .alternative
-        .iter()
-        .any(|i| i.reading == *query_str)
-    {
-        score += 45;
-    }
-
-    score
-}
-
-/// Search order for words searched by japanese meaning/kanji/reading
-pub(super) fn japanese_search_order_v2(word: &Word, relevance: f32, query_str: &str) -> usize {
+pub(super) fn japanese_search_order(word: &Word, relevance: f32, query_str: &str) -> usize {
     let mut score: usize = (relevance * 10f32) as usize;
 
     let reading = word.get_reading();
@@ -180,7 +49,7 @@ pub(super) fn japanese_search_order_v2(word: &Word, relevance: f32, query_str: &
     score
 }
 
-pub(super) fn foreign_search_order_v2(
+pub(super) fn foreign_search_order(
     word: &Word,
     relevance: f32,
     query_str: &str,

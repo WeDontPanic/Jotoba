@@ -1,4 +1,4 @@
-use std::{cmp::min, collections::BinaryHeap, vec::IntoIter};
+use std::{cmp::min, collections::BinaryHeap, ops::Index, vec::IntoIter};
 
 use super::result_item::ResultItem;
 
@@ -60,11 +60,19 @@ impl<T: PartialEq> SearchResult<T> {
 
 impl<T: PartialEq> IntoIterator for SearchResult<T> {
     type Item = ResultItem<T>;
-
     type IntoIter = IntoIter<Self::Item>;
 
     #[inline]
     fn into_iter(self) -> Self::IntoIter {
         self.items.into_iter()
+    }
+}
+
+impl<T: PartialEq> Index<usize> for SearchResult<T> {
+    type Output = ResultItem<T>;
+
+    #[inline]
+    fn index(&self, index: usize) -> &Self::Output {
+        &self.items[index]
     }
 }

@@ -128,8 +128,12 @@ where
             .collect::<Vec<_>>();
 
         let heap: BinaryHeap<ResultItem<&T::Output>> = BinaryHeap::from(items);
-        let res = SearchResult::from_binary_heap(heap, self.offset, self.limit);
-        Ok(res)
+
+        Ok(SearchResult::from_binary_heap(
+            heap,
+            self.offset,
+            self.limit,
+        ))
     }
 
     /// Returns an iterator over all queries in form of document vectors and its assigned language
@@ -137,18 +141,18 @@ where
         &'b self,
     ) -> impl Iterator<Item = (&'b str, DocumentVector<T::GenDoc>, Option<Language>)> {
         self.queries.iter().filter_map(move |(q_str, lang)| {
-            let index = T::get_index(*lang)?;
-            let vec = T::gen_query_vector(index, q_str)?;
+            let index = T::get_index(*lang).expect("Lang not loaded");
 
-            println!("{:?}", T::align_query(q_str, index, *lang));
             // align query
-            let new_query = self
+            let aligned_query = self
                 .allow_align
                 .then(|| T::align_query(q_str, index, *lang))
                 .flatten()
                 .unwrap_or(q_str);
 
-            Some((new_query, vec, *lang))
+            let vec = T::gen_query_vector(index, aligned_query)?;
+
+            Some((aligned_query, vec, *lang))
         })
     }
 

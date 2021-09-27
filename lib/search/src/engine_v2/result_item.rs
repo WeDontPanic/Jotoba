@@ -32,6 +32,13 @@ impl<T: PartialEq> Ord for ResultItem<T> {
     }
 }
 
+impl<T: PartialEq> AsRef<T> for ResultItem<T> {
+    #[inline]
+    fn as_ref(&self) -> &T {
+        &self.item
+    }
+}
+
 impl<T: PartialEq> ResultItem<T> {
     /// Create a new ResultItem<T>
     #[inline]

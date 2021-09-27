@@ -5,10 +5,7 @@ use resources::{
 use utils::to_option;
 use vector_space_model::{document_vector, DocumentVector};
 
-use crate::{
-    engine::{document::MultiDocument, lang_metadata::Metadata},
-    engine_v2::{Indexable, SearchEngine},
-};
+use crate::engine_v2::{document::MultiDocument, metadata::Metadata, Indexable, SearchEngine};
 use gen::GenDoc;
 
 pub mod gen;
@@ -85,17 +82,6 @@ impl SearchEngine for Engine {
         index: &vector_space_model::Index<Self::Document, Self::Metadata>,
         language: Option<Language>,
     ) -> Option<&'b str> {
-        println!("OMA");
-        None
-    }
-
-    /*
-    fn align_query<'b>(
-        original: &'b str,
-        index: &vector_space_model::Index<Self::Document, Self::Metadata>,
-        language: Option<Language>,
-    ) -> Option<&'b str> {
-        println!("probably align");
         let query_str = original;
         let mut indexer = index.get_indexer().clone();
 
@@ -114,5 +100,4 @@ impl SearchEngine for Engine {
         res.sort_by(|a, b| a.1.cmp(&b.1));
         res.get(0).map(|i| i.0.as_str())
     }
-    */
 }

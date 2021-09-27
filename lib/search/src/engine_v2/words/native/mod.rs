@@ -1,18 +1,15 @@
 pub mod index;
 
-use crate::{
-    engine::{document::SingleDocument, simple_gen_doc::GenDoc},
-    engine_v2::{Indexable, SearchEngine},
-};
+use crate::engine_v2::{document::SingleDocument, simple_gen_doc::GenDoc, Indexable, SearchEngine};
 use resources::{
     models::{storage::ResourceStorage, words::Word},
     parse::jmdict::languages::Language,
 };
 use vector_space_model::{DefaultMetadata, DocumentVector};
 
-pub struct NativeEngine {}
+pub struct Engine {}
 
-impl Indexable for NativeEngine {
+impl Indexable for Engine {
     type Metadata = DefaultMetadata;
     type Document = SingleDocument;
 
@@ -24,7 +21,7 @@ impl Indexable for NativeEngine {
     }
 }
 
-impl SearchEngine for NativeEngine {
+impl SearchEngine for Engine {
     type GenDoc = GenDoc;
     type Output = Word;
 

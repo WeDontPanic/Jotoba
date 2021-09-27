@@ -1,7 +1,10 @@
+pub mod document;
+pub mod metadata;
 pub mod names;
 pub mod result;
 pub mod result_item;
 pub mod search_task;
+pub mod simple_gen_doc;
 pub mod words;
 
 use std::{hash::Hash, thread};
@@ -30,6 +33,11 @@ pub fn load_indexes(config: &Config) -> Result<(), Box<dyn std::error::Error>> {
 
     let config1 = config.clone();
     joins.push(thread::spawn(move || {
+        names::foreign::index::load(&config1);
+    }));
+
+    let config1 = config.clone();
+    joins.push(thread::spawn(move || {
         names::native::index::load(&config1);
     }));
 
@@ -38,7 +46,6 @@ pub fn load_indexes(config: &Config) -> Result<(), Box<dyn std::error::Error>> {
     }
 
     /*
-    name::foreign::index::load(config);
     sentences::japanese::index::load(config);
     sentences::foreign::index::load(config)?;
     */

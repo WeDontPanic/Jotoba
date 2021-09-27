@@ -1,13 +1,13 @@
 use std::{collections::HashMap, error::Error};
 
-use crate::engine::{document::MultiDocument, lang_metadata::Metadata};
-
 use bktree::BkTree;
 use config::Config;
 use log::{error, info};
 use once_cell::sync::OnceCell;
 use resources::parse::jmdict::languages::Language;
 use serde::{Deserialize, Serialize};
+
+use crate::engine_v2::{document::MultiDocument, metadata::Metadata};
 
 // Shortcut for type of index
 pub(super) type Index = vector_space_model::Index<MultiDocument, Metadata>;
