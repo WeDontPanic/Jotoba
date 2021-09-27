@@ -7,7 +7,10 @@ use levenshtein::levenshtein;
 //use models::search_mode::SearchMode;
 use once_cell::sync::Lazy;
 use regex::Regex;
-use resources::models::{kanji, words::Word};
+use resources::{
+    models::{kanji, words::Word},
+    parse::jmdict::languages::Language,
+};
 
 pub(super) fn new_foreign_order(
     sort_map: &HashMap<u32, ResultItem>,
@@ -49,7 +52,7 @@ pub(super) fn foreign_search_order(
         score += 12;
     }
 
-    let found = match find_reading(word, &search_order.query) {
+    let found = match find_reading(word, &search_order.query.query) {
         Some(v) => v,
         None => {
             return score;
@@ -177,6 +180,57 @@ pub(super) fn japanese_search_order_v2(word: &Word, relevance: f32, query_str: &
     score
 }
 
+pub(super) fn foreign_search_order_v2(
+    word: &Word,
+    relevance: f32,
+    query_str: &str,
+    language: Language,
+    user_lang: Language,
+) -> usize {
+    let mut score: usize = (relevance * 25f32) as usize;
+
+    if word.is_common() {
+        score += 10;
+    }
+
+    if let Some(jlpt) = word.jlpt_lvl {
+        score += jlpt as usize;
+    }
+
+    if !word.is_katakana_word() {
+        score += 8;
+    }
+
+    // Result found within users specified language
+    if language == user_lang {
+        score += 12;
+    }
+
+    let found = match find_reading(word, query_str) {
+        Some(v) => v,
+        None => {
+            return score;
+        }
+    };
+
+    let divisor = match (found.mode, found.case_ignored) {
+        (SearchMode::Exact, false) => 10,
+        (SearchMode::Exact, true) => 20,
+        (_, false) => 50,
+        (_, true) => 80,
+    };
+
+    score += (calc_likeliness(word, &found) / divisor) as usize;
+
+    if found.in_parentheses {
+        score = score - score.clamp(0, 10);
+    } else {
+        score += 30;
+    }
+
+    score
+}
+
 pub(super) fn new_kanji_reading_search_order(
     sort_map: &HashMap<u32, ResultItem>,
     search_order: &SearchOrder,
@@ -280,12 +334,10 @@ struct FindResult {
     sense_pos: usize,
 }
 
-fn find_reading(word: &Word, query: &Query) -> Option<FindResult> {
-    let query_str = &query.query;
-
+fn find_reading(word: &Word, query: &str) -> Option<FindResult> {
     for mode in SearchMode::ordered_iter() {
         for ign_case in &[false, true] {
-            let res = find_in_senses(&word.senses, query_str, *mode, *ign_case);
+            let res = find_in_senses(&word.senses, query, *mode, *ign_case);
             if res.is_some() {
                 return res;
             }

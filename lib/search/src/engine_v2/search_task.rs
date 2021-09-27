@@ -16,12 +16,13 @@ where
     /// Filter out results
     res_filter: Option<Box<dyn Fn(&T::Output) -> bool>>,
     /// Custom result order function
-    order: Option<Box<dyn Fn(&T::Output, f32, &str) -> usize>>,
+    order: Option<Box<dyn Fn(&T::Output, f32, &str, Option<Language>) -> usize>>,
     /// Min relevance returned from vector space algo
     threshold: f32,
     limit: usize,
     vector_limit: usize,
     offset: usize,
+    allow_align: bool,
     phantom: PhantomData<T>,
 }
 
@@ -94,7 +95,7 @@ where
     /// Set the search task's custom order function
     pub fn set_order_fn<F: 'static>(&mut self, res_filter: F)
     where
-        F: Fn(&T::Output, f32, &str) -> usize,
+        F: Fn(&T::Output, f32, &str, Option<Language>) -> usize,
     {
         self.order = Some(Box::new(res_filter));
     }
@@ -134,11 +135,20 @@ where
     /// Returns an iterator over all queries in form of document vectors and its assigned language
     fn get_queries<'b>(
         &'b self,
-    ) -> impl Iterator<Item = (&'b str, DocumentVector<T::GenDoc>, Option<Language>)> + 'b {
-        self.queries.iter().filter_map(|(q_str, lang)| {
+    ) -> impl Iterator<Item = (&'b str, DocumentVector<T::GenDoc>, Option<Language>)> {
+        self.queries.iter().filter_map(move |(q_str, lang)| {
             let index = T::get_index(*lang)?;
             let vec = T::gen_query_vector(index, q_str)?;
-            Some((*q_str, vec, *lang))
+
+            println!("{:?}", T::align_query(q_str, index, *lang));
+            // align query
+            let new_query = self
+                .allow_align
+                .then(|| T::align_query(q_str, index, *lang))
+                .flatten()
+                .unwrap_or(q_str);
+
+            Some((new_query, vec, *lang))
         })
     }
 
@@ -196,7 +206,7 @@ where
             .flatten()
             .filter(|i| self.filter_result(&i.1))
             .map(|(rel, item)| {
-                let relevance = self.calculate_score(item, rel, q_str);
+                let relevance = self.calculate_score(item, rel, q_str, language);
 
                 language
                     .map(|i| ResultItem::with_language(item, relevance, i))
@@ -208,10 +218,16 @@ where
 
     /// Calculates the score using a custom function if provided or just `rel` otherwise
     #[inline]
-    fn calculate_score(&self, item: &T::Output, rel: f32, query: &str) -> usize {
+    fn calculate_score(
+        &self,
+        item: &T::Output,
+        rel: f32,
+        query: &str,
+        language: Option<Language>,
+    ) -> usize {
         self.order
             .as_ref()
-            .map(|i| i(item, rel, query))
+            .map(|i| i(item, rel, query, language))
             .unwrap_or((rel * 100f32) as usize)
     }
 
@@ -238,6 +254,7 @@ impl<'a, T: SearchEngine> Default for SearchTask<'a, T> {
             limit: 1000,
             vector_limit: 100_000,
             offset: 0,
+            allow_align: true,
             phantom: PhantomData::default(),
         }
     }

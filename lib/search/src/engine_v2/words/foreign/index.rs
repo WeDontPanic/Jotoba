@@ -114,7 +114,7 @@ pub(super) fn get(lang: Language) -> Option<&'static Index> {
 
 /// Retrieve a term tree of the given language. Returns `None` if there is no index loaded
 #[inline]
-pub(crate) fn get_term_tree(lang: Language) -> Option<&'static BkTree<String>> {
+pub(super) fn get_term_tree(lang: Language) -> Option<&'static BkTree<String>> {
     // Safety:
     // We don't write to `INDEX` after loading it one time at the startup. Jotoba panics if it
     // can't load this index, so until a `get()` call gets reached, `INDEX` is always set to a

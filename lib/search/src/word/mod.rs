@@ -11,10 +11,7 @@ use crate::{
 };
 
 use self::result::{InflectionInformation, WordResult};
-use super::{
-    query::{Query, QueryLang},
-    search_order::SearchOrder,
-};
+use super::query::{Query, QueryLang};
 use error::Error;
 use itertools::Itertools;
 use japanese::{inflection::SentencePart, JapaneseExt};
@@ -188,8 +185,6 @@ impl<'a> Search<'a> {
 
         let (query, morpheme, sentence) = self.get_query(query_str).await?;
 
-        let pos_filter = self.get_pos_filter(sentence.is_some());
-
         let mut search_task: SearchTask<NativeEngine> = SearchTask::new(&query)
             .limit(self.query.settings.items_per_page as usize)
             .offset(self.query.page_offset)
@@ -200,11 +195,13 @@ impl<'a> Search<'a> {
             search_task.add_query(&self.query.query);
         }
 
+        // apply user filter
         let q_cloned = self.query.clone();
-        let p_cloned = pos_filter.clone();
-        search_task.set_result_filter(move |word| Self::word_filter(&q_cloned, word, &p_cloned));
+        let pos_filter = self.get_pos_filter(sentence.is_some());
+        search_task.set_result_filter(move |word| Self::word_filter(&q_cloned, word, &pos_filter));
 
-        search_task.set_order_fn(move |word, rel, q_str| {
+        // Set order function
+        search_task.set_order_fn(move |word, rel, q_str, _| {
             order::japanese_search_order_v2(word, rel, q_str)
         });
 
@@ -237,8 +234,6 @@ impl<'a> Search<'a> {
 
     /// Search for words by their translations
     async fn gloss_results(&self) -> Result<ResultData, Error> {
-        use crate::engine::word::foreign::Find;
-
         if !matches!(
             self.query.language,
             QueryLang::Foreign | QueryLang::Undetected
@@ -246,24 +241,31 @@ impl<'a> Search<'a> {
             return Ok(ResultData::default());
         }
 
+        use engine_v2::words::foreign::Engine;
+        println!("lol");
+
+        let mut search_task: SearchTask<Engine> =
+            SearchTask::with_language(&self.query.query, self.query.settings.user_lang)
+                .limit(self.query.settings.items_per_page as usize)
+                .offset(self.query.page_offset)
+                .threshold(0.3f32);
+
+        // Set user defined filter
         let pos_filter = to_option(self.query.get_part_of_speech_tags().copied().collect());
+        let q_cloned = self.query.clone();
+        search_task.set_result_filter(move |word| Self::word_filter(&q_cloned, word, &pos_filter));
+
+        // Set order function
+        let user_lang = self.query.settings.user_lang;
+        search_task.set_order_fn(move |word, relevance, query, language| {
+            order::foreign_search_order_v2(word, relevance, query, language.unwrap(), user_lang)
+        });
 
         // Do the search
-        let search_result = Find::new(&self.query, 1000, 0)
-            .with_treshold(0.3)
-            .find()
-            .await?;
+        let res = search_task.find()?;
+        let count = res.len();
 
-        let word_storage = resources::get().words();
-
-        let wordresults = search_result
-            .sequence_ids()
-            .into_iter()
-            .filter_map(|i| word_storage.by_sequence(i))
-            //.filter(|word| self.word_filter(word, &pos_filter))
-            // We're only showing 1000 items max
-            .take(1000)
-            .collect::<Vec<_>>();
+        let mut wordresults = res.item_iter().cloned().collect::<Vec<_>>();
 
         // Do romaji search if no results were found
         if wordresults.is_empty() && !self.query.query.is_japanese() {
@@ -272,32 +274,11 @@ impl<'a> Search<'a> {
                 .await;
         }
 
-        let count = wordresults.len();
-
-        let mut wordresults = wordresults
-            .into_iter()
-            .take(self.query.page_offset + 100)
-            .cloned()
-            .collect::<Vec<_>>();
-
         filter_languages(
             wordresults.iter_mut(),
             self.query.settings.user_lang,
             self.query.settings.show_english,
         );
-
-        // Sort the result
-        order::new_foreign_order(
-            search_result.get_order_map(),
-            &SearchOrder::new(self.query, &None),
-            &mut wordresults,
-        );
-
-        let wordresults: Vec<_> = wordresults
-            .into_iter()
-            .skip(self.query.page_offset)
-            .take(self.query.settings.items_per_page as usize)
-            .collect();
 
         Ok(ResultData {
             count,

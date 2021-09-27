@@ -25,6 +25,11 @@ pub fn load_indexes(config: &Config) -> Result<(), Box<dyn std::error::Error>> {
 
     let config1 = config.clone();
     joins.push(thread::spawn(move || {
+        words::foreign::index::load(&config1).expect("failed to load index");
+    }));
+
+    let config1 = config.clone();
+    joins.push(thread::spawn(move || {
         names::native::index::load(&config1);
     }));
 
@@ -33,7 +38,6 @@ pub fn load_indexes(config: &Config) -> Result<(), Box<dyn std::error::Error>> {
     }
 
     /*
-    word::japanese::index::load(config.get_indexes_source());
     name::foreign::index::load(config);
     sentences::japanese::index::load(config);
     sentences::foreign::index::load(config)?;
@@ -67,12 +71,11 @@ pub trait SearchEngine: Indexable {
         query: &str,
     ) -> Option<DocumentVector<Self::GenDoc>>;
 
-    #[inline]
-    fn align_query(
-        &self,
-        _original: &str,
+    fn align_query<'b>(
+        _original: &'b str,
         _index: &Index<Self::Document, Self::Metadata>,
-    ) -> Option<&str> {
+        _language: Option<Language>,
+    ) -> Option<&'b str> {
         None
     }
 }
