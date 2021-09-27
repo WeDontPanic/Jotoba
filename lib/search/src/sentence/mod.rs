@@ -1,5 +1,7 @@
 pub mod result;
 
+use std::time::Instant;
+
 use self::result::SentenceResult;
 
 use super::query::Query;
@@ -12,11 +14,16 @@ use resources::{models::sentences::Sentence, parse::jmdict::languages::Language}
 
 /// Searches for sentences
 pub fn search(query: &Query) -> Result<SentenceResult, Error> {
-    if query.language == QueryLang::Japanese {
+    let start = Instant::now();
+    let res = if query.language == QueryLang::Japanese {
         jp_search(query)
     } else {
         foreign_search(query)
-    }
+    }?;
+
+    println!("Sentence search took: {:?}", start.elapsed());
+
+    Ok(res)
 }
 
 fn foreign_search(query: &Query) -> Result<SentenceResult, Error> {

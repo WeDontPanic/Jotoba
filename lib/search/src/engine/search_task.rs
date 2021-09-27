@@ -115,6 +115,28 @@ where
         })
     }
 
+    /// Estimates the amount of results efficiently. This 'guess' is defined as follows:
+    ///
+    /// Be 'm' the amount of items a full search would return.
+    /// Be 'n' the guess returned by this function.
+    ///
+    /// - n = 0 => m = 0
+    /// - n <= m
+    pub fn estimate_result_count(&self) -> Result<usize, Error> {
+        let estimated = self
+            .get_queries()
+            .map(|(_, vec, lang)| {
+                // TODO: maybe remove stopwords from vec to make it faster
+                self.estimate_by_vec(vec, lang)
+            })
+            .collect::<Result<Vec<_>, Error>>()?
+            .into_iter()
+            .max()
+            .unwrap_or(0);
+
+        Ok(estimated)
+    }
+
     /// Runs the search task and returns the result.
     pub fn find(&self) -> Result<SearchResult<&T::Output>, Error> {
         let items = self
@@ -124,12 +146,11 @@ where
             .into_iter()
             .flatten()
             .unique_by(|a| a.item)
+            .take(self.vector_limit)
             .collect::<Vec<_>>();
 
-        let heap: BinaryHeap<ResultItem<&T::Output>> = BinaryHeap::from(items);
-
         Ok(SearchResult::from_binary_heap(
-            heap,
+            BinaryHeap::from(items),
             self.offset,
             self.limit,
         ))
@@ -216,6 +237,56 @@ where
                     .unwrap_or(ResultItem::new(item, relevance))
             })
             .collect::<Vec<_>>();
+        Ok(res)
+    }
+
+    fn estimate_by_vec(
+        &self,
+        q_vec: DocumentVector<T::GenDoc>,
+        language: Option<Language>,
+    ) -> Result<usize, Error> {
+        let index = T::get_index(language);
+        if index.is_none() {
+            log::error!("Failed to retrieve {:?} index with language", language);
+            return Err(Error::Unexpected);
+        }
+        let index = index.unwrap();
+
+        let mut vec_store = index.get_vector_store().clone();
+        let query_dimensions: Vec<_> = q_vec.vector().vec_indices().collect();
+
+        // Retrieve all document vectors that share at least one dimension with the query vector
+        let document_vectors = vec_store
+            .get_all_iter(&query_dimensions)
+            .take(self.vector_limit);
+
+        let storage = resources::get();
+
+        let res = document_vectors
+            .filter_map(|i| {
+                if !self.filter_vector(&i.document) {
+                    return None;
+                }
+
+                let similarity = i.similarity(&q_vec);
+                if similarity <= self.threshold {
+                    return None;
+                }
+
+                // Retrieve `Output` values for given documents
+                let res = T::doc_to_output(storage, &i.document)?
+                    .into_iter()
+                    .map(move |i| (similarity, i));
+
+                Some(res)
+            })
+            .flatten()
+            .filter(|i| self.filter_result(&i.1))
+            .map(|(_, item)| item)
+            .unique()
+            .take(100)
+            .count();
+
         Ok(res)
     }
 

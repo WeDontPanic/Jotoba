@@ -61,7 +61,7 @@ pub fn load_indexes(config: &Config) -> Result<(), Box<dyn std::error::Error>> {
 
 pub trait Indexable {
     type Metadata: Metadata + 'static;
-    type Document: Decodable + Clone + 'static;
+    type Document: Decodable + Clone + 'static + Eq + Hash;
 
     fn get_index(
         language: Option<Language>,
