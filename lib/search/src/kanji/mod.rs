@@ -10,7 +10,7 @@ use japanese::JapaneseExt;
 use super::query::Query;
 
 /// The entry of a kanji search
-pub async fn search(query: &Query) -> Result<Vec<Item>, Error> {
+pub fn search(query: &Query) -> Result<Vec<Item>, Error> {
     let query_str = format_query(&query.query);
 
     let res;

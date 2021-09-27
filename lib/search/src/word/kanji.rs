@@ -13,7 +13,7 @@ use resources::models::{
 };
 
 /// Runs a kanji reading search
-pub(super) async fn by_reading(search: &Search<'_>) -> Result<ResultData, Error> {
+pub(super) fn by_reading(search: &Search<'_>) -> Result<ResultData, Error> {
     let reading = search
         .query
         .form
@@ -28,7 +28,7 @@ pub(super) async fn by_reading(search: &Search<'_>) -> Result<ResultData, Error>
 
     let reading_type = kanji.get_reading_type(&reading.reading);
     if !kanji.has_reading(&reading.reading) || reading_type.is_none() {
-        return alternative_reading_search(search).await;
+        return alternative_reading_search(search);
     }
     let reading_type = reading_type.unwrap();
 
@@ -123,7 +123,7 @@ fn words_with_kanji_reading(
 }
 
 /// Do a search without the kanji literal or reading
-async fn alternative_reading_search(search: &Search<'_>) -> Result<ResultData, Error> {
+fn alternative_reading_search(search: &Search<'_>) -> Result<ResultData, Error> {
     let reading = search.query.form.as_kanji_reading().unwrap();
 
     // Modify search query
@@ -134,7 +134,6 @@ async fn alternative_reading_search(search: &Search<'_>) -> Result<ResultData, E
         },
     }
     .do_word_search()
-    .await
 }
 
 /// Load word assigned kanji

@@ -11,7 +11,7 @@ use error::Error;
 use resources::{models::sentences::Sentence, parse::jmdict::languages::Language};
 
 /// Searches for sentences
-pub async fn search(query: &Query) -> Result<SentenceResult, Error> {
+pub fn search(query: &Query) -> Result<SentenceResult, Error> {
     if query.language == QueryLang::Japanese {
         jp_search(query)
     } else {

@@ -11,5 +11,5 @@ use search::query_parser::QueryType::Words;
 pub async fn word_search(payload: Json<SearchRequest>) -> Result<Json<Response>> {
     let query = SearchRequest::parse(payload, Words)?;
 
-    Ok(Json(search::word::search(&query).await?.into()))
+    Ok(Json(search::word::search(&query)?.into()))
 }

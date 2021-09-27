@@ -11,5 +11,5 @@ pub mod response;
 pub async fn name_search(payload: Json<SearchRequest>) -> Result<Json<Response>> {
     let query = SearchRequest::parse(payload, Kanji)?;
 
-    Ok(Json(search::name::search(&query).await?.items.into()))
+    Ok(Json(search::name::search(&query)?.items.into()))
 }

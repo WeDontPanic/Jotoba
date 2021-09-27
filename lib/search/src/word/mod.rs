@@ -35,8 +35,8 @@ pub(self) struct Search<'a> {
 
 /// Search among all data based on the input query
 #[inline]
-pub async fn search(query: &Query) -> Result<WordResult, Error> {
-    Ok(Search { query }.do_search().await?)
+pub fn search(query: &Query) -> Result<WordResult, Error> {
+    Ok(Search { query }.do_search()?)
 }
 
 #[derive(Default)]
@@ -51,11 +51,11 @@ pub(crate) struct ResultData {
 
 impl<'a> Search<'a> {
     /// Do the search
-    async fn do_search(&self) -> Result<WordResult, Error> {
+    fn do_search(&self) -> Result<WordResult, Error> {
         let start = Instant::now();
         let search_result = match self.query.form {
-            Form::KanjiReading(_) => kanji::by_reading(self).await?,
-            _ => self.do_word_search().await?,
+            Form::KanjiReading(_) => kanji::by_reading(self)?,
+            _ => self.do_word_search()?,
         };
 
         let words = search_result.words;
@@ -76,10 +76,9 @@ impl<'a> Search<'a> {
     }
 
     /// Search by a word
-    async fn do_word_search(&self) -> Result<ResultData, Error> {
-        // Perform searches asynchronously
-        let (native_word_res, gloss_word_res): (ResultData, ResultData) =
-            futures::try_join!(self.native_results(&self.query.query), self.gloss_results())?;
+    fn do_word_search(&self) -> Result<ResultData, Error> {
+        let native_word_res = self.native_results(&self.query.query)?;
+        let gloss_word_res = self.gloss_results()?;
 
         let sentence_parts = native_word_res
             .sentence_parts
@@ -101,7 +100,7 @@ impl<'a> Search<'a> {
         })
     }
 
-    async fn get_query<'b>(
+    fn get_query<'b>(
         &'b self,
         query_str: &'a str,
     ) -> Result<
@@ -127,7 +126,7 @@ impl<'a> Search<'a> {
 
             let index = self.query.word_index.clamp(0, parsed.items.len() - 1);
             let res = parsed.items[index].clone();
-            let sentence = Self::format_setence_parts(self, parsed).await;
+            let sentence = Self::format_setence_parts(self, parsed);
 
             Ok((res.get_lexeme().to_string(), Some(res), sentence))
         } else {
@@ -135,10 +134,7 @@ impl<'a> Search<'a> {
         }
     }
 
-    async fn format_setence_parts(
-        &self,
-        parsed: ParseResult<'static, 'a>,
-    ) -> Option<Vec<SentencePart>> {
+    fn format_setence_parts(&self, parsed: ParseResult<'static, 'a>) -> Option<Vec<SentencePart>> {
         if parsed.items.len() == 1 {
             return None;
         }
@@ -157,7 +153,7 @@ impl<'a> Search<'a> {
                 continue;
             }
 
-            part.furigana = furigana_by_reading(&part.lexeme).await;
+            part.furigana = furigana_by_reading(&part.lexeme);
 
             if let Some(ref furigana) = part.furigana {
                 let furi_end = match japanese::furigana::last_kana_part(&furigana) {
@@ -177,12 +173,12 @@ impl<'a> Search<'a> {
     }
 
     /// Perform a native word search
-    async fn native_results(&self, query_str: &str) -> Result<ResultData, Error> {
+    fn native_results(&self, query_str: &str) -> Result<ResultData, Error> {
         if self.query.language != QueryLang::Japanese && !query_str.is_japanese() {
             return Ok(ResultData::default());
         }
 
-        let (query, morpheme, sentence) = self.get_query(query_str).await?;
+        let (query, morpheme, sentence) = self.get_query(query_str)?;
 
         let mut search_task: SearchTask<native::Engine> = SearchTask::new(&query)
             .limit(self.query.settings.items_per_page as usize)
@@ -232,7 +228,7 @@ impl<'a> Search<'a> {
     }
 
     /// Search for words by their translations
-    async fn gloss_results(&self) -> Result<ResultData, Error> {
+    fn gloss_results(&self) -> Result<ResultData, Error> {
         if !matches!(
             self.query.language,
             QueryLang::Foreign | QueryLang::Undetected
@@ -269,9 +265,7 @@ impl<'a> Search<'a> {
 
         // Do romaji search if no results were found
         if wordresults.is_empty() && !self.query.query.is_japanese() {
-            return self
-                .native_results(&self.query.query.replace(" ", "").to_hiragana())
-                .await;
+            return self.native_results(&self.query.query.replace(" ", "").to_hiragana());
         }
 
         filter_languages(
@@ -339,7 +333,7 @@ fn inflection_info(morpheme: &Option<WordItem>) -> Option<InflectionInformation>
 }
 
 /// Returns furigana of the given `morpheme` if available
-async fn furigana_by_reading(morpheme: &str) -> Option<String> {
+fn furigana_by_reading(morpheme: &str) -> Option<String> {
     let word_storage = resources::get().words();
 
     let st = SearchTask::<native::Engine>::new(morpheme)

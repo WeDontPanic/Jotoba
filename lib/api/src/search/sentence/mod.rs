@@ -13,8 +13,7 @@ pub async fn sentence_search(payload: Json<SearchRequest>) -> Result<Json<Respon
     let query = SearchRequest::parse(payload, Kanji)?;
 
     Ok(Json(
-        search::sentence::search(&query)
-            .await?
+        search::sentence::search(&query)?
             .items
             .into_iter()
             .map(|i| i.sentence)

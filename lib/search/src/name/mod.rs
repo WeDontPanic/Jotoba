@@ -17,9 +17,9 @@ use utils::to_option;
 
 /// Search for names
 #[inline]
-pub async fn search(query: &Query) -> Result<NameResult, Error> {
+pub fn search(query: &Query) -> Result<NameResult, Error> {
     if query.form.is_kanji_reading() {
-        search_kanji(&query).await
+        search_kanji(&query)
     } else {
         if query.query.is_japanese() {
             do_jp(query)
@@ -52,7 +52,7 @@ fn handle_search<T: SearchEngine<Output = Name>>(task: SearchTask<T>) -> Result<
 }
 
 /// Search by kanji reading
-async fn search_kanji(query: &Query) -> Result<NameResult, Error> {
+fn search_kanji(query: &Query) -> Result<NameResult, Error> {
     let kanji_reading = query.form.as_kanji_reading().ok_or(Error::Unexpected)?;
 
     let query_str = kanji_reading.literal.to_string();
