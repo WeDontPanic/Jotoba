@@ -5,7 +5,7 @@ use log::{error, info};
 use once_cell::sync::OnceCell;
 use resources::parse::jmdict::languages::Language;
 
-use crate::engine_v2::{document::SentenceDocument, metadata::Metadata};
+use crate::engine::{document::SentenceDocument, metadata::Metadata};
 
 // Shortcut for type of index
 pub(super) type Index = vector_space_model::Index<SentenceDocument, Metadata>;

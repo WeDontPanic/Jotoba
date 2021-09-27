@@ -4,7 +4,7 @@ use self::result::SentenceResult;
 
 use super::query::Query;
 use crate::{
-    engine_v2::{sentences::foreign, sentences::native, SearchEngine, SearchTask},
+    engine::{sentences::foreign, sentences::native, SearchEngine, SearchTask},
     query::QueryLang,
 };
 use error::Error;

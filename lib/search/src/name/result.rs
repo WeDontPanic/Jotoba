@@ -2,7 +2,7 @@ use itertools::Itertools;
 use localization::{language::Language, traits::Translatable, TranslationDict};
 use resources::models::names::Name;
 
-use crate::engine_v2::result::SearchResult;
+use crate::engine::result::SearchResult;
 
 pub struct NameResult {
     pub items: Vec<Name>,

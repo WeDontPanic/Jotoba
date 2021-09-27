@@ -1,7 +1,7 @@
 // TODO: remove duplicate code if everything is properly implemented
 #![allow(dead_code)]
 
-pub mod engine_v2;
+pub mod engine;
 pub mod kanji;
 pub mod name;
 pub mod query;

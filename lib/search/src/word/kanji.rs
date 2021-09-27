@@ -1,6 +1,6 @@
 use super::{super::query::Query, ResultData, Search};
 use crate::{
-    engine_v2::{words::native, SearchTask},
+    engine::{words::native, SearchTask},
     word::order,
 };
 

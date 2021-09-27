@@ -5,7 +5,7 @@ use log::info;
 use once_cell::sync::OnceCell;
 use vector_space_model::DefaultMetadata;
 
-use crate::engine_v2::document::SentenceDocument;
+use crate::engine::document::SentenceDocument;
 
 // Shortcut for type of index
 pub(super) type Index = vector_space_model::Index<SentenceDocument, DefaultMetadata>;

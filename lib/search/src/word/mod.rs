@@ -5,7 +5,7 @@ pub mod result;
 use std::time::Instant;
 
 use crate::{
-    engine_v2::{
+    engine::{
         words::{foreign, native},
         SearchTask,
     },

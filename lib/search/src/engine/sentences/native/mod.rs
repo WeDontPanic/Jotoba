@@ -1,6 +1,6 @@
 pub mod index;
 
-use crate::engine_v2::{
+use crate::engine::{
     document::SentenceDocument, simple_gen_doc::GenDoc, Indexable, SearchEngine,
 };
 use resources::{

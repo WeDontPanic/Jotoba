@@ -5,7 +5,7 @@ use resources::{
 use utils::to_option;
 use vector_space_model::{document_vector, DocumentVector};
 
-use crate::engine_v2::{document::MultiDocument, metadata::Metadata, Indexable, SearchEngine};
+use crate::engine::{document::MultiDocument, metadata::Metadata, Indexable, SearchEngine};
 use gen::GenDoc;
 
 pub mod gen;
