@@ -46,9 +46,8 @@ where
     }
 
     /// Adds another query to look out for to the search task
-    pub fn add_language_query(mut self, query: &'a str, language: Language) -> Self {
+    pub fn add_language_query(&mut self, query: &'a str, language: Language) {
         self.queries.push((query, Some(language)));
-        self
     }
 
     /// Adds another query to look out for to the search task

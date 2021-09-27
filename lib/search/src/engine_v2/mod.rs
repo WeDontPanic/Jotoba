@@ -4,6 +4,7 @@ pub mod names;
 pub mod result;
 pub mod result_item;
 pub mod search_task;
+pub mod sentences;
 pub mod simple_gen_doc;
 pub mod words;
 

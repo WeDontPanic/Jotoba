@@ -5,10 +5,12 @@ pub mod result;
 use std::time::Instant;
 
 use crate::{
-    engine_v2::{self, SearchTask},
+    engine_v2::{
+        words::{foreign, native},
+        SearchTask,
+    },
     query::Form,
 };
-use engine_v2::words::{foreign, native};
 
 use self::result::{InflectionInformation, WordResult};
 use super::query::{Query, QueryLang};
@@ -20,7 +22,7 @@ use resources::{
         kanji::Kanji,
         words::{filter_languages, Word},
     },
-    parse::jmdict::part_of_speech::PosSimple,
+    parse::jmdict::{languages::Language, part_of_speech::PosSimple},
 };
 use result::Item;
 
@@ -243,6 +245,10 @@ impl<'a> Search<'a> {
                 .limit(self.query.settings.items_per_page as usize)
                 .offset(self.query.page_offset)
                 .threshold(0.3f32);
+
+        if self.query.settings.show_english {
+            search_task.add_language_query(&self.query.query, Language::English);
+        }
 
         // Set user defined filter
         let pos_filter = to_option(self.query.get_part_of_speech_tags().copied().collect());
