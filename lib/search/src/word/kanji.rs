@@ -1,5 +1,8 @@
 use super::{super::query::Query, ResultData, Search};
-use crate::{engine, search_order::SearchOrder, word::order};
+use crate::{
+    engine_v2::{words::native, SearchTask},
+    word::order,
+};
 
 use error::Error;
 use itertools::Itertools;
@@ -30,7 +33,7 @@ pub(super) async fn by_reading(search: &Search<'_>) -> Result<ResultData, Error>
     let reading_type = reading_type.unwrap();
 
     let (words, count) =
-        words_with_kanji_reading(kanji, reading_type, &reading.reading, search.query).await?;
+        words_with_kanji_reading(kanji, reading_type, &reading.reading, search.query)?;
 
     Ok(ResultData {
         count,
@@ -39,74 +42,66 @@ pub(super) async fn by_reading(search: &Search<'_>) -> Result<ResultData, Error>
     })
 }
 
-async fn words_with_kanji_reading(
+fn words_with_kanji_reading(
     kanji: &Kanji,
     _rt: ReadingType,
     reading: &str,
     query: &Query,
 ) -> Result<(Vec<Word>, usize), Error> {
-    use engine::word::japanese::Find;
+    let query_str = kanji.literal.to_string();
 
-    let res = Find::new(&kanji.literal.to_string(), 1000, 0)
-        .find()
-        .await?;
-    let word_storage = resources::get().words();
+    let mut search_task = SearchTask::<native::Engine>::new(&query_str)
+        .threshold(0.1)
+        .limit(query.settings.items_per_page as usize)
+        .offset(query.page_offset);
 
-    let seq_ids = res.sequence_ids();
-    let mut wordresults = seq_ids
-        .iter()
-        .filter_map(|i| word_storage.by_sequence(*i).map(|i| i.to_owned()))
-        .filter(|word| {
-            //TODO: also check for alternative readings
-            if word.reading.kanji.is_none() {
-                return false;
-            }
-            let kanji_reading = word.reading.kanji.as_ref().unwrap().reading.clone();
-            let kana = &word.reading.kana.reading;
-            let readings = japanese::furigana::generate::retrieve_readings(
-                &mut |i: String| {
-                    let retrieve = resources::get().kanji();
-                    let kanji = retrieve.by_literal(i.chars().next()?)?;
-                    if kanji.onyomi.is_none() && kanji.kunyomi.is_none() {
-                        return None;
-                    }
+    let literal = kanji.literal.to_string();
+    let reading = reading.to_string();
+    let literal_reading = kanji.get_literal_reading(&reading);
+    search_task.set_result_filter(move |word| {
+        //TODO: also check for alternative readings (eg. 止 とど.める)
+        if word.reading.kanji.is_none() {
+            return false;
+        }
+        let kanji_reading = word.reading.kanji.as_ref().unwrap().reading.clone();
+        let kana = &word.reading.kana.reading;
+        let readings = japanese::furigana::generate::retrieve_readings(
+            &mut |i: String| {
+                let retrieve = resources::get().kanji();
+                let kanji = retrieve.by_literal(i.chars().next()?)?;
+                if kanji.onyomi.is_none() && kanji.kunyomi.is_none() {
+                    return None;
+                }
 
-                    Some((kanji.kunyomi.clone(), kanji.onyomi.clone()))
-                },
-                &kanji_reading,
-                kana,
-            );
-            if readings.is_none() {
-                return false;
-            }
+                Some((kanji.kunyomi.clone(), kanji.onyomi.clone()))
+            },
+            &kanji_reading,
+            kana,
+        );
 
-            readings.unwrap().iter().any(|i| {
-                i.0.contains(&kanji.literal.to_string())
-                    && i.1
-                        .to_hiragana()
-                        .contains(&kanji.get_literal_reading(&reading).unwrap().to_hiragana())
-                    && kana
-                        .to_hiragana()
-                        .contains(&kanji::format_reading(&reading.to_hiragana()))
-            })
+        if readings.is_none() {
+            return false;
+        }
+
+        readings.unwrap().iter().any(|i| {
+            i.0.contains(&literal)
+                && i.1
+                    .to_hiragana()
+                    .contains(&literal_reading.as_ref().unwrap().to_hiragana())
+                && kana
+                    .to_hiragana()
+                    .contains(&kanji::format_reading(&reading.to_hiragana()))
         })
-        .take(1000)
-        .collect::<Vec<_>>();
+    });
 
-    // Sort the result
-    order::new_kanji_reading_search_order(
-        res.get_order_map(),
-        &SearchOrder::new(query, &None),
-        &mut wordresults,
-    );
+    let kanji_reading = query.form.as_kanji_reading().unwrap().clone();
+    search_task.set_order_fn(move |word, rel, _, _| {
+        order::kanji_reading_search(word, &kanji_reading, rel)
+    });
 
-    let len = wordresults.len();
-
-    let mut words = wordresults
-        .into_iter()
-        .skip(query.page_offset)
-        .take(10)
-        .collect::<Vec<_>>();
+    let res = search_task.find()?;
+    let len = res.len();
+    let mut words = res.item_iter().cloned().collect::<Vec<_>>();
 
     super::filter_languages(
         words.iter_mut(),

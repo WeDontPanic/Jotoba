@@ -1,5 +1,4 @@
-use super::super::search_order::SearchOrder;
-use crate::{engine::result::ResultItem, SearchMode};
+use crate::SearchMode;
 use japanese::JapaneseExt;
 use levenshtein::levenshtein;
 use once_cell::sync::Lazy;
@@ -8,7 +7,11 @@ use resources::{
     models::{kanji, words::Word},
     parse::jmdict::languages::Language,
 };
-use std::collections::HashMap;
+
+/// A Regex matching parentheses and its contents
+pub(crate) static REMOVE_PARENTHESES: Lazy<Regex> =
+    Lazy::new(|| regex::Regex::new("\\(.*\\)").unwrap());
+
 
 /// Search order for words searched by japanese meaning/kanji/reading
 pub(super) fn japanese_search_order(word: &Word, relevance: f32, query_str: &str) -> usize {
@@ -100,31 +103,14 @@ pub(super) fn foreign_search_order(
     score
 }
 
-pub(super) fn new_kanji_reading_search_order(
-    sort_map: &HashMap<u32, ResultItem>,
-    search_order: &SearchOrder,
-    e: &mut Vec<Word>,
-) {
-    e.sort_by(|a, b| {
-        let a_item = sort_map.get(&a.sequence).unwrap();
-        let b_item = sort_map.get(&b.sequence).unwrap();
-
-        let a_score = kanji_reading_search(a, search_order, a_item);
-        let b_score = kanji_reading_search(b, search_order, b_item);
-
-        a_score.cmp(&b_score).reverse()
-    })
-}
 pub(super) fn kanji_reading_search(
     word: &Word,
-    search_order: &SearchOrder,
-    result_item: &ResultItem,
+    kanji_reading: &resources::models::kanji::Reading,
+    relevance: f32,
 ) -> usize {
-    let mut score: usize = (result_item.relevance * 25f32) as usize;
+    let mut score: usize = (relevance * 25f32) as usize;
 
     // This function should only be called for kanji reading search queries!
-    debug_assert!(search_order.query.form.as_kanji_reading().is_some());
-    let kanji_reading = search_order.query.form.as_kanji_reading().unwrap();
     let formatted_reading = kanji::format_reading(&kanji_reading.reading);
     let kana_reading = &word.reading.kana.reading;
 
@@ -215,10 +201,6 @@ fn find_reading(word: &Word, query: &str) -> Option<FindResult> {
 
     None
 }
-
-/// A Regex matching parentheses and its contents
-pub(crate) static REMOVE_PARENTHESES: Lazy<Regex> =
-    Lazy::new(|| regex::Regex::new("\\(.*\\)").unwrap());
 
 fn find_in_senses(
     senses: &[resources::models::words::Sense],
