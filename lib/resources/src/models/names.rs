@@ -11,6 +11,15 @@ pub struct Name {
     pub xref: Option<String>,
 }
 
+impl std::hash::Hash for Name {
+    #[inline]
+    fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
+        self.sequence.hash(state);
+    }
+}
+
+impl Eq for Name {}
+
 impl Name {
     /// Return `true` if name is gendered
     pub fn is_gendered(&self) -> bool {

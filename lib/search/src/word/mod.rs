@@ -4,7 +4,11 @@ pub mod result;
 
 use std::time::Instant;
 
-use crate::{engine, query::Form};
+use crate::{
+    engine,
+    engine_v2::{self, SearchTask},
+    query::Form,
+};
 
 use self::result::{InflectionInformation, WordResult};
 use super::{
@@ -176,7 +180,7 @@ impl<'a> Search<'a> {
 
     /// Perform a native word search
     async fn native_results(&self, query_str: &str) -> Result<ResultData, Error> {
-        use engine::word::japanese::Find;
+        use engine_v2::words::native::NativeEngine;
 
         if self.query.language != QueryLang::Japanese && !query_str.is_japanese() {
             return Ok(ResultData::default());
@@ -184,47 +188,30 @@ impl<'a> Search<'a> {
 
         let (query, morpheme, sentence) = self.get_query(query_str).await?;
 
-        let query_modified = query != query_str;
-        let pos_filter_tags = self
-            .query
-            .get_part_of_speech_tags()
-            .copied()
-            .collect::<Vec<_>>();
+        let pos_filter = self.get_pos_filter(sentence.is_some());
 
-        let infl_info = morpheme.as_ref().and_then(|i| {
-            (!i.inflections.is_empty()).then(|| InflectionInformation {
-                lexeme: i.lexeme.to_owned(),
-                forms: i.inflections.clone(),
-            })
-        });
+        let mut search_task: SearchTask<NativeEngine> = SearchTask::new(&query)
+            .limit(self.query.settings.items_per_page as usize)
+            .offset(self.query.page_offset)
+            .threshold(0.04f32);
 
-        let mut search_result = Find::new(&query, 1000, 0).find().await?;
-        if query_modified {
-            let original_res = Find::new(&self.query.query, 1000, 0).find().await?;
-            search_result.extend(original_res);
+        // If query was modified (ie. through reflection), search for original too
+        if query != query_str {
+            search_task.add_query(&self.query.query);
         }
 
-        let pos_filter =
-            (!pos_filter_tags.is_empty() && sentence.is_none()).then(|| pos_filter_tags);
+        let q_cloned = self.query.clone();
+        let p_cloned = pos_filter.clone();
+        search_task.set_result_filter(move |word| Self::word_filter(&q_cloned, word, &p_cloned));
 
-        let word_storage = resources::get().words();
+        search_task.set_order_fn(move |word, rel, q_str| {
+            order::japanese_search_order_v2(word, rel, q_str)
+        });
 
-        let wordresults = search_result
-            .sequence_ids()
-            .into_iter()
-            .filter_map(|i| word_storage.by_sequence(i))
-            .filter(|word| self.word_filter(word, &pos_filter))
-            // We're only showing 1000 items max
-            .take(1000)
-            .collect::<Vec<_>>();
+        let res = search_task.find()?;
+        let count = res.len();
 
-        let count = wordresults.len();
-
-        let mut wordresults: Vec<_> = wordresults
-            .into_iter()
-            .take(self.query.page_offset + 100)
-            .cloned()
-            .collect();
+        let mut wordresults = res.item_iter().cloned().collect::<Vec<_>>();
 
         filter_languages(
             wordresults.iter_mut(),
@@ -232,18 +219,7 @@ impl<'a> Search<'a> {
             self.query.settings.show_english,
         );
 
-        // Sort the result
-        order::new_japanese_order(
-            search_result.get_order_map(),
-            &SearchOrder::new(self.query, &None),
-            &mut wordresults,
-        );
-
-        let wordresults: Vec<_> = wordresults
-            .into_iter()
-            .skip(self.query.page_offset)
-            .take(self.query.settings.items_per_page as usize)
-            .collect();
+        let infl_info = inflection_info(&morpheme);
 
         let searched_query = morpheme
             .map(|i| i.original_word.to_owned())
@@ -284,7 +260,7 @@ impl<'a> Search<'a> {
             .sequence_ids()
             .into_iter()
             .filter_map(|i| word_storage.by_sequence(i))
-            .filter(|word| self.word_filter(word, &pos_filter))
+            //.filter(|word| self.word_filter(word, &pos_filter))
             // We're only showing 1000 items max
             .take(1000)
             .collect::<Vec<_>>();
@@ -330,6 +306,16 @@ impl<'a> Search<'a> {
         })
     }
 
+    fn get_pos_filter(&self, is_sentence: bool) -> Option<Vec<PosSimple>> {
+        let pos_filter_tags = self
+            .query
+            .get_part_of_speech_tags()
+            .copied()
+            .collect::<Vec<_>>();
+
+        (!pos_filter_tags.is_empty() && !is_sentence).then(|| pos_filter_tags)
+    }
+
     #[inline]
     fn merge_words_with_kanji(words: Vec<Word>, kanji: Vec<Kanji>) -> Vec<Item> {
         kanji
@@ -340,7 +326,7 @@ impl<'a> Search<'a> {
     }
 
     /// Returns false if a word doesn't match a search-query given filter
-    fn word_filter(&self, word: &Word, pos_filter: &Option<Vec<PosSimple>>) -> bool {
+    fn word_filter(query: &Query, word: &Word, pos_filter: &Option<Vec<PosSimple>>) -> bool {
         // Apply pos tag filter
         if !pos_filter
             .as_ref()
@@ -351,7 +337,7 @@ impl<'a> Search<'a> {
         }
 
         // Apply misc filter
-        for misc_filter in self.query.get_misc_tags() {
+        for misc_filter in query.get_misc_tags() {
             if !word.has_misc(*misc_filter) {
                 return false;
             }
@@ -359,6 +345,16 @@ impl<'a> Search<'a> {
 
         true
     }
+}
+
+/// Returns information about word inflections, if available
+fn inflection_info(morpheme: &Option<WordItem>) -> Option<InflectionInformation> {
+    morpheme.as_ref().and_then(|i| {
+        (!i.inflections.is_empty()).then(|| InflectionInformation {
+            lexeme: i.lexeme.to_owned(),
+            forms: i.inflections.clone(),
+        })
+    })
 }
 
 /// Returns furigana of the given `morpheme` if available

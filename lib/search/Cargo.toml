@@ -23,6 +23,7 @@ jp_inflections = "0.1.1"
 strsim = "0.10.0"
 eudex = { git = "https://github.com/JojiiOfficial/eudex"}
 regex = "1.5.4"
+#vector_space_model = { path = "../../../vector_space_model"}
 vector_space_model = { git = "https://github.com/JojiiOfficial/VectorSpaceModel" }
 byteorder = "1.4.3"
 tinysegmenter = "0.1.1"

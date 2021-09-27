@@ -44,6 +44,18 @@ impl<T: PartialEq> SearchResult<T> {
 
         Self { total_items, items }
     }
+
+    /// Get the amount of items in the result
+    #[inline]
+    pub fn len(&self) -> usize {
+        self.total_items
+    }
+
+    /// Returns an iterator over the raw result items
+    #[inline]
+    pub fn item_iter(self) -> impl Iterator<Item = T> {
+        self.items.into_iter().map(|i| i.item)
+    }
 }
 
 impl<T: PartialEq> IntoIterator for SearchResult<T> {

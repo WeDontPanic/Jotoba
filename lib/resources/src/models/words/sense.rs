@@ -13,7 +13,7 @@ use serde::{Deserialize, Serialize};
 
 /// A single sense for a word. Represents one language,
 /// one misc item and 1..n glosses
-#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize, Hash)]
 pub struct Sense {
     pub misc: Option<Misc>,
     pub field: Option<Field>,
@@ -27,9 +27,11 @@ pub struct Sense {
     pub example_sentence: Option<ExampleSentence>,
 }
 
+impl Eq for Sense {}
+
 /// A gloss value represents one word in the
 /// translated language.
-#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize, Hash)]
 pub struct Gloss {
     pub gloss: String,
     pub g_type: Option<GType>,

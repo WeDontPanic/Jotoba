@@ -4,7 +4,7 @@ use crate::parse::error::{self, Error};
 use serde::{Deserialize, Serialize};
 
 /// Priority indicator of kanji/reading element
-#[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize, Hash, Eq)]
 #[repr(u8)]
 pub enum Priority {
     News(u8),

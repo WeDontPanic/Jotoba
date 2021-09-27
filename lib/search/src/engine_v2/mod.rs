@@ -4,7 +4,7 @@ pub mod result_item;
 pub mod search_task;
 pub mod words;
 
-use std::thread;
+use std::{hash::Hash, thread};
 
 use config::Config;
 
@@ -44,7 +44,7 @@ pub fn load_indexes(config: &Config) -> Result<(), Box<dyn std::error::Error>> {
 
 pub trait Indexable {
     type Metadata: Metadata + 'static;
-    type Document: Decodable + Clone + 'static + PartialEq;
+    type Document: Decodable + Clone + 'static;
 
     fn get_index(
         language: Option<Language>,
@@ -53,7 +53,7 @@ pub trait Indexable {
 
 pub trait SearchEngine: Indexable {
     type GenDoc: document_vector::Document;
-    type Output: PartialEq;
+    type Output: PartialEq + Eq + Hash;
 
     /// Loads the corresponding Output type from a document
     fn doc_to_output<'a>(

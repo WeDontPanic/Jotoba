@@ -5,7 +5,7 @@ use strum_macros::EnumString;
 
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, PartialEq, Clone, Copy, EnumString, Serialize, Deserialize)]
+#[derive(Debug, PartialEq, Clone, Copy, EnumString, Serialize, Deserialize, Hash)]
 #[repr(u8)]
 pub enum Dialect {
     #[strum(serialize = "bra")]

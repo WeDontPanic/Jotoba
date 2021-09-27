@@ -2806,7 +2806,7 @@ checksum = "f1bddf1187be692e79c5ffeab891132dfb0f236ed36a43c7ed39f1165ee20191"
 [[package]]
 name = "vector_space_model"
 version = "0.1.0"
-source = "git+https://github.com/JojiiOfficial/VectorSpaceModel#a5bb27f987d16299cf4a8af9a5a4d3e3abdbcc26"
+source = "git+https://github.com/JojiiOfficial/VectorSpaceModel#11fa98e47c0a64b1bfaf1d54c13ef1c24acae3aa"
 dependencies = [
  "bktree",
  "byteorder",

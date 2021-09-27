@@ -1,5 +1,6 @@
 use super::{result::SearchResult, result_item::ResultItem, SearchEngine};
 use error::Error;
+use itertools::Itertools;
 use resources::parse::jmdict::languages::Language;
 use std::{collections::BinaryHeap, marker::PhantomData};
 use vector_space_model::DocumentVector;
@@ -15,7 +16,7 @@ where
     /// Filter out results
     res_filter: Option<Box<dyn Fn(&T::Output) -> bool>>,
     /// Custom result order function
-    order: Option<Box<dyn Fn(&T::Output, f32) -> usize>>,
+    order: Option<Box<dyn Fn(&T::Output, f32, &str) -> usize>>,
     /// Min relevance returned from vector space algo
     threshold: f32,
     limit: usize,
@@ -41,6 +42,17 @@ where
         let mut task = Self::default();
         task.queries.push((query, Some(language)));
         task
+    }
+
+    /// Adds another query to look out for to the search task
+    pub fn add_language_query(mut self, query: &'a str, language: Language) -> Self {
+        self.queries.push((query, Some(language)));
+        self
+    }
+
+    /// Adds another query to look out for to the search task
+    pub fn add_query(&mut self, query: &'a str) {
+        self.queries.push((query, None));
     }
 
     /// Set the total limit. This is the max amount of vectors which will be loaded and processed
@@ -82,7 +94,7 @@ where
     /// Set the search task's custom order function
     pub fn set_order_fn<F: 'static>(&mut self, res_filter: F)
     where
-        F: Fn(&T::Output, f32) -> usize,
+        F: Fn(&T::Output, f32, &str) -> usize,
     {
         self.order = Some(Box::new(res_filter));
     }
@@ -107,35 +119,33 @@ where
     pub fn find(&self) -> Result<SearchResult<&T::Output>, Error> {
         let items = self
             .get_queries()
-            .map(|(vec, lang)| self.find_by_vec(vec, lang))
+            .map(|(q_str, vec, lang)| self.find_by_vec(vec, q_str, lang))
             .collect::<Result<Vec<_>, Error>>()?
             .into_iter()
             .flatten()
+            .unique_by(|a| a.item)
             .collect::<Vec<_>>();
 
         let heap: BinaryHeap<ResultItem<&T::Output>> = BinaryHeap::from(items);
-
-        Ok(SearchResult::from_binary_heap(
-            heap,
-            self.offset,
-            self.limit,
-        ))
+        let res = SearchResult::from_binary_heap(heap, self.offset, self.limit);
+        Ok(res)
     }
 
     /// Returns an iterator over all queries in form of document vectors and its assigned language
     fn get_queries<'b>(
         &'b self,
-    ) -> impl Iterator<Item = (DocumentVector<T::GenDoc>, Option<Language>)> + 'b {
+    ) -> impl Iterator<Item = (&'b str, DocumentVector<T::GenDoc>, Option<Language>)> + 'b {
         self.queries.iter().filter_map(|(q_str, lang)| {
             let index = T::get_index(*lang)?;
             let vec = T::gen_query_vector(index, q_str)?;
-            Some((vec, *lang))
+            Some((*q_str, vec, *lang))
         })
     }
 
     fn find_by_vec(
         &self,
         q_vec: DocumentVector<T::GenDoc>,
+        q_str: &str,
         language: Option<Language>,
     ) -> Result<Vec<ResultItem<&T::Output>>, Error> {
         let index = T::get_index(language);
@@ -151,15 +161,16 @@ where
         // Retrieve all document vectors that share at least one dimension with the query vector
         let document_vectors = vec_store
             .get_all_iter(&query_dimensions)
-            .take(self.vector_limit / self.query_count());
+            .take(self.vector_limit);
 
-        self.result_from_doc_vectors(document_vectors, &q_vec, language)
+        self.result_from_doc_vectors(document_vectors, &q_vec, q_str, language)
     }
 
     fn result_from_doc_vectors(
         &self,
         document_vectors: impl Iterator<Item = DocumentVector<T::Document>>,
         q_vec: &DocumentVector<T::GenDoc>,
+        q_str: &str,
         language: Option<Language>,
     ) -> Result<Vec<ResultItem<&T::Output>>, Error> {
         let storage = resources::get();
@@ -185,7 +196,7 @@ where
             .flatten()
             .filter(|i| self.filter_result(&i.1))
             .map(|(rel, item)| {
-                let relevance = self.calculate_score(item, rel);
+                let relevance = self.calculate_score(item, rel, q_str);
 
                 language
                     .map(|i| ResultItem::with_language(item, relevance, i))
@@ -197,10 +208,10 @@ where
 
     /// Calculates the score using a custom function if provided or just `rel` otherwise
     #[inline]
-    fn calculate_score(&self, item: &T::Output, rel: f32) -> usize {
+    fn calculate_score(&self, item: &T::Output, rel: f32, query: &str) -> usize {
         self.order
             .as_ref()
-            .map(|i| i(item, rel))
+            .map(|i| i(item, rel, query))
             .unwrap_or((rel * 100f32) as usize)
     }
 
@@ -225,7 +236,7 @@ impl<'a, T: SearchEngine> Default for SearchTask<'a, T> {
             order: None,
             threshold: 0.2,
             limit: 1000,
-            vector_limit: 20000,
+            vector_limit: 100_000,
             offset: 0,
             phantom: PhantomData::default(),
         }

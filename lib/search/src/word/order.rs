@@ -138,6 +138,45 @@ pub(super) fn japanese_search_order(
     score
 }
 
+/// Search order for words searched by japanese meaning/kanji/reading
+pub(super) fn japanese_search_order_v2(word: &Word, relevance: f32, query_str: &str) -> usize {
+    let mut score: usize = (relevance * 10f32) as usize;
+
+    let reading = word.get_reading();
+
+    if reading.reading == *query_str || word.reading.kana.reading == *query_str {
+        score += 50;
+
+        // Show kana only readings on top if they match with query
+        if word.reading.kanji.is_none() {
+            score += 10;
+        }
+    } else if reading.reading.starts_with(query_str) {
+        score += 4;
+    }
+
+    if let Some(jlpt) = word.jlpt_lvl {
+        score += jlpt as usize;
+    }
+
+    // Is common
+    if word.is_common() {
+        score += 20;
+    }
+
+    // If alternative reading matches query exactly
+    if word
+        .reading
+        .alternative
+        .iter()
+        .any(|i| i.reading == *query_str)
+    {
+        score += 45;
+    }
+
+    score
+}
+
 pub(super) fn new_kanji_reading_search_order(
     sort_map: &HashMap<u32, ResultItem>,
     search_order: &SearchOrder,

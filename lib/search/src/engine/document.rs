@@ -7,7 +7,7 @@ use vector_space_model::traits::Decodable;
 
 /// A document belongs to a document-vector and contains the seq_ids of all items who represent
 /// this document
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct MultiDocument {
     pub seq_ids: Vec<u32>,
 }
@@ -27,7 +27,7 @@ impl Decodable for MultiDocument {
 
 /// A document belongs to a document-vector and contains a single seq_id which means this
 /// document represents a single resource item.
-#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+#[derive(Clone, Copy, PartialEq, Eq, Debug, Hash)]
 pub struct SingleDocument {
     pub seq_id: u32,
 }
@@ -43,7 +43,7 @@ impl Decodable for SingleDocument {
 
 /// A sentence document represents a single sentence, referenced by its ID, and a bitmask of
 /// supported languages for more efficient searching
-#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+#[derive(Clone, Copy, PartialEq, Eq, Debug, Hash)]
 pub struct SentenceDocument {
     pub seq_id: u32,
     pub mask: u16,

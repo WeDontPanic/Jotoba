@@ -2,7 +2,7 @@ use crate::parse::jmdict::{information::Information, priority::Priority};
 use serde::{Deserialize, Serialize};
 
 /// A single dictionary entry representing a words reading
-#[derive(Clone, Debug, Default, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Debug, Default, PartialEq, Serialize, Deserialize, Hash, Eq)]
 pub struct Dict {
     pub reading: String,
     pub kanji: bool,

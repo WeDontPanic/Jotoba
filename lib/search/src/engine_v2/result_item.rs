@@ -1,6 +1,5 @@
-use std::cmp::Ordering;
-
 use resources::parse::jmdict::languages::Language;
+use std::{cmp::Ordering, hash::Hash};
 
 /// A single item (result) in a set of search results
 #[derive(Clone, Copy, Default, Debug, PartialEq)]
@@ -8,6 +7,13 @@ pub struct ResultItem<T: PartialEq> {
     pub item: T,
     pub relevance: usize,
     pub language: Option<Language>,
+}
+
+impl<T: PartialEq + Hash> std::hash::Hash for ResultItem<T> {
+    fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
+        self.item.hash(state);
+        self.language.hash(state);
+    }
 }
 
 impl<T: PartialEq> PartialOrd for ResultItem<T> {

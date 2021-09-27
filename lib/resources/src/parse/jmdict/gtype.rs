@@ -5,7 +5,7 @@ use strum_macros::{AsRefStr, EnumString};
 use crate::parse::error;
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, PartialEq, Clone, Copy, AsRefStr, EnumString, Serialize, Deserialize)]
+#[derive(Debug, PartialEq, Clone, Copy, AsRefStr, EnumString, Serialize, Deserialize, Hash)]
 #[repr(u8)]
 pub enum GType {
     #[strum(serialize = "lit")]

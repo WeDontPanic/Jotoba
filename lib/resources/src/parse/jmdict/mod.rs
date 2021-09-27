@@ -65,14 +65,14 @@ pub struct EntrySense {
 }
 
 /// An example sentence for a word
-#[derive(Debug, Default, Clone, PartialEq, Deserialize, Serialize)]
+#[derive(Debug, Default, Clone, PartialEq, Deserialize, Serialize, Hash)]
 pub struct ExampleSentence {
     pub text: String,
     pub japanese: String,
     pub translations: Vec<Translation>,
 }
 
-#[derive(Debug, Default, Clone, PartialEq, Deserialize, Serialize)]
+#[derive(Debug, Default, Clone, PartialEq, Deserialize, Serialize, Hash)]
 pub struct Translation {
     pub language: Language,
     pub value: String,

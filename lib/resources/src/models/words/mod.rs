@@ -24,7 +24,7 @@ use std::path::Path;
 use self::inflection::Inflections;
 
 /// A single word item
-#[derive(Debug, Clone, Default, Serialize, Deserialize, PartialEq)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize, Eq, PartialEq, Hash)]
 pub struct Word {
     pub sequence: u32,
     pub priorities: Option<Vec<Priority>>,
@@ -39,7 +39,7 @@ pub struct Word {
 }
 
 /// Various readings of a word
-#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize, Hash, Eq)]
 pub struct Reading {
     pub kana: Dict,
     pub kanji: Option<Dict>,

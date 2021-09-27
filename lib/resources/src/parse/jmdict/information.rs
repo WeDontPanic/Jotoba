@@ -3,7 +3,7 @@ use strum_macros::{AsRefStr, EnumString};
 
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, PartialEq, Clone, Copy, AsRefStr, EnumString, Serialize, Deserialize)]
+#[derive(Debug, PartialEq, Clone, Copy, AsRefStr, EnumString, Serialize, Deserialize, Hash, Eq)]
 #[repr(u8)]
 pub enum Information {
     #[strum(serialize = "ateji")]

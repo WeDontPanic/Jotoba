@@ -139,7 +139,7 @@ impl PartOfSpeech {
     }
 }
 
-#[derive(Debug, PartialEq, Clone, Copy, Serialize, PartialOrd, Ord, Eq, Deserialize)]
+#[derive(Debug, PartialEq, Clone, Copy, Serialize, PartialOrd, Ord, Eq, Deserialize, Hash)]
 #[repr(u8)]
 pub enum PartOfSpeech {
     // Adjectives
@@ -201,7 +201,7 @@ impl PartOfSpeech {
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, PartialOrd, Ord, Eq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, PartialOrd, Ord, Eq, Serialize, Deserialize, Hash)]
 #[repr(u8)]
 pub enum VerbType {
     Nidan(NidanVerb),
@@ -217,7 +217,7 @@ pub enum VerbType {
     Kuru,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, PartialOrd, Ord, Eq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, PartialOrd, Ord, Eq, Serialize, Deserialize, Hash)]
 #[repr(u8)]
 pub enum AdjectiveType {
     PreNounVerb,
@@ -234,7 +234,7 @@ pub enum AdjectiveType {
     Taru,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Serialize, PartialOrd, Ord, Eq, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Serialize, PartialOrd, Ord, Eq, Deserialize, Hash)]
 #[repr(u8)]
 pub enum NounType {
     Normal,
@@ -244,7 +244,7 @@ pub enum NounType {
     Temporal,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize, PartialOrd, Ord, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize, PartialOrd, Ord, Eq, Hash)]
 #[repr(u8)]
 pub enum IrregularVerb {
     Nu,
@@ -255,13 +255,13 @@ pub enum IrregularVerb {
     Su,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize, PartialOrd, Ord, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize, PartialOrd, Ord, Eq, Hash)]
 pub struct NidanVerb {
     class: VerbClass,
     ending: VerbEnding,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize, PartialOrd, Ord, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize, PartialOrd, Ord, Eq, Hash)]
 #[repr(u8)]
 pub enum VerbClass {
     Upper,
@@ -269,7 +269,7 @@ pub enum VerbClass {
     None,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize, PartialOrd, Ord, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize, PartialOrd, Ord, Eq, Hash)]
 #[repr(u8)]
 pub enum VerbEnding {
     Bu,
@@ -287,7 +287,7 @@ pub enum VerbEnding {
     Zu,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize, PartialOrd, Ord, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize, PartialOrd, Ord, Eq, Hash)]
 #[repr(u8)]
 pub enum GodanVerbEnding {
     Bu,

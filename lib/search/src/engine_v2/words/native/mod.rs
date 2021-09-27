@@ -41,10 +41,21 @@ impl SearchEngine for NativeEngine {
         query: &str,
     ) -> Option<DocumentVector<Self::GenDoc>> {
         let query_document = GenDoc::new(vec![query]);
-        let mut doc = DocumentVector::new(index.get_indexer(), query_document.clone())?;
+        let mut doc = DocumentVector::new(index.get_indexer(), query_document)?;
 
         // TODO: look if this makes the results really better. If not, remove
         let terms = tinysegmenter::tokenize(query);
+
+        let mut indexer = index.get_indexer().clone();
+
+        let terms = terms
+            .into_iter()
+            .filter_map(|term| {
+                let indexed = indexer.find_term(&term)?;
+                (indexed.get_frequency() <= 5_000).then(|| term)
+            })
+            .collect::<Vec<_>>();
+
         doc.add_terms(index.get_indexer(), &terms, true, Some(0.03));
 
         Some(doc)
