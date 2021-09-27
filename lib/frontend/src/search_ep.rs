@@ -90,27 +90,34 @@ type SResult = Result<ResultData, web_error::Error>;
 
 /// Perform a sentence search
 async fn sentence_search<'a>(base_data: &mut BaseData<'a>, query: &'a Query) -> SResult {
-    let result = search::sentence::search(&query)?;
+    let q = query.to_owned();
+    let result = web::block(move || search::sentence::search(&q)).await??;
+
     base_data.with_pages(result.len as u32, query.page as u32);
     Ok(ResultData::Sentence(result.items))
 }
 
 /// Perform a kanji search
 async fn kanji_search<'a>(query: &'a Query) -> SResult {
-    let result = search::kanji::search(&query)?;
+    let q = query.to_owned();
+    let result = web::block(move || search::kanji::search(&q)).await??;
     Ok(ResultData::KanjiInfo(result))
 }
 
 /// Perform a name search
 async fn name_search<'a>(base_data: &mut BaseData<'a>, query: &'a Query) -> SResult {
-    let result = search::name::search(&query)?;
+    let q = query.to_owned();
+    let result = web::block(move || search::name::search(&q)).await??;
+
     base_data.with_pages(result.total_count, query.page as u32);
     Ok(ResultData::Name(result.items))
 }
 
 /// Perform a word search
 async fn word_search<'a>(base_data: &mut BaseData<'a>, query: &'a Query) -> SResult {
-    let result = search::word::search(&query)?;
+    let q = query.to_owned();
+    let result = web::block(move || search::word::search(&q)).await??;
+
     base_data.with_pages(result.count as u32, query.page as u32);
     Ok(ResultData::Word(result))
 }
