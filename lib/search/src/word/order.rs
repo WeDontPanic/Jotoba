@@ -64,8 +64,9 @@ pub(super) fn foreign_search_order(
         score += 10;
     }
 
-    if let Some(jlpt) = word.jlpt_lvl {
-        score += jlpt as usize;
+    if word.jlpt_lvl.is_some() {
+        //score += jlpt as usize;
+        score += 8;
     }
 
     if !word.is_katakana_word() {

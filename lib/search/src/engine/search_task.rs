@@ -177,9 +177,10 @@ where
         self.queries.iter().filter_map(move |(q_str, lang)| {
             let index = T::get_index(*lang).expect("Lang not loaded");
 
+            let align = self.allow_align && !self.has_term();
+
             // align query
-            let aligned_query = self
-                .allow_align
+            let aligned_query = align
                 .then(|| T::align_query(q_str, index, *lang))
                 .flatten()
                 .unwrap_or(q_str);
