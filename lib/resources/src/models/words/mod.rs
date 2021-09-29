@@ -224,6 +224,15 @@ impl Word {
         false
     }
 
+    /// Returns `true` if a word has at least one translation for the provided language, or english
+    /// if `allow_english` is `true`
+    #[inline]
+    pub fn has_language(&self, language: Language, allow_english: bool) -> bool {
+        self.senses
+            .iter()
+            .any(|i| i.language == language || (allow_english && i.language == Language::English))
+    }
+
     /// Returns `true` if a word has collocations
     #[inline]
     pub fn has_collocations(&self) -> bool {

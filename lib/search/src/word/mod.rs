@@ -321,7 +321,7 @@ impl<'a> Search<'a> {
             .collect_vec()
     }
 
-    /// Returns false if a word doesn't match a search-query given filter
+    /// Returns false if a word should be filtered out of results
     fn word_filter(query: &Query, word: &Word, pos_filter: &Option<Vec<PosSimple>>) -> bool {
         // Apply pos tag filter
         if !pos_filter
@@ -329,6 +329,10 @@ impl<'a> Search<'a> {
             .map(|filter| word.has_pos(&filter))
             .unwrap_or(true)
         {
+            return false;
+        }
+
+        if !word.has_language(query.settings.user_lang, query.settings.show_english) {
             return false;
         }
 
