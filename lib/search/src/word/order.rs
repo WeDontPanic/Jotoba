@@ -29,8 +29,8 @@ pub fn japanese_search_order(word: &Word, relevance: f32, query_str: &str) -> us
         score += 4;
     }
 
-    if let Some(jlpt) = word.jlpt_lvl {
-        score += jlpt as usize;
+    if word.jlpt_lvl.is_some() {
+        score += 10;
     }
 
     // Is common
