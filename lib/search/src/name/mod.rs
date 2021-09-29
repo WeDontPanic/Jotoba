@@ -2,6 +2,7 @@ mod order;
 pub mod result;
 
 use crate::engine::{
+    guess::Guess,
     names::{foreign, native},
     SearchEngine, SearchTask,
 };
@@ -22,29 +23,25 @@ pub fn search(query: &Query) -> Result<NameResult, Error> {
         search_kanji(&query)
     } else {
         if query.query.is_japanese() {
-            do_jp(query)
+            handle_search(japanese_search(query))
         } else {
-            do_foreign(query)
+            handle_search(foreign_search(query))
         }
     }
 }
 
-fn do_jp(query: &Query) -> Result<NameResult, Error> {
-    handle_search(
-        SearchTask::<native::Engine>::new(&query.query)
-            .threshold(0.05f32)
-            .offset(query.page_offset)
-            .limit(query.settings.items_per_page as usize),
-    )
+fn japanese_search(query: &Query) -> SearchTask<native::Engine> {
+    SearchTask::<native::Engine>::new(&query.query)
+        .threshold(0.05f32)
+        .offset(query.page_offset)
+        .limit(query.settings.items_per_page as usize)
 }
 
-fn do_foreign(query: &Query) -> Result<NameResult, Error> {
-    handle_search(
-        SearchTask::<foreign::Engine>::new(&query.query)
-            .threshold(0.05f32)
-            .offset(query.page_offset)
-            .limit(query.settings.items_per_page as usize),
-    )
+fn foreign_search(query: &Query) -> SearchTask<foreign::Engine> {
+    SearchTask::<foreign::Engine>::new(&query.query)
+        .threshold(0.05f32)
+        .offset(query.page_offset)
+        .limit(query.settings.items_per_page as usize)
 }
 
 fn handle_search<T: SearchEngine<Output = Name>>(task: SearchTask<T>) -> Result<NameResult, Error> {
@@ -90,6 +87,7 @@ fn search_kanji(query: &Query) -> Result<NameResult, Error> {
             kanji,
             kana,
         );
+
         if readings.is_none() {
             return false;
         }
@@ -101,4 +99,18 @@ fn search_kanji(query: &Query) -> Result<NameResult, Error> {
     });
 
     Ok(NameResult::from(task.find()?))
+}
+
+/// Guesses the amount of results a search would return with given `query`
+pub fn guess_result(query: &Query) -> Option<Guess> {
+    if query.form.is_kanji_reading() {
+        return None;
+    }
+
+    if query.query.is_japanese() {
+        japanese_search(query).estimate_result_count()
+    } else {
+        foreign_search(query).estimate_result_count()
+    }
+    .ok()
 }

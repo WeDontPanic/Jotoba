@@ -2,8 +2,21 @@
 @(data: &BaseData, title: &str)
 
 <h3 class="noselect word-title">@data.gettext_fmt("No {} found", &[title])</h3>
+
 <br>
 <div class="d-flex center">
+  <div class="small-12 medium-6 columns small-centered">
+    @if let Some(search_help) = data.get_search_help() {
+      <p class="fat">@data.gettext("Found in other search types")</p>
+
+      @for (query_type, guess) in search_help.iter_items() {
+        <a class="clickable" draggable="false" href="#" onclick="changeSearchType(null, @query_type.get_type_id())">@guess.format() @data.gettext("in") @query_type.get_translated(data.dict, Some(data.get_lang())) </a>
+        <br> 
+      }
+    }
+    <br> 
+  <br>
+
   <article style="height: 700px;">
     <div class="small-12 medium-6 columns small-centered">
         <p class="fat">@data.gettext("Search Help")</p>

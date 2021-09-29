@@ -1,11 +1,12 @@
 mod kanji;
-mod order;
+pub mod order;
 pub mod result;
 
 use std::time::Instant;
 
 use crate::{
     engine::{
+        guess::Guess,
         words::{foreign, native},
         SearchTask,
     },
@@ -172,6 +173,31 @@ impl<'a> Search<'a> {
         Some(sentence_parts)
     }
 
+    /// Returns a `SearchTask` for the current query. This will be used to find all words for
+    /// the search
+    fn native_search_task<'b>(
+        &self,
+        query: &'b str,
+        sentence: bool,
+    ) -> SearchTask<'b, native::Engine> {
+        let mut search_task: SearchTask<native::Engine> = SearchTask::new(&query)
+            .limit(self.query.settings.items_per_page as usize)
+            .offset(self.query.page_offset)
+            .threshold(0.04f32);
+
+        // apply user filter
+        let q_cloned = self.query.clone();
+        let pos_filter = self.get_pos_filter(sentence);
+        search_task.set_result_filter(move |word| Self::word_filter(&q_cloned, word, &pos_filter));
+
+        // Set order function;
+        search_task.set_order_fn(move |word, rel, q_str, _| {
+            order::japanese_search_order(word, rel, q_str)
+        });
+
+        search_task
+    }
+
     /// Perform a native word search
     fn native_results(&self, query_str: &str) -> Result<ResultData, Error> {
         if self.query.language != QueryLang::Japanese && !query_str.is_japanese() {
@@ -180,25 +206,12 @@ impl<'a> Search<'a> {
 
         let (query, morpheme, sentence) = self.get_query(query_str)?;
 
-        let mut search_task: SearchTask<native::Engine> = SearchTask::new(&query)
-            .limit(self.query.settings.items_per_page as usize)
-            .offset(self.query.page_offset)
-            .threshold(0.04f32);
+        let mut search_task = self.native_search_task(&query, sentence.is_some());
 
         // If query was modified (ie. through reflection), search for original too
         if query != query_str {
             search_task.add_query(&self.query.query);
         }
-
-        // apply user filter
-        let q_cloned = self.query.clone();
-        let pos_filter = self.get_pos_filter(sentence.is_some());
-        search_task.set_result_filter(move |word| Self::word_filter(&q_cloned, word, &pos_filter));
-
-        // Set order function
-        search_task.set_order_fn(move |word, rel, q_str, _| {
-            order::japanese_search_order(word, rel, q_str)
-        });
 
         let res = search_task.find()?;
         let count = res.len();
@@ -227,15 +240,9 @@ impl<'a> Search<'a> {
         })
     }
 
-    /// Search for words by their translations
-    fn gloss_results(&self) -> Result<ResultData, Error> {
-        if !matches!(
-            self.query.language,
-            QueryLang::Foreign | QueryLang::Undetected
-        ) {
-            return Ok(ResultData::default());
-        }
-
+    /// Returns a `SearchTask` for the current query. This will be used to find all words for
+    /// the search
+    fn gloss_search_task(&self) -> SearchTask<foreign::Engine> {
         let mut search_task: SearchTask<foreign::Engine> =
             SearchTask::with_language(&self.query.query, self.query.settings.user_lang)
                 .limit(self.query.settings.items_per_page as usize)
@@ -256,6 +263,20 @@ impl<'a> Search<'a> {
         search_task.set_order_fn(move |word, relevance, query, language| {
             order::foreign_search_order(word, relevance, query, language.unwrap(), user_lang)
         });
+
+        search_task
+    }
+
+    /// Search for words by their translations
+    fn gloss_results(&self) -> Result<ResultData, Error> {
+        if !matches!(
+            self.query.language,
+            QueryLang::Foreign | QueryLang::Undetected
+        ) {
+            return Ok(ResultData::default());
+        }
+
+        let search_task = self.gloss_search_task();
 
         // Do the search
         let res = search_task.find()?;
@@ -351,4 +372,28 @@ fn furigana_by_reading(morpheme: &str) -> Option<String> {
 
     let word = word_storage.by_sequence(found[0].item.sequence as u32)?;
     word.furigana.as_ref().map(|i| i.clone())
+}
+
+/// Guesses the amount of results a search would return with given `query`
+pub fn guess_result(query: &Query) -> Option<Guess> {
+    let search = Search { query };
+
+    if query.language == QueryLang::Japanese {
+        guess_native(search)
+    } else {
+        guess_foreign(search)
+    }
+}
+
+fn guess_native(search: Search) -> Option<Guess> {
+    let (query, _, sentence) = search.get_query(&search.query.query).ok()?;
+
+    search
+        .native_search_task(&query, sentence.is_some())
+        .estimate_result_count()
+        .ok()
+}
+
+fn guess_foreign(search: Search) -> Option<Guess> {
+    search.gloss_search_task().estimate_result_count().ok()
 }

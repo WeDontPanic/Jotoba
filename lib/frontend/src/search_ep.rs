@@ -9,7 +9,7 @@ use actix_web::{rt::time::timeout, web, HttpRequest, HttpResponse};
 use localization::TranslationDict;
 use percent_encoding::percent_decode;
 
-use crate::{templates, url_query::QueryStruct, BaseData, ResultData};
+use crate::{templates, url_query::QueryStruct, BaseData, ResultData, SearchHelp};
 use config::Config;
 use search::{
     self,
@@ -70,20 +70,27 @@ pub async fn search(
 
 /// Run the search and return the `BaseData` for the result page to render
 async fn do_search<'a>(
-    querytype_: QueryType,
+    querytype: QueryType,
     locale_dict: &'a TranslationDict,
     settings: UserSettings,
     query: &'a Query,
 ) -> Result<BaseData<'a>, web_error::Error> {
     let mut base_data = BaseData::new(locale_dict, settings);
-    let result_data = match querytype_ {
+
+    let result_data = match querytype {
         QueryType::Kanji => kanji_search(&query).await,
         QueryType::Sentences => sentence_search(&mut base_data, &query).await,
         QueryType::Names => name_search(&mut base_data, &query).await,
         QueryType::Words => word_search(&mut base_data, &query).await,
     }?;
 
-    Ok(base_data.with_search_result(query, result_data))
+    let mut search_help: Option<SearchHelp> = None;
+    if result_data.is_empty() {
+        let query = query.to_owned();
+        search_help = web::block(move || build_search_help(querytype, &query)).await?;
+    }
+
+    Ok(base_data.with_search_result(query, result_data, search_help))
 }
 
 type SResult = Result<ResultData, web_error::Error>;
@@ -120,6 +127,22 @@ async fn word_search<'a>(base_data: &mut BaseData<'a>, query: &'a Query) -> SRes
 
     base_data.with_pages(result.count as u32, query.page as u32);
     Ok(ResultData::Word(result))
+}
+
+/// Build a [`SearchHelp`] in for cases without any search results
+fn build_search_help(querytype: QueryType, query: &Query) -> Option<SearchHelp> {
+    let mut help = SearchHelp::default();
+
+    for qt in QueryType::iterate().filter(|i| *i != querytype) {
+        match qt {
+            QueryType::Kanji => help.kanji = search::kanji::guess_result(query),
+            QueryType::Sentences => help.sentences = search::sentence::guess_result(query),
+            QueryType::Names => help.names = search::name::guess_result(query),
+            QueryType::Words => help.words = search::word::guess_result(query),
+        }
+    }
+
+    (!help.is_empty()).then(|| help)
 }
 
 /// Reports a search timeout to sentry

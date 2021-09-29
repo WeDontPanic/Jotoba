@@ -1,4 +1,9 @@
-use super::{result::SearchResult, result_item::ResultItem, SearchEngine};
+use super::{
+    guess::{Guess, GuessType},
+    result::SearchResult,
+    result_item::ResultItem,
+    SearchEngine,
+};
 use crate::engine::DocumentGenerateable;
 use error::Error;
 use itertools::Itertools;
@@ -69,6 +74,12 @@ where
         self
     }
 
+    /// Sets the search task's threshold. This does not apply on the final score, which can be
+    /// overwritten by `order` but applies to the vector space relevance itself.
+    pub fn set_align(&mut self, align: bool) {
+        self.allow_align = align;
+    }
+
     /// Sets the offeset of the search. Can be used for pagination. Requires output of search being
     /// directly used and not manually reordered
     pub fn offset(mut self, offset: usize) -> Self {
@@ -136,19 +147,40 @@ where
     ///
     /// - n = 0 => m = 0
     /// - n <= m
-    pub fn estimate_result_count(&self) -> Result<usize, Error> {
+    pub fn estimate_result_count(&self) -> Result<Guess, Error> {
+        // TODO: maybe we want to have some API input for this value?
+        let est_limit = 100;
+
         let estimated = self
             .get_queries()
             .map(|(_, vec, lang)| {
                 // TODO: maybe remove stopwords from vec to make it faster
-                self.estimate_by_vec(vec, lang)
+                self.estimate_by_vec(vec, lang, est_limit)
             })
             .collect::<Result<Vec<_>, Error>>()?
             .into_iter()
             .max()
             .unwrap_or(0);
 
-        Ok(estimated)
+        let mut guess_type = GuessType::Undefined;
+
+        if (self.queries.len() == 1 && estimated <= est_limit) || estimated == 0 {
+            // All filtering operations are applied in estimation algorithm as well.
+            // Since we use the max value of query
+            // result, we can only assure it being accurate if there was only one query and no
+            // Limit was reached. From the 1st condition follows that estimated == 0 implies
+            // an accurate results
+            guess_type = GuessType::Accurate;
+        } else if estimated > est_limit {
+            // Were counting 1 more than `est_limit`. Thus `estimated` being bigger than limit
+            // means there are more elements than the given limit. However since were returning a
+            // number <= est_limit, relatively to the estimation the guess type is `Opentop`
+            guess_type = GuessType::OpenTop;
+        }
+
+        let estimated = (estimated).min(est_limit) as u32;
+
+        Ok(Guess::new(estimated, guess_type))
     }
 
     /// Runs the search task and returns the result.
@@ -259,6 +291,7 @@ where
         &self,
         q_vec: DocumentVector<T::GenDoc>,
         language: Option<Language>,
+        est_limit: usize,
     ) -> Result<usize, Error> {
         let index = T::get_index(language);
         if index.is_none() {
@@ -299,7 +332,8 @@ where
             .filter(|i| self.filter_result(&i.1))
             .map(|(_, item)| item)
             .unique()
-            .take(100)
+            // `+1` to know if there are more items
+            .take(est_limit + 1)
             .count();
 
         Ok(res)

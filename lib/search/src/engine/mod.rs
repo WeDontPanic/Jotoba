@@ -1,4 +1,5 @@
 pub mod document;
+pub mod guess;
 pub mod metadata;
 pub mod names;
 pub mod result;

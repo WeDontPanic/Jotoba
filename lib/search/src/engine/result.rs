@@ -1,4 +1,4 @@
-use std::{cmp::min, collections::BinaryHeap, ops::Index, vec::IntoIter};
+use std::{cmp::min, collections::BinaryHeap, fmt::Debug, ops::Index, vec::IntoIter};
 
 use super::result_item::ResultItem;
 
@@ -16,6 +16,15 @@ impl<T: PartialEq> Default for SearchResult<T> {
             total_items: 0,
             items: vec![],
         }
+    }
+}
+
+impl<T: PartialEq + Debug> Debug for SearchResult<T> {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("SearchResult")
+            .field("total_items", &self.total_items)
+            .field("items", &self.items)
+            .finish()
     }
 }
 

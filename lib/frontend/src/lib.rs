@@ -21,7 +21,7 @@ use localization::{
 };
 use pagination::Pagination;
 use resources::models::names::Name;
-use search::query::Query;
+use search::{engine::guess::Guess, query::Query};
 
 use search::{
     kanji::result::Item as KanjiItem, query::UserSettings, query_parser::QueryType,
@@ -49,6 +49,7 @@ pub enum Site<'a> {
 pub struct SearchResult<'a> {
     pub query: &'a Query,
     pub result: ResultData,
+    pub search_help: Option<SearchHelp>,
 }
 
 /// The particular search result items
@@ -60,7 +61,49 @@ pub enum ResultData {
     Sentence(Vec<SentenceItem>),
 }
 
+/// Structure containing information for better search help in case no item was
+/// found in a search
+#[derive(Clone, Default, Debug)]
+pub struct SearchHelp {
+    words: Option<Guess>,
+    names: Option<Guess>,
+    sentences: Option<Guess>,
+    kanji: Option<Guess>,
+}
+
+impl SearchHelp {
+    /// Returns `true` if `SearchHelp` is not helpful at all (empty)
+    pub fn is_empty(&self) -> bool {
+        self.words.is_none()
+            && self.names.is_none()
+            && self.sentences.is_none()
+            && self.kanji.is_none()
+    }
+
+    /// Returns an iterator over all (QueryType, Guess) pairs that have a value
+    pub fn iter_items(&self) -> impl Iterator<Item = (QueryType, Guess)> {
+        let types = &[
+            (self.words, QueryType::Words),
+            (self.names, QueryType::Names),
+            (self.sentences, QueryType::Sentences),
+            (self.kanji, QueryType::Kanji),
+        ];
+
+        types
+            .iter()
+            .filter_map(|i| i.0.is_some().then(|| (i.1, i.0.unwrap())))
+            .filter(|i| i.1.value != 0)
+            .collect::<Vec<_>>()
+            .into_iter()
+    }
+}
+
 impl<'a> BaseData<'a> {
+    #[inline]
+    pub fn get_search_help(&self) -> Option<&SearchHelp> {
+        self.site.as_search_result()?.search_help.as_ref()
+    }
+
     #[inline]
     pub fn new(dict: &'a TranslationDict, user_settings: UserSettings) -> Self {
         Self {
@@ -126,8 +169,17 @@ impl<'a> BaseData<'a> {
     }
 
     #[inline]
-    pub fn with_search_result(self, query: &'a Query, result: ResultData) -> Self {
-        let search_result = SearchResult { query, result };
+    pub fn with_search_result(
+        self,
+        query: &'a Query,
+        result: ResultData,
+        search_help: Option<SearchHelp>,
+    ) -> Self {
+        let search_result = SearchResult {
+            query,
+            result,
+            search_help,
+        };
         self.with_site(Site::SearchResult(search_result))
     }
 
@@ -155,6 +207,30 @@ impl<'a> BaseData<'a> {
             "selected"
         } else {
             ""
+        }
+    }
+}
+
+impl<'a> Site<'a> {
+    #[inline]
+    pub fn as_search_result(&self) -> Option<&SearchResult<'a>> {
+        if let Self::SearchResult(v) = self {
+            Some(v)
+        } else {
+            None
+        }
+    }
+}
+
+impl ResultData {
+    /// Returns `true` if the ResultData does not contain any items
+    #[inline]
+    pub fn is_empty(&self) -> bool {
+        match self {
+            ResultData::Word(w) => w.items.is_empty(),
+            ResultData::KanjiInfo(k) => k.is_empty(),
+            ResultData::Name(n) => n.is_empty(),
+            ResultData::Sentence(s) => s.is_empty(),
         }
     }
 }

@@ -8,7 +8,11 @@ use result::Item;
 use error::Error;
 use japanese::JapaneseExt;
 
-use crate::engine::{words::native, SearchTask};
+use crate::engine::{
+    guess::{Guess, GuessType},
+    words::native,
+    SearchTask,
+};
 
 use super::query::Query;
 
@@ -69,6 +73,22 @@ fn all_kanji_from_text(text: &str) -> Vec<Kanji> {
         .cloned()
         .take(15)
         .collect()
+}
+
+/// Guesses the amount of results a search would return with given `query`
+pub fn guess_result(query: &Query) -> Option<Guess> {
+    let query_str = &query.query;
+
+    let kanji_storage = resources::get().kanji();
+    let guess = query_str
+        .chars()
+        .into_iter()
+        .filter(|i| i.is_kanji())
+        .filter_map(|literal| kanji_storage.by_literal(literal))
+        .take(15)
+        .count();
+
+    Some(Guess::new(guess as u32, GuessType::Accurate))
 }
 
 /// Find kanji by mits meaning

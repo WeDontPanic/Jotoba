@@ -13,7 +13,7 @@ pub(crate) static REMOVE_PARENTHESES: Lazy<Regex> =
     Lazy::new(|| regex::Regex::new("\\(.*\\)").unwrap());
 
 /// Search order for words searched by japanese meaning/kanji/reading
-pub(super) fn japanese_search_order(word: &Word, relevance: f32, query_str: &str) -> usize {
+pub fn japanese_search_order(word: &Word, relevance: f32, query_str: &str) -> usize {
     let mut score: usize = (relevance * 10f32) as usize;
 
     let reading = word.get_reading();
@@ -51,7 +51,7 @@ pub(super) fn japanese_search_order(word: &Word, relevance: f32, query_str: &str
     score
 }
 
-pub(super) fn foreign_search_order(
+pub fn foreign_search_order(
     word: &Word,
     relevance: f32,
     query_str: &str,
@@ -65,12 +65,11 @@ pub(super) fn foreign_search_order(
     }
 
     if word.jlpt_lvl.is_some() {
-        //score += jlpt as usize;
         score += 8;
     }
 
     if !word.is_katakana_word() {
-        score += 8;
+        score += 4;
     }
 
     // Result found within users specified language
@@ -95,7 +94,7 @@ pub(super) fn foreign_search_order(
     score += (calc_likeliness(word, &found) / divisor) as usize;
 
     if found.in_parentheses {
-        score = score - score.clamp(0, 10);
+        score = score.saturating_sub(10);
     } else {
         score += 30;
     }
