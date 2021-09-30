@@ -13,7 +13,12 @@ pub(crate) static REMOVE_PARENTHESES: Lazy<Regex> =
     Lazy::new(|| regex::Regex::new("\\(.*\\)").unwrap());
 
 /// Search order for words searched by japanese meaning/kanji/reading
-pub fn japanese_search_order(word: &Word, relevance: f32, query_str: &str) -> usize {
+pub fn japanese_search_order(
+    word: &Word,
+    relevance: f32,
+    query_str: &str,
+    original_query: Option<&str>,
+) -> usize {
     let mut score: usize = (relevance * 10f32) as usize;
 
     let reading = word.get_reading();
@@ -27,6 +32,12 @@ pub fn japanese_search_order(word: &Word, relevance: f32, query_str: &str) -> us
         }
     } else if reading.reading.starts_with(query_str) {
         score += 4;
+    }
+
+    if let Some(original_query) = original_query {
+        if original_query == reading.reading && query_str != reading.reading {
+            score += 45;
+        }
     }
 
     if word.jlpt_lvl.is_some() {

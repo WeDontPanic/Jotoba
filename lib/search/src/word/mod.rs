@@ -178,6 +178,7 @@ impl<'a> Search<'a> {
     fn native_search_task<'b>(
         &self,
         query: &'b str,
+        original_query: &str,
         sentence: bool,
     ) -> SearchTask<'b, native::Engine> {
         let mut search_task: SearchTask<native::Engine> = SearchTask::new(&query)
@@ -191,8 +192,9 @@ impl<'a> Search<'a> {
         search_task.set_result_filter(move |word| Self::word_filter(&q_cloned, word, &pos_filter));
 
         // Set order function;
+        let original_query = original_query.to_string();
         search_task.set_order_fn(move |word, rel, q_str, _| {
-            order::japanese_search_order(word, rel, q_str)
+            order::japanese_search_order(word, rel, q_str, Some(&original_query))
         });
 
         search_task
@@ -206,7 +208,8 @@ impl<'a> Search<'a> {
 
         let (query, morpheme, sentence) = self.get_query(query_str)?;
 
-        let mut search_task = self.native_search_task(&query, sentence.is_some());
+        let mut search_task =
+            self.native_search_task(&query, &self.query.query, sentence.is_some());
 
         // If query was modified (ie. through reflection), search for original too
         if query != query_str {
@@ -393,7 +396,7 @@ fn guess_native(search: Search) -> Option<Guess> {
     let (query, _, sentence) = search.get_query(&search.query.query).ok()?;
 
     search
-        .native_search_task(&query, sentence.is_some())
+        .native_search_task(&query, &search.query.query, sentence.is_some())
         .estimate_result_count()
         .ok()
 }
