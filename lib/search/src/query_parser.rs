@@ -1,3 +1,5 @@
+use std::cmp::Ordering;
+
 use itertools::Itertools;
 use localization::{language::Language, traits::Translatable, TranslationDict};
 use serde::Deserialize;
@@ -234,18 +236,35 @@ impl QueryParser {
     }
 }
 
-// Tries to determine between Japanese/Non japnaese
+/// Returns a number 0-100 of japanese character ratio
+fn get_jp_part(inp: &str) -> u8 {
+    let mut total = 0;
+    let mut japanese = 0;
+    for c in inp.chars() {
+        total += 1;
+        if c.is_japanese() {
+            japanese += 1;
+        }
+    }
+
+    ((japanese as f32 / total as f32) * 100f32) as u8
+}
+
+/// Tries to determine between Japanese/Non japnaese
 pub fn parse_language(query: &str) -> QueryLang {
     let query = format_kanji_reading(query);
-    if query.is_japanese() {
-        QueryLang::Japanese
-    } else if !query.has_japanese() {
-        QueryLang::Foreign
-    } else {
-        QueryLang::Undetected
+
+    // how many percent of the characters have to be japanese in order to rank a text as japanese text
+    let threshold = 40;
+
+    match get_jp_part(&query).cmp(&threshold) {
+        Ordering::Equal => QueryLang::Undetected,
+        Ordering::Less => QueryLang::Foreign,
+        Ordering::Greater => QueryLang::Japanese,
     }
 }
 
+#[inline]
 pub fn format_kanji_reading(s: &str) -> String {
     s.replace('.', "").replace('-', "").replace(' ', "")
 }

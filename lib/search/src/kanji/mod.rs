@@ -8,10 +8,13 @@ use result::Item;
 use error::Error;
 use japanese::JapaneseExt;
 
-use crate::engine::{
-    guess::{Guess, GuessType},
-    words::native,
-    SearchTask,
+use crate::{
+    engine::{
+        guess::{Guess, GuessType},
+        words::native,
+        SearchTask,
+    },
+    query::QueryLang,
 };
 
 use super::query::Query;
@@ -22,7 +25,7 @@ pub fn search(query: &Query) -> Result<Vec<Item>, Error> {
 
     let res;
 
-    if query_str.is_japanese() {
+    if query.language == QueryLang::Japanese {
         res = by_literals(&query.query)
     } else {
         res = by_meaning(&query.query)

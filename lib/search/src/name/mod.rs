@@ -1,10 +1,13 @@
 mod order;
 pub mod result;
 
-use crate::engine::{
-    guess::Guess,
-    names::{foreign, native},
-    SearchEngine, SearchTask,
+use crate::{
+    engine::{
+        guess::Guess,
+        names::{foreign, native},
+        SearchEngine, SearchTask,
+    },
+    query::QueryLang,
 };
 
 use self::result::NameResult;
@@ -22,7 +25,7 @@ pub fn search(query: &Query) -> Result<NameResult, Error> {
     if query.form.is_kanji_reading() {
         search_kanji(&query)
     } else {
-        if query.query.is_japanese() {
+        if query.language == QueryLang::Japanese {
             handle_search(japanese_search(query))
         } else {
             handle_search(foreign_search(query))
