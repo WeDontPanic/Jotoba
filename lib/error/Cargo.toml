@@ -9,5 +9,5 @@ edition = "2018"
 [dependencies]
 actix-web = "4.0.0-beta.9"
 serde = "1.0.130"
-strum = "0.21.0"
-thiserror = "1.0.29"
+strum = "0.22.0"
+thiserror = "1.0.30"

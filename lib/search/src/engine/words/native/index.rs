@@ -43,6 +43,6 @@ pub fn load_term_tree<P: AsRef<Path>>(_path: P) {
 
 /// Returns the loaded japanese index
 #[inline]
-pub(crate) fn get() -> &'static Index {
+pub fn get() -> &'static Index {
     unsafe { INDEX.get_unchecked() }
 }

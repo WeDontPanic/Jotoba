@@ -38,3 +38,7 @@ pub fn get() -> &'static ResourceStorage {
     // the program to work. It can't and won't get changed later on since its private.
     unsafe { RESOURCES.get_unchecked() }
 }
+
+pub fn set(res_storage: ResourceStorage) {
+    RESOURCES.set(res_storage).ok();
+}

@@ -33,12 +33,12 @@ pub(super) type RadicalStorage = HashMap<char, Vec<char>>;
 
 #[derive(Default)]
 pub struct ResourceStorage {
-    dict_data: DictionaryData,
+    pub dict_data: DictionaryData,
     suggestions: Option<SuggestionData>,
 }
 
 #[derive(Default)]
-struct DictionaryData {
+pub struct DictionaryData {
     words: WordStorage,
     names: NameStorage,
     kanji: KanjiStorage,
@@ -68,6 +68,11 @@ impl DictionaryData {
             rad_map,
             sentences,
         }
+    }
+
+    /// Sets the word storage
+    pub fn set_words(&mut self, words: Vec<Word>) {
+        self.words = build_words(words);
     }
 }
 
