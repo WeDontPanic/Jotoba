@@ -23,7 +23,7 @@ use super::{
     words::Word,
     DictResources,
 };
-use std::collections::HashMap;
+use std::collections::{BTreeMap, HashMap};
 
 type WordStorage = IntMap<Word>;
 type NameStorage = IntMap<Name>;
@@ -40,6 +40,7 @@ pub struct ResourceStorage {
 #[derive(Default)]
 pub struct DictionaryData {
     words: WordStorage,
+    jlpt_word_map: BTreeMap<u8, Vec<u32>>,
     names: NameStorage,
     kanji: KanjiStorage,
     rad_map: RadicalStorage,
@@ -56,6 +57,7 @@ impl DictionaryData {
     #[inline]
     fn new(
         words: WordStorage,
+        jlpt_word_map: BTreeMap<u8, Vec<u32>>,
         names: NameStorage,
         kanji: KanjiStorage,
         rad_map: RadicalStorage,
@@ -63,6 +65,7 @@ impl DictionaryData {
     ) -> Self {
         Self {
             words,
+            jlpt_word_map,
             names,
             kanji,
             rad_map,
@@ -112,7 +115,8 @@ impl ResourceStorage {
         let words = build_words(resources.words);
         let names = build_names(resources.names);
         let kanji = build_kanji(resources.kanji);
-        let dict_data = DictionaryData::new(words, names, kanji, rad_map, sentences);
+        let dict_data =
+            DictionaryData::new(words, resources.word_jlpt, names, kanji, rad_map, sentences);
 
         Self {
             dict_data,
@@ -124,6 +128,19 @@ impl ResourceStorage {
     #[inline]
     pub fn words<'a>(&'a self) -> WordRetrieve<'a> {
         WordRetrieve::new(self)
+    }
+
+    /// Returns an iterator over all words with given `jlpt` level
+    pub fn word_jlpt<'a>(&'a self, jlpt: u8) -> Option<impl Iterator<Item = &'a Word>> {
+        let word = self.words();
+
+        Some(
+            self.dict_data
+                .jlpt_word_map
+                .get(&jlpt)?
+                .iter()
+                .filter_map(move |i| word.by_sequence(*i)),
+        )
     }
 
     /// Returns a `WordRetrieve` which can be used to retrieve names from the `ResourceStorage`

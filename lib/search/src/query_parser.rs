@@ -133,7 +133,8 @@ impl QueryParser {
     /// Parses a user query into Query
     pub fn parse(self) -> Option<Query> {
         // Don't allow empty queries
-        if self.query.is_empty() {
+        if self.query.is_empty() && !self.tags.iter().any(|i| i.is_empty_allowed()) {
+            println!("empty");
             return None;
         }
 
@@ -192,6 +193,11 @@ impl QueryParser {
 
     fn parse_form(&self) -> Form {
         let query = &self.query;
+
+        // Tag only search
+        if query.is_empty() && self.tags.iter().any(|i| i.is_empty_allowed()) {
+            return Form::TagOnly;
+        }
 
         // Detect a kanji reading query
         if let Some(kr) = self.parse_kanji_reading() {

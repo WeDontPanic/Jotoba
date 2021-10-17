@@ -7,7 +7,7 @@ pub mod suggestions;
 pub mod words;
 
 use std::{
-    collections::HashMap,
+    collections::{BTreeMap, HashMap},
     error::Error,
     fs::File,
     io::{BufRead, BufReader, Read, Write},
@@ -25,6 +25,7 @@ use serde::{Deserialize, Serialize};
 #[derive(Debug, Serialize, Deserialize)]
 pub struct DictResources {
     pub words: Vec<Word>,
+    pub word_jlpt: BTreeMap<u8, Vec<u32>>,
     pub kanji: Vec<Kanji>,
     pub names: Vec<Name>,
 }

@@ -74,10 +74,7 @@ pub struct SearchHelp {
 impl SearchHelp {
     /// Returns `true` if `SearchHelp` is not helpful at all (empty)
     pub fn is_empty(&self) -> bool {
-        self.words.is_none()
-            && self.names.is_none()
-            && self.sentences.is_none()
-            && self.kanji.is_none()
+        self.iter_items().next().is_none()
     }
 
     /// Returns an iterator over all (QueryType, Guess) pairs that have a value
@@ -101,7 +98,9 @@ impl SearchHelp {
 impl<'a> BaseData<'a> {
     #[inline]
     pub fn get_search_help(&self) -> Option<&SearchHelp> {
-        self.site.as_search_result()?.search_help.as_ref()
+        let help = self.site.as_search_result()?.search_help.as_ref()?;
+        println!("{}", help.is_empty());
+        (!help.is_empty()).then(|| help)
     }
 
     #[inline]
@@ -128,8 +127,8 @@ impl<'a> BaseData<'a> {
             items_per_page: self.user_settings.items_per_page,
         };
 
-        // Don't show paginator if there is only one page
-        if pagination.get_last() == 1 {
+        // Don't show paginator if there is only one or no page
+        if pagination.get_last() <= 1 {
             return;
         }
 

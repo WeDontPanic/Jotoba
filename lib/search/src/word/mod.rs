@@ -1,6 +1,7 @@
 mod kanji;
 pub mod order;
 pub mod result;
+pub mod tag_only;
 
 use std::time::Instant;
 
@@ -56,6 +57,7 @@ impl<'a> Search<'a> {
         let start = Instant::now();
         let search_result = match self.query.form {
             Form::KanjiReading(_) => kanji::by_reading(self)?,
+            Form::TagOnly => tag_only::search(self)?,
             _ => self.do_word_search()?,
         };
 

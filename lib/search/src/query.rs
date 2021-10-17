@@ -73,6 +73,7 @@ pub enum Tag {
     SearchType(SearchTypeTag),
     PartOfSpeech(PosSimple),
     Misc(Misc),
+    Jlpt(u8),
 }
 
 /// Hashtag based search tags
@@ -101,6 +102,8 @@ pub enum Form {
     MultiWords,
     /// Kanji reading based search eg. '気 ケ'
     KanjiReading(kanji::Reading),
+    /// Tag only. Implies query string to be empty
+    TagOnly,
     /// Form was not recognized
     Undetected,
 }
@@ -137,16 +140,29 @@ impl Default for QueryLang {
 }
 
 impl Tag {
-    // Parse a tag from a string
+    /// Parse a tag from a string
     pub fn parse_from_str(s: &str) -> Option<Tag> {
-        Some(if let Some(tag) = Self::parse_search_type(s) {
-            tag
+        #[allow(irrefutable_let_patterns)]
+        if let Some(tag) = Self::parse_jlpt_tag(s) {
+            return Some(tag);
+        } else if let Some(tag) = Self::parse_search_type(s) {
+            return Some(tag);
         } else {
             match PosSimple::from_str(&s[1..]) {
-                Ok(pos) => Self::PartOfSpeech(pos),
-                Err(_) => return None,
+                Ok(pos) => return Some(Self::PartOfSpeech(pos)),
+                _ => return None,
             }
-        })
+        }
+    }
+
+    /// Returns `Some(u8)` if `s` is a valid N-tag
+    fn parse_jlpt_tag(s: &str) -> Option<Tag> {
+        if s.chars().skip(1).next()?.to_lowercase().next()? != 'n' {
+            return None;
+        }
+
+        let nr: u8 = s[2..].parse().ok()?;
+        (nr > 0 && nr < 6).then(|| Tag::Jlpt(nr))
     }
 
     /// Parse only search type
@@ -159,6 +175,11 @@ impl Tag {
             "abbreviation" | "abbrev" => Self::Misc(Misc::Abbreviation),
             _ => return None,
         })
+    }
+
+    /// Returns true if the tag is allowed to be used without a query
+    pub fn is_empty_allowed(&self) -> bool {
+        self.is_jlpt()
     }
 
     /// Returns `true` if the tag is [`SearchType`].
@@ -202,6 +223,23 @@ impl Tag {
     #[inline]
     pub fn as_misc(&self) -> Option<&Misc> {
         if let Self::Misc(v) = self {
+            Some(v)
+        } else {
+            None
+        }
+    }
+
+    /// Returns `true` if the tag is [`Jlpt`].
+    ///
+    /// [`Jlpt`]: Tag::Jlpt
+    #[inline]
+    pub fn is_jlpt(&self) -> bool {
+        matches!(self, Self::Jlpt(..))
+    }
+
+    #[inline]
+    pub fn as_jlpt(&self) -> Option<&u8> {
+        if let Self::Jlpt(v) = self {
             Some(v)
         } else {
             None
@@ -258,5 +296,15 @@ impl Query {
                 (is_tag && !is_search_type_tag) || !is_tag
             })
             .join(" ")
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use super::*;
+
+    #[test]
+    fn test_parse_jlpt_tag_parsing() {
+        assert_eq!(Tag::parse_jlpt_tag("#n4"), Some(Tag::Jlpt(4)));
     }
 }
