@@ -2,7 +2,7 @@
 name = "api"
 version = "0.1.0"
 authors = ["jojii <jojii@gmx.net>"]
-edition = "2018"
+edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
@@ -13,7 +13,7 @@ search = { path = "../search" }
 utils = { path = "../utils" }
 config = { path = "../config" }
 resources = { path = "../resources"}
-actix-web = "4.0.0-beta.9"
+actix-web = "4.0.0-beta.10"
 itertools = "0.10.1"
 once_cell = "1.8.0"
 serde = "1.0.130"
@@ -22,7 +22,7 @@ log = "0.4.14"
 eudex = { git = "https://github.com/JojiiOfficial/eudex"}
 strsim = "0.10.0"
 bincode = "1.3.3"
-actix-multipart = "0.4.0-beta.6"
+actix-multipart = "0.4.0-beta.7"
 futures = "0.3.17"
 leptess = { version = "0.13.1", optional = true }
 regex = "1.5.4"
