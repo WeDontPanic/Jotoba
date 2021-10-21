@@ -49,6 +49,7 @@ fn foreign_search(query: &Query) -> SearchTask<foreign::Engine> {
     }
 
     lang_filter(query, &mut search_task);
+    sort_fn(query, &mut search_task);
 
     search_task
 }
@@ -60,8 +61,22 @@ fn jp_search(query: &Query) -> SearchTask<native::Engine> {
         .threshold(0.0);
 
     lang_filter(query, &mut search_task);
+    sort_fn(query, &mut search_task);
 
     search_task
+}
+
+fn sort_fn<T: SearchEngine<Output = Sentence>>(query: &Query, search_task: &mut SearchTask<T>) {
+    let query = query.clone();
+    search_task.set_order_fn(move |sentence, relevance, _, _| {
+        let mut rel = (relevance * 1000f32) as usize;
+
+        if sentence.has_translation(query.settings.user_lang) {
+            rel += 60;
+        }
+
+        rel
+    });
 }
 
 /// Sets a SearchTasks language filter
