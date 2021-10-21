@@ -1,13 +1,14 @@
 pub mod result;
+mod tag_only;
 
 use std::time::Instant;
 
-use self::result::SentenceResult;
+use self::result::{Item, SentenceResult};
 
 use super::query::Query;
 use crate::{
     engine::{guess::Guess, sentences::foreign, sentences::native, SearchEngine, SearchTask},
-    query::QueryLang,
+    query::{Form, QueryLang},
 };
 use error::Error;
 use resources::{models::sentences::Sentence, parse::jmdict::languages::Language};
@@ -15,13 +16,23 @@ use resources::{models::sentences::Sentence, parse::jmdict::languages::Language}
 /// Searches for sentences
 pub fn search(query: &Query) -> Result<SentenceResult, Error> {
     let start = Instant::now();
+
+    let res = match query.form {
+        Form::TagOnly => tag_only::search(query)?,
+        _ => normal_search(query)?,
+    };
+
+    println!("Sentence search took: {:?}", start.elapsed());
+
+    Ok(res)
+}
+
+fn normal_search(query: &Query) -> Result<SentenceResult, Error> {
     let res = if query.language == QueryLang::Japanese {
         get_result(jp_search(query), query)
     } else {
         get_result(foreign_search(query), query)
     }?;
-
-    println!("Sentence search took: {:?}", start.elapsed());
 
     Ok(res)
 }
@@ -73,14 +84,16 @@ fn get_result<T: SearchEngine<Output = Sentence>>(
     let len = found.len();
     let items = found
         .item_iter()
-        .filter_map(|i| {
-            let sentence =
-                result::Sentence::from_m_sentence(i.clone(), lang, query.settings.show_english)?;
-            Some(result::Item { sentence })
-        })
+        .filter_map(|i| map_sentence_to_item(i, lang, query))
         .collect::<Vec<_>>();
 
     Ok(SentenceResult { len, items })
+}
+
+fn map_sentence_to_item(sentence: &Sentence, lang: Language, query: &Query) -> Option<Item> {
+    let sentence =
+        result::Sentence::from_m_sentence(sentence.clone(), lang, query.settings.show_english)?;
+    Some(result::Item { sentence })
 }
 
 /// Guesses the amount of results a search would return with given `query`

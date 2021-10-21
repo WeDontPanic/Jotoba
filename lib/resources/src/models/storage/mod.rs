@@ -7,6 +7,7 @@ pub mod word;
 use intmap::IntMap;
 
 use crate::parse::jmdict::languages::Language;
+use serde::{Deserialize, Serialize};
 
 use self::{
     kanji::KanjiRetrieve,
@@ -23,13 +24,18 @@ use super::{
     words::Word,
     DictResources,
 };
-use std::collections::{BTreeMap, HashMap};
+use std::collections::HashMap;
 
-type WordStorage = IntMap<Word>;
+pub type WordStorage = IntMap<Word>;
 type NameStorage = IntMap<Name>;
 type KanjiStorage = HashMap<char, Kanji>;
-pub(super) type SentenceStorage = IntMap<Sentence>;
 pub(super) type RadicalStorage = HashMap<char, Vec<char>>;
+
+#[derive(Serialize, Deserialize, Default)]
+pub struct SentenceStorage {
+    pub sentences: IntMap<Sentence>,
+    pub jlpt_map: HashMap<u8, Vec<u32>>,
+}
 
 #[derive(Default)]
 pub struct ResourceStorage {
@@ -40,7 +46,7 @@ pub struct ResourceStorage {
 #[derive(Default)]
 pub struct DictionaryData {
     words: WordStorage,
-    jlpt_word_map: BTreeMap<u8, Vec<u32>>,
+    jlpt_word_map: HashMap<u8, Vec<u32>>,
     names: NameStorage,
     kanji: KanjiStorage,
     rad_map: RadicalStorage,
@@ -57,7 +63,7 @@ impl DictionaryData {
     #[inline]
     fn new(
         words: WordStorage,
-        jlpt_word_map: BTreeMap<u8, Vec<u32>>,
+        jlpt_word_map: HashMap<u8, Vec<u32>>,
         names: NameStorage,
         kanji: KanjiStorage,
         rad_map: RadicalStorage,
@@ -115,6 +121,7 @@ impl ResourceStorage {
         let words = build_words(resources.words);
         let names = build_names(resources.names);
         let kanji = build_kanji(resources.kanji);
+
         let dict_data =
             DictionaryData::new(words, resources.word_jlpt, names, kanji, rad_map, sentences);
 
@@ -143,6 +150,30 @@ impl ResourceStorage {
         )
     }
 
+    /// Returns an iterator over all sentences with given `jlpt` level
+    pub fn sentence_jlpt<'a>(&'a self, jlpt: u8) -> Option<impl Iterator<Item = &'a Sentence>> {
+        let sentences = self.sentences();
+
+        Some(
+            self.dict_data
+                .sentences
+                .jlpt_map
+                .get(&jlpt)?
+                .iter()
+                .filter_map(move |i| sentences.by_id(*i)),
+        )
+    }
+
+    /// Returns the amount of sentences with given jlpt level
+    pub fn sentence_jlpt_len(&self, jlpt: u8) -> usize {
+        self.dict_data
+            .sentences
+            .jlpt_map
+            .get(&jlpt)
+            .map(|i| i.len())
+            .unwrap_or_default()
+    }
+
     /// Returns a `WordRetrieve` which can be used to retrieve names from the `ResourceStorage`
     #[inline]
     pub fn names<'a>(&'a self) -> NameRetrieve<'a> {
@@ -169,7 +200,7 @@ impl ResourceStorage {
 }
 
 #[inline]
-fn build_words(words: Vec<Word>) -> WordStorage {
+pub fn build_words(words: Vec<Word>) -> WordStorage {
     words.into_iter().map(|i| (i.sequence as u64, i)).collect()
 }
 

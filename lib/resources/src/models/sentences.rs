@@ -8,6 +8,7 @@ pub struct Sentence {
     pub japanese: String,
     pub furigana: String,
     pub translations: Vec<Translation>,
+    pub jlpt_guess: Option<u8>,
 }
 
 /// A Translation for a sentence
@@ -25,7 +26,12 @@ impl Sentence {
             japanese,
             furigana,
             translations,
+            jlpt_guess: None,
         }
+    }
+
+    pub fn set_jlpt_guess(&mut self, guess: u8) {
+        self.jlpt_guess = Some(guess)
     }
 
     /// Returns the kana reading of a sentence
