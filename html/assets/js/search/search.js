@@ -27,80 +27,11 @@ var lastRequest = undefined;
 var preventApiCallUntilDelete = false;
 var textToPrevent = "";
 
-// Key Events focussing on the search
-$(document).on("keydown", (event) => {
-    if (!$('#search').is(":focus")) return;
-
-    // Switch the key code for potential changes
-    switch (event.key) {
-        case "ArrowUp": // Use suggestion above current
-            event.preventDefault();
-            changeSuggestionIndex(-1);
-            break;
-        case "ArrowDown": // Use suggestion beneath current
-        case "Tab":
-            event.preventDefault();
-            var direction = 1;
-            if (event.key == "Tab" && shiftPressed) {
-              direction = -1;
-            }
-            changeSuggestionIndex(direction);
-            break;
-        case "Enter": // Start the search
-            if (currentSuggestionIndex > 0) {
-                event.preventDefault();
-                activateSelection();
-            }
-            $('#searchBtn').click();
-            break;
-    }
-});
-
 // Prepare Search / Voice Icon when loading the page
 toggleSearchIcon(0);
 
 // Mark the currently selected search type (only used for mobile so far)
 markCurrentSearchType();
-
-// Event whenever the user types into the search bar
-input.addEventListener("input", e => {
-    if (input.value != oldInputValue) {
-        callApiAndSetShadowText();
-    }
-    oldInputValue = input.value;
-
-    toggleSearchIcon(200);
-});
-
-// Check if input was focussed / not focussed to show / hide overlay 長い
-input.addEventListener("focus", e => {
-    if (!keepSuggestions) {
-        callApiAndSetShadowText();
-    }
-    showContainer();
-    keepSuggestions = false;
-});
-document.addEventListener("click", e => {
-    // When clicking anything but the search bar or dropdown
-    if (!Util.isChildOf(searchRow, e.target)) {
-        container.classList.add("hidden");
-        keepSuggestions = true;
-    }
-});
-
-// Check on resize if shadow text would overflow the search bar and show / hide it
-window.addEventListener("resize", e => {
-    setShadowText();
-});
-
-// Scroll sentence-reader to display selected index
-Util.awaitDocumentReady(() => {
-    let sentencePart = $('.sentence-part.selected');
-
-    if (sentencePart.length > 0) {
-        $('#sr')[0].scrollTop = (sentencePart.offset().top);
-    }
-});
 
 // Marks the current search's type, so it can be displayed in another color
 function markCurrentSearchType() {
@@ -155,7 +86,7 @@ function callApiAndSetShadowText() {
     }
     // Load new API data
     else if (input.value.length > 0) {
-        getApiData();
+        getSuggestionApiData();
     } else {
         removeSuggestions();
     }
@@ -341,116 +272,7 @@ function getHashtagData(currentText) {
         "suggestions": suggestions
     }
 
-    loadApiData(resultJSON);
-}
-
-// Calls the API to get input suggestions
-function getApiData() {
-
-    // Check if API call should be prevented
-    if (preventApiCallUntilDelete) {
-        if (textToPrevent.length <= input.value.length && input.value.substring(0, textToPrevent.length) === textToPrevent) {
-            return;
-        } else {
-            preventApiCallUntilDelete = false;
-            textToPrevent = "";
-        }
-    }
-
-    // Create the JSON
-    let lang = Cookies.get("default_lang");
-    let type = $('#search-type').val();
-
-    let inputJSON = {
-        "input": input.value,
-        "search_type": type,
-        "lang": lang === undefined ? "en-US" : lang
-    }
-
-    // Abort any requests sent earlier
-    if (lastRequest !== undefined) {
-        lastRequest.abort();
-    }
-
-    // Send Request to backend
-    lastRequest = $.ajax({ 
-        type : "POST", 
-        url : "/api/suggestion", 
-        data: JSON.stringify(inputJSON),
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        success : function(result) { 
-            // Load the results into frontend
-            loadApiData(result);
-        }, 
-        error : function(result) { 
-            // Error = reset everything if not aborted
-            if (result.statusText !== "abort") {
-                removeSuggestions();
-            }
-        } 
-    }); 
-}
-
-// Loads data called from the API into the frontend
-function loadApiData(result) {
-
-    // Keep old suggestion if it exists in the list again
-    let oldSuggestion = currentSuggestion;
-    let suggestionChosen = false;
-
-    // Remove current suggestions
-    removeSuggestions();
-
-    // Return if no suggestions were found and 
-    if (result.suggestions.length == 0) {
-        // Prevent future requests if no result was found 
-        preventApiCallUntilDelete = true;
-        textToPrevent = input.value;
-
-        // Return
-        return;
-    }
-
-    // Set suggestion type
-    currentSuggestionType = result.suggestion_type;
-
-    // Set the amount of possible suggestions
-    availableSuggestions = result.suggestions.length;
-
-    // Add suggestions
-    for (let i = 0; i < availableSuggestions; i++) {
-
-        // Result variables
-        let primaryResult = "";
-        let secondaryResult = "";
-
-        // Only one result
-        if (result.suggestions[i].secondary === undefined) {
-            primaryResult = result.suggestions[i].primary;
-        }
-        // Two results, kanji needs to be in the first position here
-        else {
-            primaryResult = result.suggestions[i].secondary;
-            secondaryResult = "(" + result.suggestions[i].primary + ")";
-        }
-
-        // Add to Page
-        container.innerHTML += 
-        ' <div class="search-suggestion" onclick="onSuggestionClick(this);"> ' +
-        '   <span class="primary-suggestion">'+primaryResult+'</span> ' +
-        '   <span class="secondary-suggestion">'+secondaryResult+'</span> ' +
-        ' </div> ';      
-    }
-
-    // Activate first suggestion
-    if (!suggestionChosen) {
-        //changeSuggestionIndex(1, true);
-    }
-
-    // Load Container if there is text present
-    showContainer();
+    loadSuggestionApiData(resultJSON);
 }
 
 // Handles clicks on the suggestion dropdown
