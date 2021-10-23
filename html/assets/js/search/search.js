@@ -125,99 +125,6 @@ function setShadowText() {
     shadowText.style.opacity = 0.4;
 }
 
-// Returns the primary [0], secondary [1] suggestion and the parent [2]
-function getSuggestion(index) {
-    // Get newly selected suggestion
-    let suggestion = document.querySelectorAll(".search-suggestion")[index];
-
-    // Find primary and secondary suggestion <span>
-    let primarySuggestion = suggestion.querySelector(".primary-suggestion");
-    let secondarySuggestion = suggestion.querySelector(".secondary-suggestion");
-
-    return [primarySuggestion, secondarySuggestion, suggestion];
-}
-
-// Selects the suggestion at the index above (-1) or beneath (1)
-// If setDirectly = true, the index will be used directly
-function changeSuggestionIndex(direction, setDirectly) {
-    let oldIndex = currentSuggestionIndex;
-
-    if (setDirectly) {
-      currentSuggestionIndex = direction;
-    } else {
-      currentSuggestionIndex = mod(currentSuggestionIndex + direction, availableSuggestions + 1);
-    }
-
-    // Get newly selected suggestion
-    if (currentSuggestionIndex != 0) { 
-        let suggestion = getSuggestion(currentSuggestionIndex-1);
-    
-        // Add Furigana. If Kanji are used, select the secondary suggestion. If user types kanji, show him kanji instead
-        if (suggestion[1].innerHTML.length > 0 && input.value.match(kanjiRegEx) === null) {
-            currentSuggestion = suggestion[1].innerHTML.substring(1, suggestion[1].innerHTML.length - 1);
-        } else {
-            currentSuggestion = suggestion[0].innerHTML;
-        }
-
-        // Mark the suggestion's row
-        suggestion[2].classList.add("selected");
-    }
-   
-    // Remove mark on old row
-    if (oldIndex != 0) {
-        getSuggestion(oldIndex-1)[2].classList.remove("selected");
-    }
-
-    // Update shadow text
-  setShadowText();
-}
-
-// Adds the currently selected suggestion to the search input
-function activateSelection(element) {
-
-    // The primary suggestion to use
-    let suggestion = "";
-
-    // If element is given as parameter directly, use its the suggestion instead
-    if (element !== undefined) {
-        switch (currentSuggestionType) {
-            case "kanji_reading":
-                let se = element.querySelector(".secondary-suggestion");
-                suggestion =  element.querySelector(".primary-suggestion").innerHTML + " " + se.innerHTML.substring(1, se.innerHTML.length - 1);
-                break;
-            default:
-                suggestion = element.querySelector(".primary-suggestion").innerHTML;
-        }
-    } 
-    // Else, find the suggestion by searching for the current index
-    else {
-        switch (currentSuggestionType) {
-            case "kanji_reading":
-                let s = getSuggestion(currentSuggestionIndex - 1);
-                suggestion = s[0].innerHTML + " " + s[1].innerHTML.substring(1, s[1].innerHTML.length - 1);
-                break;
-            default:
-                suggestion = getSuggestion(currentSuggestionIndex - 1)[0].innerHTML;
-        }
-    }
-
-    // Fix some weird characters
-    suggestion = suggestion.replace("&amp;", "&");
-
-    // Remove last text from string and append new word
-    input.value = input.value.substring(0, input.value.lastIndexOf(" "));
-    if (suggestion.startsWith("#")) {
-        input.value += " " + suggestion;   
-    }
-    else {
-        input.value = suggestion;
-    }
-    
-
-    // Reset dropdown
-    removeSuggestions();
-}
-
 // Returns the substring of what the user already typed for the current suggestion
 // If target is not empty, the substring of target will be searched instead
 function getCurrentSubstring(target) {
@@ -275,21 +182,15 @@ function getHashtagData(currentText) {
     loadSuggestionApiData(resultJSON);
 }
 
-// Handles clicks on the suggestion dropdown
-function onSuggestionClick(element) {
-    activateSelection(element);
-    document.getElementById("searchBtn").click();
-}
-
 // Interrupts the form's submit and makes the user visit the correct page
 function onSearchStart() {
     var search_value = $('#search').val();
     var search_type = $('#search-type').val();
 
     if (search_value.length == 0) {
-        window.location = window.location.origin;
+        Util.loadUrl(JotoTools.createUrl());
     } else {
-        window.location = window.location.origin + "/search/" + encodeURIComponent(search_value) + "?t=" + search_type;
+        Util.loadUrl(JotoTools.createUrl(search_value, search_type));
     }
 
     return false;
@@ -315,8 +216,8 @@ function closeAllSubSearchbarOverlays(overlayToIgnore) {
 
 // Initialize Pagination Buttons
 $('.pagination-item:not(.disabled) > button').on("click", (e) => {
-    var search_value = $('#search').val();
-    var search_type = $('#search-type').val();
+    var searchValue = $('#search').val();
+    var searchType = $('#search-type').val();
     var targetPage = $(e.target.parentNode).attr("target-page");
-    window.location = window.location.origin + "/search/" + encodeURIComponent(search_value) + "?t=" + search_type + "&p=" + targetPage;
+    Util.loadUrl(JotoTools.createUrl(searchValue, searchType, targetPage));
 });

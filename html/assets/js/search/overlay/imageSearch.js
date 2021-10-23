@@ -87,12 +87,10 @@ function openImageCropOverlay() {
 
 // Receives the image from Croppie, sends it to the server and starts the search
 function uploadCroppedImage(dataUrl) {
-
     cropTarget.croppie('result', {
         type: 'canvas',
         size: 'viewport'
     }).then(function (resp) {
-
         // Generate a file from the Base64 String
         let generatedFile = Util.convertDataURLtoFile(resp);
 
@@ -107,9 +105,9 @@ function uploadCroppedImage(dataUrl) {
                 $("#loading-screen").toggleClass("show", false);
             } else {
                 if (response.text.length == 1 && response.text.match(kanjiRegEx)) {
-                    window.location = window.location.origin + "/search/" + encodeURIComponent(response.text) + "?t=1"
+                    Util.loadUrl(JotoTools.createUrl(response.Text, 1));
                 } else {
-                    window.location = window.location.origin + "/search/" + encodeURIComponent(response.text)
+                    Util.loadUrl(JotoTools.createUrl(response.Text));
                 }
             }
         });

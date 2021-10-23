@@ -176,7 +176,7 @@ function copyTranslationAndShowMessage(textParent) {
 function changeSearchType(html, newType) {
     var search_value = $('#search').val();
     if (search_value.length > 0) {
-        window.location = window.location.origin + "/search/" + search_value + "?t=" + newType;
+        Util.loadUrl(JotoTools.createUrl(search_value, newType));
     }
 }
 

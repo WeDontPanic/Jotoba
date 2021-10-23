@@ -247,3 +247,11 @@ Math.easeInOutQuad = function (t, b, c, d) {
     t--;
     return -c/2 * (t*(t-2) - 1) + b;
 };
+
+Util.loadUrl = function(url) {
+    window.location = url;
+}
+
+Util.loadUrlInNewTab = function(url) {
+    window.open(url, '_blank').focus();
+}
