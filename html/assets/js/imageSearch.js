@@ -121,12 +121,14 @@ function uploadCroppedImage(dataUrl) {
 // Loads the Image Cropper
 function initCroppie(inputUrl) {
     cropTarget = $('#croppingTarget').croppie({
-        mouseWheelZoom: 'ctrl',
-        enableResize: true,
+    showZoomer: false,
+    enableResize: true,
+    enableOrientation: true,
+    mouseWheelZoom: 'ctrl'
     });
     cropTarget.croppie('bind', {
-            url: inputUrl,
-        });
+        url: inputUrl,
+    });
 
     cropTarget.croppie('result', 'html').then(function(html) { });
 }
