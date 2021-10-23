@@ -866,7 +866,12 @@ footer {
 .sentence-part.symbol {
     border-bottom: 0px;
     margin-right: 0px;
+    margin-left: 0px;
+}
+
+.sentence-part:not(.symbol) + .symbol {
     margin-left: -15px;
+    margin-right: 10px;
 }
 
 .sentence-part.particle {
