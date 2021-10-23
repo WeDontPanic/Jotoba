@@ -1,0 +1,265 @@
+#page-container {
+    max-width: 98.5vw;
+    padding-top: 10px;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+.main-container {
+    width: 100%;
+    max-width: 1150px;
+    height: -webkit-max-content;
+    height: -moz-max-content;
+    height: max-content;
+}
+
+.title-div {
+    text-align: center;
+    text-align: -webkit-center;
+    width: 80%;
+}
+
+.title-div h1 {
+    font-weight: bold;
+    font-size: xx-large;
+}
+
+.title-div h4 {
+    font-size: medium;
+}
+
+.main-tab-select {
+    padding-top: 25px;
+    width: 100%;
+}
+
+.main-tab-select.l {
+    padding-right: 10px;
+    display: flex;
+    justify-content: flex-start;
+}
+
+.main-tab-select.r {
+    padding-left: 10px;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.main-tab-select h2 {
+    font-size: medium;
+    text-decoration: underline;
+    color: var(--primaryColor);
+}
+
+.tab-btn {
+    cursor: pointer;
+    width: -webkit-max-content;
+    width: -moz-max-content;
+    width: max-content;
+}
+
+.main-info {
+    width: 100%;
+    height: -webkit-max-content;
+    height: -moz-max-content;
+    height: max-content;
+    padding-bottom: 10px;
+}
+
+.secondary-info {
+    height: -webkit-max-content;
+    height: -moz-max-content;
+    height: max-content;
+    width: 35%;
+    padding-bottom: 10px;
+    padding-left: 10px;
+}
+
+.entry-min-height-1 {
+    min-height: 90px;
+}
+
+.entry-min-height-2 {
+    min-height: 180px;
+}
+
+.main-info > .d-flex.flex-row {
+    padding-left: 1vw;
+}
+
+/* Kanji Stuff Overwrite */
+
+.kanji-entry.left.fixed {
+    min-width: 155px;
+    max-width: 155px;
+    justify-content: center;
+    align-items: center;
+}
+
+.kanji-preview.large {
+    font-size: 50px;
+    padding-top: 10px;
+}
+
+.kanji-preview.large:hover {
+    text-decoration: none;
+} 
+
+/* 3-dot Menu */
+
+.dot-menu {
+    width: 100%;
+}
+
+#info-dropdown {
+    background-color: var(--background);
+    width: -webkit-max-content;
+    width: -moz-max-content;
+    width: max-content;
+    cursor: pointer;
+}
+
+.info-dropdown-txt {
+    padding-left: 10px;
+    margin-right: 5px;
+}
+
+.info-entry {
+    padding-left: 5px;
+    padding-right: 5px;
+    font-size: 18px;
+    line-height: 1.4;
+    cursor: pointer;
+    text-align: center;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    width: -webkit-max-content;
+    width: -moz-max-content;
+    width: max-content;
+}
+
+.info-entry:hover {
+    background-color: var(--itemBG_075);
+}
+
+.word-tooltip {
+    position: absolute;
+    top: -5px;
+    right: 25px;
+    width: 20px;
+    height: 30px;
+    color: var(--tagColor);
+    font-weight: bold;
+    text-align: center;
+    text-align: -webkit-center;
+    cursor: pointer;
+}
+
+.word-tooltip > span {
+    margin-bottom: -20px;
+}
+
+.mdl-menu__container {
+    margin-right: 10px;
+}
+
+/* -------- Words Column -------- */
+
+.word-frequency {
+    margin-top: 10px;
+    width: 100px;
+    clear: right;
+    margin: 4px 0 8px 0;
+    padding: 2px 5px 3px 5px;
+    font-size: 10px;
+    -webkit-font-smoothing: antialiased;
+    background-color: var(--secondaryColor);
+    border-radius: 3px;
+    color: var(--secondaryTextColor);
+    font-weight: bold;
+    text-align: center;
+    text-align: -webkit-center;
+}
+
+.word-frequency.common {
+    background-color: var(--primaryColor);
+}
+
+.kanji-entry .list-entry + .list-entry {
+    padding-top: 5px;
+}
+
+
+/* Pitch Accent Borders */
+.pitch {
+    border-radius: 0px;
+    margin-right: -4px;
+    font-size: large;
+    color: var(--primaryColor);
+}
+
+.pitch.t {
+    border-top: 1px solid var(--tagColor);
+    padding-left: 5px;
+    padding-right: 5px;
+}
+
+.pitch.r {
+    border-right: 1px solid var(--tagColor);
+    margin-right: -6px;
+}
+
+.pitch.b {
+    border-bottom: 1px solid var(--tagColor);
+}
+
+.pitch.b:not(.r) {
+    padding-left: 3px;
+}
+
+/* Info Overlay */
+
+.table.conjugation, .table.collocation {
+    width: 80%;
+    margin-left: 10%;
+}
+
+.table.collocation tr:first-child > th {
+    border-top: 2px solid var(--lineColor) !important;
+}
+
+.table.collocation th, .table.collocation td {
+    width: 50%;
+}
+
+.table {
+    color: var(--primaryTextColor) !important;
+}
+
+thead > tr > th {
+    color: var(--secondaryTextColor) !important;
+    background-color: var(--bgPrimaryColor) !important;
+}
+
+table th {
+    border-color: var(--searchTextColor) !important;
+    border-bottom: 2px solid var(--lineColor) !important;
+    border-top: 1px solid var(--lineColor) !important;
+}
+
+td {
+    border-top: 2px solid var(--lineColor) !important;
+}
+
+table tr:last-child > td {
+    border-bottom: 2px solid var(--lineColor) !important;
+}
+
+
+/* -------- Kanji Column -------- */
+
+.translation.kanji {
+    padding-top: 10px;
+    padding-left: 10px;
+}

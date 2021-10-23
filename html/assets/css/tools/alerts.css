@@ -9,3 +9,7 @@
     background-color: rgba(195,195,195,0.95) !important; 
     border-color: rgba(195,195,195,0.95) !important;
 } 
+
+.mdl-tooltip {
+    font-size: 12px;
+}

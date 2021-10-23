@@ -1,0 +1,65 @@
+.kanji-entry {
+    height: -webkit-fit-content;
+    height: -moz-fit-content;
+    height: fit-content;
+    padding-bottom: 10px;
+}
+
+.kanji-entry.right {
+    position: relative;
+    width: 100%;
+}
+
+.kanji-preview {
+    display: block;
+    line-height: 1.1;
+    font-size: xx-large;
+}
+
+.translation {
+    font-size: 19px;
+}
+
+.stroke-container {
+    max-width: 80vw;
+    overflow-x: auto;
+}
+
+.animation-container {
+    padding-left: 30%;
+    padding-top: 10px;
+}
+
+.kanji-entry > d-flex.flex-row {
+    flex-flow: row wrap;
+}
+
+.furigana-kanji-container {
+    text-align: center;
+    text-align: -webkit-center;
+    word-spacing: 10px;
+}
+
+.kun-reading {
+    padding-left: 10px;
+    width: 120%;
+}
+
+.draw2 {
+    stroke-dasharray: 1000;
+    stroke-dashoffset: 1000;
+    -webkit-animation: dash2 10s linear forwards;
+            animation: dash2 10s linear forwards;
+}
+
+.kanjisvg:hover {
+    cursor: pointer;
+}
+
+@-webkit-keyframes dash2 {
+    to { stroke-dashoffset: 0;}
+}
+
+@keyframes dash2 {
+    to { stroke-dashoffset: 0;}
+}

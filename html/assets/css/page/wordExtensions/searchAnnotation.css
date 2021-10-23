@@ -1,0 +1,13 @@
+.search-annotation {
+    color: var(--tagColor);
+    display: flex;
+    align-items: flex-start;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: -webkit-fit-content;
+    height: -moz-fit-content;
+    height: fit-content;
+    padding-right: 75px;
+    padding-left: 75px;
+}

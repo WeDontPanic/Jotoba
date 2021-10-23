@@ -1,6 +1,8 @@
 @use crate::BaseData;
 @(data: &BaseData, title: &str)
 
+<link rel="stylesheet" type="text/css" href="/assets/css/page/helpPage.css">
+
 <h3 class="noselect word-title">@data.gettext_fmt("No {} found", &[title])</h3>
 
 <br>

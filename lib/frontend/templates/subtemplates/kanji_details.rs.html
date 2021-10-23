@@ -8,6 +8,9 @@
   @:search_help(&data, data.gettext("kanji"))
 }
 
+<link rel="stylesheet" type="text/css" href="/assets/css/page/multiPage/kanji.css">
+<link rel="stylesheet" type="text/css" href="/assets/css/page/kanjiPage.css">
+
 <!-- Inner Main Body -->
 @for (kpos, k_item) in kanji.iter().enumerate() {
   @if kpos > 0 {

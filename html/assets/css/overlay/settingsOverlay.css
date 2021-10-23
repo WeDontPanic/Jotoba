@@ -1,0 +1,11 @@
+.hr-settings {
+    width: 100%;
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.vl-settings {
+    border-left: 1px solid var(--lineColor);
+    height: 100%;
+    margin-right: 0.25rem;
+}

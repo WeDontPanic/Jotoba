@@ -5,6 +5,15 @@
 @use japanese::furigana::from_str as furi_from_str;
 
 @(data: &BaseData, query: &Query, result: WordResult)
+
+<link rel="stylesheet" type="text/css" media="print" onload="this.media='all'" href="/assets/css/tools/ripple.css">
+
+<link rel="stylesheet" type="text/css" href="/assets/css/page/multiPage/kanji.css">
+<link rel="stylesheet" type="text/css" href="/assets/css/page/multiPage/kana.css">
+<link rel="stylesheet" type="text/css" href="/assets/css/page/wordPage.css">
+<link rel="stylesheet" type="text/css" href="/assets/css/page/wordExtensions/sentenceReader.css">
+<link rel="stylesheet" type="text/css" href="/assets/css/page/wordExtensions/searchAnnotation.css">
+
   @if let Some(ref inflection) = result.inflection_info {
     <div class="search-annotation">
 

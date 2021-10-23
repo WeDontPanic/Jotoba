@@ -1,0 +1,62 @@
+.sentence-reader {
+    max-width: 1000px;
+    max-height: 190px;
+    overflow-y: auto;
+}
+
+.sentence-reader::-webkit-scrollbar, .rad-picker::-webkit-scrollbar {
+    width: 0px;
+}
+
+.sentence-part {
+    color: var(--primaryTextColor) !important;
+    border-bottom: 2px solid var(--lineColor);
+    margin-right: 15px;
+    margin-top: 9px;
+    cursor: pointer;
+}
+
+.sentence-part.selected {
+    border-bottom: 2px solid var(--primaryColor);
+}
+
+.sentence-part:hover {
+    text-decoration: unset;
+    text-shadow: -1px -1px var(--primaryTextColor);
+    color: var(--primaryTextColor) !important; 
+}
+
+.sentence-part.inline-kana-preview {
+    margin-top: 19px;
+}
+
+.sentence-part.symbol {
+    border-bottom: 0px;
+    margin-right: 0px;
+    margin-left: 0px;
+}
+
+.sentence-part:not(.symbol) + .symbol {
+    margin-left: -15px;
+    margin-right: 10px;
+}
+
+.sentence-part.particle {
+    color: var(--primaryColor) !important;
+}
+
+.sentence-part.particle:hover {
+    text-shadow: -1px -1px var(--primaryColor);
+}
+
+.sentence-part:empty {
+    padding-top: 19px;
+}
+
+.sentence-part > .furigana-kanji-container {
+    padding-top: 10px;
+}
+
+.sentence-part > .inline-kana-preview {
+    margin-top: 9px;
+}

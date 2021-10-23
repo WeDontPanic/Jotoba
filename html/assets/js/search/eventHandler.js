@@ -32,7 +32,7 @@ $(document).on("keydown", (event) => {
 });
 
 // Event whenever the user types into the search bar
-input.addEventListener("input", e => {
+document.querySelector("#search").addEventListener("input", e => {
     if (input.value != oldInputValue) {
         callApiAndSetShadowText();
     }
@@ -42,7 +42,7 @@ input.addEventListener("input", e => {
 });
 
 // Check if input was focussed / not focussed to show / hide overlay 長い
-input.addEventListener("focus", e => {
+document.querySelector("#search").addEventListener("focus", e => {
     if (!keepSuggestions) {
         callApiAndSetShadowText();
     }

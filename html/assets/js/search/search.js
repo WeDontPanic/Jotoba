@@ -6,7 +6,7 @@
 const hashtags = [
     "#adverb", "#auxilary", "#conjungation", "#noun", "#prefix", "#suffix", "#particle", "#sfx",
     "#verb", "#adjective", "#counter", "#expression", "#interjection", "#pronoun", "#numeric", "#transitive", "#intransitive",
-    "#unclassified", "#word", "#sentence", "#name", "#kanji", "#abbreviation", "#N5", "#N4", "#N3", "#N2", "#N1"
+    "#unclassified", "#word", "#sentence", "#name", "#kanji", "#abbreviation", "#n5", "#n4", "#n3", "#n2", "#n1"
 ];
 
 // Elements used
@@ -166,7 +166,7 @@ function removeSuggestions() {
 function getHashtagData(currentText) {
     let suggestions = [];
     for (let i = 0; i < hashtags.length; i++) {
-        if (hashtags[i].includes(currentText)) {
+        if (hashtags[i].includes(currentText.toLowerCase())) {
             suggestions.push({"primary": hashtags[i]});
 
             if (suggestions.length == 10) {

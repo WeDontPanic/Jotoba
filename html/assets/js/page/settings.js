@@ -2,19 +2,6 @@
  * This JS-File handles saving and loading from browser cookies
  */
 
-// Array containing all ids of color settings
-const colorIdentifiers = [
-    "background_value", "overlay_value", "primaryColor_value", "bgPrimaryColor_value", "secondaryColor_value",
-    "primaryTextColor_value", "secondaryTextColor_value", "searchBackground_value", "searchTextColor_value", "shadowColor_value", "tagColor_value", 
-    "itemBG_value"
-];
-
-// Arrays for color coding
-const colorCodings = [
-    "0gú*+q", "1hó&-r", "2ií$%s", "3jté.M", "4ku~,N", "5lv\\§O", "6mw}/P", "7nx]:Q", "8oy[;R", "9pz{?S",
-    "AaG@)T", "BbH°(U", "CdI^_V", "DYJ´!W", "EeK'#X", "FfL=áZ",
-];
-
 // Cookies that track the user
 const trackingCookies = [
     "allow_cookies"
@@ -79,37 +66,6 @@ function revokeCookieAgreement(manuallyCalled) {
     }
 
     Cookies.set("allow_cookies", "0", {path: '/'});
-}
-
-// Changes the color that the caller represents
-function onSettingsChange_Color(event) {
-    // Called by going pack in page -> Do nothing
-    if (!$('#settingsModal').hasClass("show")) {
-        return;
-    }
-
-    // Find the input div
-    let input = $(event.target.parentElement).children('input');
-    let id = input.attr("id");
-    let cssName = "--" + id.split("_value")[0];
-    let color = input[0].value;
-
-    // Reset if clicked
-    if (event.target.classList.contains("clickable")) {
-        document.documentElement.style.removeProperty(cssName);
-        $(input[0]).val(getCssValue(cssName));
-        Cookies.set(id, getComputedStyle(document.documentElement).getPropertyValue(cssName).trim(), {path: '/'});
-    } else { // Set the selected color if not
-        document.documentElement.style.setProperty(cssName, color);
-        Cookies.set(id, color, {path: '/'});
-    }
-    
-    setSpecialColorVars();
-}
-
-// Returns the value of the given CSS-Variable's name
-function getCssValue(cssName) {
-    return  getComputedStyle(document.documentElement).getPropertyValue(cssName).trim();
 }
 
 // Changes the Default Language to search for
@@ -212,29 +168,6 @@ function loadCookieData() {
     // Load anim speed
     $('#show_anim_speed_settings').val(anim_speed);
     $('#show_anim_speed_settings_slider').html(anim_speed);
-
-    // Load all Color Data
-    setColorFromCookie();
-}
-
-// Loads all colors form the cookie from a given array of identifiers
-function setColorFromCookie() {
-
-    // Iterate all entries
-    colorIdentifiers.forEach(id => {
-        // Get the cookie's data
-        let color = Cookies.get(id);
-        let cssName = "--" + id.split("_value")[0]
-
-        // Set all the Color informations
-        if (color === undefined)
-            color = getCssValue(cssName);
-        $('#'+id).val(color);
-
-        document.documentElement.style.setProperty(cssName, color);
-    });
-
-    setSpecialColorVars();
 }
 
 // Check if the current browsers doesn't want the user to be tracked
@@ -252,131 +185,6 @@ function checkTrackingAllowed() {
     } catch (e) {
         return true;
     }
-}
-
-// Loads all colors form the given array
-function setColorFromArray(array) {
-
-    // Iterate all entries
-    colorIdentifiers.forEach((id, index) => {
-        // Get the cookie's data
-        let color = array[index];
-        let cssName = "--" + id.split("_value")[0]
-
-        // Set all the Color informations
-        if (color === undefined)
-            color = getCssValue(cssName);
-        $('#'+id).val(color);
-
-        // Set Property and Cookie
-        document.documentElement.style.setProperty(cssName, color);
-        Cookies.set(id, color, {path: '/'});
-    });
-
-    setSpecialColorVars();
-}
-
-// Sets variables with (e.g.) lower opacity
-function setSpecialColorVars() {
-    let hexVal_itemBg = getComputedStyle(document.documentElement).getPropertyValue("--itemBG").trim();
-    let rgbVal_itemBg = Util.hexToRgb(hexVal_itemBg);
-    document.documentElement.style.setProperty("--itemBG_075", "rgba("+rgbVal_itemBg.r+","+rgbVal_itemBg.g+","+rgbVal_itemBg.b+",0.75)");
-
-    let hexVal_lineColor = getComputedStyle(document.documentElement).getPropertyValue("--primaryTextColor").trim();
-    let rgbVal_lineColor = Util.hexToRgb(hexVal_lineColor);
-    document.documentElement.style.setProperty("--lineColor", "rgba("+rgbVal_lineColor.r+","+rgbVal_lineColor.g+","+rgbVal_lineColor.b+",0.1)");
-
-    let hexVal_shadowColor = getComputedStyle(document.documentElement).getPropertyValue("--shadowColor").trim();
-    let rgbVal_shadowColor = Util.hexToRgb(hexVal_shadowColor);
-    document.documentElement.style.setProperty("--backgroundShadow", "rgba("+rgbVal_shadowColor.r+","+rgbVal_shadowColor.g+","+rgbVal_shadowColor.b+",0.1)");
-
-}
-
-// Calculates a code from all identifiers
-function createSchemeCode() {
-    let colorCode = "";
-
-    let currentNum = -1;
-    let count = 0;
-
-    // Iterate all entries
-    colorIdentifiers.forEach((id, index) => {
-        let color = $('#'+id).val().substring(1);
-        for (var i = 0; i < color.length; i++) {
-            
-            let num = Util.hex2num_single(color.charAt(i))
-            // Count appearance time
-            if (currentNum == num) {
-                count++;
-            } else {
-                // Add to colorCode
-                if (currentNum !== -1) {
-                    colorCode += colorCodings[currentNum].charAt(count);
-                }
-
-                currentNum = num;
-                count = 0;
-            }
-
-            // Handle last element
-            if (index == colorIdentifiers.length - 1 && i == color.length - 1) {
-                colorCode += colorCodings[num].charAt(count);
-            }
-        }
-
-        // Handle max counts
-        if (count === 5) {
-            colorCode += colorCodings[currentNum].charAt(count);
-            currentNum = -1;
-            count = 0;
-        }
-    });
-
-    $("#scheme_input").val(colorCode);
-}
-
-function parseSchemeCode(colorCode) {
-
-    // Get color code
-    if (colorCode === undefined) {
-        colorCode = $("#scheme_input").val();
-    }
-
-    // A string containing all hex values in a row
-    let allHex = "";
-
-    // Iterate the colorCode's parts
-    for (var i = 0; i < colorCode.length; i++) {    
-        // Find where the code appears in
-        let arrayIndex = -1;
-        let entryIndex = -1;
-        for (var j = 0; j < colorCodings.length; j++) {
-            entryIndex = colorCodings[j].indexOf(colorCode[i]);
-            if (entryIndex != -1) {
-                arrayIndex = j;
-                break;
-            }
-        }
-
-        // Code Error
-        if (arrayIndex === -1) {
-            Util.showMessage("error", "Please enter a valid code. (Index = -1)");
-            return;
-        }
-
-        // Add Hex
-        for (var j = 0; j <= entryIndex; j++) {
-            allHex += Util.num2hex_single(arrayIndex);
-        }
-    }
-
-    // Parse Hex String into respective single ones
-    let parsedHex = [];
-    for (var i = 0; i < allHex.length; i += 6) {   
-        parsedHex.push("#"+allHex.substring(i, i+6));
-    }
-
-    setColorFromArray(parsedHex);
 }
 
 // Returns the Kanji's default speed

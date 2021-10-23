@@ -1,0 +1,23 @@
+.cookie-footer {
+    display: block;
+    position: fixed;
+    left: 10%;
+    bottom: 0;
+    width: 80%;
+    padding: 10px;
+    background: var(--overlay);
+    border: 2px solid var( --tagColor);
+    border-radius: 10px 10px 0px 0px;
+    border-bottom: 0px;
+    z-index: 100;
+}
+
+.cookie-footer > .res-separator {
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+.cookie-btn {
+    margin-top: 10px;
+    margin-right: 10px;
+}
