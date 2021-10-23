@@ -51,8 +51,6 @@ mod test {
     }
 }
 
-fn main() {}
-
 #[derive(Debug)]
 enum State {
     FirstMoji,
