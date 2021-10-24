@@ -213,6 +213,14 @@ a:hover {
 
 /* ----------------- Commonly Used CSS ----------------- */
 
+.search-suggestion {
+    color: inherit;
+}
+
+.search-suggestion:focus, .search-suggestion:link, .search-suggestion:visited, .search-suggestion:hover {
+    text-decoration: none;
+}
+
 #page-container {
     max-width: 98.5vw;
     padding-top: 10px;

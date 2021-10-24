@@ -203,7 +203,7 @@ function loadSuggestionApiData(result) {
 
         // Add to Page
         container.innerHTML += 
-        ' <a href="'+primaryResult+'" class="search-suggestion"> ' +
+        ' <a href="/search/'+primaryResult+'" class="search-suggestion"> ' +
         '   <span class="primary-suggestion">'+primaryResult+'</span> ' +
         '   <span class="secondary-suggestion">'+secondaryResult+'</span> ' +
         ' </a> ';      
