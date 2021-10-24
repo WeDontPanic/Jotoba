@@ -100,7 +100,7 @@
 
     .sentence-reader {
         overflow-x: scroll;
-        max-width: 90vw;
+        max-width: 90vw !important;
         padding-top: 20px;
         flex-wrap: unset !important;
     }
@@ -229,9 +229,11 @@
     }
     
     .translation.kanji {
-        padding-top: 70px;
-		padding-left: 0px;
-		padding-right: 0px;
+        padding-top: 70px !important;
+		padding-left: 0px !important;
+		padding-right: 0px !important;
+        text-align: center;
+        text-align: -webkit-center;
     }
 	
 	.kanji-parent > .tags {
