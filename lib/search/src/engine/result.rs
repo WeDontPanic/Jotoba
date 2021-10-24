@@ -1,4 +1,6 @@
-use std::{cmp::min, collections::BinaryHeap, fmt::Debug, ops::Index, vec::IntoIter};
+use std::{
+    cmp::min, collections::BinaryHeap, fmt::Debug, ops::Index, time::Instant, vec::IntoIter,
+};
 
 use super::result_item::ResultItem;
 
@@ -71,6 +73,20 @@ impl<T: PartialEq> SearchResult<T> {
     pub fn item_iter(self) -> impl Iterator<Item = T> {
         self.items.into_iter().map(|i| i.item)
     }
+
+    pub fn merge(&mut self, other: Self) {
+        let start = Instant::now();
+        merge_sorted_list(&mut self.items, other.items);
+        println!("merging took: {:?}", start.elapsed());
+    }
+}
+
+/// Merges two sorted sequences `other` and `src` and stores result into `src`. Ignores duplicates.
+fn merge_sorted_list<T: Ord>(src: &mut Vec<T>, other: Vec<T>) {
+    // TODO: they're already sorted... make this O(n)
+    src.extend(other);
+    src.sort_unstable_by(|a, b| a.cmp(&b).reverse());
+    src.dedup_by(|a, b| a.eq(&b));
 }
 
 impl<T: PartialEq> IntoIterator for SearchResult<T> {

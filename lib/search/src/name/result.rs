@@ -5,7 +5,7 @@ use resources::models::names::Name;
 use crate::engine::result::SearchResult;
 
 pub struct NameResult {
-    pub items: Vec<Name>,
+    pub items: Vec<&'static Name>,
     pub total_count: u32,
 }
 
@@ -21,10 +21,10 @@ pub fn get_types_humanized(name: &Name, dict: &TranslationDict, lang: Language) 
     }
 }
 
-impl From<SearchResult<&Name>> for NameResult {
+impl From<SearchResult<&'static Name>> for NameResult {
     #[inline]
-    fn from(res: SearchResult<&Name>) -> Self {
-        let items: Vec<_> = res.items.into_iter().map(|i| i.item.clone()).collect();
+    fn from(res: SearchResult<&'static Name>) -> Self {
+        let items: Vec<_> = res.items.into_iter().map(|i| i.item).collect();
         NameResult {
             total_count: res.total_items as u32,
             items,

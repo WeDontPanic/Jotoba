@@ -57,7 +57,7 @@ pub struct SearchResult<'a> {
 pub enum ResultData {
     Word(WordResult),
     KanjiInfo(Vec<KanjiItem>),
-    Name(Vec<Name>),
+    Name(Vec<&'static Name>),
     Sentence(Vec<SentenceItem>),
 }
 

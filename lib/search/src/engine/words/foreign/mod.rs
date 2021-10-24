@@ -30,10 +30,10 @@ impl SearchEngine for Engine {
     type Output = Word;
 
     #[inline]
-    fn doc_to_output<'a>(
-        storage: &'a ResourceStorage,
+    fn doc_to_output(
+        storage: &'static ResourceStorage,
         inp: &Self::Document,
-    ) -> Option<Vec<&'a Self::Output>> {
+    ) -> Option<Vec<&'static Self::Output>> {
         to_option(
             inp.seq_ids
                 .iter()

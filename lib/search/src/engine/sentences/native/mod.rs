@@ -1,8 +1,6 @@
 pub mod index;
 
-use crate::engine::{
-    document::SentenceDocument, simple_gen_doc::GenDoc, Indexable, SearchEngine,
-};
+use crate::engine::{document::SentenceDocument, simple_gen_doc::GenDoc, Indexable, SearchEngine};
 use resources::{
     models::{sentences::Sentence, storage::ResourceStorage},
     parse::jmdict::languages::Language,
@@ -28,10 +26,10 @@ impl SearchEngine for Engine {
     type Output = Sentence;
 
     #[inline]
-    fn doc_to_output<'a>(
-        storage: &'a ResourceStorage,
+    fn doc_to_output(
+        storage: &'static ResourceStorage,
         inp: &Self::Document,
-    ) -> Option<Vec<&'a Self::Output>> {
+    ) -> Option<Vec<&'static Self::Output>> {
         storage.sentences().by_id(inp.seq_id).map(|i| vec![i])
     }
 

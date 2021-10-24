@@ -27,9 +27,9 @@ impl SearchEngine for Engine {
 
     #[inline]
     fn doc_to_output<'a>(
-        storage: &'a ResourceStorage,
+        storage: &'static ResourceStorage,
         inp: &Self::Document,
-    ) -> Option<Vec<&'a Self::Output>> {
+    ) -> Option<Vec<&'static Self::Output>> {
         storage.words().by_sequence(inp.seq_id).map(|i| vec![i])
     }
 

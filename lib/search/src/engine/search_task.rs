@@ -7,7 +7,7 @@ use super::{
 use crate::engine::DocumentGenerateable;
 use error::Error;
 use itertools::Itertools;
-use resources::parse::jmdict::languages::Language;
+use resources::{models::storage::ResourceStorage, parse::jmdict::languages::Language};
 use std::{collections::BinaryHeap, marker::PhantomData};
 use vector_space_model::DocumentVector;
 
@@ -127,7 +127,7 @@ where
         })
     }
 
-    pub fn find_exact(&self) -> Result<Vec<ResultItem<&T::Output>>, Error> {
+    pub fn find_exact(&self) -> Result<Vec<ResultItem<&'static T::Output>>, Error> {
         let (query, lang) = self.queries.get(0).unwrap();
         let index = T::get_index(*lang).expect("Lang not loaded");
 
@@ -184,7 +184,7 @@ where
     }
 
     /// Runs the search task and returns the result.
-    pub fn find(&self) -> Result<SearchResult<&T::Output>, Error> {
+    pub fn find(&self) -> Result<SearchResult<&'static T::Output>, Error> {
         let items = self
             .get_queries()
             .map(|(q_str, vec, lang)| self.find_by_vec(vec, q_str, lang))
@@ -228,7 +228,7 @@ where
         q_vec: DocumentVector<T::GenDoc>,
         q_str: &str,
         language: Option<Language>,
-    ) -> Result<Vec<ResultItem<&T::Output>>, Error> {
+    ) -> Result<Vec<ResultItem<&'static T::Output>>, Error> {
         let index = T::get_index(language);
         if index.is_none() {
             log::error!("Failed to retrieve {:?} index with language", language);
@@ -253,8 +253,8 @@ where
         q_vec: &DocumentVector<T::GenDoc>,
         q_str: &str,
         language: Option<Language>,
-    ) -> Result<Vec<ResultItem<&T::Output>>, Error> {
-        let storage = resources::get();
+    ) -> Result<Vec<ResultItem<&'static T::Output>>, Error> {
+        let storage: &'static ResourceStorage = resources::get();
 
         let res = document_vectors
             .filter_map(|i| {

@@ -75,13 +75,13 @@ pub trait DocumentGenerateable {
 
 pub trait SearchEngine: Indexable {
     type GenDoc: document_vector::Document + DocumentGenerateable;
-    type Output: PartialEq + Eq + Hash;
+    type Output: PartialEq + Eq + Hash + 'static;
 
     /// Loads the corresponding Output type from a document
-    fn doc_to_output<'a>(
-        storage: &'a ResourceStorage,
+    fn doc_to_output(
+        storage: &'static ResourceStorage,
         input: &Self::Document,
-    ) -> Option<Vec<&'a Self::Output>>;
+    ) -> Option<Vec<&'static Self::Output>>;
 
     /// Generates a vector for a query, in order to be able to compare results with a vector
     fn gen_query_vector(

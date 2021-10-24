@@ -18,22 +18,22 @@ pub struct Name {
     pub xref: Option<String>,
 }
 
-impl From<names::Name> for Name {
+impl From<&names::Name> for Name {
     #[inline]
-    fn from(name: names::Name) -> Self {
+    fn from(name: &names::Name) -> Self {
         Self {
-            kana: name.kana,
-            kanji: name.kanji,
-            transcription: name.transcription,
-            name_type: name.name_type,
-            xref: name.xref,
+            kana: name.kana.clone(),
+            kanji: name.kanji.clone(),
+            transcription: name.transcription.clone(),
+            name_type: name.name_type.clone(),
+            xref: name.xref.clone(),
         }
     }
 }
 
-impl From<Vec<names::Name>> for Response {
+impl From<Vec<&names::Name>> for Response {
     #[inline]
-    fn from(name: Vec<names::Name>) -> Self {
+    fn from(name: Vec<&names::Name>) -> Self {
         let names: Vec<Name> = name.into_iter().map(|i| Name::from(i)).collect();
         Self { names }
     }

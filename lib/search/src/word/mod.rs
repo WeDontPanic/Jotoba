@@ -292,16 +292,14 @@ impl<'a> Search<'a> {
             return self.native_results(&self.query.query.replace(" ", "").to_hiragana());
         }
 
-        let mut wordresults = res.item_iter().cloned().collect::<Vec<_>>();
-
         // possibly romaji search
         if japanese::guessing::could_be_romaji(&self.query.query) {
             let hg_query = self.query.query.to_hiragana();
             let native_search_task = self.native_search_task(&hg_query, &hg_query, false);
-            let native_search_task = native_search_task.find()?;
-
-            // TODO: merge with original results properly
+            res.merge(native_search_task.find()?);
         }
+
+        let mut wordresults = res.item_iter().cloned().collect::<Vec<_>>();
 
         filter_languages(
             wordresults.iter_mut(),
