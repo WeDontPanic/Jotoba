@@ -105,6 +105,16 @@
     text-decoration: none;
 } 
 
+/* Suggestion Overlay */
+
+.search-suggestion {
+    color: inherit;
+}
+
+.search-suggestion:focus, .search-suggestion:link, .search-suggestion:visited, .search-suggestion:hover {
+    text-decoration: none;
+}
+
 /* 3-dot Menu */
 
 .dot-menu {

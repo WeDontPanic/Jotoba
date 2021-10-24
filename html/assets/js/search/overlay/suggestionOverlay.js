@@ -10,26 +10,6 @@ function getSuggestionParent(element) {
         return element.parentElement;
 }
 
-// Handles clicks on the suggestion dropdown
-function onSuggestionClick(event) {
-
-    // Get the suggestion parent
-    let target = getSuggestionParent(event.target);
-    console.log(target);
-
-    // Left click
-    if (event.button == 0) {
-        activateSelection(target);
-        document.getElementById("searchBtn").click();
-    }
-
-    // Middle click
-    else if (event.button == 1) {
-        event.preventDefault();
-        Util.loadUrlInNewTab(JotoTools.createUrl(getSuggestion(target)));
-    }
-}
-
 // Returns a suggestion either by receiving its element or by using the current index.
 function getSuggestion(element) {
     // The primary suggestion to use
@@ -223,10 +203,10 @@ function loadSuggestionApiData(result) {
 
         // Add to Page
         container.innerHTML += 
-        ' <div class="search-suggestion" onmousedown="onSuggestionClick(event);"> ' +
+        ' <a href="'+primaryResult+'" class="search-suggestion"> ' +
         '   <span class="primary-suggestion">'+primaryResult+'</span> ' +
         '   <span class="secondary-suggestion">'+secondaryResult+'</span> ' +
-        ' </div> ';      
+        ' </a> ';      
     }
 
     // Activate first suggestion

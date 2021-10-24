@@ -203,10 +203,13 @@ Math.easeInOutQuad = function (t, b, c, d) {
     return -c/2 * (t*(t-2) - 1) + b;
 };
 
+// Opens the given URL in the current tab
 Util.loadUrl = function(url) {
     window.location = url;
 }
 
+// Tries to open URL in a new tab and keep focussed on current. Doesnt work in all browsers
 Util.loadUrlInNewTab = function(url) {
-    window.open(url, '_blank');
+    window.open(url, '_blank').blur();
+    window.focus();
 }
