@@ -82,11 +82,11 @@ impl<T: PartialEq> SearchResult<T> {
 }
 
 /// Merges two sorted sequences `other` and `src` and stores result into `src`. Ignores duplicates.
-fn merge_sorted_list<T: Ord>(src: &mut Vec<T>, other: Vec<T>) {
+fn merge_sorted_list<T: PartialEq>(src: &mut Vec<ResultItem<T>>, other: Vec<ResultItem<T>>) {
     // TODO: they're already sorted... make this O(n)
     src.extend(other);
     src.sort_unstable_by(|a, b| a.cmp(&b).reverse());
-    src.dedup_by(|a, b| a.eq(&b));
+    src.dedup_by(|a, b| a.item.eq(&b.item));
 }
 
 impl<T: PartialEq> IntoIterator for SearchResult<T> {

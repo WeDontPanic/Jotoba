@@ -25,6 +25,8 @@ pub struct Query {
     pub page: usize,
     pub word_index: usize,
     pub parse_japanese: bool,
+    /// Whether to use the user query only or modify it if necessary
+    pub use_original: bool,
 }
 
 /// In-cookie saved personalized settings

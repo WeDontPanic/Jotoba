@@ -287,13 +287,10 @@ impl<'a> Search<'a> {
         let mut res = search_task.find()?;
         let count = res.len();
 
-        // Do romaji search if no results were found
-        if res.is_empty() && !self.query.query.is_japanese() {
-            return self.native_results(&self.query.query.replace(" ", "").to_hiragana());
-        }
-
-        // possibly romaji search
-        if japanese::guessing::could_be_romaji(&self.query.query) {
+        if !self.query.use_original
+            && count < 50
+            && japanese::guessing::could_be_romaji(&self.query.query)
+        {
             let hg_query = self.query.query.to_hiragana();
             let native_search_task = self.native_search_task(&hg_query, &hg_query, false);
             res.merge(native_search_task.find()?);

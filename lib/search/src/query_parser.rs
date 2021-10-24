@@ -19,6 +19,7 @@ pub struct QueryParser {
     page_offset: usize,
     page: usize,
     word_index: usize,
+    use_original: bool,
 }
 
 #[derive(Deserialize, Debug, Copy, Clone, PartialEq, Hash)]
@@ -88,15 +89,26 @@ impl QueryParser {
     ) -> QueryParser {
         // Split query into the actual query and possibly available tags
         let (parsed_query, tags) = Self::partition_tags_query(&query, trim);
-        let parsed_query: String = Self::format_query(parsed_query, trim)
+        let mut parsed_query: String = Self::format_query(parsed_query, trim)
             .chars()
             .into_iter()
-            .take(80)
+            .take(200)
             .collect();
 
         // Pages start at 1. First offset has to be 0
         let page_offset = (page.saturating_sub(1)) * user_settings.items_per_page as usize;
-        println!("page_offset: {}", page_offset);
+
+        let trimmed_query = parsed_query.trim();
+        let use_original = trimmed_query.starts_with("\"")
+            && trimmed_query.ends_with("\"")
+            && trimmed_query.len() > 2;
+
+        // Remove tailing and leading parentheses
+        if use_original {
+            parsed_query = trimmed_query[1..trimmed_query.len() - 1].to_string();
+            //query.remove(0);
+            //query.remove(query.len() - 1);
+        }
 
         QueryParser {
             q_type,
@@ -107,6 +119,7 @@ impl QueryParser {
             page_offset,
             page,
             word_index,
+            use_original,
         }
     }
 
@@ -152,6 +165,7 @@ impl QueryParser {
             page: self.page,
             word_index: self.word_index,
             parse_japanese,
+            use_original: self.use_original,
         })
     }
 
