@@ -213,11 +213,3 @@ function closeAllSubSearchbarOverlays(overlayToIgnore) {
     if (overlayToIgnore !== "image")
         $('.overlay.image').addClass('hidden');
 }
-
-// Initialize Pagination Buttons
-$('.pagination-item:not(.disabled) > button').on("click", (e) => {
-    var searchValue = $('#search').val();
-    var searchType = $('#search-type').val();
-    var targetPage = $(e.target.parentNode).attr("target-page");
-    Util.loadUrl(JotoTools.createUrl(searchValue, searchType, targetPage));
-});

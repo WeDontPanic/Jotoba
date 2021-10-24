@@ -70,3 +70,13 @@ Util.awaitDocumentReady(() => {
         $('#sr')[0].scrollTop = (sentencePart.offset().top);
     }
 });
+
+// Initialize Pagination Buttons
+Util.awaitDocumentReady(() => {
+    $('.pagination-item:not(.disabled) > button').on("click", (e) => {
+        var searchValue = $('#search').val();
+        var searchType = $('#search-type').val();
+        var targetPage = $(e.target.parentNode).attr("target-page");
+        Util.loadUrl(JotoTools.createUrl(searchValue, searchType, targetPage));
+    });
+});
