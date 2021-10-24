@@ -35,12 +35,14 @@ pub enum Dialect {
 }
 
 impl Display for Dialect {
+    #[inline]
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(f, "{:?}", self)
     }
 }
 
 impl Into<&'static str> for Dialect {
+    #[inline]
     fn into(self) -> &'static str {
         match self {
             Dialect::Hokkaido => "Hokkaido",
@@ -60,10 +62,12 @@ impl Into<&'static str> for Dialect {
 }
 
 impl Translatable for Dialect {
+    #[inline]
     fn get_id(&self) -> &'static str {
-        "{} dialect"
+        (*self).into()
     }
 
+    #[inline]
     fn gettext_custom(&self, dict: &TranslationDict, language: Option<Language>) -> String {
         dict.gettext_fmt("{} dialect", &[self.gettext(dict, language)], language)
     }
