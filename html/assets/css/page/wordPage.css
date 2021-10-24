@@ -1,18 +1,3 @@
-#page-container {
-    max-width: 98.5vw;
-    padding-top: 10px;
-    padding-left: 10px;
-    padding-right: 10px;
-}
-
-.main-container {
-    width: 100%;
-    max-width: 1150px;
-    height: -webkit-max-content;
-    height: -moz-max-content;
-    height: max-content;
-}
-
 .title-div {
     text-align: center;
     text-align: -webkit-center;
@@ -56,23 +41,6 @@
     width: -webkit-max-content;
     width: -moz-max-content;
     width: max-content;
-}
-
-.main-info {
-    width: 100%;
-    height: -webkit-max-content;
-    height: -moz-max-content;
-    height: max-content;
-    padding-bottom: 10px;
-}
-
-.secondary-info {
-    height: -webkit-max-content;
-    height: -moz-max-content;
-    height: max-content;
-    width: 35%;
-    padding-bottom: 10px;
-    padding-left: 10px;
 }
 
 .entry-min-height-1 {
