@@ -1,7 +1,10 @@
 pub mod models;
 pub mod parse;
 
-use models::storage::ResourceStorage;
+use models::{
+    storage::{word::WordRetrieve, ResourceStorage},
+    words::Word,
+};
 use once_cell::sync::OnceCell;
 use std::{error::Error, path::Path};
 

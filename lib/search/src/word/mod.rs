@@ -284,14 +284,23 @@ impl<'a> Search<'a> {
         let search_task = self.gloss_search_task();
 
         // Do the search
-        let res = search_task.find()?;
+        let mut res = search_task.find()?;
         let count = res.len();
+
+        // Do romaji search if no results were found
+        if res.is_empty() && !self.query.query.is_japanese() {
+            return self.native_results(&self.query.query.replace(" ", "").to_hiragana());
+        }
 
         let mut wordresults = res.item_iter().cloned().collect::<Vec<_>>();
 
-        // Do romaji search if no results were found
-        if wordresults.is_empty() && !self.query.query.is_japanese() {
-            return self.native_results(&self.query.query.replace(" ", "").to_hiragana());
+        // possibly romaji search
+        if japanese::guessing::could_be_romaji(&self.query.query) {
+            let hg_query = self.query.query.to_hiragana();
+            let native_search_task = self.native_search_task(&hg_query, &hg_query, false);
+            let native_search_task = native_search_task.find()?;
+
+            // TODO: merge with original results properly
         }
 
         filter_languages(

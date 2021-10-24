@@ -60,6 +60,12 @@ impl<T: PartialEq> SearchResult<T> {
         self.total_items
     }
 
+    /// Returns `true` if result is empty
+    #[inline]
+    pub fn is_empty(&self) -> bool {
+        self.len() == 0
+    }
+
     /// Returns an iterator over the raw result items
     #[inline]
     pub fn item_iter(self) -> impl Iterator<Item = T> {
