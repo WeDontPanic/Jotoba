@@ -31,7 +31,7 @@ Please refer to our [Trello board](https://trello.com/b/nmG0xgaW/jotoba-roadmap)
 # Developing
 Jotoba is entirely open source. Contributions are highly welcome and can be made by anyone who wants to help Jotoba grow.<br>
 That being said, all API endpoints exposed by Jotoba are documented and allowed to be used (within a fair amount).<br>
-Refer to [API-Docs](https://jotoba.de/docs.html) for the API documentations.
+Refer to [API-Docs](https://jotoba.de/docs.html) for the API documentations and to [CONTRIBUTION](https://github.com/WeDontPanic/Jotoba/wiki/Contributing) for an introduction in how to contribute code to Jotoba.
 
 # Translations
 Jotoba is aimed to be a multi-language dictionary thus the website is aimed to be fully translated into all available languages.<br>
