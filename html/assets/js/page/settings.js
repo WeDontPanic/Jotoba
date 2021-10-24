@@ -14,7 +14,9 @@ var analyticsAttributes = null;
 /* ------------------------------------------------------------------- */
 
 // On load, get all the cookie's data
-loadCookieData();
+Util.awaitDocumentReady(() => {
+    loadCookieData();
+});
 
 // Deletes all stored cookies
 function deleteCookies(deleteAll) {
@@ -131,16 +133,14 @@ function loadCookieData() {
     }
 
     // Activate by finding the correct 
-    Util.awaitDocumentReady(() => {
-        
-        document.querySelectorAll("#search-lang-select > .choices__item--choice").forEach((e) => {
-            if (e.dataset.value == userLang) {
-                let choicesInner = e.parentElement.parentElement.parentElement.children[0].children;
-                
-                choicesInner[0].children[0].innerHTML = e.innerHTML;
-                choicesInner[1].children[0].innerHTML = e.innerHTML;
-            }
-        });
+      
+    document.querySelectorAll("#search-lang-select > .choices__item--choice").forEach((e) => {
+        if (e.dataset.value == userLang) {
+            let choicesInner = e.parentElement.parentElement.parentElement.children[0].children;
+             
+            choicesInner[0].children[0].innerHTML = e.innerHTML;
+            choicesInner[1].children[0].innerHTML = e.innerHTML;
+        }
     });
 
     // Set in cookie selected language
