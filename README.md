@@ -41,7 +41,6 @@ For a guide on how to add translations please refer to the [wiki](https://github
 
 # Selfhosting
 Please refer to the [wiki](https://github.com/WeDontPanic/Jotoba/wiki/Selfhost) for a guide on how to host Jotoba yourself.
-<br>(Currently the Wiki is a TODO!)
 
 # License
 Jotoba itself is licensed under AGPL 3.0 or later. 
