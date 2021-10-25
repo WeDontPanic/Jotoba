@@ -15,7 +15,7 @@ use std::{
 };
 
 use self::{
-    kanji::Kanji,
+    kanji::{Kanji, Radical},
     names::Name,
     storage::{RadicalStorage, ResourceStorage, SentenceStorage},
     words::Word,
@@ -28,6 +28,7 @@ pub struct DictResources {
     pub word_jlpt: HashMap<u8, Vec<u32>>,
     pub kanji: Vec<Kanji>,
     pub names: Vec<Name>,
+    pub radicals: Vec<Radical>,
 }
 
 impl DictResources {

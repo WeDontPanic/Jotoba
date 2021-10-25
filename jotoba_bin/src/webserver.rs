@@ -123,6 +123,10 @@ pub(super) async fn start() -> std::io::Result<()> {
                         actixweb::post().to(api::radical::kanji_by_radicals),
                     )
                     .route(
+                        "/radical/search",
+                        actixweb::post().to(api::radical::search::search_radical),
+                    )
+                    .route(
                         "/suggestion",
                         actixweb::post().to(api::completions::suggestion_ep),
                     )

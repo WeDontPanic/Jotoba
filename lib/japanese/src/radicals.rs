@@ -69,3 +69,22 @@ pub const RADICALS: &[(i32, &[&'static str]); 15] = &[
     (14, &["鼻", "齊"]),
     (17, &["龠"]),
 ];
+
+/// Returns true if `lit` is a radical
+#[inline]
+pub fn is_radical(lit: char) -> bool {
+    RADICALS
+        .iter()
+        .any(|i| i.1.iter().any(|j| j.chars().next().unwrap() == lit))
+}
+
+/// Returns a radical literal with its stroke count if found
+#[inline]
+pub fn get_radical(lit: char) -> Option<(char, i32)> {
+    RADICALS.iter().find_map(|i| {
+        i.1.iter().find_map(|j| {
+            let found = j.chars().next().unwrap() == lit;
+            found.then(|| (lit, i.0))
+        })
+    })
+}
