@@ -22,6 +22,7 @@ pub fn japanese_search_order(
     let mut score: usize = (relevance * 10f32) as usize;
 
     let reading = word.get_reading();
+    let kana = &word.reading.kana.reading;
 
     if reading.reading == *query_str || word.reading.kana.reading == *query_str {
         score += 50;
@@ -35,8 +36,10 @@ pub fn japanese_search_order(
     }
 
     if let Some(original_query) = original_query {
-        if original_query == reading.reading && query_str != reading.reading {
-            score += 45;
+        if (original_query == reading.reading || original_query == kana)
+            && query_str != reading.reading
+        {
+            score += 20;
         }
     }
 
