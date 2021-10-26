@@ -14,6 +14,12 @@ impl<'a> KanjiRetrieve<'a> {
         KanjiRetrieve { storage }
     }
 
+    /// Returns an iterator over all loaded kanji
+    #[inline]
+    pub fn all(&self) -> impl Iterator<Item = &Kanji> {
+        self.storage.dict_data.kanji.iter().map(|i| i.1)
+    }
+
     /// Get a kanji by its sequence id
     #[inline]
     pub fn by_literal(&self, literal: char) -> Option<&Kanji> {
