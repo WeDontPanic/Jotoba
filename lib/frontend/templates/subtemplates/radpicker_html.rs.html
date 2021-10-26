@@ -3,8 +3,11 @@
 @()
 
 @for (stroke_count, radicals) in RADICALS.iter() {
+  <!-- TODO Jojii - Improve this part -->
+  @if (stroke_count < &3i32) {
     <span class="rad-btn picker num">@stroke_count</span>
     @for radical in radicals.iter() {
       <span class="rad-btn picker" onClick="handleRadicalSelect(event)">@radical</span>
     } 
+  }
 }

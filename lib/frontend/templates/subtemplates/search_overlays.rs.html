@@ -9,24 +9,43 @@
 <div class="overlay radical noselect hidden">
     <span class="x-button noselect" onclick="toggleRadicalOverlay()">x</span>
 
-    <div class="d-flex flex-row wrap rad-results">
-        <div class="rad-result-preview">
-            <span>@data.gettext("This tool allows you to find Kanji by their core components (Radicals)")</span>
-            <br />
-            <span>@data.gettext("You can select Radicals below and add found Kanji to the search bar")</span>
-            <br />
-            <span>@data.gettext("Press") <span class="highlight">@data.gettext("Enter")</span> @data.gettext("to start searching")</span>
-        </div>
+    <div class="rad-page-toggle">
+        <span onclick="openRadicalPage(0);" class="selected">1&2</span>
+        <span onclick="openRadicalPage(1);">3</span>
+        <span onclick="openRadicalPage(2);">4</span>
+        <span onclick="openRadicalPage(3);">5</span>
+        <span onclick="openRadicalPage(4);">6</span>
+        <span onclick="openRadicalPage(5);">7</span>
+        <span onclick="openRadicalPage(6);">8</span>
+        <span onclick="openRadicalPage(7);">9</span>
+        <span onclick="openRadicalPage(8);">10</span>
+        <span onclick="openRadicalPage(9);">> 10</span>
     </div>
 
-    <br />
-
-    <span class="clickable" onclick="resetRadPicker()">
-        @data.gettext("Reset")
-    </span>
-
-    <div class="d-flex flex-row wrap rad-picker">
-        @:radpicker_html()
+    <div class="rad-kanji-wrapper">
+        <div class="rad-wrapper">
+            <span class="rad-kanji-title">Select Radicals</span>
+            <div class="d-flex flex-row wrap rad-picker">
+                @:radpicker_html()
+            </div>
+        </div>
+        <div class="kanji-wrapper">
+            <span class="rad-kanji-title">Select Kanji</span>
+            <div class="d-flex flex-row wrap rad-results">
+                <!-- Filled by JS -->
+            </div>
+        </div>
+        <div class="rad-page-footer">
+            <!-- TODO -->
+            <span style="
+                background: var(--lineColor);
+                width: 70%;
+                height: 35px;
+                position: absolute;
+                margin-top: 8px;
+                margin-left: 10px;">
+            </span>
+        </div>
     </div>
     <div id="rad-end-point"></div>
 </div>

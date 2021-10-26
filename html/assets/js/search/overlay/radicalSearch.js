@@ -79,6 +79,11 @@ function handleRadicalSelect(event) {
     getRadicalInfo();
 }
 
+// Opens the Radical Page at the given index
+function openRadicalPage(index) {
+    //TODO
+}
+
 // Loads Kanji / Radical result from API into frontend
 function loadRadicalResults(info) {
     var rrHtml = "";

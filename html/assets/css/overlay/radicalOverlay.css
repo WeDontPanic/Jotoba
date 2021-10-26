@@ -2,16 +2,7 @@
     Used by the radical picker only.
 */
 
-.rad-result-preview {
-    width: 100%;
-    text-align: center;
-    text-align: -webkit-center;
-    font-size: 19px;
-    line-height: 1.4;
-}
-
 .rad-results {
-    width: 99%;
     padding-left: 5px;
     padding-top: 10px;
     min-height: 90px;
@@ -19,21 +10,81 @@
     overflow-y: scroll;
 }
 
+.rad-page-footer {
+    height: 50px;
+    border-top: 1px solid;
+    margin-top: 10px;
+}
+
 .overlay.radical > .clickable {
     padding-left: 5px;
 }
 
-.rad-picker {
-    border: 2px;
-    border-style: solid;
-    border-radius: 5px;
-    max-height: 105vw;
-    overflow-y: scroll;
+.rad-page-toggle {
+    display: flex;
+    flex-direction: row;
+    margin-top: 10px;
+    margin-bottom: -1px;
+}
+
+.rad-page-toggle:hover {
+    cursor: pointer;
+}
+
+.rad-page-toggle > span {
+    margin-left: 5px;
+    margin-right: 5px;
+    border-bottom: 2px solid;
     border-color: var(--searchTextColor);
-    background-color: var(--overlay);
-    background-image: linear-gradient(180deg, var(--itemBG_075) 50%, transparent 50%);
-    background-repeat: repeat;
-    background-size: 100px 76px;
+    font-size: 18px;
+    /* font-family: "Overpass"; */
+    width: 45px;
+    text-align: center;
+}
+
+.rad-page-toggle span.selected {
+    color: var(--primaryColor);
+    border-color: var(--primaryColor);
+    border: 2px solid var(--searchTextColor);
+    border-bottom: unset;
+    background: var(--background);
+    border-radius: 6px 6px 0px 0px;
+}
+
+.rad-kanji-wrapper {
+    border: 2px solid var(--searchTextColor);
+    margin: 0px 5px 5px 5px;
+    border-radius: 0px 15px 15px 15px;
+    border-top: unset;
+    overflow-x: auto;
+}
+
+.rad-kanji-title {
+    font-size: 17px;
+    color: var(--searchTextColor);
+    margin: 5px;
+}
+
+.rad-wrapper {
+    /*  border: unset; */
+    border-top: 2px solid var(--searchTextColor);
+    border-radius: 0;
+    background-color: var(--background);
+}
+
+.kanji-wrapper {
+    background-color: var(--background);
+    margin-top: 10px;
+    margin-bottom: -10px;
+    border-top: 1px solid var(--searchTextColor);
+    border-top-width: 1px;
+    width: 100%;
+}
+
+.rad-picker {
+    overflow-y: scroll;
+    margin-bottom: -10px;
+    padding: 5px;
 }
 
 .rad-btn {
@@ -50,8 +101,8 @@
 }
 
 .rad-btn.picker.selected {
-    color: var(--primaryColor);
-    border-bottom: 2px solid var(--primaryColor);
+    color: var(--secondaryTextColor);
+    background-color: var(--bgPrimaryColor);
 }
 
 .rad-btn.picker.disabled {
@@ -66,10 +117,6 @@
     background-color: none;
 }
 
-.rad-btn.result {
-    background-color: var(--background);
-}
-
 .rad-btn.num {
     color: var(--secondaryTextColor);
     background: none;
@@ -80,11 +127,7 @@
     padding: 0 5px;
 }
 
-.rad-btn.result.num {
-    color: var(--primaryTextColor);
-}
-
-.rad-btn.picker.num {
+.rad-btn.num {
     background-color: var(--searchTextColor);
 } 
 
