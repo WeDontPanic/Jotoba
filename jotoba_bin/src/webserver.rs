@@ -25,17 +25,33 @@ pub(super) async fn start() -> std::io::Result<()> {
     let config = Config::new().expect("config failed");
 
     let c2 = config.clone();
-    threads.push(thread::spawn(move || load_resources(c2)));
+    threads.push(
+        thread::Builder::new()
+            .name("Resource loader".into())
+            .spawn(move || load_resources(c2)),
+    );
 
     let c2 = config.clone();
-    threads.push(thread::spawn(move || load_suggestions(c2)));
+    threads.push(
+        thread::Builder::new()
+            .name("Suggestion loader".into())
+            .spawn(move || load_suggestions(c2)),
+    );
 
     let c2 = config.clone();
-    threads.push(thread::spawn(move || load_indexes(c2)));
+    threads.push(
+        thread::Builder::new()
+            .name("Index loader".into())
+            .spawn(move || load_indexes(c2)),
+    );
 
-    threads.push(thread::spawn(move || {
-        load_tokenizer();
-    }));
+    threads.push(
+        thread::Builder::new()
+            .name("Tokenizer loader".into())
+            .spawn(move || {
+                load_tokenizer();
+            }),
+    );
 
     let locale_dict_arc = load_translations(&config);
 
@@ -58,7 +74,9 @@ pub(super) async fn start() -> std::io::Result<()> {
     clean_img_scan_dir(&config);
 
     for thr in threads {
-        thr.join().expect("Failed to join threads");
+        thr.expect("Failed to spawn thread")
+            .join()
+            .expect("Failed to join threads");
     }
 
     let address = config.server.listen_address.clone();
