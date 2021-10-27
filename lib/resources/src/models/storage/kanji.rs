@@ -1,4 +1,4 @@
-use crate::models::kanji::{Kanji, Radical};
+use crate::models::kanji::{DetailedRadical, Kanji};
 
 use super::ResourceStorage;
 use sorted_intersection::SortedIntersection;
@@ -47,7 +47,7 @@ impl<'a> KanjiRetrieve<'a> {
 
     /// Returns an iterator over all radicals
     #[inline]
-    pub fn radicals(&self) -> impl Iterator<Item = &Radical> {
+    pub fn radicals(&self) -> impl Iterator<Item = &DetailedRadical> {
         self.storage.dict_data.radicals.iter().map(|i| i.1)
     }
 

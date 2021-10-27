@@ -2,7 +2,7 @@ pub mod search_radicals;
 
 use utils::to_option;
 
-use crate::models::kanji::Radical;
+use crate::models::kanji::DetailedRadical;
 use std::{
     fs::File,
     io::{BufRead, BufReader},
@@ -10,7 +10,7 @@ use std::{
 };
 
 /// Parse a radicals file. Calls `f` for each radical in file with the parsed radical value
-pub fn parse(path: &str) -> impl Iterator<Item = Radical> {
+pub fn parse(path: &str) -> impl Iterator<Item = DetailedRadical> {
     let file = File::open(path).expect("Error opening radicals file");
     let bufr = BufReader::new(file);
 
@@ -20,7 +20,7 @@ pub fn parse(path: &str) -> impl Iterator<Item = Radical> {
 }
 
 /// Parses a single line of radical info
-pub fn parse_item(line: String) -> Option<Radical> {
+pub fn parse_item(line: String) -> Option<DetailedRadical> {
     let mut split = line.split('\t');
 
     let literal: char = split.next()?.chars().into_iter().next()?;
@@ -38,7 +38,7 @@ pub fn parse_item(line: String) -> Option<Radical> {
         .map(|i| i.trim().to_owned())
         .collect::<Vec<_>>();
 
-    Some(Radical {
+    Some(DetailedRadical {
         id,
         literal,
         alternative,
