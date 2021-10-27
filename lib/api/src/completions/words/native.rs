@@ -8,7 +8,14 @@ use super::super::*;
 /// Get suggestions for foreign search input
 pub async fn suggestions(query_str: &str) -> Option<Vec<WordPair>> {
     let start = Instant::now();
-    let items = suggest_words(query_str)?;
+
+    let mut items = suggest_words(query_str)?;
+    if items.len() <= 4 && !query_str.is_katakana() {
+        if let Some(other) = suggest_words(&romaji::RomajiExt::to_katakana(query_str)) {
+            items.extend(other);
+        }
+    }
+
     println!("suggesting took: {:?}", start.elapsed());
 
     let mut results: Vec<_> = items.into_iter().take(10).map(|i| i.0).collect();

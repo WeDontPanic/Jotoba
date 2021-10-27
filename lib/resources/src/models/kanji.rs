@@ -22,19 +22,26 @@ pub struct Kanji {
     pub on_dicts: Option<Vec<u32>>,
     pub similar_kanji: Option<Vec<char>>,
     pub meanings: Vec<String>,
-    pub radical: Radical,
+    pub radical: DetailedRadical,
     pub parts: Option<Vec<char>>,
 }
 
 /// A single radical representing structure
 #[derive(Clone, Debug, Default, PartialEq, Serialize, Deserialize)]
-pub struct Radical {
+pub struct DetailedRadical {
     pub id: u16,
     pub literal: char,
     pub alternative: Option<char>,
     pub stroke_count: u8,
     pub readings: Vec<String>,
     pub translations: Option<Vec<String>>,
+}
+
+#[derive(Clone, Serialize, Deserialize)]
+pub struct SearchRadicalInfo {
+    pub literal: char,
+    pub frequency: u16,
+    pub meanings: Vec<String>,
 }
 
 /// Represents a radical which gets used for kanji-searches

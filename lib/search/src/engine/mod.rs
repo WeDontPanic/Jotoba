@@ -2,6 +2,7 @@ pub mod document;
 pub mod guess;
 pub mod metadata;
 pub mod names;
+pub mod radical;
 pub mod result;
 pub mod result_item;
 pub mod search_task;
@@ -46,6 +47,11 @@ pub fn load_indexes(config: &Config) -> Result<(), Box<dyn std::error::Error>> {
     let config1 = config.clone();
     joins.push(thread::spawn(move || {
         sentences::native::index::load(&config1);
+    }));
+
+    let config1 = config.clone();
+    joins.push(thread::spawn(move || {
+        radical::index::load(&config1).expect("Failed to load radical index");
     }));
 
     let config1 = config.clone();

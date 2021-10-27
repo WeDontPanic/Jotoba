@@ -17,7 +17,7 @@ use self::{
     word::WordRetrieve,
 };
 use super::{
-    kanji::{Kanji, Radical},
+    kanji::{DetailedRadical, Kanji},
     names::Name,
     sentences::Sentence,
     suggestions::{foreign_words::ForeignSuggestion, native_words::NativeSuggestion},
@@ -51,7 +51,7 @@ pub struct DictionaryData {
     kanji: KanjiStorage,
     rad_map: RadicalStorage,
     sentences: SentenceStorage,
-    radicals: HashMap<char, Radical>,
+    radicals: HashMap<char, DetailedRadical>,
 }
 
 #[derive(Default)]
@@ -69,7 +69,7 @@ impl DictionaryData {
         kanji: KanjiStorage,
         rad_map: RadicalStorage,
         sentences: SentenceStorage,
-        radicals: HashMap<char, Radical>,
+        radicals: HashMap<char, DetailedRadical>,
     ) -> Self {
         Self {
             words,
@@ -226,6 +226,6 @@ fn build_kanji(kanji: Vec<Kanji>) -> KanjiStorage {
 }
 
 #[inline]
-fn build_radicals(radicals: Vec<Radical>) -> HashMap<char, Radical> {
+fn build_radicals(radicals: Vec<DetailedRadical>) -> HashMap<char, DetailedRadical> {
     radicals.into_iter().map(|i| (i.literal, i)).collect()
 }
