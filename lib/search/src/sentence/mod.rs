@@ -49,7 +49,7 @@ fn foreign_search(query: &Query) -> SearchTask<foreign::Engine> {
     }
 
     lang_filter(query, &mut search_task);
-    sort_fn(query, &mut search_task);
+    sort_fn(query, &mut search_task, false);
 
     search_task
 }
@@ -61,18 +61,26 @@ fn jp_search(query: &Query) -> SearchTask<native::Engine> {
         .threshold(0.0);
 
     lang_filter(query, &mut search_task);
-    sort_fn(query, &mut search_task);
+    sort_fn(query, &mut search_task, true);
 
     search_task
 }
 
-fn sort_fn<T: SearchEngine<Output = Sentence>>(query: &Query, search_task: &mut SearchTask<T>) {
+fn sort_fn<T: SearchEngine<Output = Sentence>>(
+    query: &Query,
+    search_task: &mut SearchTask<T>,
+    japanese: bool,
+) {
     let query = query.clone();
     search_task.set_order_fn(move |sentence, relevance, _, _| {
         let mut rel = (relevance * 1000f32) as usize;
 
         if sentence.has_translation(query.settings.user_lang) {
             rel += 60;
+        }
+
+        if japanese && sentence.japanese.contains(&query.query) {
+            rel += 140;
         }
 
         rel
