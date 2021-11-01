@@ -4,6 +4,8 @@
 
 var shiftPressed = false;
 
+
+
 // Prevent random dragging of <a> elements
 $('a').mousedown((event) => {
     event.preventDefault();
@@ -188,31 +190,30 @@ $(document).ready(() => {
     }
 });
 
-// Iterate all audio Btns on the page (if any) and enable their audio feature
-$('.audioBtn').each((e, i) => {
-    let audioParent = $(i);
+// Wait for the Document to load completely
+Util.awaitDocumentReady(() => {
 
-    audioParent.click((e) => {
-        let audio = $(e.target).children()[0];
-        audio.play();
+    // Iterate all audio Btns on the page (if any) and enable their audio feature
+    $('.audioBtn').each((e, i) => {
+        let audioParent = $(i);
+
+        audioParent.click((e) => {
+            let audio = $(e.target).children()[0];
+            audio.play();
+        });
     });
 
+    // Allow right-click on "Play audio" buttons to copy the proper asset-url
+    $(".audioBtn").contextmenu((event) => {
+        event.preventDefault();
+        var url = window.location.origin + $(event.target).attr('data');
+        Util.copyToClipboard(url);
+        Util.showMessage("success", "Audio URL copied to clipboard");
+        });
+
+    // Disables the dropdown's animation until the first onclick event
+    $(".input-field.first-wrap").one("click", (event) => {
+        $('.choices__list.choices__list--dropdown.index').addClass('animate');
+    })
+
 });
-
-// Allow right-click on "Play audio" buttons to copy the proper asset-url
-$(".audioBtn").contextmenu((event) => {
-  event.preventDefault();
-  var url = window.location.origin + $(event.target).attr('data');
-  Util.copyToClipboard(url);
-  Util.showMessage("success", "Audio URL copied to clipboard");
-});
-
-// Disables the dropdown's animation until the first onclick event
-$(".input-field.first-wrap").one("click", (event) => {
-    $('.choices__list.choices__list--dropdown.index').addClass('animate');
-})
-
-// Does this % thingy but only within signed value range: mod(-6,4) == 2 instead of -2
-function mod(n, m) {
-  return ((n % m) + m) % m;
-}
