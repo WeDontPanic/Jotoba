@@ -24,11 +24,16 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct DictResources {
+    // words
     pub words: Vec<Word>,
     pub word_jlpt: HashMap<u8, Vec<u32>>,
+    // kanji
     pub kanji: Vec<Kanji>,
     pub kanji_genki: HashMap<u8, Vec<char>>,
+    pub kanji_jlpt: HashMap<u8, Vec<char>>,
+    // names
     pub names: Vec<Name>,
+    // radicals
     pub radicals: Vec<DetailedRadical>,
 }
 

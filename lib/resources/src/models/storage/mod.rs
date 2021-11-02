@@ -61,6 +61,7 @@ pub struct WordData {
 pub struct KanjiData {
     kanji: KanjiStorage,
     genki_levels: HashMap<u8, Vec<char>>,
+    jlpt_data: HashMap<u8, Vec<char>>,
 }
 
 /// Contains sentences and jlpt levels for the dictionary.
@@ -151,6 +152,7 @@ impl ResourceStorage {
         let kanji_data = KanjiData {
             kanji,
             genki_levels: resources.kanji_genki,
+            jlpt_data: resources.kanji_jlpt,
         };
 
         let dict_data =

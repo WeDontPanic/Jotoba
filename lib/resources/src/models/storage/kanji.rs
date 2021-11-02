@@ -45,6 +45,12 @@ impl<'a> KanjiRetrieve<'a> {
             .collect::<Vec<_>>()
     }
 
+    /// Returns all kanji with given jlpt level
+    #[inline]
+    pub fn by_jlpt(&self, jlpt: u8) -> Option<&Vec<char>> {
+        self.storage.dict_data.kanji.jlpt_data.get(&jlpt)
+    }
+
     /// Returns an iterator over all radicals
     #[inline]
     pub fn radicals(&self) -> impl Iterator<Item = &DetailedRadical> {

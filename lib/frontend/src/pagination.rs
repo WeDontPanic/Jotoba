@@ -9,6 +9,7 @@ pub struct Pagination {
     pub curr_page: u32,
     pub items: u32,
     pub items_per_page: u32,
+    // TODO: Add a way to change the max amout of pages
 }
 
 impl Pagination {
