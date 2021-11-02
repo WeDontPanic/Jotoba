@@ -3,6 +3,8 @@ use std::{
     str::FromStr,
 };
 
+use crate::query_parser;
+
 use super::query_parser::QueryType;
 
 use itertools::Itertools;
@@ -37,7 +39,8 @@ pub struct UserSettings {
     pub show_english: bool,
     pub english_on_top: bool,
     pub cookies_enabled: bool,
-    pub items_per_page: u32,
+    pub page_size: u32,
+    pub kanji_page_size: u32,
 }
 
 impl PartialEq for UserSettings {
@@ -64,7 +67,8 @@ impl Default for UserSettings {
             page_lang: localization::language::Language::default(),
             english_on_top: false,
             cookies_enabled: false,
-            items_per_page: 10,
+            page_size: 10,
+            kanji_page_size: 4,
         }
     }
 }
@@ -315,6 +319,10 @@ impl Query {
     #[inline]
     pub fn get_misc_tags(&self) -> impl Iterator<Item = &Misc> + '_ {
         self.tags.iter().filter_map(|i| i.as_misc())
+    }
+
+    pub fn page_offset(&self, page_size: usize) -> usize {
+        query_parser::calc_page_offset(self.page, page_size)
     }
 
     /// Returns the original_query with search type tags omitted

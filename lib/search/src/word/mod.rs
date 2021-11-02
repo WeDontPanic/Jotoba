@@ -184,7 +184,7 @@ impl<'a> Search<'a> {
         sentence: bool,
     ) -> SearchTask<'b, native::Engine> {
         let mut search_task: SearchTask<native::Engine> = SearchTask::new(&query)
-            .limit(self.query.settings.items_per_page as usize)
+            .limit(self.query.settings.page_size as usize)
             .offset(self.query.page_offset)
             .threshold(0.04f32);
 
@@ -250,7 +250,7 @@ impl<'a> Search<'a> {
     fn gloss_search_task(&self) -> SearchTask<foreign::Engine> {
         let mut search_task: SearchTask<foreign::Engine> =
             SearchTask::with_language(&self.query.query, self.query.settings.user_lang)
-                .limit(self.query.settings.items_per_page as usize)
+                .limit(self.query.settings.page_size as usize)
                 .offset(self.query.page_offset)
                 .threshold(0.3f32);
 

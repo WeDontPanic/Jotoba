@@ -43,7 +43,7 @@ fn jlpt_search(query: &Query, jlpt: u8) -> Result<SentenceResult, Error> {
     let sentences = senences
         .into_iter()
         .skip(query.page_offset)
-        .take(query.settings.items_per_page as usize)
+        .take(query.settings.page_size as usize)
         .filter_map(|i| super::map_sentence_to_item(i, query.settings.user_lang, query))
         .collect::<Vec<_>>();
 

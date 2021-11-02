@@ -49,7 +49,7 @@ fn jlpt_search(search: &Search<'_>, jlpt: u8) -> Result<ResultData, Error> {
     let wordresults = wordresults
         .into_iter()
         .skip(search.query.page_offset)
-        .take(search.query.settings.items_per_page as usize)
+        .take(search.query.settings.page_size as usize)
         .collect();
 
     Ok(ResultData {

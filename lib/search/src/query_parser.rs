@@ -96,7 +96,8 @@ impl QueryParser {
             .collect();
 
         // Pages start at 1. First offset has to be 0
-        let page_offset = (page.saturating_sub(1)) * user_settings.items_per_page as usize;
+        //let page_offset = (page.saturating_sub(1)) * user_settings.items_per_page as usize;
+        let page_offset = calc_page_offset(page as usize, user_settings.page_size as usize);
 
         let trimmed_query = parsed_query.trim();
         let use_original = trimmed_query.starts_with("\"")
@@ -287,4 +288,8 @@ pub fn parse_language(query: &str) -> QueryLang {
 #[inline]
 pub fn format_kanji_reading(s: &str) -> String {
     s.replace('.', "").replace('-', "").replace(' ', "")
+}
+
+pub fn calc_page_offset(page: usize, page_size: usize) -> usize {
+    page.saturating_sub(1) * page_size
 }

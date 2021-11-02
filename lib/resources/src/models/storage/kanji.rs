@@ -52,6 +52,7 @@ impl<'a> KanjiRetrieve<'a> {
     }
 
     /// Returns a list of kanji taught in given genki_lesson
+    #[inline]
     pub fn by_genki_lesson(&self, genki_lektion: u8) -> Option<&Vec<char>> {
         self.storage
             .dict_data

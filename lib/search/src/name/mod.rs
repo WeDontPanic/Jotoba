@@ -37,14 +37,14 @@ fn japanese_search(query: &Query) -> SearchTask<native::Engine> {
     SearchTask::<native::Engine>::new(&query.query)
         .threshold(0.05f32)
         .offset(query.page_offset)
-        .limit(query.settings.items_per_page as usize)
+        .limit(query.settings.page_size as usize)
 }
 
 fn foreign_search(query: &Query) -> SearchTask<foreign::Engine> {
     SearchTask::<foreign::Engine>::new(&query.query)
         .threshold(0.05f32)
         .offset(query.page_offset)
-        .limit(query.settings.items_per_page as usize)
+        .limit(query.settings.page_size as usize)
 }
 
 fn handle_search<T: SearchEngine<Output = Name>>(task: SearchTask<T>) -> Result<NameResult, Error> {
@@ -57,7 +57,7 @@ fn search_kanji(query: &Query) -> Result<NameResult, Error> {
 
     let query_str = kanji_reading.literal.to_string();
     let mut task = SearchTask::<native::Engine>::new(&query_str)
-        .limit(query.settings.items_per_page as usize)
+        .limit(query.settings.page_size as usize)
         .offset(query.page_offset);
 
     let literal = kanji_reading.literal;

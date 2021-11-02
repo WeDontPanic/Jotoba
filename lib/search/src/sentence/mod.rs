@@ -40,7 +40,7 @@ fn normal_search(query: &Query) -> Result<SentenceResult, Error> {
 fn foreign_search(query: &Query) -> SearchTask<foreign::Engine> {
     let mut search_task =
         SearchTask::<foreign::Engine>::with_language(&query.query, query.settings.user_lang)
-            .limit(query.settings.items_per_page as usize)
+            .limit(query.settings.page_size as usize)
             .offset(query.page_offset)
             .threshold(0.0);
 
@@ -56,7 +56,7 @@ fn foreign_search(query: &Query) -> SearchTask<foreign::Engine> {
 
 fn jp_search(query: &Query) -> SearchTask<native::Engine> {
     let mut search_task = SearchTask::<native::Engine>::new(&query.query)
-        .limit(query.settings.items_per_page as usize)
+        .limit(query.settings.page_size as usize)
         .offset(query.page_offset)
         .threshold(0.0);
 
