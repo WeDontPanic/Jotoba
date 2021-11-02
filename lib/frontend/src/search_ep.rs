@@ -112,6 +112,7 @@ async fn kanji_search<'a>(base_data: &mut BaseData<'a>, query: &'a Query) -> SRe
         result.total_items as u32,
         query.page as u32,
         query.settings.kanji_page_size,
+        400,
     );
     Ok(ResultData::KanjiInfo(result.items))
 }

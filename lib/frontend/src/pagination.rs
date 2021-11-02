@@ -9,16 +9,14 @@ pub struct Pagination {
     pub curr_page: u32,
     pub items: u32,
     pub items_per_page: u32,
-    // TODO: Add a way to change the max amout of pages
+    pub max_pages: u32,
 }
 
 impl Pagination {
     /// Returns the number of the last page
     #[inline]
     pub fn get_last(&self) -> u32 {
-        let last = (self.items as f32 / self.items_per_page as f32).ceil() as u32;
-        // Max 100 pages
-        min(last, 100)
+        ((self.items as f32 / self.items_per_page as f32).ceil() as u32).min(self.max_pages)
     }
 
     /// Returns `true` if the current page is the first page

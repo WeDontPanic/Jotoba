@@ -120,11 +120,18 @@ impl<'a> BaseData<'a> {
     }
 
     #[inline]
-    pub fn with_cust_pages(&mut self, items: u32, curr_page: u32, items_per_page: u32) {
+    pub fn with_cust_pages(
+        &mut self,
+        items: u32,
+        curr_page: u32,
+        items_per_page: u32,
+        max_pages: u32,
+    ) {
         let mut pagination = Pagination {
             items,
             curr_page,
             items_per_page,
+            max_pages,
         };
 
         // Don't show paginator if there is only one or no page
@@ -141,7 +148,7 @@ impl<'a> BaseData<'a> {
 
     #[inline]
     pub fn with_pages(&mut self, items: u32, curr_page: u32) {
-        self.with_cust_pages(items, curr_page, self.user_settings.page_size);
+        self.with_cust_pages(items, curr_page, self.user_settings.page_size, 100);
     }
 
     #[inline]
