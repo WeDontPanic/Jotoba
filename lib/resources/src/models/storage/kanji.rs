@@ -17,13 +17,13 @@ impl<'a> KanjiRetrieve<'a> {
     /// Returns an iterator over all loaded kanji
     #[inline]
     pub fn all(&self) -> impl Iterator<Item = &Kanji> {
-        self.storage.dict_data.kanji.iter().map(|i| i.1)
+        self.storage.dict_data.kanji.kanji.iter().map(|i| i.1)
     }
 
     /// Get a kanji by its sequence id
     #[inline]
     pub fn by_literal(&self, literal: char) -> Option<&Kanji> {
-        self.storage.dict_data.kanji.get(&literal)
+        self.storage.dict_data.kanji.kanji.get(&literal)
     }
 
     /// Returns all kanji with the given radicals
@@ -51,8 +51,17 @@ impl<'a> KanjiRetrieve<'a> {
         self.storage.dict_data.radicals.iter().map(|i| i.1)
     }
 
+    /// Returns a list of kanji taught in given genki_lesson
+    pub fn by_genki_lesson(&self, genki_lektion: u8) -> Option<&Vec<char>> {
+        self.storage
+            .dict_data
+            .kanji
+            .genki_levels
+            .get(&genki_lektion)
+    }
+
     #[inline]
     pub fn iter(&self) -> impl Iterator<Item = &Kanji> {
-        self.storage.dict_data.kanji.iter().map(|i| i.1)
+        self.storage.dict_data.kanji.kanji.iter().map(|i| i.1)
     }
 }

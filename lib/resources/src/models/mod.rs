@@ -27,6 +27,7 @@ pub struct DictResources {
     pub words: Vec<Word>,
     pub word_jlpt: HashMap<u8, Vec<u32>>,
     pub kanji: Vec<Kanji>,
+    pub kanji_genki: HashMap<u8, Vec<char>>,
     pub names: Vec<Name>,
     pub radicals: Vec<DetailedRadical>,
 }

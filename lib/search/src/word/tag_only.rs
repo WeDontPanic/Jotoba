@@ -7,15 +7,13 @@ use crate::query::Tag;
 use super::{ResultData, Search};
 
 pub(super) fn search(search: &Search<'_>) -> Result<ResultData, Error> {
-    let filter_tag = search
-        .query
-        .tags
-        .iter()
-        .find(|i| i.is_empty_allowed())
-        // We expect to find one since this function should only be called if there is one
-        .ok_or(Error::Unexpected)?;
+    let filter_tag = search.query.tags.iter().find(|i| i.is_empty_allowed());
 
-    match filter_tag {
+    if filter_tag.is_none() {
+        return Ok(ResultData::default());
+    }
+
+    match filter_tag.unwrap() {
         Tag::Jlpt(jlpt) => return jlpt_search(search, *jlpt),
         _ => return Err(Error::Unexpected),
     }

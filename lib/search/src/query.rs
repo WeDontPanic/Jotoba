@@ -76,6 +76,7 @@ pub enum Tag {
     PartOfSpeech(PosSimple),
     Misc(Misc),
     Jlpt(u8),
+    GenkiLesson(u8),
 }
 
 /// Hashtag based search tags
@@ -125,6 +126,14 @@ impl Form {
     pub fn is_kanji_reading(&self) -> bool {
         matches!(self, Self::KanjiReading(..))
     }
+
+    /// Returns `true` if the form is [`TagOnly`].
+    ///
+    /// [`TagOnly`]: Form::TagOnly
+    #[inline]
+    pub fn is_tag_only(&self) -> bool {
+        matches!(self, Self::TagOnly)
+    }
 }
 
 impl Default for Form {
@@ -145,7 +154,9 @@ impl Tag {
     /// Parse a tag from a string
     pub fn parse_from_str(s: &str) -> Option<Tag> {
         #[allow(irrefutable_let_patterns)]
-        if let Some(tag) = Self::parse_jlpt_tag(s) {
+        if let Some(tag) = Self::parse_genki_tag(s) {
+            return Some(tag);
+        } else if let Some(tag) = Self::parse_jlpt_tag(s) {
             return Some(tag);
         } else if let Some(tag) = Self::parse_search_type(s) {
             return Some(tag);
@@ -167,6 +178,17 @@ impl Tag {
         (nr > 0 && nr < 6).then(|| Tag::Jlpt(nr))
     }
 
+    /// Returns `Some(u8)` if `s` is a valid genki-tag
+    fn parse_genki_tag(s: &str) -> Option<Tag> {
+        let e = s.trim().strip_prefix("#")?.trim().to_lowercase();
+        if !e.starts_with("genki") {
+            return None;
+        }
+
+        let nr: u8 = s[6..].parse().ok()?;
+        (nr >= 3 && nr <= 23).then(|| Tag::GenkiLesson(nr))
+    }
+
     /// Parse only search type
     fn parse_search_type(s: &str) -> Option<Tag> {
         Some(match s[1..].to_lowercase().as_str() {
@@ -180,8 +202,9 @@ impl Tag {
     }
 
     /// Returns true if the tag is allowed to be used without a query
+    #[inline]
     pub fn is_empty_allowed(&self) -> bool {
-        self.is_jlpt()
+        self.is_jlpt() || self.is_genki_lesson()
     }
 
     /// Returns `true` if the tag is [`SearchType`].
@@ -242,6 +265,21 @@ impl Tag {
     #[inline]
     pub fn as_jlpt(&self) -> Option<&u8> {
         if let Self::Jlpt(v) = self {
+            Some(v)
+        } else {
+            None
+        }
+    }
+
+    /// Returns `true` if the tag is [`GenkiLesson`].
+    ///
+    /// [`GenkiLesson`]: Tag::GenkiLesson
+    pub fn is_genki_lesson(&self) -> bool {
+        matches!(self, Self::GenkiLesson(..))
+    }
+
+    pub fn as_genki_lesson(&self) -> Option<&u8> {
+        if let Self::GenkiLesson(v) = self {
             Some(v)
         } else {
             None
@@ -308,5 +346,11 @@ mod test {
     #[test]
     fn test_parse_jlpt_tag_parsing() {
         assert_eq!(Tag::parse_jlpt_tag("#n4"), Some(Tag::Jlpt(4)));
+    }
+
+    #[test]
+    fn test_parse_genki_tag_parsing() {
+        assert_eq!(Tag::parse_genki_tag("#genki3"), Some(Tag::GenkiLesson(3)));
+        assert_eq!(Tag::parse_genki_tag("#genki23"), Some(Tag::GenkiLesson(23)));
     }
 }

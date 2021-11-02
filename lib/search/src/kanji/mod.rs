@@ -1,5 +1,6 @@
 mod order;
 pub mod result;
+mod tag_only;
 
 use itertools::Itertools;
 use resources::models::kanji::Kanji;
@@ -21,6 +22,10 @@ use super::query::Query;
 
 /// The entry of a kanji search
 pub fn search(query: &Query) -> Result<Vec<Item>, Error> {
+    if query.form.is_tag_only() {
+        return tag_only::search(query);
+    }
+
     let query_str = format_query(&query.query);
 
     let res;
@@ -59,7 +64,7 @@ fn by_literals(query: &str) -> Vec<Kanji> {
         .filter(|i| i.item.reading.kana.reading == query)
         .map(|i| i.item.get_reading().reading.chars().collect::<Vec<_>>())
         .flatten()
-        .take(8)
+        .take(100)
         .unique()
         .join("");
 
@@ -74,7 +79,7 @@ fn all_kanji_from_text(text: &str) -> Vec<Kanji> {
         .filter(|i| i.is_kanji())
         .filter_map(|literal| kanji_storage.by_literal(literal))
         .cloned()
-        .take(15)
+        .take(100)
         .collect()
 }
 
