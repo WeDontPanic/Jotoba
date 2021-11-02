@@ -105,9 +105,9 @@ function uploadCroppedImage(dataUrl) {
                 $("#loading-screen").toggleClass("show", false);
             } else {
                 if (response.text.length == 1 && response.text.match(kanjiRegEx)) {
-                    Util.loadUrl(JotoTools.createUrl(response.Text, 1));
+                    Util.loadUrl(JotoTools.createUrl(response.text, 1));
                 } else {
-                    Util.loadUrl(JotoTools.createUrl(response.Text));
+                    Util.loadUrl(JotoTools.createUrl(response.text));
                 }
             }
         });
