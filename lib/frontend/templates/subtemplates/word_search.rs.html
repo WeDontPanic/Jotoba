@@ -1,4 +1,5 @@
 @use search::word::result::{Item, WordResult, selected};
+@use resources::parse::jmdict::languages::Language;
 @use search::query::Query;
 @use super::search_help;
 @use crate::BaseData;
@@ -214,11 +215,13 @@
                     <li disabled class="mdl-menu__item dot-menu" style="height: 10px;"><hr style="margin: 0px; margin-top: 5px;"></li>
                   }
 
-                  <li class="info-entry noselect" class="mdl-menu__item">
-                    <div class="sentenceSvg"></div>
-                    <div class="info-dropdown-vl"></div>
-                    <span class="info-dropdown-txt"><a class="no-highlight" draggable="false" href="/search/@word.get_reading().reading?t=2">@data.gettext("Sentence search")</a></span> 
-                  </li>
+                  @if word.has_sentence(data.user_settings.user_lang) || (data.user_settings.show_english && word.has_sentence(Language::English)) {
+                    <li class="info-entry noselect" class="mdl-menu__item">
+                      <div class="sentenceSvg"></div>
+                      <div class="info-dropdown-vl"></div>
+                      <span class="info-dropdown-txt"><a class="no-highlight" draggable="false" href="/search/@word.get_reading().reading?t=2">@data.gettext("Sentence search")</a></span> 
+                    </li>
+                  }
 
                   @if let Some(audio) = word.audio_file() {
                     <li disabled class="mdl-menu__item" style="height: 10px;"><hr style="margin: 0px; margin-top: 5px;"></li>
