@@ -20,6 +20,10 @@
     padding-left: 5px;
 }
 
+.overlay.radical > .x-button {
+    margin: 1px 5px 5px 5px;
+}
+
 .rad-page-toggle {
     display: flex;
     flex-direction: row;
@@ -42,6 +46,10 @@
     text-align: center;
 }
 
+.rad-page-toggle > span:first-child {
+    margin-left: 20px;
+}
+
 .rad-page-toggle span.selected {
     color: var(--primaryColor);
     border-color: var(--primaryColor);
@@ -53,9 +61,8 @@
 
 .rad-kanji-wrapper {
     border: 2px solid var(--searchTextColor);
-    margin: 0px 5px 5px 5px;
-    border-radius: 0px 15px 15px 15px;
-    border-top: unset;
+    margin: -2px;
+    border-radius: 15px;
     overflow-x: auto;
 }
 
@@ -66,9 +73,6 @@
 }
 
 .rad-wrapper {
-    /*  border: unset; */
-    border-top: 2px solid var(--searchTextColor);
-    border-radius: 0;
     background-color: var(--background);
 }
 
@@ -103,6 +107,7 @@
 .rad-btn.picker.selected {
     color: var(--secondaryTextColor);
     background-color: var(--bgPrimaryColor);
+    border-radius: 5px;
 }
 
 .rad-btn.picker.disabled {
@@ -135,6 +140,47 @@
     cursor: pointer;
 }
 
+.kanji-search-wrapper > .searchSvg{
+    display: inline-block;
+    margin: 13px 0px 0px 18px;
+    width: 20px;
+    height: 20px;
+    background-color: var(--tagColor);
+}
+
+.kanji-search-wrapper > .btn-search{
+    position: absolute;
+    height: 30px;
+    width: 100px;
+    right: 20px;
+    margin-top: -29px;
+}
+
+#kanji-search {
+    border: none;
+    border-bottom: 2px solid var(--backgroundShadow);
+    color: var(--searchTextColor);
+    position: absolute;
+    padding-left: 40px;
+    margin-top: 8px;
+    margin-left: 10px;
+    height: 35px;
+    width: 70%;
+    max-width: calc(100% - 175px);
+}
+
+.undoSvg {
+    position: absolute;
+    scale: 1.2;
+    left: calc(70% + 20px);
+    margin-top: 18px;
+}
+
+#kanji-search:focus-visible, #kanji-search:focus {
+    outline: unset;
+    border-bottom: 2px solid var(--tagColor);
+}
+
 /* ---------- Scrollbar changes ---------- */
 
 /* Firefox */
@@ -145,4 +191,37 @@
 /* Literally everyone else */
 .rad-results::-webkit-scrollbar, .rad-picker::-webkit-scrollbar {
     width: 0px;
+}
+
+/* Mobile Adjustments */
+@media only screen and (max-width: 600px) {
+
+    .rad-picker {
+        height: 25vh;
+    }
+    
+    .rad-results {
+        max-height: 20vh !important;
+    }
+
+    .rad-page-toggle {
+        height: 30px;
+    }
+
+    .rad-page-toggle > span:first-child {
+        margin-left: 10px;
+        width: 12%;
+    }
+
+    .rad-page-toggle > span:not(:first-child) {
+        width: max-content;
+        padding: 0px 2px 0px 2px;
+    }
+
+    .undoSvg {
+        scale: 1;
+        right: 132px;
+        left: unset;
+        margin-top: 16px;
+    }
 }

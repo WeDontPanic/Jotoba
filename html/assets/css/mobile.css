@@ -396,7 +396,7 @@
     }
     
     .rad-btn {
-        width: 11.9%;
+        width: calc(100% / 9 + 8px);
     }
 
     .rad-picker-icon {
@@ -504,11 +504,6 @@
     /* Radical Picker */
     .rad-result-preview {
         display: none;
-    }
-
-    .rad-results {
-        min-height: 80px;
-        max-height: 80px;
     }
 
     .mobile-nav-btn:focus, .mobile-nav-inner-btn:focus {

@@ -24,27 +24,29 @@
 
     <div class="rad-kanji-wrapper">
         <div class="rad-wrapper">
-            <span class="rad-kanji-title">Select Radicals</span>
+            <span class="rad-kanji-title">@data.gettext("Select Radicals")</span>
             <div class="d-flex flex-row wrap rad-picker">
                 @:radpicker_html()
             </div>
         </div>
         <div class="kanji-wrapper">
-            <span class="rad-kanji-title">Select Kanji</span>
+            <span class="rad-kanji-title">@data.gettext("Select Kanji")</span>
             <div class="d-flex flex-row wrap rad-results">
                 <!-- Filled by JS -->
             </div>
         </div>
         <div class="rad-page-footer">
-            <!-- TODO -->
-            <span style="
-                background: var(--lineColor);
-                width: 70%;
-                height: 35px;
-                position: absolute;
-                margin-top: 8px;
-                margin-left: 10px;">
-            </span>
+            <div class="kanji-search-wrapper">
+                <input type="text" id="kanji-search" name="kanjiSearch" placeholder='@data.gettext("Search Kanji...")'>
+                <span class="searchSvg"></span>
+                <span class="undoSvg" onclick="resetRadPicker()"></span>
+                <button onclick="onSearchStart()" class="btn-search">
+                    <div class="flex-center">
+                       <div>@data.gettext("Search")</div>
+                       <div class="searchSvg index"></div>
+                    </div>
+                 </button>
+            </div>
         </div>
     </div>
     <div id="rad-end-point"></div>
@@ -79,7 +81,6 @@
    <span class="x-button noselect" onclick="toggleImageSearchOverlay()">x</span>
    <div class="d-flex flex-column">
        <span>@data.gettext("Enter a URL or upload your image directly and Jotoba will try to search for japanese words contained in the picture.")</span>
-       <br />
        <div class="d-flex flex-row image-upload-parent">
             <input id="imgUploadUrl" name="image-search" class="image-search-input" type="text" value="" placeholder='@data.gettext("Enter Image URL...")' tabindex="1" autocapitalize="off" autocomplete="off" data-autoload="false" data-effective-keyword="">
             <input id="imgUploadFile" type="file" class="image-search-upload" accept=".png,.jpg,.jpeg" onchange="imgSearchFileSelected()">

@@ -19,7 +19,29 @@ const radicals = [
     ["龠"]
 ];
 
+var radicalMask = [
+    [0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0],
+    [0, 0, 0, 0],
+    [0, 0],
+    [0]
+];
+
 const baseRadResult = $('.rad-results')[0].innerHTML;
+
+Util.awaitDocumentReady(() => {
+    loadRadicals(0);
+});
 
 function toggleRadicalOverlay() {
     closeAllSubSearchbarOverlays("radical");
@@ -69,6 +91,14 @@ function handleRadicalSelect(event) {
         return;
     }
 
+    // Update Radical Map
+    if (target.hasClass("selected")) {
+        radicalMask[target.attr("index")][target.attr("position")] = 0;
+    } else {
+        radicalMask[target.attr("index")][target.attr("position")] = 1;
+    }
+        
+
     // Make results visible again if they were hidden
     $('.rad-results').removeClass("hidden");
 
@@ -81,7 +111,51 @@ function handleRadicalSelect(event) {
 
 // Opens the Radical Page at the given index
 function openRadicalPage(index) {
-    //TODO
+    $(".rad-page-toggle > span").each((i, e) => {
+        if (i == index)
+            e.classList.add("selected");
+        else
+            e.classList.remove("selected");
+    });
+
+    loadRadicals(index);
+}
+
+// Loads the Radicals of the specific tab
+function loadRadicals(tabIndex) {
+    // Clear Radicals
+    $(".rad-btn.picker:not(.num)").each((i, e) => {
+        if (e.classList.contains("selected")) {
+            radicalMask[e.getAttribute("index")][e.getAttribute("position")] = 1;
+        }
+    });
+    $(".rad-picker").html("");
+
+    // Add Radicals
+    if (tabIndex == 0) {
+        addRadicals(0);
+        addRadicals(1);
+    }
+    else if (tabIndex == 9) {
+        for (let i = 10; i < radicals.length; i++) {
+            addRadicals(i);
+        }
+    }
+    else {
+        addRadicals(tabIndex+1);
+    }
+}
+
+// Loads the given Array into the Select Radicals Tab
+function addRadicals(arrayIndex) {
+    let html = $(".rad-picker").html();
+    html += '<span class="rad-btn picker num">'+(arrayIndex+1)+'</span>';
+
+    for (let i = 0; i < radicals[arrayIndex].length; i++) {
+        html += '<span class="rad-btn picker'+(radicalMask[arrayIndex][i] == 1 ? " selected" : "")+(radicalMask[arrayIndex][i] == -1 ? " disabled" : "")+'" index='+arrayIndex+' position='+i+' onClick="handleRadicalSelect(event)">'+radicals[arrayIndex][i]+'</span>';
+    }
+
+    $(".rad-picker").html(html);
 }
 
 // Loads Kanji / Radical result from API into frontend
@@ -115,9 +189,9 @@ function loadRadicalResults(info) {
     $('.rad-results').html(rrHtml);
 
     // Only activate possible radicals
-    let radicals = $('.rad-btn.picker:not(.num)').toArray();
-    for (let i = 0; i < radicals.length; i++) {
-        let rad = $(radicals[i]);
+    let currentRadicals = $('.rad-btn.picker:not(.num)').toArray();
+    for (let i = 0; i < currentRadicals.length; i++) {
+        let rad = $(currentRadicals[i]);
         if (info.possible_radicals.includes(rad.html()) || rad.hasClass("selected")) {
             rad.removeClass("disabled");
         } else {
@@ -125,6 +199,16 @@ function loadRadicalResults(info) {
         }
     }
 
+    // Apply changes to mask
+    for (let i = 0; i < radicals.length; i++) {
+        for (let j = 0; j < radicals[i].length; j++) {
+            if (!info.possible_radicals.includes(radicals[i][j])) {
+                radicalMask[i][j] = -1;
+            } else if (radicalMask[i][j] == -1) {
+                radicalMask[i][j] = 0;
+            }
+        }
+    }
 }
 
 // Calls the API to get all kanji and radicals that are still possible
@@ -135,9 +219,12 @@ function getRadicalInfo() {
     }
 
     // Populate radicals within JSON with all selected radicals
-    let rads = $('.rad-btn.selected').toArray();
-    for (let i = 0; i < rads.length; i++) {
-        radicalJSON.radicals.push(rads[i].innerHTML);
+    for (let i = 0; i < radicalMask.length; i++) {
+        for (let j = 0; j < radicalMask[i].length; j++) {
+            if (radicalMask[i][j] == 1) {
+                radicalJSON.radicals.push(radicals[i][j]);
+            }
+        }
     }
 
     // No Radicals selected, Reset
@@ -145,6 +232,13 @@ function getRadicalInfo() {
         $('.rad-btn.disabled').each((i, e) => {
             $(e).removeClass("disabled");
         });
+        for (let i = 0; i < radicals.length; i++) {
+            for (let j = 0; j < radicals[i].length; j++) {
+                if (radicalMask[i][j] == -1) {
+                    radicalMask[i][j] = 0;
+                }
+            }
+        }
         return;
     }
 
