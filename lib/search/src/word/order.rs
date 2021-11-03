@@ -82,9 +82,11 @@ pub fn foreign_search_order(
         score += 8;
     }
 
+    /*
     if !word.is_katakana_word() {
         score += 4;
     }
+    */
 
     // Result found within users specified language
     if language == user_lang {

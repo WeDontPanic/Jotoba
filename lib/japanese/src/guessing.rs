@@ -1,6 +1,3 @@
-//! add here https://github.com/WeDontPanic/Jotoba/blob/dev/lib/api/src/completions/words/foreign.rs#L21
-//! add here https://github.com/WeDontPanic/Jotoba/blob/dev/lib/search/src/word/mod.rs#L291
-
 #[cfg(test)]
 mod test {
     use super::*;
@@ -28,6 +25,9 @@ mod test {
         test("otagai", true);
         test("kansei", true);
         test("kanpeki", true);
+        test("fuben", true);
+        test("kansetsu", true);
+        test("chokusetsu", true);
     }
 
     #[test]
@@ -37,7 +37,6 @@ mod test {
         test("gx", false);
         test("kochen macht spaß", false);
         test("kinderarbeit", false);
-        test("buchfuehren", false);
         test("hausaufgaben sind toll", false);
         test("I can't think of proper sentences lol", false);
         test("Mir fallen keine weiteren sätze ein lol", false);
@@ -46,7 +45,7 @@ mod test {
 
     fn test(inp: &str, assert: bool) {
         if could_be_romaji(inp) != assert {
-            panic!("{} should be {}", inp, assert);
+            panic!("{:?} should be {}", inp, assert);
         }
     }
 }
@@ -62,10 +61,10 @@ const SKIP_CHARS: &[char] = &[' ', '　', ',', '、', '。'];
 
 const ALLOW_FIRST: &[char] = &[
     'a', 'e', 'i', 'o', 'u', 'k', 'g', 's', 'z', 't', 'd', 'h', 'b', 'p', 'f', 'n', 'm', 'w', 'r',
-    'y', 'j',
+    'y', 'j', 'c',
 ];
 
-const ALLOW_SECOND: &[char] = &['a', 'e', 'i', 'o', 'u', 'n', 'y', 'h'];
+const ALLOW_SECOND: &[char] = &['a', 'e', 'i', 'o', 'u', 'n', 'y', 'h', 's'];
 
 const ALLOW_THIRD: &[char] = &['a', 'o', 'u'];
 const ALLOW_TO_THIRD: &[char] = &['y', 'h'];
