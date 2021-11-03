@@ -27,7 +27,9 @@
 .rad-page-toggle {
     display: flex;
     flex-direction: row;
+    height: 28px;
     margin-top: 10px;
+    margin-bottom: -2px;
 }
 
 .rad-page-toggle:hover {
@@ -59,7 +61,7 @@
 
 .rad-kanji-wrapper {
     border: 2px solid var(--searchTextColor);
-    margin: -2px;
+    margin: 0px -2px -2px -2px;
     border-radius: 15px;
     overflow-x: auto;
 }
