@@ -7,7 +7,6 @@ use super::super::*;
 /// Returns suggestions based on non japanese input
 pub async fn suggestions(query: &Query, query_str: &str) -> Option<Vec<WordPair>> {
     let lang = query.settings.user_lang;
-    println!("ongaku");
 
     // Check if suggestions are available for the given language
     if !resources::get().suggestions().foreign_words(lang).is_some() {
@@ -24,7 +23,6 @@ fn search<'a>(main_lang: Language, query_str: &'a str) -> Vec<WordPair> {
         .map(|i| {
             let similarity =
                 (strsim::jaro(&i.text.to_lowercase(), &query_str.to_lowercase()) * 100f64) as u32;
-            println!("{} {}", i.text, similarity);
             (i, main_lang, similarity)
         })
         .take(50)
@@ -58,8 +56,6 @@ fn search<'a>(main_lang: Language, query_str: &'a str) -> Vec<WordPair> {
                 }),
         );
     }
-
-    //println!("{:#?}", res);
 
     let query_len = real_string_len(query_str);
     if query_len >= 3 {
