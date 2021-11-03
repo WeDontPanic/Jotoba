@@ -1,5 +1,6 @@
 mod order;
 pub mod result;
+mod tag_only;
 
 use itertools::Itertools;
 use resources::models::kanji::Kanji;
@@ -19,8 +20,19 @@ use crate::{
 
 use super::query::Query;
 
+// Defines the result of a kanji search
+#[derive(Default)]
+pub struct KanjiResult {
+    pub items: Vec<Item>,
+    pub total_items: usize,
+}
+
 /// The entry of a kanji search
-pub fn search(query: &Query) -> Result<Vec<Item>, Error> {
+pub fn search(query: &Query) -> Result<KanjiResult, Error> {
+    if query.form.is_tag_only() {
+        return tag_only::search(query);
+    }
+
     let query_str = format_query(&query.query);
 
     let res;
@@ -36,7 +48,17 @@ pub fn search(query: &Query) -> Result<Vec<Item>, Error> {
         items.sort_by(order::by_meaning);
     }
 
-    Ok(items)
+    let len = items.len();
+    let items = items
+        .into_iter()
+        .skip(query.page_offset(query.settings.kanji_page_size as usize))
+        .take(query.settings.kanji_page_size as usize)
+        .collect::<Vec<_>>();
+
+    Ok(KanjiResult {
+        items,
+        total_items: len,
+    })
 }
 
 /// Find a kanji by its literal
@@ -59,7 +81,7 @@ fn by_literals(query: &str) -> Vec<Kanji> {
         .filter(|i| i.item.reading.kana.reading == query)
         .map(|i| i.item.get_reading().reading.chars().collect::<Vec<_>>())
         .flatten()
-        .take(8)
+        .take(100)
         .unique()
         .join("");
 
@@ -74,7 +96,7 @@ fn all_kanji_from_text(text: &str) -> Vec<Kanji> {
         .filter(|i| i.is_kanji())
         .filter_map(|literal| kanji_storage.by_literal(literal))
         .cloned()
-        .take(15)
+        .take(100)
         .collect()
 }
 

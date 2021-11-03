@@ -10,6 +10,8 @@ pub mod response;
 /// Do a kanji search via API
 pub async fn kanji_search(payload: Json<SearchRequest>) -> Result<Json<Response>> {
     let query = SearchRequest::parse(payload, Kanji)?;
-    let result = web::block(move || search::kanji::search(&query)).await??;
+    let result = web::block(move || search::kanji::search(&query))
+        .await??
+        .items;
     Ok(Json(result.into()))
 }

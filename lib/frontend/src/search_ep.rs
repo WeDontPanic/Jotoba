@@ -78,7 +78,7 @@ async fn do_search<'a>(
     let mut base_data = BaseData::new(locale_dict, settings);
 
     let result_data = match querytype {
-        QueryType::Kanji => kanji_search(&query).await,
+        QueryType::Kanji => kanji_search(&mut base_data, &query).await,
         QueryType::Sentences => sentence_search(&mut base_data, &query).await,
         QueryType::Names => name_search(&mut base_data, &query).await,
         QueryType::Words => word_search(&mut base_data, &query).await,
@@ -105,10 +105,16 @@ async fn sentence_search<'a>(base_data: &mut BaseData<'a>, query: &'a Query) -> 
 }
 
 /// Perform a kanji search
-async fn kanji_search<'a>(query: &'a Query) -> SResult {
+async fn kanji_search<'a>(base_data: &mut BaseData<'a>, query: &'a Query) -> SResult {
     let q = query.to_owned();
     let result = web::block(move || search::kanji::search(&q)).await??;
-    Ok(ResultData::KanjiInfo(result))
+    base_data.with_cust_pages(
+        result.total_items as u32,
+        query.page as u32,
+        query.settings.kanji_page_size,
+        400,
+    );
+    Ok(ResultData::KanjiInfo(result.items))
 }
 
 /// Perform a name search

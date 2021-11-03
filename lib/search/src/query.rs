@@ -3,6 +3,8 @@ use std::{
     str::FromStr,
 };
 
+use crate::query_parser;
+
 use super::query_parser::QueryType;
 
 use itertools::Itertools;
@@ -37,7 +39,8 @@ pub struct UserSettings {
     pub show_english: bool,
     pub english_on_top: bool,
     pub cookies_enabled: bool,
-    pub items_per_page: u32,
+    pub page_size: u32,
+    pub kanji_page_size: u32,
 }
 
 impl PartialEq for UserSettings {
@@ -64,7 +67,8 @@ impl Default for UserSettings {
             page_lang: localization::language::Language::default(),
             english_on_top: false,
             cookies_enabled: false,
-            items_per_page: 10,
+            page_size: 10,
+            kanji_page_size: 4,
         }
     }
 }
@@ -76,6 +80,7 @@ pub enum Tag {
     PartOfSpeech(PosSimple),
     Misc(Misc),
     Jlpt(u8),
+    GenkiLesson(u8),
 }
 
 /// Hashtag based search tags
@@ -125,6 +130,14 @@ impl Form {
     pub fn is_kanji_reading(&self) -> bool {
         matches!(self, Self::KanjiReading(..))
     }
+
+    /// Returns `true` if the form is [`TagOnly`].
+    ///
+    /// [`TagOnly`]: Form::TagOnly
+    #[inline]
+    pub fn is_tag_only(&self) -> bool {
+        matches!(self, Self::TagOnly)
+    }
 }
 
 impl Default for Form {
@@ -145,7 +158,9 @@ impl Tag {
     /// Parse a tag from a string
     pub fn parse_from_str(s: &str) -> Option<Tag> {
         #[allow(irrefutable_let_patterns)]
-        if let Some(tag) = Self::parse_jlpt_tag(s) {
+        if let Some(tag) = Self::parse_genki_tag(s) {
+            return Some(tag);
+        } else if let Some(tag) = Self::parse_jlpt_tag(s) {
             return Some(tag);
         } else if let Some(tag) = Self::parse_search_type(s) {
             return Some(tag);
@@ -167,6 +182,17 @@ impl Tag {
         (nr > 0 && nr < 6).then(|| Tag::Jlpt(nr))
     }
 
+    /// Returns `Some(u8)` if `s` is a valid genki-tag
+    fn parse_genki_tag(s: &str) -> Option<Tag> {
+        let e = s.trim().strip_prefix("#")?.trim().to_lowercase();
+        if !e.starts_with("genki") {
+            return None;
+        }
+
+        let nr: u8 = s[6..].parse().ok()?;
+        (nr >= 3 && nr <= 23).then(|| Tag::GenkiLesson(nr))
+    }
+
     /// Parse only search type
     fn parse_search_type(s: &str) -> Option<Tag> {
         Some(match s[1..].to_lowercase().as_str() {
@@ -180,8 +206,9 @@ impl Tag {
     }
 
     /// Returns true if the tag is allowed to be used without a query
+    #[inline]
     pub fn is_empty_allowed(&self) -> bool {
-        self.is_jlpt()
+        self.is_jlpt() || self.is_genki_lesson()
     }
 
     /// Returns `true` if the tag is [`SearchType`].
@@ -247,6 +274,21 @@ impl Tag {
             None
         }
     }
+
+    /// Returns `true` if the tag is [`GenkiLesson`].
+    ///
+    /// [`GenkiLesson`]: Tag::GenkiLesson
+    pub fn is_genki_lesson(&self) -> bool {
+        matches!(self, Self::GenkiLesson(..))
+    }
+
+    pub fn as_genki_lesson(&self) -> Option<&u8> {
+        if let Self::GenkiLesson(v) = self {
+            Some(v)
+        } else {
+            None
+        }
+    }
 }
 
 impl Query {
@@ -279,6 +321,10 @@ impl Query {
         self.tags.iter().filter_map(|i| i.as_misc())
     }
 
+    pub fn page_offset(&self, page_size: usize) -> usize {
+        query_parser::calc_page_offset(self.page, page_size)
+    }
+
     /// Returns the original_query with search type tags omitted
     #[inline]
     pub fn without_search_type_tags(&self) -> String {
@@ -308,5 +354,11 @@ mod test {
     #[test]
     fn test_parse_jlpt_tag_parsing() {
         assert_eq!(Tag::parse_jlpt_tag("#n4"), Some(Tag::Jlpt(4)));
+    }
+
+    #[test]
+    fn test_parse_genki_tag_parsing() {
+        assert_eq!(Tag::parse_genki_tag("#genki3"), Some(Tag::GenkiLesson(3)));
+        assert_eq!(Tag::parse_genki_tag("#genki23"), Some(Tag::GenkiLesson(23)));
     }
 }

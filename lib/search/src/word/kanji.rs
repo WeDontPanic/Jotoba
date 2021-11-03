@@ -52,7 +52,7 @@ fn words_with_kanji_reading(
 
     let mut search_task = SearchTask::<native::Engine>::new(&query_str)
         .threshold(0.1)
-        .limit(query.settings.items_per_page as usize)
+        .limit(query.settings.page_size as usize)
         .offset(query.page_offset);
 
     let literal = kanji.literal.to_string();
