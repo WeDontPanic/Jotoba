@@ -73,11 +73,9 @@ function resetRadPicker() {
         $(e).removeClass("disabled");
     });
 
-    for (let i = 0; i < radicalMask.length; i++) {
-        for (let j = 0; j < radicalMask[i].length; j++) {
-            radicalMask[i][j] = 0;
-        }
-    }
+    iterateMaskAsync((i, j) => {
+        radicalMask[i][j] = 0;
+    });
 
     $('.rad-results').html(baseRadResult);
 }
@@ -206,15 +204,13 @@ function loadRadicalResults(info) {
     }
 
     // Apply changes to mask
-    for (let i = 0; i < radicals.length; i++) {
-        for (let j = 0; j < radicals[i].length; j++) {
-            if (!info.possible_radicals.includes(radicals[i][j])) {
-                radicalMask[i][j] = -1;
-            } else if (radicalMask[i][j] == -1) {
-                radicalMask[i][j] = 0;
-            }
+    iterateMaskAsync((i, j) => {
+        if (!info.possible_radicals.includes(radicals[i][j])) {
+            radicalMask[i][j] = -1;
+        } else if (radicalMask[i][j] == -1) {
+            radicalMask[i][j] = 0;
         }
-    }
+    });
 }
 
 // Calls the API to get all kanji and radicals that are still possible
@@ -238,13 +234,13 @@ function getRadicalInfo() {
         $('.rad-btn.disabled').each((i, e) => {
             $(e).removeClass("disabled");
         });
-        for (let i = 0; i < radicals.length; i++) {
-            for (let j = 0; j < radicals[i].length; j++) {
-                if (radicalMask[i][j] == -1) {
-                    radicalMask[i][j] = 0;
-                }
+        iterateMaskAsync((i, j) => {
+            if (radicalMask[i][j] == -1) {
+                radicalMask[i][j] = 0;
             }
-        }
+        });
+
+        
         return;
     }
 
@@ -265,4 +261,19 @@ function getRadicalInfo() {
             Util.showMessage("error", "Could not reach Radical API.")
         }
     });
+}
+
+// Calls the given function on every iteration of the array. Passes i (outer) and j (inner) as params.
+async function iterateMaskAsync(functionToCall, startIndex, endIndex) {
+    if (startIndex == undefined) {
+        iterateMaskAsync(radicals.length / 2, radicals.length);
+        startIndex = 0;
+        endIndex = radicals.length / 2;
+    }
+
+    for (let i = startIndex; i < radicals.length; i++) {
+        for (let j = 0; j < radicals[i].length; j++) {
+           functionToCall(i, j);
+        }
+    }
 }
