@@ -73,6 +73,12 @@ function resetRadPicker() {
         $(e).removeClass("disabled");
     });
 
+    for (let i = 0; i < radicalMask.length; i++) {
+        for (let j = 0; j < radicalMask[i].length; j++) {
+            radicalMask[i][j] = 0;
+        }
+    }
+
     $('.rad-results').html(baseRadResult);
 }
 
