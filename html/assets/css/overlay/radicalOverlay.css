@@ -214,6 +214,8 @@
     }
 
     .rad-page-toggle > span:not(:first-child) {
+        width: -webkit-max-content;
+        width: -moz-max-content;
         width: max-content;
         padding: 0px 2px 0px 2px;
     }
