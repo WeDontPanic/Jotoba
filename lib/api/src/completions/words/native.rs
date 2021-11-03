@@ -1,5 +1,6 @@
 use std::{cmp::min, collections::BinaryHeap, time::Instant};
 
+use itertools::Itertools;
 use resources::models::{suggestions::native_words::NativeSuggestion, words::Word};
 use utils::binary_search::BinarySearchable;
 
@@ -18,10 +19,7 @@ pub fn suggestions(query_str: &str) -> Option<Vec<WordPair>> {
 
     println!("suggesting took: {:?}", start.elapsed());
 
-    let mut results: Vec<_> = items.into_iter().take(10).map(|i| i.0).collect();
-    results.dedup();
-
-    Some(results)
+    Some(items.into_iter().map(|i| i.0).unique().take(10).collect())
 }
 
 #[derive(PartialEq, Eq)]

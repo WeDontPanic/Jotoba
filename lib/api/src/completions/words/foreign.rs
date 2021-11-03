@@ -68,8 +68,17 @@ fn search<'a>(main_lang: Language, query_str: &'a str) -> Vec<WordPair> {
             if could_be_romaji(is_romaji_trim) {
                 query = is_romaji_trim;
             }
-            if let Some(hira_res) = super::native::suggest_words(&query.to_hiragana()) {
+
+            let hira_query = query.to_hiragana();
+            if let Some(hira_res) = super::native::suggest_words(&hira_query) {
                 hira_res.into_iter().for_each(|i| {
+                    let exact_match = i.0.primary == hira_query;
+
+                    let score = if exact_match {
+                        400u32
+                    } else {
+                        (((i.1 + 1) as f32 * 4f32).log2() + 65f32) as u32
+                    };
                     res.push((
                         ForeignSuggestion {
                             secondary: i.0.secondary,
@@ -79,7 +88,7 @@ fn search<'a>(main_lang: Language, query_str: &'a str) -> Vec<WordPair> {
                             occurrences: i.1,
                         },
                         Language::Japanese,
-                        (((i.1 + 1) as f32 * 4f32).log2() + 65f32) as u32,
+                        score,
                     ));
                 });
             }
