@@ -271,7 +271,7 @@ async function iterateMaskAsync(functionToCall, startIndex, endIndex) {
         endIndex = radicals.length / 2;
     }
 
-    for (let i = startIndex; i < radicals.length; i++) {
+    for (let i = startIndex; i < endIndex; i++) {
         for (let j = 0; j < radicals[i].length; j++) {
            functionToCall(i, j);
         }
