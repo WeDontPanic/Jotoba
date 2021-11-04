@@ -215,11 +215,8 @@ function loadRadicalResults(info) {
 
 }
 
-//  $("#r-t"+i).removeClass("containsSelected");
-
 // Calls the given function on every iteration of the array. Passes i (outer) and j (inner) as params.
-// Also checks whether the Page-Tabs have to be colored in a specific way (None possible, element selected...)
-async function iterateMaskAsync(functionToCall, startIndex, endIndex) {
+function iterateMaskAsync(functionToCall, startIndex, endIndex) {
     if (startIndex == undefined) {
         iterateMaskAsync(radicals.length / 2, radicals.length);
         startIndex = 0;
@@ -227,21 +224,60 @@ async function iterateMaskAsync(functionToCall, startIndex, endIndex) {
     }
 
     for (let i = startIndex; i < endIndex; i++) {
-        let showTabDisabled = true;
-        let showTabHighlighted = true;
         for (let j = 0; j < radicals[i].length; j++) {
            functionToCall(i, j);
-           if (radicals[i][j] > -1) {
-                showTabDisabled = false;
-           }
-           if (radiacls[i][j] < 1) {
-                showTabHighlighted = false;
-           }
+        }
+    }
+
+    updateTabVisuals();
+}
+
+// Checks whether the Page-Tabs have to be colored in a specific way (None possible, element selected...)
+async function updateTabVisuals() {
+    for (let i = 0; i < 10; i++) {
+        let tabStatus = -1;
+
+        // First Tab
+        if (i == 0) {
+            tabStatus = checkRadicalsInTab(0);
+            let tabStatus2 = checkRadicalsInTab(1);
+            if (tabStatus2 == 0 && tabStatus == -1)
+                tabStatus = 0;
+            else if (tabStatus2 == 1)
+                tabStatus = 1;
+
+            console.log("First tab: 1:",tabStatus, " vs 2:",tabStatus2); 
+        }
+        // Last Tab
+        else if (i == 9) {
+            for (let j = 10; j < radicals.length; j++) {
+                tabStatus = checkRadicalsInTab(j);
+            }
+        }
+        // Any other Tab
+        else {
+            tabStatus = checkRadicalsInTab(i+1);
         }
 
-        $("#r-t"+i).toggleClass("disabled", showTabDisabled);
-        $("#r-t"+i).toggleClass("highlighted", showTabHighlighted);
+        $("#r-t"+i).toggleClass("disabled", tabStatus == -1);
+        $("#r-t"+i).toggleClass("highlighted", tabStatus == 1);
     }
+}
+
+// Called by updateTabVisuals. Checks for tabDisabled (-1) | normal (0) | highlighted (1)
+function checkRadicalsInTab(arrayIndex) {
+    let status = -1;
+
+    for (let i = 0; i < radicals[arrayIndex].length; i++) {
+        if (radicalMask[arrayIndex][i] == 0) {
+            status = 0;
+        } else if (radicalMask[arrayIndex][i] == 1) {
+            status = 1; 
+            break;
+        }
+    }
+
+    return status;
 }
 
 // Resets all Radical-Tabs by removing class-modifiers

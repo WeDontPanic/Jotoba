@@ -1,4 +1,4 @@
-@use crate::BaseData; @use super::radpicker_html; @(data: &BaseData)
+@use crate::BaseData; @(data: &BaseData)
 
 <!-- Start of Search Suggestion -->
 <div class="overlay suggestion noselect">
@@ -26,7 +26,7 @@
         <div class="rad-wrapper">
             <span class="rad-kanji-title">@data.gettext("Select Radicals")</span>
             <div class="d-flex flex-row wrap rad-picker">
-                @:radpicker_html()
+                <!-- Filled by JS -->
             </div>
         </div>
         <div class="kanji-wrapper">
