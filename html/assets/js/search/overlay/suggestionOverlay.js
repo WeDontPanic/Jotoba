@@ -202,11 +202,19 @@ function loadSuggestionApiData(result) {
         }
 
         // Add to Page
-        container.innerHTML += 
-        ' <a href="/search/'+primaryResult+'" class="search-suggestion"> ' +
-        '   <span class="primary-suggestion">'+primaryResult+'</span> ' +
-        '   <span class="secondary-suggestion">'+secondaryResult+'</span> ' +
-        ' </a> ';      
+        if (rad_overlay.classList.contains("hidden")) {
+            container.innerHTML += 
+            ' <a href="/search/'+primaryResult+'" class="search-suggestion"> ' +
+            '   <span class="primary-suggestion">'+primaryResult+'</span> ' +
+            '   <span class="secondary-suggestion">'+secondaryResult+'</span> ' +
+            ' </a> ';      
+        } else {
+            container_rad.innerHTML += 
+            ' <a href="/search/'+primaryResult+'" class="search-suggestion"> ' +
+            '   <span class="primary-suggestion">'+primaryResult+'</span> ' +
+            '   <span class="secondary-suggestion">'+secondaryResult+'</span> ' +
+            ' </a> ';      
+        }
     }
 
     // Activate first suggestion

@@ -10,10 +10,43 @@
     overflow-y: scroll;
 }
 
+.rad-suggestion-wrapper {
+    width: 100%;
+    border-top: 1px solid var(--searchTextColor);
+    margin-top: 10px;
+    overflow-x: scroll;
+    scrollbar-width: none;
+    background: var(--itemBG_075);
+}
+
+.rad-suggestion-wrapper::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+}
+
+#suggestion-container-rad {
+    overflow-y: auto;
+    width: -webkit-max-content;
+    width: -moz-max-content;
+    width: max-content;
+}
+
+#suggestion-container-rad > .search-suggestion:first-child {
+    padding-top: 0px !important;
+}
+
+#suggestion-container-rad > .search-suggestion {
+    width: -webkit-max-content !important;
+    width: -moz-max-content !important;
+    width: max-content !important;
+    padding-bottom: 0px !important;
+    padding-left: 10px !important;
+    padding-right: 10px !important;
+}
+
 .rad-page-footer {
     height: 50px;
     border-top: 1px solid;
-    margin-top: 10px;
 }
 
 .overlay.radical > .clickable {

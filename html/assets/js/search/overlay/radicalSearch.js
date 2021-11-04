@@ -56,6 +56,8 @@ function toggleRadicalOverlay() {
     // Reset on close
     if (overlay.hasClass("hidden")) {
         resetRadPicker()
+        container.classList.add("hidden");
+        container_rad.classList.add("hidden");
     } else {
         $('.rad-results').html(baseRadResult);
         $('.rad-results').removeClass("hidden");
