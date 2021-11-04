@@ -4,6 +4,7 @@ use std::convert::{TryFrom, TryInto};
 #[derive(Clone, Debug)]
 pub struct ForeignSuggestion {
     pub text: String,
+    pub secondary: Option<String>,
     pub sequence: u32,
     pub occurrences: u32,
     pub hash: eudex::Hash,
@@ -30,6 +31,7 @@ impl TryFrom<&[u8]> for ForeignSuggestion {
             hash: eudex::Hash::from(u64::from_le_bytes(hash)),
             sequence: u32::from_le_bytes(sequence_bytes),
             occurrences: u32::from_le_bytes(occurrences_bytes),
+            secondary: None,
         })
     }
 }

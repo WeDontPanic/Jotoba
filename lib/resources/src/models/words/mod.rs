@@ -2,6 +2,7 @@ pub mod dict;
 pub mod inflection;
 pub mod sense;
 
+use bitflags::BitFlag;
 pub use dict::Dict;
 use itertools::Itertools;
 pub use sense::{Gloss, Sense};
@@ -36,6 +37,7 @@ pub struct Word {
     pub collocations: Option<Vec<u32>>,
     pub transive_verion: Option<u32>,
     pub intransive_verion: Option<u32>,
+    pub sentences_available: u16,
 }
 
 /// Various readings of a word
@@ -191,6 +193,13 @@ impl Word {
     pub fn get_intransitive_counterpart(&self) -> Option<Word> {
         let seq_id = self.intransive_verion.as_ref()?;
         crate::get().words().by_sequence(*seq_id).cloned()
+    }
+
+    /// Returns `true` if the word has at least one sentence in the given language
+    #[inline]
+    pub fn has_sentence(&self, language: Language) -> bool {
+        let lang: i32 = language.into();
+        BitFlag::<u16>::from(self.sentences_available).get(lang as u16)
     }
 
     pub fn glosses_pretty(&self) -> String {

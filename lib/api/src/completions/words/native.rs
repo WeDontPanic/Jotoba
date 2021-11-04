@@ -1,12 +1,13 @@
 use std::{cmp::min, collections::BinaryHeap, time::Instant};
 
+use itertools::Itertools;
 use resources::models::{suggestions::native_words::NativeSuggestion, words::Word};
 use utils::binary_search::BinarySearchable;
 
 use super::super::*;
 
 /// Get suggestions for foreign search input
-pub async fn suggestions(query_str: &str) -> Option<Vec<WordPair>> {
+pub fn suggestions(query_str: &str) -> Option<Vec<WordPair>> {
     let start = Instant::now();
 
     let mut items = suggest_words(query_str)?;
@@ -18,16 +19,13 @@ pub async fn suggestions(query_str: &str) -> Option<Vec<WordPair>> {
 
     println!("suggesting took: {:?}", start.elapsed());
 
-    let mut results: Vec<_> = items.into_iter().take(10).map(|i| i.0).collect();
-    results.dedup();
-
-    Some(results)
+    Some(items.into_iter().map(|i| i.0).unique().take(10).collect())
 }
 
 #[derive(PartialEq, Eq)]
 struct WordPairOrder((WordPair, u32));
 
-fn suggest_words(query_str: &str) -> Option<Vec<(WordPair, u32)>> {
+pub(super) fn suggest_words(query_str: &str) -> Option<Vec<(WordPair, u32)>> {
     let query_romaji = query_str
         .is_kana()
         .then(|| romaji::RomajiExt::to_romaji(query_str));
