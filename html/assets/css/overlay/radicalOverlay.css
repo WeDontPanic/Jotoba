@@ -27,7 +27,9 @@
 .rad-page-toggle {
     display: flex;
     flex-direction: row;
+    height: 28px;
     margin-top: 10px;
+    margin-bottom: -2px;
 }
 
 .rad-page-toggle:hover {
@@ -48,6 +50,14 @@
     margin-left: 20px;
 }
 
+.rad-page-toggle > span.disabled {
+    color: var(--secondaryColor);
+}
+
+.rad-page-toggle > span.highlighted {
+    color: var(--primaryColor);
+}
+
 .rad-page-toggle span.selected {
     color: var(--primaryColor);
     border-color: var(--primaryColor);
@@ -59,7 +69,7 @@
 
 .rad-kanji-wrapper {
     border: 2px solid var(--searchTextColor);
-    margin: -2px;
+    margin: 0px -2px -2px -2px;
     border-radius: 15px;
     overflow-x: auto;
 }
