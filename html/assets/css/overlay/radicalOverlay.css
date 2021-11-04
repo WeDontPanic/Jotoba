@@ -50,6 +50,14 @@
     margin-left: 20px;
 }
 
+.rad-page-toggle > span.disabled {
+    color: var(--secondaryColor);
+}
+
+.rad-page-toggle > span.highlighted {
+    color: var(--primaryColor);
+}
+
 .rad-page-toggle span.selected {
     color: var(--primaryColor);
     border-color: var(--primaryColor);

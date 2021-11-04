@@ -78,6 +78,7 @@ function resetRadPicker() {
     });
 
     $('.rad-results').html(baseRadResult);
+    resetAllTabs();
 }
 
 // Adds the selected Kanji to the search bar
@@ -211,6 +212,44 @@ function loadRadicalResults(info) {
             radicalMask[i][j] = 0;
         }
     });
+
+}
+
+//  $("#r-t"+i).removeClass("containsSelected");
+
+// Calls the given function on every iteration of the array. Passes i (outer) and j (inner) as params.
+// Also checks whether the Page-Tabs have to be colored in a specific way (None possible, element selected...)
+async function iterateMaskAsync(functionToCall, startIndex, endIndex) {
+    if (startIndex == undefined) {
+        iterateMaskAsync(radicals.length / 2, radicals.length);
+        startIndex = 0;
+        endIndex = radicals.length / 2;
+    }
+
+    for (let i = startIndex; i < endIndex; i++) {
+        let showTabDisabled = true;
+        let showTabHighlighted = true;
+        for (let j = 0; j < radicals[i].length; j++) {
+           functionToCall(i, j);
+           if (radicals[i][j] > -1) {
+                showTabDisabled = false;
+           }
+           if (radiacls[i][j] < 1) {
+                showTabHighlighted = false;
+           }
+        }
+
+        $("#r-t"+i).toggleClass("disabled", showTabDisabled);
+        $("#r-t"+i).toggleClass("highlighted", showTabHighlighted);
+    }
+}
+
+// Resets all Radical-Tabs by removing class-modifiers
+function resetAllTabs() {
+    for (let i = 0; i < radicals.length; i++) {
+        $("#r-t"+i).removeClass("disabled");
+        $("#r-t"+i).removeClass("highlighted");
+    }
 }
 
 // Calls the API to get all kanji and radicals that are still possible
@@ -239,8 +278,8 @@ function getRadicalInfo() {
                 radicalMask[i][j] = 0;
             }
         });
+        resetAllTabs();
 
-        
         return;
     }
 
@@ -261,19 +300,4 @@ function getRadicalInfo() {
             Util.showMessage("error", "Could not reach Radical API.")
         }
     });
-}
-
-// Calls the given function on every iteration of the array. Passes i (outer) and j (inner) as params.
-async function iterateMaskAsync(functionToCall, startIndex, endIndex) {
-    if (startIndex == undefined) {
-        iterateMaskAsync(radicals.length / 2, radicals.length);
-        startIndex = 0;
-        endIndex = radicals.length / 2;
-    }
-
-    for (let i = startIndex; i < endIndex; i++) {
-        for (let j = 0; j < radicals[i].length; j++) {
-           functionToCall(i, j);
-        }
-    }
 }
