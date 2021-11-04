@@ -162,6 +162,7 @@
     width: 100px;
     right: 20px;
     margin-top: -29px;
+    border-radius: 15px;
 }
 
 #kanji-search {

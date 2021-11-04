@@ -103,7 +103,6 @@ function handleRadicalSelect(event) {
         radicalMask[target.attr("index")][target.attr("position")] = 1;
     }
         
-
     // Make results visible again if they were hidden
     $('.rad-results').removeClass("hidden");
 
@@ -218,9 +217,10 @@ function loadRadicalResults(info) {
 // Calls the given function on every iteration of the array. Passes i (outer) and j (inner) as params.
 function iterateMaskAsync(functionToCall, startIndex, endIndex) {
     if (startIndex == undefined) {
-        iterateMaskAsync(radicals.length / 2, radicals.length);
+        let middle = Math.floor(radicals.length / 2); 
+        iterateMaskAsync(functionToCall, middle, radicals.length);
         startIndex = 0;
-        endIndex = radicals.length / 2;
+        endIndex = middle;
     }
 
     for (let i = startIndex; i < endIndex; i++) {
@@ -245,14 +245,15 @@ async function updateTabVisuals() {
                 tabStatus = 0;
             else if (tabStatus2 == 1)
                 tabStatus = 1;
-
-            console.log("First tab: 1:",tabStatus, " vs 2:",tabStatus2); 
         }
         // Last Tab
         else if (i == 9) {
             for (let j = 10; j < radicals.length; j++) {
                 tabStatus = checkRadicalsInTab(j);
+                $("#r-t"+j).toggleClass("disabled", tabStatus == -1);
+                $("#r-t"+j).toggleClass("highlighted", tabStatus == 1);
             }
+            break;
         }
         // Any other Tab
         else {
