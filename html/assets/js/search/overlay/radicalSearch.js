@@ -394,25 +394,15 @@ function getRadicalInfo() {
 var lastRadRequest;
 function getRadicalSearchResults() {
 
-    // Get values for the input
+    // Get value for the input
     let query = $("#kanji-search").val();
-    let pickedRads = [];
-
     if (query.length == 0) {
         return;
     }
 
-    for (let i = 0; i < radicals.length; i++) {
-        for (let j = 0; j < radicals[i].length; j++) {
-            if (radicalMask[i][j] == 1)
-                pickedRads.push(radicals[i][j]);
-        }
-    }
-
     // Create the JSON
     let inputJSON = {
-        "query": query,
-        "picked_radicals": pickedRads
+        "query": query
     }
 
     // Abort any requests sent earlier
