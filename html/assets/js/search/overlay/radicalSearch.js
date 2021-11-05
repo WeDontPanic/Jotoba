@@ -193,11 +193,12 @@ function addRadicals(arrayIndex) {
 function addRadicalsFromArray(index, array) {
     let html = $(".rad-picker").html();
     html += '<span class="rad-btn picker num">'+index+'</span>';
+    index -= 1;
 
     for (let a = 0; a < array.length; a++) {
-        for (let j = 0; j < radicals[index-1].length; j++) {
-            if (radicals[index-1][j] == array[a].l) {
-                html += '<span class="rad-btn picker'+(radicalMask[index-1][j] == 1 ? " selected" : "")+(radicalMask[index-1][j] == -1 ? " disabled" : "")+'" index='+index+' position='+j+' onClick="handleRadicalSelect(event)">'+radicals[index-1][j]+'</span>';
+        for (let j = 0; j < radicals[index].length; j++) {
+            if (radicals[index][j] == array[a].l) {
+                html += '<span class="rad-btn picker'+(radicalMask[index][j] == 1 ? " selected" : "")+(radicalMask[index][j] == -1 ? " disabled" : "")+'" index='+index+' position='+j+' onClick="handleRadicalSelect(event)">'+radicals[index][j]+'</span>';
             }
         }
     }
