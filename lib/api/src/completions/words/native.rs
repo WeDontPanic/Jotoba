@@ -19,7 +19,7 @@ pub fn suggestions(query_str: &str) -> Option<Vec<WordPair>> {
 
     println!("suggesting took: {:?}", start.elapsed());
 
-    Some(items.into_iter().map(|i| i.0).unique().take(10).collect())
+    Some(items.into_iter().map(|i| i.0).unique().take(30).collect())
 }
 
 #[derive(PartialEq, Eq)]
@@ -48,7 +48,7 @@ pub(super) fn suggest_words(query_str: &str) -> Option<Vec<(WordPair, u32)>> {
             }),
     );
 
-    let res_size = min(heap.len(), 10);
+    let res_size = min(heap.len(), 30);
     let mut items = Vec::with_capacity(res_size);
     for _ in 0..res_size {
         items.push(heap.pop()?.0);

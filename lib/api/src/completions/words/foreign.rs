@@ -101,7 +101,7 @@ fn search<'a>(main_lang: Language, query_str: &'a str) -> Vec<WordPair> {
 
     res.sort_by(|a, b| a.2.cmp(&b.2).reverse());
 
-    res.into_iter().take(10).map(|i| i.0.into()).collect()
+    res.into_iter().take(30).map(|i| i.0.into()).collect()
 }
 
 fn search_by_lang<'a>(
