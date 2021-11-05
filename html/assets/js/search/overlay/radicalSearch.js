@@ -38,6 +38,7 @@ var radicalMask = [
 ];
 
 const baseRadResult = $('.rad-results')[0].innerHTML;
+var lastRadicalSearchResult;
 
 Util.awaitDocumentReady(() => {
     loadRadicals(0);
@@ -87,6 +88,7 @@ function resetRadPicker() {
 // Adds the selected Kanji to the search bar
 function handleKanjiSelect(event) {
     $('#search').val($('#search').val() + event.target.innerHTML);
+    callApiAndSetShadowText();
     toggleSearchIcon(200);
 }
 
@@ -117,19 +119,32 @@ function handleRadicalSelect(event) {
 }
 
 // Opens the Radical Page at the given index
+let lastRadicalPage;
 function openRadicalPage(index) {
+    if (index == -1) {
+        if (lastRadicalPage !== undefined) {
+            index = lastRadicalPage;
+        } 
+        else {
+            openRadicalPage(0);
+            return;
+        }
+    }
+
     $(".rad-page-toggle > span").each((i, e) => {
-        if (i == index)
+        if (i == index) {
             e.classList.add("selected");
-        else
+            lastRadicalPage = index;
+        } else
             e.classList.remove("selected");
     });
+    
 
     loadRadicals(index);
 }
 
-// Loads the Radicals of the specific tab
-function loadRadicals(tabIndex) {
+// Clears the shown Radical list
+function clearRadicals() {
     // Clear Radicals
     $(".rad-btn.picker:not(.num)").each((i, e) => {
         if (e.classList.contains("selected")) {
@@ -137,6 +152,12 @@ function loadRadicals(tabIndex) {
         }
     });
     $(".rad-picker").html("");
+}
+
+// Loads the Radicals of the specific tab
+function loadRadicals(tabIndex) {
+    // Clear Radicals
+    clearRadicals();
 
     // Add Radicals
     if (tabIndex == 0) {
@@ -147,6 +168,9 @@ function loadRadicals(tabIndex) {
         for (let i = 10; i < radicals.length; i++) {
             addRadicals(i);
         }
+    }
+    else if (tabIndex == 10) {
+        loadRadicalSearchResults(lastRadicalSearchResult);
     }
     else {
         addRadicals(tabIndex+1);
@@ -160,6 +184,22 @@ function addRadicals(arrayIndex) {
 
     for (let i = 0; i < radicals[arrayIndex].length; i++) {
         html += '<span class="rad-btn picker'+(radicalMask[arrayIndex][i] == 1 ? " selected" : "")+(radicalMask[arrayIndex][i] == -1 ? " disabled" : "")+'" index='+arrayIndex+' position='+i+' onClick="handleRadicalSelect(event)">'+radicals[arrayIndex][i]+'</span>';
+    }
+
+    $(".rad-picker").html(html);
+}
+
+// Appends radicals contained in an array
+function addRadicalsFromArray(index, array) {
+    let html = $(".rad-picker").html();
+    html += '<span class="rad-btn picker num">'+index+'</span>';
+
+    for (let a = 0; a < array.length; a++) {
+        for (let j = 0; j < radicals[index-1].length; j++) {
+            if (radicals[index-1][j] == array[a].l) {
+                html += '<span class="rad-btn picker'+(radicalMask[index-1][j] == 1 ? " selected" : "")+(radicalMask[index-1][j] == -1 ? " disabled" : "")+'" index='+index+' position='+j+' onClick="handleRadicalSelect(event)">'+radicals[index-1][j]+'</span>';
+            }
+        }
     }
 
     $(".rad-picker").html(html);
@@ -191,7 +231,6 @@ function loadRadicalResults(info) {
 
         rrHtml += kanjiBtns;
     }
-
 
     $('.rad-results').html(rrHtml);
 
@@ -286,9 +325,18 @@ function checkRadicalsInTab(arrayIndex) {
 
 // Resets all Radical-Tabs by removing class-modifiers
 function resetAllTabs() {
-    for (let i = 0; i < radicals.length; i++) {
+    for (let i = 0; i < 10; i++) {
         $("#r-t"+i).removeClass("disabled");
         $("#r-t"+i).removeClass("highlighted");
+    }
+}
+
+// Resets all Radical-Tabs by removing class-modifiers including the selected tab
+function closeAllTabs() {
+    for (let i = 0; i < 10; i++) {
+        $("#r-t"+i).removeClass("disabled");
+        $("#r-t"+i).removeClass("highlighted");
+        $("#r-t"+i).removeClass("selected");
     }
 }
 
@@ -340,4 +388,80 @@ function getRadicalInfo() {
             Util.showMessage("error", "Could not reach Radical API.")
         }
     });
+}
+
+// Calls the API to get input suggestions
+var lastRadRequest;
+function getRadicalSearchResults() {
+
+    // Get values for the input
+    let query = $("#kanji-search").val();
+    let pickedRads = [];
+
+    if (query.length == 0) {
+        return;
+    }
+
+    for (let i = 0; i < radicals.length; i++) {
+        for (let j = 0; j < radicals[i].length; j++) {
+            if (radicalMask[i][j] == 1)
+                pickedRads.push(radicals[i][j]);
+        }
+    }
+
+    // Create the JSON
+    let inputJSON = {
+        "query": query,
+        "picked_radicals": pickedRads
+    }
+
+    // Abort any requests sent earlier
+    if (lastRadRequest !== undefined) {
+        lastRadRequest.abort();
+    }
+
+    // Send Request to backend
+    lastRadRequest = $.ajax({ 
+        type : "POST", 
+        url : "/api/radical/search", 
+        data: JSON.stringify(inputJSON),
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        success : function(result) { 
+            // Load the results into frontend
+            loadRadicalSearchResults(result);
+            lastRadicalSearchResult = result;
+        }, 
+        error : function(result) { 
+            $("#r-tc").removeClass("show");
+            $("#r-tc").removeClass("selected");
+        } 
+    }); 
+}
+
+// Visualizes the results of getRadicalSearchResults
+function loadRadicalSearchResults(results) {
+    let firstFound = false;
+
+    for (let i = 1; i <= 15; i++) {
+        if (results.radicals[i] !== undefined) {
+            if (!firstFound) {
+                firstFound = true;
+                
+                clearRadicals();
+                closeAllTabs();
+
+                $("#r-tc").addClass("show");
+                $("#r-tc").addClass("selected");
+            }
+
+            addRadicalsFromArray(i, results.radicals[i]);
+        }
+    }
+
+    if (!firstFound) {
+        $("#r-tc").removeClass("show")
+        openRadicalPage(-1);
+    }
 }

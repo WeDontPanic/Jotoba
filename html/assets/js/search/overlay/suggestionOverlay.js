@@ -125,9 +125,14 @@ function getSuggestionApiData() {
     // Create the JSON
     let lang = Cookies.get("default_lang");
     let type = $('#search-type').val();
+    let txt = input.value;
+    
+    if (txt.length == 0) {
+        return;
+    }
 
     let inputJSON = {
-        "input": input.value,
+        "input": txt,
         "search_type": type,
         "lang": lang === undefined ? "en-US" : lang
     }

@@ -49,6 +49,13 @@ document.querySelector("#search").addEventListener("focus", e => {
     showContainer();
     keepSuggestions = false;
 });
+
+// Event whenever the user types into the search bar
+document.querySelector("#kanji-search").addEventListener("input", e => {
+    getRadicalSearchResults();
+});
+
+// Outside-Click event (used to hide overlays...)
 document.addEventListener("click", e => {
     // When clicking anything but the search bar or dropdown
     if (!Util.isChildOf(searchRow, e.target)) {

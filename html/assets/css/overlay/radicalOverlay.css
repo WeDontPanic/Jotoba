@@ -63,6 +63,7 @@
     height: 28px;
     margin-top: 10px;
     margin-bottom: -2px;
+    cursor: default;
 }
 
 .rad-page-toggle:hover {
@@ -77,6 +78,24 @@
     /* font-family: "Overpass"; */
     width: 45px;
     text-align: center;
+    cursor: pointer;
+}
+
+#r-tc {
+    display: none;
+    text-align: center;
+    text-align: -webkit-center;
+}
+
+#r-tc.show {
+    display: block;
+}
+
+#r-tc > .searchSvg {
+    background-color: var(--searchTextColor);
+    width: 15px;
+    height: 15px;
+    margin-top: 4px;
 }
 
 .rad-page-toggle > span:first-child {
