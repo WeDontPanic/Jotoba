@@ -212,7 +212,6 @@ function loadSuggestionApiData(result) {
             container_rad.innerHTML += 
             ' <a href="/search/'+primaryResult+'" class="search-suggestion"> ' +
             '   <span class="primary-suggestion">'+primaryResult+'</span> ' +
-            '   <span class="secondary-suggestion">'+secondaryResult+'</span> ' +
             ' </a> ';      
         }
     }

@@ -52,13 +52,11 @@ function markCurrentSearchType() {
 function showContainer() {
     if (availableSuggestions > 0 && input.value.length > 0) {
         container.classList.remove("hidden");
-        container_rad.classList.remove("hidden");
         if (typeof scrollSearchIntoView === "function") {
             scrollSearchIntoView();
         }
     } else {
         container.classList.add("hidden");
-        container_rad.classList.add("hidden");
     } 
 }
 
