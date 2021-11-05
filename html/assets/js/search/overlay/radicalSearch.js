@@ -336,7 +336,6 @@ function resetAllTabs() {
 function closeAllTabs() {
     for (let i = 0; i < 10; i++) {
         $("#r-t"+i).removeClass("disabled");
-        $("#r-t"+i).removeClass("highlighted");
         $("#r-t"+i).removeClass("selected");
     }
 }
