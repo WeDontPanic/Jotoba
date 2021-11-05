@@ -82,7 +82,7 @@ function changeSuggestionIndex(direction, setDirectly) {
     if (setDirectly) {
       currentSuggestionIndex = direction;
     } else {
-      currentSuggestionIndex = mod(currentSuggestionIndex + direction, availableSuggestions + 1);
+      currentSuggestionIndex = Math.positiveMod(currentSuggestionIndex + direction, availableSuggestions + 1);
     }
 
     // Get newly selected suggestion

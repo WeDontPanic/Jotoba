@@ -203,6 +203,11 @@ Math.easeInOutQuad = function (t, b, c, d) {
     return -c/2 * (t*(t-2) - 1) + b;
 };
 
+// Returns the modulo of n and m but always makes them positive (-6, 4) = 2
+Math.positiveMod = function(n, m) {
+    return ((n % m) + m) % m;
+}
+
 // Opens the given URL in the current tab
 Util.loadUrl = function(url) {
     window.location = url;
