@@ -41,8 +41,8 @@ fn kana_search(query: &str) -> Result<Vec<char>, Error> {
         .find()?
         .item_iter()
         .map(|i| {
-            let reading = &i.get_reading().reading;
-            reading
+            i.get_reading()
+                .reading
                 .chars()
                 .filter(|i| i.is_kanji())
                 .collect::<Vec<char>>()

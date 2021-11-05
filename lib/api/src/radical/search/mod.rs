@@ -1,45 +1,51 @@
 mod jp_search;
 mod meaning;
 
-use std::collections::{HashMap, HashSet};
+use std::{
+    collections::{BTreeSet, HashMap},
+    str::FromStr,
+};
 
-use actix_web::web::Json;
+use actix_web::{web::Json, HttpRequest};
 use error::api_error::RestError;
 use japanese::JapaneseExt;
+use resources::parse::jmdict::languages::Language;
 use serde::{Deserialize, Serialize};
 
 /// Request struct for kanji_by_radicals endpoint
 #[derive(Deserialize)]
 pub struct RadSearchRequest {
     pub query: String,
-    #[serde(default)]
-    pub picked_radicals: Vec<char>,
 }
 
 /// Response struct for kanji_by_radicals endpoint
 #[derive(Serialize, Default)]
 pub struct RadSearchResponse {
-    pub radicals: HashMap<u8, HashSet<ResRadical>>,
+    pub radicals: HashMap<u8, BTreeSet<ResRadical>>,
 }
 
 /// Single radical with its enabled/disabled state, representing whether it can be used together
 /// with the currently picked radicals or not.
-#[derive(Serialize, Hash, Eq, PartialEq)]
+#[derive(Serialize, Hash, Eq, PartialEq, Ord, PartialOrd)]
 pub struct ResRadical {
     #[serde(rename = "l")]
     literal: char,
-    #[serde(rename = "p")]
-    possible: bool,
 }
 
 /// Search for radicals
 pub async fn search_radical(
     mut payload: Json<RadSearchRequest>,
+    request: HttpRequest,
 ) -> Result<Json<RadSearchResponse>, actix_web::Error> {
     verify_payload(&mut payload)?;
 
+    let user_lang = request
+        .cookie("default_lang")
+        .and_then(|i| Language::from_str(i.value()).ok())
+        .unwrap_or_default();
+
     let res = if !payload.query.is_japanese() {
-        meaning::search(&payload.query)
+        meaning::search(&payload.query, user_lang)
     } else {
         jp_search::search(&payload.query)
     };
@@ -48,59 +54,26 @@ pub async fn search_radical(
         return Ok(Json(RadSearchResponse::default()));
     }
 
-    let mut radicals = HashMap::with_capacity(res.len());
-
-    let possible_radicals = get_possible_radicals(&payload.picked_radicals);
-
-    for (rad, strokes) in map_radicals(&res, possible_radicals) {
-        radicals
-            .entry(strokes as u8)
-            .or_insert_with(|| HashSet::new())
-            .insert(rad);
-    }
-
-    Ok(Json(RadSearchResponse { radicals }))
+    Ok(Json(RadSearchResponse {
+        radicals: map_radicals(&res),
+    }))
 }
 
 /// Maps radicals by its literals to ResRadical with its stroke count
-fn map_radicals(inp: &[char], possible_radicals: Option<HashSet<char>>) -> Vec<(ResRadical, i32)> {
-    let mut res = Vec::with_capacity(inp.len());
+fn map_radicals(inp: &[char]) -> HashMap<u8, BTreeSet<ResRadical>> {
+    let mut radicals = HashMap::with_capacity(inp.len());
 
     for (lit, strokes) in inp
         .iter()
         .filter_map(|lit| japanese::radicals::get_radical(*lit))
     {
-        let possible = possible_radicals
-            .as_ref()
-            .map(|i| i.contains(&lit))
-            .unwrap_or(true);
-
-        let res_rad = ResRadical {
-            literal: lit,
-            possible,
-        };
-
-        res.push((res_rad, strokes));
+        radicals
+            .entry(strokes as u8)
+            .or_insert_with(|| BTreeSet::new())
+            .insert(ResRadical { literal: lit });
     }
 
-    res
-}
-
-/// Returns a HashSet of radicals that are still possible. Returns `None` if no radicals were provided.
-fn get_possible_radicals(radicals: &[char]) -> Option<HashSet<char>> {
-    if radicals.is_empty() {
-        return None;
-    }
-
-    let mut possible_radicals: HashSet<char> = HashSet::new();
-
-    for kanji in resources::get().kanji().by_radicals(radicals) {
-        if let Some(parts) = &kanji.parts {
-            possible_radicals.extend(parts);
-        }
-    }
-
-    Some(possible_radicals)
+    radicals
 }
 
 /// Verifies the payload itself and returns a proper error if the request is invalid
