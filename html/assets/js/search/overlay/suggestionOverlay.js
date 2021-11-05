@@ -167,7 +167,6 @@ function getSuggestionApiData() {
 function loadSuggestionApiData(result) {
 
     // Keep old suggestion if it exists in the list again
-    let oldSuggestion = currentSuggestion;
     let suggestionChosen = false;
 
     // Remove current suggestions
@@ -213,6 +212,10 @@ function loadSuggestionApiData(result) {
             '   <span class="primary-suggestion">'+primaryResult+'</span> ' +
             '   <span class="secondary-suggestion">'+secondaryResult+'</span> ' +
             ' </a> ';      
+
+            // Stop after appending 10 entries max
+            if (i == 9) 
+                break;
         } else {
             container_rad.innerHTML += 
             ' <a href="/search/'+primaryResult+'" class="search-suggestion"> ' +
