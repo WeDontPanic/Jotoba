@@ -390,15 +390,7 @@
     }
 
     /* -------- Radical Picker -------- */
-
-    .rad-picker {
-        background-image: unset;
-    }
     
-    .rad-btn {
-        width: calc(100% / 9 + 8px);
-    }
-
     .rad-picker-icon {
         font-size: 30px;
     }

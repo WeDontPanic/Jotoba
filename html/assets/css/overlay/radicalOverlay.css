@@ -257,10 +257,6 @@
 
 /* Mobile Adjustments */
 @media only screen and (max-width: 600px) {
-
-    .rad-picker {
-        height: 25vh;
-    }
     
     .rad-results {
         max-height: 20vh !important;
@@ -268,11 +264,14 @@
 
     .rad-page-toggle {
         height: 30px;
+        overflow-x: scroll;
+        white-space: nowrap;
+        max-width: 90%;
     }
 
     .rad-page-toggle > span:first-child {
         margin-left: 10px;
-        width: 12%;
+        margin-right: 0px;
     }
 
     .rad-page-toggle > span:not(:first-child) {
@@ -280,6 +279,11 @@
         width: -moz-max-content;
         width: max-content;
         padding: 0px 2px 0px 2px;
+    }
+
+    .rad-page-toggle > span {
+        margin-left: 2%;
+        margin-right: 2%;
     }
 
     .undoSvg {
