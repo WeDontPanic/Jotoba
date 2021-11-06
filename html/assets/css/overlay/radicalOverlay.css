@@ -258,6 +258,10 @@
 /* Mobile Adjustments */
 @media only screen and (max-width: 600px) {
     
+    body {
+        min-height: 650px;
+    }
+
     .rad-results {
         max-height: 20vh !important;
     }
