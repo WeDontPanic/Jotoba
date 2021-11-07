@@ -43,8 +43,13 @@
         margin-bottom: 5px;
     }
     
-    .cookie-footer span {
+    .cookie-footer span, .cookie-btn {
         font-size: 12px;
+    }
+
+    .joto-cookie {
+        width: 125px;
+        margin-right: 25px;
     }
 }
 
