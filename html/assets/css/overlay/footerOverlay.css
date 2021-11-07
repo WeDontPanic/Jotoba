@@ -2,13 +2,12 @@
     display: block;
     position: fixed;
     left: 10%;
-    bottom: 0;
-    width: 80%;
+    bottom: 5%;
+    width: 85%;
     padding: 10px;
     background: var(--overlay);
     border: 2px solid var( --tagColor);
-    border-radius: 10px 10px 0px 0px;
-    border-bottom: 0px;
+    border-radius: 10px;
     z-index: 100;
 }
 
@@ -20,4 +19,38 @@
 .cookie-btn {
     margin-top: 10px;
     margin-right: 10px;
+}
+
+.joto-cookie {
+    width: 85px;
+    margin-right: 25px;
+}
+
+/* Mobile adjustments */
+
+@media only screen and (max-width: 600px) {
+    .cookie-footer {
+        z-index: 100;
+        height: -webkit-max-content;
+        height: -moz-max-content;
+        height: max-content;
+        width: 90%;
+        left: 5%;
+    }
+    
+    .cookie-footer > h3 {
+        font-size: 17px;
+        margin-bottom: 5px;
+    }
+    
+    .cookie-footer span {
+        font-size: 12px;
+    }
+}
+
+@media only screen and (min-width: 1270px) {
+    .cookie-footer {
+        left: 23%;
+        width: 54%;
+    }
 }

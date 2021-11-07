@@ -503,29 +503,6 @@
         box-shadow: 0 0 3pt 2pt var(--primaryColor);
     }
 
-    /* Footer */
-
-    .cookie-footer {
-        z-index: 100;
-        height: -webkit-max-content;
-        height: -moz-max-content;
-        height: max-content;
-        width: 90%;
-        left: 5%;
-    }
-
-    .cookie-footer > h3 {
-        font-size: 17px;
-        margin-bottom: 5px;
-    }
-
-    .cookie-footer > span {
-        font-size: 12px;
-    }
-
-    .cookie-footer > .d-flex {
-        height: 45px;
-    }
 }
 
 /* Mobile only */

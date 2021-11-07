@@ -276,19 +276,20 @@ msgid "About Page"
 msgstr ""
 
 # Cookie Footer
-msgid "This Website uses Cookies"
+msgid "We use cookies to improve your experience and deliver personalized content."
 msgstr ""
 
-msgid "We use cookies to provide you with the best experience possible. You can find more details in our"
+msgid "By using Jotoba you agree to our"
+msgstr ""
+
+#  - End of the above sentence -
+msgid "."  
 msgstr ""
 
 msgid "privacy policy"
 msgstr ""
 
-msgid "You can change your preferences at any time by pressing on the Settings icon."
-msgstr ""
-
-msgid "Only use necessary cookies"
+msgid "Only use necessary"
 msgstr ""
 
 msgid "Allow Cookies"
