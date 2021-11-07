@@ -61,6 +61,7 @@ pub struct EntrySense {
     pub xref: Option<String>,
     pub dialect: Option<Dialect>,
     pub information: Option<String>,
+    pub gairaigo: Option<Gairaigo>,
     pub example_sentence: Option<ExampleSentence>,
 }
 
@@ -76,6 +77,13 @@ pub struct ExampleSentence {
 pub struct Translation {
     pub language: Language,
     pub value: String,
+}
+
+#[derive(Debug, Default, Clone, PartialEq, Deserialize, Serialize, Hash)]
+pub struct Gairaigo {
+    pub language: Language,
+    pub fully_derived: bool,
+    pub original: String,
 }
 
 /// A single gloss entry.
@@ -302,6 +310,11 @@ where
                             Tag::Dialect => sense.dialect = Some(Dialect::from_str(&value)?),
                             Tag::SInf => sense.information = Some(value),
                             Tag::ExampleText => example_sentence.text = value,
+                            Tag::LSource(gairaigo) => {
+                                let mut gairaigo = gairaigo.clone();
+                                gairaigo.original = value;
+                                sense.gairaigo = Some(gairaigo)
+                            }
                             Tag::ExampleSentence(lang) => {
                                 if *lang == Language::Japanese {
                                     example_sentence.japanese = value;
@@ -382,6 +395,7 @@ impl EntrySense {
         self.misc = None;
         self.part_of_speech.clear();
         self.example_sentence = None;
+        self.gairaigo = None;
     }
 }
 
@@ -416,7 +430,7 @@ enum Tag {
     Pos,       // pos Part-of-Speech
     Field,     // field Information about the field of application of the entry/sense
     Misc,      // misc Other relevant information about entry/sense
-    LSource,   // lsource indicates information about the source language
+    LSource(Gairaigo), // lsource indicates information about the source language
     Dialect, // dial For words specifically associated with regional dialects in Japanese, the entity code for that dialect, e.g. ksb for Kansaiben
     Gloss(GlossValue), // gloss Represents trans language words
     Pri, // pri Highlights patricular target-language words which are strongly associated with the japanese word
@@ -487,7 +501,7 @@ impl Tag {
             "pos" => Tag::Pos,
             "field" => Tag::Field,
             "misc" => Tag::Misc,
-            "lsource" => Tag::LSource,
+            "lsource" => Tag::LSource(parse_gairaigo(attributes)),
             "dial" => Tag::Dialect,
             "gloss" => Tag::Gloss(GlossValue::new(attributes)),
             "pri" => Tag::Pri,
@@ -513,6 +527,33 @@ fn get_language(attributes: Option<Attributes>) -> Language {
                 })
         })
         .unwrap_or_default()
+}
+
+fn parse_gairaigo(attributes: Option<Attributes>) -> Gairaigo {
+    let mut gairaigo = Gairaigo::default();
+
+    if attributes.is_none() {
+        return gairaigo;
+    }
+
+    for attribute in attributes
+        .unwrap()
+        .into_iter()
+        .filter_map(|i| i.is_ok().then(|| i.unwrap()))
+    {
+        let key = str::from_utf8(&attribute.key).unwrap();
+        let val = str::from_utf8(&attribute.value).unwrap();
+
+        match key {
+            "xml:lang" => {
+                gairaigo.language = Language::from_str(val).unwrap_or_default();
+            }
+            "ls_wasei" => gairaigo.fully_derived = val == "y",
+            _ => continue,
+        }
+    }
+
+    gairaigo
 }
 
 impl Display for Tag {

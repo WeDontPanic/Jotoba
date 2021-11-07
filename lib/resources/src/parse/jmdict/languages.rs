@@ -1,3 +1,4 @@
+use localization::traits::Translatable;
 use std::convert::TryFrom;
 use strum_macros::{AsRefStr, Display, EnumString};
 
@@ -73,6 +74,24 @@ impl Into<i32> for Language {
             Self::Hungarian => 7,
             Self::Slovenian => 8,
             Self::Japanese => 9,
+        }
+    }
+}
+
+impl Translatable for Language {
+    #[inline]
+    fn get_id(&self) -> &'static str {
+        match self {
+            Language::English => "English",
+            Language::German => "German",
+            Language::Russian => "Russian",
+            Language::Spanish => "Spanish",
+            Language::Swedish => "Swedish",
+            Language::French => "French",
+            Language::Dutch => "Dutch",
+            Language::Hungarian => "Hungarian",
+            Language::Slovenian => "Slovenian",
+            Language::Japanese => "Japanese",
         }
     }
 }

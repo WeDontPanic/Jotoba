@@ -112,9 +112,6 @@ msgstr "Lade ein Bild hoch oder füge direkt die URL ein ein und Jotoba wird ver
 msgid "Enter Image URL..."
 msgstr "Bild-URL einfügen..."
 
-msgid "Search"
-msgstr "Suchen"
-
 # Languages
 
 msgid "English"
@@ -519,6 +516,10 @@ msgstr "Audio herunterladen"
 # "no words found"
 msgid "words"
 msgstr "Wörter"
+
+# gairaigo
+msgid "From {}: {}"
+msgstr "Vom {}: {}"
 
 ## Sentence search
 

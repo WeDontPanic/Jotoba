@@ -5,7 +5,7 @@ use crate::parse::jmdict::{
     languages::Language,
     misc::Misc,
     part_of_speech::{PartOfSpeech, PosSimple},
-    ExampleSentence,
+    ExampleSentence, Gairaigo,
 };
 use itertools::Itertools;
 use localization::{language::Language as LocLanguage, traits::Translatable, TranslationDict};
@@ -25,6 +25,7 @@ pub struct Sense {
     pub part_of_speech: Vec<PartOfSpeech>,
     pub language: Language,
     pub example_sentence: Option<ExampleSentence>,
+    pub gairaigo: Option<Gairaigo>,
 }
 
 impl Eq for Sense {}
@@ -84,17 +85,38 @@ impl Sense {
         &self,
         dict: &TranslationDict,
         language: LocLanguage,
-    ) -> Option<(Option<String>, Option<&str>, Option<&str>, Option<Dialect>)> {
+    ) -> Option<(
+        Option<String>,
+        Option<&str>,
+        Option<&str>,
+        Option<Dialect>,
+        Option<String>,
+    )> {
         let info_str = self.get_information_string(dict, language);
         let xref = self.get_xref();
         let antonym = self.get_antonym();
         let dialect = self.dialect;
 
-        if xref.is_none() && info_str.is_none() && antonym.is_none() {
+        if xref.is_none() && info_str.is_none() && antonym.is_none() && self.gairaigo.is_none() {
             None
         } else {
-            Some((info_str, xref, antonym, dialect))
+            let gairaigo_txt = self.get_gairaigo(dict, language);
+            Some((info_str, xref, antonym, dialect, gairaigo_txt))
         }
+    }
+
+    fn get_gairaigo(&self, dict: &TranslationDict, language: LocLanguage) -> Option<String> {
+        self.gairaigo.as_ref().map(|gairaigo| {
+            let lang = gairaigo
+                .language
+                .gettext(dict, Some(language))
+                .to_lowercase();
+            dict.gettext_fmt(
+                "From {}: {}",
+                &[lang, gairaigo.original.clone()],
+                Some(language),
+            )
+        })
     }
 
     /// Return human readable information about a gloss

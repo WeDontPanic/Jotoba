@@ -112,9 +112,6 @@ msgstr ""
 msgid "Enter Image URL..."
 msgstr ""
 
-msgid "Search"
-msgstr ""
-
 # Rad Picker overlay
 
 msgid "Select Radicals"
@@ -531,6 +528,10 @@ msgstr ""
 
 # "no words found"
 msgid "words"
+msgstr ""
+
+# gairaigo
+msgid "From {}: {}"
 msgstr ""
 
 ## Sentence search
