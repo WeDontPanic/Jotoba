@@ -155,6 +155,122 @@ msgstr ""
 msgid "Japanese"
 msgstr ""
 
+msgctxt "foreign_lang"
+msgid "mnc"
+msgstr "Manchu"
+
+msgctxt "foreign_lang"
+msgid "geo"
+msgstr "Georgian"
+
+
+msgctxt "foreign_lang"
+msgid "chi"
+msgstr "Chinese"
+
+
+msgctxt "foreign_lang"
+msgid "may"
+msgstr "Manchu"
+
+
+msgctxt "foreign_lang"
+msgid "kur"
+msgstr "Kurdish"
+
+
+msgctxt "foreign_lang"
+msgid "mnc"
+msgstr "Chinook jargon"
+
+
+msgctxt "foreign_lang"
+msgid "ita"
+msgstr "Italian"
+
+
+msgctxt "foreign_lang"
+msgid "mal"
+msgstr "Malayalam"
+
+
+msgctxt "foreign_lang"
+msgid "tib"
+msgstr "Tibetian"
+
+
+msgctxt "foreign_lang"
+msgid "mon"
+msgstr "Mongolian"
+
+
+msgctxt "foreign_lang"
+msgid "rum"
+msgstr "Romanian"
+
+
+msgctxt "foreign_lang"
+msgid "bnt"
+msgstr "Bantu"
+
+
+msgctxt "foreign_lang"
+msgid "nor"
+msgstr "Norwegian"
+
+
+msgctxt "foreign_lang"
+msgid "gre"
+msgstr "Greek"
+
+msgctxt "foreign_lang"
+msgid "ice"
+msgstr "Icelandic"
+
+msgctxt "foreign_lang"
+msgid "bre"
+msgstr "Breton"
+
+msgctxt "foreign_lang"
+msgid "mao"
+msgstr "Maori"
+
+msgctxt "foreign_lang"
+msgid "lat"
+msgstr "Latin"
+
+msgctxt "foreign_lang"
+msgid "amh"
+msgstr "Amharic"
+
+msgctxt "foreign_lang"
+msgid "khm"
+msgstr "Khmer"
+
+msgctxt "foreign_lang"
+msgid "swa"
+msgstr "Swahili"
+
+msgctxt "foreign_lang"
+msgid "heb"
+msgstr "Hebrew"
+
+msgctxt "foreign_lang"
+msgid "glg"
+msgstr "Galician"
+
+msgctxt "foreign_lang"
+msgid "kor"
+msgstr "Korean"
+
+msgctxt "foreign_lang"
+msgid "tam"
+msgstr "Tamil"
+
+msgctxt "foreign_lang"
+msgid "vie"
+msgstr "Viatnamese"
+
 # Settings
 msgid "Default search language"
 msgstr ""
