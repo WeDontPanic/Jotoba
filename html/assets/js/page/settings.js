@@ -116,7 +116,7 @@ function loadCookieData() {
     prepareCookieSettings(allow_cookies);
 
     // Load search language
-    let default_lang = Cookies.get("default_lang");
+    let search_lang = Cookies.get("default_lang") || navigator.language || navigator.userLanguage || "en-US";
     let page_lang = Cookies.get ("page_lang");
 
     // Load result settings
@@ -126,16 +126,15 @@ function loadCookieData() {
     // Load display settings
     let anim_speed = Cookies.get("anim_speed");
 
-    // Set Default_Lang 
-    let userLang = default_lang || navigator.language || navigator.userLanguage || "en-US";
-    if (!isSupportedSearchLang(userLang)) {
-         userLang = "en-US";
+    // Correct search_lang if needed
+    if (!isSupportedSearchLang(search_lang)) {
+        search_lang = "en-US";
     }
+    Cookies.set("default_lang", search_lang);
 
-    // Activate by finding the correct 
-      
+    // Set search_lang in settings overlay
     document.querySelectorAll("#search-lang-select > .choices__item--choice").forEach((e) => {
-        if (e.dataset.value == userLang) {
+        if (e.dataset.value == search_lang) {
             let choicesInner = e.parentElement.parentElement.parentElement.children[0].children;
              
             choicesInner[0].children[0].innerHTML = e.innerHTML;
@@ -143,9 +142,8 @@ function loadCookieData() {
         }
     });
 
-    // Set in cookie selected language
+    // Set page_lang in settings overlay
     document.querySelectorAll("#page-lang-select > .choices__item--choice").forEach((e) => {
-
         if (e.dataset.value == page_lang) {
             let choicesInner = e.parentElement.parentElement.parentElement.children[0].children;
             
