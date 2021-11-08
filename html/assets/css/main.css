@@ -106,7 +106,7 @@ button {
 }
 
 .btn-danger {
-    color: var(--secondaryTextColor) !important;
+    color: white !important;
     background-color: var(--danger) !important;
     border-color: var(--danger) !important;
 }
@@ -418,16 +418,16 @@ a:hover {
 /* SVG Colors */
 
 .searchSvg, .settingsSvg, .clearSvg, .voiceSvg {
-    -webkit-mask-size: cover !important;
     mask-size: cover !important;
+    -webkit-mask-size: cover !important; 
 }
 
 .searchSvg {
     height: 18px;
     width: 18px;
     background-color: var(--primaryColor);
-    -webkit-mask: url("/assets/svg/ui/search.svg") no-repeat center;
     mask: url("/assets/svg/ui/search.svg") no-repeat center;
+    -webkit-mask: url("/assets/svg/ui/search.svg") no-repeat center;
 }
 
 .searchSvg.index {
@@ -442,8 +442,8 @@ a:hover {
     height: 30px;
     width: 30px;
     background-color: var(--tagColor);
-    -webkit-mask: url("/assets/svg/ui/settings.svg") no-repeat center;
     mask: url("/assets/svg/ui/settings.svg") no-repeat center;
+    -webkit-mask: url("/assets/svg/ui/settings.svg") no-repeat center;
 }
 
 .settingsSvg.mobile {
@@ -456,8 +456,8 @@ a:hover {
     width: 20px;
     margin-top: 2px;
     background-color: var(--tagColor);
-    -webkit-mask: url("/assets/svg/ui/clear.svg") no-repeat center;
     mask: url("/assets/svg/ui/clear.svg") no-repeat center;
+    -webkit-mask: url("/assets/svg/ui/clear.svg") no-repeat center;
 }
 
 .voiceSvg {
@@ -465,8 +465,8 @@ a:hover {
     height: 24px;
     width: 24px;
     background-color: var(--primaryColor);
-    -webkit-mask: url("/assets/svg/ui/voice.svg") no-repeat center;
     mask: url("/assets/svg/ui/voice.svg") no-repeat center;
+    -webkit-mask: url("/assets/svg/ui/voice.svg") no-repeat center;
 }
 
 .voiceSvg.mobile {
@@ -486,8 +486,8 @@ a:hover {
     height: 28px;
     width: 28px;
     background-color: var(--tagColor);
-    -webkit-mask: url("/assets/svg/ui/camera.svg") no-repeat center;
     mask: url("/assets/svg/ui/camera.svg") no-repeat center;
+    -webkit-mask: url("/assets/svg/ui/camera.svg") no-repeat center;
 }
 
 .cameraSvg.index {
@@ -500,24 +500,24 @@ a:hover {
     height: 26px;
     width: 26px;
     background-color: var(--primaryColor);
-    -webkit-mask: url("/assets/svg/ui/jump.svg") no-repeat center;
     mask: url("/assets/svg/ui/jump.svg") no-repeat center;
+    -webkit-mask: url("/assets/svg/ui/jump.svg") no-repeat center;
 }
 
 .menuSvg {
     height: 28px;
     width: 28px;
     background-color: var(--tagColor);
-    -webkit-mask: url("/assets/svg/ui/menu.svg") no-repeat center;
     mask: url("/assets/svg/ui/menu.svg") no-repeat center;
+    -webkit-mask: url("/assets/svg/ui/menu.svg") no-repeat center;
 }
 
 .undoSvg {
     height: 20px;
     width: 20px;
     background-color: var(--tagColor);
-    -webkit-mask: url("/assets/svg/ui/undo.svg") no-repeat center;
     mask: url("/assets/svg/ui/undo.svg") no-repeat center;
+    -webkit-mask: url("/assets/svg/ui/undo.svg") no-repeat center;
     cursor: pointer;
 }
 
@@ -526,8 +526,8 @@ a:hover {
     height: 20px;
     width: 20px;
     background-color: var(--tagColor);
-    -webkit-mask: url("/assets/svg/ui/upload.svg") no-repeat center;
     mask: url("/assets/svg/ui/upload.svg") no-repeat center;
+    -webkit-mask: url("/assets/svg/ui/upload.svg") no-repeat center;
     cursor: pointer;
 }
 
@@ -535,8 +535,8 @@ a:hover {
     height: 20px;
     width: 20px;
     background-color: var(--tagColor);
-    -webkit-mask: url("/assets/svg/ui/download.svg") no-repeat center;
     mask: url("/assets/svg/ui/download.svg") no-repeat center;
+    -webkit-mask: url("/assets/svg/ui/download.svg") no-repeat center;
     cursor: pointer;
     pointer-events: none;
 }
@@ -545,8 +545,8 @@ a:hover {
     height: 20px;
     width: 20px;
     background-color: var(--tagColor);
-    -webkit-mask: url("/assets/svg/ui/conjugation.svg") no-repeat center;
     mask: url("/assets/svg/ui/conjugation.svg") no-repeat center;
+    -webkit-mask: url("/assets/svg/ui/conjugation.svg") no-repeat center;
     cursor: pointer;
     pointer-events: none;
 }
@@ -555,8 +555,8 @@ a:hover {
     height: 20px;
     width: 20px;
     background-color: var(--tagColor);
-    -webkit-mask: url("/assets/svg/ui/sentence.svg") no-repeat center;
     mask: url("/assets/svg/ui/sentence.svg") no-repeat center;
+    -webkit-mask: url("/assets/svg/ui/sentence.svg") no-repeat center;
     cursor: pointer;
     pointer-events: none;
 }
@@ -565,8 +565,8 @@ a:hover {
     height: 20px;
     width: 20px;
     background-color: var(--tagColor);
-    -webkit-mask: url("/assets/svg/ui/transitivity.svg") no-repeat center;
     mask: url("/assets/svg/ui/transitivity.svg") no-repeat center;
+    -webkit-mask: url("/assets/svg/ui/transitivity.svg") no-repeat center;
     cursor: pointer;
     pointer-events: none;
 }
