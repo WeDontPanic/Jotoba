@@ -12,7 +12,7 @@
 
 .rad-suggestion-wrapper {
     width: 100%;
-    border-top: 1px solid var(--searchTextColor);
+    border-top: 1px solid var(--borderColor);
     margin-top: 10px;
     overflow-x: scroll;
     scrollbar-width: none;
@@ -46,7 +46,7 @@
 
 .rad-page-footer {
     height: 50px;
-    border-top: 1px solid;
+    border-top: 1px solid var(--borderColor);
 }
 
 .overlay.radical > .clickable {
@@ -103,7 +103,7 @@
 }
 
 .rad-page-toggle > span.disabled {
-    color: var(--secondaryColor);
+    color: var(--disabledColor);
 }
 
 .rad-page-toggle > span.highlighted {
@@ -113,14 +113,14 @@
 .rad-page-toggle span.selected {
     color: var(--primaryColor);
     border-color: var(--primaryColor);
-    border: 2px solid var(--searchTextColor);
+    border: 2px solid var(--borderColor);
     border-bottom: unset;
     background: var(--background);
     border-radius: 6px 6px 0px 0px;
 }
 
 .rad-kanji-wrapper {
-    border: 2px solid var(--searchTextColor);
+    border: 2px solid var(--borderColor);
     margin: 0px -2px -2px -2px;
     border-radius: 15px;
     overflow-x: auto;
@@ -140,7 +140,7 @@
     background-color: var(--background);
     margin-top: 10px;
     margin-bottom: -10px;
-    border-top: 1px solid var(--searchTextColor);
+    border-top: 1px solid var(--borderColor);
     border-top-width: 1px;
     width: 100%;
 }
@@ -194,16 +194,16 @@
 }
 
 .rad-btn.num {
-    background-color: var(--searchTextColor);
+    background-color: var(--borderColor);
 } 
-
+ 
 .rad-btn:hover:not(.num) {
     cursor: pointer;
 }
 
 .kanji-search-wrapper > .searchSvg{
     display: inline-block;
-    margin: 13px 0px 0px 18px;
+    margin: 15px 0px 0px 18px;
     width: 20px;
     height: 20px;
     background-color: var(--tagColor);

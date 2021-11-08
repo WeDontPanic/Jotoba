@@ -27,24 +27,35 @@
     --langSep: rgba(50,103,51,.1);
     --lineColor: rgba(0,0,0,.1);
     --backgroundShadow: rgba(34,34,34,0.1);
+
+    --borderColor: var(--searchTextColor);
+    --disabledColor: #BDBDBD;
 }
 
 :root.dark {
     --background: #202324;
     --overlay: #1F2123;
+
     --primaryColor: #62CF6A;
     --bgPrimaryColor: #2A8630;
-    --secondaryColor: #384463;
+    --secondaryColor: #435993;
+
     --primaryTextColor: #D3CFC9;
     --secondaryTextColor: #D1D1D1;
+
     --searchBackground: #181A1B;
     --searchTextColor: #B2ACA2;
     --shadowColor: #9D9488;
+
     --tagColor: #787878;
     --itemBG: #7A7A7A;
+
     --itemBG_075: rgba(122,122,122,0.75);
     --lineColor: rgba(211,207,201,0.1);
     --backgroundShadow: rgba(157,148,136,0.1);
+
+    --border-color: var(--itemBG_075);
+    --disabledColor: #3C3C3C;
 }
 
 /* ----------------- Overall Page Adjustments ----------------- */

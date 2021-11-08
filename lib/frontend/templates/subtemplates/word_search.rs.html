@@ -15,6 +15,8 @@
 <link rel="stylesheet" type="text/css" href="/assets/css/page/wordExtensions/sentenceReader.css">
 <link rel="stylesheet" type="text/css" href="/assets/css/page/wordExtensions/searchAnnotation.css">
 
+<script defer src="/assets/js/page/wordPage.js"></script>
+
   @if let Some(ref inflection) = result.inflection_info {
     <div class="search-annotation">
 
@@ -273,6 +275,42 @@
                             }
                           </div>
                         }
+                        <!-- TODO: Example Sentences for words-->
+                        <div class="d-flex flex-row">
+                          <div class="tags no-margin example-sentence collapsed"> 
+                            <div class="d-flex flex-row wrap">               
+                              <div class="inline-kana-preview">
+                                この                    
+                              </div>
+                              <div class="furigana-kanji-container">
+                                <span class="furigana-preview noselect">
+                                  せ
+                                </span>
+                                <span class="kanji-preview">
+                                  世
+                                </span>
+                              </div>
+                              <div class="furigana-kanji-container">
+                                <span class="furigana-preview noselect">
+                                  けん
+                                </span>
+                                <span class="kanji-preview">
+                                  間
+                                </span>
+                              </div>
+                              <div class="inline-kana-preview">
+                                はいいですね                     
+                              </div>
+                            </div>
+                          </div>
+                          <div class="expander">
+
+                          </div>
+                        </div>
+                        <div class="tags no-margin">
+                          Irgendwas mit Welt.. Mir fallen keine Beispiele für nen Satz ein, also muss der hier ausreichen.
+                        </div>
+                        <!-- TODO - END -->
                       </div>
                     }
                   }

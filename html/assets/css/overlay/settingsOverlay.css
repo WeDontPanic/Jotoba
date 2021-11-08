@@ -9,3 +9,12 @@
     height: 100%;
     margin-right: 0.25rem;
 }
+
+.slidecontainer {
+    margin-top: 5px;
+    margin-bottom: -3px;
+}
+
+.colorLbl {
+    margin-right: 5px;
+}

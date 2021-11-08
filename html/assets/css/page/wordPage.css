@@ -55,6 +55,55 @@
     padding-left: 1vw;
 }
 
+/* Example Sentences */
+.example-sentence {
+    padding-top: 5px;
+    margin-bottom: 5px !important;
+    max-width: 90%;
+    overflow-y: hidden;
+}
+
+.example-sentence.collapsed {
+    max-height: 35px;
+}
+
+.example-sentence .wrap div {
+    margin-top: -5px;
+}
+
+.expander {
+    height: 0;
+    width: 0;
+    margin-top: 24px;
+    margin-left: 5px;
+    border-style: solid;
+    border-width: 5px;
+    border-color: var(--tagColor) transparent transparent transparent;
+}
+
+.expander.on {
+    transform: rotate(180deg);
+    transform-origin: top center;
+    margin-top: 29px;
+}
+
+.expander:hover {
+    cursor: pointer;
+}
+
+.tags .kanji-preview {
+    font-size: 15px;
+}
+
+.tags .furigana-preview {
+    font-size: 10px;
+}
+
+.tags .inline-kana-preview {
+    font-size: 15px;
+    padding-top: 18px;
+}
+
 /* Kanji Stuff Overwrite */
 
 .kanji-entry.left.fixed {
@@ -151,7 +200,7 @@
 }
 
 .word-frequency.common {
-    background-color: var(--primaryColor);
+    background-color: var(--bgPrimaryColor);
 }
 
 .kanji-entry .list-entry + .list-entry {
