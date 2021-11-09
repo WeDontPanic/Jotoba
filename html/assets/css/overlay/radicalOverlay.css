@@ -219,6 +219,7 @@
 }
 
 #kanji-search {
+    background-color: var(--searchBackground);
     border: none;
     border-bottom: 2px solid var(--backgroundShadow);
     color: var(--searchTextColor);
