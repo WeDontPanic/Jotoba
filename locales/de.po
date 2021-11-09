@@ -504,7 +504,7 @@ msgstr "Nur notwendige verwenden"
 msgid "Allow Cookies"
 msgstr "alle Cookies erlauben"
 
-### Index
+### About Page
 
 msgid "is a multilingual Japanese dictionary"
 msgstr "ist ein mehrsprachiges Japanisch-Wörterbuch"
@@ -551,6 +551,131 @@ msgstr "Drücke"
 
 msgid "to instantly focus the search bar"
 msgstr "um die Suchleiste zu fokussieren"
+
+### Info / Help Page
+
+msgid "Shortcuts"
+msgstr "Tastenkombinationen"
+
+msgid "To improve the quality of life on Jotoba, we offer some shortcuts to quickly navigate the page:"
+msgstr "Um die Nutzung von Jotoba so einfach wie möglich zu machen, bieten wir einige Shortcuts an mit denen man schnell auf der Seite navigieren kann:"
+
+msgid "Everywhere"
+msgstr "Überall verfügbar"
+
+msgid "Quickly change between words | sentences | names | kanji tabs"
+msgstr "Wechsle schnell zwischen Wörtern | Sätzen | Namen | Kanji Suchen"
+
+msgid "Focus the search bar"
+msgstr "Fokussiere die Suchleiste"
+
+msgid "Focussed search bar"
+msgstr "Wenn die Suchleiste im Fokus liegt"
+
+msgid "Iterate suggestions up | down"
+msgstr "Iteriere Vorschläge hoch | herunter"
+
+msgid "Iterate suggestions down"
+msgstr "Iteriere Vorschläge herunter"
+
+msgid "[Words] search"
+msgstr "[Wörter] Suche"
+
+msgid "Play the first possible audio"
+msgstr "Spiele die Audio vom ersten Ergebnis ab"
+
+msgid "To specify what kind of results your search should offer, you can use shortcuts."
+msgstr "Um deine Suche genauer zu spezifizieren, können Hashtags verwendet werden."
+
+msgid "Hashtags should be written at end end of your input like this:"
+msgstr "Sie sollten folgendermaßen an das Ende eines Inputs geschrieben werden:"
+
+msgid "Available Hashtags for [Words] search"
+msgstr "Verfügbare Hashtags für die [Wörter] Suche"
+
+msgid "Search for nouns"
+msgstr "Suche nach Nomen"
+
+msgid "Search for verbs"
+msgstr "Suche nach Verben"
+
+msgid "Search for transitive verbs"
+msgstr "Suche nach transitiven Verben"
+
+msgid "Search for intransitive verbs""
+msgstr "Suche nach intransitiven Verben"
+
+msgid "Search for adverb"
+msgstr "Suche nach Adverben"
+
+msgid "Search for auxilary verbs"
+msgstr "Suche nach Hilfsverben"
+
+msgid "Search for adjectives"
+msgstr "Suche nach Adjektiven"
+
+msgid "Search for pronouns"
+msgstr "Suche nach Pronomen"
+
+msgid "Search for conjugations"
+msgstr "Suche nach Konjugationen"
+
+msgid "Search for prefixes"
+msgstr "Suche nach Prefixen"
+
+msgid "Search for suffixes"
+msgstr "Suche nach Suffixen"
+
+msgid "Search for japanese particles"
+msgstr "Suche nach Japanischen Partikeln [z.B. を]"
+
+msgid "Search for sfx words [comic sounds]"
+msgstr "Suche nach sfx-Wörtern [z.b. Sounds in Comics]"
+
+msgid "Search for words used for counting"
+msgstr "Suche nach Wörtern zum Zählen"
+
+msgid "Search for expressions"
+msgstr "Suche nach Ausdrücken"
+
+msgid "Search for words used as interjections"
+msgstr "Suche nach Wörtern, welche als Interjektionen genutzt werden"
+
+msgid "Search for numeric words"
+msgstr "Suche nach numerischen Wörtern"
+
+msgid "Search for abbreviations"
+msgstr "Suche nach Abkürzungen"
+
+msgid "Search for words that don't fit in any category"
+msgstr "Suche nach Wörtern, welche in keine andere Kategorie passen"
+
+msgid "Search for words included in the specific JLPT level"
+msgstr "Suche nach Wörtern aus dem jeweiligen JLPT Level"
+
+msgid "Search in the [words] category"
+msgstr "Suche in der [Wörter] Kategorie"
+
+msgid "Search in the [sentences] category"
+msgstr "Suche in der [Sätze] Kategorie"
+
+msgid "Search in the [name] category"
+msgstr "Suche in der [Namen] Kategorie"
+
+msgid "Search in the [kanji] category"
+msgstr "Suche in der [Kanji] Kategorie"
+
+msgid "Available Hashtags for [Sentence] search"
+msgstr "Verfügbare Hashtags für die [Sätze] Suche"
+
+msgid "Search for sentences included in the specific JLPT level"
+msgstr "Suche nach Sätzen aus dem jeweiligen JLPT Level"
+
+msgid "Available Hashtags for [Kanji] search"
+msgstr "Verfügbare Hashtags für die [Kanji] Suche"
+
+msgid "Search for kanji included in the specific Genki chapter"
+msgstr "Suche nach Kanji aus dem jeweiligen Genki Kapitel"
 
 ## Name search
 msgid "Full name"
