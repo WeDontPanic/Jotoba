@@ -5,6 +5,7 @@ mod actix_ructe;
 
 pub mod about;
 pub mod index;
+pub mod help_page;
 mod pagination;
 pub mod search_ep;
 mod session;
@@ -42,6 +43,7 @@ pub enum Site<'a> {
     SearchResult(SearchResult<'a>),
     Index,
     About,
+    InfoPage,
 }
 
 /// Search result data. Required by individual templates to render the result items

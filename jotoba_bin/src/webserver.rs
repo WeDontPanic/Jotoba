@@ -115,6 +115,11 @@ pub(super) async fn start() -> std::io::Result<()> {
                     .wrap(Compat::new(middleware::Compress::default()))
                     .route(actixweb::get().to(frontend::about::about)),
             )
+            .service(
+                actixweb::resource("/help")
+                    .wrap(Compat::new(middleware::Compress::default()))
+                    .route(actixweb::get().to(frontend::help_page::help)),
+            )
             .default_service(actix_web::Route::new().to(frontend::web_error::not_found))
             // API
             .service(
