@@ -340,6 +340,50 @@
         }
       }
     },
+    "/api/radical/search": {
+      "post": {
+        "tags": [
+          "Radicals"
+        ],
+        "summary": "Search radicals",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/RadicalSearchPayload"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success response",
+            "schema": {
+              "$ref": "#/definitions/RadicalSearchResponse"
+            }
+          },
+          "400": {
+            "description": "Bad request. Might occur if no value was passed",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
     "/api/suggestion": {
       "post": {
         "tags": [
@@ -729,6 +773,16 @@
       },
       "description": "Payload for kanji-by-radicals search"
     },
+    "RadicalSearchPayload": {
+      "type": "object",
+      "properties": {
+        "query": {
+          "type": "string",
+          "example": "heart"
+        }
+      },
+      "description": "Payload for radical search"
+    },
     "RadicalsResponse": {
       "type": "object",
       "properties": {
@@ -754,6 +808,30 @@
         }
       },
       "description": "Kanji-by-radicals response"
+    },
+    "RadicalSearchResponse": {
+      "type": "object",
+      "properties": {
+        "4": {
+          "type": "array",
+          "description": "Radical search result",
+          "items": {
+            "$ref": "#/definitions/RadicalSearchItem"
+          }
+        }
+      },
+      "description": "Radical search response"
+    },
+    "RadicalSearchItem": {
+      "type": "object",
+      "properties": {
+        "l": {
+          "type": "string",
+          "example": "心",
+          "description": "A kanji literal"
+        }
+      },
+      "description": "Radical search response item"
     },
     "CompletionPayload": {
       "type": "object",

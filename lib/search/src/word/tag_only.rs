@@ -15,7 +15,7 @@ pub(super) fn search(search: &Search<'_>) -> Result<ResultData, Error> {
 
     match filter_tag.unwrap() {
         Tag::Jlpt(jlpt) => return jlpt_search(search, *jlpt),
-        _ => return Err(Error::Unexpected),
+        _ => return Ok(ResultData::default()),
     }
 }
 
