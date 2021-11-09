@@ -13,7 +13,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"PO-Revision-Date: 2021-09-19 15:35+0200\n"
+"PO-Revision-Date: 2021-11-09 19:31+0100\n"
 "Last-Translator:  <jojii@gmx.net>\n"
 "Language-Team: English\n"
 "Language: en\n"
@@ -156,38 +156,28 @@ msgid "Japanese"
 msgstr ""
 
 msgctxt "foreign_lang"
-msgid "mnc"
-msgstr "Manchu"
-
-msgctxt "foreign_lang"
 msgid "geo"
 msgstr "Georgian"
-
 
 msgctxt "foreign_lang"
 msgid "chi"
 msgstr "Chinese"
 
-
 msgctxt "foreign_lang"
 msgid "may"
 msgstr "Manchu"
-
 
 msgctxt "foreign_lang"
 msgid "kur"
 msgstr "Kurdish"
 
-
 msgctxt "foreign_lang"
 msgid "mnc"
 msgstr "Chinook jargon"
 
-
 msgctxt "foreign_lang"
 msgid "ita"
 msgstr "Italian"
-
 
 msgctxt "foreign_lang"
 msgid "mal"
@@ -198,26 +188,21 @@ msgctxt "foreign_lang"
 msgid "tib"
 msgstr "Tibetian"
 
-
 msgctxt "foreign_lang"
 msgid "mon"
 msgstr "Mongolian"
-
 
 msgctxt "foreign_lang"
 msgid "rum"
 msgstr "Romanian"
 
-
 msgctxt "foreign_lang"
 msgid "bnt"
 msgstr "Bantu"
 
-
 msgctxt "foreign_lang"
 msgid "nor"
 msgstr "Norwegian"
-
 
 msgctxt "foreign_lang"
 msgid "gre"
@@ -1366,37 +1351,96 @@ msgid "Space"
 msgstr ""
 
 ## Name search
+msgctxt "name_type"
 msgid "Company"
 msgstr ""
 
+msgctxt "name_type"
 msgid "Female"
 msgstr ""
 
+msgctxt "name_type"
 msgid "Male"
 msgstr ""
 
+msgctxt "name_type"
 msgid "Organization"
 msgstr ""
 
+msgctxt "name_type"
 msgid "Persons name"
 msgstr ""
 
+msgctxt "name_type"
 msgid "Place"
 msgstr ""
 
+msgctxt "name_type"
 msgid "Product"
 msgstr ""
 
+msgctxt "name_type"
 msgid "(Railway)Station"
 msgstr ""
 
+msgctxt "name_type"
 msgid "Surname"
 msgstr ""
 
+msgctxt "name_type"
 msgid "Unknown"
 msgstr ""
 
+msgctxt "name_type"
 msgid "Art work"
+msgstr ""
+
+msgctxt "name_type"
+msgid "Character"
+msgstr ""
+
+msgctxt "name_type"
+msgid "Deity"
+msgstr ""
+
+msgctxt "name_type"
+msgid "Document"
+msgstr ""
+
+msgctxt "name_type"
+msgid "Event"
+msgstr ""
+
+msgctxt "name_type"
+msgid "Fiction"
+msgstr ""
+
+msgctxt "name_type"
+msgid "Group"
+msgstr ""
+
+msgctxt "name_type"
+msgid "Legend"
+msgstr ""
+
+msgctxt "name_type"
+msgid "Mythology"
+msgstr ""
+
+msgctxt "name_type"
+msgid "Object"
+msgstr "Object"
+
+msgctxt "name_type"
+msgid "Other"
+msgstr ""
+
+msgctxt "name_type"
+msgid "Religion"
+msgstr ""
+
+msgctxt "name_type"
+msgid "Service"
 msgstr ""
 
 # "No names found"

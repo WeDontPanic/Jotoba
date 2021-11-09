@@ -13,7 +13,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"PO-Revision-Date: 2021-09-19 15:35+0200\n"
+"PO-Revision-Date: 2021-11-09 19:33+0100\n"
 "Last-Translator:  <>\n"
 "Language-Team: English\n"
 "Language: en\n"
@@ -152,61 +152,45 @@ msgctxt "foreign_lang"
 msgid "geo"
 msgstr "Georgischen"
 
-
 msgctxt "foreign_lang"
 msgid "chi"
 msgstr "Chinesischen"
-
 
 msgctxt "foreign_lang"
 msgid "may"
 msgstr "Mandschurischen"
 
-
 msgctxt "foreign_lang"
 msgid "kur"
 msgstr "Kurdischen"
-
-
-msgctxt "foreign_lang"
-msgid "mnc"
-msgstr "Chinook Wawa'ischen"
-
 
 msgctxt "foreign_lang"
 msgid "ita"
 msgstr "Italienischen"
 
-
 msgctxt "foreign_lang"
 msgid "mal"
 msgstr "Malayalamischen"
-
 
 msgctxt "foreign_lang"
 msgid "tib"
 msgstr "Tibetischen"
 
-
 msgctxt "foreign_lang"
 msgid "mon"
 msgstr "Mongolischen"
-
 
 msgctxt "foreign_lang"
 msgid "rum"
 msgstr "Rumänischen"
 
-
 msgctxt "foreign_lang"
 msgid "bnt"
 msgstr "Bantusprachischen"
 
-
 msgctxt "foreign_lang"
 msgid "nor"
 msgstr "Norwegischen"
-
 
 msgctxt "foreign_lang"
 msgid "gre"
@@ -1356,38 +1340,98 @@ msgid "Space"
 msgstr "Leerzeichen"
 
 ## Name search
+msgctxt "name_type"
 msgid "Company"
 msgstr "Firma"
 
+msgctxt "name_type"
 msgid "Female"
 msgstr "Weiblich"
 
+msgctxt "name_type"
 msgid "Male"
 msgstr "Männlich"
 
+msgctxt "name_type"
 msgid "Organization"
 msgstr "Organisation"
 
+msgctxt "name_type"
 msgid "Persons name"
 msgstr "Personenname"
 
+msgctxt "name_type"
 msgid "Place"
 msgstr "Platz"
 
+msgctxt "name_type"
 msgid "Product"
 msgstr "Produkt"
 
+msgctxt "name_type"
 msgid "(Railway)Station"
 msgstr "Haltestelle"
 
+msgctxt "name_type"
 msgid "Surname"
 msgstr "Familienname"
 
+msgctxt "name_type"
 msgid "Unknown"
 msgstr "unbekannt"
 
+msgctxt "name_type"
 msgid "Art work"
 msgstr "Kunstwerk"
+
+msgctxt "name_type"
+msgid "Character"
+msgstr "Charakter"
+
+msgctxt "name_type"
+msgid "Deity"
+msgstr "Göttliches Wesen"
+
+msgctxt "name_type"
+msgid "Document"
+msgstr "Dokument"
+
+msgctxt "name_type"
+msgid "Event"
+msgstr ""
+
+msgctxt "name_type"
+msgid "Fiction"
+msgstr "Fiktion"
+
+msgctxt "name_type"
+msgid "Group"
+msgstr "Gruppe"
+
+msgctxt "name_type"
+msgid "Legend"
+msgstr "Legende"
+
+msgctxt "name_type"
+msgid "Mythology"
+msgstr "Mythologie"
+
+msgctxt "name_type"
+msgid "Object"
+msgstr "Objekt"
+
+msgctxt "name_type"
+msgid "Other"
+msgstr "Andere"
+
+msgctxt "name_type"
+msgid "Religion"
+msgstr ""
+
+msgctxt "name_type"
+msgid "Service"
+msgstr ""
+
 
 # "No names found"
 msgid "names"

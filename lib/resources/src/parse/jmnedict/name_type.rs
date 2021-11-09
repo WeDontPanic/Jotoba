@@ -29,15 +29,43 @@ pub enum NameType {
     Unclassified,
     #[strum(serialize = "work")]
     Work,
+    #[strum(serialize = "char")]
+    Character,
+    #[strum(serialize = "creat")]
+    Creature,
+    #[strum(serialize = "dei")]
+    Deity,
+    #[strum(serialize = "doc")]
+    Document,
+    #[strum(serialize = "ev")]
+    Event,
+    #[strum(serialize = "fict")]
+    Fiction,
+    #[strum(serialize = "group")]
+    Group,
+    #[strum(serialize = "leg")]
+    Legend,
+    #[strum(serialize = "myth")]
+    Mythology,
+    #[strum(serialize = "obj")]
+    Object,
+    #[strum(serialize = "oth")]
+    Other,
+    #[strum(serialize = "relig")]
+    Religion,
+    #[strum(serialize = "serv")]
+    Service,
 }
 
 impl NameType {
+    #[inline]
     pub fn is_gender(&self) -> bool {
         matches!(self, Self::Female | Self::Male)
     }
 }
 
 impl Translatable for NameType {
+    #[inline]
     fn get_id(&self) -> &'static str {
         match self {
             NameType::Company => "Company",
@@ -52,6 +80,19 @@ impl Translatable for NameType {
             NameType::Surname => "Surname",
             NameType::Unclassified => "Unknown",
             NameType::Work => "Art work",
+            NameType::Character => "Character",
+            NameType::Creature => "Creature",
+            NameType::Deity => "Deity",
+            NameType::Document => "Document",
+            NameType::Event => "Event",
+            NameType::Fiction => "Fiction",
+            NameType::Group => "Group",
+            NameType::Legend => "Legend",
+            NameType::Mythology => "Mythology",
+            NameType::Object => "Object",
+            NameType::Other => "Other",
+            NameType::Religion => "Religion",
+            NameType::Service => "Service",
         }
     }
 }

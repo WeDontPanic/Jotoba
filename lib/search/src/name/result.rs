@@ -14,7 +14,7 @@ pub fn get_types_humanized(name: &Name, dict: &TranslationDict, lang: Language) 
     if let Some(ref n_types) = name.name_type {
         n_types
             .iter()
-            .filter_map(|i| (!i.is_gender()).then(|| i.gettext(dict, Some(lang))))
+            .filter_map(|i| (!i.is_gender()).then(|| i.pgettext(dict, "name_type", Some(lang))))
             .join(", ")
     } else {
         String::from("")
