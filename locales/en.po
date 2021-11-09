@@ -13,7 +13,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"PO-Revision-Date: 2021-11-09 19:31+0100\n"
+"PO-Revision-Date: 2021-11-09 19:55+0100\n"
 "Last-Translator:  <jojii@gmx.net>\n"
 "Language-Team: English\n"
 "Language: en\n"
@@ -255,6 +255,126 @@ msgstr "Tamil"
 msgctxt "foreign_lang"
 msgid "vie"
 msgstr "Viatnamese"
+
+msgctxt "foreign_lang"
+msgid "pol"
+msgstr "Polish"
+
+msgctxt "foreign_lang"
+msgid "san"
+msgstr "Sanskrit"
+
+msgctxt "foreign_lang"
+msgid "per"
+msgstr "Persian"
+
+msgctxt "foreign_lang"
+msgid "fil"
+msgstr "Filipino"
+
+msgctxt "foreign_lang"
+msgid "mol"
+msgstr "Moldavian"
+
+msgctxt "foreign_lang"
+msgid "scr"
+msgstr "Croatian"
+
+msgctxt "foreign_lang"
+msgid "tha"
+msgstr "Thai"
+
+msgctxt "foreign_lang"
+msgid "bur"
+msgstr "Burmese"
+
+msgctxt "foreign_lang"
+msgid "slo"
+msgstr "Slovak"
+
+msgctxt "foreign_lang"
+msgid "cze"
+msgstr "Czech"
+
+msgctxt "foreign_lang"
+msgid "hin"
+msgstr "Hindi"
+
+msgctxt "foreign_lang"
+msgid "arn"
+msgstr "Mapudungun"
+
+msgctxt "foreign_lang"
+msgid "tur"
+msgstr "Turkish"
+
+msgctxt "foreign_lang"
+msgid "haw"
+msgstr "Hawaiian"
+
+msgctxt "foreign_lang"
+msgid "afr"
+msgstr "Afrikaans"
+
+msgctxt "foreign_lang"
+msgid "epo"
+msgstr "Esperanto"
+
+msgctxt "foreign_lang"
+msgid "yid"
+msgstr "Yiddish"
+
+msgctxt "foreign_lang"
+msgid "som"
+msgstr "Somali"
+
+msgctxt "foreign_lang"
+msgid "tah"
+msgstr "Tahitian"
+
+msgctxt "foreign_lang"
+msgid "urd"
+msgstr "Urdu"
+
+msgctxt "foreign_lang"
+msgid "ind"
+msgstr "Indonesian"
+
+msgctxt "foreign_lang"
+msgid "est"
+msgstr "Estonian"
+
+msgctxt "foreign_lang"
+msgid "bul"
+msgstr "Bulgarian"
+
+msgctxt "foreign_lang"
+msgid "ara"
+msgstr "Arabic"
+
+msgctxt "foreign_lang"
+msgid "dan"
+msgstr "Danish"
+
+msgctxt "foreign_lang"
+msgid "por"
+msgstr "Portuguese"
+
+msgctxt "foreign_lang"
+msgid "grc"
+msgstr "Greek"
+
+msgctxt "foreign_lang"
+msgid "fin"
+msgstr "Finnish"
+
+msgctxt "foreign_lang"
+msgid "ain"
+msgstr "Ainu"
+
+msgctxt "foreign_lang"
+msgid "alg"
+msgstr "Algonquian"
 
 # Settings
 msgid "Default search language"

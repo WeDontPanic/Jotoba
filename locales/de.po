@@ -13,7 +13,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"PO-Revision-Date: 2021-11-09 19:33+0100\n"
+"PO-Revision-Date: 2021-11-09 20:01+0100\n"
 "Last-Translator:  <>\n"
 "Language-Team: English\n"
 "Language: en\n"
@@ -242,7 +242,128 @@ msgstr "Tamilschen"
 
 msgctxt "foreign_lang"
 msgid "vie"
-msgstr "Vietnamesisch"
+msgstr "Vietnamesischen"
+
+
+msgctxt "foreign_lang"
+msgid "pol"
+msgstr "Polnischen"
+
+msgctxt "foreign_lang"
+msgid "san"
+msgstr "Sanskrit"
+
+msgctxt "foreign_lang"
+msgid "per"
+msgstr "Persischen"
+
+msgctxt "foreign_lang"
+msgid "fil"
+msgstr "Filipinischen"
+
+msgctxt "foreign_lang"
+msgid "mol"
+msgstr "Moldavischen"
+
+msgctxt "foreign_lang"
+msgid "scr"
+msgstr "Kroatischen"
+
+msgctxt "foreign_lang"
+msgid "tha"
+msgstr "Thailändischen"
+
+msgctxt "foreign_lang"
+msgid "bur"
+msgstr "Birmanischen"
+
+msgctxt "foreign_lang"
+msgid "slo"
+msgstr "Slowakischen"
+
+msgctxt "foreign_lang"
+msgid "cze"
+msgstr "Tschechischen"
+
+msgctxt "foreign_lang"
+msgid "hin"
+msgstr "Hindischen"
+
+msgctxt "foreign_lang"
+msgid "arn"
+msgstr "Araukaischen"
+
+msgctxt "foreign_lang"
+msgid "tur"
+msgstr "Türkischen"
+
+msgctxt "foreign_lang"
+msgid "haw"
+msgstr "Hawaiischen"
+
+msgctxt "foreign_lang"
+msgid "afr"
+msgstr "Afrikanischen"
+
+msgctxt "foreign_lang"
+msgid "epo"
+msgstr "Esperantonischen"
+
+msgctxt "foreign_lang"
+msgid "yid"
+msgstr "Jiddischen"
+
+msgctxt "foreign_lang"
+msgid "som"
+msgstr "Somalischen"
+
+msgctxt "foreign_lang"
+msgid "tah"
+msgstr "Tahitischen"
+
+msgctxt "foreign_lang"
+msgid "urd"
+msgstr "Urduischen"
+
+msgctxt "foreign_lang"
+msgid "ind"
+msgstr "Indonesischen"
+
+msgctxt "foreign_lang"
+msgid "est"
+msgstr "Estnischen"
+
+msgctxt "foreign_lang"
+msgid "bul"
+msgstr "Bulgarischen"
+
+msgctxt "foreign_lang"
+msgid "ara"
+msgstr "Arabischen"
+
+msgctxt "foreign_lang"
+msgid "dan"
+msgstr "Dänischen"
+
+msgctxt "foreign_lang"
+msgid "por"
+msgstr "Portugiesischen"
+
+msgctxt "foreign_lang"
+msgid "grc"
+msgstr "Griechischen"
+
+msgctxt "foreign_lang"
+msgid "fin"
+msgstr "Finnischen"
+
+msgctxt "foreign_lang"
+msgid "ain"
+msgstr "Ainuischen"
+
+msgctxt "foreign_lang"
+msgid "alg"
+msgstr "Algonkinischen"
 
 # Settings
 msgid "Default search language"
