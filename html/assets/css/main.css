@@ -447,6 +447,24 @@ a:hover {
     -webkit-mask: url("/assets/svg/ui/settings.svg") no-repeat center;
 }
 
+.infoSvg {
+    scale: 1.1;
+    height: 30px;
+    width: 30px;
+    background-color: var(--tagColor);
+    mask: url("/assets/svg/ui/info.svg") no-repeat center;
+    -webkit-mask: url("/assets/svg/ui/info.svg") no-repeat center;
+}
+
+.notificationSvg {
+    scale: 1.1;
+    height: 30px;
+    width: 30px;
+    background-color: var(--tagColor);
+    mask: url("/assets/svg/ui/notification.svg") no-repeat center;
+    -webkit-mask: url("/assets/svg/ui/notification.svg") no-repeat center;
+}
+
 .settingsSvg.mobile {
     height: 26px;
     width: 26px;

@@ -47,9 +47,29 @@ form {
     place-content: center;
 }
 
-.settingsBtn {
+.settingsBtn, .infoBtn, .notificationBtn {
     top: 15px;
     position: absolute !important;
+}
+
+.notificationBtn {
+    top: 22px;
+    right: 10px;
+}
+
+.notificationBtn.update::after {
+    content: "";
+    position: absolute;
+    top: 0.5rem;
+    right: 1.25rem;
+    padding: .25rem;
+    border-radius: 1rem;
+    background-color: var(--bgPrimaryColor);
+}
+
+.infoBtn {
+    top: 22px;
+    right: 45px;
 }
 
 .inner-form {
@@ -174,6 +194,10 @@ form {
     .settingsBtn {
         display: unset !important;
         left: 10px !important;
+    }
+
+    .infoBtn, .notificationBtn {
+        display: unset !important;
     }
 
     .input-field.third-wrap:not(.rad) {
