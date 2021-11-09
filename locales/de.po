@@ -13,7 +13,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"PO-Revision-Date: 2021-11-09 20:33+0100\n"
+"PO-Revision-Date: 2021-11-09 22:58+0100\n"
 "Last-Translator:  <>\n"
 "Language-Team: English\n"
 "Language: en\n"
@@ -602,7 +602,7 @@ msgstr "Suche nach Verben"
 msgid "Search for transitive verbs"
 msgstr "Suche nach transitiven Verben"
 
-msgid "Search for intransitive verbs""
+msgid "Search for intransitive verbs"
 msgstr "Suche nach intransitiven Verben"
 
 msgid "Search for adverb"
