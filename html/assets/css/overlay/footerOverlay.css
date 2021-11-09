@@ -1,14 +1,18 @@
 .cookie-footer {
     display: block;
     position: fixed;
-    left: 10%;
     bottom: 5%;
-    width: 85%;
     padding: 10px;
     background: var(--overlay);
     border: 2px solid var( --tagColor);
     border-radius: 10px;
     z-index: 100;
+    max-width: -webkit-max-content;
+    max-width: -moz-max-content;
+    max-width: max-content;
+    width: inherit;
+    left: 50%;
+    transform: translate(-50%, 0);
 }
 
 .cookie-footer > .res-separator {
@@ -28,21 +32,7 @@
 
 /* Mobile adjustments */
 
-@media only screen and (max-width: 600px) {
-    .cookie-footer {
-        z-index: 100;
-        height: -webkit-max-content;
-        height: -moz-max-content;
-        height: max-content;
-        width: 90%;
-        left: 5%;
-    }
-    
-    .cookie-footer > h3 {
-        font-size: 17px;
-        margin-bottom: 5px;
-    }
-    
+@media only screen and (max-width: 600px) {   
     .cookie-footer span, .cookie-btn {
         font-size: 12px;
     }
@@ -50,12 +40,5 @@
     .joto-cookie {
         width: 125px;
         margin-right: 25px;
-    }
-}
-
-@media only screen and (min-width: 1270px) {
-    .cookie-footer {
-        left: 23%;
-        width: 54%;
     }
 }
