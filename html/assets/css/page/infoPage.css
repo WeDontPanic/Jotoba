@@ -1,0 +1,17 @@
+.help-cat {
+    padding-top: 25px;
+}
+
+table {
+    margin-left: 25px;
+}
+
+.help-list ul:first-child {
+    color: var(--primaryColor);
+    width: 150px;
+}
+
+td:first-child {
+    color: var(--primaryColor);
+    width: 150px;
+}

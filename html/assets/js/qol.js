@@ -4,8 +4,6 @@
 
 var shiftPressed = false;
 
-
-
 // Prevent random dragging of <a> elements
 $('a').mousedown((event) => {
     event.preventDefault();

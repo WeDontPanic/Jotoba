@@ -99,7 +99,10 @@ function changeSuggestionIndex(direction, setDirectly) {
         // Mark the suggestion's row
         suggestion[2].classList.add("selected");
     }
-   
+    else {
+        currentSuggestion = "";
+    }
+
     // Remove mark on old row
     if (oldIndex != 0) {
         getSuggestionByIndex(oldIndex-1)[2].classList.remove("selected");
@@ -187,6 +190,9 @@ function loadSuggestionApiData(result) {
 
     // Set the amount of possible suggestions
     availableSuggestions = result.suggestions.length;
+    if (availableSuggestions > 10) {
+        availableSuggestions = 10;
+    }
 
     // Add suggestions
     for (let i = 0; i < availableSuggestions; i++) {
@@ -212,10 +218,6 @@ function loadSuggestionApiData(result) {
             '   <span class="primary-suggestion">'+primaryResult+'</span> ' +
             '   <span class="secondary-suggestion">'+secondaryResult+'</span> ' +
             ' </a> ';      
-
-            // Stop after appending 10 entries max
-            if (i == 9) 
-                break;
         } else {
             container_rad.innerHTML += 
             ' <a href="/search/'+primaryResult+'" class="search-suggestion"> ' +

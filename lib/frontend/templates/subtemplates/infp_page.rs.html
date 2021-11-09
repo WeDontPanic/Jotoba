@@ -1,0 +1,192 @@
+@use crate::BaseData;
+@(data: &BaseData)
+
+
+<link rel="stylesheet" type="text/css" href="/assets/css/page/infoPage.css">
+<script defer src="/assets/js/page/infoPage.js"></script>
+
+<div class="d-flex center">
+	<article>
+
+		<!-- Shortcuts -->
+		<div id="shortcutInfo" class="small-12 medium-6 columns small-centered">
+			<h2>@data.gettext("Shortcuts")</h2>
+			<p>@data.gettext("To improve the quality of life on Jotoba, we offer some shortcuts to quickly navigate the page:")</p>
+			
+         <!-- Everywhere accessable shortcuts -->
+         <b>@data.gettext("Everywhere")</b>
+			<table>
+				<tbody>
+					<tr>
+						<td>w | s | n | k</td>
+						<td>@data.gettext("Quickly change between words | sentences | names | kanji tabs")</td>
+					</tr>
+					<tr>
+						<td>/</td>
+						<td>@data.gettext("Focus the search bar")</td>
+					</tr>
+				</tbody>
+			</table>
+
+         <!-- Shortcuts when focussed on search bar -->
+			<b>@data.gettext("Focussed search bar")</b>
+			<table>
+				<tbody>
+					<tr>
+						<td>↑ | ↓</td>
+						<td>@data.gettext("Iterate suggestions up | down")</td>
+					</tr>
+					<tr>
+						<td>[Tab]</td>
+						<td>@data.gettext("Iterate suggestions down")</td>
+					</tr>
+				</tbody>
+			</table>
+
+         <!-- Shortcuts used only by the [Words] search -->
+			<b>@data.gettext("[Words] search")</b>
+			<table>
+				<tbody>
+					<tr>
+						<td>p</td>
+						<td>@data.gettext("Play the first possible audio")</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+
+		<!-- Hashtags -->
+		<div class="small-12 medium-6 columns small-centered help-cat">
+			<h2>@data.gettext("Hashtags")</h2>
+			<p>
+				@data.gettext("To specify what kind of results your search should offer, you can use shortcuts.") <br> @data.gettext("Hashtags should be written at end end of your input like this:")
+				<a class="clickable no-align" href="/search/start%20%23noun?t=0">start #noun</a>
+			</p>
+
+         <!-- Word search hashtags --> 
+			<b>@data.gettext("Available Hashtags for [Words] search")</b>
+			<table>
+				<tbody>
+					<tr>
+						<td>#noun</td>
+						<td>@data.gettext("Search for nouns")</td>
+					</tr>
+					<tr>
+						<td>#verb</td>
+						<td>@data.gettext("Search for verbs")</td>
+					</tr>
+					<tr>
+						<td>#transitive</td>
+						<td>@data.gettext("Search for transitive verbs")</td>
+					</tr>
+					<tr>
+						<td>#intransitive</td>
+						<td>@data.gettext("Search for intransitive verbs")</td>
+					</tr>
+					<tr>
+						<td>#adverb</td>
+						<td>@data.gettext("Search for adverbs")</td>
+					</tr>
+					<tr>
+						<td>#auxilary</td>
+						<td>@data.gettext("Search for auxilary verbs")</td>
+					</tr>
+					<tr>
+						<td>#adjective</td>
+						<td>@data.gettext("Search for adjectives")</td>
+					</tr>
+					<tr>
+						<td>#pronoun</td>
+						<td>@data.gettext("Search for pronouns")</td>
+					</tr>
+					<tr>
+						<td>#conjungation</td>
+						<td>@data.gettext("Search for conjugations")</td>
+					</tr>
+					<tr>
+						<td>#prefix</td>
+						<td>@data.gettext("Search for prefixes")</td>
+					</tr>
+					<tr>
+						<td>#suffix</td>
+						<td>@data.gettext("Search for suffixes")</td>
+					</tr>
+					<tr>
+						<td>#particle</td>
+						<td>@data.gettext("Search for japanese particles")</td>
+					</tr>
+					<tr>
+						<td>#sfx</td>
+						<td>@data.gettext("Search for sfx words [comic sounds]")</td>
+					</tr>
+					<tr>
+						<td>#counter</td>
+						<td>@data.gettext("Search for words used for counting")</td>
+					</tr>
+					<tr>
+						<td>#expression</td>
+						<td>@data.gettext("Search for expressions")</td>
+					</tr>
+					<tr>
+						<td>#interjection</td>
+						<td>@data.gettext("Search for words used as interjections")</td>
+					</tr>
+					<tr>
+						<td>#numeric</td>
+						<td>@data.gettext("Search for numeric words")</td>
+					</tr>
+					<tr>
+						<td>#abbreviation</td>
+						<td>@data.gettext("Search for abbreviations")</td>
+					</tr>
+					<tr>
+						<td>#unclassified</td>
+						<td>@data.gettext("Search for words that don't fit in any category")</td>
+					</tr>
+					<tr>
+						<td>#N [5-1]</td>
+						<td>@data.gettext("Search for words included in the specific JLPT level")</td>
+					</tr>
+					<tr>
+						<td>#word</td>
+						<td>@data.gettext("Search in the [words] category")</td>
+					</tr>
+					<tr>
+						<td>#sentence</td>
+						<td>@data.gettext("Search in the [sentences] category")</td>
+					</tr>
+					<tr>
+						<td>#name</td>
+						<td>@data.gettext("Search in the [name] category")</td>
+					</tr>
+					<tr>
+						<td>#kanji</td>
+						<td>@data.gettext("Search in the [kanji] category")</td>
+					</tr>
+				</tbdody>
+			</table>
+
+         <!-- Sentence search hashtags --> 
+			<b>@data.gettext("Available Hashtags for [Sentence] search")</b>
+			<table>
+				<tbody>
+					<tr>
+						<td>#N [1-5]</td>
+						<td>@data.gettext("Search for sentences included in the specific JLPT level")</td>
+					</tr>
+				</tbdody>
+			</table>
+
+         <!-- Kanji search hashtags --> 
+			<b>@data.gettext("Available Hashtags for [Kanji] search")</b>
+			<table>
+				<tbody>
+					<tr>
+						<td>#Genki [3-23]</td>
+						<td>@data.gettext("Search for kanji included in the specific Genki chapter")</td>
+					</tr>
+				</tbdody>
+			</table>
+		</div>
+	</article>
+</div>
