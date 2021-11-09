@@ -13,7 +13,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"PO-Revision-Date: 2021-11-09 20:01+0100\n"
+"PO-Revision-Date: 2021-11-09 20:33+0100\n"
 "Last-Translator:  <>\n"
 "Language-Team: English\n"
 "Language: en\n"
@@ -145,224 +145,227 @@ msgid "Japanese"
 msgstr "Japanisch"
 
 msgctxt "foreign_lang"
-msgid "mnc"
-msgstr "Mandschurischen"
+msgid "German"
+msgstr "Deutschen"
 
 msgctxt "foreign_lang"
-msgid "geo"
+msgid "English"
+msgstr "Englischen"
+
+msgctxt "foreign_lang"
+msgid "Georgian"
 msgstr "Georgischen"
 
 msgctxt "foreign_lang"
-msgid "chi"
+msgid "Chinese"
 msgstr "Chinesischen"
 
 msgctxt "foreign_lang"
-msgid "may"
+msgid "Manchu"
 msgstr "Mandschurischen"
 
 msgctxt "foreign_lang"
-msgid "kur"
+msgid "Kurdish"
 msgstr "Kurdischen"
 
 msgctxt "foreign_lang"
-msgid "ita"
+msgid "ChinookJargon"
+msgstr "Mandschurischen"
+
+msgctxt "foreign_lang"
+msgid "Italian"
 msgstr "Italienischen"
 
 msgctxt "foreign_lang"
-msgid "mal"
+msgid "Malayalam"
 msgstr "Malayalamischen"
 
 msgctxt "foreign_lang"
-msgid "tib"
+msgid "Tibetian"
 msgstr "Tibetischen"
 
 msgctxt "foreign_lang"
-msgid "mon"
+msgid "Mongolian"
 msgstr "Mongolischen"
 
 msgctxt "foreign_lang"
-msgid "rum"
+msgid "Romanian"
 msgstr "Rumänischen"
 
 msgctxt "foreign_lang"
-msgid "bnt"
+msgid "Bantu"
 msgstr "Bantusprachischen"
 
 msgctxt "foreign_lang"
-msgid "nor"
+msgid "Norwegian"
 msgstr "Norwegischen"
 
 msgctxt "foreign_lang"
-msgid "gre"
-msgstr "Griechischen"
-
-msgctxt "foreign_lang"
-msgid "ice"
+msgid "Icelandic"
 msgstr "Isländischen"
 
 msgctxt "foreign_lang"
-msgid "bre"
+msgid "Breton"
 msgstr "Bretonischen"
 
 msgctxt "foreign_lang"
-msgid "mao"
+msgid "Maori"
 msgstr "Maorischen"
 
 msgctxt "foreign_lang"
-msgid "lat"
+msgid "Latin"
 msgstr "Lateinischen"
 
 msgctxt "foreign_lang"
-msgid "amh"
+msgid "Amharic"
 msgstr "Amharischen"
 
 msgctxt "foreign_lang"
-msgid "khm"
+msgid "Khmer"
 msgstr "Khmerischen"
 
 msgctxt "foreign_lang"
-msgid "swa"
+msgid "Swahili"
 msgstr "Swahilischen"
 
 msgctxt "foreign_lang"
-msgid "heb"
+msgid "Hebrew"
 msgstr "Hebräischen"
 
 msgctxt "foreign_lang"
-msgid "glg"
+msgid "Galician"
 msgstr "Galegischen"
 
 msgctxt "foreign_lang"
-msgid "kor"
+msgid "Korean"
 msgstr "Koreanischen"
 
 msgctxt "foreign_lang"
-msgid "tam"
+msgid "Tamil"
 msgstr "Tamilschen"
 
 msgctxt "foreign_lang"
-msgid "vie"
+msgid "Viatnamese"
 msgstr "Vietnamesischen"
 
-
 msgctxt "foreign_lang"
-msgid "pol"
+msgid "Polish"
 msgstr "Polnischen"
 
 msgctxt "foreign_lang"
-msgid "san"
+msgid "Sanskrit"
 msgstr "Sanskrit"
 
 msgctxt "foreign_lang"
-msgid "per"
+msgid "Persian"
 msgstr "Persischen"
 
 msgctxt "foreign_lang"
-msgid "fil"
+msgid "Filipino"
 msgstr "Filipinischen"
 
 msgctxt "foreign_lang"
-msgid "mol"
+msgid "Moldavian"
 msgstr "Moldavischen"
 
 msgctxt "foreign_lang"
-msgid "scr"
+msgid "Croatian"
 msgstr "Kroatischen"
 
 msgctxt "foreign_lang"
-msgid "tha"
+msgid "Thai"
 msgstr "Thailändischen"
 
 msgctxt "foreign_lang"
-msgid "bur"
+msgid "Burmese"
 msgstr "Birmanischen"
 
 msgctxt "foreign_lang"
-msgid "slo"
+msgid "Slovak"
 msgstr "Slowakischen"
 
 msgctxt "foreign_lang"
-msgid "cze"
+msgid "Czech"
 msgstr "Tschechischen"
 
 msgctxt "foreign_lang"
-msgid "hin"
+msgid "Hindi"
 msgstr "Hindischen"
 
 msgctxt "foreign_lang"
-msgid "arn"
+msgid "Mapudungun"
 msgstr "Araukaischen"
 
 msgctxt "foreign_lang"
-msgid "tur"
+msgid "Turkish"
 msgstr "Türkischen"
 
 msgctxt "foreign_lang"
-msgid "haw"
+msgid "Hawaiian"
 msgstr "Hawaiischen"
 
 msgctxt "foreign_lang"
-msgid "afr"
+msgid "Afrikaans"
 msgstr "Afrikanischen"
 
 msgctxt "foreign_lang"
-msgid "epo"
+msgid "Esperanto"
 msgstr "Esperantonischen"
 
 msgctxt "foreign_lang"
-msgid "yid"
+msgid "Yiddish"
 msgstr "Jiddischen"
 
 msgctxt "foreign_lang"
-msgid "som"
+msgid "Somali"
 msgstr "Somalischen"
 
 msgctxt "foreign_lang"
-msgid "tah"
+msgid "Tahitian"
 msgstr "Tahitischen"
 
 msgctxt "foreign_lang"
-msgid "urd"
+msgid "Urdu"
 msgstr "Urduischen"
 
 msgctxt "foreign_lang"
-msgid "ind"
+msgid "Indonesian"
 msgstr "Indonesischen"
 
 msgctxt "foreign_lang"
-msgid "est"
+msgid "Estonian"
 msgstr "Estnischen"
 
 msgctxt "foreign_lang"
-msgid "bul"
+msgid "Bullgarian"
 msgstr "Bulgarischen"
 
 msgctxt "foreign_lang"
-msgid "ara"
+msgid "Arabic"
 msgstr "Arabischen"
 
 msgctxt "foreign_lang"
-msgid "dan"
+msgid "Danish"
 msgstr "Dänischen"
 
 msgctxt "foreign_lang"
-msgid "por"
+msgid "Portuguese"
 msgstr "Portugiesischen"
 
 msgctxt "foreign_lang"
-msgid "grc"
+msgid "Greek"
 msgstr "Griechischen"
 
 msgctxt "foreign_lang"
-msgid "fin"
+msgid "Finnish"
 msgstr "Finnischen"
 
 msgctxt "foreign_lang"
-msgid "ain"
+msgid "Ainu"
 msgstr "Ainuischen"
 
 msgctxt "foreign_lang"
-msgid "alg"
+msgid "Algonquian"
 msgstr "Algonkinischen"
 
 # Settings
