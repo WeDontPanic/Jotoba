@@ -1,5 +1,6 @@
 pub mod dialect;
 pub mod field;
+pub mod foreign_language;
 pub mod gtype;
 pub mod information;
 pub mod languages;
@@ -26,6 +27,8 @@ use priority::Priority;
 use serde::{Deserialize, Serialize};
 
 use crate::parse::{error::Error, parser::Parse};
+
+use self::foreign_language::ForeignLanguage;
 
 /// An dict entry. Represents one word, phrase or expression
 #[derive(Debug, Default, Clone)]
@@ -81,7 +84,7 @@ pub struct Translation {
 
 #[derive(Debug, Default, Clone, PartialEq, Deserialize, Serialize, Hash)]
 pub struct Gairaigo {
-    pub language: Language,
+    pub language: ForeignLanguage,
     pub fully_derived: bool,
     pub original: String,
 }
@@ -546,7 +549,7 @@ fn parse_gairaigo(attributes: Option<Attributes>) -> Gairaigo {
 
         match key {
             "xml:lang" => {
-                gairaigo.language = Language::from_str(val).unwrap_or_default();
+                gairaigo.language = ForeignLanguage::from_str(val).unwrap_or_default();
             }
             "ls_wasei" => gairaigo.fully_derived = val == "y",
             _ => continue,

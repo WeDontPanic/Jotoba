@@ -109,7 +109,7 @@ impl Sense {
         self.gairaigo.as_ref().map(|gairaigo| {
             let lang = gairaigo
                 .language
-                .gettext(dict, Some(language))
+                .pgettext(dict, "foreign_lang", Some(language))
                 .to_lowercase();
             dict.gettext_fmt(
                 "From {}: {}",
