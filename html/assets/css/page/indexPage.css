@@ -57,7 +57,12 @@ form {
     right: 10px;
 }
 
-.notificationBtn.update::after {
+.infoBtn {
+    top: 22px;
+    right: 45px;
+}
+
+.notificationBtn.update::after, .infoBtn.new::after {
     content: "";
     position: absolute;
     top: 0.5rem;
@@ -67,9 +72,8 @@ form {
     background-color: var(--bgPrimaryColor);
 }
 
-.infoBtn {
-    top: 22px;
-    right: 45px;
+.infoBtn.new::after {
+    right: 0.95rem;
 }
 
 .inner-form {
