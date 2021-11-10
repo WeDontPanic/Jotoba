@@ -134,6 +134,7 @@ function loadCookieData() {
     let anim_speed = Cookies.get("anim_speed");
 
     // Correct search_lang if needed
+    search_lang = translateIsoToJotobaFormat(search_lang);
     if (!isSupportedSearchLang(search_lang)) {
         search_lang = "en-US";
     }
@@ -218,6 +219,47 @@ function isSupportedSearchLang(code) {
         default:
             return false;
     }
+}
+
+// Converts a code from (e.g.) the ISO 639-1 format into the Jotoba format (navigator.language)
+function translateIsoToJotobaFormat(code) {
+    if (code.startsWith("en")) {
+        return "en-US";
+    }
+
+    if (code.startsWith("de")) {
+        return "de-DE";
+    }
+
+    if (code.startsWith("es")) {
+        return "es-ES";
+    }
+
+    if (code.startsWith("fr")) {
+        return "fr-FR";
+    }
+
+    if (code.startsWith("nl")) {
+        return "nl-NL";
+    }
+
+    if (code.startsWith("sv")) {
+        return "sv-SV";
+    }
+
+    if (code.startsWith("ru")) {
+        return "ru";
+    }
+
+    if (code.startsWith("ru")) {
+        return "ru";
+    }
+
+    if (code.startsWith("sl")) {
+        return "sl-SI";
+    }
+
+    return code;
 }
 
 // Set all sliders (if any) to their default value

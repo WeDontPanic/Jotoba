@@ -96,6 +96,8 @@
     width: 15px;
     height: 15px;
     margin-top: 4px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .rad-page-toggle > span:first-child {
