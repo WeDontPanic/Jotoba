@@ -19,12 +19,22 @@ Util.awaitDocumentReady(() => {
 });
 
 // Deletes all stored cookies
-function deleteCookies(deleteAll) {
+function deleteAllCookies() {
     var allCookies = document.cookie.split(';');
                 
     for (var i = 0; i < allCookies.length; i++) {
-        if (deleteAll || (!deleteAll && !trackingCookies.includes(allCookies[i]))) {
+        document.cookie = allCookies[i] + "=;expires="+ new Date(0).toUTCString()+";path=/;";
+    }
+}
+
+function deleteTrackingCookies() {
+    var allCookies = document.cookie.split(';');
+                
+    for (var i = 0; i < allCookies.length; i++) {
+        if (trackingCookies.includes(allCookies[i])) {
             document.cookie = allCookies[i] + "=;expires="+ new Date(0).toUTCString()+";path=/;";
+        } else {
+            document.cookie = allCookies[i];
         }
     }
 }
@@ -42,9 +52,10 @@ function prepareCookieSettings(allow_cookies) {
 }
 
 // Opens the Settings Overlay and accepts cookie usage
-function cookiesAccepted() {
+function cookiesAccepted(manuallyCalled) {
     Cookies.set("allow_cookies", "1", {path: '/'});
-    Util.showMessage("success", "Cookies accepted!");
+    if (manuallyCalled)
+        Util.showMessage("success", "Thanks for making Jotoba better!");
 
     $('#cookie-footer').addClass("hidden");
     $('#cookie-agreement-accept').addClass("hidden");
@@ -59,14 +70,10 @@ function revokeCookieAgreement(manuallyCalled) {
     $('#cookie-agreement-accept').removeClass("hidden");
     $('#cookie-agreement-revoke').addClass("hidden");
 
-    if (manuallyCalled) {
+    if (manuallyCalled)
         Util.showMessage("success", "Successfully deleted your cookie data.");
-        deleteCookies(true);
-    } else {
-        Util.showMessage("success", "Your personal data will not be saved.");
-        deleteCookies(false);
-    }
 
+    deleteTrackingCookies(true);
     Cookies.set("allow_cookies", "0", {path: '/'});
 }
 
@@ -109,7 +116,7 @@ function onSettingsChange_AnimationSpeed(event) {
 function loadCookieData() {
     // User agreement on using Cookies
     let allow_cookies = Cookies.get("allow_cookies");
-    if (!checkTrackingAllowed()) {
+    if (!allow_cookies && !checkTrackingAllowed()) {
         allow_cookies = "0";
         Cookies.set("allow_cookies", 0);
     }

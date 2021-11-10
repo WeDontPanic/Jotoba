@@ -38,32 +38,40 @@ var radicalMask = [
 ];
 
 const baseRadResult = $('.rad-results')[0].innerHTML;
+var currentSearchInput;
 var lastRadicalSearchResult;
 
 Util.awaitDocumentReady(() => {
     loadRadicals(0);
+
+    // Used to re-focus upon using Radical Btns
+    $("#kanji-search").focus(e => {
+        currentSearchInput = $("#kanji-search");
+    });
+    $("#search").focus(e => {
+        currentSearchInput = $("#search");
+    });
 });
 
+// Opens | Closes the Radical overlay
 function toggleRadicalOverlay() {
     closeAllSubSearchbarOverlays("radical");
 
     let overlay = $('.overlay.radical');
     overlay.toggleClass('hidden');
 
-    if (overlay.hasClass("hidden")) {
-        recognition.stop();
-    }
-
     // Reset on close
     if (overlay.hasClass("hidden")) {
         resetRadPicker()
         container.classList.add("hidden");
         container_rad.classList.add("hidden");
+        recognition.stop();
     } else {
         $('.rad-results').html(baseRadResult);
         $('.rad-results').removeClass("hidden");
         getSuggestionApiData();
         scrollSearchIntoView();
+        $('#kanji-search').focus();
     }
 }
 
@@ -87,9 +95,15 @@ function resetRadPicker() {
 
 // Adds the selected Kanji to the search bar
 function handleKanjiSelect(event) {
+    // Insert Kanji in search bar
     $('#search').val($('#search').val() + event.target.innerHTML);
+
+    // Update search bar
     callApiAndSetShadowText();
     toggleSearchIcon(200);
+
+    // Focus the last search bar
+    currentSearchInput.focus();
 }
 
 // Toggles Radicals on Input and loads the results
@@ -116,11 +130,15 @@ function handleRadicalSelect(event) {
 
     // Get possible Kanji / Radicals from selection
     getRadicalInfo();
+    
+    // Focus the last search bar
+    currentSearchInput.focus();
 }
 
 // Opens the Radical Page at the given index
 let lastRadicalPage;
 function openRadicalPage(index) {
+    // Handle special pages
     if (index == -1) {
         if (lastRadicalPage !== undefined) {
             index = lastRadicalPage;
@@ -131,6 +149,7 @@ function openRadicalPage(index) {
         }
     }
 
+    // Iterate buttons and update whether to hightlight them or not
     $(".rad-page-toggle > span").each((i, e) => {
         if (i == index) {
             e.classList.add("selected");
@@ -139,8 +158,11 @@ function openRadicalPage(index) {
             e.classList.remove("selected");
     });
     
-
+    // Load Radicals of new page
     loadRadicals(index);
+
+     // Focus the last search bar
+     currentSearchInput.focus();
 }
 
 // Clears the shown Radical list
