@@ -91,6 +91,8 @@ function resetRadPicker() {
 
     $('.rad-results').html(baseRadResult);
     resetAllTabs();
+
+    currentSearchInput.focus();
 }
 
 // Adds the selected Kanji to the search bar
