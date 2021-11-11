@@ -15,3 +15,7 @@ td:first-child {
     color: var(--primaryColor);
     width: 150px;
 }
+
+article {
+    max-width: 700px;
+}
