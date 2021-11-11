@@ -13,7 +13,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"PO-Revision-Date: 2021-11-09 22:58+0100\n"
+"PO-Revision-Date: 2021-11-11 18:39+0100\n"
 "Last-Translator:  <>\n"
 "Language-Team: English\n"
 "Language: en\n"
@@ -676,6 +676,21 @@ msgstr "Verfügbare Hashtags für die [Kanji] Suche"
 
 msgid "Search for kanji included in the specific Genki chapter"
 msgstr "Suche nach Kanji aus dem jeweiligen Genki Kapitel"
+
+msgid "Radical search"
+msgstr "Radical suche"
+
+msgid "The radical picker allows searching for radicals to make radical-picking process even faster. The supported inputs are as following:"
+msgstr "Der Radikalsucher ermöglicht eine Suche innerhalb der Radikalen um eine noch schnellere Kanji Inputmethode zur Verfügung zu stellen. Die unterstützten Input-typen sind wie folgt:"
+
+msgid "Results in all radicals used to build given kanji characters"
+msgstr "Gibt alle Radikale an, die benutzt werden um die gesuchten kanji zusammenezustellen"
+
+msgid "Searches in words for the given query and returns in result-matching radicals"
+msgstr "Führt eine Wortsuche durch und gibt alle Radikale an, die in den Ergebnissen benutzt werden"
+
+msgid "Tries to find the given query in radicals names, otherwise does a word search and returns the results kanji"
+msgstr "Versucht Radikale bei ihren Namen zu finden. Gelingt dies nicht, wird eine Wortsuche durchgeführt"
 
 ## Name search
 msgid "Full name"

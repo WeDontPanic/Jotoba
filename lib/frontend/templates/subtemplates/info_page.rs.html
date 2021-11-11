@@ -163,7 +163,7 @@
 						<td>#kanji</td>
 						<td>@data.gettext("Search in the [kanji] category")</td>
 					</tr>
-				</tbdody>
+				</tbody>
 			</table>
 
          <!-- Sentence search hashtags --> 
@@ -174,7 +174,7 @@
 						<td>#N [1-5]</td>
 						<td>@data.gettext("Search for sentences included in the specific JLPT level")</td>
 					</tr>
-				</tbdody>
+				</tbody>
 			</table>
 
          <!-- Kanji search hashtags --> 
@@ -185,8 +185,34 @@
 						<td>#Genki [3-23]</td>
 						<td>@data.gettext("Search for kanji included in the specific Genki chapter")</td>
 					</tr>
-				</tbdody>
+				</tbody>
 			</table>
 		</div>
+
+
+        <div class="small-12 medium-6 columns small-centered help-cat">
+			<h2>@data.gettext("Radical search")</h2>
+			<p>
+				@data.gettext("The radical picker allows searching for radicals to make radical-picking process even faster. The supported inputs are as following:")
+			</p>
+            <table>
+                <tbody>
+                    <tr>
+                        <td>Kanji</td>
+                        <td>@data.gettext("Results in all radicals used to build given kanji characters")</td>
+                    </tr>
+                    <tr>
+                        <td>Kana</td>
+                        <td>@data.gettext("Searches in words for the given query and returns in result-matching radicals")</td>
+                    </tr>
+                    <tr>
+                        <td>Romaji</td>
+                        <td>@data.gettext("Tries to find the given query in radicals names, otherwise does a word search and returns the results kanji")</td>
+                    </tr>
+                </tbody>
+            </table>
+
+        </div>
+
 	</article>
 </div>
