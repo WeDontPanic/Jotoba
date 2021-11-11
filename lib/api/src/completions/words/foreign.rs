@@ -65,7 +65,7 @@ fn search<'a>(main_lang: Language, query_str: &'a str) -> Vec<WordPair> {
 
         if is_romaji || could_be_romaji(is_romaji_trim) {
             let mut query = query_str;
-            if could_be_romaji(is_romaji_trim) {
+            if could_be_romaji(is_romaji_trim) && !is_romaji {
                 query = is_romaji_trim;
             }
 
