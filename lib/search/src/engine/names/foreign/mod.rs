@@ -43,7 +43,7 @@ impl SearchEngine for Engine {
         index: &vector_space_model::Index<Self::Document, Self::Metadata>,
         query: &str,
     ) -> Option<DocumentVector<Self::GenDoc>> {
-        let query_document = GenDoc::new(vec![query]);
+        let query_document = GenDoc::new(format_word(query));
         DocumentVector::new(index.get_indexer(), query_document.clone())
     }
 
@@ -70,4 +70,13 @@ impl SearchEngine for Engine {
         res.sort_by(|a, b| a.1.cmp(&b.1));
         res.get(0).map(|i| i.0.as_str())
     }
+}
+
+/// Replaces all special characters into spaces so we can split it down into words
+fn format_word(inp: &str) -> Vec<String> {
+    let mut out = String::from(inp);
+    for i in ".,[]() \t\"'\\/-;:".chars() {
+        out = out.replace(i, " ");
+    }
+    out.split(' ').map(|i| i.to_lowercase()).collect::<Vec<_>>()
 }

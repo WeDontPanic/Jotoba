@@ -26,9 +26,9 @@ pub fn search(query: &Query) -> Result<NameResult, Error> {
         search_kanji(&query)
     } else {
         if query.language == QueryLang::Japanese {
-            handle_search(japanese_search(query))
+            handle_search(japanese_search(&query))
         } else {
-            handle_search(foreign_search(query))
+            handle_search(foreign_search(&query))
         }
     }
 }
