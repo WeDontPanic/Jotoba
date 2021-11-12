@@ -175,11 +175,14 @@ function loadSuggestionApiData(result) {
     // Remove current suggestions
     removeSuggestions();
 
-    // Return if no suggestions were found and 
+    // Return if no suggestions were found
     if (result.suggestions.length == 0) {
-        // Prevent future requests if no result was found 
-        preventApiCallUntilDelete = true;
-        textToPrevent = input.value;
+
+        // Prevent future requests if no result was found and input was > 8 chars
+        if (input.value >= 8) { 
+            preventApiCallUntilDelete = true;
+            textToPrevent = input.value;
+        }
 
         // Return
         return;
@@ -211,16 +214,19 @@ function loadSuggestionApiData(result) {
             secondaryResult = "(" + result.suggestions[i].primary + ")";
         }
 
+        // Get target page
+        var currentPage = JotoTools.getCurrentSearchType();
+
         // Add to Page
         if (rad_overlay.classList.contains("hidden")) {
             container.innerHTML += 
-            ' <a href="/search/'+primaryResult+'" class="search-suggestion"> ' +
+            ' <a href="/search/'+primaryResult+'?t='+currentPage+'" class="search-suggestion"> ' +
             '   <span class="primary-suggestion">'+primaryResult+'</span> ' +
             '   <span class="secondary-suggestion">'+secondaryResult+'</span> ' +
             ' </a> ';      
         } else {
             container_rad.innerHTML += 
-            ' <a href="/search/'+primaryResult+'" class="search-suggestion"> ' +
+            ' <a href="/search/'+primaryResult+'?t='+currentPage+'" class="search-suggestion"> ' +
             '   <span class="primary-suggestion">'+primaryResult+'</span> ' +
             ' </a> ';      
         }

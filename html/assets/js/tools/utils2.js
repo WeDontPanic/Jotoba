@@ -218,3 +218,11 @@ Util.loadUrlInNewTab = function(url) {
     window.open(url, '_blank').blur();
     window.focus();
 }
+
+// Tries to find the given parameter in the url and returns its value
+Util.getPageParameter = function(paramName) {
+    var url_string = window.location.href;
+    var url = new URL(url_string);
+    var p = url.searchParams.get(paramName);
+    return p;
+}
