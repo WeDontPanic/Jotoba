@@ -53,7 +53,7 @@ function prepareCookieSettings(allow_cookies) {
 
 // Opens the Settings Overlay and accepts cookie usage
 function cookiesAccepted(manuallyCalled) {
-    Cookies.set("allow_cookies", "1", {path: '/'});
+    Cookies.set("allow_cookies", "1", {expires: 365, path: '/'});
     if (manuallyCalled)
         Util.showMessage("success", "Thanks for making Jotoba better!");
 
@@ -74,12 +74,12 @@ function revokeCookieAgreement(manuallyCalled) {
         Util.showMessage("success", "Successfully deleted your cookie data.");
 
     deleteTrackingCookies(true);
-    Cookies.set("allow_cookies", "0", {path: '/'});
+    Cookies.set("allow_cookies", "0", {expires: 365, path: '/'});
 }
 
 // Changes the Default Language to search for
 function onSettingsChange_DefaultLanguage(html, value) {
-    Cookies.set('default_lang', value, {path: '/'});
+    Cookies.set('default_lang', value, {expires: 365, path: '/'});
     if (window.location.href.includes("/search")) {
         location.reload();
     }
@@ -87,13 +87,13 @@ function onSettingsChange_DefaultLanguage(html, value) {
 
 // Changes the Page's UI Language
 function onSettingsChange_PageLanguage(html, value) {
-    Cookies.set('page_lang', value, {path: '/'});
+    Cookies.set('page_lang', value, {expires: 365, path: '/'});
     location.reload();
 }
 
 // Changes whether english results should be shown
 function onSettingsChange_ShowEnglish(event) {
-    Cookies.set('show_english', event.target.checked, {path: '/'});
+    Cookies.set('show_english', event.target.checked, {expires: 365, path: '/'});
     if (!event.target.checked)
         $('#show_eng_on_top_settings_parent').addClass("hidden");
     else
@@ -103,13 +103,13 @@ function onSettingsChange_ShowEnglish(event) {
 
 // Changes whether english results should be shown on top
 function onSettingsChange_ShowEnglishOnTop(event) {
-    Cookies.set('show_english_on_top', event.target.checked, {path: '/'});
+    Cookies.set('show_english_on_top', event.target.checked, {expires: 365, path: '/'});
 }
 
 // Sets the default kanji animation speed
 function onSettingsChange_AnimationSpeed(event) {
     $('#show_anim_speed_settings_slider').html(event.target.value);
-    Cookies.set('anim_speed', event.target.value, {path: '/'});
+    Cookies.set('anim_speed', event.target.value, {expires: 365, path: '/'});
 }
 
 // Load the cookie's data into important stuff
@@ -118,7 +118,7 @@ function loadCookieData() {
     let allow_cookies = Cookies.get("allow_cookies");
     if (!allow_cookies && !checkTrackingAllowed()) {
         allow_cookies = "0";
-        Cookies.set("allow_cookies", 0);
+        Cookies.set("allow_cookies", 0, {expires: 365, path: "/"});
     }
     prepareCookieSettings(allow_cookies);
 
@@ -138,7 +138,7 @@ function loadCookieData() {
     if (!isSupportedSearchLang(search_lang)) {
         search_lang = "en-US";
     }
-    Cookies.set("default_lang", search_lang);
+    Cookies.set("default_lang", search_lang, {expires: 365, path: "/"});
 
     // Set search_lang in settings overlay
     document.querySelectorAll("#search-lang-select > .choices__item--choice").forEach((e) => {
