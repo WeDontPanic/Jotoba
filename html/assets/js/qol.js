@@ -13,7 +13,7 @@ $(document).on('keyup keydown keypress', function(e){ shiftPressed = e.shiftKey}
 
 // Key Events, or how I like to call 'em: The Jojii-Only events
 $(document).on("keypress", (event) => {
-    if ($('#search').is(":focus") || $('#imgUploadUrl').is(":focus") || $('#kanji-search').is(":focus")) return;
+    if ($('input:text').is(":focus")) return;
     
     switch (event.key) {
         case '/': // Focus search bar
