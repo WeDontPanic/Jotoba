@@ -4,6 +4,7 @@
 @use super::search_help;
 @use crate::BaseData;
 @use japanese::furigana::from_str as furi_from_str;
+@use crate::example_sentence::ext_sentence;
 
 @(data: &BaseData, query: &Query, result: WordResult)
 
@@ -275,44 +276,36 @@
                             }
                           </div>
                         }
-                        <!-- TODO: Example Sentences for words-->
-                        <!--
-                        <div class="d-flex flex-row">
-                          <div class="tags no-margin example-sentence collapsed"> 
-                            <div class="d-flex flex-row wrap">               
-                              <div class="inline-kana-preview">
-                                この                    
-                              </div>
-                              <div class="furigana-kanji-container">
-                                <span class="furigana-preview noselect">
-                                  せ
-                                </span>
-                                <span class="kanji-preview">
-                                  世
-                                </span>
-                              </div>
-                              <div class="furigana-kanji-container">
-                                <span class="furigana-preview noselect">
-                                  けん
-                                </span>
-                                <span class="kanji-preview">
-                                  間
-                                </span>
-                              </div>
-                              <div class="inline-kana-preview">
-                                はいいですね                     
+                        @if let Some((furi, translation)) = ext_sentence(sense, &query.settings.user_lang) {
+                          <div class="d-flex flex-row">
+                            <div class="tags no-margin example-sentence collapsed"> 
+                              <div class="d-flex flex-row wrap">               
+                                @for spair in furi {
+                                  @if spair.kanji.is_some() {
+                                    <div class="furigana-kanji-container">
+                                      <span class="furigana-preview noselect">
+                                        @spair.kana
+                                      </span>
+                                      <span class="kanji-preview">
+                                        @spair.kanji.unwrap()
+                                      </span>
+                                    </div>
+                                  } else {
+                                    <div class="inline-kana-preview">
+                                      @spair.kana
+                                    </div>
+                                  }
+                                }
                               </div>
                             </div>
-                          </div>
-                          <div class="expander">
+                            <div class="expander">
 
+                            </div>
                           </div>
-                        </div>
-                        <div class="tags no-margin">
-                          Irgendwas mit Welt.. Mir fallen keine Beispiele für nen Satz ein, also muss der hier ausreichen.
-                        </div>
-                        -->
-                        <!-- TODO - END -->
+                          <div class="tags no-margin">
+                            @translation
+                          </div>
+                        }
                       </div>
                     }
                   }

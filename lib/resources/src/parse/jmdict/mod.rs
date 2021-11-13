@@ -65,15 +65,7 @@ pub struct EntrySense {
     pub dialect: Option<Dialect>,
     pub information: Option<String>,
     pub gairaigo: Option<Gairaigo>,
-    pub example_sentence: Option<ExampleSentence>,
-}
-
-/// An example sentence for a word
-#[derive(Debug, Default, Clone, PartialEq, Deserialize, Serialize, Hash)]
-pub struct ExampleSentence {
-    pub text: String,
-    pub japanese: String,
-    pub translations: Vec<Translation>,
+    pub example_sentence: Option<u32>,
 }
 
 #[derive(Debug, Default, Clone, PartialEq, Deserialize, Serialize, Hash)]
@@ -210,7 +202,6 @@ where
         let mut entry = Entry::default();
         let mut element = EntryElement::default();
         let mut sense = EntrySense::default();
-        let mut example_sentence = ExampleSentence::default();
 
         /*
          * The stack represents the current 'history' of tags which have
@@ -232,9 +223,6 @@ where
                     if tag == Tag::Sense {
                         sense.clear();
                     }
-                    if tag == Tag::Example {
-                        example_sentence.clear();
-                    }
 
                     stack.push(tag);
                 }
@@ -254,7 +242,6 @@ where
                                 entry.senses.push(sense.clone())
                             }
                         }
-                        Tag::Example => sense.example_sentence = Some(example_sentence.clone()),
                         _ => (),
                     }
 
@@ -312,21 +299,16 @@ where
                             Tag::Xref => sense.xref = Some(value),
                             Tag::Dialect => sense.dialect = Some(Dialect::from_str(&value)?),
                             Tag::SInf => sense.information = Some(value),
-                            Tag::ExampleText => example_sentence.text = value,
+                            Tag::ExampleSrcID(src) => {
+                                if src == "tat" {
+                                    let id: u32 = value.parse()?;
+                                    sense.example_sentence = Some(id);
+                                }
+                            }
                             Tag::LSource(gairaigo) => {
                                 let mut gairaigo = gairaigo.clone();
                                 gairaigo.original = value;
                                 sense.gairaigo = Some(gairaigo)
-                            }
-                            Tag::ExampleSentence(lang) => {
-                                if *lang == Language::Japanese {
-                                    example_sentence.japanese = value;
-                                } else {
-                                    example_sentence.translations.push(Translation {
-                                        value,
-                                        language: *lang,
-                                    });
-                                }
                             }
 
                             // Other
@@ -402,15 +384,6 @@ impl EntrySense {
     }
 }
 
-impl ExampleSentence {
-    #[inline]
-    fn clear(&mut self) {
-        self.japanese.clear();
-        self.translations.clear();
-        self.text.clear();
-    }
-}
-
 /// An XML tag
 #[derive(Debug, Clone, PartialEq)]
 enum Tag {
@@ -440,6 +413,7 @@ enum Tag {
     SInf, // s_inf sense information, for additional sense info
     Example, // Example sentence for a sense
     ExampleText, // Form of the term in the example sentence
+    ExampleSrcID(String), // Example sentence ID from tatoeba
     ExampleSentence(Language), // The actual example sentence in any language
 
     Unknown, // Parsing error
@@ -510,11 +484,24 @@ impl Tag {
             "pri" => Tag::Pri,
             "example" => Tag::Example,
             "ex_text" => Tag::ExampleText,
+            "ex_srce" => Tag::ExampleSrcID(parse_ex_srce(attributes)),
             "ex_sent" => Tag::ExampleSentence(get_language(attributes)),
             "s_inf" => Tag::SInf,
             _ => Tag::Unknown,
         }
     }
+}
+
+fn parse_ex_srce(attributes: Option<Attributes>) -> String {
+    attributes
+        .and_then(|attributes| {
+            attributes
+                .into_iter()
+                .filter_map(|i| i.is_ok().then(|| i.unwrap()))
+                .find(|i| str::from_utf8(i.key.as_ref()).unwrap() == "exsrc_type")
+                .and_then(|i| String::from_utf8(i.value.as_ref().to_vec()).ok())
+        })
+        .unwrap_or_default()
 }
 
 fn get_language(attributes: Option<Attributes>) -> Language {

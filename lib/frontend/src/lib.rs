@@ -4,8 +4,9 @@ include!(concat!(env!("OUT_DIR"), "/templates.rs"));
 mod actix_ructe;
 
 pub mod about;
-pub mod index;
+pub mod example_sentence;
 pub mod help_page;
+pub mod index;
 mod pagination;
 pub mod search_ep;
 mod session;
