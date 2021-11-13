@@ -244,7 +244,7 @@ function translateIsoToJotobaFormat(code) {
     }
 
     if (code.startsWith("sv")) {
-        return "sv-SV";
+        return "sv-SE";
     }
 
     if (code.startsWith("ru")) {

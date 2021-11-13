@@ -51,25 +51,6 @@ $(document).on("keypress", (event) => {
     }
 });
 
-// Is it Easter already?
-var lastKeys = [];
-var lastKeyDown = -1;
-$(document).on("keydown", (event) => {
-    if (event.keyCode != lastKeyDown) {
-        lastKeyDown = event.keyCode;
-        lastKeys.push(event.keyCode);
-        if (lastKeys.length == 9) {
-            lastKeys.shift();
-        }
-    }
-    if (lastKeys.toString() === "38,40,37,39,37,39,66,65") {
-        parseSchemeCode("1A1A1C252527C3083F9407416Fi32636363ZC4C4C4OR6Fi32D3D3D3");
-        if (Cookies.get("allow_cookies") !== "1") {
-            deleteCookies(true);
-        }
-    }
-});
-
 // Copies Furigana to clipboard on click
 $('.furigana-kanji-container > .furigana-preview').on("click", (event) => {
     preventDefaultHighlight(event, 100, true, false);
@@ -83,8 +64,8 @@ $('.furigana-kanji-container > .furigana-preview').on("dblclick", (event) => {
     preventDefaultHighlight(event, 100, false);
 
     // Show the correct message
-    $('.ajs-message.ajs-success.ajs-visible').last().remove();
-    $('.ajs-message.ajs-success.ajs-visible').last().html("<b>full</b> furigana copied to clipboard");
+    $('.msg-message.msg-success.msg-visible').last().remove();
+    $('.msg-message.msg-success.msg-visible').last().html("<b>full</b> furigana copied to clipboard");
 
     // Find all furigana
     let parent = $(event.target.parentElement.parentElement);
