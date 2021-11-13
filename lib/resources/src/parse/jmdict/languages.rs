@@ -13,7 +13,7 @@ use serde::{Deserialize, Serialize};
 pub enum Language {
     #[strum(serialize = "eng", serialize = "en-US")]
     English,
-    #[strum(serialize = "ger", serialize = "de-DE")]
+    #[strum(serialize = "ger", serialize = "de-DE", serialize = "deu")]
     German,
     #[strum(serialize = "rus", serialize = "ru")]
     Russian,
@@ -21,9 +21,9 @@ pub enum Language {
     Spanish,
     #[strum(serialize = "swe", serialize = "sv-SE")]
     Swedish,
-    #[strum(serialize = "fre", serialize = "fr-FR")]
+    #[strum(serialize = "fre", serialize = "fr-FR", serialize = "fra")]
     French,
-    #[strum(serialize = "dut", serialize = "nl-NL")]
+    #[strum(serialize = "dut", serialize = "nl-NL", serialize = "nld")]
     Dutch,
     #[strum(serialize = "hun", serialize = "hu")]
     Hungarian,

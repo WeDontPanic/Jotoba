@@ -3,12 +3,14 @@ use bitflags::BitFlag;
 use serde::{Deserialize, Serialize};
 
 /// A single Sentence with multiple translations.
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, Eq, Hash, Default)]
 pub struct Sentence {
+    pub id: u32,
     pub japanese: String,
     pub furigana: String,
     pub translations: Vec<Translation>,
     pub jlpt_guess: Option<u8>,
+    pub level: Option<i8>,
 }
 
 /// A Translation for a sentence
@@ -21,12 +23,19 @@ pub struct Translation {
 impl Sentence {
     /// Create a new sentence
     #[inline]
-    pub fn new(japanese: String, furigana: String, translations: Vec<Translation>) -> Self {
+    pub fn new(
+        id: u32,
+        japanese: String,
+        furigana: String,
+        translations: Vec<Translation>,
+    ) -> Self {
         Sentence {
+            id,
             japanese,
             furigana,
             translations,
             jlpt_guess: None,
+            level: None,
         }
     }
 
