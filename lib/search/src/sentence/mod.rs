@@ -76,11 +76,11 @@ fn sort_fn<T: SearchEngine<Output = Sentence>>(
         let mut rel = (relevance * 1000f32) as usize;
 
         if sentence.has_translation(query.settings.user_lang) {
-            rel += 60;
+            rel += 550;
         }
 
         if japanese && sentence.japanese.contains(&query.query) {
-            rel += 140;
+            rel += 900;
         }
 
         rel
