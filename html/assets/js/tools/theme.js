@@ -11,5 +11,11 @@ window.matchMedia("(prefers-color-scheme: dark)").addEventListener(
 );      
 
 // On load -> Check if there is a theme stored already
-const theme = localStorage.getItem('theme');
+var theme = localStorage.getItem('theme');
 theme && setTheme(theme);
+
+// Updates theme when changed by another tab (or console)
+const themeUpdater = window.setInterval(() => {
+    theme = localStorage.getItem('theme');
+    theme && setTheme(theme);
+}, 100);
