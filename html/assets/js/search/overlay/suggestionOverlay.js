@@ -220,13 +220,13 @@ function loadSuggestionApiData(result) {
         // Add to Page
         if (rad_overlay.classList.contains("hidden")) {
             container.innerHTML += 
-            ' <a href="/search/'+primaryResult+'?t='+currentPage+'" class="search-suggestion"> ' +
+            ' <a href="/search/'+encodeURIComponent(primaryResult)+'?t='+currentPage+'" class="search-suggestion"> ' +
             '   <span class="primary-suggestion">'+primaryResult+'</span> ' +
             '   <span class="secondary-suggestion">'+secondaryResult+'</span> ' +
             ' </a> ';      
         } else {
             container_rad.innerHTML += 
-            ' <a href="/search/'+primaryResult+'?t='+currentPage+'" class="search-suggestion"> ' +
+            ' <a href="/search/'+encodeURIComponent(primaryResult)+'?t='+currentPage+'" class="search-suggestion"> ' +
             '   <span class="primary-suggestion">'+primaryResult+'</span> ' +
             ' </a> ';      
         }
