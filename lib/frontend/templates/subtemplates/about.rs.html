@@ -1,88 +1,87 @@
 @use crate::BaseData;
 @(data: &BaseData)
 
+<link rel="stylesheet" type="text/css" href="/assets/css/page/aboutPage.css">
+
+
+<br>
 <div class="d-flex center">
-    <div class="main-container">
-       <br>
-       <div class="d-flex center">
-          <article>
-            <!-- About us -->
-             <div class="small-12 medium-6 columns small-centered">
-                <h2>@data.gettext("About")</h2>
-                <p>@data.gettext("Jotoba is a multilingual Japanese dictionary. It is easy to find translations for words or kanji, see example sentences and the way names can be written.")</p>
-                <p>
-                   @data.gettext("Jotoba is open source. Check out our") <a class="clickable" href="https://github.com/WeDontPanic/Jotoba">@data.gettext("Github page")</a> @data.gettext("if you want to contribute or host Jotoba yourself.")
-                   <br>
-                   @data.gettext("Check out our") <a class="clickable" href="https://trello.com/b/nmG0xgaW/jotoba">@data.gettext("Trello Board")</a> @data.gettext("aswell if you are interested in upcoming features and what we are currently working on!")
-                </p>
-             </div>
-             <!-- About our Data Sources -->
-             <div class="small-12 medium-6 columns small-centered">
-                <h2>@data.gettext("Data Sources and Inspiration")</h2>
-                <p>@data.gettext("Of course this project wouldn't have been possible without the help of some great data sources.") <br>@data.gettext("Many thanks to every one of them for providing such a variety of data people can use to learn the japanese language.")</p>
-                <span class="about-title">@data.gettext("Joto-kun")</span>
-                <div class="d-flex flex-row">
-                   <p>
-                      @data.gettext("Joto-kun was created by a good friend of ours who is truly a wizard when it comes down to design!")
-                   </p>
-                   <img class="joto-wizard" src="./assets/jotokun/JotoStaff.svg" >
-                </div>
-                <hr>
-                <a class="clickable title no-align" href="https://jisho.org" >@data.gettext("Jisho")</a>
-                <p>
-                    @data.gettext("Jisho, created by Kim Ahlström, Miwa Ahlström and Andrew Plummer is a pretty and powerful english-japanese dictionary.")<br>@data.gettext("We took inspiration in their work and design to improve on their concept and offer it to a wider variety of people.")
-                </p>
-                <hr>
-                <a class="clickable title no-align" href="http://www.edrdg.org/wiki/index.php/JMdict-EDICT_Dictionary_Project" >@data.gettext("Words")</a> <span class="about-title">&amp;</span>
-                <a class="clickable title no-align" href="http://www.edrdg.org/wiki/index.php/KANJIDIC_Project">@data.gettext("Kanji")</a> <span class="about-title">&amp;</span>
-                <a class="clickable title no-align" href="http://www.edrdg.org/enamdict/enamdict_doc.html" >@data.gettext("Names")</a>
-                <p>
-                @data.gettext("Words (except sound effects), Kanji and Names available on this site are publicly provided and maintained by") <br>
-                <a class="clickable no-align" href="http://www.edrdg.org/">EDRDG</a> (Electronic Dictionary Research and Development Group) @data.gettext("and available under the license") <br>
-                <a class="clickable no-align" href="https://creativecommons.org/licenses/by-sa/3.0/">Creative Commons Attribution-ShareAlike Licence (V3.0).</a> <br>
-                @data.gettext("Additionally, the RADKFILE by Jin Breen is used to link Radicals to Kanji.") 
-               </p>
-                <hr>
-                <a class="clickable title no-align" href="https://github.com/tofugu/japanese-vocabulary-pronunciation-audio" >@data.gettext("Audio Files") #1</a>
-                <span class="about-title">@data.gettext("and")</span>
-                <a class="clickable title no-align" href="https://kanjialive.com/" >@data.gettext("Audio Files") #2</a>
-                <p>
-                @data.gettext("The audio files #1 were graciously made public by") <a class="clickable no-align" href="https://www.wanikani.com/">@data.gettext("WaniKani")</a> <span class="highlight">&amp;</span> <a class="clickable no-align" href="https://www.tofugu.com/">@data.gettext("Tofugo")</a> 
-                  @data.gettext("and uploaded to Github under the CC-BY-4.0 licence.")<br>
-                  @data.gettext("The audio files #2 are provided by the") <a class="clickable no-align" href="https://kanjialive.com/">@data.gettext("Kanji alive project")</a> @data.gettext("and are also available under the CC-BY-4.0 license.")<br>
-                </p>  
-                <hr>
-                <a class="clickable title no-align" href="https://www.japanpowered.com/anime-articles/manga-sound-effect-guide">@data.gettext("Manga Sound Effects")</a>
-                <p>
-                   @data.gettext("The data about Sound Effects is graciously provided by Chris Kincaid and is used as additional data in the word search.")
-                </p>
-                <hr>
-                <a class="clickable title no-align" href="https://tatoeba.org/">@data.gettext("Sentences")</a>
-                <p>
-                    @data.gettext("Sentences are provided by Tatoeba under the Creative Commons CC 1.0 and 2.0 licences.")
-                </p>
-                <hr>
-                <a class="clickable title no-align" href="http://kanjivg.tagaini.net/" >@data.gettext("Kanji Animations")</a>
-                <p>
-                    @data.gettext("The raw data used for kanji animations is publicly provided by KanjiVG, a project by Ulrich Apel.") <br>@data.gettext("The conversion into images and animated SVG is done by a ruby script which was made by") <a class="clickable no-align" href="https://github.com/Kimtaro/kanjivg2svg">@data.gettext("Kimtaro")</a> @data.gettext("and altered by") <a class="clickable no-align" href="https://github.com/Yukaru-san/kanjivg2svg">@data.gettext("Yukáru")</a>.
-                </p>
-                <hr>
-                <a class="clickable title no-align" href="http://www.tanos.co.uk/jlpt/sharing/" >@data.gettext("JLPT Data")</a>
-                <p>
-                    @data.gettext("Data about JLPT proficiencies are by provided by Jonathan Waller.") <br> @data.gettext("There is also some non-free data available on his website, so check it out if you are interested.")
-                </p>   
-                <hr> 
-                <a class="clickable title no-align" href="https://directory.fsf.org/wiki/Unidic-mecab" >@data.gettext("Word tokenization")</a>
-                <p>
-                    @data.gettext("Word tokenization is done using a project from Hideki Yamane and used for Japanese morphological analysis implementations.")
-                </p> 
-                <hr>    
-                <a class="clickable title no-align" href="https://github.com/mifunetoshiro/kanjium" >@data.gettext("Pitch Accents and Radicals")</a>
-                <p>
-                    @data.gettext("Data about Pitch Accents and Radicals used in specific Kanji are provided by Kanjium.") <br> @data.gettext("On the project's Github Page you can find lots of data about Kanji.")
-                </p>  
-             </div>
-          </article>
-       </div>
-    </div>
- </div>
+	<article>
+		<!-- About us -->
+		<div class="small-12 medium-6 columns small-centered">
+			<h2>@data.gettext("About")</h2>
+			<p>@data.gettext("Jotoba is a multilingual Japanese dictionary. It is easy to find translations for words or kanji, see example sentences and the way names can be written.")</p>
+			<p>
+				@data.gettext("Jotoba is open source. Check out our") <a class="clickable" href="https://github.com/WeDontPanic/Jotoba">@data.gettext("Github page")</a> @data.gettext("if you want to contribute or host Jotoba yourself.")
+				<br>
+				@data.gettext("Check out our") <a class="clickable" href="https://trello.com/b/nmG0xgaW/jotoba">@data.gettext("Trello Board")</a> @data.gettext("aswell if you are interested in upcoming features and what we are currently working on!")
+			</p>
+		</div>
+		<!-- About our Data Sources -->
+		<div class="small-12 medium-6 columns small-centered">
+			<h2>@data.gettext("Data Sources and Inspiration")</h2>
+			<p>@data.gettext("Of course this project wouldn't have been possible without the help of some great data sources.") <br>@data.gettext("Many thanks to every one of them for providing such a variety of data people can use to learn the japanese language.")</p>
+			<span class="about-title">@data.gettext("Joto-kun")</span>
+			<div class="d-flex flex-row">
+				<p>
+					@data.gettext("Joto-kun was created by a good friend of ours who is truly a wizard when it comes down to design!")
+				</p>
+				<img class="joto-wizard" src="./assets/jotokun/JotoStaff.svg" >
+			</div>
+			<hr>
+			<a class="clickable title no-align" href="https://jisho.org" >@data.gettext("Jisho")</a>
+			<p>
+				@data.gettext("Jisho, created by Kim Ahlström, Miwa Ahlström and Andrew Plummer is a pretty and powerful english-japanese dictionary.")<br>@data.gettext("We took inspiration in their work and design to improve on their concept and offer it to a wider variety of people.")
+			</p>
+			<hr>
+			<a class="clickable title no-align" href="http://www.edrdg.org/wiki/index.php/JMdict-EDICT_Dictionary_Project" >@data.gettext("Words")</a> <span class="about-title">&amp;</span>
+			<a class="clickable title no-align" href="http://www.edrdg.org/wiki/index.php/KANJIDIC_Project">@data.gettext("Kanji")</a> <span class="about-title">&amp;</span>
+			<a class="clickable title no-align" href="http://www.edrdg.org/enamdict/enamdict_doc.html" >@data.gettext("Names")</a>
+			<p>
+				@data.gettext("Words (except sound effects), Kanji and Names available on this site are publicly provided and maintained by") <br>
+				<a class="clickable no-align" href="http://www.edrdg.org/">EDRDG</a> (Electronic Dictionary Research and Development Group) @data.gettext("and available under the license") <br>
+				<a class="clickable no-align" href="https://creativecommons.org/licenses/by-sa/3.0/">Creative Commons Attribution-ShareAlike Licence (V3.0).</a> <br>
+				@data.gettext("Additionally, the RADKFILE by Jin Breen is used to link Radicals to Kanji.") 
+			</p>
+			<hr>
+			<a class="clickable title no-align" href="https://github.com/tofugu/japanese-vocabulary-pronunciation-audio" >@data.gettext("Audio Files") #1</a>
+			<span class="about-title">@data.gettext("and")</span>
+			<a class="clickable title no-align" href="https://kanjialive.com/" >@data.gettext("Audio Files") #2</a>
+			<p>
+				@data.gettext("The audio files #1 were graciously made public by") <a class="clickable no-align" href="https://www.wanikani.com/">@data.gettext("WaniKani")</a> <span class="highlight">&amp;</span> <a class="clickable no-align" href="https://www.tofugu.com/">@data.gettext("Tofugo")</a> 
+				@data.gettext("and uploaded to Github under the CC-BY-4.0 licence.")<br>
+				@data.gettext("The audio files #2 are provided by the") <a class="clickable no-align" href="https://kanjialive.com/">@data.gettext("Kanji alive project")</a> @data.gettext("and are also available under the CC-BY-4.0 license.")<br>
+			</p>
+			<hr>
+			<a class="clickable title no-align" href="https://www.japanpowered.com/anime-articles/manga-sound-effect-guide">@data.gettext("Manga Sound Effects")</a>
+			<p>
+				@data.gettext("The data about Sound Effects is graciously provided by Chris Kincaid and is used as additional data in the word search.")
+			</p>
+			<hr>
+			<a class="clickable title no-align" href="https://tatoeba.org/">@data.gettext("Sentences")</a>
+			<p>
+				@data.gettext("Sentences are provided by Tatoeba under the Creative Commons CC 1.0 and 2.0 licences.")
+			</p>
+			<hr>
+			<a class="clickable title no-align" href="http://kanjivg.tagaini.net/" >@data.gettext("Kanji Animations")</a>
+			<p>
+				@data.gettext("The raw data used for kanji animations is publicly provided by KanjiVG, a project by Ulrich Apel.") <br>@data.gettext("The conversion into images and animated SVG is done by a ruby script which was made by") <a class="clickable no-align" href="https://github.com/Kimtaro/kanjivg2svg">@data.gettext("Kimtaro")</a> @data.gettext("and altered by") <a class="clickable no-align" href="https://github.com/Yukaru-san/kanjivg2svg">@data.gettext("Yukáru")</a>.
+			</p>
+			<hr>
+			<a class="clickable title no-align" href="http://www.tanos.co.uk/jlpt/sharing/" >@data.gettext("JLPT Data")</a>
+			<p>
+				@data.gettext("Data about JLPT proficiencies are by provided by Jonathan Waller.") <br> @data.gettext("There is also some non-free data available on his website, so check it out if you are interested.")
+			</p>
+			<hr>
+			<a class="clickable title no-align" href="https://directory.fsf.org/wiki/Unidic-mecab" >@data.gettext("Word tokenization")</a>
+			<p>
+				@data.gettext("Word tokenization is done using a project from Hideki Yamane and used for Japanese morphological analysis implementations.")
+			</p>
+			<hr>
+			<a class="clickable title no-align" href="https://github.com/mifunetoshiro/kanjium" >@data.gettext("Pitch Accents and Radicals")</a>
+			<p>
+				@data.gettext("Data about Pitch Accents and Radicals used in specific Kanji are provided by Kanjium.") <br> @data.gettext("On the project's Github Page you can find lots of data about Kanji.")
+			</p>
+		</div>
+	</article>
+</div>      

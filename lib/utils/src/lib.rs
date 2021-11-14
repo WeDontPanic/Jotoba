@@ -1,3 +1,5 @@
+pub mod binary_search;
+
 use itertools::Itertools;
 use rand::{distributions::Alphanumeric, thread_rng, Rng};
 use std::{cmp::Ordering, ops::Sub};
@@ -92,6 +94,7 @@ pub fn bool_ord(a: bool, b: bool) -> Ordering {
 }
 
 /// Returns `None` if the vec is empty or Some(Vec<T>) if not
+#[inline]
 pub fn to_option<T>(vec: Vec<T>) -> Option<Vec<T>> {
     (!vec.is_empty()).then(|| vec)
 }
@@ -245,6 +248,7 @@ pub fn first_letter_upper(s: &str) -> String {
 }
 
 /// Returns a random alpha numeric string with the length of [`len`]
+#[inline]
 pub fn rand_alpha_numeric(len: usize) -> String {
     thread_rng()
         .sample_iter(&Alphanumeric)
@@ -254,6 +258,7 @@ pub fn rand_alpha_numeric(len: usize) -> String {
 }
 
 /// Calculates the difference between `a` and `b`. This method never fails
+#[inline]
 pub fn diff<T: Sub<Output = T> + Ord>(a: T, b: T) -> T {
     if a > b {
         a - b

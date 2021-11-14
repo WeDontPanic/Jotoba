@@ -1,0 +1,32 @@
+.search-annotation {
+    color: var(--tagColor);
+    display: flex;
+    align-items: flex-start;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: -webkit-fit-content;
+    height: -moz-fit-content;
+    height: fit-content;
+    padding-right: 75px;
+    padding-left: 75px;
+}
+
+.search-inflection {
+    padding: 0.5rem 1rem 0.5rem 1rem;
+}
+
+.search-inflection > span > .forms {
+    position: relative;
+    left: 5px;
+    top: 5px;
+}
+
+/* Mobile only */
+@media only screen and (max-width: 600px) {
+    .search-inflection {
+        padding: 0.5rem 0rem 0.5rem 0rem;
+        width: 80vw;
+
+    }
+}

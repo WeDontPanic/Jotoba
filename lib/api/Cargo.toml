@@ -2,26 +2,31 @@
 name = "api"
 version = "0.1.0"
 authors = ["jojii <jojii@gmx.net>"]
-edition = "2018"
+edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
 japanese = { path = "../japanese" }
-models = { path = "../models" }
-cache = { path = "../cache" }
 error = { path = "../error" }
 search = { path = "../search" }
 utils = { path = "../utils" }
-parse = { path = "../parse" }
 config = { path = "../config" }
-actix-web = "4.0.0-beta.8"
+resources = { path = "../resources"}
+actix-web = "4.0.0-beta.10"
 itertools = "0.10.1"
 once_cell = "1.8.0"
-tokio = { version = "1.8.1", features = ["macros","rt-multi-thread","sync"] }
-serde = "1.0.126"
-futures = "0.3.15"
+serde = "1.0.130"
 romaji = "0.1.1"
 log = "0.4.14"
-eudex = "0.1.1"
-deadpool-postgres = "0.9.0"
+eudex = { git = "https://github.com/JojiiOfficial/eudex"}
+strsim = "0.10.0"
+bincode = "1.3.3"
+actix-multipart = "0.4.0-beta.7"
+futures = "0.3.17"
+leptess = { version = "0.13.1", optional = true }
+regex = "1.5.4"
+
+[features]
+default = []
+img_scan = ["leptess"]

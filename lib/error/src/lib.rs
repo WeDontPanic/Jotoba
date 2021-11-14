@@ -1,8 +1,6 @@
 pub mod api_error;
 
 use std::{fmt::Display, num::ParseIntError, string::FromUtf8Error};
-
-use deadpool_postgres::PoolError;
 use strum::ParseError;
 
 #[derive(Debug)]
@@ -14,21 +12,7 @@ pub enum Error {
     ParseError,
     Undefined,
     IoError(std::io::Error),
-    Checkout(r2d2::Error),
-    PoolError(PoolError),
-    Postgres(tokio_postgres::Error), // new db error
-}
-
-impl From<tokio_postgres::Error> for Error {
-    fn from(err: tokio_postgres::Error) -> Self {
-        Self::Postgres(err)
-    }
-}
-
-impl From<PoolError> for Error {
-    fn from(err: PoolError) -> Self {
-        Self::PoolError(err)
-    }
+    Unexpected,
 }
 
 impl From<std::io::Error> for Error {

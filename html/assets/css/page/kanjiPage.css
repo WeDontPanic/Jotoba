@@ -1,0 +1,34 @@
+.kanji-entry-parent {
+    max-width: 1000px;
+}
+
+.kanji-entry.left.detail {
+    width: 155px;
+    padding-left: 25px
+}
+
+.kanji-entry.right.detail {
+    padding-left: 35px;
+    width: 100%;
+}
+
+.kanji-preview.x-large {
+    font-size: 100px;
+}
+
+.kanji-preview-info {
+    padding-left: 5px;
+}
+
+.kanji-preview-right {
+    max-width: 350px;
+}
+
+.translation.big {
+    font-size: 25px;
+}
+
+.kanji-preview-left {
+    width: 63%;
+    padding-right: 10%;
+}

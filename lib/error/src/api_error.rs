@@ -1,7 +1,6 @@
 #![allow(dead_code, unreachable_patterns)]
 
-use actix_web::{http::StatusCode, HttpResponse, ResponseError};
-use deadpool_postgres::PoolError;
+use actix_web::{error::BlockingError, http::StatusCode, HttpResponse, ResponseError};
 use serde::Serialize;
 use thiserror::Error;
 
@@ -9,6 +8,7 @@ use thiserror::Error;
 pub enum Origin {
     Radicals,
     Suggestions,
+    File,
 }
 
 impl std::fmt::Debug for Origin {
@@ -19,6 +19,7 @@ impl std::fmt::Debug for Origin {
             match self {
                 Origin::Radicals => "radicals",
                 Origin::Suggestions => "suggestions",
+                Origin::File => "file",
             }
         )
     }
@@ -37,6 +38,15 @@ pub enum RestError {
 
     #[error("Timeout exceeded")]
     Timeout,
+
+    #[error("IO error")]
+    IoError,
+
+    #[error("Format not supported")]
+    FormatNotSupported,
+
+    #[error("No text found")]
+    NoTextFound,
 
     #[error("missing {0:?}")]
     Missing(Origin),
@@ -57,6 +67,9 @@ impl RestError {
             Self::BadRequest => "BadRequest".to_string(),
             Self::Internal => "InternalError".to_string(),
             Self::Timeout => "Timeout".to_string(),
+            Self::IoError => "IoError".to_string(),
+            Self::NoTextFound => "NoTextFound".to_string(),
+            Self::FormatNotSupported => "FormatNotSupported".to_string(),
             _ => "InternalError".to_string(),
         }
     }
@@ -70,6 +83,8 @@ impl ResponseError for RestError {
             Self::BadRequest => StatusCode::BAD_REQUEST,
             Self::Internal => StatusCode::INTERNAL_SERVER_ERROR,
             Self::Timeout => StatusCode::REQUEST_TIMEOUT,
+            Self::FormatNotSupported => StatusCode::BAD_REQUEST,
+            Self::NoTextFound => StatusCode::SEE_OTHER,
             _ => StatusCode::INTERNAL_SERVER_ERROR,
         }
     }
@@ -86,25 +101,25 @@ impl ResponseError for RestError {
 }
 
 impl From<super::Error> for RestError {
+    #[inline]
     fn from(err: super::Error) -> Self {
         match err {
             crate::Error::NotFound => Self::NotFound,
-            crate::Error::PoolError(pool_err) => pool_err.into(),
             _ => Self::Internal,
         }
     }
 }
 
-impl From<PoolError> for RestError {
-    fn from(e: PoolError) -> Self {
-        match e {
-            _ => Self::Internal,
-        }
+impl From<std::io::Error> for RestError {
+    #[inline]
+    fn from(_: std::io::Error) -> Self {
+        Self::IoError
     }
 }
 
-impl From<tokio_postgres::Error> for RestError {
-    fn from(e: tokio_postgres::Error) -> Self {
+impl From<BlockingError> for RestError {
+    #[inline]
+    fn from(_: BlockingError) -> Self {
         Self::Internal
     }
 }

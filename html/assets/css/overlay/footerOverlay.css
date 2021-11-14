@@ -1,0 +1,44 @@
+.cookie-footer {
+    display: block;
+    position: fixed;
+    bottom: 5%;
+    padding: 10px;
+    background: var(--overlay);
+    border: 2px solid var( --tagColor);
+    border-radius: 10px;
+    z-index: 100;
+    max-width: -webkit-max-content;
+    max-width: -moz-max-content;
+    max-width: max-content;
+    width: inherit;
+    left: 50%;
+    transform: translate(-50%, 0);
+}
+
+.cookie-footer > .res-separator {
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+.cookie-btn {
+    margin-top: 10px;
+    margin-right: 10px;
+}
+
+.joto-cookie {
+    width: 85px;
+    margin-right: 25px;
+}
+
+/* Mobile adjustments */
+
+@media only screen and (max-width: 600px) {   
+    .cookie-footer span, .cookie-btn {
+        font-size: 12px;
+    }
+
+    .joto-cookie {
+        width: 125px;
+        margin-right: 25px;
+    }
+}

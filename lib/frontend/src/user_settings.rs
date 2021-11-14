@@ -1,7 +1,7 @@
 use std::str::FromStr;
 
 use actix_web::HttpRequest;
-use parse::jmdict::languages::Language;
+use resources::parse::jmdict::languages::Language;
 use search::query::UserSettings;
 
 /// Parses user settings from a `HttpRequest`
@@ -27,6 +27,16 @@ pub(super) fn parse(request: &HttpRequest) -> UserSettings {
         .unwrap_or_else(|| UserSettings::default().english_on_top)
         && show_english;
 
+    let items_per_page = request
+        .cookie("items_per_page")
+        .and_then(|i| i.value().parse().ok())
+        .unwrap_or_else(|| UserSettings::default().page_size);
+
+    let items_per_kanji_page = request
+        .cookie("kanji_page_size")
+        .and_then(|i| i.value().parse().ok())
+        .unwrap_or_else(|| UserSettings::default().kanji_page_size);
+
     let cookies_enabled = request
         .cookie("allow_cookies")
         .and_then(|i| {
@@ -41,6 +51,8 @@ pub(super) fn parse(request: &HttpRequest) -> UserSettings {
         english_on_top,
         cookies_enabled,
         page_lang,
+        page_size: items_per_page,
+        kanji_page_size: items_per_kanji_page,
         ..Default::default()
     }
 }

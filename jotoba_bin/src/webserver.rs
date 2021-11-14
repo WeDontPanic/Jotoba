@@ -1,35 +1,59 @@
 use actix_files::NamedFile;
-use deadpool_postgres::Pool;
 use localization::TranslationDict;
 
 use actix_web::{
     http::header::{ACCESS_CONTROL_ALLOW_ORIGIN, CACHE_CONTROL},
-    middleware,
+    middleware::{self, Compat, Compress},
     web::{self as actixweb, Data},
     App, HttpRequest, HttpServer,
 };
 use config::Config;
-use std::sync::Arc;
+use log::{debug, warn};
+use std::{path::Path, sync::Arc, thread, time::Instant};
 
 /// How long frontend assets are going to be cached by the clients. Currently 1 week
 const ASSET_CACHE_MAX_AGE: u64 = 604800;
 
 /// Start the webserver
-pub(super) async fn start(pool: Pool) -> std::io::Result<()> {
+pub(super) async fn start() -> std::io::Result<()> {
     setup_logger();
 
-    let config = Config::new().await.expect("config failed");
+    let start = Instant::now();
 
-    #[cfg(feature = "tokenizer")]
-    load_tokenizer();
+    let mut threads = Vec::with_capacity(4);
 
-    let locale_dict = TranslationDict::new(
-        config.server.get_locale_path(),
-        localization::language::Language::English,
-    )
-    .expect("Failed to load localization files");
+    let config = Config::new().expect("config failed");
 
-    let locale_dict_arc = Arc::new(locale_dict);
+    let c2 = config.clone();
+    threads.push(
+        thread::Builder::new()
+            .name("Resource loader".into())
+            .spawn(move || load_resources(c2)),
+    );
+
+    let c2 = config.clone();
+    threads.push(
+        thread::Builder::new()
+            .name("Suggestion loader".into())
+            .spawn(move || load_suggestions(c2)),
+    );
+
+    let c2 = config.clone();
+    threads.push(
+        thread::Builder::new()
+            .name("Index loader".into())
+            .spawn(move || load_indexes(c2)),
+    );
+
+    threads.push(
+        thread::Builder::new()
+            .name("Tokenizer loader".into())
+            .spawn(move || {
+                load_tokenizer();
+            }),
+    );
+
+    let locale_dict_arc = load_translations(&config);
 
     #[cfg(feature = "sentry_error")]
     if let Some(ref sentry_config) = config.sentry {
@@ -47,44 +71,55 @@ pub(super) async fn start(pool: Pool) -> std::io::Result<()> {
         std::env::set_var("RUST_BACKTRACE", "1");
     }
 
-    let config_clone = config.clone();
+    clean_img_scan_dir(&config);
 
-    if let Err(err) = api::completions::load_word_suggestions(&config) {
-        log::error!("Failed loading suggestions: {}", err);
+    for thr in threads {
+        thr.expect("Failed to spawn thread")
+            .join()
+            .expect("Failed to join threads");
     }
 
-    if let Err(err) = api::completions::load_meaning_suggestions(&config) {
-        log::error!("Failed loading kanji suggestions: {}", err);
-    }
+    let address = config.server.listen_address.clone();
 
-    if let Err(err) = api::completions::load_name_transcriptions(&config) {
-        log::error!("Failed loading name transcriptions suggestions: {}", err);
-    }
-
-    if let Err(err) = api::completions::load_native_names(&config) {
-        log::error!("Failed loading name transcriptions suggestions: {}", err);
-    }
+    debug!("Resource loading took {:?}", start.elapsed());
 
     HttpServer::new(move || {
         let app = App::new()
             // Data
-            .app_data(Data::new(config_clone.clone()))
-            .app_data(Data::new(pool.clone()))
+            .app_data(Data::new(config.clone()))
             .app_data(Data::new(locale_dict_arc.clone()))
             // Middlewares
             .wrap(middleware::Logger::default())
-            //.wrap(middleware::Compress::default())
-            //.wrap(CookieSession::signed(&[0; 32]).secure(false))
-            // Static files
-            .route("/index.html", actixweb::get().to(frontend::index::index))
-            .route("/docs.html", actixweb::get().to(docs))
-            .route("/privacy", actixweb::get().to(privacy))
-            .route("/", actixweb::get().to(frontend::index::index))
-            .route(
-                "/search/{query}",
-                actixweb::get().to(frontend::search_ep::search),
+            .service(
+                actixweb::resource("/")
+                    .wrap(Compat::new(middleware::Compress::default()))
+                    .route(actixweb::get().to(frontend::index::index)),
             )
-            .route("/about", actixweb::get().to(frontend::about::about))
+            .service(
+                actixweb::resource("/docs.html")
+                    .wrap(Compat::new(middleware::Compress::default()))
+                    .route(actixweb::get().to(docs)),
+            )
+            .service(
+                actixweb::resource("/privacy")
+                    .wrap(Compat::new(middleware::Compress::default()))
+                    .route(actixweb::get().to(privacy)),
+            )
+            .service(
+                actixweb::resource("/search/{query}")
+                    .wrap(Compat::new(middleware::Compress::default()))
+                    .route(actixweb::get().to(frontend::search_ep::search)),
+            )
+            .service(
+                actixweb::resource("/about")
+                    .wrap(Compat::new(middleware::Compress::default()))
+                    .route(actixweb::get().to(frontend::about::about)),
+            )
+            .service(
+                actixweb::resource("/help")
+                    .wrap(Compat::new(middleware::Compress::default()))
+                    .route(actixweb::get().to(frontend::help_page::help)),
+            )
             .default_service(actix_web::Route::new().to(frontend::web_error::not_found))
             // API
             .service(
@@ -92,6 +127,7 @@ pub(super) async fn start(pool: Pool) -> std::io::Result<()> {
                     .wrap(
                         middleware::DefaultHeaders::new().header(ACCESS_CONTROL_ALLOW_ORIGIN, "*"),
                     )
+                    .wrap(Compat::new(Compress::default()))
                     .service(
                         actixweb::scope("search")
                             .route("words", actixweb::post().to(api::search::word::word_search))
@@ -110,21 +146,38 @@ pub(super) async fn start(pool: Pool) -> std::io::Result<()> {
                         actixweb::post().to(api::radical::kanji_by_radicals),
                     )
                     .route(
+                        "/radical/search",
+                        actixweb::post().to(api::radical::search::search_radical),
+                    )
+                    .route(
                         "/suggestion",
                         actixweb::post().to(api::completions::suggestion_ep),
-                    ),
+                    )
+                    .route("/img_scan", actixweb::post().to(api::img::scan_ep)),
             )
             // Static files
+            .service(
+                actixweb::scope("/audio")
+                    .wrap(
+                        middleware::DefaultHeaders::new()
+                            .header(CACHE_CONTROL, format!("max-age={}", ASSET_CACHE_MAX_AGE)),
+                    )
+                    .service(
+                        actix_files::Files::new("", config.server.get_audio_files())
+                            .show_files_listing(),
+                    ),
+            )
             .service(
                 actixweb::scope("/assets")
                     .wrap(
                         middleware::DefaultHeaders::new()
                             .header(CACHE_CONTROL, format!("max-age={}", ASSET_CACHE_MAX_AGE)),
                     )
-                    .service(actix_files::Files::new(
-                        "",
-                        config_clone.server.get_html_files(),
-                    )),
+                    .wrap(Compat::new(Compress::default()))
+                    .service(
+                        actix_files::Files::new("", config.server.get_html_files())
+                            .show_files_listing(),
+                    ),
             );
 
         //#[cfg(feature = "sentry_error")]
@@ -132,7 +185,7 @@ pub(super) async fn start(pool: Pool) -> std::io::Result<()> {
 
         app
     })
-    .bind(&config.server.listen_address)?
+    .bind(&address)?
     .run()
     .await
 }
@@ -149,10 +202,8 @@ fn setup_logger() {
     env_logger::init_from_env(env_logger::Env::new().default_filter_or("debug"));
 }
 
-#[cfg(feature = "tokenizer")]
 fn load_tokenizer() {
     use japanese::jp_parsing::{JA_NL_PARSER, NL_PARSER_PATH};
-    use std::path::Path;
 
     if !Path::new(NL_PARSER_PATH).exists() {
         panic!("No NL dict was found! Place the following folder in he binaries root dir: ./unidic-mecab");
@@ -161,4 +212,44 @@ fn load_tokenizer() {
     // Force parser to parse something to
     // prevent 1. search after launch taking up several seconds
     JA_NL_PARSER.parse("");
+}
+
+/// Clears uploaded images which haven't been cleared yet
+fn clean_img_scan_dir(config: &Config) {
+    let path = config.get_img_scan_upload_path();
+    let path = Path::new(&path);
+    if !path.exists() || !path.is_dir() {
+        return;
+    }
+    std::fs::remove_dir_all(&path).expect("Failed to clear img scan director");
+}
+
+fn load_resources(config: Config) {
+    resources::initialize_resources(
+        config.get_storage_data_path().as_str(),
+        config.get_suggestion_sources(),
+        config.get_radical_map_path().as_str(),
+        config.get_sentences_path().as_str(),
+    )
+    .expect("Failed to load resources");
+}
+
+fn load_suggestions(config: Config) {
+    if let Err(err) = api::completions::load_suggestions(&config) {
+        warn!("Failed to load suggestions: {}", err);
+    }
+}
+
+fn load_translations(config: &Config) -> Arc<TranslationDict> {
+    let locale_dict = TranslationDict::new(
+        config.server.get_locale_path(),
+        localization::language::Language::English,
+    )
+    .expect("Failed to load localization files");
+
+    Arc::new(locale_dict)
+}
+
+fn load_indexes(config: Config) {
+    search::engine::load_indexes(&config).expect("Failed to load v2 index files");
 }

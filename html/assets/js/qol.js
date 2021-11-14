@@ -2,14 +2,18 @@
  * This JS-File contains some Quality of Life improvements for the website
  */
 
+var shiftPressed = false;
+
 // Prevent random dragging of <a> elements
 $('a').mousedown((event) => {
     event.preventDefault();
 });
 
+$(document).on('keyup keydown keypress', function(e){ shiftPressed = e.shiftKey} );
+
 // Key Events, or how I like to call 'em: The Jojii-Only events
 $(document).on("keypress", (event) => {
-    if ($('#search').is(":focus")) return;
+    if ($('input:text').is(":focus")) return;
     
     switch (event.key) {
         case '/': // Focus search bar
@@ -47,58 +51,71 @@ $(document).on("keypress", (event) => {
     }
 });
 
-// Is it Easter already?
-var lastKeys = [];
-var lastKeyDown = -1;
-$(document).on("keydown", (event) => {
-    if (event.keyCode != lastKeyDown) {
-        lastKeyDown = event.keyCode;
-        lastKeys.push(event.keyCode);
-        if (lastKeys.length == 9) {
-            lastKeys.shift();
-        }
-    }
-    if (lastKeys.toString() === "38,40,37,39,37,39,66,65") {
-        parseSchemeCode("1A1A1C252527C3083F9407416Fi32636363ZC4C4C4OR6Fi32D3D3D3");
-        if (Cookies.get("allow_cookies") !== "1") {
-            deleteCookies(true);
-        }
-    }
-});
-
 // Copies Furigana to clipboard on click
 $('.furigana-kanji-container > .furigana-preview').on("click", (event) => {
+    preventDefaultHighlight(event, 100, true, false);
     Util.showMessage("success", "furigana copied to clipboard.");
     Util.copyToClipboard($(event.target).html().trim());
 });
 
 // Copies full Furigana to clipboard on dblclick
 $('.furigana-kanji-container > .furigana-preview').on("dblclick", (event) => {
-    $('.ajs-message.ajs-success.ajs-visible').last().remove();
-    $('.ajs-message.ajs-success.ajs-visible').last().html("<b>full</b> furigana copied to clipboard");
+    // Disable Events for a short time
+    preventDefaultHighlight(event, 100, false);
+
+    // Show the correct message
+    $('.msg-message.msg-success.msg-visible').last().remove();
+    $('.msg-message.msg-success.msg-visible').last().html("<b>full</b> furigana copied to clipboard");
 
     // Find all furigana
     let parent = $(event.target.parentElement.parentElement);
-    let furi = "";
-    parent.find('.furigana-preview, .inline-kana-preview').each((i, element) => {
-        furi += element.innerHTML.trim();
+        let furi = "";
+        parent.find('.furigana-preview, .inline-kana-preview').each((i, element) => {
+            furi += element.innerHTML.trim();
+        });
+        Util.copyToClipboard(furi);
     });
-    Util.copyToClipboard(furi);
-});
 
 // Copies translations to clipboard on double click
-$('.furigana-kanji-container > .kanji-preview').on("dblclick copy", (event) => {
-	event.preventDefault();
-    Util.deleteSelection();
+$('.furigana-kanji-container > .kanji-preview').on("dblclick", (event) => {
+    preventDefaultHighlight(event, 500, false);
     copyTranslationAndShowMessage(event.target.parentElement.parentElement);
 });
 
 // Copies translations to clipboard on double click
-$('.inline-kana-preview').on("dblclick copy", (event) => {
-	event.preventDefault();
-    Util.deleteSelection();
+$('.inline-kana-preview').on("dblclick", (event) => {
+    preventDefaultHighlight(event, 500, false);
     copyTranslationAndShowMessage(event.target.parentElement);
 });
+
+// Prevents the default User highlighting
+function preventDefaultHighlight(event, timeoutDurationMs, disableClick, disableDoubleClick) {
+    startEventTimeout(event.target, timeoutDurationMs, disableClick, disableDoubleClick);
+	event.preventDefault();
+    Util.deleteSelection();
+}
+
+// Disbaled onclick events for a short period of time
+function startEventTimeout(targetElement, durationMs, disableClick = true, disableDoubleClick = true) {
+    // Disbale events for single clicks
+    if (disableClick) {
+        let eventFunc = $._data(targetElement, "events").click[0].handler;
+        $._data(targetElement, "events").click[0].handler = () => {};    
+        setTimeout(() => {
+            $._data(targetElement, "events").click[0].handler = eventFunc;
+        }, durationMs);
+    }
+
+    // Disable events for double clicks
+    if (disableDoubleClick) {
+        let eventFuncDbl = $._data(targetElement, "events").dblclick[0].handler;
+        $._data(targetElement, "events").dblclick[0].handler = () => {};
+    
+        setTimeout(() => {
+            $._data(targetElement, "events").dblclick[0].handler = eventFuncDbl;
+        }, durationMs);
+    }    
+}
 
 // Used by kanji/kana copy to combine all parts, starts from the flex (parent)
 function copyTranslationAndShowMessage(textParent) {
@@ -140,7 +157,7 @@ function copyTranslationAndShowMessage(textParent) {
 function changeSearchType(html, newType) {
     var search_value = $('#search').val();
     if (search_value.length > 0) {
-        window.location = window.location.origin + "/search/" + search_value + "?t=" + newType;
+        Util.loadUrl(JotoTools.createUrl(search_value, newType));
     }
 }
 
@@ -152,27 +169,30 @@ $(document).ready(() => {
     }
 });
 
-// Iterate all audio Btns on the page (if any) and enable their audio feature
-$('.audioBtn').each((e, i) => {
-    let audioParent = $(i);
+// Wait for the Document to load completely
+Util.awaitDocumentReady(() => {
 
-    audioParent.click((e) => {
-        let audio = $(e.target).children()[0];
-        audio.play();
+    // Iterate all audio Btns on the page (if any) and enable their audio feature
+    $('.audioBtn').each((e, i) => {
+        let audioParent = $(i);
+
+        audioParent.click((e) => {
+            let audio = $(e.target).children()[0];
+            audio.play();
+        });
     });
 
+    // Allow right-click on "Play audio" buttons to copy the proper asset-url
+    $(".audioBtn").contextmenu((event) => {
+        event.preventDefault();
+        var url = window.location.origin + $(event.target).attr('data');
+        Util.copyToClipboard(url);
+        Util.showMessage("success", "Audio URL copied to clipboard");
+        });
+
+    // Disables the dropdown's animation until the first onclick event
+    $(".input-field.first-wrap").one("click", (event) => {
+        $('.choices__list.choices__list--dropdown.index').addClass('animate');
+    })
+
 });
-
-// Allow right-click on "Play audio" buttons to copy the proper asset-url
-$(".audioBtn").contextmenu((event) => {
-  event.preventDefault();
-  var url = window.location.origin + $(event.target).attr('data');
-  Util.copyToClipboard(url);
-  Util.showMessage("success", "Audio URL copied to clipboard");
-});
-
-// Disables the dropdown's animation until the first onclick event
-$(".input-field.first-wrap").one("click", (event) => {
-    $('.choices__list.choices__list--dropdown.index').addClass('animate');
-})
-

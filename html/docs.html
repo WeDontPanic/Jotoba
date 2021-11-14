@@ -29,7 +29,7 @@
         let strSpec = `{
   "swagger": "2.0",
   "info": {
-    "description": "Jotoba search API",
+    "description": "Jotoba search API<br><br>(Note: Jotoba doesn't own any of the provided resources! Please refer to https://jotoba.de/about for a list of used resources and their licenses. If you're using data provided by jotoba, you have to acknowledge the autors and creators of the used resoure and follow the terms and contiditons of the original license)",
     "version": "0.1",
     "title": "Jotoba"
   },
@@ -38,6 +38,10 @@
     {
       "name": "Search",
       "description": "Search endpoints to address jotoba from own applications"
+    },
+    {
+      "name": "Image",
+      "description": "Image text detection"
     },
     {
       "name": "Radicals",
@@ -49,6 +53,49 @@
     }
   ],
   "paths": {
+    "/api/img_scan": {
+      "post": {
+        "tags": [
+          "Image"
+        ],
+        "summary": "Get japanese text from an image",
+        "consumes": [
+          "multipart/form-data"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "upfile",
+            "in": "formData",
+            "description": "The image to scan. Can be either jpg or png. Max 2MB.",
+            "required": false,
+            "type": "file"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success response",
+            "schema": {
+              "$ref": "#/definitions/ImgScanResponse"
+            }
+          },
+          "400": {
+            "description": "Bad request. Might occur if the query is empty or the provided image is malformed",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
     "/api/search/words": {
       "post": {
         "tags": [
@@ -280,6 +327,50 @@
           },
           "400": {
             "description": "Bad request. Might occur if no radicals were passed",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/api/radical/search": {
+      "post": {
+        "tags": [
+          "Radicals"
+        ],
+        "summary": "Search radicals",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/RadicalSearchPayload"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success response",
+            "schema": {
+              "$ref": "#/definitions/RadicalSearchResponse"
+            }
+          },
+          "400": {
+            "description": "Bad request. Might occur if no value was passed",
             "schema": {
               "$ref": "#/definitions/Error"
             }
@@ -682,6 +773,16 @@
       },
       "description": "Payload for kanji-by-radicals search"
     },
+    "RadicalSearchPayload": {
+      "type": "object",
+      "properties": {
+        "query": {
+          "type": "string",
+          "example": "heart"
+        }
+      },
+      "description": "Payload for radical search"
+    },
     "RadicalsResponse": {
       "type": "object",
       "properties": {
@@ -707,6 +808,30 @@
         }
       },
       "description": "Kanji-by-radicals response"
+    },
+    "RadicalSearchResponse": {
+      "type": "object",
+      "properties": {
+        "4": {
+          "type": "array",
+          "description": "Radical search result",
+          "items": {
+            "$ref": "#/definitions/RadicalSearchItem"
+          }
+        }
+      },
+      "description": "Radical search response"
+    },
+    "RadicalSearchItem": {
+      "type": "object",
+      "properties": {
+        "l": {
+          "type": "string",
+          "example": "心",
+          "description": "A kanji literal"
+        }
+      },
+      "description": "Radical search response item"
     },
     "CompletionPayload": {
       "type": "object",
@@ -771,6 +896,16 @@
       },
       "description": "A single suggestion item"
     },
+    "ImgScanResponse": {
+      "type": "object",
+      "properties": {
+        "text": {
+          "type": "string",
+          "example": "音楽が大好き"
+        }
+      },
+      "description": "Sucess response for retrieving text from an image"
+    },
     "SearchType": {
       "type": "string",
       "description": "Type of search (Words, Kanji, Sentences, Names)",
@@ -782,13 +917,11 @@
       ]
     }
   }
-}
-`;
+}`;
         let objSpec = JSON.parse(strSpec);
         docEl.loadSpec(objSpec);
       })
     </script>
-
   </body>
 </html>
 

@@ -1,4 +1,4 @@
-@use super::{word_search_html, kanji_details, name_search, sentence_search, about_html};
+@use super::{word_search_html, kanji_details, name_search, sentence_search, about_html, info_page_html};
 @use crate::{BaseData, ResultData, Site};
 @(data: &BaseData)
 
@@ -31,19 +31,21 @@
            Site::About => {
               @:about_html(&data)
            }
+           Site::InfoPage => {
+              @:info_page_html(&data)
+           }
         }
 
       </div>
     </div>
+    
   </div>
   
   <!-- Mobile Menu -->
   <div class="mobile-nav d-flex flex-column-reverse hidden">
      <!-- Settings -->
      <button class="mobile-nav-inner-btn" data-toggle="modal" data-target="#settingsModal" onclick="toggleMobileNav()">
-        <svg height="26px" width="26px" viewBox="0 0 100 100">
-           <path d="m50.011 0c-2.8839 0-5.7139 0.25936-8.4642 0.7281l-1.3424 14.221c-2.8444 0.79287-5.5365 1.9015-8.0546 3.322l-10.99-9.0785c-4.6419 3.286-8.7054 7.3259-11.991 11.968l9.1012 10.99c-1.4188 2.5151-2.552 5.214-3.3447 8.0546l-14.197 1.35c-0.46893 2.75-0.728 5.58-0.728 8.49 0 2.8897 0.25747 5.7085 0.7281 8.4641l14.198 1.3425c0.79274 2.8406 1.926 5.5395 3.3447 8.0546l-9.0785 10.99c3.2796 4.6294 7.3161 8.6885 11.945 11.968l11.013-9.1013c2.5197 1.4217 5.2082 2.5515 8.0546 3.3447l1.3424 14.221c2.7503 0.4688 5.5803 0.7054 8.4642 0.7054 2.8838 0 5.6911-0.2366 8.4414-0.7054l1.3424-14.221c2.8465-0.7932 5.5349-1.923 8.0546-3.3447l11.013 9.1013c4.6293-3.2797 8.6658-7.3388 11.945-11.968l-9.0785-10.99c1.4188-2.5151 2.552-5.214 3.3447-8.0546l14.198-1.3425c0.47063-2.7556 0.7281-5.5744 0.7281-8.4641 0-2.8848-0.25907-5.7131-0.7281-8.4642l-14.198-1.3424c-0.79274-2.8406-1.926-5.5395-3.3447-8.0546l9.1012-10.99c-3.2855-4.6423-7.349-8.6821-11.991-11.968l-10.99 9.0785c-2.5181-1.4205-5.2102-2.5291-8.0546-3.322l-1.3424-14.221c-2.7503-0.46874-5.5576-0.7281-8.4414-0.7281zm0 30.967c10.516 0 19.022 8.528 19.022 19.044s-8.5053 19.044-19.022 19.044c-10.516 0-19.044-8.528-19.044-19.044s8.528-19.044 19.044-19.044z"></path>
-        </svg>
+         <div class="settingsSvg mobile"></div> 
      </button>
      <!-- Radical Input -->
      <button class="mobile-nav-inner-btn" onclick="toggleRadicalOverlay(); toggleMobileNav();">
@@ -51,18 +53,14 @@
      </button>
      <!-- Speech Input -->
      <button class="mobile-nav-inner-btn" onclick="toggleSpeakOverlay(); toggleMobileNav();">
-        <svg height="30px" width="30px">
-           <path d="M15.93,24.714v3.091c3.09,0.168,5.483,1.19,5.483,2.146c0,0.023-12.679,0.023-12.679,0c0-0.919,2.213-1.91,5.139-2.133   v-3.115c-3.734-0.535-6.616-3.717-6.616-7.602v-1.541h1.027v1.541c0,3.688,2.992,6.682,6.681,6.683h0.005   c3.691-0.001,6.743-2.991,6.743-6.683v-1.541h1.029v1.541C22.743,21.031,19.729,24.236,15.93,24.714L15.93,24.714z M14.965,22.693   c-3.122,0-5.654-2.532-5.654-5.654v-1.477h11.373v1.477C20.684,20.161,18.087,22.693,14.965,22.693z M9.312,5.685   c0-3.121,2.531-5.653,5.654-5.653s5.718,2.532,5.718,5.653v8.849H9.312V5.685z"></path>
-        </svg>
+         <div class="voiceSvg mobile"></div> 
      </button>
      <!-- Jump Up / Down -->
      <button onclick="jumpToTop()" id="jmp-btn" class="mobile-nav-inner-btn hidden">
-        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="26px" height="26px" viewBox="0 0 16 16" xml:space="preserve">
-           <polygon points="8,2.8 16,10.7 13.6,13.1 8.1,7.6 2.5,13.2 0,10.7 "></polygon>
-        </svg>
+         <div class="jumpSvg mobile"></div> 
      </button>
   </div>
   <!-- Shows / Hides the buttons above -->
   <button onclick="toggleMobileNav()" class="mobile-nav-btn">
-     <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" height="28px" width="28px" viewBox="0 0 32 32" xml:space="preserve"><path d="M4,10h24c1.104,0,2-0.896,2-2s-0.896-2-2-2H4C2.896,6,2,6.896,2,8S2.896,10,4,10z M28,14H4c-1.104,0-2,0.896-2,2  s0.896,2,2,2h24c1.104,0,2-0.896,2-2S29.104,14,28,14z M28,22H4c-1.104,0-2,0.896-2,2s0.896,2,2,2h24c1.104,0,2-0.896,2-2  S29.104,22,28,22z"/></svg>
+      <div class="menuSvg"></div> 
   </button>

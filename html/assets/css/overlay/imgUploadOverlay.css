@@ -1,0 +1,35 @@
+.image-search-input {
+    width: 50%;
+    padding: 0px 39px 0px 8px;
+    margin-top: 4px;
+    display: block;
+    border: 1px solid var(--lineColor);
+    background-color: var(--searchBackground);
+}
+
+.image-search-input.disabled {
+    cursor: not-allowed;
+    background: var(--backgroundShadow);
+}
+
+.image-search-input:focus {
+    outline: none;
+}
+
+.image-search-upload {
+    opacity: 0;   
+    margin-left: -40px;
+    margin-right: 10px;
+    width: 30px;
+    margin-top: 5px;
+    cursor: pointer;
+}
+
+.image-search-upload-btn {
+    border: 1px solid var(--lineColor);
+    background: var(--overlay);
+    color: var(--primaryTextColor);
+    padding: 5px;
+    font-size: small;
+    margin-top: 4px;
+}

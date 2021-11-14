@@ -5,7 +5,7 @@ pub mod word;
 
 use actix_web::web::Json;
 use error::api_error::RestError;
-use parse::jmdict::languages::Language;
+use resources::parse::jmdict::languages::Language;
 use search::{
     query::{Query, UserSettings},
     query_parser::{QueryParser, QueryType},
@@ -15,7 +15,7 @@ use serde::Deserialize;
 pub type Result<T> = std::result::Result<T, RestError>;
 
 /// An Search API payload
-#[derive(Debug, Deserialize)]
+#[derive(Deserialize)]
 pub struct SearchRequest {
     #[serde(rename = "query")]
     query_str: String,

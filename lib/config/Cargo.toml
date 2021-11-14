@@ -2,17 +2,11 @@
 name = "config"
 version = "0.1.0"
 authors = ["jojii <jojii@gmx.net>"]
-edition = "2018"
+edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-async-std = "1.9.0"
-log = "0.4.14"
-serde = "1.0.126"
-serde_derive = "1.0.126"
+serde = "1.0.130"
+serde_derive = "1.0.130"
 toml = "0.5.8"
-sentry = { version = "0.23.0", optional = true }
-
-[features]
-sentry_error = ["sentry"]

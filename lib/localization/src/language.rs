@@ -1,7 +1,10 @@
 use strum_macros::{AsRefStr, Display, EnumString};
 
+use crate::traits::Translatable;
+
 /// Supported languages for translation
-#[derive(Copy, Clone, AsRefStr, EnumString, Display, Eq, PartialEq, Debug, Hash)]
+#[derive(Copy, Clone, AsRefStr, EnumString, Display, Eq, PartialEq, Hash, Debug)]
+#[repr(u8)]
 pub enum Language {
     #[strum(serialize = "en", serialize = "en-US")]
     English,
@@ -26,7 +29,26 @@ pub enum Language {
 }
 
 impl Default for Language {
+    #[inline]
     fn default() -> Self {
         Self::English
+    }
+}
+
+impl Translatable for Language {
+    #[inline]
+    fn get_id(&self) -> &'static str {
+        match self {
+            Language::English => "English",
+            Language::German => "German",
+            Language::Russain => "Russian",
+            Language::Spanish => "Spanish",
+            Language::Swedish => "Swedish",
+            Language::French => "French",
+            Language::Dutch => "Dutch",
+            Language::Hungarian => "Hungarian",
+            Language::Slovenian => "Slovenian",
+            Language::Japanese => "Japanese",
+        }
     }
 }

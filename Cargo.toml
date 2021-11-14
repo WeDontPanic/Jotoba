@@ -2,16 +2,5 @@
 
 members = [
   "jotoba_bin",
-  "lib/parse",
-  "lib/japanese",
-  "lib/models",
-  "lib/cache",
-  "lib/search",
-  "lib/error",
-  "lib/utils",
-  "lib/frontend",
-  "lib/api",
-  "lib/import",
-  "lib/localization",
-  "lib/config",
+  "lib/*",
 ]

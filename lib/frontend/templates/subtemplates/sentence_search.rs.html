@@ -3,23 +3,9 @@
 @use crate::BaseData;
 @(data: &BaseData, sentences: Vec<Item>)
 
-<!-- Inner Top Row -->
-<div class="d-flex center no-drag">
-  <div class="main-tab-select l">
-    <h2 id="previousTabBtn" onclick="changeSearchType(null, 3)" class="tab-btn">&larr; @data.gettext("Names")</h2>
-  </div>
-
-  @if !sentences.is_empty() {
-      <div class="title-div">
-        <h1>@data.gettext("Sentences")</h1>
-      </div>
-  }
-
-  <div class="main-tab-select r">
-    <h2 id="nextTabBtn" onclick="changeSearchType(null, 0)" class="tab-btn">@data.gettext("Words") &rarr;</h2>
-  </div>
-</div>
-<br>
+  <link rel="stylesheet" type="text/css" href="/assets/css/page/multiPage/kanji.css">
+  <link rel="stylesheet" type="text/css" href="/assets/css/page/multiPage/kana.css">
+  <link rel="stylesheet" type="text/css" href="/assets/css/page/sentencePage.css">
 
 <!-- Inner Main Body -->
 <div class="d-flex center">

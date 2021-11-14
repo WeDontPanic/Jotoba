@@ -25,6 +25,10 @@
         padding-right: 1em;
     }
 
+    .voiceSvg.index {
+        margin-top: -4px;
+    }
+
 	/* -------- Word Search -------- */
     
     .search-embedded-btn {
@@ -58,15 +62,24 @@
     .choices__item--selectable.selected {
         color: var(--primaryColor) !important;
     }
+    
+    .form-main > div > div > div > div .choices__list.choices__list--dropdown {
+        width: -webkit-max-content;
+        width: -moz-max-content;
+        width: max-content;
+    }
 
     .searchDivInner form .inner-form .input-field.first-wrap .choices__list.choices__list--dropdown {
-        width: max-content;
         padding-right: 20px;
     }
 
     .overlay.suggestion {
         width: 98%;
         margin-left: 1%;
+    }
+    
+    .image-search-input {
+        width: 100%;
     }
 
     .search-annotation {
@@ -87,7 +100,7 @@
 
     .sentence-reader {
         overflow-x: scroll;
-        max-width: 90vw;
+        max-width: 90vw !important;
         padding-top: 20px;
         flex-wrap: unset !important;
     }
@@ -97,17 +110,20 @@
     }
 
     .sentence-part {
+        min-width: -webkit-max-content;
+        min-width: -moz-max-content;
         min-width: max-content;
         margin-right: 20px;
     }
     
 
     #content-container {
-        -ms-flex-direction: column!important;
         flex-direction: column!important;
     }
     
     body {
+        height: -webkit-max-content;
+        height: -moz-max-content;
         height: max-content;
     }
 
@@ -158,6 +174,8 @@
     }
     
     .main-info {
+        height: -webkit-max-content;
+        height: -moz-max-content;
         height: max-content;
         width: 100%;
     }
@@ -167,8 +185,7 @@
     }
 	
 	.main-info > .d-flex.center {
-		-ms-flex-direction: column!important;
-        flex-direction: column!important;
+  flex-direction: column!important;
 		align-self: center;
 		align-items: center;
         width: 100%;
@@ -185,6 +202,8 @@
     }
     
     .secondary-info {
+        height: -webkit-max-content;
+        height: -moz-max-content;
         height: max-content;
         align-self: center;
         width: 100%;
@@ -210,9 +229,11 @@
     }
     
     .translation.kanji {
-        padding-top: 70px;
-		padding-left: 0px;
-		padding-right: 0px;
+        padding-top: 70px !important;
+		padding-left: 0px !important;
+		padding-right: 0px !important;
+        text-align: center;
+        text-align: -webkit-center;
     }
 	
 	.kanji-parent > .tags {
@@ -369,17 +390,26 @@
     }
 
     /* -------- Radical Picker -------- */
-
-    .rad-picker {
-        background-image: unset;
-    }
     
-    .rad-btn {
-        width: 11.9%;
-    }
-
     .rad-picker-icon {
         font-size: 30px;
+    }
+
+    /* -------- Image Upload -------- */
+
+    .cropping-target-border {
+        width: calc(100% - 30px);
+        left: 15px;
+    }
+
+    .croppie-container {
+        width: calc(100% - 60px);
+        left: 30px;
+    }
+
+    .croppie-container .cr-boundary {
+        height: 485px;
+        overflow: scroll;
     }
 
     /* -------- Help Page --------- */
@@ -401,6 +431,9 @@
     }
 
     .mobile-nav-btn {
+        place-content: center;
+        place-items: center;
+        display: flex;
         position: fixed;
         bottom: 20px;
         right: 30px; 
@@ -411,6 +444,7 @@
         border-radius: 50%;
         width: 50px;
         height: 50px;
+        text-align: center;
         text-align: -webkit-center;
     }
 
@@ -464,37 +498,11 @@
         display: none;
     }
 
-    .rad-results {
-        min-height: 80px;
-        max-height: 80px;
-    }
-
     .mobile-nav-btn:focus, .mobile-nav-inner-btn:focus {
         outline: none;
         box-shadow: 0 0 3pt 2pt var(--primaryColor);
     }
 
-    /* Footer */
-
-    .cookie-footer {
-        z-index: 100;
-        height: max-content;
-        width: 90%;
-        left: 5%;
-    }
-
-    .cookie-footer > h3 {
-        font-size: 17px;
-        margin-bottom: 5px;
-    }
-
-    .cookie-footer > span {
-        font-size: 12px;
-    }
-
-    .cookie-footer > .d-flex {
-        height: 45px;
-    }
 }
 
 /* Mobile only */

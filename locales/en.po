@@ -13,7 +13,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"PO-Revision-Date: 2021-07-11 20:12+0200\n"
+"PO-Revision-Date: 2021-11-11 18:57+0100\n"
 "Last-Translator:  <jojii@gmx.net>\n"
 "Language-Team: English\n"
 "Language: en\n"
@@ -104,6 +104,25 @@ msgstr ""
 msgid "To change your language, select one of the following"
 msgstr ""
 
+# Image search overlay
+
+msgid "Enter a URL or upload your image directly and Jotoba will try to search for japanese words contained in the picture."
+msgstr ""
+
+msgid "Enter Image URL..."
+msgstr ""
+
+# Rad Picker overlay
+
+msgid "Select Radicals"
+msgstr ""
+
+msgid "Select Kanji"
+msgstr ""
+
+msgid "Search Kanji..."
+msgstr ""
+
 # Languages
 
 msgid "English"
@@ -135,6 +154,230 @@ msgstr ""
 
 msgid "Japanese"
 msgstr ""
+
+msgctxt "foreign_lang"
+msgid "German"
+msgstr ""
+
+msgctxt "foreign_lang"
+msgid "English"
+msgstr ""
+
+msgctxt "foreign_lang"
+msgid "Georgian"
+msgstr "Georgian"
+
+msgctxt "foreign_lang"
+msgid "Chinese"
+msgstr "Chinese"
+
+msgctxt "foreign_lang"
+msgid "Manchu"
+msgstr "Manchu"
+
+msgctxt "foreign_lang"
+msgid "Kurdish"
+msgstr "Kurdish"
+
+msgctxt "foreign_lang"
+msgid "ChinookJargon"
+msgstr "Chinook jargon"
+
+msgctxt "foreign_lang"
+msgid "Italian"
+msgstr "Italian"
+
+msgctxt "foreign_lang"
+msgid "Malayalam"
+msgstr "Malayalam"
+
+msgctxt "foreign_lang"
+msgid "Tibetian"
+msgstr "Tibetian"
+
+msgctxt "foreign_lang"
+msgid "Mongolian"
+msgstr "Mongolian"
+
+msgctxt "foreign_lang"
+msgid "Romanian"
+msgstr "Romanian"
+
+msgctxt "foreign_lang"
+msgid "Bantu"
+msgstr "Bantu"
+
+msgctxt "foreign_lang"
+msgid "Norwegian"
+msgstr "Norwegian"
+
+msgctxt "foreign_lang"
+msgid "Icelandic"
+msgstr "Icelandic"
+
+msgctxt "foreign_lang"
+msgid "Breton"
+msgstr "Breton"
+
+msgctxt "foreign_lang"
+msgid "Maori"
+msgstr "Maori"
+
+msgctxt "foreign_lang"
+msgid "Latin"
+msgstr "Latin"
+
+msgctxt "foreign_lang"
+msgid "Amharic"
+msgstr "Amharic"
+
+msgctxt "foreign_lang"
+msgid "Khmer"
+msgstr "Khmer"
+
+msgctxt "foreign_lang"
+msgid "Swahili"
+msgstr "Swahili"
+
+msgctxt "foreign_lang"
+msgid "Hebrew"
+msgstr "Hebrew"
+
+msgctxt "foreign_lang"
+msgid "Galician"
+msgstr "Galician"
+
+msgctxt "foreign_lang"
+msgid "Korean"
+msgstr "Korean"
+
+msgctxt "foreign_lang"
+msgid "Tamil"
+msgstr "Tamil"
+
+msgctxt "foreign_lang"
+msgid "Viatnamese"
+msgstr "Viatnamese"
+
+msgctxt "foreign_lang"
+msgid "Polish"
+msgstr "Polish"
+
+msgctxt "foreign_lang"
+msgid "Sanskrit"
+msgstr "Sanskrit"
+
+msgctxt "foreign_lang"
+msgid "Persian"
+msgstr "Persian"
+
+msgctxt "foreign_lang"
+msgid "Filipino"
+msgstr "Filipino"
+
+msgctxt "foreign_lang"
+msgid "Moldavian"
+msgstr "Moldavian"
+
+msgctxt "foreign_lang"
+msgid "Croatian"
+msgstr "Croatian"
+
+msgctxt "foreign_lang"
+msgid "Thai"
+msgstr "Thai"
+
+msgctxt "foreign_lang"
+msgid "Burmese"
+msgstr "Burmese"
+
+msgctxt "foreign_lang"
+msgid "Slovak"
+msgstr "Slovak"
+
+msgctxt "foreign_lang"
+msgid "Czech"
+msgstr "Czech"
+
+msgctxt "foreign_lang"
+msgid "Hindi"
+msgstr "Hindi"
+
+msgctxt "foreign_lang"
+msgid "Mapudungun"
+msgstr "Mapudungun"
+
+msgctxt "foreign_lang"
+msgid "Turkish"
+msgstr "Turkish"
+
+msgctxt "foreign_lang"
+msgid "Hawaiian"
+msgstr "Hawaiian"
+
+msgctxt "foreign_lang"
+msgid "Afrikaans"
+msgstr "Afrikaans"
+
+msgctxt "foreign_lang"
+msgid "Esperanto"
+msgstr "Esperanto"
+
+msgctxt "foreign_lang"
+msgid "Yiddish"
+msgstr "Yiddish"
+
+msgctxt "foreign_lang"
+msgid "Somali"
+msgstr "Somali"
+
+msgctxt "foreign_lang"
+msgid "Tahitian"
+msgstr "Tahitian"
+
+msgctxt "foreign_lang"
+msgid "Urdu"
+msgstr "Urdu"
+
+msgctxt "foreign_lang"
+msgid "Indonesian"
+msgstr "Indonesian"
+
+msgctxt "foreign_lang"
+msgid "Estonian"
+msgstr "Estonian"
+
+msgctxt "foreign_lang"
+msgid "Bulgarian"
+msgstr "Bulgarian"
+
+msgctxt "foreign_lang"
+msgid "Arabic"
+msgstr "Arabic"
+
+msgctxt "foreign_lang"
+msgid "Danish"
+msgstr "Danish"
+
+msgctxt "foreign_lang"
+msgid "Portuguese"
+msgstr "Portuguese"
+
+msgctxt "foreign_lang"
+msgid "Greek"
+msgstr "Greek"
+
+msgctxt "foreign_lang"
+msgid "Finnish"
+msgstr "Finnish"
+
+msgctxt "ain"
+msgid "Ainu"
+msgstr "Ainu"
+
+msgctxt "alg"
+msgid "Algonquian"
+msgstr "Algonquian"
 
 # Settings
 msgid "Default search language"
@@ -254,25 +497,26 @@ msgid "About Page"
 msgstr ""
 
 # Cookie Footer
-msgid "This Website uses Cookies"
+msgid "We use cookies to improve your experience and deliver personalized content."
 msgstr ""
 
-msgid "We use cookies to provide you with the best experience possible. You can find more details in our"
+msgid "By using Jotoba you agree to our"
+msgstr ""
+
+#  - End of the above sentence -
+msgid "."  
 msgstr ""
 
 msgid "privacy policy"
 msgstr ""
 
-msgid "You can change your preferences at any time by pressing on the Settings icon."
-msgstr ""
-
-msgid "Only use necessary cookies"
+msgid "Only use necessary"
 msgstr ""
 
 msgid "Allow Cookies"
 msgstr ""
 
-### Index
+### About Page
 
 msgid "is a multilingual Japanese dictionary"
 msgstr ""
@@ -321,6 +565,146 @@ msgstr ""
 msgid "to instantly focus the search bar"
 msgstr ""
 
+### Info / Help Page
+
+msgid "Shortcuts"
+msgstr ""
+
+msgid "To improve the quality of life on Jotoba, we offer some shortcuts to quickly navigate the page:"
+msgstr ""
+
+msgid "Everywhere"
+msgstr ""
+
+msgid "Quickly change between words | sentences | names | kanji tabs"
+msgstr ""
+
+msgid "Focus the search bar"
+msgstr ""
+
+msgid "Focussed search bar"
+msgstr ""
+
+msgid "Iterate suggestions up | down"
+msgstr ""
+
+msgid "Iterate suggestions down"
+msgstr ""
+
+msgid "[Words] search"
+msgstr ""
+
+msgid "Play the first possible audio"
+msgstr ""
+
+msgid "To specify what kind of results your search should offer, you can use shortcuts."
+msgstr ""
+
+msgid "Hashtags should be written at end end of your input like this:"
+msgstr ""
+
+msgid "Available Hashtags for [Words] search"
+msgstr ""
+
+msgid "Search for nouns"
+msgstr ""
+
+msgid "Search for verbs"
+msgstr ""
+
+msgid "Search for transitive verbs"
+msgstr ""
+
+msgid "Search for intransitive verbs"
+msgstr ""
+
+msgid "Search for adverb"
+msgstr ""
+
+msgid "Search for auxilary verbs"
+msgstr ""
+
+msgid "Search for adjectives"
+msgstr ""
+
+msgid "Search for pronouns"
+msgstr ""
+
+msgid "Search for conjugations"
+msgstr ""
+
+msgid "Search for prefixes"
+msgstr ""
+
+msgid "Search for suffixes"
+msgstr ""
+
+msgid "Search for japanese particles"
+msgstr ""
+
+msgid "Search for sfx words [comic sounds]"
+msgstr ""
+
+msgid "Search for words used for counting"
+msgstr ""
+
+msgid "Search for expressions"
+msgstr ""
+
+msgid "Search for words used as interjections"
+msgstr ""
+
+msgid "Search for numeric words"
+msgstr ""
+
+msgid "Search for abbreviations"
+msgstr ""
+
+msgid "Search for words that don't fit in any category"
+msgstr ""
+
+msgid "Search for words included in the specific JLPT level"
+msgstr ""
+
+msgid "Search in the [words] category"
+msgstr ""
+
+msgid "Search in the [sentences] category"
+msgstr ""
+
+msgid "Search in the [name] category"
+msgstr ""
+
+msgid "Search in the [kanji] category"
+msgstr ""
+
+msgid "Available Hashtags for [Sentence] search"
+msgstr ""
+
+msgid "Search for sentences included in the specific JLPT level"
+msgstr ""
+
+msgid "Available Hashtags for [Kanji] search"
+msgstr ""
+
+msgid "Search for kanji included in the specific Genki chapter"
+msgstr ""
+
+msgid "Radical search"
+msgstr ""
+
+msgid "The radical picker allows searching for radicals to make the process of picking radicals even faster. The supported inputs are as following:"
+msgstr ""
+
+msgid "Results in all radicals used to build given kanji characters"
+msgstr ""
+
+msgid "Searches in words for the given query and returns in result-matching radicals"
+msgstr ""
+
+msgid "Tries to find the given query in radicals names, otherwise does a word search and returns the result's kanji"
+msgstr ""
+
 ## Name search
 msgid "Full name"
 msgstr ""
@@ -334,6 +718,11 @@ msgstr ""
 ## Kanji results
 
 # strokes suffix
+
+msgid "Part"
+msgid_plural "Parts"
+msgstr[0] "Part"
+msgstr[1] "Parts"
 
 msgid "strokes"
 msgstr ""
@@ -412,7 +801,7 @@ msgstr ""
 
 msgctxt "inflection"
 msgid "CausativePassive"
-msgstr ""
+msgstr "Causative or Passive"
 
 msgctxt "inflection"
 msgid "Imperative"
@@ -503,6 +892,10 @@ msgstr ""
 
 # "no words found"
 msgid "words"
+msgstr ""
+
+# gairaigo
+msgid "From {}: {}"
 msgstr ""
 
 ## Sentence search
@@ -1221,37 +1614,96 @@ msgid "Space"
 msgstr ""
 
 ## Name search
+msgctxt "name_type"
 msgid "Company"
 msgstr ""
 
+msgctxt "name_type"
 msgid "Female"
 msgstr ""
 
+msgctxt "name_type"
 msgid "Male"
 msgstr ""
 
+msgctxt "name_type"
 msgid "Organization"
 msgstr ""
 
+msgctxt "name_type"
 msgid "Persons name"
 msgstr ""
 
+msgctxt "name_type"
 msgid "Place"
 msgstr ""
 
+msgctxt "name_type"
 msgid "Product"
 msgstr ""
 
+msgctxt "name_type"
 msgid "(Railway)Station"
 msgstr ""
 
+msgctxt "name_type"
 msgid "Surname"
 msgstr ""
 
+msgctxt "name_type"
 msgid "Unknown"
 msgstr ""
 
+msgctxt "name_type"
 msgid "Art work"
+msgstr ""
+
+msgctxt "name_type"
+msgid "Character"
+msgstr ""
+
+msgctxt "name_type"
+msgid "Deity"
+msgstr ""
+
+msgctxt "name_type"
+msgid "Document"
+msgstr ""
+
+msgctxt "name_type"
+msgid "Event"
+msgstr ""
+
+msgctxt "name_type"
+msgid "Fiction"
+msgstr ""
+
+msgctxt "name_type"
+msgid "Group"
+msgstr ""
+
+msgctxt "name_type"
+msgid "Legend"
+msgstr ""
+
+msgctxt "name_type"
+msgid "Mythology"
+msgstr ""
+
+msgctxt "name_type"
+msgid "Object"
+msgstr "Object"
+
+msgctxt "name_type"
+msgid "Other"
+msgstr ""
+
+msgctxt "name_type"
+msgid "Religion"
+msgstr ""
+
+msgctxt "name_type"
+msgid "Service"
 msgstr ""
 
 # "No names found"
@@ -1288,4 +1740,11 @@ msgid "Also check our"
 msgstr ""
 
 msgid "since we might be working on it!"
+msgstr ""
+ 
+# Paginator
+msgid "First"
+msgstr ""
+ 
+msgid "Last"
 msgstr ""

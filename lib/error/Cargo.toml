@@ -2,16 +2,12 @@
 name = "error"
 version = "0.1.0"
 authors = ["jojii <jojii@gmx.net>"]
-edition = "2018"
+edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-actix-web = "4.0.0-beta.8"
-deadpool-postgres = "0.9.0"
-log = "0.4.14"
-r2d2 = "0.8.9"
-serde = "1.0.126"
-strum = "0.21.0"
-thiserror = "1.0.26"
-tokio-postgres = "0.7.2"
+actix-web = "4.0.0-beta.10"
+serde = "1.0.130"
+strum = "0.22.0"
+thiserror = "1.0.30"

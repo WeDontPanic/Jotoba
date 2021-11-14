@@ -1,0 +1,233 @@
+/* ----------------- Index Page ----------------- */
+
+.index-noselect {
+    -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */ /* Konqueror HTML */
+    -moz-user-select: none; /* Old versions of Firefox */
+    -ms-user-select: none; /* Internet Explorer/Edge */
+    -o-user-select:none; /* Opera */
+    user-select: none; /* Non-prefixed version, currently supported by Chrome, Edge, Opera and Firefox */;
+}
+
+.title {
+    padding-top: 5%;
+    padding-bottom: 2.25%;
+    margin: auto;
+    width: 30%;
+}
+
+.titleImg {
+    width: 30vw;
+}
+
+form {
+    -webkit-margin-after: 1em;
+            margin-block-end: 1em;
+}
+
+#searchDiv {
+    max-width: 1000px;
+}
+
+.overlay {
+    margin-top: -14px;
+}
+
+.overlay.suggestion {
+    width: 81%;
+    margin-left: 17.5%;
+}
+
+.x-button {
+    margin-right: 5px;
+}
+
+.index-btn-container {
+    display: flex;
+    place-content: center;
+}
+
+.settingsBtn, .infoBtn, .notificationBtn {
+    top: 15px;
+    position: absolute !important;
+}
+
+.notificationBtn {
+    top: 22px;
+    right: 10px;
+}
+
+.infoBtn {
+    top: 22px;
+    right: 45px;
+}
+
+.notificationBtn.update::after, .infoBtn.new::after {
+    content: "";
+    position: absolute;
+    top: 0.5rem;
+    right: 1.25rem;
+    padding: .25rem;
+    border-radius: 1rem;
+    background-color: var(--bgPrimaryColor);
+}
+
+.infoBtn.new::after {
+    right: 0.95rem;
+}
+
+.inner-form {
+    border-radius: 20px !important;
+}
+
+.input-field.third-wrap {
+    width: 120px;
+    height: 45px;
+    margin: 11px 4px;
+}
+
+.input-field.third-wrap.rad {
+    width: 180px;
+    height: 45px;
+    margin: 11px 4px;
+}
+
+.btn-search {
+    color: white !important;
+}
+
+.input-field.third-wrap.rad > .btn-search {
+    background: var(--secondaryColor);
+}
+
+.rad-picker-icon {
+    color: white;
+    font-size: 22px;
+    margin-left: 5px;
+}
+
+.searchDivInner form .inner-form .input-field input {
+    width: 96%;
+}
+
+.searchDivInner form .inner-form .input-field.first-wrap {
+    display: unset !important;
+}
+  
+/* Mobile View */
+@media only screen and (max-width: 600px) {
+
+    @-webkit-keyframes dropdownAnim {
+        from {height: 0px;}
+        to { height: 360%;}
+    }
+
+    @keyframes dropdownAnim {
+        from {height: 0px;}
+        to { height: 360%;}
+    }   
+
+	.title {
+        padding-top: 15%;
+        width: 72%;
+    }
+    
+    .titleImg {
+        width: 70vw;
+    }
+
+    .choices.main[data-type*="select-one"]:after {
+        border-color: var(--secondaryTextColor) transparent transparent transparent;
+    }
+
+    .choices.main[data-type*="select-one"].is-open:after {
+        border-color: transparent transparent var(--secondaryTextColor) transparent !important;
+    }
+
+    .inner-form > .index-btn-container {
+        position: absolute;
+        top: 75px;
+        width: 50%;
+        place-content: flex-start;
+        z-index: -1;
+    }
+
+    .choices__item.index {
+        color: white !important;
+    }
+
+    .searchDivInner form .inner-form .input-field.first-wrap .choices__inner .choices__list--single .choices__item {
+        display: unset !important;
+        margin-top: 4px;
+    }
+
+    .input-field.first-wrap {
+        background: var(--bgPrimaryColor);
+        border-radius: 3px;
+        height: 45px !important;
+        width: 100% !important;
+        margin-left: 10px;
+    }
+
+    .overlay {
+        z-index: 1;
+    }
+
+    .overlay.suggestion {
+        width: 100%;
+        margin-left: 0%;
+    }
+
+    #suggestion-container {
+        margin: 5px -5px;
+    }
+    
+    .rad-picker {
+        max-height: 44vh;
+    }
+
+    #settingsModal {
+        display: none;
+    }
+
+    div:not(.inner-form) > .index-btn-container {
+        flex-direction: row-reverse;
+        place-content: flex-start;
+    }
+
+    .settingsBtn {
+        display: unset !important;
+        left: 10px !important;
+    }
+
+    .infoBtn, .notificationBtn {
+        display: unset !important;
+    }
+
+    .input-field.third-wrap:not(.rad) {
+        display: none;
+    }
+    
+    .input-field.third-wrap.rad {
+        width: -webkit-max-content;
+        width: -moz-max-content;
+        width: max-content;
+        margin-top: 9px;
+        padding-right: 15px;
+    }
+
+    .btn-search {
+        border-radius: 3px;
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+
+    .mobile-nav-btn {
+        display: none;
+    }
+
+    footer > div > span {
+        font-size: 15px;
+    }
+
+}

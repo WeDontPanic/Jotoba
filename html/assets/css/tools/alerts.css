@@ -1,0 +1,15 @@
+/* ----------------- Alerts Color Design ----------------- */
+.msg-message {
+    border: none !important;
+    border-radius: 15px !important;  
+    text-shadow: none !important;
+}
+
+.msg-warning {
+    background-color: rgba(195,195,195,0.95) !important; 
+    border-color: rgba(195,195,195,0.95) !important;
+} 
+
+.mdl-tooltip {
+    font-size: 12px;
+}

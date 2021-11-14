@@ -1,4 +1,4 @@
-#[cfg(feature = "tokenizer")]
+pub mod guessing;
 pub mod jp_parsing;
 
 pub mod accent;
@@ -76,26 +76,32 @@ pub trait JapaneseExt {
 }
 
 impl JapaneseExt for char {
+    #[inline]
     fn is_katakana(&self) -> bool {
         (*self) >= '\u{30A0}' && (*self) <= '\u{30FF}'
     }
 
+    #[inline]
     fn is_hiragana(&self) -> bool {
         (*self) >= '\u{3040}' && (*self) <= '\u{309F}'
     }
 
+    #[inline]
     fn is_kana(&self) -> bool {
         self.is_hiragana() || self.is_katakana()
     }
 
+    #[inline]
     fn to_hiragana(&self) -> String {
         romaji::RomajiExt::to_hiragana(self.to_string().as_str())
     }
 
+    #[inline]
     fn has_roman_letter(&self) -> bool {
         self.is_roman_letter()
     }
 
+    #[inline]
     fn is_roman_letter(&self) -> bool {
         (*self) >= '\u{FF01}' && (*self) <= '\u{FF5A}'
             || ((*self) >= '\u{2000}' && (*self) <= '\u{206F}')
@@ -104,6 +110,7 @@ impl JapaneseExt for char {
             || (*self) == '\u{2212}'
     }
 
+    #[inline]
     fn is_kanji(&self) -> bool {
         ((*self) >= '\u{3400}' && (*self) <= '\u{4DBF}')
             || ((*self) >= '\u{4E00}' && (*self) <= '\u{9FFF}')
@@ -113,6 +120,7 @@ impl JapaneseExt for char {
             || (*self) == '\u{29E8A}'
     }
 
+    #[inline]
     fn is_symbol(&self) -> bool {
         ((*self) >= '\u{3000}' && (*self) <= '\u{303F}')
             || ((*self) >= '\u{0370}' && (*self) <= '\u{03FF}')
@@ -123,22 +131,27 @@ impl JapaneseExt for char {
             || (*self) == '\u{00D7}'
     }
 
+    #[inline]
     fn has_symbol(&self) -> bool {
         self.is_symbol()
     }
 
+    #[inline]
     fn has_kana(&self) -> bool {
         self.is_kana()
     }
 
+    #[inline]
     fn has_kanji(&self) -> bool {
         self.is_kanji()
     }
 
+    #[inline]
     fn is_of_type(&self, ct: CharType) -> bool {
         self.get_text_type() == ct
     }
 
+    #[inline]
     fn get_text_type(&self) -> CharType {
         if self.is_kana() {
             CharType::Kana
@@ -149,14 +162,17 @@ impl JapaneseExt for char {
         }
     }
 
+    #[inline]
     fn is_japanese(&self) -> bool {
         self.is_kana() || self.is_kanji() || self.is_symbol() || self.is_roman_letter()
     }
 
+    #[inline]
     fn has_japanese(&self) -> bool {
         self.is_japanese()
     }
 
+    #[inline]
     fn kanji_count(&self) -> usize {
         if self.is_kanji() {
             1
@@ -165,22 +181,27 @@ impl JapaneseExt for char {
         }
     }
 
+    #[inline]
     fn is_small_hiragana(&self) -> bool {
         *self == '\u{3083}' || *self == '\u{3085}' || *self == '\u{3087}'
     }
 
+    #[inline]
     fn is_small_katakana(&self) -> bool {
         *self == '\u{30E3}' || *self == '\u{30E5}' || *self == '\u{30E7}'
     }
 
+    #[inline]
     fn is_small_kana(&self) -> bool {
         self.is_small_katakana() || self.is_small_hiragana()
     }
 
+    #[inline]
     fn is_radical(&self) -> bool {
         self.is_kanji() || RADICALS.iter().any(|i| *i == *self)
     }
 
+    #[inline]
     fn is_particle(&self) -> bool {
         matches!(
             self,
@@ -190,10 +211,12 @@ impl JapaneseExt for char {
 }
 
 impl JapaneseExt for str {
+    #[inline]
     fn is_of_type(&self, ct: CharType) -> bool {
         self.get_text_type() == ct
     }
 
+    #[inline]
     fn get_text_type(&self) -> CharType {
         if self.is_kanji() || self.is_symbol() {
             CharType::Kanji
@@ -204,46 +227,57 @@ impl JapaneseExt for str {
         }
     }
 
+    #[inline]
     fn is_hiragana(&self) -> bool {
         !self.chars().into_iter().any(|s| !s.is_hiragana())
     }
 
+    #[inline]
     fn is_katakana(&self) -> bool {
         !self.chars().into_iter().any(|s| !s.is_katakana())
     }
 
+    #[inline]
     fn is_roman_letter(&self) -> bool {
         !self.chars().into_iter().any(|s| !s.is_roman_letter())
     }
 
+    #[inline]
     fn has_roman_letter(&self) -> bool {
         self.chars().into_iter().any(|s| s.is_roman_letter())
     }
 
+    #[inline]
     fn has_kana(&self) -> bool {
         self.chars().into_iter().any(|s| s.is_kana())
     }
 
+    #[inline]
     fn has_symbol(&self) -> bool {
         self.chars().into_iter().any(|s| s.is_symbol())
     }
 
+    #[inline]
     fn is_kana(&self) -> bool {
         !self.chars().into_iter().any(|s| !s.is_kana())
     }
 
+    #[inline]
     fn is_kanji(&self) -> bool {
         !self.chars().into_iter().any(|s| !s.is_kanji())
     }
 
+    #[inline]
     fn is_radical(&self) -> bool {
         !self.chars().into_iter().any(|s| !s.is_radical())
     }
 
+    #[inline]
     fn has_kanji(&self) -> bool {
         self.chars().into_iter().any(|s| s.is_kanji())
     }
 
+    #[inline]
     fn is_japanese(&self) -> bool {
         let mut buf = [0; 16];
         !self.chars().into_iter().any(|c| {
@@ -252,6 +286,7 @@ impl JapaneseExt for str {
         })
     }
 
+    #[inline]
     fn has_japanese(&self) -> bool {
         let mut buf = [0; 16];
         self.chars().into_iter().any(|c| {
@@ -260,36 +295,43 @@ impl JapaneseExt for str {
         })
     }
 
+    #[inline]
     fn kanji_count(&self) -> usize {
         self.chars().into_iter().filter(|i| i.is_kanji()).count()
     }
 
+    #[inline]
     fn is_symbol(&self) -> bool {
         !self.chars().into_iter().any(|s| !s.is_symbol())
     }
 
+    #[inline]
     fn to_hiragana(&self) -> String {
         romaji::RomajiExt::to_hiragana(self)
     }
+    #[inline]
 
     fn is_small_katakana(&self) -> bool {
         !self.chars().into_iter().any(|s| !s.is_small_katakana())
     }
 
+    #[inline]
     fn is_small_hiragana(&self) -> bool {
         !self.chars().into_iter().any(|s| !s.is_small_hiragana())
     }
 
+    #[inline]
     fn is_small_kana(&self) -> bool {
         self.is_small_katakana() || self.is_small_hiragana()
     }
 
+    #[inline]
     fn is_particle(&self) -> bool {
         !self.chars().into_iter().any(|s| !s.is_particle())
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq)]
+#[derive(Clone, Copy, PartialEq, Eq)]
 pub enum CharType {
     Kana,
     Kanji,

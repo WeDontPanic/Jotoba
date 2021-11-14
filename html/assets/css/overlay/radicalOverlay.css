@@ -1,0 +1,302 @@
+/*
+    Used by the radical picker only.
+*/
+
+.rad-results {
+    padding-left: 5px;
+    padding-top: 10px;
+    min-height: 90px;
+    max-height: 85px;
+    overflow-y: scroll;
+}
+
+.rad-suggestion-wrapper {
+    width: 100%;
+    border-top: 1px solid var(--borderColor);
+    margin-top: 10px;
+    overflow-x: scroll;
+    scrollbar-width: none;
+    background: var(--itemBG_075);
+}
+
+.rad-suggestion-wrapper::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+}
+
+#suggestion-container-rad {
+    overflow-y: auto;
+    width: -webkit-max-content;
+    width: -moz-max-content;
+    width: max-content;
+}
+
+#suggestion-container-rad > .search-suggestion:first-child {
+    padding-top: 0px !important;
+}
+
+#suggestion-container-rad > .search-suggestion {
+    width: -webkit-max-content !important;
+    width: -moz-max-content !important;
+    width: max-content !important;
+    padding-bottom: 0px !important;
+    padding-left: 10px !important;
+    padding-right: 10px !important;
+}
+
+.rad-page-footer {
+    height: 50px;
+    border-top: 1px solid var(--borderColor);
+}
+
+.overlay.radical > .clickable {
+    padding-left: 5px;
+}
+
+.overlay.radical > .x-button {
+    margin: 1px 5px 5px 5px;
+}
+
+.rad-page-toggle {
+    display: flex;
+    flex-direction: row;
+    height: 28px;
+    margin-top: 10px;
+    margin-bottom: -2px;
+    cursor: default;
+}
+
+.rad-page-toggle:hover {
+    cursor: pointer;
+}
+
+.rad-page-toggle > span {
+    margin-left: 5px;
+    margin-right: 5px;
+    padding-bottom: 1px;
+    font-size: 18px;
+    /* font-family: "Overpass"; */
+    width: 45px;
+    text-align: center;
+    cursor: pointer;
+}
+
+#r-tc {
+    display: none;
+    text-align: center;
+    text-align: -webkit-center;
+}
+
+#r-tc.show {
+    display: block;
+}
+
+#r-tc > .searchSvg {
+    background-color: var(--searchTextColor);
+    width: 15px;
+    height: 15px;
+    margin-top: 4px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.rad-page-toggle > span:first-child {
+    margin-left: 20px;
+}
+
+.rad-page-toggle > span.disabled {
+    color: var(--disabledColor);
+}
+
+.rad-page-toggle > span.highlighted {
+    color: var(--primaryColor);
+}
+
+.rad-page-toggle span.selected {
+    color: var(--primaryColor);
+    border-color: var(--primaryColor);
+    border: 2px solid var(--borderColor);
+    border-bottom: unset;
+    background: var(--background);
+    border-radius: 6px 6px 0px 0px;
+}
+
+.rad-kanji-wrapper {
+    border: 2px solid var(--borderColor);
+    margin: 0px -2px -2px -2px;
+    border-radius: 15px;
+    overflow-x: auto;
+}
+
+.rad-kanji-title {
+    font-size: 17px;
+    color: var(--searchTextColor);
+    margin: 5px;
+}
+
+.rad-wrapper {
+    background-color: var(--background);
+}
+
+.kanji-wrapper {
+    background-color: var(--background);
+    margin-top: 10px;
+    margin-bottom: -10px;
+    border-top: 1px solid var(--borderColor);
+    border-top-width: 1px;
+    width: 100%;
+}
+
+.rad-picker {
+    overflow-y: scroll;
+    margin-bottom: -10px;
+    padding: 5px;
+    height: 86px;
+}
+
+.rad-btn {
+    display: inline-block;
+    border-radius: 2px;
+    font-size: 24px;
+    text-align: center;
+    text-align: -webkit-center;
+    margin: 1px;
+    height: 36px;
+    width: 36px;
+    padding: 2px 4px;
+    line-height: 1.4;
+}
+
+.rad-btn.picker.selected {
+    color: var(--secondaryTextColor);
+    background-color: var(--bgPrimaryColor);
+    border-radius: 5px;
+}
+
+.rad-btn.picker.disabled {
+    color: var(--lineColor);
+}
+
+.rad-btn.picker.disabled:hover {
+    cursor: unset;
+}
+
+.rad-btn.picker {
+    background-color: none;
+}
+
+.rad-btn.num {
+    color: var(--secondaryTextColor);
+    background: none;
+    min-width: 32px;
+    line-height: 36px;
+    font-weight: bold;
+    font-size: 20px;
+    padding: 0 5px;
+}
+
+.rad-btn.num {
+    background-color: var(--borderColor);
+} 
+ 
+.rad-btn:hover:not(.num) {
+    cursor: pointer;
+}
+
+.kanji-search-wrapper > .searchSvg{
+    display: inline-block;
+    margin: 15px 0px 0px 18px;
+    width: 20px;
+    height: 20px;
+    background-color: var(--tagColor);
+}
+
+.kanji-search-wrapper > .btn-search{
+    position: absolute;
+    height: 30px;
+    width: 100px;
+    right: 20px;
+    margin-top: -29px;
+    border-radius: 15px;
+}
+
+#kanji-search {
+    background-color: var(--searchBackground);
+    border: none;
+    border-bottom: 2px solid var(--backgroundShadow);
+    color: var(--searchTextColor);
+    position: absolute;
+    padding-left: 40px;
+    margin-top: 8px;
+    margin-left: 10px;
+    height: 35px;
+    width: 70%;
+    max-width: calc(100% - 175px);
+}
+
+.undoSvg {
+    position: absolute;
+    scale: 1.2;
+    left: calc(70% + 20px);
+    margin-top: 18px;
+}
+
+#kanji-search:focus-visible, #kanji-search:focus {
+    outline: unset;
+    border-bottom: 2px solid var(--tagColor);
+}
+
+/* ---------- Scrollbar changes ---------- */
+
+/* Firefox */
+.rad-results, .rad-picker, .overlay.radical {
+    scrollbar-width: none;
+}
+
+/* Literally everyone else */
+.rad-results::-webkit-scrollbar, .rad-picker::-webkit-scrollbar {
+    width: 0px;
+}
+
+/* Mobile Adjustments */
+@media only screen and (max-width: 600px) {
+    
+    body {
+        min-height: 650px;
+    }
+
+    .rad-results {
+        max-height: 20vh !important;
+    }
+
+    .rad-page-toggle {
+        height: 30px;
+        overflow-x: scroll;
+        white-space: nowrap;
+        max-width: 90%;
+    }
+
+    .rad-page-toggle > span:first-child {
+        margin-left: 10px;
+        margin-right: 0px;
+    }
+
+    .rad-page-toggle > span:not(:first-child) {
+        width: -webkit-max-content;
+        width: -moz-max-content;
+        width: max-content;
+        padding: 0px 2px 0px 2px;
+    }
+
+    .rad-page-toggle > span {
+        margin-left: 2%;
+        margin-right: 2%;
+    }
+
+    .undoSvg {
+        scale: 1;
+        right: 132px;
+        left: unset;
+        margin-top: 16px;
+    }
+}

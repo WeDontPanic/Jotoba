@@ -1,7 +1,31 @@
 @use crate::BaseData;
 @(data: &BaseData)
 
-<!-- Start of Settings Overlay -->
+<!-- Blocking Overlay aka. Loading Overlay -->
+<div id="loading-screen">
+   <div class="loading-animation"></div>
+</div> 
+
+<div class="modal fade" id="imageCroppingModal">
+   <div class="modal-body cropping-target-body">
+      <div class="cropping-target-border">
+         <button class="btn-search crop" onclick="uploadCroppedImage()">
+            <div class="flex-center">
+               <div>@data.gettext("Search")</div>
+               <div class="searchSvg index"></div>
+            </div>
+         </button>
+         <button class="btn-search btn-danger crop" onclick="resetUploadUrlInput();">
+            <div class="flex-center">
+               <div>@data.gettext("Close")</div>
+            </div>
+         </button>
+      </div>
+      <div id="croppingTarget"></div>
+   </div>
+</div>
+
+<!-- Start of Settings Modal -->
 <div class="modal fade" id="settingsModal">
     <div class="modal-dialog">
        <div class="modal-content">
@@ -121,89 +145,15 @@
              <div class="d-flex flex-column top-padding-05-rem">
                 <div class="d-flex flex-row">
                    <span class="colorLbl">@data.gettext("Use theme"):</span>
-                   <span onclick='parseSchemeCode("F2F1F0F3F3Fj4A83C50C058909DC0sZZOs808080D3D3D3");' class="clickable" style="padding-right: 0.5em;">@data.gettext("Light")</span>
-                   <span onclick='parseSchemeCode("2023241F212362CF6A2A863038k63D3CFC9D1D1Dh81A1b2ACA29D94o7878787A7A7A");' class="clickable">@data.gettext("Dark")</span>
+                   <span onclick='setTheme("light");' class="clickable" style="padding-right: 0.5em;">@data.gettext("Light")</span>
+                   <span onclick='setTheme("dark");' class="clickable">@data.gettext("Dark")</span>
                 </div>
-                <hr class="hr-settings"/>
-                <div class="d-flex flex-row">
-                   <span class="colorLbl">@data.gettext("background"):</span>
-                   <input id="background_value" type="color" value="#f2f1f0"  onchange='onSettingsChange_Color(event)'/>
-                   <span onclick='onSettingsChange_Color(event)' class="clickable">@data.gettext("reset")</span>
-                </div>
-                <div class="d-flex flex-row">
-                   <span class="colorLbl">@data.gettext("overlay"):</span>
-                   <input id="overlay_value" type="color" value="#f3f3f3" onchange='onSettingsChange_Color(event)'/>
-                   <span onclick='onSettingsChange_Color(event)' class="clickable">@data.gettext("reset")</span>
-                </div>
-                <hr class="hr-settings"/>
-                <div class="d-flex flex-row">
-                   <span class="colorLbl">@data.gettext("primary"):</span>
-                   <input id="primaryColor_value" type="color" value="#34a83c" onchange='onSettingsChange_Color(event)'/>
-                   <span onclick='onSettingsChange_Color(event)' class="clickable">@data.gettext("reset")</span>
-                </div>
-                <div class="d-flex flex-row">
-                   <span class="colorLbl">@data.gettext("primHover"):</span>
-                   <input id="bgPrimaryColor_value" type="color" value="#50c058" onchange='onSettingsChange_Color(event)'/>
-                   <span onclick='onSettingsChange_Color(event)' class="clickable">@data.gettext("reset")</span>
-                </div>
-                <div class="d-flex flex-row">
-                   <span class="colorLbl">@data.gettext("secondary"):</span>
-                   <input id="secondaryColor_value" type="color" value="#909dc0" onchange='onSettingsChange_Color(event)'/>
-                   <span onclick='onSettingsChange_Color(event)' class="clickable">@data.gettext("reset")</span>
-                </div>
-                <hr class="hr-settings"/>
-                <div class="d-flex flex-row">
-                   <span class="colorLbl">@data.gettext("text"):</span>
-                   <input id="primaryTextColor_value" type="color" value="#909dc0" onchange='onSettingsChange_Color(event)'/>
-                   <span onclick='onSettingsChange_Color(event)' class="clickable">@data.gettext("reset")</span>
-                </div>
-                <div class="d-flex flex-row">
-                   <span class="colorLbl">@data.gettext("overlayText"):</span>
-                   <input id="secondaryTextColor_value" type="color" value="#909dc0" onchange='onSettingsChange_Color(event)'/>
-                   <span onclick='onSettingsChange_Color(event)' class="clickable">@data.gettext("reset")</span>
-                </div>
-                <hr class="hr-settings"/>
-                <div class="d-flex flex-row">
-                   <span class="colorLbl">@data.gettext("searchBG"):</span>
-                   <input id="searchBackground_value" type="color" value="#909dc0" onchange='onSettingsChange_Color(event)'/>
-                   <span onclick='onSettingsChange_Color(event)' class="clickable">@data.gettext("reset")</span>
-                </div>
-                <div class="d-flex flex-row">
-                   <span class="colorLbl">@data.gettext("searchText"):</span>
-                   <input id="searchTextColor_value" type="color" value="#909dc0" onchange='onSettingsChange_Color(event)'/>
-                   <span onclick='onSettingsChange_Color(event)' class="clickable">@data.gettext("reset")</span>
-                </div>
-                <div class="d-flex flex-row">
-                    <span class="colorLbl">@data.gettext("shadow"):</span>
-                    <input id="shadowColor_value" type="color" value="#222222" onchange="onSettingsChange_Color(event)">
-                    <span onclick="onSettingsChange_Color(event)" class="clickable">@data.gettext("reset")</span>
-                 </div>
-                <hr class="hr-settings"/>
-                <div class="d-flex flex-row">
-                   <span class="colorLbl">@data.gettext("tags"):</span>
-                   <input id="tagColor_value" type="color" value="#909dc0" onchange='onSettingsChange_Color(event)'/>
-                   <span onclick='onSettingsChange_Color(event)' class="clickable">@data.gettext("reset")</span>
-                </div>
-                <div class="d-flex flex-row">
-                   <span class="colorLbl">@data.gettext("itemBG"):</span>
-                   <input id="itemBG_value" type="color" value="#909dc0" onchange='onSettingsChange_Color(event)'/>
-                   <span onclick='onSettingsChange_Color(event)' class="clickable">@data.gettext("reset")</span>
-                </div>
-                <br>
-                <div>
-                   <span class="colorLbl">@data.gettext("scheme code"):</span>
-                   <input id="scheme_input" class="form-control small" id="bg_col_settings_hex">
-                   <span onclick='parseSchemeCode()' class="clickable ">@data.gettext("apply")</span>
-                   <vl class="vl-settings"></vl>
-                   <span onclick='createSchemeCode(true)' class="clickable ">@data.gettext("create")</span>
-                </div>
-                <span class="tags">@data.gettext("Using the code you can share color schemes")</span>
              </div>
              <br>
              <span class="inner-title">@data.gettext("Cookie management")</span>
              <br>
-                  <span id="cookie-agreement-revoke" class="hidden">@data.gettext("Click") <span onclick="revokeCookieAgreement()" class="clickable">@data.gettext("here")</span> @data.gettext("to revoke your Cookies agreement")</span>
-                  <span id="cookie-agreement-accept" class="hidden">@data.gettext("Click") <span onclick="cookiesAccepted()" class="clickable">@data.gettext("here")</span> @data.gettext("to enable Cookies")</span>
+                  <span id="cookie-agreement-revoke" class="hidden">@data.gettext("Click") <span onclick="revokeCookieAgreement(true)" class="clickable">@data.gettext("here")</span> @data.gettext("to revoke your Cookies agreement")</span>
+                  <span id="cookie-agreement-accept" class="hidden">@data.gettext("Click") <span onclick="cookiesAccepted(true)" class="clickable">@data.gettext("here")</span> @data.gettext("to enable Cookies")</span>
              <br>
           </div>
 

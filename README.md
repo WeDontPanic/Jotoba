@@ -2,7 +2,7 @@
 Jotoba is a free online, selfhostable, multi-language japanese dictionary based on lots of various free resources.<br>
 Public instance: [jotoba.de](https://jotoba.de)<br>
 
-<img src="https://camo.githubusercontent.com/f045cbbb51444bf80b15e1c06d5c148f97e82cee9d005210271fa3bdbf71db22/68747470733a2f2f66696c65732e6a6f6a69692e64652f707265766965772f7261772f4672555450664f68645761354c5071594364454674656a3743" width="600">
+<a href="https://discord.gg/ysSkFFxmjr"><img src="https://img.shields.io/discord/854657468867936267?style=for-the-badge" alt="Discord"></a>
 
 # Team
 <table>
@@ -31,18 +31,18 @@ Please refer to our [Trello board](https://trello.com/b/nmG0xgaW/jotoba-roadmap)
 # Developing
 Jotoba is entirely open source. Contributions are highly welcome and can be made by anyone who wants to help Jotoba grow.<br>
 That being said, all API endpoints exposed by Jotoba are documented and allowed to be used (within a fair amount).<br>
-Refer to [API-Docs](https://jotoba.de/docs.html) for the API documentations.
+Refer to [API-Docs](https://jotoba.de/docs.html) for the API documentations and to [CONTRIBUTION](https://github.com/WeDontPanic/Jotoba/wiki/Contributing) for an introduction in how to contribute code to Jotoba.
 
 # Translations
 Jotoba is aimed to be a multi-language dictionary thus the website is aimed to be fully translated into all available languages.<br>
 However, the main developers of this project don't speak ~10 languages.
 If you're interested in contributing to this project we are thankful for each translation contribution.<br>
-For a guide on how to add translations please refer to the [wiki](https://github.com/WeDontPanic/Jotoba).
+For a guide on how to add translations please refer to the [wiki](https://github.com/WeDontPanic/Jotoba/wiki/Translate).
 
 # Selfhosting
-Please refer to the [wiki](https://github.com/WeDontPanic/Jotoba) for a guide on how to host Jotoba yourself.
+Please refer to the [wiki](https://github.com/WeDontPanic/Jotoba/wiki/Selfhost) for a guide on how to host Jotoba yourself.
 
 # License
-Jotoba itself is licensed under GPL 3.0 or later. 
+Jotoba itself is licensed under AGPL 3.0 or later. 
 Please refer to the [license file](https://github.com/WeDontPanic/Jotoba/blob/master/LICENSE) for further information.
 Joto-kun (including all of his variants) is licensed under [CC BY-NC-ND 4.0](https://creativecommons.org/licenses/by-nc-nd/4.0/).

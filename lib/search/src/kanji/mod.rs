@@ -1,72 +1,146 @@
 mod order;
 pub mod result;
+mod tag_only;
 
-use deadpool_postgres::Pool;
+use itertools::Itertools;
+use resources::models::kanji::Kanji;
 use result::Item;
 
 use error::Error;
 use japanese::JapaneseExt;
-use models::kanji::{self, KanjiResult};
+
+use crate::{
+    engine::{
+        guess::{Guess, GuessType},
+        words::native,
+        SearchTask,
+    },
+    query::QueryLang,
+};
 
 use super::query::Query;
-use futures::future::try_join_all;
-use itertools::Itertools;
 
-fn format_query(query: &str) -> String {
-    query.replace(" ", "").replace(".", "").trim().to_string()
+// Defines the result of a kanji search
+#[derive(Default)]
+pub struct KanjiResult {
+    pub items: Vec<Item>,
+    pub total_items: usize,
 }
 
 /// The entry of a kanji search
-pub async fn search(db: &Pool, query: &Query) -> Result<Vec<Item>, Error> {
-    let q = format_query(&query.query);
+pub fn search(query: &Query) -> Result<KanjiResult, Error> {
+    if query.form.is_tag_only() {
+        return tag_only::search(query);
+    }
 
-    let res = if q.is_japanese() {
-        by_literals(db, &query.query).await
+    let query_str = format_query(&query.query);
+
+    let res;
+
+    if query.language == QueryLang::Japanese {
+        res = by_literals(&query.query)
     } else {
-        by_meaning(db, &query.query).await
-    }?;
+        res = by_meaning(&query.query)
+    };
 
-    let mut items = to_item(db, res, &query).await?;
-    if !q.is_japanese() {
+    let mut items = to_item(res, &query);
+    if !query_str.is_japanese() {
         items.sort_by(order::by_meaning);
     }
 
-    Ok(items)
+    let len = items.len();
+    let items = items
+        .into_iter()
+        .skip(query.page_offset(query.settings.kanji_page_size as usize))
+        .take(query.settings.kanji_page_size as usize)
+        .collect::<Vec<_>>();
+
+    Ok(KanjiResult {
+        items,
+        total_items: len,
+    })
 }
 
 /// Find a kanji by its literal
-async fn by_literals(db: &Pool, query: &str) -> Result<Vec<KanjiResult>, Error> {
-    let kanji = query
+fn by_literals(query: &str) -> Vec<Kanji> {
+    let kanji = all_kanji_from_text(query);
+    if !kanji.is_empty() || query.is_kanji() {
+        return kanji;
+    }
+
+    // kana search
+
+    let search = SearchTask::<native::Engine>::new(query).threshold(0.89);
+    let res = search.find_exact().unwrap_or_default();
+    if res.is_empty() {
+        return vec![];
+    }
+
+    let text = res
+        .into_iter()
+        .filter(|i| i.item.reading.kana.reading == query)
+        .map(|i| i.item.get_reading().reading.chars().collect::<Vec<_>>())
+        .flatten()
+        .take(100)
+        .unique()
+        .join("");
+
+    all_kanji_from_text(&text)
+}
+
+fn all_kanji_from_text(text: &str) -> Vec<Kanji> {
+    let kanji_storage = resources::get().kanji();
+
+    text.chars()
+        .into_iter()
+        .filter(|i| i.is_kanji())
+        .filter_map(|literal| kanji_storage.by_literal(literal))
+        .cloned()
+        .take(100)
+        .collect()
+}
+
+/// Guesses the amount of results a search would return with given `query`
+pub fn guess_result(query: &Query) -> Option<Guess> {
+    let query_str = &query.query;
+
+    let kanji_storage = resources::get().kanji();
+    let guess = query_str
         .chars()
         .into_iter()
-        .filter_map(|i| i.is_kanji().then(|| i.to_string()))
-        .collect_vec();
+        .filter(|i| i.is_kanji())
+        .filter_map(|literal| kanji_storage.by_literal(literal))
+        .take(15)
+        .count();
 
-    let mut items = kanji::find_by_literals(db, &kanji).await?;
-
-    // Order them by occurence in query
-    items
-        .sort_by(|a, b| utils::get_item_order(&kanji, &a.kanji.literal, &b.kanji.literal).unwrap());
-
-    Ok(items)
+    Some(Guess::new(guess as u32, GuessType::Accurate))
 }
 
 /// Find kanji by mits meaning
-async fn by_meaning(db: &Pool, meaning: &str) -> Result<Vec<KanjiResult>, Error> {
-    Ok(kanji::meaning::find(db, meaning)
-        .await?
-        .into_iter()
-        // TODO add paginator
-        .take(5)
-        .collect())
+fn by_meaning(meaning: &str) -> Vec<Kanji> {
+    let mut out = Vec::new();
+
+    let kanji_storage = resources::get().kanji();
+
+    // TODO: implement a proper meaning search algorithm
+    for kanji in kanji_storage.iter() {
+        if kanji.meanings.contains(&meaning.to_string()) {
+            out.push(kanji.clone());
+        }
+    }
+
+    out
 }
 
-async fn to_item(db: &Pool, items: Vec<KanjiResult>, query: &Query) -> Result<Vec<Item>, Error> {
-    Ok(try_join_all(
-        items
-            .into_iter()
-            .map(|i| Item::from_db(db, i, query.settings.user_lang, query.settings.show_english))
-            .collect::<Vec<_>>(),
-    )
-    .await?)
+#[inline]
+fn to_item(items: Vec<Kanji>, query: &Query) -> Vec<Item> {
+    items
+        .into_iter()
+        .map(|i| Item::load_words(i, query.settings.user_lang, query.settings.show_english))
+        .collect()
+}
+
+#[inline]
+fn format_query(query: &str) -> String {
+    query.replace(" ", "").replace(".", "").trim().to_string()
 }

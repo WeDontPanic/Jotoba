@@ -1,23 +1,22 @@
 @use search::word::result::{Item, WordResult, selected};
+@use resources::parse::jmdict::languages::Language;
 @use search::query::Query;
 @use super::search_help;
 @use crate::BaseData;
 @use japanese::furigana::from_str as furi_from_str;
+@use crate::example_sentence::ext_sentence;
 
 @(data: &BaseData, query: &Query, result: WordResult)
 
-  <!-- Inner Top Row -->
-  <div class="d-flex center no-drag">
-    <div class="main-tab-select l">
-      <h2 id="previousTabBtn" onclick="changeSearchType(null, 2)" class="tab-btn">&larr; @data.gettext("Sentences")</h2>
-    </div>
-    <div class="title-div">
-      <h1>@data.gettext("Words and kanji")</h1>
-    </div>
-    <div class="main-tab-select r">
-      <h2 id="nextTabBtn" onclick="changeSearchType(null, 3)" class="tab-btn">@data.gettext("Names") &rarr;</h2>
-    </div>
-  </div>
+<link rel="stylesheet" type="text/css" media="print" onload="this.media='all'" href="/assets/css/tools/ripple.css">
+
+<link rel="stylesheet" type="text/css" href="/assets/css/page/multiPage/kanji.css">
+<link rel="stylesheet" type="text/css" href="/assets/css/page/multiPage/kana.css">
+<link rel="stylesheet" type="text/css" href="/assets/css/page/wordPage.css">
+<link rel="stylesheet" type="text/css" href="/assets/css/page/wordExtensions/sentenceReader.css">
+<link rel="stylesheet" type="text/css" href="/assets/css/page/wordExtensions/searchAnnotation.css">
+
+<script defer src="/assets/js/page/wordPage.js"></script>
 
   @if let Some(ref inflection) = result.inflection_info {
     <div class="search-annotation">
@@ -27,10 +26,11 @@
         <span>
           @data.gettext_fmt("{} could be an inflection of", &[&result.searched_query]) <a class="clickable no-align green" href="/search/@inflection.lexeme">@inflection.lexeme</a>@data.ngettext(", with this form:", inflection.forms.len() as u64)
           <br>
-          @for form in inflection.forms.iter() {
-            @data.gettext(*form)
-            <br>
-          }
+          <span class="forms">
+            @for form in inflection.forms.iter() {
+              <li>@data.gettext(*form)</li>
+            }
+          </span>
         </span>
       </div>
 
@@ -44,7 +44,7 @@
   @if let Some(ref sentence_parts) = result.sentence_parts {
     <div class="search-annotation">
       <!-- Sentence Info -->
-      <div class="d-flex flex-row wrap sentence-reader">
+      <div id="sr" class="d-flex flex-row wrap sentence-reader">
         @for part in sentence_parts {
           @if let Some(ref furigana) = part.furigana {
             <a id="p@part.pos" href="/search/@query.query?i=@part.pos" class="@part.get_add_class() d-flex flex-row sentence-part @selected(part.pos, result.sentence_index)">
@@ -160,15 +160,15 @@
                   @data.gettext("common word")
                 </div>
               }
-              @if let Some(lvl) =  word.reading.get_jplt_lvl() {
+              @if let Some(lvl) =  word.jlpt_lvl {
                 <div class="word-frequency">
                   @data.gettext("JLPT") n@lvl
                 </div>
               }
               @if let Some(audio) = word.audio_file() {
-                <span class="clickable audioBtn" data="/assets/audio/@audio">@data.gettext("Play audio")
+                <span class="clickable audioBtn" data="/audio/@audio">@data.gettext("Play audio")
                   <audio preload="none">
-                    <source src="/assets/audio/@audio" type="audio/ogg">
+                    <source src="/audio/@audio" type="audio/ogg">
                   </audio>
                 </span>
               }
@@ -187,22 +187,55 @@
 
                 <ul id="info-dropdown" class="mdl-menu mdl-menu--bottom-right mdl-js-menu mdl-js-ripple-effect" for="m@word.sequence">
                   @if word.get_inflections().is_some() {
-                    <li id="conjugationBtn" class="info-entry noselect" data-toggle="modal" data-target="#conj@word.sequence" class="mdl-menu__item">@data.gettext("Show Conjugations")</li>
+                    <li id="conjugationBtn" class="info-entry noselect" data-toggle="modal" data-target="#conj@word.sequence" class="mdl-menu__item">
+                      <div class="conjugationSvg"></div> 
+                      <span class="info-dropdown-txt">@data.gettext("Show Conjugations")</span>
+                    </li>
                     <li disabled class="mdl-menu__item" style="height: 10px;"><hr style="margin: 0px; margin-top: 5px;"></li>
                   }
                   
                   @if let Some(ref collocations) = word.collocations {
-                    <li id="collocationBtn" class="info-entry noselect" data-toggle="modal" data-target="#coll@word.sequence" class="mdl-menu__item">@data.ngettext("Show collocation", collocations.len() as u64)</li>
-                    <li disabled class="mdl-menu__item" style="height: 10px;"><hr style="margin: 0px; margin-top: 5px;"></li>
+                    <li id="collocationBtn" class="info-entry noselect" data-toggle="modal" data-target="#coll@word.sequence" class="mdl-menu__item">
+                      <div class="conjugationSvg"></div> <!-- TODO -->
+                      <span class="info-dropdown-txt">@data.ngettext("Show collocation", collocations.len() as u64)</span>
+                    </li>
+                    <li disabled class="mdl-menu__item dot-menu" style="height: 10px;"><hr style="margin: 0px; margin-top: 5px;"></li>
                   }
-                  <li id="SentenceSearchBtn" class="info-entry noselect" class="mdl-menu__item"><a class="no-highlight" draggable="false" href="/search/@word.get_reading().reading?t=2">@data.gettext("Sentence search")</a></li>
+
+                  @if let Some(intransitive) = word.get_intransitive_counterpart() {
+                    <li class="info-entry noselect" class="mdl-menu__item"> 
+                      <div class="transitivitySvg"></div>
+                      <span class="info-dropdown-txt"><a class="no-highlight" draggable="false" href="/search/@intransitive.get_reading().reading">@data.gettext("Intransitive word")</a></span>
+                    </li>
+                    <li disabled class="mdl-menu__item dot-menu" style="height: 10px;"><hr style="margin: 0px; margin-top: 5px;"></li>
+                  }
+
+                  @if let Some(transitive) = word.get_transitive_counterpart() {
+                    <li class="info-entry noselect" class="mdl-menu__item">
+                      <div class="transitivitySvg"></div>
+                      <span class="info-dropdown-txt"><a class="no-highlight" draggable="false" href="/search/@transitive.get_reading().reading">@data.gettext("Transitive word")</a></span> 
+                    </li>
+                    <li disabled class="mdl-menu__item dot-menu" style="height: 10px;"><hr style="margin: 0px; margin-top: 5px;"></li>
+                  }
+
+                  @if word.has_sentence(data.user_settings.user_lang) || (data.user_settings.show_english && word.has_sentence(Language::English)) {
+                    <li class="info-entry noselect" class="mdl-menu__item">
+                      <div class="sentenceSvg"></div>
+                      <div class="info-dropdown-vl"></div>
+                      <span class="info-dropdown-txt"><a class="no-highlight" draggable="false" href="/search/@word.get_reading().reading?t=2">@data.gettext("Sentence search")</a></span> 
+                    </li>
+                  }
+
                   @if let Some(audio) = word.audio_file() {
                     <li disabled class="mdl-menu__item" style="height: 10px;"><hr style="margin: 0px; margin-top: 5px;"></li>
-                    <li id="AudioDlBtn" class="info-entry noselect" class="mdl-menu__item"><a class="no-highlight" draggable="false" href="/assets/audio/@audio">@data.gettext("Download audio")</a></li>
+                    <li id="AudioDlBtn" class="info-entry noselect" class="mdl-menu__item">
+                      <div class="downloadSvg"></div>
+                      <span class="info-dropdown-txt"><a class="no-highlight" draggable="false" href="/audio/@audio">@data.gettext("Download audio")</a></span> 
+                    </li>
                   }
                 </ul>
 
-                @for (spos, senses_compound) in word.get_senses_orderd(&query).iter().enumerate() { 
+                @for (spos, senses_compound) in word.get_senses_orderd(query.settings.english_on_top, query.settings.user_lang).iter().enumerate() { 
                   @for (pos, sense) in senses_compound.iter().enumerate() {
                     @if !sense.glosses.is_empty() {
                       <!-- Sense entry -->
@@ -218,9 +251,15 @@
                             @sense.get_glosses()
                           </div>
                         </div>
-                        @if let Some((info, xref, antonym, dialect)) = sense.get_infos(&data.dict, data.get_lang()) {
+                        @if let Some((info, xref, antonym, dialect, gairaigo)) = sense.get_infos(&data.dict, data.get_lang()) {
                           <div class="tags no-margin">
+                            @if let Some(ref gro) = gairaigo {
+                              @gro
+                            }
                             @if let Some(ref info) = info {
+                              @if gairaigo.is_some() {
+                                .
+                              }
                               @info
                             }
                             @if let Some(ref dialect) = dialect {
@@ -235,6 +274,36 @@
                               }
                               @data.gettext("See also") <a class="clickable no-align green" href="/search/@xref">@xref</a>
                             }
+                          </div>
+                        }
+                        @if let Some((furi, translation)) = ext_sentence(sense, &query.settings.user_lang) {
+                          <div class="d-flex flex-row">
+                            <div class="tags no-margin example-sentence collapsed"> 
+                              <div class="d-flex flex-row wrap">               
+                                @for spair in furi {
+                                  @if spair.kanji.is_some() {
+                                    <div class="furigana-kanji-container">
+                                      <span class="furigana-preview noselect">
+                                        @spair.kana
+                                      </span>
+                                      <span class="kanji-preview">
+                                        @spair.kanji.unwrap()
+                                      </span>
+                                    </div>
+                                  } else {
+                                    <div class="inline-kana-preview">
+                                      @spair.kana
+                                    </div>
+                                  }
+                                }
+                              </div>
+                            </div>
+                            <div class="expander">
+
+                            </div>
+                          </div>
+                          <div class="tags no-margin">
+                            @translation
                           </div>
                         }
                       </div>
@@ -262,8 +331,8 @@
                 }
               </div>
 
-              <!-- !!! START OF COLLOCATION OVERLAY !!! -->
-              @if let Some(ref collocations) = word.collocations {
+              <!-- Start of Collocation Modal -->
+              @if word.has_collocations() {
                 <div class="modal fade" id="coll@word.sequence" style="display: none;" aria-hidden="true">
                   <div class="modal-dialog  modal-lg">
                     <div class="modal-content">
@@ -275,7 +344,7 @@
                         <h3 class="info-h3">@data.gettext("Collocations")</h3>
                         <table class="table collocation">
                           <tbody>
-                            @for collocation in collocations {
+                            @for collocation in word.get_collocations(data.user_settings.user_lang, data.user_settings.show_english) {
                               <tr>
                                   <th scope="row"><a class="clickable no-align green" href="/search/@collocation.0">@collocation.0</a></th>
                                   <td>@collocation.1</td>
@@ -393,19 +462,19 @@
           <div class="kanji-parent">
             <!-- Tags -->
             <div class="tags">
-              @kanji.kanji.stroke_count @data.gettext("strokes").
-              @if let Some(jplt_lvl) = kanji.kanji.jlpt {
+              @kanji.stroke_count @data.gettext("strokes").
+              @if let Some(jplt_lvl) = kanji.jlpt {
                 JLPT N@jplt_lvl.
               }
-              @if let Some(grade) = kanji.kanji.grade {
+              @if let Some(grade) = kanji.grade {
                 @data.gettext_fmt("Taught in {} grade", &[grade])
               }
             </div>
 
             <!-- Kanji and translation -->
             <div class="kanji-entry left d-flex flex-row">
-              <a class="kanji-preview large black" href="/search/@kanji.kanji.literal?t=1">
-                @kanji.kanji.literal
+              <a class="kanji-preview large black" href="/search/@kanji.literal?t=1">
+                @kanji.literal
               </a>
               <div class="translation kanji">
                 @kanji.meanings.join(", ")
@@ -413,27 +482,27 @@
             </div>
 
             <!-- Kun readings -->
-            @if let Some(ref kun) = kanji.kanji.kunyomi {
+            @if let Some(ref kun) = kanji.kunyomi {
               <div class="tags no-margin">@data.gettext("Kun")</div>
               <div class="d-flex flex-row wrap noselect">
                 @for (pos, reading) in kun.iter().enumerate() {
                   @if pos > 0 {
                     <span class="tags no-margin fat right-padding-10">,</span>
                   }
-                  <a class="clickable no-align green" href="/search/@kanji.kanji.literal @reading">@reading</a>
+                  <a class="clickable no-align green" href="/search/@kanji.literal @reading">@reading</a>
                 }
               </div>
             }
 
             <!-- On readings -->
-            @if let Some(ref on) = kanji.kanji.onyomi {
+            @if let Some(ref on) = kanji.onyomi {
               <div class="tags no-margin">@data.gettext("On")</div>
               <div class="d-flex flex-row wrap noselect">
                 @for (pos, reading) in on.iter().enumerate() {
                   @if pos > 0 {
                     <span class="tags no-margin fat right-padding-10">,</span>
                   }
-                  <a class="clickable no-align green" href="/search/@kanji.kanji.literal @reading">@reading</a>
+                  <a class="clickable no-align green" href="/search/@kanji.literal @reading">@reading</a>
                 }
               </div>
             }

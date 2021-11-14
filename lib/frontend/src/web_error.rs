@@ -1,4 +1,4 @@
-use actix_web::{http::StatusCode, HttpResponse, ResponseError};
+use actix_web::{error::BlockingError, http::StatusCode, HttpResponse, ResponseError};
 
 #[cfg(not(feature = "sentry_error"))]
 use log::error;
@@ -61,6 +61,13 @@ impl ResponseError for Error {
 impl From<std::str::Utf8Error> for Error {
     fn from(_: std::str::Utf8Error) -> Self {
         Self::BadRequest
+    }
+}
+
+impl From<BlockingError> for Error {
+    #[inline]
+    fn from(_: BlockingError) -> Self {
+        Self::Internal
     }
 }
 

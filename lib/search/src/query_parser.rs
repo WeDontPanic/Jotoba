@@ -1,11 +1,13 @@
+use std::cmp::Ordering;
+
 use itertools::Itertools;
+use localization::{language::Language, traits::Translatable, TranslationDict};
 use serde::Deserialize;
 
 use japanese::JapaneseExt;
-use parse::jmdict::part_of_speech::PosSimple;
+use resources::{models::kanji, parse::jmdict::part_of_speech::PosSimple};
 
 use super::query::{Form, Query, QueryLang, SearchTypeTag, Tag, UserSettings};
-use models::kanji::reading::KanjiReading;
 
 /// Represents a query
 pub struct QueryParser {
@@ -14,8 +16,10 @@ pub struct QueryParser {
     original_query: String,
     tags: Vec<Tag>,
     user_settings: UserSettings,
+    page_offset: usize,
     page: usize,
     word_index: usize,
+    use_original: bool,
 }
 
 #[derive(Deserialize, Debug, Copy, Clone, PartialEq, Hash)]
@@ -30,7 +34,45 @@ pub enum QueryType {
     Words,
 }
 
+impl QueryType {
+    /// Iterate over all query types
+    pub fn iterate() -> impl Iterator<Item = Self> {
+        vec![Self::Kanji, Self::Sentences, Self::Names, Self::Words].into_iter()
+    }
+
+    pub fn get_translated<'a>(
+        &self,
+        dict: &'a TranslationDict,
+        language: Option<Language>,
+    ) -> &'a str {
+        dict.gettext(self.get_id(), language)
+    }
+
+    #[inline]
+    pub fn get_type_id(&self) -> u8 {
+        match self {
+            QueryType::Kanji => 1,
+            QueryType::Sentences => 2,
+            QueryType::Names => 3,
+            QueryType::Words => 0,
+        }
+    }
+}
+
+impl Translatable for QueryType {
+    #[inline]
+    fn get_id(&self) -> &'static str {
+        match self {
+            QueryType::Kanji => "Kanji",
+            QueryType::Sentences => "Sentences",
+            QueryType::Names => "Names",
+            QueryType::Words => "Words",
+        }
+    }
+}
+
 impl Default for QueryType {
+    #[inline]
     fn default() -> Self {
         Self::Words
     }
@@ -47,7 +89,27 @@ impl QueryParser {
     ) -> QueryParser {
         // Split query into the actual query and possibly available tags
         let (parsed_query, tags) = Self::partition_tags_query(&query, trim);
-        let parsed_query = Self::format_query(parsed_query, trim);
+        let mut parsed_query: String = Self::format_query(parsed_query, trim)
+            .chars()
+            .into_iter()
+            .take(200)
+            .collect();
+
+        // Pages start at 1. First offset has to be 0
+        //let page_offset = (page.saturating_sub(1)) * user_settings.items_per_page as usize;
+        let page_offset = calc_page_offset(page as usize, user_settings.page_size as usize);
+
+        let trimmed_query = parsed_query.trim();
+        let use_original = trimmed_query.starts_with("\"")
+            && trimmed_query.ends_with("\"")
+            && trimmed_query.len() > 2;
+
+        // Remove tailing and leading parentheses
+        if use_original {
+            parsed_query = trimmed_query[1..trimmed_query.len() - 1].to_string();
+            //query.remove(0);
+            //query.remove(query.len() - 1);
+        }
 
         QueryParser {
             q_type,
@@ -55,8 +117,10 @@ impl QueryParser {
             original_query: query,
             tags,
             user_settings,
+            page_offset,
             page,
             word_index,
+            use_original,
         }
     }
 
@@ -83,7 +147,8 @@ impl QueryParser {
     /// Parses a user query into Query
     pub fn parse(self) -> Option<Query> {
         // Don't allow empty queries
-        if self.query.is_empty() {
+        if self.query.is_empty() && !self.tags.iter().any(|i| i.is_empty_allowed()) {
+            println!("empty");
             return None;
         }
 
@@ -97,9 +162,11 @@ impl QueryParser {
             query: self.query,
             original_query: self.original_query,
             settings: self.user_settings,
+            page_offset: self.page_offset,
             page: self.page,
             word_index: self.word_index,
             parse_japanese,
+            use_original: self.use_original,
         })
     }
 
@@ -142,6 +209,11 @@ impl QueryParser {
     fn parse_form(&self) -> Form {
         let query = &self.query;
 
+        // Tag only search
+        if query.is_empty() && self.tags.iter().any(|i| i.is_empty_allowed()) {
+            return Form::TagOnly;
+        }
+
         // Detect a kanji reading query
         if let Some(kr) = self.parse_kanji_reading() {
             return Form::KanjiReading(kr);
@@ -167,14 +239,14 @@ impl QueryParser {
     }
 
     /// Returns Some(KanjiReading) if the query is a kanji reading query
-    fn parse_kanji_reading(&self) -> Option<KanjiReading> {
+    fn parse_kanji_reading(&self) -> Option<kanji::Reading> {
         // Format of kanji query: '<Kanji> <reading>'
         if utils::real_string_len(&self.query) >= 3 && self.query.contains(' ') {
             let split: Vec<_> = self.query.split(' ').collect();
 
             if split[0].trim().is_kanji() && format_kanji_reading(split[1]).is_japanese() {
                 // Kanji detected
-                return Some(KanjiReading {
+                return Some(kanji::Reading {
                     literal: split[0].chars().next().unwrap(),
                     reading: split[1].to_string(),
                 });
@@ -185,18 +257,39 @@ impl QueryParser {
     }
 }
 
-// Tries to determine between Japanese/Non japnaese
+/// Returns a number 0-100 of japanese character ratio
+fn get_jp_part(inp: &str) -> u8 {
+    let mut total = 0;
+    let mut japanese = 0;
+    for c in inp.chars() {
+        total += 1;
+        if c.is_japanese() {
+            japanese += 1;
+        }
+    }
+
+    ((japanese as f32 / total as f32) * 100f32) as u8
+}
+
+/// Tries to determine between Japanese/Non japnaese
 pub fn parse_language(query: &str) -> QueryLang {
     let query = format_kanji_reading(query);
-    if query.is_japanese() {
-        QueryLang::Japanese
-    } else if !query.has_japanese() {
-        QueryLang::Foreign
-    } else {
-        QueryLang::Undetected
+
+    // how many percent of the characters have to be japanese in order to rank a text as japanese text
+    let threshold = 40;
+
+    match get_jp_part(&query).cmp(&threshold) {
+        Ordering::Equal => QueryLang::Undetected,
+        Ordering::Less => QueryLang::Foreign,
+        Ordering::Greater => QueryLang::Japanese,
     }
 }
 
+#[inline]
 pub fn format_kanji_reading(s: &str) -> String {
     s.replace('.', "").replace('-', "").replace(' ', "")
+}
+
+pub fn calc_page_offset(page: usize, page_size: usize) -> usize {
+    page.saturating_sub(1) * page_size
 }

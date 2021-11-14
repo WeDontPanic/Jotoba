@@ -8,6 +8,9 @@
   @:search_help(&data, data.gettext("kanji"))
 }
 
+<link rel="stylesheet" type="text/css" href="/assets/css/page/multiPage/kanji.css">
+<link rel="stylesheet" type="text/css" href="/assets/css/page/kanjiPage.css">
+
 <!-- Inner Main Body -->
 @for (kpos, k_item) in kanji.iter().enumerate() {
   @if kpos > 0 {
@@ -17,24 +20,24 @@
       <!-- Left side: Kanji -->
       <div class="kanji-entry left detail d-flex flex-column">
          <span class="kanji-preview x-large">
-           @k_item.kanji.kanji.literal
+           @k_item.kanji.literal
          </span>
          <div class="kanji-preview-info">
-           <div class="notes stroke"><b>@k_item.kanji.kanji.stroke_count</b> @data.gettext("strokes") </div>
+           <div class="notes stroke"><b>@k_item.kanji.stroke_count</b> @data.gettext("strokes") </div>
             <!--TODO-->
             <div class="rad-parts-parent">
               <div class="notes rad"><b>@data.gettext("Radical"):</b>
                 <br>
-                <a class="clickable no-align" href="/search/@k_item.radical.literal?t=1">@k_item.get_radical()</a>
+                <a class="clickable no-align" href="/search/@k_item.kanji.radical.literal?t=1">@k_item.get_radical()</a>
                 @if k_item.get_rad_len() > 7 {
                  <br>
                 }
-                @if let Some(ref translations) = k_item.radical.translations {
+                @if let Some(ref translations) = k_item.kanji.radical.translations {
                   (@translations.join(", "))
                 }
             </div>
-            @if let Some(ref parts) = k_item.parts {
-              <div class="notes parts"><b>@k_item.get_parts_title():</b>
+            @if let Some(ref parts) = k_item.kanji.parts {
+              <div class="notes parts"><b>@data.ngettext("Part", k_item.get_parts_count() as u64):</b>
                 <br>
                 @for (pos, part) in parts.iter().enumerate() {
                   @if pos > 0 {
@@ -56,55 +59,55 @@
                <div class="translation big">
                    @k_item.kanji.meanings.join(", ")
                </div>
-                @if let Some(ref kun_readings) = k_item.kanji.kanji.kunyomi {
+                @if let Some(ref kun_readings) = k_item.kanji.kunyomi {
                  <div class="d-flex flex-row wrap">
                     <div class="tags no-margin fat right-padding-10 noselect">@data.gettext("Kun"):</div>
                       @for (pos, kun) in kun_readings.iter().enumerate() {
                         @if pos > 0 {
                           <div class="tags no-margin fat right-padding-10">,</div>
                         }
-                        <a class="clickable no-align fat" href="/search/@k_item.kanji.kanji.literal @kun">@kun</a>
+                        <a class="clickable no-align fat" href="/search/@k_item.kanji.literal @kun">@kun</a>
                       }
                  </div>
                 }
-                @if let Some(ref on_readings) = k_item.kanji.kanji.onyomi {
+                @if let Some(ref on_readings) = k_item.kanji.onyomi {
                  <div class="d-flex flex-row wrap">
                     <div class="tags no-margin fat right-padding-20 noselect">@data.gettext("On"):</div>
                       @for (pos, on) in on_readings.iter().enumerate() {
                         @if pos > 0 {
                           <div class="tags no-margin fat right-padding-10">,</div>
                         }
-                        <a class="clickable no-align fat" href="/search/@k_item.kanji.kanji.literal @on">@on</a>
+                        <a class="clickable no-align fat" href="/search/@k_item.kanji.literal @on">@on</a>
                       }
                  </div>
                }
             </div>
             <!-- Inner Right Side -->
             <div class="kanji-preview-right">
-                @if let Some(grade) = k_item.kanji.kanji.grade {
+                @if let Some(grade) = k_item.kanji.grade {
                   @data.gettext_fmt("Taught in {} grade", &[grade])
                 }
-                @if let Some(n_lvl) = k_item.kanji.kanji.jlpt {
+                @if let Some(n_lvl) = k_item.kanji.jlpt {
                  <div class="notes">@data.gettext("JLPT level") <b>N@n_lvl</b></div>
                 }
-                @if let Some(frequency) = k_item.kanji.kanji.frequency {
+                @if let Some(frequency) = k_item.kanji.frequency {
                  <div class="notes"><b>@frequency</b> @data.gettext("of 2500 most used kanji in newspapers")</div>
                 }
             </div>
         </div>
         <!-- Alternative Readings Part -->
         <div>
-          @if let Some(ref natori) = k_item.kanji.kanji.natori {
+          @if let Some(ref natori) = k_item.kanji.natori {
             <div class="notes d-flex flex-row wrap"><b class="right-padding-10">@data.gettext("Japanese names"):</b> 
               @for (pos, n) in natori.iter().enumerate() {
                 @if pos > 0 {
                   <div class="tags no-margin slim right-padding-10">,</div>
                 }
-                <a class="clickable no-align" href="/search/@k_item.kanji.kanji.literal @n?t=3">@n</a>
+                <a class="clickable no-align" href="/search/@k_item.kanji.literal @n?t=3">@n</a>
               }
             </div>
           }
-          @if let Some(ref similar_kanji) = k_item.kanji.kanji.similar_kanji {
+          @if let Some(ref similar_kanji) = k_item.kanji.similar_kanji {
             <div class="notes d-flex flex-row wrap"><b class="right-padding-10">@data.gettext("Similar Kanji"):</b> 
               @for (pos, n) in similar_kanji.iter().enumerate() {
                 @if pos > 0 {
@@ -114,7 +117,7 @@
               }
             </div>
           }
-          @if let Some(ref chinese) = k_item.kanji.kanji.chinese {
+          @if let Some(ref chinese) = k_item.kanji.chinese {
             <div class="notes"><b>@data.gettext("Chinese reading"):</b> @chinese.join(", ")</div>
           }
           @if let Some(ref korean) = k_item.get_korean() {
@@ -123,13 +126,13 @@
         </div>
 
          <!-- Second Part -->
-         @if k_item.has_stroke_frames() {
+         @if k_item.kanji.has_stroke_frames() {
            <hr/>
            <div class="stroke-container">
-                <img src="@k_item.get_stroke_frames_url()">
+                <img src="@k_item.kanji.get_stroke_frames_url()">
            </div>
          }
-         @if k_item.has_animation_file() {
+         @if k_item.kanji.has_animation_file() {
            <div class="animation-container d-flex flex-row">
               <div class="d-flex flex-column slider-parent">
                  <div class="slidecontainer">
@@ -160,7 +163,7 @@
                    @for on in ons.iter() {
                       <span>
                         @if let Some(ref kanji_reading) = on.reading.kanji {
-                          <a class="clickable green" href="/search/@kanji_reading.reading">@kanji_reading.reading</a> 【@on.reading.kana.as_ref().unwrap().reading】@on.glosses_pretty()
+                          <a class="clickable green" href="/search/@kanji_reading.reading">@kanji_reading.reading</a> 【@on.reading.kana.reading】@on.glosses_pretty()
                         }
                       </span>
                     }
@@ -177,7 +180,7 @@
                   @for kun in kuns.iter() {
                     <span>
                       @if let Some(ref kanji_reading) = kun.reading.kanji {
-                        <a class="clickable green" href="/search/@kanji_reading.reading">@kanji_reading.reading</a> 【@kun.reading.kana.as_ref().unwrap().reading】@kun.glosses_pretty()
+                        <a class="clickable green" href="/search/@kanji_reading.reading">@kanji_reading.reading</a> 【@kun.reading.kana.reading】@kun.glosses_pretty()
                       }
                     </span>
                   }
@@ -189,5 +192,5 @@
    </div>
 
    <!-- Load this page's script -->
-   <script src="/assets/js/kanjiAnimation.js"></script>
+   <script src="/assets/js/page/kanji/kanjiAnimation.js"></script>
 }

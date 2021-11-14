@@ -4,39 +4,64 @@
 <head>
     <!-- Meta Info -->
     <title>@data.gettext("Jotoba")</title>
-    <link rel="icon" type="image/svg+xml" href="/assets/jotokun/JotoHead.svg">
+    <link rel="shortcut icon" type="image/png" href="/assets/jotokun/favicon.png">
     <meta http-equiv="Content-type" content="text/html; charset=utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="Jotoba is a powerful and free Japanese dictionary supporting words, kanji, sentences, and many different languages.">
 
+    <!-- Fonts -->
+    <link rel="stylesheet" type="text/css" media="print" onload="this.media='all'" href="/assets/fonts/roboto.css">
+
     <!-- External Stylesheets -->
     <link rel="stylesheet" type="text/css" href="/assets/css/lib/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="/assets/css/lib/material.min.css">
-    <link rel="preload" href="/assets/css/lib/alertify.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
-       <noscript><link rel="stylesheet" href="/assets/css/lib/alertify.min.css"></noscript>
-    <link rel="preload" href="/assets/css/lib/alertifyThemes/bootstrap.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
-       <noscript><link rel="stylesheet" href="/assets/css/lib/alertifyThemes/bootstrap.min.css"></noscript>
+
+    <link rel="stylesheet" type="text/css" media="print" onload="this.media='all'" href="/assets/css/lib/alertify.min.css">
+    <link rel="stylesheet" type="text/css" media="print" onload="this.media='all'" href="/assets/css/lib/alertifyThemes/alertify_btstrap.min.css">
+    <link rel="stylesheet" type="text/css" media="print" onload="this.media='all'" href="/assets/css/lib/imagecrop.min.css">
+
     <!-- Internal Stylesheets -->
-    <link rel="preload" href="/assets/css/alerts.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
-       <noscript><link rel="stylesheet" href="/assets/css/alerts.css"></noscript>
+    <link rel="stylesheet" type="text/css" media="print" onload="this.media='all'" href="/assets/css/tools/alerts.css">
+    <link rel="stylesheet" type="text/css" media="print" onload="this.media='all'" href="/assets/css/overlay/overlayBase.css">
+    <link rel="stylesheet" type="text/css" media="print" onload="this.media='all'" href="/assets/css/overlay/imgUploadOverlay.css">
+    <link rel="stylesheet" type="text/css" media="print" onload="this.media='all'" href="/assets/css/overlay/suggestionOverlay.css">
+    <link rel="stylesheet" type="text/css" media="print" onload="this.media='all'" href="/assets/css/overlay/settingsOverlay.css">
+    <link rel="stylesheet" type="text/css" media="print" onload="this.media='all'" href="/assets/css/overlay/radicalOverlay.css">
+    <link rel="stylesheet" type="text/css" media="print" onload="this.media='all'" href="/assets/css/overlay/footerOverlay.css">
+    <link rel="stylesheet" type="text/css" media="print" onload="this.media='all'" href="/assets/css/overlay/croppingOverlay.css">
+    <link rel="stylesheet" type="text/css" media="print" onload="this.media='all'" href="/assets/css/tools/ripple.css">
+
     <link rel="stylesheet" type="text/css" href="/assets/css/main.css">
-    <link rel="stylesheet" type="text/css" href="/assets/css/choices.css">
-    <link rel="preload" href="/assets/css/radselect.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
-      <noscript><link rel="stylesheet" href="/assets/css/radselect.css"></noscript>
+    <link rel="stylesheet" type="text/css" href="/assets/css/search/searchRow.css">
+    <link rel="stylesheet" type="text/css" href="/assets/css/search/choices.css">
+    
+    <link rel="stylesheet" type="text/css" media="print" onload="this.media='all'" href="/assets/css/page/footer.css">
+    <link rel="stylesheet" type="text/css" media="print" onload="this.media='all'" href="/assets/css/tools/pagination.css">
     <link rel="stylesheet" type="text/css" href="/assets/css/mobile.css">
+
     <!-- External JS -->
     <script src="/assets/js/lib/jquery.min.js"></script>
-    <script async defer src="/assets/js/lib/bootstrap.min.js"></script>
-    <script async defer src="/assets/js/lib/material.min.js"></script>
-    <script async defer src="/assets/js/lib/alertify.min.js"></script>
-    <script defer src ="/assets/js/lib/js-cookie-2.2.1.min.js"></script>
-    <script async defer src="/assets/js/lib/jotobaChoices.js"></script>
+    <script async src="/assets/js/lib/bootstrap.min.js"></script>
+    <script async src="/assets/js/lib/material.min.js"></script>
+    <script async src="/assets/js/lib/alertify.min.js"></script>
+    <script src ="/assets/js/lib/jc.js"></script>
+    <script defer src="/assets/js/lib/jotobaChoices.js"></script>
+    <script async src="/assets/js/lib/imagecrop.min.js"></script>
+    <!-- <script async defer src="/assets/js/lib/loadAnalytics.js"></script> -->
+    
     <!-- Internal JS -->
-    <script src="/assets/js/utils.js"></script>
-     <script async defer src="/assets/js/qol.js"></script>
-    <script defer src="/assets/js/search.js"></script>
-    <script async defer src="/assets/js/stt.js"></script>
-    <script async defer src="/assets/js/radicals.js"></script>
-    <script async defer src="/assets/js/mobile.js"></script>
-    <script defer src="/assets/js/settings.js"></script>
+    <script src="/assets/js/tools/utils.js"></script>
+    <script src="/assets/js/tools/theme.js"></script>
+    <script async src="/assets/js/tools/utils2.js"></script>
+    <script async src="/assets/js/tools/jotoTools.js"></script>
+    <script async src="/assets/js/tools/ripple.js"></script>
+    <script defer src="/assets/js/qol.js"></script>
+    <script async src= "/assets/js/search/overlay/suggestionOverlay.js"></script>
+    <script async src="/assets/js/search/search.js"></script>
+    <script async src="/assets/js/search/eventHandler.js"></script>
+    <script async src="/assets/js/search/overlay/speechSearch.js"></script>
+    <script async src="/assets/js/search/overlay/radicalSearch.js"></script>
+    <script async src="/assets/js/search/overlay/imageSearch.js"></script>
+    <script async src="/assets/js/mobile.js"></script>
+    <script defer src="/assets/js/page/settings.js"></script>
  </head>

@@ -1,8 +1,12 @@
+@use super::{paginator};
 @use crate::BaseData;
 @(data: &BaseData)
 
 <!-- Footer -->
 <footer>
+
+   @:paginator(data)
+
     <div class="center-text">
        <hr class="footer-hr">
        <span>
@@ -12,18 +16,17 @@
 
     <!-- Cookies -->
     <div id="cookie-footer" class="cookie-footer hidden">
-       <h3 class="text-left">@data.gettext("This Website uses Cookies")</h3>
-       <span>
-          @data.gettext("We use cookies to provide you with the best experience possible. You can find more details in our") <a class="clickable no-select" href="/privacy">@data.gettext("privacy policy")</a>.
-       </span>
-       <br>
-       <hr class="res-separator">
-       <span>
-          @data.gettext("You can change your preferences at any time by pressing on the Settings icon.")
-       </span>
        <div class="d-flex flex-row">
-          <button type="button" class="btn btn-danger cookie-btn" onclick="revokeCookieAgreement()">@data.gettext("Only use necessary cookies")</button>
-          <button type="button" class="btn btn-success cookie-btn" onclick="cookiesAccepted()">@data.gettext("Allow Cookies")</button>
-       </div>
+         <img class="joto-cookie" src="/assets/jotokun/JotoCookie.svg" >
+         <div class="d-flex flex-column">
+            <span>@data.gettext("We use cookies to improve your experience and deliver personalized content.")</span>
+            <span>@data.gettext("By using Jotoba you agree to our") <a class="clickable no-select" href="/privacy">@data.gettext("privacy policy")</a>@data.gettext(".")</span>
+
+            <div style="margin-top: 10px;">
+               <button type="button" class="btn btn-danger cookie-btn" onclick="revokeCookieAgreement(false)">@data.gettext("Only use necessary")</button>
+               <button type="button" class="btn btn-success cookie-btn" onclick="cookiesAccepted(false)">@data.gettext("Allow Cookies")</button>
+            </div>
+         </div>
+      </div>
     </div>
  </footer>
