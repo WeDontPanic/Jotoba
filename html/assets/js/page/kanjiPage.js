@@ -24,22 +24,27 @@ function restartAnimation(target, delayMultiplier) {
 
 // Kanji and SVG list
 var kanjis = $('.kanjisvg');
-var sliders = $('.slidecontainer > .speedSlider');
+var sliders = $('.slidecontainer > .speedSlider:not(.settings)');
 
 // Restart Animation by clicking on Kanji
 kanjis.click(function(e) {
     e.preventDefault();
-    restartAnimation(e.target);
+    restartAnimation(e.target, this.slider.value);
 });
 
-// Tell every slider their kanji and text field
-sliders.each(function() {
-    if (this.id === "show_anim_speed_settings") {
-        return;
-    }
+// Tell every kanji their slider and initially start them
+kanjis.each(function() {
+    this.slider = $(this).parent().parent().find('.slider')[0];
+    restartAnimation(this, getDefaultAnimSpeed());
+});
 
+// Tell every slider their kanji, text field and intial speed
+sliders.each(function() {
     this.textField = $(this).parent().parent().find('span')[0];
     this.kanjisvg = $(this).parent().parent().parent().children('.kanjisvgParent').children()[0];
+    let speed = getDefaultAnimSpeed();
+    this.value = speed;
+    this.textField.innerHTML = "Animation speed: "+ speed;
 });
 
 // Adjust svg's draw speed using the slider

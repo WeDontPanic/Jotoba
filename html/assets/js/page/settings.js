@@ -261,19 +261,3 @@ function translateIsoToJotobaFormat(code) {
 
     return code;
 }
-
-// Set all sliders (if any) to their default value
-var sliders = $('.speedSlider');
-sliders.each(function() {
-    this.value = getDefaultAnimSpeed();
-    if (this.textField !== undefined) {
-        this.textField.innerHTML = "Animation speed: "+ this.value;
-    }
-});
-
-// Set all kanji animation's initial speed
-var kanjis = $('.kanjisvg');
-kanjis.each(function() {
-    restartAnimation(this, getDefaultAnimSpeed());
-});
-
