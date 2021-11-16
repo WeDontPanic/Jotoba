@@ -116,7 +116,11 @@ function changeSuggestionIndex(direction, setDirectly) {
 function getSuggestionApiData() {
 
     // Check if API call should be prevented
-    if (preventApiCallUntilDelete) {
+    if (preventNextApiCall) {
+        preventNextApiCall = false;
+        return;
+    }
+    else if (preventApiCallUntilDelete) {
         if (textToPrevent.length <= input.value.length && input.value.substring(0, textToPrevent.length) === textToPrevent) {
             return;
         } else {

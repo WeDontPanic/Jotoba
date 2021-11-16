@@ -120,7 +120,7 @@ msgstr ""
 msgid "Select Kanji"
 msgstr ""
 
-msgid "Search Kanji..."
+msgid "Search Radicals..."
 msgstr ""
 
 # Languages

@@ -26,6 +26,7 @@ var availableSuggestions = 0;
 var keepSuggestions = false;
 var oldInputValue = "";
 var lastRequest = undefined;
+var preventNextApiCall = false;
 var preventApiCallUntilDelete = false;
 var textToPrevent = "";
 

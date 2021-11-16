@@ -112,6 +112,17 @@ msgstr "Lade ein Bild hoch oder füge direkt die URL ein ein und Jotoba wird ver
 msgid "Enter Image URL..."
 msgstr "Bild-URL einfügen..."
 
+# Rad Picker overlay
+
+msgid "Select Radicals"
+msgstr "Wähle Radikale"
+
+msgid "Select Kanji"
+msgstr "Wähle Kanji"
+
+msgid "Search Radicals..."
+msgstr "Suche Radikale..."
+
 # Languages
 
 msgid "English"

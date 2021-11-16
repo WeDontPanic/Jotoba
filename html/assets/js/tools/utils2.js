@@ -226,3 +226,28 @@ Util.getPageParameter = function(paramName) {
     var p = url.searchParams.get(paramName);
     return p;
 }
+
+// Sets a text field's cursor to the given position. -1 -> last position
+Util.setCaretPosition = function(elemId, caretPos) {
+    var elem = document.getElementById(elemId);
+    if (caretPos == -1) {
+        caretPos = elem.value.length;
+    }
+
+    console.log(caretPos);
+
+    if(elem != null) {
+        if(elem.createTextRange !== undefined) {
+            var range = elem.createTextRange();
+            range.move('character', caretPos);
+            range.select();
+        }
+        else {
+            if(elem.selectionStart !== undefined) {
+                elem.setSelectionRange(caretPos, caretPos);
+            }
+            else
+                elem.focus();
+        }
+    }
+}

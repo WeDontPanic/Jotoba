@@ -161,12 +161,11 @@ function changeSearchType(html, newType) {
     }
 }
 
-// Focus Search Bar on index page
-$(document).ready(() => {
-    if (window.location.href.substring(0,window.location.href.length - 1) == window.location.origin) {
-        $('#search').focus();
-        $('#search').select();
-    }
+// Focus Search Bar on load
+Util.awaitDocumentReady(() => {
+    preventNextApiCall = true;
+    $('#search').focus();
+    Util.setCaretPosition("search", -1);
 });
 
 // Wait for the Document to load completely
@@ -188,7 +187,7 @@ Util.awaitDocumentReady(() => {
         var url = window.location.origin + $(event.target).attr('data');
         Util.copyToClipboard(url);
         Util.showMessage("success", "Audio URL copied to clipboard");
-        });
+    });
 
     // Disables the dropdown's animation until the first onclick event
     $(".input-field.first-wrap").one("click", (event) => {
