@@ -40,11 +40,6 @@
     word-spacing: 10px;
 }
 
-.kun-reading {
-    padding-left: 10px;
-    width: 120%;
-}
-
 .draw2 {
     stroke-dasharray: 1000;
     stroke-dashoffset: 1000;

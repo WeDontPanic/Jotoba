@@ -24,7 +24,6 @@
          </span>
          <div class="kanji-preview-info">
            <div class="notes stroke"><b>@k_item.kanji.stroke_count</b> @data.gettext("strokes") </div>
-            <!--TODO-->
             <div class="rad-parts-parent">
               <div class="notes rad"><b>@data.gettext("Radical"):</b>
                 <br>
@@ -152,7 +151,7 @@
          }
          <hr/>
          <!-- Reading Compounds -->
-         <div class="kanji-entry d-flex flex-row">
+         <div class="compounds-parent d-flex flex-row">
             <!-- On Reading -->
             @if let Some(ref ons) = k_item.on_dicts {
               <div class="on-reading">
