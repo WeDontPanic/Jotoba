@@ -166,6 +166,7 @@ function onInputSettingsChange(relatedCookie, event) {
         Cookies.set(relatedCookie, event.target.value);
     } else {
         event.target.value = Cookies.get(relatedCookie);
+        $(event.target).parent().addClass("is-dirty");
     }
 }
 

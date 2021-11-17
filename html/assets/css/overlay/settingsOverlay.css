@@ -6,6 +6,7 @@
 
 #settingsModal .choices__list--dropdown .choices__list {
     max-height: 350px;
+    overflow-y: scroll;
 }
 
 #settingsModal .close {
@@ -17,12 +18,30 @@
     color: #a7a7a7;
 }
 
+#settingsModal {
+    font-family: 'Roboto';
+}
+
+#settingsModal .choices:after {
+    right: 15px;
+    margin-left: unset;
+}
+
+#show_anim_speed_settings_slider {
+    font-family: 'Overpass', sans-serif;
+    font-size: 14px;
+}
+
 .mdl-layout__header-row {
     padding-left: 25px !important;
 }
 
-.mdl-layout__header, .mdl-layout__tab-bar, .mdl-layout__tab-bar-button {
-    background-color: var(--borderColor);
+.mdl-layout__header, .mdl-layout__tab-bar {
+    background-color: var(--headerColor);
+}
+
+.mdl-layout__tab-bar-button {
+    background-color: var(--headerScrollBar);
 }
 
 .mdl-layout__tab-bar {
@@ -75,6 +94,14 @@
     width: calc(100% - 100px);
 }
 
+:root.dark .mdl-textfield__label {
+    color: var(--borderColor);
+}
+
+.mdl-textfield__label:after {
+    background-color: var(--bgPrimaryColor);
+}
+
 #show_anim_speed_settings {
     margin-top: 10px;
 }
@@ -83,9 +110,20 @@
     left: 0px;
 }
 
-#show_anim_speed_settings_slider {
-    font-family: 'Overpass', sans-serif;
-    font-size: 14px;
+.mdl-checkbox.is-checked .mdl-checkbox__box-outline {
+    border-color: var(--primaryColor);
+}
+
+.mdl-checkbox.is-checked .mdl-checkbox__tick-outline {
+    background-color: var(--primaryColor);
+}
+
+:root.dark .mdl-checkbox__box-outline {
+    border-color: var(--borderColor);
+}
+
+:root.dark .mdl-textfield__input {
+    border-color: var(--itemBG);
 }
 
 @media only screen and (max-width: 600px) {

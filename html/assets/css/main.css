@@ -33,7 +33,9 @@
     --disabledColor: #BDBDBD;
 
     /* Used by overlays */
-    --headerColor: var(--searchBackground);
+    --headerColor: var(--borderColor);
+    --headerScrollBar: var(--borderColor);
+    
 }
 
 :root.dark {
@@ -60,6 +62,9 @@
 
     --borderColor: var(--itemBG_075);
     --disabledColor: #3C3C3C;
+
+    --headerColor: var(--lineColor);
+    --headerScrollBar: #434344;
 }
 
 /* ----------------- Overall Page Adjustments ----------------- */
@@ -342,6 +347,9 @@ a:hover {
 .slider:hover {
     opacity: 1;
 }
+:root.dark .slider:hover {
+    opacity: 0.8;
+}
   
 /* The slider handle for webkit and mozilla with its extra shit */
 .slider::-webkit-slider-thumb {
@@ -350,6 +358,7 @@ a:hover {
     width: 25px;
     height: 25px;
     border-radius: 50%; 
+    border-color: var(--bgPrimaryColor);
     background: var(--bgPrimaryColor);
     cursor: pointer;
 }

@@ -131,10 +131,6 @@
         display: none;
     }
 
-    .choices[data-type*="select-one"]:after {
-        margin-right: -16px;
-    }
-
     .searchDivInner form .inner-form .input-field.first-wrap {
         width: 40px;
     }

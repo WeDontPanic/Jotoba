@@ -182,8 +182,8 @@
 }
 
 .modal-body .choices:after {
-  right: unset;
-  margin-left: -24px;
+  right: 15px;
+  margin-left: unset;
 }
 
 .modal-body .choices__list.choices__list--dropdown {
