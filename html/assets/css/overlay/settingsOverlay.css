@@ -1,20 +1,116 @@
-.hr-settings {
+#settingsModal .modal-body {
+    height: 600px;
+    margin: 0;
+    padding: 0;
+}
+
+#settingsModal .choices__list--dropdown .choices__list {
+    max-height: 350px;
+}
+
+#settingsModal .close {
+    margin: -1rem -1rem -1rem auto;
+    color: var(--secondaryTextColor);
+}
+
+#settingsModal .close:hover {
+    color: #a7a7a7;
+}
+
+.mdl-layout__header-row {
+    padding-left: 25px !important;
+}
+
+.mdl-layout__header, .mdl-layout__tab-bar, .mdl-layout__tab-bar-button {
+    background-color: var(--borderColor);
+}
+
+.mdl-layout__tab-bar {
+    width: calc(100% - 56px);
+}
+
+.mdl-layout.is-upgraded .mdl-layout__tab.is-active::after {
+    background-color: var(--bgPrimaryColor);
+}
+
+.page-content {
+    margin: 15px;
+}
+
+.settings-entry {
+    display: flex;
+    flex-direction: row;
+}
+
+.settings-entry:not(:first-child, .no-gap)  {
+    margin-top: 10px;
+}
+
+.inner-title {
+    width: 60%;
+    font-size: 15px;
+    font-family: 'Overpass', sans-serif;
+    align-self: center;
+}
+
+.inner-title.display {
+    width: 72%;
+}
+
+.inner-title.txt-input {
+    margin-top: -10px;
+}
+
+.mdl-checkbox {
+    width: 0%;
+}
+
+.mdl-textfield.mdl-js-textfield.is-upgraded {
     width: 100%;
-    margin-top: 0.5rem;
-    margin-bottom: 0.5rem;
+    margin: -20px 0;
+    padding-right: 100px;
 }
 
-.vl-settings {
-    border-left: 1px solid var(--lineColor);
-    height: 100%;
-    margin-right: 0.25rem;
+.mdl-textfield.is-focused .mdl-textfield__label:after {
+    width: calc(100% - 100px);
 }
 
-.slidecontainer {
-    margin-top: 5px;
-    margin-bottom: -3px;
+#show_anim_speed_settings {
+    margin-top: 10px;
 }
 
-.colorLbl {
-    margin-right: 5px;
+.mdl-textfield__label:after {
+    left: 0px;
+}
+
+#show_anim_speed_settings_slider {
+    font-family: 'Overpass', sans-serif;
+    font-size: 14px;
+}
+
+@media only screen and (max-width: 600px) {
+	
+    .inner-title.big {
+        width: 80%;
+    }
+
+    .mdl-textfield.mdl-js-textfield.is-upgraded {
+        padding-right: 0px;
+    }
+
+    .mdl-textfield.is-focused .mdl-textfield__label:after {
+        width: 100%;
+    }
+
+    .mdl-textfield__label:after {
+        left: 45%;
+    }
+
+    .inner-title.display {
+        width: 76%;
+    }
+
+    .slidercontainer.settings {
+        text-align: center;
+    }
 }

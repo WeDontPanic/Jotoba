@@ -1,6 +1,6 @@
-/**
- * This JS-File handles saving and loading from browser cookies
- */
+/*
+* This JS-File everything related to the settings overlay
+*/
 
 // Cookies that track the user
 const trackingCookies = [
@@ -11,55 +11,13 @@ const trackingCookies = [
 var analyticsUrl = '';
 var analyticsAttributes = null;
 
-/* ------------------------------------------------------------------- */
-
-// On load, get all the cookie's data
-Util.awaitDocumentReady(() => {
-    loadCookieData();
-});
-
-// Deletes all stored cookies
-function deleteAllCookies() {
-    var allCookies = document.cookie.split(';');
-                
-    for (var i = 0; i < allCookies.length; i++) {
-        document.cookie = allCookies[i] + "=;expires="+ new Date(0).toUTCString()+";path=/;";
-    }
-}
-
-function deleteTrackingCookies() {
-    var allCookies = document.cookie.split(';');
-                
-    for (var i = 0; i < allCookies.length; i++) {
-        if (trackingCookies.includes(allCookies[i])) {
-            document.cookie = allCookies[i] + "=;expires="+ new Date(0).toUTCString()+";path=/;";
-        } else {
-            document.cookie = allCookies[i];
-        }
-    }
-}
-
-// Handle Cookie stuff on load
-function prepareCookieSettings(allow_cookies) {
-    if (allow_cookies == undefined) {
-        $('#cookie-footer').removeClass("hidden");
-        $('#cookie-agreement-accept').removeClass("hidden");
-    } else if (allow_cookies == "1") {
-        $('#cookie-agreement-revoke').removeClass("hidden");
-    } else {
-        $('#cookie-agreement-accept').removeClass("hidden");
-    }
-}
-
 // Opens the Settings Overlay and accepts cookie usage
 function cookiesAccepted(manuallyCalled) {
-    Cookies.set("allow_cookies", "1", {expires: 365, path: '/'});
+    Cookies.set("allow_cookies", "1", {path: '/'});
     if (manuallyCalled)
         Util.showMessage("success", "Thanks for making Jotoba better!");
 
     $('#cookie-footer').addClass("hidden");
-    $('#cookie-agreement-accept').addClass("hidden");
-    $('#cookie-agreement-revoke').removeClass("hidden");
 
     Util.loadScript(analyticsUrl, true, analyticsAttributes);
 }
@@ -67,80 +25,59 @@ function cookiesAccepted(manuallyCalled) {
 // Revokes the right to store user Cookies
 function revokeCookieAgreement(manuallyCalled) {
     $('#cookie-footer').addClass("hidden");
-    $('#cookie-agreement-accept').removeClass("hidden");
-    $('#cookie-agreement-revoke').addClass("hidden");
 
     if (manuallyCalled)
         Util.showMessage("success", "Successfully deleted your cookie data.");
 
-    deleteTrackingCookies(true);
-    Cookies.set("allow_cookies", "0", {expires: 365, path: '/'});
+    Util.deleteSelectedCookies(trackingCookies);
+    Cookies.set("allow_cookies", "0", {path: '/'});
 }
 
-// Changes the Default Language to search for
-function onSettingsChange_DefaultLanguage(html, value) {
-    Cookies.set('default_lang', value, {expires: 365, path: '/'});
-    if (window.location.href.includes("/search")) {
-        location.reload();
-    }
-}
+/* ------------------------------------------------------------------- */
 
-// Changes the Page's UI Language
-function onSettingsChange_PageLanguage(html, value) {
-    Cookies.set('page_lang', value, {expires: 365, path: '/'});
-    location.reload();
-}
-
-// Changes whether english results should be shown
-function onSettingsChange_ShowEnglish(event) {
-    Cookies.set('show_english', event.target.checked, {expires: 365, path: '/'});
-    if (!event.target.checked)
-        $('#show_eng_on_top_settings_parent').addClass("hidden");
-    else
-        $('#show_eng_on_top_settings_parent').removeClass("hidden");
-    
-}
-
-// Changes whether english results should be shown on top
-function onSettingsChange_ShowEnglishOnTop(event) {
-    Cookies.set('show_english_on_top', event.target.checked, {expires: 365, path: '/'});
-}
-
-// Sets the default kanji animation speed
-function onSettingsChange_AnimationSpeed(event) {
-    $('#show_anim_speed_settings_slider').html(event.target.value);
-    Cookies.set('anim_speed', event.target.value, {expires: 365, path: '/'});
-}
+// On load, get all the cookie's data and prepare settings overlay
+Util.awaitDocumentReady(() => {
+    loadCookieData();
+    Util.mdlScrollFix(); 
+});
 
 // Load the cookie's data into important stuff
 function loadCookieData() {
-    // User agreement on using Cookies
-    let allow_cookies = Cookies.get("allow_cookies");
-    if (!allow_cookies && !checkTrackingAllowed()) {
-        allow_cookies = "0";
-        Cookies.set("allow_cookies", 0, {expires: 365, path: "/"});
+
+    // Language Settings
+    let search_lang = JotoTools.toJotobaLaguage(Cookies.get("default_lang") || navigator.language || navigator.userLanguage || "en-US");
+    let page_lang = Cookies.get("page_lang") || "en-US";
+
+    // Search Settings
+    let english_always = Util.toBoolean(Cookies.get("show_english"));
+    let english_on_top = Util.toBoolean(Cookies.get("show_english_on_top"));
+    let example_sentences = Util.toBoolean(Cookies.get("show_sentences"));
+    let focus_searchbar = Util.toBoolean(Cookies.get("focus_searchbar"));
+    let items_per_page = Cookies.get("items_per_page");
+    let kanji_per_page = Cookies.get("kanji_page_size");
+
+    // Display Settings
+    let theme = localStorage.getItem("theme");
+    let kanji_speed = localStorage.getItem("kanji_speed");
+
+    // Other Settings
+    let cookies_allowed = Util.toBoolean(Cookies.get("allow_cookies"));
+
+    // Set essentials
+    if (Cookies.get("default_lang") === undefined) {
+        Cookies.set("default_lang", search_lang);
     }
-    prepareCookieSettings(allow_cookies);
 
-    // Load search language
-    let search_lang = Cookies.get("default_lang") || navigator.language || navigator.userLanguage || "en-US";
-    let page_lang = Cookies.get ("page_lang");
+    // Execute 
+    setLanguageSettings(search_lang, page_lang);
+    setSearchSettings(english_always, english_on_top, example_sentences, focus_searchbar, items_per_page, kanji_per_page);
+    setDisplaySettings(theme, kanji_speed);
+    setOtherSettings(cookies_allowed);
+}
 
-    // Load result settings
-    let show_english = Cookies.get("show_english");
-    let show_english_on_top = Cookies.get("show_english_on_top");
-
-    // Load display settings
-    let anim_speed = Cookies.get("anim_speed");
-
-    // Correct search_lang if needed
-    search_lang = translateIsoToJotobaFormat(search_lang);
-    if (!isSupportedSearchLang(search_lang)) {
-        search_lang = "en-US";
-    }
-    Cookies.set("default_lang", search_lang, {expires: 365, path: "/"});
-
-    // Set search_lang in settings overlay
+// Prepare the language tab
+async function setLanguageSettings(search_lang, page_lang) {
+    // Set search_lang
     document.querySelectorAll("#search-lang-select > .choices__item--choice").forEach((e) => {
         if (e.dataset.value == search_lang) {
             let choicesInner = e.parentElement.parentElement.parentElement.children[0].children;
@@ -150,7 +87,7 @@ function loadCookieData() {
         }
     });
 
-    // Set page_lang in settings overlay
+    // Set page_lang
     document.querySelectorAll("#page-lang-select > .choices__item--choice").forEach((e) => {
         if (e.dataset.value == page_lang) {
             let choicesInner = e.parentElement.parentElement.parentElement.children[0].children;
@@ -159,105 +96,130 @@ function loadCookieData() {
             choicesInner[1].children[0].innerHTML = e.innerHTML;
         }
     });
-       
-    // Set English results
-    if (show_english === "false") {
-        $('#show_eng_settings').prop('checked', false);
-        $('#show_eng_on_top_settings_parent').addClass("hidden");
+}
+
+// Prepare the search tab
+async function setSearchSettings(english_always, english_on_top, example_sentences, focus_searchbar, items_per_page, kanji_per_page) {
+    // Set checkboxes
+    Util.setMdlCheckboxState("show_eng_settings", english_always);
+    Util.setMdlCheckboxState("show_eng_on_top_settings", english_on_top);
+    Util.setMdlCheckboxState("show_example_sentences_settings", example_sentences);
+    Util.setMdlCheckboxState("focus_search_bar_settings", focus_searchbar);
+
+    // Hide english_on_top if not english_always
+    if (!english_always) {
+        $('#eng_on_top_parent').addClass("hidden");
     } else {
-        $('#show_eng_on_top_settings_parent').removeClass("hidden");
-    }
-    if (show_english_on_top === "true") {
-        $('#show_eng_on_top_settings').prop('checked', true);
+        $('#eng_on_top_parent').removeClass("hidden");
     }
 
-    // Load anim speed
-    $('#show_anim_speed_settings').val(anim_speed);
-    $('#show_anim_speed_settings_slider').html(anim_speed);
+    // Default items val
+    if (items_per_page == undefined) {
+       items_per_page = 10;
+    }
+
+    // Set items val
+    let itemsInput = $('#items_per_page_input');
+    itemsInput.val(items_per_page);
+    itemsInput.parent().addClass("is-dirty")
+
+    // Default kanji val
+    if (kanji_per_page == undefined) {
+        kanji_per_page = 4;
+    }
+
+    // Set kanji val
+    let kanjiInput =  $('#kanji_per_page_input');
+    kanjiInput.val(kanji_per_page);
+    kanjiInput.parent().addClass("is-dirty")
 }
 
-// Check if the current browsers doesn't want the user to be tracked
-function checkTrackingAllowed() {
-    try {
-        if (window.doNotTrack || navigator.doNotTrack || navigator.msDoNotTrack || 'msTrackingProtectionEnabled' in window.external) {
-            if (window.doNotTrack == "1" || navigator.doNotTrack == "yes" || navigator.doNotTrack == "1" || navigator.msDoNotTrack == "1") {
-                return false;
-            } else {
-                return true;
-            }
-        } else {
-            return true;
-        }
-    } catch (e) {
-        return true;
+// Prepare the display tab
+async function setDisplaySettings(theme, kanji_speed) {
+    // Light / Dark Mode toggle
+    if (theme !== "dark") {
+        Util.setMdlCheckboxState("use_dark_mode_settings", false);
+    }
+
+    // Kanji speed
+    if (kanji_speed === undefined) {
+        kanji_speed = 1;
+    }
+    $('#show_anim_speed_settings').val(kanji_speed);
+    $('#show_anim_speed_settings_slider').html(kanji_speed);
+}
+
+// Prepare the others tab
+async function setOtherSettings(allow_cookies) {
+    if (allow_cookies === undefined) {
+        Cookies.set("allow_cookies", false);
+    } 
+
+    Util.setMdlCheckboxState("cookie_settings", allow_cookies);
+}
+
+// Handles an event caused by an input field
+function onInputSettingsChange(relatedCookie, event) {
+    let value = event.target.value;
+
+    if (value > 0 && value < 101) {
+        Cookies.set(relatedCookie, event.target.value);
+    } else {
+        event.target.value = Cookies.get(relatedCookie);
     }
 }
 
-// Returns the Kanji's default speed
-function getDefaultAnimSpeed() {
-    let speed = Cookies.get("anim_speed");
-    if (speed === undefined) {
-        speed = 1;
-    }
-
-    return speed;
+// Handles an event caused by a settings-btn
+function onBtnSettingsChange(relatedCookie, event) {
+    Cookies.set(relatedCookie, event.target.checked);
 }
 
-// Checks if a given language code is supported as a search lang
-function isSupportedSearchLang(code) {
-    switch (code) {
-        case "en-US":
-        case "de-DE":
-        case "es-ES":
-        case "fr-FR":
-        case "nl-NL":
-        case "sv-SE":
-        case "ru":
-        case "hu":
-        case "sl-SI":
-            return true;
-        default:
-            return false;
+// Special handling for english_always
+function onBtnSettingsChange_englishAlways(event) {
+    // Hide english_on_top if not english_always
+    if (!event.target.checked) {
+        $('#eng_on_top_parent').addClass("hidden");
+    } else {
+        $('#eng_on_top_parent').removeClass("hidden");
+    }
+
+    onBtnSettingsChange("show_english", event);
+}
+
+// Special handling for use_darkmode
+function onBtnSettingsChange_darkTheme(event) {
+    if (event.target.checked) {
+        setTheme("dark");
+    } else {
+        setTheme("light");
     }
 }
 
-// Converts a code from (e.g.) the ISO 639-1 format into the Jotoba format (navigator.language)
-function translateIsoToJotobaFormat(code) {
-    if (code.startsWith("en")) {
-        return "en-US";
+// Special handling for allow_cookies
+function onCookiesAcceptChange(event) {
+    if (event.target.checked) {
+        cookiesAccepted(true);
+    } else {
+        revokeCookieAgreement(true);
     }
+}
 
-    if (code.startsWith("de")) {
-        return "de-DE";
+// Changes the Default Language to search for
+function onSettingsChange_DefaultLanguage(html, value) {
+    Cookies.set('default_lang', value, {path: '/'});
+    if (window.location.href.includes("/search")) {
+        location.reload();
     }
+}
 
-    if (code.startsWith("es")) {
-        return "es-ES";
-    }
+// Changes the Page's UI Language
+function onSettingsChange_PageLanguage(html, value) {
+    Cookies.set('page_lang', value, {path: '/'});
+    location.reload();
+}
 
-    if (code.startsWith("fr")) {
-        return "fr-FR";
-    }
-
-    if (code.startsWith("nl")) {
-        return "nl-NL";
-    }
-
-    if (code.startsWith("sv")) {
-        return "sv-SE";
-    }
-
-    if (code.startsWith("ru")) {
-        return "ru";
-    }
-
-    if (code.startsWith("ru")) {
-        return "ru";
-    }
-
-    if (code.startsWith("sl")) {
-        return "sl-SI";
-    }
-
-    return code;
+// Sets the default kanji animation speed
+function onSettingsChange_AnimationSpeed(event) {
+    $('#show_anim_speed_settings_slider').html(event.target.value);
+    localStorage.setItem('kanji_speed', event.target.value);
 }

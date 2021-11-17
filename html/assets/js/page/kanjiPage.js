@@ -35,14 +35,14 @@ kanjis.click(function(e) {
 // Tell every kanji their slider and initially start them
 kanjis.each(function() {
     this.slider = $(this).parent().parent().find('.slider')[0];
-    restartAnimation(this, getDefaultAnimSpeed());
+    restartAnimation(this, localStorage.getItem("kanji_speed"));
 });
 
 // Tell every slider their kanji, text field and intial speed
 sliders.each(function() {
     this.textField = $(this).parent().parent().find('span')[0];
     this.kanjisvg = $(this).parent().parent().parent().children('.kanjisvgParent').children()[0];
-    let speed = getDefaultAnimSpeed();
+    let speed = localStorage.getItem("kanji_speed");
     this.value = speed;
     this.textField.innerHTML = "Animation speed: "+ speed;
 });

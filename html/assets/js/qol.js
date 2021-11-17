@@ -161,11 +161,13 @@ function changeSearchType(html, newType) {
     }
 }
 
-// Focus Search Bar on load
+// Focus Search Bar on load if the user wants it to
 Util.awaitDocumentReady(() => {
-    preventNextApiCall = true;
-    $('#search').focus();
-    Util.setCaretPosition("search", -1);
+    if (Util.toBoolean(Cookies.get("focus_searchbar"))) {
+        preventNextApiCall = true;
+        $('#search').focus();
+        Util.setCaretPosition("search", -1);
+    }
 });
 
 // Wait for the Document to load completely
@@ -193,5 +195,16 @@ Util.awaitDocumentReady(() => {
     $(".input-field.first-wrap").one("click", (event) => {
         $('.choices__list.choices__list--dropdown.index').addClass('animate');
     })
+    
+    // Install the serviceWorker for PWA
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/service-worker.js')
+        .then(function(registration) {
+          console.log('Registration successful, scope is:', registration.scope);
+        })
+        .catch(function(error) {
+          console.log('Service worker registration failed, error:', error);
+        });
+    }
 
 });

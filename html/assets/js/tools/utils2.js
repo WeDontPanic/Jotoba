@@ -233,9 +233,7 @@ Util.setCaretPosition = function(elemId, caretPos) {
     if (caretPos == -1) {
         caretPos = elem.value.length;
     }
-
-    console.log(caretPos);
-
+    
     if(elem != null) {
         if(elem.createTextRange !== undefined) {
             var range = elem.createTextRange();
@@ -249,5 +247,80 @@ Util.setCaretPosition = function(elemId, caretPos) {
             else
                 elem.focus();
         }
+    }
+}
+
+// Check if the current browsers doesn't want the user to be tracked
+Util.checkTrackingAllowed = function() {
+    try {
+        if (window.doNotTrack || navigator.doNotTrack || navigator.msDoNotTrack || 'msTrackingProtectionEnabled' in window.external) {
+            if (window.doNotTrack == "1" || navigator.doNotTrack == "yes" || navigator.doNotTrack == "1" || navigator.msDoNotTrack == "1") {
+                return false;
+            } else {
+                return true;
+            }
+        } else {
+            return true;
+        }
+    } catch (e) {
+        return true;
+    }
+}
+
+// MDL doesn't show the scroll-arrows on start. This should help.
+Util.mdlScrollFix = function(){
+    $(".mdl-layout__tab-bar-right-button").addClass("is-active");
+}
+
+// Changes the state of an MDL checkbox
+Util.setMdlCheckboxState = function(id, state) {
+    if (state === undefined) {
+        return;
+    }
+
+    let element = $('label[for='+id+']'); 
+
+    if(state) {
+        element[0].MaterialCheckbox.check();
+    } else {
+        element[0].MaterialCheckbox.uncheck();
+    }
+}
+
+// Deletes all cookies whose names are within the given array
+Util.deleteSelectedCookies = function(cookieArray) {
+    var allCookies = document.cookie.split(';');
+                
+    for (var i = 0; i < allCookies.length; i++) {
+        if (cookieArray.includes(allCookies[i])) {
+            document.cookie = allCookies[i] + "=;expires="+ new Date(0).toUTCString()+";path=/;";
+        } else {
+            document.cookie = allCookies[i];
+        }
+    }
+}
+
+// Deletes all stored cookies
+Util.deleteAllCookies = function() {
+    var allCookies = document.cookie.split(';');
+                
+    for (var i = 0; i < allCookies.length; i++) {
+        document.cookie = allCookies[i] + "=;expires="+ new Date(0).toUTCString()+";path=/;";
+    }
+}
+
+// Parses the given value into a boolean
+Util.toBoolean = function(value) {
+    switch (value) {
+        case 0:
+        case "0":
+        case "false":
+        case false:
+            return false;
+        case 1:
+        case "1":
+        case "true":
+        case true:
+            return true;
     }
 }

@@ -17,5 +17,6 @@ theme && setTheme(theme);
 // Updates theme when changed by another tab (or console)
 const themeUpdater = window.setInterval(() => {
     theme = localStorage.getItem('theme');
-    theme && setTheme(theme);
-}, 100);
+    if (theme !== null)
+        setTheme(theme);
+}, 500);

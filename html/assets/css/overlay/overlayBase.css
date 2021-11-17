@@ -10,12 +10,6 @@
     background-color: var(--overlay);
 }
 
-.inner-title {
-    text-decoration: underline;
-    font-size: 15px;
-    font-weight: bold;
-}
-
 #default_lang_settings {
     margin-top: 0.25rem !important;
 }
