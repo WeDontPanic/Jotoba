@@ -7,6 +7,8 @@ assignees: ''
 
 ---
 
+Before you file a bug report, check the [trello board](https://trello.com/b/nmG0xgaW/jotoba-roadmap) if this has already added on the road map.
+
 **Describe the bug**
 A clear and concise description of what the bug is.
 
