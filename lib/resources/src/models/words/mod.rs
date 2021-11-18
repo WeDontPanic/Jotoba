@@ -141,6 +141,11 @@ impl Word {
 
         let res = accent_iter
             .map(|(pos, (part, is_high))| {
+                if part.len() == 0 {
+                    // Don't render under/overline for empty character -- handles the case where the 
+                    // pitch changes from the end of the word to the particle
+                    return vec![];
+                }
                 let borders = vec![if *is_high {
                     Border::Top
                 } else {
