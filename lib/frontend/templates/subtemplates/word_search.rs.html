@@ -5,6 +5,7 @@
 @use crate::BaseData;
 @use japanese::furigana::from_str as furi_from_str;
 @use crate::example_sentence::ext_sentence;
+@use super::render_sentence_html;
 
 @(data: &BaseData, query: &Query, result: WordResult)
 
@@ -48,22 +49,7 @@
         @for part in sentence_parts {
           @if let Some(ref furigana) = part.furigana {
             <a id="p@part.pos" href="/search/@query.query?i=@part.pos" class="@part.get_add_class() d-flex flex-row sentence-part @selected(part.pos, result.sentence_index)">
-              @for furi_part in furi_from_str(furigana) {
-                @if let Some(kanji) = furi_part.kanji {
-                  <div class="furigana-kanji-container">
-                    <span class="furigana-preview noselect">
-                      @furi_part.kana
-                    </span>
-                    <span class="kanji-preview">
-                      @kanji
-                    </span>
-                  </div>
-                } else {
-                  <div class="inline-kana-preview">
-                    @furi_part.kana
-                  </div>
-                }
-              }
+              @:render_sentence_html(furi_from_str(furigana).collect())
             </a>
           } else {
             <a id="p@part.pos" href="/search/@query.query?i=@part.pos" class="@part.get_add_class() inline-kana-preview sentence-part @selected(part.pos, result.sentence_index)">@part.text</a>
@@ -100,22 +86,7 @@
           @if word.get_reading().len() > 3 {
             <div class="d-flex flex-row wrap"> 
               @if let Some(s_pairs) = word.get_furigana() {
-                @for spair in s_pairs {
-                  @if spair.kanji.is_some() {
-                     <div class="furigana-kanji-container">
-                        <span class="furigana-preview noselect">
-                           @spair.kana
-                        </span>
-                        <span class="kanji-preview">
-                           @spair.kanji.unwrap()
-                        </span>
-                     </div>
-                  } else {
-                     <div class="inline-kana-preview">
-                        @spair.kana
-                     </div>
-                  }
-                }
+                @:render_sentence_html(s_pairs)
               } else {
                 <div class="inline-kana-preview">
                   @word.get_reading().reading
@@ -131,22 +102,7 @@
               @if word.get_reading().len() <= 3 {
                 <div class="d-flex flex-row"> 
                   @if let Some(s_pairs) = word.get_furigana() {
-                    @for spair in s_pairs {
-                      @if spair.kanji.is_some() {
-                         <div class="furigana-kanji-container">
-                            <span class="furigana-preview noselect">
-                               @spair.kana
-                            </span>
-                            <span class="kanji-preview">
-                               @spair.kanji.unwrap()
-                            </span>
-                         </div>
-                      } else {
-                         <div class="inline-kana-preview">
-                            @spair.kana
-                         </div>
-                      }
-                    }
+                    @:render_sentence_html(s_pairs)
                   } else {
                     <div class="inline-kana-preview">
                       @word.get_reading().reading
@@ -282,22 +238,7 @@
                             <div class="d-flex flex-row">
                               <div class="tags no-margin example-sentence collapsed"> 
                                 <div class="d-flex flex-row wrap">               
-                                  @for spair in furi {
-                                    @if spair.kanji.is_some() {
-                                      <div class="furigana-kanji-container">
-                                        <span class="furigana-preview noselect">
-                                          @spair.kana
-                                        </span>
-                                        <span class="kanji-preview">
-                                          @spair.kanji.unwrap()
-                                        </span>
-                                      </div>
-                                    } else {
-                                      <div class="inline-kana-preview">
-                                        @spair.kana
-                                      </div>
-                                    }
-                                  }
+                                  @:render_sentence_html(furi)
                                 </div>
                               </div>
                               <div class="expander">

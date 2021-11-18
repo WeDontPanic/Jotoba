@@ -1,0 +1,20 @@
+@use japanese::furigana::SentencePartRef;
+@type MyIterator<'a> = Vec<SentencePartRef<'a>>;
+@(iter: MyIterator)
+
+@for furi_part in iter {
+    @if let Some(kanji) = furi_part.kanji {
+    <div class="furigana-kanji-container">
+        <span class="furigana-preview noselect">
+        @furi_part.kana
+        </span>
+        <span class="kanji-preview">
+        @kanji
+        </span>
+    </div>
+    } else {
+    <div class="inline-kana-preview">
+        @furi_part.kana
+    </div>
+    }
+}
