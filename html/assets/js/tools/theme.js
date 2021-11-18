@@ -8,7 +8,12 @@ const setTheme = (theme) => {
 window.matchMedia("(prefers-color-scheme: dark)").addEventListener(
     "change", 
      e => e.matches && setTheme("dark")
-);      
+);
+
+window.matchMedia("(prefers-color-scheme: light)").addEventListener(
+    "change",
+     e => e.matches && setTheme("light")
+);
 
 // On load -> Check if there is a theme stored already
 var theme = localStorage.getItem('theme');
