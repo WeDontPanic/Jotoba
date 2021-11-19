@@ -11,7 +11,6 @@ window.addEventListener("storage", ()=> {
   let targetTheme = localStorage.getItem("theme");
   if (targetTheme) {
     setTheme(targetTheme);
-    console.log("setting ", targetTheme);
   }
 })
 
