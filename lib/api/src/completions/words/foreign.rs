@@ -97,7 +97,7 @@ fn search<'a>(main_lang: Language, query_str: &'a str) -> Vec<WordPair> {
 
     // Sort by text first since its needed for dedup
     res.sort_by(|a, b| a.0.text.cmp(&b.0.text));
-    res.dedup_by(|a, b| a.0.text == b.0.text);
+    res.dedup_by(|a, b| a.0.text == b.0.text && a.0.secondary == b.0.secondary);
 
     res.sort_by(|a, b| a.2.cmp(&b.2).reverse());
 
