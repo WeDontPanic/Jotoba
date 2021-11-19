@@ -23,6 +23,6 @@ theme && setTheme(theme);
 window.addEventListener("storage", ()=>{
   let newTheme = localStorage.getItem("theme");
 
-  if (!!newTheme)
+  if (newTheme)
     setTheme(newTheme);
 })
