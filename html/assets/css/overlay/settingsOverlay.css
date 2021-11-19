@@ -18,17 +18,12 @@
     color: #a7a7a7;
 }
 
-#settingsModal {
-    font-family: 'Roboto';
-}
-
 #settingsModal .choices:after {
     right: 15px;
     margin-left: unset;
 }
 
 #show_anim_speed_settings_slider {
-    font-family: 'Overpass', sans-serif;
     font-size: 14px;
 }
 
@@ -68,7 +63,6 @@
 .inner-title {
     width: 60%;
     font-size: 15px;
-    font-family: 'Overpass', sans-serif;
     align-self: center;
 }
 
