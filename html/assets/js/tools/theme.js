@@ -24,7 +24,6 @@ theme && setTheme(theme);
 window.addEventListener("storage", ()=>{
   const newTheme = localStorage.getItem("theme");
 
-  if (!!newTheme){
+  if (!!newTheme)
     setTheme(newTheme);
-  }
 })
