@@ -276,35 +276,38 @@
                             }
                           </div>
                         }
-                        @if let Some((furi, translation)) = ext_sentence(sense, &query.settings.user_lang) {
-                          <div class="d-flex flex-row">
-                            <div class="tags no-margin example-sentence collapsed"> 
-                              <div class="d-flex flex-row wrap">               
-                                @for spair in furi {
-                                  @if spair.kanji.is_some() {
-                                    <div class="furigana-kanji-container">
-                                      <span class="furigana-preview noselect">
+
+                        @if query.settings.show_example_sentences {
+                          @if let Some((furi, translation)) = ext_sentence(sense, &query.settings.user_lang) {
+                            <div class="d-flex flex-row">
+                              <div class="tags no-margin example-sentence collapsed"> 
+                                <div class="d-flex flex-row wrap">               
+                                  @for spair in furi {
+                                    @if spair.kanji.is_some() {
+                                      <div class="furigana-kanji-container">
+                                        <span class="furigana-preview noselect">
+                                          @spair.kana
+                                        </span>
+                                        <span class="kanji-preview">
+                                          @spair.kanji.unwrap()
+                                        </span>
+                                      </div>
+                                    } else {
+                                      <div class="inline-kana-preview">
                                         @spair.kana
-                                      </span>
-                                      <span class="kanji-preview">
-                                        @spair.kanji.unwrap()
-                                      </span>
-                                    </div>
-                                  } else {
-                                    <div class="inline-kana-preview">
-                                      @spair.kana
-                                    </div>
+                                      </div>
+                                    }
                                   }
-                                }
+                                </div>
+                              </div>
+                              <div class="expander">
+
                               </div>
                             </div>
-                            <div class="expander">
-
+                            <div class="tags no-margin">
+                              @translation
                             </div>
-                          </div>
-                          <div class="tags no-margin">
-                            @translation
-                          </div>
+                          }
                         }
                       </div>
                     }

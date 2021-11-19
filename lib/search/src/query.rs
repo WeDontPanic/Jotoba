@@ -41,6 +41,7 @@ pub struct UserSettings {
     pub cookies_enabled: bool,
     pub page_size: u32,
     pub kanji_page_size: u32,
+    pub show_example_sentences: bool,
 }
 
 impl PartialEq for UserSettings {
@@ -69,6 +70,7 @@ impl Default for UserSettings {
             cookies_enabled: false,
             page_size: 10,
             kanji_page_size: 4,
+            show_example_sentences: true,
         }
     }
 }
