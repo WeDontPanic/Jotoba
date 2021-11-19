@@ -272,21 +272,6 @@ Util.mdlScrollFix = function(){
     $(".mdl-layout__tab-bar-right-button").addClass("is-active");
 }
 
-// Changes the state of an MDL checkbox
-Util.setMdlCheckboxState = function(id, state) {
-    if (state === undefined) {
-        return;
-    }
-
-    let element = $('label[for='+id+']'); 
-
-    if(state) {
-        element[0].MaterialCheckbox.check();
-    } else {
-        element[0].MaterialCheckbox.uncheck();
-    }
-}
-
 // Deletes all cookies whose names are within the given array
 Util.deleteSelectedCookies = function(cookieArray) {
     var allCookies = document.cookie.split(';');

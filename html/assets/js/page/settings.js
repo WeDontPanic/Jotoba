@@ -137,9 +137,7 @@ async function setSearchSettings(english_always, english_on_top, example_sentenc
 // Prepare the display tab
 async function setDisplaySettings(theme, kanji_speed) {
     // Light / Dark Mode toggle
-    if (theme !== "dark") {
-        Util.setMdlCheckboxState("use_dark_mode_settings", false);
-    }
+    Util.setMdlCheckboxState("use_dark_mode_settings", theme === "dark");
 
     // Kanji speed
     if (kanji_speed === undefined) {
