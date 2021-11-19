@@ -2,7 +2,7 @@ use actix_files::NamedFile;
 use localization::TranslationDict;
 
 use actix_web::{
-    http::header::{ACCESS_CONTROL_ALLOW_ORIGIN, CACHE_CONTROL},
+    http::header::{ACCESS_CONTROL_ALLOW_HEADERS, ACCESS_CONTROL_ALLOW_ORIGIN, CACHE_CONTROL},
     middleware::{self, Compat, Compress},
     web::{self as actixweb, Data},
     App, HttpRequest, HttpServer,
@@ -125,7 +125,9 @@ pub(super) async fn start() -> std::io::Result<()> {
             .service(
                 actixweb::scope("/api")
                     .wrap(
-                        middleware::DefaultHeaders::new().header(ACCESS_CONTROL_ALLOW_ORIGIN, "*"),
+                        middleware::DefaultHeaders::new()
+                            .header(ACCESS_CONTROL_ALLOW_ORIGIN, "*")
+                            .header(ACCESS_CONTROL_ALLOW_HEADERS, "Content-Type"),
                     )
                     .wrap(Compat::new(Compress::default()))
                     .service(
