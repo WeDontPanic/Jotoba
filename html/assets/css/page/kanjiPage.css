@@ -37,6 +37,10 @@
     padding-left: 10px;
 }
 
+.kun-reading, .on-reading {
+    width: 100%;
+}
+
 @media only screen and (max-width: 600px) {
 
     .compounds-parent {
