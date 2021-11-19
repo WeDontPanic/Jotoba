@@ -45,9 +45,17 @@ Util.setMdlCheckboxState = function(id, state) {
     return;
   }
 
+  // Wait for readyState complete if not already.
+  if (document.readyState !== "complete"){
+    this.awaitDocumentReady((id,state)=>{
+      this.setMdlCheckboxState(id,state);
+    })
+    return;
+  }
+
   let element = $('label[for='+id+']');
 
-  // Only attempt to apply change if element has been rendered.
+  // Only attempt to apply change if element exists.
   if (element[0]){
     if(state) {
       element[0].MaterialCheckbox.check();
