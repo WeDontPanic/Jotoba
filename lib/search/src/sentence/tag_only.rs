@@ -16,7 +16,7 @@ pub(super) fn search(query: &Query) -> Result<SentenceResult, Error> {
     if let Tag::Jlpt(jlpt) = filter_tag {
         return jlpt_search(query, *jlpt);
     } else {
-        return Err(Error::Unexpected);
+        return Ok(SentenceResult::default());
     }
 }
 
