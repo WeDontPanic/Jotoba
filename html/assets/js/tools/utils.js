@@ -38,3 +38,21 @@ Util.loadScript = function(url, async, attributes, callback) {
     // Append and load
     document.head.appendChild(s);
 }
+
+// Changes the state of an MDL checkbox
+Util.setMdlCheckboxState = function(id, state) {
+  if (state === undefined) {
+    return;
+  }
+
+  let element = $('label[for='+id+']');
+
+  // Only attempt to apply change if element has been rendered.
+  if (element[0]){
+    if(state) {
+      element[0].MaterialCheckbox.check();
+    } else {
+      element[0].MaterialCheckbox.uncheck();
+    }
+  }
+}
