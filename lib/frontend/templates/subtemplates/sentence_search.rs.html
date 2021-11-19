@@ -21,7 +21,7 @@
     @for sentence in sentences {
       <div class="list-entry sentence">
         <div class="d-flex flex-row wrap sentence">
-          @:render_sentence_html(sentence.sentence.furigana_pairs())
+          @:render_sentence_html(sentence.sentence.furigana_pairs().collect())
         </div>
 
         <div class="sentence-translation original">

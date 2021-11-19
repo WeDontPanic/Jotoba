@@ -2,19 +2,24 @@
 @type MyIterator<'a> = Vec<SentencePartRef<'a>>;
 @(iter: MyIterator)
 
-@for furi_part in iter {
-    @if let Some(kanji) = furi_part.kanji {
-    <div class="furigana-kanji-container">
-        <span class="furigana-preview noselect">
-        @furi_part.kana
-        </span>
-        <span class="kanji-preview">
-        @kanji
-        </span>
-    </div>
-    } else {
-    <div class="inline-kana-preview">
-        @furi_part.kana
-    </div>
-    }
-}
+<div class="furigana-kanji-container"><!--
+-->@for furi_part in iter {<!--
+    -->@if furi_part.kana.len() != 0 {<!--
+        --><ruby><!--
+            --><span class="kanji-preview"><!--
+            -->@if let Some(kanji) = furi_part.kanji {<!--
+                    -->@kanji<!--
+                --></span><!--
+                --><rp>（</rp><rt class="furigana-preview noselect"><!--
+                    -->@furi_part.kana<!--
+            -->} else {<!--
+                    -->@furi_part.kana<!--
+                --></span><!--
+                --><rp>（</rp><rt class="furigana-preview noselect"><!--
+                    -->　<!-- note that this is a japanese space -- putting anything else gives wrong height
+            -->}<!--
+            --></rt><rp>）</rp><!--
+        --></ruby><!--
+    -->}<!--
+-->}<!--
+--></div>
