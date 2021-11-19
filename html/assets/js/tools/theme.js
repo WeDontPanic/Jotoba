@@ -2,6 +2,9 @@
 const setTheme = (theme) => {
     document.documentElement.className = theme;
     localStorage.setItem('theme', theme);
+
+    if (typeof setDisplaySettings === "function")
+      setDisplaySettings(theme);
 }
 
 // On load -> Set the Color Theme
@@ -14,12 +17,14 @@ window.matchMedia("(prefers-color-scheme: dark)").addEventListener(
 );
 
 // On load -> Check if there is a theme stored already
-var theme = localStorage.getItem('theme');
+let theme = localStorage.getItem('theme');
 theme && setTheme(theme);
 
 // Updates theme when changed by another tab (or console)
-const themeUpdater = window.setInterval(() => {
-    theme = localStorage.getItem('theme');
-    if (theme !== null)
-        setTheme(theme);
-}, 500);
+window.addEventListener("storage", ()=>{
+  const newTheme = localStorage.getItem("theme");
+
+  if (!!newTheme){
+    setTheme(newTheme);
+  }
+})
