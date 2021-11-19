@@ -3,8 +3,7 @@ const setTheme = (theme) => {
     document.documentElement.className = theme;
     localStorage.setItem('theme', theme);
 
-    if (typeof setDisplaySettings === "function")
-      setDisplaySettings(theme);
+      Util.setMdlCheckboxState("use_dark_mode_settings", theme === "dark")
 }
 
 // On load -> Set the Color Theme
@@ -22,7 +21,7 @@ theme && setTheme(theme);
 
 // Updates theme when changed by another tab (or console)
 window.addEventListener("storage", ()=>{
-  const newTheme = localStorage.getItem("theme");
+  let newTheme = localStorage.getItem("theme");
 
   if (!!newTheme)
     setTheme(newTheme);
