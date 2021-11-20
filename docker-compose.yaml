@@ -11,4 +11,4 @@ services:
       - ./html:/app/html
       - ./resources:/app/resources
       - ./unidic-mecab:/app/unidic-mecab
-        #- ./indexes:/app/indexes
+      - ./indexes:/app/indexes
