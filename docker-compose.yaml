@@ -1,0 +1,14 @@
+version: "3.7"
+
+services:
+  app:
+    image: jotoba
+    restart: always
+    ports:
+      - 8080:8080
+    working_dir: /app
+    volumes:
+      - ./html:/app/html
+      - ./resources:/app/resources
+      - ./unidic-mecab:/app/unidic-mecab
+        #- ./indexes:/app/indexes
