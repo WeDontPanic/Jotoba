@@ -1,7 +1,7 @@
 @use crate::BaseData;
 @(data: &BaseData, title: &str)
 
-<link rel="stylesheet" type="text/css" href="/assets/css/page/helpPage.css">
+<link rel="stylesheet" type="text/css" href="/variable_assets/@data.asset_hash/assets/css/page/helpPage.css">
 
 <h3 class="noselect word-title">@data.gettext_fmt("No {} found", &[title])</h3>
 
@@ -35,7 +35,7 @@
            <br>
            @data.gettext("Also check our") <a class="clickable" href='https://trello.com/b/nmG0xgaW/jotoba'>Trello Board</a> @data.gettext("since we might be working on it!")
         </p>
-        <img class="help-joto" src="/assets/jotokun/JotoBook.svg">
+        <img class="help-joto" src="/variable_assets/@data.asset_hash/assets/jotokun/JotoBook.svg">
     </div>
   </article>
 </div>

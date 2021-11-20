@@ -1,4 +1,8 @@
-use std::{io::Write, time::Duration};
+use std::{
+    fs::DirEntry,
+    io::{BufReader, Read, Write},
+    time::Duration,
+};
 
 use serde::{Deserialize, Serialize};
 
@@ -12,6 +16,9 @@ pub struct Config {
     pub server: ServerConfig,
     pub sentry: Option<SentryConfig>,
     pub search: Option<SearchConfig>,
+
+    #[serde(skip)]
+    pub asset_hash: String,
 }
 
 #[derive(Serialize, Deserialize, Clone)]
@@ -163,7 +170,7 @@ impl Config {
             .map(|i| Path::new(&i).to_owned())
             .unwrap_or(Self::get_config_file()?);
 
-        let config = if !config_file.exists()
+        let mut config = if !config_file.exists()
             // Check if file is empty
             || fs::metadata(&config_file).map(|i| i.len()).unwrap_or(1)
                 == 0
@@ -184,11 +191,13 @@ impl Config {
         }
         */
 
+        config.asset_hash = variable_asset_hash(&config).map_err(|i| i.to_string())?;
+
         Ok(config)
     }
 
     // Save the config
-    pub fn save(self) -> Result<Self, String> {
+    fn save(self) -> Result<Self, String> {
         let config_file = Self::get_config_file()?;
 
         let s = toml::to_string_pretty(&self).map_err(|e| e.to_string())?;
@@ -196,16 +205,6 @@ impl Config {
         f.write_all(&s.as_bytes()).map_err(|e| e.to_string())?;
 
         Ok(self)
-    }
-
-    // load a config
-    pub fn load(&mut self) -> Result<(), String> {
-        let config_file = Self::get_config_file()?;
-
-        let conf_data = fs::read_to_string(&config_file).map_err(|e| e.to_string())?;
-        *self = toml::from_str(&conf_data).map_err(|e| e.to_string())?;
-
-        Ok(())
     }
 
     // Create missing folders and return the config file
@@ -218,4 +217,62 @@ impl Config {
 
         Ok(conf_dir.join("config.toml"))
     }
+}
+
+fn variable_asset_hash(config: &Config) -> std::io::Result<String> {
+    let asset_path = Path::new(config.server.get_html_files());
+    let js_files = dir_content(&asset_path.join("js"))?;
+    let css_files = dir_content(&asset_path.join("css"))?;
+
+    let mut files = js_files
+        .into_iter()
+        .chain(css_files.into_iter())
+        .collect::<Vec<_>>();
+
+    files.sort_by(|a, b| a.file_name().cmp(&b.file_name()));
+
+    let mut hash = sha1::Sha1::new();
+    let mut buf: Vec<u8> = vec![0u8; 100];
+
+    for file in files {
+        let mut content = BufReader::new(File::open(file)?);
+
+        loop {
+            let read = content.read(&mut buf[..])?;
+            if read == 0 {
+                break;
+            }
+            hash.update(&buf[..read]);
+        }
+    }
+
+    Ok(hash.digest().to_string())
+}
+
+fn dir_content(path: &Path) -> std::io::Result<Vec<PathBuf>> {
+    let mut files = Vec::new();
+
+    visit_dirs(path, &mut files)?;
+
+    let out = files
+        .into_iter()
+        .map(|i| i.path().clone())
+        .collect::<Vec<_>>();
+
+    Ok(out)
+}
+
+fn visit_dirs(dir: &Path, out: &mut Vec<DirEntry>) -> std::io::Result<()> {
+    if dir.is_dir() {
+        for entry in std::fs::read_dir(dir)? {
+            let entry = entry?;
+            let path = entry.path();
+            if path.is_dir() {
+                visit_dirs(&path, out)?;
+            } else {
+                out.push(entry)
+            }
+        }
+    }
+    Ok(())
 }

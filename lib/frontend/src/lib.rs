@@ -36,6 +36,7 @@ pub struct BaseData<'a> {
     pub dict: &'a TranslationDict,
     pub user_settings: UserSettings,
     pub pagination: Option<Pagination>,
+    pub asset_hash: &'a str,
 }
 
 /// The site to display
@@ -107,12 +108,17 @@ impl<'a> BaseData<'a> {
     }
 
     #[inline]
-    pub fn new(dict: &'a TranslationDict, user_settings: UserSettings) -> Self {
+    pub fn new(
+        dict: &'a TranslationDict,
+        user_settings: UserSettings,
+        asset_hash: &'a str,
+    ) -> Self {
         Self {
             site: Site::Index,
             dict,
             user_settings,
             pagination: None,
+            asset_hash,
         }
     }
 

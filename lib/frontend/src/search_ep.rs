@@ -51,7 +51,7 @@ pub async fn search(
     // Log search duration if too long and available
     let search_result = timeout(
         search_timeout,
-        do_search(query.type_, &locale_dict, settings, &query),
+        do_search(query.type_, &locale_dict, settings, &query, &config),
     )
     .await
     .map_err(|_| {
@@ -74,8 +74,9 @@ async fn do_search<'a>(
     locale_dict: &'a TranslationDict,
     settings: UserSettings,
     query: &'a Query,
+    config: &'a Config,
 ) -> Result<BaseData<'a>, web_error::Error> {
-    let mut base_data = BaseData::new(locale_dict, settings);
+    let mut base_data = BaseData::new(locale_dict, settings, &config.asset_hash);
 
     let result_data = match querytype {
         QueryType::Kanji => kanji_search(&mut base_data, &query).await,

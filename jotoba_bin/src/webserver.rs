@@ -105,6 +105,13 @@ pub(super) async fn start() -> std::io::Result<()> {
                     .wrap(Compat::new(middleware::Compress::default()))
                     .route(actixweb::get().to(privacy)),
             )
+            /*
+            .service(
+                actixweb::resource("/service-worker.js")
+                    .wrap(Compat::new(middleware::Compress::default()))
+                    .route(actixweb::get().to(service_worker)),
+            )
+            */
             .service(
                 actixweb::resource("/search/{query}")
                     .wrap(Compat::new(middleware::Compress::default()))
@@ -180,6 +187,18 @@ pub(super) async fn start() -> std::io::Result<()> {
                         actix_files::Files::new("", config.server.get_html_files())
                             .show_files_listing(),
                     ),
+            )
+            .service(
+                actixweb::scope("/variable_assets/{oma}/assets")
+                    .wrap(
+                        middleware::DefaultHeaders::new()
+                            .header(CACHE_CONTROL, format!("max-age={}", ASSET_CACHE_MAX_AGE)),
+                    )
+                    .wrap(Compat::new(Compress::default()))
+                    .service(
+                        actix_files::Files::new("", config.server.get_html_files())
+                            .show_files_listing(),
+                    ),
             );
 
         //#[cfg(feature = "sentry_error")]
@@ -190,6 +209,10 @@ pub(super) async fn start() -> std::io::Result<()> {
     .bind(&address)?
     .run()
     .await
+}
+
+async fn service_worker(_req: HttpRequest) -> actix_web::Result<NamedFile> {
+    Ok(NamedFile::open("html/assets/js/tools/service-worker.js")?)
 }
 
 async fn privacy(_req: HttpRequest) -> actix_web::Result<NamedFile> {

@@ -8,9 +8,9 @@
   @:search_help(&data, data.gettext("kanji"))
 }
 
-<script defer src="/assets/js/page/kanjiPage.js"></script>
-<link rel="stylesheet" type="text/css" href="/assets/css/page/multiPage/kanji.css">
-<link rel="stylesheet" type="text/css" href="/assets/css/page/kanjiPage.css">
+<script defer src="/variable_assets/@data.asset_hash/assets/js/page/kanjiPage.js"></script>
+<link rel="stylesheet" type="text/css" href="/variable_assets/@data.asset_hash/assets/css/page/multiPage/kanji.css">
+<link rel="stylesheet" type="text/css" href="/variable_assets/@data.asset_hash/assets/css/page/kanjiPage.css">
 
 <!-- Inner Main Body -->
 @for (kpos, k_item) in kanji.iter().enumerate() {

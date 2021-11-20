@@ -8,15 +8,15 @@
 
 @(data: &BaseData, query: &Query, result: WordResult)
 
-<link rel="stylesheet" type="text/css" media="print" onload="this.media='all'" href="/assets/css/tools/ripple.css">
+<link rel="stylesheet" type="text/css" media="print" onload="this.media='all'" href="/variable_assets/@data.asset_hash/assets/css/tools/ripple.css">
 
-<link rel="stylesheet" type="text/css" href="/assets/css/page/multiPage/kanji.css">
-<link rel="stylesheet" type="text/css" href="/assets/css/page/multiPage/kana.css">
-<link rel="stylesheet" type="text/css" href="/assets/css/page/wordPage.css">
-<link rel="stylesheet" type="text/css" href="/assets/css/page/wordExtensions/sentenceReader.css">
-<link rel="stylesheet" type="text/css" href="/assets/css/page/wordExtensions/searchAnnotation.css">
+<link rel="stylesheet" type="text/css" href="/variable_assets/@data.asset_hash/assets/css/page/multiPage/kanji.css">
+<link rel="stylesheet" type="text/css" href="/variable_assets/@data.asset_hash/assets/css/page/multiPage/kana.css">
+<link rel="stylesheet" type="text/css" href="/variable_assets/@data.asset_hash/assets/css/page/wordPage.css">
+<link rel="stylesheet" type="text/css" href="/variable_assets/@data.asset_hash/assets/css/page/wordExtensions/sentenceReader.css">
+<link rel="stylesheet" type="text/css" href="/variable_assets/@data.asset_hash/assets/css/page/wordExtensions/searchAnnotation.css">
 
-<script defer src="/assets/js/page/wordPage.js"></script>
+<script defer src="/variable_assets/@data.asset_hash/assets/js/page/wordPage.js"></script>
 
   @if let Some(ref inflection) = result.inflection_info {
     <div class="search-annotation">
