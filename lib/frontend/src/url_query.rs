@@ -14,7 +14,7 @@ pub struct QueryStruct {
     #[serde(rename = "p", default = "default_page")]
     pub page: usize,
 
-    #[serde(skip_serializing, skip_deserializing)]
+    #[serde(skip)]
     pub query_str: String,
 }
 
@@ -55,4 +55,32 @@ impl QueryStruct {
 #[inline]
 fn default_page() -> usize {
     1
+}
+
+/// Query format for js fallback queries of the format http://127.0.0.1:8080/search?t=0&s=world
+/// instead of the query being an url parameter
+#[derive(Deserialize)]
+pub struct NoJSQueryStruct {
+    #[serde(rename = "s")]
+    pub query: String,
+    #[serde(rename = "t")]
+    pub search_type: Option<QueryType>,
+    #[serde(rename = "i")]
+    pub word_index: Option<usize>,
+    #[serde(rename = "p", default = "default_page")]
+    pub page: usize,
+}
+
+impl NoJSQueryStruct {
+    /// Converts a NoJSQueryStruct into a QueryStruct and the query string
+    pub(crate) fn to_query_struct(self) -> (QueryStruct, String) {
+        let query_struct = QueryStruct {
+            page: self.page,
+            word_index: self.word_index,
+            search_type: self.search_type,
+            query_str: String::new(),
+        };
+
+        (query_struct, self.query)
+    }
 }

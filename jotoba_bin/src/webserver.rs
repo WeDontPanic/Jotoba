@@ -115,7 +115,12 @@ pub(super) async fn start() -> std::io::Result<()> {
             .service(
                 actixweb::resource("/search/{query}")
                     .wrap(Compat::new(middleware::Compress::default()))
-                    .route(actixweb::get().to(frontend::search_ep::search)),
+                    .route(actixweb::get().to(frontend::search_ep::search_ep)),
+            )
+            .service(
+                actixweb::resource("/search")
+                    .wrap(Compat::new(middleware::Compress::default()))
+                    .route(actixweb::get().to(frontend::search_ep::search_ep_no_js)),
             )
             .service(
                 actixweb::resource("/about")

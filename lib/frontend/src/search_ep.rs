@@ -9,7 +9,11 @@ use actix_web::{rt::time::timeout, web, HttpRequest, HttpResponse};
 use localization::TranslationDict;
 use percent_encoding::percent_decode;
 
-use crate::{templates, url_query::QueryStruct, BaseData, ResultData, SearchHelp};
+use crate::{
+    templates,
+    url_query::{NoJSQueryStruct, QueryStruct},
+    BaseData, ResultData, SearchHelp,
+};
 use config::Config;
 use search::{
     self,
@@ -20,16 +24,36 @@ use search::{
 use super::web_error;
 
 /// Endpoint to perform a search
-pub async fn search(
+pub async fn search_ep_no_js(
+    query_data: web::Query<NoJSQueryStruct>,
+    locale_dict: web::Data<Arc<TranslationDict>>,
+    config: web::Data<Config>,
+    request: HttpRequest,
+) -> Result<HttpResponse, web_error::Error> {
+    let (query_data, query) = query_data.0.to_query_struct();
+    search(query, query_data, locale_dict, config, request).await
+}
+
+/// Endpoint to perform a search
+pub async fn search_ep(
     query: web::Path<String>,
     query_data: web::Query<QueryStruct>,
     locale_dict: web::Data<Arc<TranslationDict>>,
     config: web::Data<Config>,
     request: HttpRequest,
 ) -> Result<HttpResponse, web_error::Error> {
-    let settings = user_settings::parse(&request);
+    let query = percent_decode(query.as_bytes()).decode_utf8()?.to_string();
+    search(query, query_data.0, locale_dict, config, request).await
+}
 
-    let query = percent_decode(query.as_bytes()).decode_utf8()?;
+async fn search(
+    query: String,
+    query_data: QueryStruct,
+    locale_dict: web::Data<Arc<TranslationDict>>,
+    config: web::Data<Config>,
+    request: HttpRequest,
+) -> Result<HttpResponse, web_error::Error> {
+    let settings = user_settings::parse(&request);
 
     // Parse query and redirect to home on error
     let query = match query_data
