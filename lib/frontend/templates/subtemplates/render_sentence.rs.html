@@ -1,21 +1,21 @@
 @use japanese::furigana::SentencePartRef;
-@type MyIterator<'a> = Vec<SentencePartRef<'a>>;
-@(iter: MyIterator)
+@type MyVec<'a> = Vec<SentencePartRef<'a>>;
+@(iter: MyVec, addl_classes: &str)
 
 <div class="furigana-kanji-container"><!--
 -->@for furi_part in iter {<!--
-    -->@if furi_part.kana.len() != 0 {<!--
+    -->@if !furi_part.kana.is_empty() {<!--
         --><ruby><!--
-            --><span class="kanji-preview"><!--
+            --><span class="kanji-preview @addl_classes"><!--
             -->@if let Some(kanji) = furi_part.kanji {<!--
                     -->@kanji<!--
                 --></span><!--
-                --><rp>（</rp><rt class="furigana-preview noselect"><!--
+                --><rp>（</rp><rt class="furigana-preview noselect @addl_classes"><!--
                     -->@furi_part.kana<!--
             -->} else {<!--
                     -->@furi_part.kana<!--
                 --></span><!--
-                --><rp>（</rp><rt class="furigana-preview noselect"><!--
+                --><rp>（</rp><rt class="furigana-preview noselect @addl_classes"><!--
                     -->　<!-- note that this is a japanese space -- putting anything else gives wrong height
             -->}<!--
             --></rt><rp>）</rp><!--

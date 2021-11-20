@@ -49,7 +49,7 @@
         @for part in sentence_parts {
           @if let Some(ref furigana) = part.furigana {
             <a id="p@part.pos" href="/search/@query.query?i=@part.pos" class="@part.get_add_class() d-flex flex-row sentence-part @selected(part.pos, result.sentence_index)">
-              @:render_sentence_html(furi_from_str(furigana).collect())
+              @:render_sentence_html(furi_from_str(furigana).collect(), "")
             </a>
           } else {
             <a id="p@part.pos" href="/search/@query.query?i=@part.pos" class="@part.get_add_class() inline-kana-preview sentence-part @selected(part.pos, result.sentence_index)">@part.text</a>
@@ -86,7 +86,7 @@
           @if word.get_reading().len() > 3 {
             <div class="d-flex flex-row wrap"> 
               @if let Some(s_pairs) = word.get_furigana() {
-                @:render_sentence_html(s_pairs)
+                @:render_sentence_html(s_pairs, "")
               } else {
                 <div class="inline-kana-preview">
                   @word.get_reading().reading
@@ -102,7 +102,7 @@
               @if word.get_reading().len() <= 3 {
                 <div class="d-flex flex-row"> 
                   @if let Some(s_pairs) = word.get_furigana() {
-                    @:render_sentence_html(s_pairs)
+                    @:render_sentence_html(s_pairs, "")
                   } else {
                     <div class="inline-kana-preview">
                       @word.get_reading().reading
@@ -238,7 +238,7 @@
                             <div class="d-flex flex-row">
                               <div class="tags no-margin example-sentence collapsed"> 
                                 <div class="d-flex flex-row wrap">               
-                                  @:render_sentence_html(furi)
+                                  @:render_sentence_html(furi, "")
                                 </div>
                               </div>
                               <div class="expander">
