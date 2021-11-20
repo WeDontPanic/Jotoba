@@ -12,3 +12,4 @@ services:
       - ./resources:/app/resources
       - ./unidic-mecab:/app/unidic-mecab
       - ./indexes:/app/indexes
+      - ./suggestions:/app/suggestions
