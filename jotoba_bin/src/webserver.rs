@@ -105,13 +105,11 @@ pub(super) async fn start() -> std::io::Result<()> {
                     .wrap(Compat::new(middleware::Compress::default()))
                     .route(actixweb::get().to(privacy)),
             )
-            /*
             .service(
                 actixweb::resource("/service-worker.js")
                     .wrap(Compat::new(middleware::Compress::default()))
                     .route(actixweb::get().to(service_worker)),
             )
-            */
             .service(
                 actixweb::resource("/search/{query}")
                     .wrap(Compat::new(middleware::Compress::default()))
