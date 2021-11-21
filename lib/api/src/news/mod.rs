@@ -26,7 +26,7 @@ impl NewsEntry {
             html,
             title: src.title.clone(),
             creation_time: src.creation_time,
-            trimmed: src.was_trimmed,
+            trimmed: src.was_trimmed && !short,
         }
     }
 }
