@@ -81,7 +81,9 @@ pub(super) async fn start() -> std::io::Result<()> {
 
     let address = config.server.listen_address.clone();
 
-    resources::news::News::load(config.server.get_news_folder()).expect("Failed to load news");
+    if let Err(err) = resources::news::News::load(config.server.get_news_folder()) {
+        warn!("Failed to load news: {}", err);
+    }
 
     debug!("Resource loading took {:?}", start.elapsed());
 
