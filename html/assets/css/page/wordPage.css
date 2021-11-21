@@ -95,6 +95,10 @@
     font-size: 15px;
 }
 
+.furigana-preview {
+    font-size: inherit;
+}
+
 .tags .furigana-preview {
     font-size: 10px;
 }

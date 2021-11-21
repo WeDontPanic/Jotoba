@@ -1,6 +1,8 @@
 @use search::sentence::result::Item;
 @use super::search_help;
 @use crate::BaseData;
+@use super::render_sentence_html;
+
 @(data: &BaseData, sentences: Vec<Item>)
 
   <link rel="stylesheet" type="text/css" href="/variable_assets/@data.asset_hash/assets/css/page/multiPage/kanji.css">
@@ -19,23 +21,7 @@
     @for sentence in sentences {
       <div class="list-entry sentence">
         <div class="d-flex flex-row wrap sentence">
-
-          @for spair in sentence.sentence.furigana_pairs() {
-            @if spair.kanji.is_some() {
-              <div class="furigana-kanji-container">
-                <span class="furigana-preview small noselect">
-                  @spair.kana
-                </span>
-                <span class="kanji-preview small">
-                  @spair.kanji.unwrap()
-                </span>
-              </div>
-            } else {
-              <div class="inline-kana-preview small">
-                @spair.kana
-              </div>
-            }
-          }
+          @:render_sentence_html(sentence.sentence.furigana_pairs().collect(), "small")
         </div>
 
         <div class="sentence-translation original">
