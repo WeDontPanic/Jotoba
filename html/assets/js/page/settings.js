@@ -52,6 +52,7 @@ function loadCookieData() {
     let english_always = Util.toBoolean(Cookies.get("show_english"));
     let english_on_top = Util.toBoolean(Cookies.get("show_english_on_top"));
     let example_sentences = Util.toBoolean(Cookies.get("show_sentences"));
+    let sentence_furigana = Util.toBoolean(Cookies.get("sentence_furigana"));
     let focus_searchbar = Util.toBoolean(Cookies.get("focus_searchbar"));
     let items_per_page = Cookies.get("items_per_page");
     let kanji_per_page = Cookies.get("kanji_page_size");
@@ -70,7 +71,7 @@ function loadCookieData() {
 
     // Execute 
     setLanguageSettings(search_lang, page_lang);
-    setSearchSettings(english_always, english_on_top, example_sentences, focus_searchbar, items_per_page, kanji_per_page);
+    setSearchSettings(english_always, english_on_top, example_sentences, sentence_furigana, focus_searchbar, items_per_page, kanji_per_page);
     setDisplaySettings(theme, kanji_speed);
     setOtherSettings(cookies_allowed);
 }
@@ -99,11 +100,12 @@ async function setLanguageSettings(search_lang, page_lang) {
 }
 
 // Prepare the search tab
-async function setSearchSettings(english_always, english_on_top, example_sentences, focus_searchbar, items_per_page, kanji_per_page) {
+async function setSearchSettings(english_always, english_on_top, example_sentences, sentence_furigana, focus_searchbar, items_per_page, kanji_per_page) {
     // Set checkboxes
     Util.setMdlCheckboxState("show_eng_settings", english_always);
     Util.setMdlCheckboxState("show_eng_on_top_settings", english_on_top);
     Util.setMdlCheckboxState("show_example_sentences_settings", example_sentences);
+    Util.setMdlCheckboxState("show_sentence_furigana_settings", sentence_furigana);
     Util.setMdlCheckboxState("focus_search_bar_settings", focus_searchbar);
 
     // Hide english_on_top if not english_always

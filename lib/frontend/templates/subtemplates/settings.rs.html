@@ -130,12 +130,18 @@
                               </label>
                            </div>
                            <div class="settings-entry"> <!-- TODO translate -->
+                              <span class="inner-title">Show Sentence-Furigana:</span>
+                              <label for="show_sentence_furigana_settings" class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect">
+                                 <input checked id="show_sentence_furigana_settings" type="checkbox" class="mdl-checkbox__input" onchange="onBtnSettingsChange('sentence_furigana', event)">
+                              </label>
+                           </div>
+                           <div class="settings-entry"> <!-- TODO translate -->
                               <span class="inner-title">Focus search bar on load:</span>
                               <label for="focus_search_bar_settings" class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect">
                                  <input id="focus_search_bar_settings" type="checkbox" class="mdl-checkbox__input" onchange="onBtnSettingsChange('focus_searchbar', event)">
                               </label>
                            </div>
-                           <div class="settings-entry"> <!-- TODO implement; translate -->
+                           <div class="settings-entry"> <!-- TODO translate -->
                               <span id="rpr" class="inner-title txt-input">Results per page:</span>
                               <form action="#" onsubmit="return false">
                                  <div class="mdl-textfield mdl-js-textfield">
