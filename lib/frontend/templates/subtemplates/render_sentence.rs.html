@@ -6,21 +6,22 @@
 <div class="furigana-kanji-container">@*
 *@@for furi_part in iter {@*
     *@@if !furi_part.kana.is_empty() {@*
-        *@<ruby>@*
-            *@<span class="kanji-preview @addl_classes">@*
             *@@if let Some(kanji) = furi_part.kanji {@*
-                    *@@kanji@*
-                *@</span>@*
-                *@<rp>（</rp><rt class="furigana-preview noselect @addl_classes">@*
-                    *@@furi_part.kana@*
+                *@<ruby>@*
+                    *@<span class="kanji-preview @addl_classes">@*
+                        *@@kanji@*
+                    *@</span>@*
+                    *@<rp>（</rp>@*
+                    *@<rt class="furigana-preview noselect @addl_classes">@*
+                        *@@furi_part.kana@*
+                    *@</rt>@*
+                    *@<rp>）</rp>@*
+                *@</ruby>@*
             *@} else {@*
+                *@<span class="inline-kana-preview @addl_classes">@*
                     *@@furi_part.kana@*
                 *@</span>@*
-                *@<rp>（</rp><rt class="furigana-preview noselect @addl_classes">@*
-                    *@　@* note that this is a japanese space -- putting anything else gives wrong height
             *@}@*
-            *@</rt><rp>）</rp>@*
-        *@</ruby>@*
     *@}@*
 *@}@*
 *@</div>
