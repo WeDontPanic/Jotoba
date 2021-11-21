@@ -1,5 +1,11 @@
 use std::{
-    cmp::min, collections::BinaryHeap, fmt::Debug, ops::Index, time::Instant, vec::IntoIter,
+    cmp::min,
+    collections::{BinaryHeap, HashSet},
+    fmt::Debug,
+    hash::Hash,
+    ops::Index,
+    time::Instant,
+    vec::IntoIter,
 };
 
 use super::result_item::ResultItem;
@@ -30,7 +36,7 @@ impl<T: PartialEq + Debug> Debug for SearchResult<T> {
     }
 }
 
-impl<T: PartialEq> SearchResult<T> {
+impl<T: PartialEq + Hash + Clone> SearchResult<T> {
     /// Returns a `SearchResult` from a BinaryHeap
     pub(crate) fn from_binary_heap(
         mut heap: BinaryHeap<ResultItem<T>>,
@@ -82,9 +88,18 @@ impl<T: PartialEq> SearchResult<T> {
 }
 
 /// Merges two sorted sequences `other` and `src` and stores result into `src`. Ignores duplicates.
-fn merge_sorted_list<T: PartialEq>(src: &mut Vec<ResultItem<T>>, other: Vec<ResultItem<T>>) {
-    // TODO: they're already sorted... make this O(n)
-    src.extend(other);
+fn merge_sorted_list<T: PartialEq + Clone + Hash>(
+    src: &mut Vec<ResultItem<T>>,
+    other: Vec<ResultItem<T>>,
+) {
+    let mut hash_set = HashSet::with_capacity(src.len() + other.len());
+    hash_set.extend(src.clone());
+    hash_set.extend(other.clone());
+
+    // TODO: maybe make this O(n) since both sets are already sorted
+    src.truncate(0);
+    src.extend(hash_set);
+
     src.sort_unstable_by(|a, b| a.cmp(&b).reverse());
     src.dedup_by(|a, b| a.item.eq(&b.item));
 }

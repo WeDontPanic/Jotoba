@@ -2,14 +2,22 @@ use resources::parse::jmdict::languages::Language;
 use std::{cmp::Ordering, hash::Hash};
 
 /// A single item (result) in a set of search results
-#[derive(Clone, Copy, Default, Debug, PartialEq)]
+#[derive(Clone, Copy, Default, Debug)]
 pub struct ResultItem<T: PartialEq> {
     pub item: T,
     pub relevance: usize,
     pub language: Option<Language>,
 }
 
+impl<T: PartialEq> PartialEq for ResultItem<T> {
+    #[inline]
+    fn eq(&self, other: &Self) -> bool {
+        self.item == other.item && self.language == other.language
+    }
+}
+
 impl<T: PartialEq + Hash> std::hash::Hash for ResultItem<T> {
+    #[inline]
     fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
         self.item.hash(state);
         self.language.hash(state);
