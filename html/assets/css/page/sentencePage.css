@@ -1,3 +1,7 @@
+.furigana-kanji-container {
+    text-align: left;
+}
+
 .inline-kana-preview.small, .kanji-preview.small, .inline-kana-preview.small {
     font-size: x-large;
 }
