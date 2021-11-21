@@ -81,6 +81,8 @@ pub(super) async fn start() -> std::io::Result<()> {
 
     let address = config.server.listen_address.clone();
 
+    resources::news::News::load("./news").expect("Failed to load news");
+
     debug!("Resource loading took {:?}", start.elapsed());
 
     HttpServer::new(move || {

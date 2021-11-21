@@ -1,4 +1,5 @@
 pub mod models;
+pub mod news;
 pub mod parse;
 
 use models::storage::ResourceStorage;

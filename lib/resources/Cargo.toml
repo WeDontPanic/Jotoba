@@ -25,6 +25,7 @@ indexed_file = { git = "https://github.com/JojiiOfficial/IndexedFile"}
 sorted_intersection = "1.2.0"
 bitflags = {git = "https://github.com/JojiiOfficial/BitFlags"}
 intmap = { git = "https://github.com/JojiiOfficial/rust-intmap"}
+markdown = { git = "https://github.com/johannhof/markdown.rs"}
 
 [lib]
 name = "resources"

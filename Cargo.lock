@@ -1464,6 +1464,16 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "3e2e65a1a2e43cfcb47a895c4c8b10d1f4a61097f9f254f183aee60cad9c651d"
 
 [[package]]
+name = "markdown"
+version = "0.3.0"
+source = "git+https://github.com/johannhof/markdown.rs#68ff3f837a24e47219e204b2c420a4f008951387"
+dependencies = [
+ "lazy_static",
+ "pipeline",
+ "regex",
+]
+
+[[package]]
 name = "match_cfg"
 version = "0.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1753,6 +1763,12 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "8b870d8c151b6f2fb93e84a13146138f05d02ed11c7e7c54f8826aaaf7c9f184"
 
 [[package]]
+name = "pipeline"
+version = "0.5.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d15b6607fa632996eb8a17c9041cb6071cb75ac057abd45dece578723ea8c7c0"
+
+[[package]]
 name = "pkg-config"
 version = "0.3.22"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1932,6 +1948,7 @@ dependencies = [
  "japanese",
  "jp_inflections",
  "localization",
+ "markdown",
  "once_cell",
  "quick-xml",
  "regex",
