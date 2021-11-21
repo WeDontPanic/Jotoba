@@ -13,12 +13,12 @@ pub struct News {
 
 #[derive(Default, Debug)]
 pub struct NewsEntry {
-    id: u32,
-    title: String,
-    long: String,
-    short: String,
-    creation_time: u64,
-    was_trimmed: bool,
+    pub id: u32,
+    pub title: String,
+    pub long: String,
+    pub short: String,
+    pub creation_time: u64,
+    pub was_trimmed: bool,
 }
 
 impl News {
@@ -54,6 +54,13 @@ impl News {
 
         entries.sort_by(|a, b| a.creation_time.cmp(&b.creation_time));
 
+        let entry_count = entries.len();
+        // Only load 15 latest news
+        let entries = entries
+            .into_iter()
+            .skip(entry_count.saturating_sub(15))
+            .collect::<Vec<_>>();
+
         NEWS_RETRIEVE
             .set(News { entries })
             .ok()
@@ -67,6 +74,11 @@ impl News {
         self.entries
             .iter()
             .skip(self.entries.len() - limit.min(self.entries.len()))
+    }
+
+    /// Returns a news entry by its ID
+    pub fn by_id(&self, id: u32) -> Option<&NewsEntry> {
+        self.entries.iter().find(|i| i.id == id)
     }
 }
 

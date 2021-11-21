@@ -81,7 +81,7 @@ pub(super) async fn start() -> std::io::Result<()> {
 
     let address = config.server.listen_address.clone();
 
-    resources::news::News::load("./news").expect("Failed to load news");
+    resources::news::News::load(config.server.get_news_folder()).expect("Failed to load news");
 
     debug!("Resource loading took {:?}", start.elapsed());
 
@@ -169,7 +169,12 @@ pub(super) async fn start() -> std::io::Result<()> {
                         "/suggestion",
                         actixweb::post().to(api::completions::suggestion_ep),
                     )
-                    .route("/img_scan", actixweb::post().to(api::img::scan_ep)),
+                    .route("/img_scan", actixweb::post().to(api::img::scan_ep))
+                    .route("/news/short", actixweb::post().to(api::news::short::news))
+                    .route(
+                        "/news/detailed",
+                        actixweb::post().to(api::news::detailed::news),
+                    ),
             )
             // Static files
             .service(

@@ -31,6 +31,7 @@ pub struct ServerConfig {
     pub sentences: Option<String>,
     pub img_upload_dir: Option<String>,
     pub tess_data: Option<String>,
+    pub news_folder: Option<String>,
 }
 
 #[derive(Serialize, Deserialize, Clone)]
@@ -145,6 +146,7 @@ impl Default for ServerConfig {
             radical_map: Some(String::from("./resources/radical_map")),
             img_upload_dir: Some(String::from("./img_scan_tmp")),
             tess_data: None,
+            news_folder: Some(String::from("./news")),
         }
     }
 }
@@ -160,6 +162,10 @@ impl ServerConfig {
 
     pub fn get_locale_path(&self) -> &str {
         "./locales"
+    }
+
+    pub fn get_news_folder(&self) -> &str {
+        self.news_folder.as_deref().unwrap_or("./news")
     }
 }
 
