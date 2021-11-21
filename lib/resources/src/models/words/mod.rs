@@ -123,9 +123,9 @@ impl Word {
 
     /// Get the audio path of a word
     #[inline]
-    pub fn audio_file(&self) -> Option<String> {
+    pub fn audio_file(&self, file_ending: &str) -> Option<String> {
         self.reading.kanji.as_ref().and_then(|kanji| {
-            let file = format!("{}【{}】.ogg", kanji.reading, self.reading.kana.reading);
+            let file = format!("{}/{}【{}】.{}", file_ending, kanji.reading, self.reading.kana.reading, file_ending);
             Path::new(&format!("html/audio/{}", file))
                 .exists()
                 .then(|| file)

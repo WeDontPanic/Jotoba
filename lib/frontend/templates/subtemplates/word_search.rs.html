@@ -165,10 +165,13 @@
                   @data.gettext("JLPT") n@lvl
                 </div>
               }
-              @if let Some(audio) = word.audio_file() {
+              @if let Some(audio) = word.audio_file("ogg") {
                 <span class="clickable audioBtn" data="/audio/@audio">@data.gettext("Play audio")
                   <audio preload="none">
                     <source src="/audio/@audio" type="audio/ogg">
+                    @if let Some(audio) = word.audio_file("mp3") {
+                      <source src="/audio/@audio" type="audio/mp3">
+                    }
                   </audio>
                 </span>
               }
@@ -226,7 +229,7 @@
                     </li>
                   }
 
-                  @if let Some(audio) = word.audio_file() {
+                  @if let Some(audio) = word.audio_file("mp3") {
                     <li disabled class="mdl-menu__item" style="height: 10px;"><hr style="margin: 0px; margin-top: 5px;"></li>
                     <li id="AudioDlBtn" class="info-entry noselect" class="mdl-menu__item">
                       <div class="downloadSvg"></div>

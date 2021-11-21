@@ -97,7 +97,7 @@ impl From<&resources::models::words::Word> for Word {
             senses,
             alt_readings: None,
             audio: word
-                .audio_file()
+                .audio_file("mp3")
                 .as_ref()
                 .map(|i| format!("/audio/{}", i)),
         }
