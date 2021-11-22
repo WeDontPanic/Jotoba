@@ -504,7 +504,7 @@ a:hover {
     margin-top: 2px;
     height: 24px;
     width: 24px;
-    background-color: var(--primaryColor);
+    background-color: var(--tagColor);
     mask: url("/assets/svg/ui/voice.svg") no-repeat center;
     -webkit-mask: url("/assets/svg/ui/voice.svg") no-repeat center;
 }
@@ -519,7 +519,10 @@ a:hover {
     margin-top: -7px;
     height: 30px;
     width: 30px;
-    background-color: var(--tagColor);
+}
+
+.voiceSvg.active {
+    background-color: var(--primaryColor) !important;
 }
 
 .cameraSvg {
