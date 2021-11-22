@@ -1,5 +1,5 @@
 /**
- * This JS-File implements the Kanji Animation
+ * This JS-File implements the Kanji Animation and compound dropdown feature
  */
 
 // Restarts the animation of the kanji strokes
@@ -51,4 +51,21 @@ sliders.each(function() {
 sliders.on('input', function() {
     this.textField.innerHTML = "Animation speed: "+this.value;
     restartAnimation(this.kanjisvg, this.value);
+});
+
+// Toggles compounds visible / hidden
+function toggleCompounds(event) {
+    let compoundParent = event.target.parentElement.parentElement; 
+    compoundParent.children[compoundParent.children.length-1].classList.toggle("hidden");
+    event.target.parentElement.children[0].classList.toggle("closed");
+}
+
+// Toggle all compounds on keypress
+$(document).on("keypress", (event) => {
+    if ($('input:text').is(":focus")) return;
+    
+    if (event.key == "c") {
+        $(".compounds-dropdown").toggleClass("closed");
+        $(".compounds-parent").toggleClass("hidden");
+    }
 });

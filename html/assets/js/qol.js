@@ -11,7 +11,7 @@ $('a').mousedown((event) => {
 
 $(document).on('keyup keydown keypress', function(e){ shiftPressed = e.shiftKey} );
 
-// Key Events, or how I like to call 'em: The Jojii-Only events
+// Key Events for easy usability
 $(document).on("keypress", (event) => {
     if ($('input:text').is(":focus")) return;
     
@@ -144,9 +144,9 @@ function changeSearchType(html, newType) {
     }
 }
 
-// Focus Search Bar on load if the user wants it to
+// Focus Search Bar on load if the user wants it to (or on index page)
 Util.awaitDocumentReady(() => {
-    if (Util.toBoolean(Cookies.get("focus_searchbar"))) {
+    if (Util.toBoolean(Cookies.get("focus_searchbar")) || document.location.href.slice(0, -1) == document.location.origin) {
         preventNextApiCall = true;
         $('#search').focus();
         Util.setCaretPosition("search", -1);
