@@ -133,7 +133,7 @@ function copyTranslationAndShowMessage(textParent) {
 
     // Copy and visual feedback
     Util.copyToClipboard(fullContent);
-    Util.showMessage("success", onlyKanji ? "kanji copied to clipboard." : "meaning copied to clipboard.");
+    Util.showMessage("success", onlyKanji ? "kanji copied to clipboard." : "kana copied to clipboard.");
 }
 
 // Changes the search type in the upper row depending on the users input
