@@ -58,3 +58,25 @@
 .sentence-part > .inline-kana-preview {
     margin-top: 9px;
 }
+
+@media only screen and (max-width: 600px) { 
+
+    .sentence-reader {
+        overflow-x: scroll;
+        flex-wrap: unset !important;
+        justify-content: flex-start !important;
+        scrollbar-width: none;
+    }
+
+    .sentence-reader::-webkit-scrollbar {
+        width: 0px;
+    }
+
+    .sentence-part {
+        min-width: -webkit-max-content;
+        min-width: -moz-max-content;
+        min-width: max-content;
+        margin-right: 20px;
+    }
+
+}

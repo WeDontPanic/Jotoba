@@ -420,6 +420,15 @@
   transition: linear 0.2s;
 }
 
+/* Mobile Only */
+@media only screen and (max-width: 600px) {
+
+  .choices[data-type*="select-one"]:after {
+    right: 14px;
+  }
+
+}
+
 /* Dekstop Only */
 @media only screen and (min-width: 600px) {
 
