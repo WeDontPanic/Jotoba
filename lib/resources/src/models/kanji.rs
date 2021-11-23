@@ -148,6 +148,12 @@ impl Kanji {
     pub fn get_animation_path(&self) -> String {
         format!("html/assets/svg/kanji/{}_animated.svgs", self.literal)
     }
+
+    /// Returns `true` if kanji has on or kun compounds (or both)
+    #[inline]
+    pub fn has_compounds(&self) -> bool {
+        self.on_dicts.is_some() || self.kun_dicts.is_some()
+    }
 }
 
 /// Formats a kun/on reading to a kana entry
