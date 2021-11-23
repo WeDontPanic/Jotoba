@@ -244,7 +244,13 @@ impl QueryParser {
         if utils::real_string_len(&self.query) >= 3 && self.query.contains(' ') {
             let split: Vec<_> = self.query.split(' ').collect();
 
-            if split[0].trim().is_kanji() && format_kanji_reading(split[1]).is_japanese() {
+            let kanji_literal = split[0].trim();
+
+            if kanji_literal.trim().is_kanji()
+                && format_kanji_reading(split[1]).is_japanese()
+                // don't allow queries like '音楽 おと'
+                && utils::real_string_len(kanji_literal) == 1
+            {
                 // Kanji detected
                 return Some(kanji::Reading {
                     literal: split[0].chars().next().unwrap(),
