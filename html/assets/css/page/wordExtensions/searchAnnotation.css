@@ -31,9 +31,13 @@
 
 /* Mobile only */
 @media only screen and (max-width: 600px) {
+    .search-annotation {
+        padding-right: 30px;
+        padding-left: 30px;
+    }
+    
     .search-inflection {
         padding: 0.5rem 0rem 0.5rem 0rem;
         width: 80vw;
-
     }
 }
