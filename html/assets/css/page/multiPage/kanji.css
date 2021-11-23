@@ -39,6 +39,10 @@
     word-spacing: 10px;
 }
 
+.furigana-preview {
+    margin-bottom: 15px;
+}
+
 .draw2 {
     stroke-dasharray: 1000;
     stroke-dashoffset: 1000;

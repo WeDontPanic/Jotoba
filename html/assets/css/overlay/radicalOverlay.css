@@ -151,6 +151,11 @@
     margin-bottom: -10px;
     padding: 5px;
     height: 86px;
+    scrollbar-width: none;
+}
+
+.rad-picker::-webkit-scrollbar {
+    width: 0px;
 }
 
 .rad-btn {

@@ -48,11 +48,19 @@
       <div id="sr" class="d-flex flex-row wrap sentence-reader">
         @for part in sentence_parts {
           @if let Some(ref furigana) = part.furigana {
-            <a id="p@part.pos" href="/search/@query.query?i=@part.pos" class="@part.get_add_class() d-flex flex-row sentence-part @selected(part.pos, result.sentence_index)">
+            <a id="p@part.pos" href="/search/@query.query?i=@part.pos" class="@part.get_add_class() sentence-part @selected(part.pos, result.sentence_index)">
               @:render_sentence_html(furi_from_str(furigana).collect(), "", true)
-            </a>
+              </a>
           } else {
-            <a id="p@part.pos" href="/search/@query.query?i=@part.pos" class="@part.get_add_class() inline-kana-preview sentence-part @selected(part.pos, result.sentence_index)">@part.text</a>
+            <!-- TODO find a better way to keep this consistent. Implement with reader_sentence.rs.html -->
+            <a id="p@part.pos" href="/search/@query.query?i=@part.pos" class="@part.get_add_class() sentence-part @selected(part.pos, result.sentence_index)">
+              <div class="furigana-kanji-container">
+                <ruby>
+                  <span class="kanji-preview">@part.text</span>
+                  <rt class="furigana-preview">&nbsp;</rt>
+                </ruby>
+              </div>
+            </a>
           }
         }
       </div>
