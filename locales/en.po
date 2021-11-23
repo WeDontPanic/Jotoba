@@ -684,6 +684,9 @@ msgstr ""
 msgid "Search for sentences included in the specific JLPT level"
 msgstr ""
 
+msgid "Hide translations by default to translate them yourself and check if its correct"
+msgstr ""
+
 msgid "Available Hashtags for [Kanji] search"
 msgstr ""
 

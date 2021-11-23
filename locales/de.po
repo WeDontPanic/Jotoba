@@ -682,6 +682,9 @@ msgstr "Verfügbare Hashtags für die [Sätze] Suche"
 msgid "Search for sentences included in the specific JLPT level"
 msgstr "Suche nach Sätzen aus dem jeweiligen JLPT Level"
 
+msgid "Hide translations by default to translate them yourself and check if its correct"
+msgstr "Zeige Übersetzungen eingeklappt an, damit du die Sätze selber übersetzen und gegenprüfen kannst"
+
 msgid "Available Hashtags for [Kanji] search"
 msgstr "Verfügbare Hashtags für die [Kanji] Suche"
 
