@@ -153,13 +153,26 @@
            </div>
           }
         
-          <div>
-            <hr class="compounds-dropdown"/>
-            <div class="compounds-click-area" onclick="toggleCompounds(event)"></div>
-          </div>
+          @if k_item.kanji.has_compounds() {
+            <div>
+              @if data.kanji_copounds_collapsed() {
+                <hr class="compounds-dropdown closed"/>
+              }else{
+                <hr class="compounds-dropdown"/>
+              }
+              <div class="compounds-click-area" onclick="toggleCompounds(event)"></div>
+            </div>
+          }else{
+            <hr/>
+          }
 
-         <!-- Reading Compounds -->
-         <div class="compounds-parent d-flex flex-row">
+            <!-- Reading Compounds -->
+            @if data.kanji_copounds_collapsed() {
+             <div class="compounds-parent d-flex flex-row hidden">
+            }else{
+             <div class="compounds-parent d-flex flex-row">
+            }
+
             <!-- On Reading -->
             @if let Some(ref ons) = k_item.on_dicts {
               <div class="on-reading">

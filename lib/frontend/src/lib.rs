@@ -229,6 +229,11 @@ impl<'a> BaseData<'a> {
             ""
         }
     }
+
+    /// Returns true if the kanji compounds should be collapsed by default
+    pub fn kanji_copounds_collapsed(&self) -> bool {
+        self.pagination.as_ref().map(|i| i.get_last()).unwrap_or(0) > 1
+    }
 }
 
 impl<'a> Site<'a> {
