@@ -85,6 +85,7 @@ pub enum Tag {
     Misc(Misc),
     Jlpt(u8),
     GenkiLesson(u8),
+    Hidden,
 }
 
 /// Hashtag based search tags
@@ -161,6 +162,13 @@ impl Default for QueryLang {
 impl Tag {
     /// Parse a tag from a string
     pub fn parse_from_str(s: &str) -> Option<Tag> {
+        if let Some(tag) = s.strip_prefix("#") {
+            match tag {
+                "hidden" | "hide" => return Some(Tag::Hidden),
+                _ => (),
+            }
+        }
+
         #[allow(irrefutable_let_patterns)]
         if let Some(tag) = Self::parse_genki_tag(s) {
             return Some(tag);
@@ -325,8 +333,16 @@ impl Query {
         self.tags.iter().filter_map(|i| i.as_misc())
     }
 
+    /// Returns the result offset by a given page
+    #[inline]
     pub fn page_offset(&self, page_size: usize) -> usize {
         query_parser::calc_page_offset(self.page, page_size)
+    }
+
+    /// Returns `true` if query has `tag`
+    #[inline]
+    pub fn has_tag(&self, tag: Tag) -> bool {
+        self.tags.iter().any(|i| *i == tag)
     }
 
     /// Returns the original_query with search type tags omitted
