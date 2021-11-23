@@ -166,13 +166,13 @@
             <hr/>
           }
 
-         <!-- Reading Compounds -->
-          @if data.kanji_copounds_collapsed() {
-           <div class="compounds-parent d-flex flex-row hidden">
-          }else{
-           <div class="compounds-parent d-flex flex-row">
-          }
-          </div>
+            <!-- Reading Compounds -->
+            @if data.kanji_copounds_collapsed() {
+             <div class="compounds-parent d-flex flex-row hidden">
+            }else{
+             <div class="compounds-parent d-flex flex-row">
+            }
+
             <!-- On Reading -->
             @if let Some(ref ons) = k_item.on_dicts {
               <div class="on-reading">
