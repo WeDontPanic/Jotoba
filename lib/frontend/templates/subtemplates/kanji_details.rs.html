@@ -64,7 +64,7 @@
                     <div class="tags no-margin fat right-padding-10 noselect">@data.gettext("Kun"):</div>
                       @for (pos, kun) in kun_readings.iter().enumerate() {
                         @if pos > 0 {
-                          <div class="tags no-margin fat right-padding-10">,</div>
+                          <div class="tags no-margin fat right-padding-10">、</div>
                         }
                         <a class="clickable no-align fat" href="/search/@k_item.kanji.literal @kun">@kun</a>
                       }
@@ -75,7 +75,7 @@
                     <div class="tags no-margin fat right-padding-20 noselect">@data.gettext("On"):</div>
                       @for (pos, on) in on_readings.iter().enumerate() {
                         @if pos > 0 {
-                          <div class="tags no-margin fat right-padding-10">,</div>
+                          <div class="tags no-margin fat right-padding-10">、</div>
                         }
                         <a class="clickable no-align fat" href="/search/@k_item.kanji.literal @on">@on</a>
                       }

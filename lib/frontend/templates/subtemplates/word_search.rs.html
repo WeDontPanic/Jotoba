@@ -434,7 +434,7 @@
               <div class="d-flex flex-row wrap noselect">
                 @for (pos, reading) in kun.iter().enumerate() {
                   @if pos > 0 {
-                    <span class="tags no-margin fat right-padding-10">,</span>
+                    <span class="tags no-margin fat right-padding-10">、</span>
                   }
                   <a class="clickable no-align green" href="/search/@kanji.literal @reading">@reading</a>
                 }
@@ -447,7 +447,7 @@
               <div class="d-flex flex-row wrap noselect">
                 @for (pos, reading) in on.iter().enumerate() {
                   @if pos > 0 {
-                    <span class="tags no-margin fat right-padding-10">,</span>
+                    <span class="tags no-margin fat right-padding-10">、</span>
                   }
                   <a class="clickable no-align green" href="/search/@kanji.literal @reading">@reading</a>
                 }
