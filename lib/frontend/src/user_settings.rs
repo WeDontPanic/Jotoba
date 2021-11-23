@@ -50,6 +50,11 @@ pub(super) fn parse(request: &HttpRequest) -> UserSettings {
         })
         .unwrap_or_else(|| UserSettings::default().cookies_enabled);
 
+    let sentence_furigana = request
+        .cookie("sentence_furigana")
+        .and_then(|i| Some(i.value() == "true"))
+        .unwrap_or_else(|| UserSettings::default().sentence_furigana);
+
     UserSettings {
         user_lang,
         show_english,
@@ -59,6 +64,7 @@ pub(super) fn parse(request: &HttpRequest) -> UserSettings {
         page_size: items_per_page,
         kanji_page_size: items_per_kanji_page,
         show_example_sentences: example_sentences_enabled,
+        sentence_furigana,
         ..Default::default()
     }
 }

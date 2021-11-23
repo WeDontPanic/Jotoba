@@ -42,6 +42,7 @@ pub struct UserSettings {
     pub page_size: u32,
     pub kanji_page_size: u32,
     pub show_example_sentences: bool,
+    pub sentence_furigana: bool,
 }
 
 impl PartialEq for UserSettings {
@@ -71,6 +72,7 @@ impl Default for UserSettings {
             page_size: 10,
             kanji_page_size: 4,
             show_example_sentences: true,
+            sentence_furigana: true,
         }
     }
 }
