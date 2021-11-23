@@ -20,7 +20,7 @@ impl<T: PartialEq + Hash> std::hash::Hash for ResultItem<T> {
     #[inline]
     fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
         self.item.hash(state);
-        self.language.hash(state);
+        //self.language.hash(state);
     }
 }
 

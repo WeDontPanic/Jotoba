@@ -25,7 +25,7 @@ use std::path::Path;
 use self::inflection::Inflections;
 
 /// A single word item
-#[derive(Debug, Clone, Default, Serialize, Deserialize, Eq, PartialEq, Hash)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize, Eq)]
 pub struct Word {
     pub sequence: u32,
     pub priorities: Option<Vec<Priority>>,
@@ -38,6 +38,20 @@ pub struct Word {
     pub transive_verion: Option<u32>,
     pub intransive_verion: Option<u32>,
     pub sentences_available: u16,
+}
+
+impl std::hash::Hash for Word {
+    #[inline]
+    fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
+        self.sequence.hash(state);
+    }
+}
+
+impl PartialEq for Word {
+    #[inline]
+    fn eq(&self, other: &Self) -> bool {
+        self.sequence == other.sequence
+    }
 }
 
 /// Various readings of a word
@@ -125,7 +139,10 @@ impl Word {
     #[inline]
     pub fn audio_file(&self, file_ending: &str) -> Option<String> {
         self.reading.kanji.as_ref().and_then(|kanji| {
-            let file = format!("{}/{}【{}】.{}", file_ending, kanji.reading, self.reading.kana.reading, file_ending);
+            let file = format!(
+                "{}/{}【{}】.{}",
+                file_ending, kanji.reading, self.reading.kana.reading, file_ending
+            );
             Path::new(&format!("html/audio/{}", file))
                 .exists()
                 .then(|| file)
@@ -142,7 +159,7 @@ impl Word {
         let res = accent_iter
             .map(|(pos, (part, is_high))| {
                 if part.len() == 0 {
-                    // Don't render under/overline for empty character -- handles the case where the 
+                    // Don't render under/overline for empty character -- handles the case where the
                     // pitch changes from the end of the word to the particle
                     return vec![];
                 }
