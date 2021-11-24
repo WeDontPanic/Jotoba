@@ -595,6 +595,12 @@ msgstr "[Wörter] Suche"
 msgid "Play the first possible audio"
 msgstr "Spiele die Audio vom ersten Ergebnis ab"
 
+msgid "[Kanji] search"
+msgstr "[Kanji] Suche"
+
+msgid "Show / Collapse compounds"
+msgstr "Zeige / Verstecke Wortverbindungen"
+
 msgid "To specify what kind of results your search should offer, you can use shortcuts."
 msgstr "Um deine Suche genauer zu spezifizieren, können Hashtags verwendet werden."
 

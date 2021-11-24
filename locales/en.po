@@ -597,6 +597,12 @@ msgstr ""
 msgid "Play the first possible audio"
 msgstr ""
 
+msgid "[Kanji] search"
+msgstr ""
+
+msgid "Show / Collapse compounds"
+msgstr ""
+
 msgid "To specify what kind of results your search should offer, you can use shortcuts."
 msgstr ""
 

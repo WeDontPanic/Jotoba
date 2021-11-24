@@ -14,45 +14,49 @@
 			<p>@data.gettext("To improve the quality of life on Jotoba, we offer some shortcuts to quickly navigate the page:")</p>
 			
          <!-- Everywhere accessable shortcuts -->
-         <b>@data.gettext("Everywhere")</b>
-			<table>
-				<tbody>
-					<tr>
-						<td>w | s | n | k</td>
-						<td>@data.gettext("Quickly change between words | sentences | names | kanji tabs")</td>
-					</tr>
-					<tr>
-						<td>/</td>
-						<td>@data.gettext("Focus the search bar")</td>
-					</tr>
-				</tbody>
-			</table>
+        	<b>@data.gettext("Everywhere")</b>
+		 	<div class="table">
+				<div class="row">
+					<span>w | s | n | k</span>
+					<span>@data.gettext("Quickly change between words | sentences | names | kanji tabs")</span>
+				</div>
+				<div class="row">
+					<span>/</span>
+					<span>@data.gettext("Focus the search bar")</span>
+				</div>
+			</div>
 
          <!-- Shortcuts when focussed on search bar -->
 			<b>@data.gettext("Focussed search bar")</b>
-			<table>
-				<tbody>
-					<tr>
-						<td>↑ | ↓</td>
-						<td>@data.gettext("Iterate suggestions up | down")</td>
-					</tr>
-					<tr>
-						<td>[Tab]</td>
-						<td>@data.gettext("Iterate suggestions down")</td>
-					</tr>
-				</tbody>
-			</table>
+			<div class="table">
+				<div class="row">
+					<span>↑ | ↓</span>
+					<span>@data.gettext("Iterate suggestions up | down")</span>
+				</div>
+				<div class="row">
+					<span>[Tab]</span>
+					<span>@data.gettext("Iterate suggestions down")</span>
+				</div>
+			</div>
 
          <!-- Shortcuts used only by the [Words] search -->
 			<b>@data.gettext("[Words] search")</b>
-			<table>
-				<tbody>
-					<tr>
-						<td>p</td>
-						<td>@data.gettext("Play the first possible audio")</td>
-					</tr>
-				</tbody>
-			</table>
+			<div class="table">
+				<div class="row">
+					<span>p</span>
+					<span>@data.gettext("Play the first possible audio")</span>
+				</div>
+			</div>
+
+		<!-- Shortcuts used only by the [Words] search -->
+			<b>@data.gettext("[Kanji] search")</b>	
+			<div class="table">
+				<div class="row">
+					<span>c</span>
+					<span>@data.gettext("Show / Collapse compounds")</span>
+				</div>
+			</div>
+
 		</div>
 
 		<!-- Hashtags -->
@@ -64,157 +68,150 @@
 			</p>
 
          <!-- Word search hashtags --> 
-			<b>@data.gettext("Available Hashtags for [Words] search")</b>
-			<table>
-				<tbody>
-					<tr>
-						<td>#noun</td>
-						<td>@data.gettext("Search for nouns")</td>
-					</tr>
-					<tr>
-						<td>#verb</td>
-						<td>@data.gettext("Search for verbs")</td>
-					</tr>
-					<tr>
-						<td>#transitive</td>
-						<td>@data.gettext("Search for transitive verbs")</td>
-					</tr>
-					<tr>
-						<td>#intransitive</td>
-						<td>@data.gettext("Search for intransitive verbs")</td>
-					</tr>
-					<tr>
-						<td>#adverb</td>
-						<td>@data.gettext("Search for adverbs")</td>
-					</tr>
-					<tr>
-						<td>#auxilary</td>
-						<td>@data.gettext("Search for auxilary verbs")</td>
-					</tr>
-					<tr>
-						<td>#adjective</td>
-						<td>@data.gettext("Search for adjectives")</td>
-					</tr>
-					<tr>
-						<td>#pronoun</td>
-						<td>@data.gettext("Search for pronouns")</td>
-					</tr>
-					<tr>
-						<td>#conjungation</td>
-						<td>@data.gettext("Search for conjugations")</td>
-					</tr>
-					<tr>
-						<td>#prefix</td>
-						<td>@data.gettext("Search for prefixes")</td>
-					</tr>
-					<tr>
-						<td>#suffix</td>
-						<td>@data.gettext("Search for suffixes")</td>
-					</tr>
-					<tr>
-						<td>#particle</td>
-						<td>@data.gettext("Search for japanese particles")</td>
-					</tr>
-					<tr>
-						<td>#sfx</td>
-						<td>@data.gettext("Search for sfx words [comic sounds]")</td>
-					</tr>
-					<tr>
-						<td>#counter</td>
-						<td>@data.gettext("Search for words used for counting")</td>
-					</tr>
-					<tr>
-						<td>#expression</td>
-						<td>@data.gettext("Search for expressions")</td>
-					</tr>
-					<tr>
-						<td>#interjection</td>
-						<td>@data.gettext("Search for words used as interjections")</td>
-					</tr>
-					<tr>
-						<td>#numeric</td>
-						<td>@data.gettext("Search for numeric words")</td>
-					</tr>
-					<tr>
-						<td>#abbreviation</td>
-						<td>@data.gettext("Search for abbreviations")</td>
-					</tr>
-					<tr>
-						<td>#unclassified</td>
-						<td>@data.gettext("Search for words that don't fit in any category")</td>
-					</tr>
-					<tr>
-						<td>#N [5-1]</td>
-						<td>@data.gettext("Search for words included in the specific JLPT level")</td>
-					</tr>
-					<tr>
-						<td>#word</td>
-						<td>@data.gettext("Search in the [words] category")</td>
-					</tr>
-					<tr>
-						<td>#sentence</td>
-						<td>@data.gettext("Search in the [sentences] category")</td>
-					</tr>
-					<tr>
-						<td>#name</td>
-						<td>@data.gettext("Search in the [name] category")</td>
-					</tr>
-					<tr>
-						<td>#kanji</td>
-						<td>@data.gettext("Search in the [kanji] category")</td>
-					</tr>
-				</tbody>
-			</table>
+			<b>@data.gettext("Available Hashtags for [Words] search")</b>+
+
+			<div class="table">
+				<div class="row">
+					<span>#noun</span>
+					<span>@data.gettext("Search for nouns")</span>
+				</div>
+				<div class="row">
+					<span>#verb</span>
+					<span>@data.gettext("Search for verbs")</span>
+				</div>
+				<div class="row">
+					<span>#transitive</span>
+					<span>@data.gettext("Search for transitive verbs")</span>
+				</div>
+				<div class="row">
+					<span>#intransitive</span>
+					<span>@data.gettext("Search for intransitive verbs")</span>
+				</div>
+				<div class="row">
+					<span>#adverb</span>
+					<span>@data.gettext("Search for adverbs")</span>
+				</div>
+				<div class="row">
+					<span>#auxilary</span>
+					<span>@data.gettext("Search for auxilary verbs")</span>
+				</div>
+				<div class="row">
+					<span>#adjective</span>
+					<span>@data.gettext("Search for adjectives")</span>
+				</div>
+				<div class="row">
+					<span>#pronoun</span>
+					<span>@data.gettext("Search for pronouns")</span>
+				</div>
+				<div class="row">
+					<span>#conjungation</span>
+					<span>@data.gettext("Search for conjugations")</span>
+				</div>
+				<div class="row">
+					<span>#prefix</span>
+					<span>@data.gettext("Search for prefixes")</span>
+				</div>
+				<div class="row">
+					<span>#suffix</span>
+					<span>@data.gettext("Search for suffixes")</span>
+				</div>
+				<div class="row">
+					<span>#particle</span>
+					<span>@data.gettext("Search for japanese particles")</span>
+				</div>
+				<div class="row">
+					<span>#sfx</span>
+					<span>@data.gettext("Search for sfx words [comic sounds]")</span>
+				</div>
+				<div class="row">
+					<span>#counter</span>
+					<span>@data.gettext("Search for words used for counting")</span>
+				</div>
+				<div class="row">
+					<span>#expression</span>
+					<span>@data.gettext("Search for expressions")</span>
+				</div>
+				<div class="row">
+					<span>#interjection</span>
+					<span>@data.gettext("Search for words used as interjections")</span>
+				</div>
+				<div class="row">
+					<span>#numeric</span>
+					<span>@data.gettext("Search for numeric words")</span>
+				</div>
+				<div class="row">
+					<span>#abbreviation</span>
+					<span>@data.gettext("Search for abbreviations")</span>
+				</div>
+				<div class="row">
+					<span>#unclassified</span>
+					<span>@data.gettext("Search for words that don't fit in any category")</span>
+				</div>
+				<div class="row">
+					<span>#N [5-1]</span>
+					<span>@data.gettext("Search for words included in the specific JLPT level")</span>
+				</div>
+				<div class="row">
+					<span>#word</span>
+					<span>@data.gettext("Search in the [words] category")</span>
+				</div>
+				<div class="row">
+					<span>#sentence</span>
+					<span>@data.gettext("Search in the [sentences] category")</span>
+				</div>
+				<div class="row">
+					<span>#name</span>
+					<span>@data.gettext("Search in the [name] category")</span>
+				</div>
+				<div class="row">
+					<span>#kanji</span>
+					<span>@data.gettext("Search in the [kanji] category")</span>
+				</div>
+			</div>	
 
          <!-- Sentence search hashtags --> 
 			<b>@data.gettext("Available Hashtags for [Sentence] search")</b>
-			<table>
-				<tbody>
-					<tr>
-						<td>#N [1-5]</td>
-						<td>@data.gettext("Search for sentences included in the specific JLPT level")</td>
-					</tr>
-					<tr>
-						<td>#hidden</td>
-						<td>@data.gettext("Hide translations by default to translate them yourself and check if its correct")</td>
-					</tr>
-				</tbody>
-			</table>
+			<div class="table">
+				<div class="row">
+					<span>#N [1-5]</span>
+					<span>@data.gettext("Search for sentences included in the specific JLPT level")</span>
+				</div>
+				<div class="row">
+					<span>#hidden</span>
+					<span>@data.gettext("Hide translations by default to translate them yourself and check if its correct")</span>
+				</div>
+			</div>
 
          <!-- Kanji search hashtags --> 
 			<b>@data.gettext("Available Hashtags for [Kanji] search")</b>
-			<table>
-				<tbody>
-					<tr>
-						<td>#Genki [3-23]</td>
-						<td>@data.gettext("Search for kanji included in the specific Genki chapter")</td>
-					</tr>
-				</tbody>
-			</table>
+			<div class="table">
+				<div class="row">
+					<span>#Genki [3-23]</span>
+					<span>@data.gettext("Search for kanji included in the specific Genki chapter")</span>
+				</div>
+			</div>
 		</div>
 
-
+		<!-- Radical Search info -->
         <div class="small-12 medium-6 columns small-centered help-cat">
 			<h2>@data.gettext("Radical search")</h2>
 			<p>
 				@data.gettext("The radical picker allows searching for radicals to make the process of picking radicals even faster. The supported inputs are as following:")
 			</p>
-            <table>
-                <tbody>
-                    <tr>
-                        <td>Kanji</td>
-                        <td>@data.gettext("Results in all radicals used to build given kanji characters")</td>
-                    </tr>
-                    <tr>
-                        <td>Kana</td>
-                        <td>@data.gettext("Searches in words for the given query and returns in result-matching radicals")</td>
-                    </tr>
-                    <tr>
-                        <td>Romaji</td>
-                        <td>@data.gettext("Tries to find the given query in radicals names, otherwise does a word search and returns the result's kanji")</td>
-                    </tr>
-                </tbody>
-            </table>
+			<div class="table">
+				<div class="row">
+					<span>Kanji</span>
+					<span>@data.gettext("Results in all radicals used to build given kanji characters")</span>
+				</div>
+				<div class="row">
+					<span>Kana</span>
+					<span>@data.gettext("Searches in words for the given query and returns in result-matching radicals")</span>
+				</div>
+				<div class="row">
+					<span>Romaji</span>
+					<span>@data.gettext("Tries to find the given query in radicals names, otherwise does a word search and returns the result's kanji")</span>
+				</div>
+			</div>
 
         </div>
 
