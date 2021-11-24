@@ -4,7 +4,7 @@
 
 const svgColorScheme = [
     ["rgb(0, 0, 0)", "rgb(153, 153, 153)", "rgb(221, 221, 221)", "rgb(52, 168, 60)", "0.7"], // light
-    ["rgb(211, 207, 201)", "rgb(76, 76, 76)","rgb(92, 92, 92)", "rgb(95, 241, 96)", "0.75"]  // dark
+    ["rgb(211, 207, 201)", "rgb(105, 105, 105)","rgb(92, 92, 92)", "rgb(95, 241, 96)", "0.75"]  // dark
 ]
 
 // Restarts the animation of the kanji strokes
