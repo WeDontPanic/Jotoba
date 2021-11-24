@@ -3,8 +3,6 @@ pub mod order;
 pub mod result;
 pub mod tag_only;
 
-use std::time::Instant;
-
 use crate::{
     engine::{
         guess::Guess,
@@ -54,7 +52,6 @@ pub(crate) struct ResultData {
 impl<'a> Search<'a> {
     /// Do the search
     fn do_search(&self) -> Result<WordResult, Error> {
-        let start = Instant::now();
         let search_result = match self.query.form {
             Form::KanjiReading(_) => kanji::by_reading(self)?,
             Form::TagOnly => tag_only::search(self)?,
@@ -74,7 +71,6 @@ impl<'a> Search<'a> {
             sentence_index: search_result.sentence_index,
             searched_query: search_result.searched_query,
         };
-        println!("search took: {:?}", start.elapsed());
         Ok(res)
     }
 

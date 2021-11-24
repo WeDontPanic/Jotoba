@@ -171,9 +171,11 @@ impl ServerConfig {
 
 impl Config {
     /// Create a new config object
-    pub fn new() -> Result<Self, String> {
-        let config_file = std::env::var("JOTOBA_CONFIG")
-            .map(|i| Path::new(&i).to_owned())
+    pub fn new(src: Option<PathBuf>) -> Result<Self, String> {
+        let config_file = src
+            .or(std::env::var("JOTOBA_CONFIG")
+                .map(|i| Path::new(&i).to_owned())
+                .ok())
             .unwrap_or(Self::get_config_file()?);
 
         let mut config = if !config_file.exists()

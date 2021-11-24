@@ -321,6 +321,11 @@ impl Word {
         self.reading.iter(allow_kana)
     }
 
+    /// Returns true if word has `reading`
+    pub fn has_reading(&self, reading: &str) -> bool {
+        self.reading_iter(true).any(|j| j.reading == reading)
+    }
+
     fn pretty_print_senses(senses: &[Sense]) -> String {
         senses
             .iter()

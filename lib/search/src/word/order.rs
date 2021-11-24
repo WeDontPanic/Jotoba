@@ -72,14 +72,14 @@ pub fn foreign_search_order(
     language: Language,
     user_lang: Language,
 ) -> usize {
-    let mut score: usize = (relevance * 25f32) as usize;
+    let mut score: usize = (relevance * 20f32) as usize;
 
     if word.is_common() {
         score += 10;
     }
 
     if word.jlpt_lvl.is_some() {
-        score += 8;
+        score += (word.jlpt_lvl.unwrap() * 2) as usize;
     }
 
     /*
@@ -102,7 +102,7 @@ pub fn foreign_search_order(
 
     let divisor = match (found.mode, found.case_ignored) {
         (SearchMode::Exact, false) => 10,
-        (SearchMode::Exact, true) => 20,
+        (SearchMode::Exact, true) => 10,
         (_, false) => 50,
         (_, true) => 80,
     };

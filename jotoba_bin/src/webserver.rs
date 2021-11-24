@@ -22,7 +22,7 @@ pub(super) async fn start() -> std::io::Result<()> {
 
     let mut threads = Vec::with_capacity(4);
 
-    let config = Config::new().expect("config failed");
+    let config = Config::new(None).expect("config failed");
 
     let c2 = config.clone();
     threads.push(
@@ -239,7 +239,7 @@ fn setup_logger() {
     env_logger::init_from_env(env_logger::Env::new().default_filter_or("debug"));
 }
 
-fn load_tokenizer() {
+pub fn load_tokenizer() {
     use japanese::jp_parsing::{JA_NL_PARSER, NL_PARSER_PATH};
 
     if !Path::new(NL_PARSER_PATH).exists() {
@@ -261,7 +261,7 @@ fn clean_img_scan_dir(config: &Config) {
     std::fs::remove_dir_all(&path).expect("Failed to clear img scan director");
 }
 
-fn load_resources(config: Config) {
+pub fn load_resources(config: Config) {
     resources::initialize_resources(
         config.get_storage_data_path().as_str(),
         config.get_suggestion_sources(),
@@ -287,6 +287,6 @@ fn load_translations(config: &Config) -> Arc<TranslationDict> {
     Arc::new(locale_dict)
 }
 
-fn load_indexes(config: Config) {
+pub fn load_indexes(config: Config) {
     search::engine::load_indexes(&config).expect("Failed to load v2 index files");
 }

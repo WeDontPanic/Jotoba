@@ -4,7 +4,6 @@ use std::{
     fmt::Debug,
     hash::Hash,
     ops::Index,
-    time::Instant,
     vec::IntoIter,
 };
 
@@ -81,9 +80,7 @@ impl<T: PartialEq + Hash + Clone + Eq> SearchResult<T> {
     }
 
     pub fn merge(&mut self, other: Self) {
-        let start = Instant::now();
         merge_sorted_list(&mut self.items, other.items);
-        println!("merging took: {:?}", start.elapsed());
     }
 }
 
