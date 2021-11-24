@@ -1,0 +1,40 @@
+.notifications-container {
+    position: absolute;
+    top: 60px;
+    right: 55px;
+    width: 16rem;
+    max-height: 22rem;
+    z-index: 10;
+    overflow: auto;
+    border-radius: .5rem;
+    background-color: var(--overlay);
+    color: var(--primaryTextColor);
+    box-shadow: 0px 8px 20px 0px var(--backgroundShadow);
+}
+
+.notifications-info-container {
+    display: -webkit-flex;
+    display: flex;
+    -webkit-flex-flow: column;
+    flex-flow: column;
+    width: 100%;
+    padding: 1rem;
+    overflow: hidden;
+}
+
+.notification-title {
+    padding: .5rem;
+    margin: -1rem -1rem .5rem;
+    background-color: var(--bgPrimaryColor);
+    background: linear-gradient(45deg,var(--bgPrimaryColor),var(--primaryColor));
+    color: var(--secondaryTextColor);
+    text-align: center;
+    text-transform: uppercase;
+    font-size: large;
+}
+
+.notification-content {
+    margin: .5rem 0;
+    opacity: .85;
+    font-weight: 400;
+}
