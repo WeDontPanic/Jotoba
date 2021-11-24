@@ -91,8 +91,8 @@ pub fn get() -> &'static News {
 fn parse_markdown<P: AsRef<Path>>(file: P) -> Result<(String, String), Box<dyn std::error::Error>> {
     let contents = std::fs::read_to_string(file)?;
 
-    let short_html = markdown::to_html(shorten_markdown(&contents.replace("# Featuring", ""))).replace("\n", "");
-    let full_html = markdown::to_html(&contents).replace("\n", "");
+    let short_html = markdown::to_html(shorten_markdown(&contents.replace("# Featuring", "")));
+    let full_html = markdown::to_html(&contents);
 
     Ok((short_html, full_html))
 }

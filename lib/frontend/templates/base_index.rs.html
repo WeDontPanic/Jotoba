@@ -9,6 +9,7 @@
    <link rel="stylesheet" type="text/css" href="variable_assets/@data.asset_hash/assets/css/page/indexPage.css">
    <link rel="stylesheet" type="text/css" href="variable_assets/@data.asset_hash/assets/css/overlay/notificationOverlay.css">
    <script defer src="/variable_assets/@data.asset_hash/assets/js/page/indexPage.js"></script>
+   <script defer src="/variable_assets/@data.asset_hash/assets/js/page/overlay/notifications.js"></script>
 
    <body>
       <div class="index-noselect">
@@ -59,18 +60,17 @@
                   <div class="notification-title">
                      Notifications
                   </div>
-                  <div class="notification-content">
-                     <div class="notification-entry"></div>
-                     <div class="notification-entry"></div>
+                  <div id="notification-content">
+                     <div id="no-result" class="notification-entry hidden">
+                        No notifications
+                     </div>
+                     <div class="button-container">
+                        <button>Show</button>
+                        <button>Ok</button>
+                     </div>
                   </div>
                </div>
             </div>
-
-            <!--
-               <div class="title">V 1.2</div>
-               <div class="date-tag">24.11.2021</div>
-               <div class="informations"></div>
-            -->
 
             <!-- TODO END OF DEBUG -->
 
