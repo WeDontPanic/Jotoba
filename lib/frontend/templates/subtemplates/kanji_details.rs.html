@@ -129,10 +129,10 @@
          @if k_item.kanji.has_stroke_frames() {
            <hr/>
            <div class="stroke-container">
-                <img src="@k_item.kanji.get_stroke_frames_url()">
+              <object data="@k_item.kanji.get_stroke_frames_url()" type="image/svg+xml"></object>
            </div>
          }
-        
+
          @if k_item.kanji.has_animation_file() {
          
           <div class="animation-container d-flex flex-row">
