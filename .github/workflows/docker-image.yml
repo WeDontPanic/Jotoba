@@ -17,10 +17,10 @@ jobs:
         docker save -o jotoba_latest.tar jotoba:latest
         gzip jotoba_latest.tar
     - name: SCP Files
-      uses: appleboy/scp-action@v0.0.1
+      uses: garygrossgarten/github-action-scp@release
       with:
-        host: ${{ secrets.HOST }}
-        username: ${{ secrets.USERNAME }}
-        password: ${{ secrets.PASSWORD }}
-        source: "./jotoba_latest.tar.gz"
-        target: "jotoba_latest.tar.gz"
+          local: ./jotoba_latest.tar.gz
+          remote: jotoba_latest.tar.gz
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.SSH_USER }}
+          password: ${{ secrets.PASSWORD }}
