@@ -11,7 +11,7 @@
 
 <script>
   const news = [
-      @for news_entry in news {
+      @for news_entry in news.into_iter().rev() {
         @{
           title: '@news_entry.title',
           html: '@news_entry.long.replace("\n", "")'
