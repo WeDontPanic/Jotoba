@@ -37,30 +37,16 @@ async function parseShortNotificationResults(results) {
     // Else, show the results
     let notifiContent = document.getElementById("notification-content");
     for (let result of results.entries) {
-        var entry = document.createElement("div"); 
-        var title = document.createElement("div"); 
-        var date = document.createElement("div"); 
-        var content = document.createElement("div"); 
-    
-        entry.classList.add("notification-entry");
-        title.classList.add("entry-title");
-        date.classList.add("date-tag");
-        content.classList.add("content");
-    
-        title.innerHTML = result.title;
-    
         let creationDate = new Date(result.creation_time * 1000);
-        date.innerHTML = creationDate.toLocaleDateString(Cookies.get("page_lang") || "en-US", dateSettings);
-        
-        content.innerHTML = result.html;
-    
-        entry.appendChild(title);
-        entry.appendChild(date);
-        entry.appendChild(content);
-    
-        entry.onclick = function() {requestLongData(result.id);};
+        let creationDateString = creationDate.toLocaleDateString(Cookies.get("page_lang") || "en-US", dateSettings);
 
-        notifiContent.insertBefore(entry, notifiContent.firstChild);
+        var entryHtml = '<div class="notification-entry" onclick="requestLongData('+result.id+');">'
+                            + '<div class="entry-title">' + result.title + '</div>'
+                            + '<div class="date-tag">' + creationDateString + '</div>'
+                            + '<div class="content">' + result.html + '</div>'
+                        +'</div>';
+
+        notifiContent.innerHTML = entryHtml + notifiContent.innerHTML;
         document.getElementsByClassName("notificationBtn")[0].classList.add("update");
     }
 }

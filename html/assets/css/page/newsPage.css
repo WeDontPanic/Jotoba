@@ -10,6 +10,7 @@
     margin-top: 2rem;
     border-radius: 1rem;
     background-color: rgba(249, 249, 249, 0.75);
+    box-shadow: 0px 8px 20px 0px var(--backgroundShadow); 
 }
 
 :root.dark .news-container {
