@@ -91,23 +91,28 @@ pub fn get() -> &'static News {
 fn parse_markdown<P: AsRef<Path>>(file: P) -> Result<(String, String), Box<dyn std::error::Error>> {
     let contents = std::fs::read_to_string(file)?;
 
-    let short_html = markdown::to_html(shorten_markdown(&contents.replace("# Featuring", "")));
+    let short_html = markdown::to_html(&shorten_markdown(&contents));
     let full_html = markdown::to_html(&contents);
 
     Ok((short_html, full_html))
 }
 
-fn shorten_markdown(full: &str) -> &str {
+fn shorten_markdown(full: &str) -> String {
     let line_count = full.split('\n').count().max(1);
     let conten_len = utils::real_string_len(full);
 
-    let mut end = full.len().min(50);
+    let mut text_iter = full.split('\n').filter(|i| !i.trim().starts_with("#"));
 
+    let out;
     if conten_len > 100 {
         if line_count > 3 {
-            end = full.split('\n').take(3).map(|i| i.len()).sum();
+            out = text_iter.take(3).join("\n");
+        } else {
+            out = text_iter.join("\n");
         }
+    } else {
+        out = text_iter.join("\n");
     }
 
-    &full[..end]
+    out
 }
