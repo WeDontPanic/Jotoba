@@ -110,6 +110,9 @@
                  <section class="mdl-layout__tab-panel" id="scroll-tab-2">
                      <div class="page-content">
                         <div class="d-flex flex-column">
+
+                           <div class="inner-header">General</div>
+
                            <div class="settings-entry no-gap">
                               <span class="inner-title">@data.gettext("Always show english results"):</span>
 
@@ -123,25 +126,15 @@
                                  <input id="show_eng_on_top_settings" type="checkbox" class="mdl-checkbox__input" onchange="onBtnSettingsChange('show_english_on_top', event)">
                               </label>
                            </div>
-                           <div class="settings-entry"> <!-- TODO translate -->
-                              <span class="inner-title">Show example sentences:</span>
-                              <label for="show_example_sentences_settings" class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect">
-                                 <input checked id="show_example_sentences_settings" type="checkbox" class="mdl-checkbox__input" onchange="onBtnSettingsChange('show_sentences', event)">
-                              </label>
-                           </div>
-                           <div class="settings-entry"> <!-- TODO translate -->
-                              <span class="inner-title">Show Sentence-Furigana:</span>
-                              <label for="show_sentence_furigana_settings" class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect">
-                                 <input checked id="show_sentence_furigana_settings" type="checkbox" class="mdl-checkbox__input" onchange="onBtnSettingsChange('sentence_furigana', event)">
-                              </label>
-                           </div>
+
                            <div class="settings-entry"> <!-- TODO translate -->
                               <span class="inner-title">Focus search bar on load:</span>
                               <label for="focus_search_bar_settings" class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect">
                                  <input id="focus_search_bar_settings" type="checkbox" class="mdl-checkbox__input" onchange="onBtnSettingsChange('focus_searchbar', event)">
                               </label>
                            </div>
-                           <div class="settings-entry"> <!-- TODO translate -->
+
+                           <div class="settings-entry txt-input"> <!-- TODO translate -->
                               <span id="rpr" class="inner-title txt-input">Results per page:</span>
                               <form action="#" onsubmit="return false">
                                  <div class="mdl-textfield mdl-js-textfield">
@@ -154,8 +147,29 @@
                                  max amount of names/words/sentences shown per page
                                </div>
                            </div>
+
+                           <div class="inner-header">Sentences</div>
+                           
+                           <div class="settings-entry"> <!-- TODO translate -->
+                              <span class="inner-title">Show Furigana:</span>
+                              <label for="show_sentence_furigana_settings" class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect">
+                                 <input checked id="show_sentence_furigana_settings" type="checkbox" class="mdl-checkbox__input" onchange="onBtnSettingsChange('sentence_furigana', event)">
+                              </label>
+                           </div>
+
+                           <div class="inner-header">Words</div>
+
+                           <div class="settings-entry"> <!-- TODO translate -->
+                              <span class="inner-title">Show example sentences:</span>
+                              <label for="show_example_sentences_settings" class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect">
+                                 <input checked id="show_example_sentences_settings" type="checkbox" class="mdl-checkbox__input" onchange="onBtnSettingsChange('show_sentences', event)">
+                              </label>
+                           </div>
+                           
+                           <div class="inner-header">Kanji</div>
+                           
                            <div class="settings-entry no-gap"> <!-- TODO implement; translate -->
-                              <span id="krp" class="inner-title txt-input">Kanji per page:</span>
+                              <span id="krp" class="inner-title txt-input">Items per page:</span>
                               <form action="#" onsubmit="return false">
                                  <div class="mdl-textfield mdl-js-textfield">
                                    <input class="mdl-textfield__input" type="text" pattern="\b(0*(?:[1-9][0-9]?|100))\b" id="kanji_per_page_input" onblur="onInputSettingsChange('kanji_page_size', event)">

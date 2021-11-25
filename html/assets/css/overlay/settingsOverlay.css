@@ -56,14 +56,33 @@
     flex-direction: row;
 }
 
+.settings-entry.txt-input {
+    margin-top: 5px !important;
+    margin-bottom: -15px !important;
+}
+
 .settings-entry:not(:first-child, .no-gap)  {
     margin-top: 10px;
+}
+
+.inner-header {
+    font-weight: bold;
+    text-decoration: underline;
+}
+
+.inner-header:first-child {
+    margin-bottom: 5px;
 }
 
 .inner-title {
     width: 60%;
     font-size: 15px;
     align-self: center;
+}
+
+.inner-header:not(:first-child) {
+    margin-bottom: -5px;
+    margin-top: 10px;
 }
 
 .inner-title.display {
@@ -79,13 +98,22 @@
 }
 
 .mdl-textfield.mdl-js-textfield.is-upgraded {
-    width: 100%;
+    width: 65%;
     margin: -20px 0;
-    padding-right: 100px;
+    padding-right: 65px;
+}
+
+.mdl-textfield__input {
+    text-align: center;
 }
 
 .mdl-textfield.is-focused .mdl-textfield__label:after {
-    width: calc(100% - 100px);
+    width: calc(100% - 65px);
+}
+
+.mdl-textfield__error {
+    width: 150%;
+    margin-left: -50px;
 }
 
 :root.dark .mdl-textfield__label {
@@ -122,12 +150,21 @@
 
 @media only screen and (max-width: 600px) {
 	
+    .inner-title {
+        width: 70%;
+    }
+
     .inner-title.big {
         width: 80%;
     }
 
-    .mdl-textfield.mdl-js-textfield.is-upgraded {
-        padding-right: 0px;
+    .inner-title.display {
+        width: 76%;
+    }
+
+    .mdl-textfield.mdl-js-textfield {
+        padding-right: 0px !important;
+        left: 7px !important;
     }
 
     .mdl-textfield.is-focused .mdl-textfield__label:after {
@@ -136,10 +173,6 @@
 
     .mdl-textfield__label:after {
         left: 45%;
-    }
-
-    .inner-title.display {
-        width: 76%;
     }
 
     .slidercontainer.settings {
