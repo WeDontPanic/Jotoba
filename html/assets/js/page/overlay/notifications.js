@@ -49,7 +49,7 @@ async function parseShortNotificationResults(results) {
     
         title.innerHTML = result.title;
     
-        let creationDate = new Date(result.creation_time * 1000);
+        let creationDate = new Date(result.creation_time);
         date.innerHTML = creationDate.toLocaleDateString(Cookies.get("page_lang") || "en-US", dateSettings);
         
         content.innerHTML = result.html;

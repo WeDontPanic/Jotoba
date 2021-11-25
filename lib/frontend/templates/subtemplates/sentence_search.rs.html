@@ -26,12 +26,12 @@
         </div>
 
         
-        <div class="sentence-translation original @if sentences.hidden { hidden }">
+        <div class="sentence-translation original" style="@if sentences.hidden { display: none; }">
           @sentence.sentence.translation
         </div>
         @if let Some(ref english) = sentence.sentence.get_english() {
-          <hr class="lang-separator @if sentences.hidden { hidden }"/>
-          <div class="sentence-translation @if sentences.hidden { hidden }">
+          <hr class="lang-separator" style="@if sentences.hidden { display: none; }"/>
+          <div class="sentence-translation" style="@if sentences.hidden { display: none; }">
             @english
           </div>
         }
