@@ -2,6 +2,14 @@
     border-bottom-color: var(--lineColor);
 }
 
+:root.dark .modal-header > .close {
+    color: #fff;
+}
+
+:root.dark .modal-header > .close:hover {
+    color: #97a495;
+}
+
 .modal-footer {
     border-top-color: var(--lineColor);
 }
@@ -27,4 +35,37 @@
 
 .form-control.small:focus {
     box-shadow: unset;
+}
+
+.overlay-button {
+    position: relative;
+    display: inline-flex;
+    flex: auto 0 0;
+    justify-content: center;
+    align-items: center;
+    grid-gap: 4px;
+    gap: 4px;
+    padding: 0 0.625rem;
+    margin: 0;
+    border: none;
+    height: 2rem;
+    font-size: 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.overlay-button {
+    color: var(--buttonText);
+    background-color: var(--buttonBg);
+    flex-grow: 1;
+    outline: 0px solid var(--primaryColor);
+    transition: all .05s ease;
+}
+
+.overlay-button:hover, .overlay-button:active {
+    background-color: var(--buttonBgActive);
+}
+
+.overlay-button:active {
+    outline: 2px solid var(--primaryColor);
 }

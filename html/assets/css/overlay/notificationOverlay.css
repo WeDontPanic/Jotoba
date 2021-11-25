@@ -1,9 +1,8 @@
-.notifications-container {
+#notifications-container {
     position: absolute;
     top: 60px;
     right: 55px;
     width: 16rem;
-    max-height: 22rem;
     z-index: 10;
     overflow: hidden;
     border-radius: .5rem;
@@ -31,6 +30,10 @@
     font-size: large;
 }
 
+:root.dark .notification-title {
+    background: var(--bgPrimaryColor);
+}
+
 #notification-content {
     margin: .5rem 0;
     opacity: .85;
@@ -44,12 +47,24 @@
 
 .notification-entry {
     border-bottom: 1px solid var(--borderColor);
-    margin-bottom: 10px;
+    padding: 5px;
+    cursor: pointer;
+}
+
+.notification-entry:not(#no-result):hover {
+    background: rgba(0, 0, 0, 0.02);
+}
+
+:root.dark .notification-entry:not(#no-result):hover {
+    background: rgba(255, 255, 255, 0.02);
 }
 
 .entry-title {
     font-weight: bold;
     font-size: 16px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    max-width: 60%;
 }
 
 .date-tag {
@@ -64,22 +79,18 @@
 }
 
 .button-container {
-    display: -webkit-flex;
     display: flex;
     grid-gap: .5rem;
     gap: .5rem;
-    -webkit-justify-content: flex-end;
+    margin-top: 10px;
+    margin-bottom: -10px;
     justify-content: flex-end;
 }
 
-.button-container > button {
-    -webkit-flex-grow: 1;
-    flex-grow: 1;
+#notificationModal h1 {
+    font-size: 1.5rem;
 }
 
-.button-container > button:focus {
-}
-
-.button-container > button, .button-container > button:active, .button-container > button:focus, .button-container > button:hover {
-    transition: all .2s ease;
+#notificationModal h2 {
+    font-size: 1.25rem;
 }

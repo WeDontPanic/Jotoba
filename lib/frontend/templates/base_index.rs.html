@@ -53,26 +53,22 @@
                </div>
             </div>
 
-            <!-- TODO DEBUG -->
-
-            <div class="notifications-container">
+            <div id="notifications-container" class="hidden">
                <div class="notifications-info-container">
                   <div class="notification-title">
-                     Notifications
+                     @data.gettext("Notifications")
                   </div>
                   <div id="notification-content">
                      <div id="no-result" class="notification-entry hidden">
-                        No notifications
+                        @data.gettext("No new notifications")
                      </div>
                      <div class="button-container">
-                        <button>Show</button>
-                        <button>Ok</button>
+                        <button class="overlay-button" onclick="showAllNotifications()">@data.gettext("Show all")</button> <!-- TODO -->
+                        <button class="overlay-button" onclick="closeNotifications()">@data.gettext("Close")</button>
                      </div>
                   </div>
                </div>
             </div>
-
-            <!-- TODO END OF DEBUG -->
 
             @:settings_html(&data)
 
@@ -82,60 +78,12 @@
            
                      <!-- Modal Header -->
                      <div class="modal-header">
-                        <h3 class="modal-title">@data.gettext("Patchnotes")</h4>
+                        <h3 id="notification-detail-head" class="modal-title"></h3>
                         <button type="button" class="close" data-dismiss="modal">&times;</button>
                      </div>
                      
                      <!-- Modal body -->
-                     <div class="modal-body">
-                        <b>Featuring</b>
-                        <ul>
-                           <li>New radical-picker</li>
-                           <li>Image to text search</li>
-                           <li>Genki hashtags (kanji only)</li>
-                           <li>Transitive/Intransitive pairs</li>
-                           <li>JLPT hashtags for words and kanji</li>
-                           <li>Example sentences for some words</li>
-                           <li>New paginator</li>
-                           <li>Suggest other search types if no result was found</li>
-                        </ul>
-                        <b>Fixes</b>
-                        <ul>
-                           <li>Furigana fix</li>
-                           <li>Fixed dialect not being formatted properly</li>
-                           <li>Fixed audio</li>
-                           <li>Fixed lots of frontend bugs</li>
-                        </ul>
-                        
-                        <b>Improvements</b>
-                        <ul>
-                           <li>Improved romaji search</li>
-                           <li>Improved search algorithm</li>
-                           <li>Much better backend performance</li>
-                           <li>Much better frontend performance</li>
-                           <li>Improved Word inflection view</li>
-                           <li>Improved input language detection</li>
-                           <li>Improved 3-dot menu</li>
-                           <li>Improved Cookie banner</li>
-                        </ul>
-                        
-                        <b>Additions</b>
-                        <ul>
-                           <li>Middle mouse button on search suggestions opens a new tab</li>
-                           <li>Added wiki</li>
-                           <li>Show japanese suggestions for romaji input</li>
-                           <li>Show katakana word origins</li>
-                        
-                        </ul>
-                        
-                        <b>Other</b>
-                        <ul>
-                           <li>Full rewrite of search engine implementation</li>
-                           <li>Refactored parts of frontend code</li>
-                           <li>Switched from Database to in-memory storage</li>
-                           <li>Lots of other internal improvements, fixes, code style and performance improvements</li>
-                        </ul>
-                     </div>
+                     <div id="notification-detail-body" class="modal-body"></div>
                   </div>
                </div>
             </div>
@@ -152,7 +100,7 @@
                <div class="infoSvg"></div>
             </div>
 
-            <div class="btn-container notificationBtn index" onclick="openNotifications()" data-toggle="modal" data-target="#notificationModal">
+            <div class="btn-container notificationBtn index" onclick="openNotifications(event)">
                <div class="notificationSvg"></div>
             </div>
    

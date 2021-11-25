@@ -123,6 +123,19 @@ msgstr "Wähle Kanji"
 msgid "Search Radicals..."
 msgstr "Suche Radikale..."
 
+# Notification overlay
+msgid "Notifications"
+msgstr "Benachrichtigungen"
+
+msgid "No new notifications"
+msgstr "Keine Benachrichtigungen"
+
+msgid "Show all"
+msgstr "Zeige alle"
+
+msgid "Close"
+msgstr "Schließen"
+
 # Languages
 
 msgid "English"

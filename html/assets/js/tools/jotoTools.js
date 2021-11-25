@@ -24,6 +24,14 @@ JotoTools.createUrl = function(searchText, searchType, targetPage) {
     return url;
 }
 
+// Creates a Jotoba URL for the given page
+JotoTools.getPageUrl = function(pageName) {
+    let url = window.location.origin;
+    url += "/" + pageName;
+
+    return url;
+}
+
 // Returns the value of the current Search [Words, Sentence...]
 JotoTools.getCurrentSearchType = function() {
     return $(".choices__item.choices__item--choice.choices__item--selectable.selected").attr("data-value");

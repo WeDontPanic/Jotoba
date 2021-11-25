@@ -123,6 +123,19 @@ msgstr ""
 msgid "Search Radicals..."
 msgstr ""
 
+# Notification overlay
+msgid "Notifications"
+msgstr ""
+
+msgid "No new notifications"
+msgstr ""
+
+msgid "Show all"
+msgstr ""
+
+msgid "Close"
+msgstr ""
+
 # Languages
 
 msgid "English"

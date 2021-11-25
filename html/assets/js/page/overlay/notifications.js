@@ -1,24 +1,32 @@
-// On load -> Start a query to receive current notifications
-var data = {"after": parseInt(localStorage.getItem("notification_timestamp") || 00000000)};
-var request = $.ajax({ 
+// Date display settings
+const dateSettings = { year: 'numeric', month: 'numeric', day: 'numeric' };
+
+// On Start -> Try and load the latest data
+requestShortData();
+
+// Start a query to receive current notifications
+async function requestShortData() {
+    if (!localStorage) { return; }
+
+    var data = {"after": parseInt(localStorage.getItem("notification_timestamp") || 00000000)};
+    $.ajax({ 
         type : "POST", 
         url : "/api/news/short", 
         data: JSON.stringify(data),
         headers: {
             'Content-Type': 'application/json'
-        },
+         },
         success : function(result) { 
-            console.log(result);
-            parseNotificationResults(result);
+            parseShortNotificationResults(result);
         }, 
         error : function(result) { 
             console.log(result);
         } 
-});
-localStorage.setItem("notification_timestamp", + new Date());
+    });
+}
 
 // Parses the results of /api/news/short API calls and displays them
-async function parseNotificationResults(results) {
+async function parseShortNotificationResults(results) {
     
     // If nothing was received, show a message that there are no new updates
     if (results.entries.length == 0) {
@@ -41,9 +49,8 @@ async function parseNotificationResults(results) {
     
         title.innerHTML = result.title;
     
-            var creationDate = new Date(result.creation_time * 1000);
-            const options = { year: 'numeric', month: 'numeric', day: 'numeric' };
-        date.innerHTML = creationDate.toLocaleDateString(Cookies.get("page_lang") || "en-US", options);
+        let creationDate = new Date(result.creation_time * 1000);
+        date.innerHTML = creationDate.toLocaleDateString(Cookies.get("page_lang") || "en-US", dateSettings);
         
         content.innerHTML = result.html;
     
@@ -51,19 +58,64 @@ async function parseNotificationResults(results) {
         entry.appendChild(date);
         entry.appendChild(content);
     
+        entry.onclick = function() {requestLongData(result.id);};
+
         notifiContent.insertBefore(entry, notifiContent.firstChild);
+        document.getElementsByClassName("notificationBtn")[0].classList.add("update");
     }
 }
 
+// Shows the detailed information of the target element using its ID
+function requestLongData(id) {
+    var data = {"id": id};
+    
+    $.ajax({ 
+        type : "POST", 
+        url : "/api/news/detailed", 
+        data: JSON.stringify(data),
+        headers: {
+            'Content-Type': 'application/json'
+         },
+        success : function(result) { 
+            parseDetailedNotificationResults(result);
+        }, 
+        error : function(result) { 
+            console.log(result);
+        } 
+    });
+}
 
+// Parses the results of /api/news/detailed API calls and displays them
+async function parseDetailedNotificationResults(result) {
+    $("#notification-detail-head").html(result.entry.title);
+    $("#notification-detail-body").html(result.entry.html);
 
+    $("#notificationModal").modal('show');
+}
 
+// Opens the short-informations for notifications
+function openNotifications(event) {
+    event.stopPropagation();    
 
+    localStorage.setItem("notification_timestamp", + new Date());
+    document.getElementById("notifications-container").classList.remove("hidden");
+    
+    $(document).one("click", function() {
+        closeNotifications();
+        $('#notifications-container').off("click");
+    });
+    $('#notifications-container').click(function(event){
+        event.stopPropagation();
+    });
+}
 
-/*
-<div class="notification-entry">
-                        <div class="title">V 1.2</div>
-                        <div class="date-tag">24.11.2021</div>
-                        <div class="content"></div>
-                     </div>
-*/
+// Closes the short-informations for notifications
+function closeNotifications() {
+    document.getElementById("notifications-container").classList.add("hidden");
+    document.getElementsByClassName("notificationBtn")[0].classList.remove("update");
+}
+
+// Calls a page that displays (more-or-less) all past notifications
+function showAllNotifications() {
+    Util.loadUrl(JotoTools.getPageUrl("news"));
+}
