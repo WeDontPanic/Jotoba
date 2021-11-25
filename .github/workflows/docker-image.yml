@@ -11,4 +11,16 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag jotoba:$(date +%s)
+      run: docker build . --file Dockerfile --tag jotoba:latest
+    - name: upload
+      run: |
+        docker save -o jotoba_latest.tar jotoba:latest
+        gzip jotoba_latest.tar
+    - name: SCP Files
+      uses: appleboy/scp-action@v0.0.1
+      with:
+        host: ${{ secrets.HOST }}
+        username: ${{ secrets.USERNAME }}
+        password: ${{ secrets.PASSWORD }}
+        source: "./jotoba_latest.tar.gz"
+        target: "jotoba_latest.tar.gz"
