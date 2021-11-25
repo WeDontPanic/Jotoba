@@ -63,18 +63,8 @@ form {
     right: 45px;
 }
 
-.notificationBtn.update::after, .infoBtn.new::after {
-    content: "";
-    position: absolute;
-    top: 0.5rem;
-    right: 1.25rem;
-    padding: .25rem;
-    border-radius: 1rem;
-    background-color: var(--bgPrimaryColor);
-}
-
-.infoBtn.new::after {
-    right: 0.95rem;
+.notificationBtn.update, .infoBtn.new {
+    background-color: var(--primaryColor);
 }
 
 .inner-form {

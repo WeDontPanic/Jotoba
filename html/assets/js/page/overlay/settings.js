@@ -74,6 +74,11 @@ function loadCookieData() {
     setSearchSettings(english_always, english_on_top, example_sentences, sentence_furigana, focus_searchbar, items_per_page, kanji_per_page);
     setDisplaySettings(theme, kanji_speed);
     setOtherSettings(cookies_allowed);
+
+    // New-User design adjustments
+    if (!localStorage.getItem("first_time")) {
+        $(".infoBtn").addClass("new");
+    }
 }
 
 // Prepare the language tab
