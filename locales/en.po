@@ -393,25 +393,19 @@ msgid "Algonquian"
 msgstr "Algonquian"
 
 # Settings
+msgid "Language"
+msgstr ""
+
+msgid "Display"
+msgstr ""
+
+msgid "General"
+msgstr ""
+
 msgid "Default search language"
 msgstr ""
 
-msgid "Results will try to match the selected language"
-msgstr ""
-
 msgid "Page language"
-msgstr ""
-
-msgid "Displays the website in the selected language"
-msgstr ""
-
-msgid "This language has not been translated yet."
-msgstr ""
-
-msgid "Contributions are welcome!"
-msgstr ""
-
-msgid "Result settings"
 msgstr ""
 
 msgid "Always show english results"
@@ -420,67 +414,40 @@ msgstr ""
 msgid "Show english results on top"
 msgstr ""
 
-msgid "Display settings"
+msgid "Focus search bar on load"
+msgstr ""
+
+msgid "Results per page"
+msgstr ""
+
+msgid "Number..."
+msgstr ""
+
+msgid "Input has to be in range of 1 and 100!"
+msgstr ""
+
+msgid "max amount of names/words/sentences shown per page"
+msgstr ""
+
+msgid "Show Furigana"
+msgstr ""
+
+msgid "Show example sentences"
+msgstr ""
+
+msgid "Items per page"
+msgstr ""
+
+msgid "max amount of kanji shown per page"
+msgstr ""
+
+msgid "Use dark mode"
 msgstr ""
 
 msgid "Default kanji animation speed"
 msgstr ""
 
-msgid "Select color scheme"
-msgstr ""
-
-msgid "Use theme"
-msgstr ""
-
-msgid "Light"
-msgstr ""
-
-msgid "Dark"
-msgstr ""
-
-msgid "background"
-msgstr ""
-
-msgid "overlay"
-msgstr ""
-
-msgid "primary"
-msgstr ""
-
-msgid "primHover"
-msgstr ""
-
-msgid "secondary"
-msgstr ""
-
-msgid "text"
-msgstr ""
-
-msgid "overlayText"
-msgstr ""
-
-msgid "searchBG"
-msgstr ""
-
-msgid "searchText"
-msgstr ""
-
-msgid "shadow"
-msgstr ""
-
-msgid "tags"
-msgstr ""
-
-msgid "itemBG"
-msgstr ""
-
-msgid "scheme code"
-msgstr ""
-
-msgid "Using the code you can share color schemes"
-msgstr ""
-
-msgid "Cookie management"
+msgid "Accept Cookies"
 msgstr ""
 
 # Cookie text

@@ -393,95 +393,62 @@ msgid "Algonquian"
 msgstr "Algonkinischen"
 
 # Settings
-msgid "Default search language"
-msgstr "Standardmäßige Suchsprache"
+msgid "Language"
+msgstr "Sprache"
 
-msgid "Results will try to match the selected language"
-msgstr "Die gewählte Sprache wird für Suchen verwendet"
+msgid "Display"
+msgstr "Design"
+
+msgid "General"
+msgstr "Allgemein"
+
+msgid "Default search language"
+msgstr "Sprache für Suchanfragen"
 
 msgid "Page language"
-msgstr "Seitensprache"
-
-msgid "Displays the website in the selected language"
-msgstr "Die gewählte Sprache bestimmt die UI Sprache"
-
-msgid "This language has not been translated yet."
-msgstr "Diese Sprache wurde noch nicht übersetzt."
-
-msgid "Contributions are welcome!"
-msgstr "Kontributionen sind willkommen!"
-
-msgid "Result settings"
-msgstr "Ergebnis Einstellungen"
+msgstr "Sprache der Webseite"
 
 msgid "Always show english results"
-msgstr "Zeige immer englische Ergebnisse"
+msgstr "Zeige englische Ergebnisse immer"
 
 msgid "Show english results on top"
 msgstr "Zeige englische Ergebnisse als erstes"
 
-msgid "Display settings"
-msgstr "Ansichts Einstellungen"
+msgid "Focus search bar on load"
+msgstr "Fokussiere die Suchleiste nach dem Suchen"
+
+msgid "Results per page"
+msgstr "Ergebnisse pro Seite"
+
+msgid "Number..."
+msgstr "Nummer..."
+
+msgid "Input has to be in range of 1 and 100!"
+msgstr "Eingabe muss zwischen 1 und 100 liegen!"
+
+msgid "max amount of names/words/sentences shown per page"
+msgstr "Anzahl der Namen/Wörter/Sätze auf einer Seite"
+
+msgid "Show Furigana"
+msgstr "Zeige Furigana"
+
+msgid "Show example sentences"
+msgstr "Zeige Beispielsätze"
+
+msgid "Items per page"
+msgstr "Anzahl pro Seite"
+
+msgid "max amount of kanji shown per page"
+msgstr "Anzahl der Kanji auf einer Seite"
+
+msgid "Use dark mode"
+msgstr "Dark Mode"
 
 msgid "Default kanji animation speed"
 msgstr "Kanji Animationsgeschwindigkeit"
 
-msgid "Select color scheme"
-msgstr "Wähle ein Farbschema aus"
-
-msgid "Use theme"
-msgstr "Presets"
-
-msgid "Light"
-msgstr "Hell"
-
-msgid "Dark"
-msgstr "Dunkel"
-
-msgid "background"
-msgstr "Hintergrund"
-
-msgid "overlay"
-msgstr "Overlay"
-
-msgid "primary"
-msgstr "Primär"
-
-msgid "primHover"
-msgstr "PrimHover"
-
-msgid "secondary"
-msgstr "Sekundär"
-
-msgid "text"
-msgstr "Text"
-
-msgid "overlayText"
-msgstr "OverlayText"
-
-msgid "searchBG"
-msgstr "SuchBG"
-
-msgid "searchText"
-msgstr "SuchText"
-
-msgid "shadow"
-msgstr "Schatten"
-
-msgid "tags"
-msgstr "Tags"
-
-msgid "itemBG"
-msgstr "ItemBG"
-
-msgid "scheme code"
-msgstr "Farbcode"
-
-msgid "Using the code you can share color schemes"
-msgstr "Mit diesem Code kannst du dein Farbschema mit anderen teilen"
-
-msgid "Cookie management"
-msgstr "Cookie Einstellungen"
+msgid "Accept Cookies"
+msgstr "Cookies akzeptieren"
 
 # Cookie text
 msgid "To use this feature you have to accept to the use of cookies."
