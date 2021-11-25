@@ -7,6 +7,7 @@ pub mod about;
 pub mod example_sentence;
 pub mod help_page;
 pub mod index;
+pub mod news;
 mod pagination;
 pub mod search_ep;
 mod session;
@@ -22,7 +23,7 @@ use localization::{
     TranslationDict,
 };
 use pagination::Pagination;
-use resources::models::names::Name;
+use resources::{models::names::Name, news::NewsEntry};
 use search::{engine::guess::Guess, query::Query};
 
 use search::{
@@ -46,6 +47,7 @@ pub enum Site<'a> {
     Index,
     About,
     InfoPage,
+    News(Vec<&'static NewsEntry>),
 }
 
 /// Search result data. Required by individual templates to render the result items

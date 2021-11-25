@@ -1,4 +1,4 @@
-@use super::{word_search_html, kanji_details, name_search, sentence_search, about_html, info_page_html};
+@use super::{word_search_html, kanji_details, name_search, sentence_search, about_html, info_page_html, news_html};
 @use crate::{BaseData, ResultData, Site};
 @(data: &BaseData)
 
@@ -33,6 +33,9 @@
            }
            Site::InfoPage => {
               @:info_page_html(&data)
+           }
+           Site::News(news) => {
+              @:news_html(&data, news)
            }
         }
 

@@ -130,6 +130,11 @@ pub(super) async fn start() -> std::io::Result<()> {
                     .route(actixweb::get().to(frontend::about::about)),
             )
             .service(
+                actixweb::resource("/news")
+                    .wrap(Compat::new(middleware::Compress::default()))
+                    .route(actixweb::get().to(frontend::news::news)),
+            )
+            .service(
                 actixweb::resource("/help")
                     .wrap(Compat::new(middleware::Compress::default()))
                     .route(actixweb::get().to(frontend::help_page::help)),
