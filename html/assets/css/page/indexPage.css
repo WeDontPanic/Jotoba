@@ -50,6 +50,7 @@ form {
 .settingsBtn, .infoBtn, .notificationBtn {
     top: 15px;
     position: absolute !important;
+    cursor: pointer;
 }
 
 .notificationBtn {

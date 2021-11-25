@@ -16,8 +16,14 @@
             <div class="d-flex center">
 
                <!-- Settings Button -->
-               <div class="btn-container settingsBtn" data-toggle="modal" data-target="#settingsModal"> 
-                  <div class="settingsSvg"></div>
+               <div class="btn-container"> 
+                  <div class="settingsSvg settingsBtn" data-toggle="modal" data-target="#settingsModal"></div>
+               </div>
+
+               <!-- Home / Info Button -->
+               <div class="btn-container right">
+                  <div class="homeBtn noselect" onclick='Util.loadUrl(JotoTools.getPageUrl(""));'>home</div>
+                  <div class="infoSvg infoBtn"></div>
                </div>
 
                <!-- Search Bar -->

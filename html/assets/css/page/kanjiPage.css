@@ -74,6 +74,10 @@
         flex-direction: column!important;
     }
 
+    .compounds-dropdown:after {
+        right: -8px;
+    }
+
     .kun-reading {
         padding-left: 0px;
         padding-top: 20px;
