@@ -13,16 +13,16 @@ jobs:
     - uses: satackey/action-docker-layer-caching@v0.0.11
     - name: Build the Docker image
       run: docker build . --file Dockerfile --tag jotoba:latest
-    - name: upload
+    - name: Export image
       run: |
         docker save -o jotoba_latest.tar jotoba:latest
         gzip jotoba_latest.tar
     - name: SCP Files
-      uses: appleboy/scp-action@v0.0.1
+      uses: nogsantos/scp-deploy@master
       with:
-        host: ${{ secrets.HOST }}
-        username: ${{ secrets.SSH_USER }}
-        password: ${{ secrets.PASSWORD }}
-        port: ${{ secrets.PORT }}
-        source: "./jotoba_latest.tar.gz"
-        target: "jotoba_latest.tar.gz"
+          src: ./jotoba_latest.tar.gz
+          host: ${{ secrets.HOST }}
+          remote: jotoba_latest.tar.gz
+          port: ${{ secrets.PORT }}
+          user: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
