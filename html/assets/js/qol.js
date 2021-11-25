@@ -54,6 +54,12 @@ $(document).on("keypress", (event) => {
 // Copies Furigana to clipboard on click
 $('.furigana-preview').on("click", (event) => {
     preventDefaultHighlight(event, 100, true, false);
+
+    // Prevent copying if the text was just a placeholder
+    if (event.target.innerHTML == "&nbsp;")
+        return;
+
+    // Copy and show message
     Util.showMessage("success", "furigana copied to clipboard.");
     Util.copyToClipboard($(event.target).html().trim());
 });
@@ -63,18 +69,22 @@ $('.furigana-preview').on("dblclick", (event) => {
     // Disable Events for a short time
     preventDefaultHighlight(event, 100, false);
 
-    // Show the correct message
-    $('.msg-message.msg-success.msg-visible').last().remove();
-    $('.msg-message.msg-success.msg-visible').last().html("<b>full</b> furigana copied to clipboard");
-
     // Find all furigana
     let parent = $(event.target.parentElement.parentElement);
-        let furi = "";
-        parent.find('.furigana-preview, .inline-kana-preview').each((i, element) => {
-            furi += element.innerHTML.trim();
-        });
-        Util.copyToClipboard(furi);
+    let furi = "";
+    parent.find('.furigana-preview, .inline-kana-preview').each((i, element) => {
+        furi += element.innerHTML.trim();
     });
+
+    // Prevent copying if the text was just a placeholder
+    if (furi === "&nbsp;")
+        return;
+
+    // Copy and show the correct message
+    Util.copyToClipboard(furi);
+    $('.msg-message.msg-success.msg-visible').last().remove();
+    $('.msg-message.msg-success.msg-visible').last().html("<b>full</b> furigana copied to clipboard");
+});
 
 // Copies translations to clipboard on double click
 $('.kanji-preview').on("dblclick", (event) => {
