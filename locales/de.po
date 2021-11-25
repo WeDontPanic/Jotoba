@@ -13,7 +13,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"PO-Revision-Date: 2021-11-11 18:56+0100\n"
+"PO-Revision-Date: 2021-11-25 23:45+0100\n"
 "Last-Translator:  <>\n"
 "Language-Team: English\n"
 "Language: en\n"
@@ -132,9 +132,6 @@ msgstr "Keine Benachrichtigungen"
 
 msgid "Show all"
 msgstr "Zeige alle"
-
-msgid "Close"
-msgstr "Schließen"
 
 # Languages
 
