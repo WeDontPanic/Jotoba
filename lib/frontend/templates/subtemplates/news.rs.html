@@ -4,14 +4,19 @@
 @(data: &BaseData, news: News)
 
 <link rel="stylesheet" type="text/css" href="/variable_assets/@data.asset_hash/assets/css/page/newsPage.css">
+<link rel="stylesheet" type="text/css" href="variable_assets/@data.asset_hash/assets/css/page/multiPage/markdown.css">
 
-<div class="news-list">
-
-	<div class="news-container">
-		<!-- INSERT HTML HERE -->
-                @for news_entry in news {
-                  @news_entry.long
-                }
-	</div>
-
+<div id="news-list">
 </div>
+
+<script>
+  const news = [
+      @for news_entry in news {
+        @{
+          title: '@news_entry.title',
+          html: '@news_entry.long.replace("\n", "")'
+        @},
+      }
+  ];
+</script>
+<script src="/variable_assets/@data.asset_hash/assets/js/page/newsPage.js"></script>

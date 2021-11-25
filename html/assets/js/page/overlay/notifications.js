@@ -49,7 +49,7 @@ async function parseShortNotificationResults(results) {
     
         title.innerHTML = result.title;
     
-        let creationDate = new Date(result.creation_time);
+        let creationDate = new Date(result.creation_time * 1000);
         date.innerHTML = creationDate.toLocaleDateString(Cookies.get("page_lang") || "en-US", dateSettings);
         
         content.innerHTML = result.html;
@@ -94,17 +94,28 @@ async function parseDetailedNotificationResults(result) {
 }
 
 // Opens the short-informations for notifications
-function openNotifications(event) {
+function toggleNotifications(event) {
+    let container = $('#notifications-container');
+    
+    // Check if notification is opened already
+    if (!container.hasClass("hidden")) {
+        closeNotifications();
+        return;
+    }
+
+    // Prevent click event to pass through to the body
     event.stopPropagation();    
 
+    // Set the timestamp
     localStorage.setItem("notification_timestamp", Math.floor(Date.now() / 1000));
-    document.getElementById("notifications-container").classList.remove("hidden");
+    container[0].classList.remove("hidden");
     
+    // Make clicks outside the element close it 
     $(document).one("click", function() {
         closeNotifications();
-        $('#notifications-container').off("click");
+        container.off("click");
     });
-    $('#notifications-container').click(function(event){
+    container.click(function(event){
         event.stopPropagation();
     });
 }

@@ -39,6 +39,12 @@ Util.loadScript = function(url, async, attributes, callback) {
     document.head.appendChild(s);
 }
 
+// Re-Encodes a decoded HTML
+Util.decodeHtml = function(html) {
+  var doc = new DOMParser().parseFromString(html, "text/html");
+  return doc.documentElement.textContent;
+}
+
 // Changes the state of an MDL checkbox
 Util.setMdlCheckboxState = function(id, state) {
   if (state === undefined) {
