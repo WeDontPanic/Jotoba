@@ -1,5 +1,6 @@
 use std::path::Path;
 
+use comrak::ComrakOptions;
 use itertools::Itertools;
 use once_cell::sync::OnceCell;
 
@@ -91,8 +92,16 @@ pub fn get() -> &'static News {
 fn parse_markdown<P: AsRef<Path>>(file: P) -> Result<(String, String), Box<dyn std::error::Error>> {
     let contents = std::fs::read_to_string(file)?;
 
-    let short_html = markdown::to_html(&shorten_markdown(&contents));
-    let full_html = markdown::to_html(&contents);
+    let short_md = shorten_markdown(&contents);
+
+    let mut md_options = ComrakOptions::default();
+    md_options.render.unsafe_ = true;
+    md_options.extension.autolink = true;
+    md_options.extension.tasklist = true;
+    md_options.extension.strikethrough = true;
+
+    let short_html = comrak::markdown_to_html(&short_md, &md_options);
+    let full_html = comrak::markdown_to_html(&contents, &md_options);
 
     Ok((short_html, full_html))
 }
