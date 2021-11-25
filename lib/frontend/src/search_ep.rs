@@ -126,7 +126,7 @@ async fn sentence_search<'a>(base_data: &mut BaseData<'a>, query: &'a Query) -> 
     let result = web::block(move || search::sentence::search(&q)).await??;
 
     base_data.with_pages(result.len as u32, query.page as u32);
-    Ok(ResultData::Sentence(result.items))
+    Ok(ResultData::Sentence(result))
 }
 
 /// Perform a kanji search

@@ -24,11 +24,11 @@ use localization::{
 };
 use pagination::Pagination;
 use resources::{models::names::Name, news::NewsEntry};
-use search::{engine::guess::Guess, query::Query};
+use search::{engine::guess::Guess, query::Query, sentence::result::SentenceResult};
 
 use search::{
     kanji::result::Item as KanjiItem, query::UserSettings, query_parser::QueryType,
-    sentence::result::Item as SentenceItem, word::result::WordResult,
+    word::result::WordResult,
 };
 
 /// Data for the base template
@@ -64,7 +64,7 @@ pub enum ResultData {
     Word(WordResult),
     KanjiInfo(Vec<KanjiItem>),
     Name(Vec<&'static Name>),
-    Sentence(Vec<SentenceItem>),
+    Sentence(SentenceResult),
 }
 
 /// Structure containing information for better search help in case no item was
@@ -257,7 +257,7 @@ impl ResultData {
             ResultData::Word(w) => w.items.is_empty(),
             ResultData::KanjiInfo(k) => k.is_empty(),
             ResultData::Name(n) => n.is_empty(),
-            ResultData::Sentence(s) => s.is_empty(),
+            ResultData::Sentence(s) => s.items.is_empty(),
         }
     }
 }

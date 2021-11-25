@@ -8,7 +8,7 @@ use self::result::{Item, SentenceResult};
 use super::query::Query;
 use crate::{
     engine::{guess::Guess, sentences::foreign, sentences::native, SearchEngine, SearchTask},
-    query::{Form, QueryLang},
+    query::{Form, QueryLang, Tag},
 };
 use error::Error;
 use resources::{models::sentences::Sentence, parse::jmdict::languages::Language};
@@ -110,7 +110,8 @@ fn get_result<T: SearchEngine<Output = Sentence>>(
         .filter_map(|i| map_sentence_to_item(i, lang, query))
         .collect::<Vec<_>>();
 
-    Ok(SentenceResult { len, items })
+    let hidden = query.has_tag(Tag::Hidden);
+    Ok(SentenceResult { len, items, hidden })
 }
 
 fn map_sentence_to_item(sentence: &Sentence, lang: Language, query: &Query) -> Option<Item> {
