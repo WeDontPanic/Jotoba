@@ -8,6 +8,7 @@
   <link rel="stylesheet" type="text/css" href="/variable_assets/@data.asset_hash/assets/css/page/multiPage/kanji.css">
   <link rel="stylesheet" type="text/css" href="/variable_assets/@data.asset_hash/assets/css/page/multiPage/kana.css">
   <link rel="stylesheet" type="text/css" href="/variable_assets/@data.asset_hash/assets/css/page/sentencePage.css">
+  <script defer src="/variable_assets/@data.asset_hash/assets/js/page/sentencePage.js"></script>
 
 <!-- Inner Main Body -->
 <div class="d-flex center">
@@ -33,6 +34,9 @@
             @english
           </div>
         }
+
+        <div class="sentence-toggle hide noselect" onclick='toggleTranslation(this)'>[@data.gettext("hide")]</div>
+        <div class="sentence-toggle show hidden noselect" onclick='toggleTranslation(this)'>[@data.gettext("show")]</div>
       </div>
      <hr class="res-separator sentence" />
     }

@@ -10,3 +10,14 @@
     font-size: 19px;
     padding-top: 0.2rem;
 }   
+
+.sentence-toggle {
+    width: 100%;
+    margin-top: -10px;
+    margin-bottom: -10px;
+    color: var(--primaryColor);
+    font-family: "Roboto";
+    text-align: end;
+    font-size: small;
+    cursor: pointer;
+}
