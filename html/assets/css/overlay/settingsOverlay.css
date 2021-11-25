@@ -32,7 +32,11 @@
 }
 
 .mdl-layout__tab {
-    padding: 0 12px !important;
+    padding: 0 24px !important;
+}
+
+.mdl-layout__tab-bar {
+    width: calc(100% - 56px);
 }
 
 .mdl-layout__header, .mdl-layout__tab-bar {
@@ -41,10 +45,6 @@
 
 .mdl-layout__tab-bar-button {
     background-color: var(--headerScrollBar);
-}
-
-.mdl-layout__tab-bar {
-    width: calc(100% - 56px);
 }
 
 .mdl-layout.is-upgraded .mdl-layout__tab.is-active::after {
