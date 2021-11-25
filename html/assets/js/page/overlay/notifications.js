@@ -97,7 +97,7 @@ async function parseDetailedNotificationResults(result) {
 function openNotifications(event) {
     event.stopPropagation();    
 
-    localStorage.setItem("notification_timestamp", + new Date());
+    localStorage.setItem("notification_timestamp", Math.floor(Date.now() / 1000));
     document.getElementById("notifications-container").classList.remove("hidden");
     
     $(document).one("click", function() {
