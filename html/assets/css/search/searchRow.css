@@ -110,21 +110,21 @@ svg {
 
 .settingsBtn {
     top: 22px;
-    left: 15px;
+    left: 20px;
     padding-top: 12px;
     padding-bottom: 0px;
 }
 
 .infoBtn {
     top: 21px;
-    right: 45px;
+    right: 60px;
 }
 
 .homeBtn {
     font-family: 'Material Icons';
     font-size: 27px;
     top: 16px;
-    right: 10px;
+    right: 25px;
     color: var(--tagColor);
 }
 
@@ -198,10 +198,18 @@ svg {
         width: 90%;
         padding-right: 30px;
     }
+
+    .homeBtn {
+        right: 10px;
+    }
+
+    .infoBtn {
+        right: 50px;
+    }
 }
 @media only screen and (max-width: 850px) {
     #searchDiv {
-        padding-right: 40px;
+        padding-right: 45px;
     }
 }
 @media only screen and (max-width: 600px) {
