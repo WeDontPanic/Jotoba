@@ -1,0 +1,13 @@
+.news-list {
+    max-width: 1000px;
+    display: flex;
+    flex-direction: column;
+}
+
+.news-container {
+    display: block;
+    padding: 1.125rem;
+    margin-top: 2rem;
+    border-radius: 1rem;
+    background-color: var(--overlay);
+}
