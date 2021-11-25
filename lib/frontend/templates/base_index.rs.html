@@ -91,20 +91,8 @@
 
          </div>
        
-         <!-- Special Buttons -->
+         <!-- Search / Radical Button -->
          <div class="index-btn-container">
-            <div class="btn-container settingsBtn index" data-toggle="modal" data-target="#settingsModal">
-               <div class="settingsSvg"></div>
-            </div>
-
-            <div class="btn-container infoBtn index" onclick='openHelpPage()'>
-               <div class="infoSvg"></div>
-            </div>
-
-            <div class="btn-container notificationBtn index" onclick="toggleNotifications(event)">
-               <div class="notificationSvg"></div>
-            </div>
-   
             <div class="input-field third-wrap index">
                <button id="searchBtn" class="btn-search" onclick="onSearchStart()">
                   <div class="flex-center">
@@ -121,7 +109,17 @@
                </button>
             </div>
          </div> 
-      
+
+         <!-- Settings Button -->
+         <div class="btn-container">
+            <div class="settingsSvg settingsBtn index"  data-toggle="modal" data-target="#settingsModal"></div>
+         </div>
+
+         <!-- Info / Notification Button-->
+         <div class="btn-container">
+            <div class="infoSvg infoBtn index" onclick='openHelpPage()'></div>
+            <div class="notificationSvg notificationBtn index" onclick="toggleNotifications(event)"></div>
+         </div>      
       </div>
 
       @:footer_html(&data)

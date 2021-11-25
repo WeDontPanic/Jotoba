@@ -69,7 +69,10 @@ function toggleCompounds(event) {
 function changeStrokeSvgColorScheme(scheme) {
     let index = scheme == "light" ? 0 : 1;
     let indexInv = scheme == "light" ? 1 : 0;
-    let contentDoc = $($('object')[0].contentDocument);
+    let obj = $('object');
+    if (obj.length == 0)
+        return;
+    let contentDoc = $(obj[0].contentDocument);
 
     contentDoc.find("path").filter(function() {
         return $(this).css('stroke') == svgColorScheme[indexInv][0];

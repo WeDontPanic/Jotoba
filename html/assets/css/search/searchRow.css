@@ -85,12 +85,11 @@ svg {
 }
 
 .btn-container {
+    position: absolute;
+    width: 100%;
+    top: 0;
     text-align: center;
     text-align: -webkit-center;
-    min-width: 46px;
-    padding: 5px 0;
-    margin-left: 6px;
-    cursor: pointer;
 }
 
 .btn-container div {
@@ -103,19 +102,37 @@ svg {
     margin-right: -7px;
 }
 
-.settingsBtn {
+.settingsBtn, .infoBtn, .homeBtn {
     position: absolute;
-    top: 10px;
+    cursor: pointer;
+}
+
+.settingsBtn {
+    top: 22px;
     left: 15px;
     padding-top: 12px;
     padding-bottom: 0px;
 }
 
-@media only screen and (max-width: 1300px) {
-    .settingsBtn {
-        position: unset;
-        margin-right: -10px;
-    }
+.infoBtn {
+    top: 21px;
+    right: 45px;
+}
+
+.homeBtn {
+    font-family: 'Material Icons';
+    font-size: 27px;
+    top: 16px;
+    right: 10px;
+    color: var(--tagColor);
+}
+
+.homeBtn.mobile {
+    position: relative;
+    font-size: 38px;
+    top: 0;
+    left: 0;
+    right: 0;
 }
 
 .rad-picker-icon {
@@ -172,4 +189,27 @@ svg {
 
 .x-button:hover {
     cursor: pointer;
+}
+
+/* Adjustments for the upper buttons */
+@media only screen and (max-width: 1255px) {
+    #searchDiv {
+        width: 90%;
+    }
+}
+@media only screen and (max-width: 1330px) {
+    #searchDiv {
+        padding-right: 30px;
+    }
+}
+@media only screen and (max-width: 815px) {
+    #searchDiv {
+        padding-right: 40px;
+    }
+}
+@media only screen and (max-width: 600px) {
+    #searchDiv {
+        width: 100%;
+        padding-right: 0px;
+    }
 }
