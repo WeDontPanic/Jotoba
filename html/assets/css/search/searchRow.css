@@ -105,6 +105,7 @@ svg {
 .settingsBtn, .infoBtn, .homeBtn {
     position: absolute;
     cursor: pointer;
+    z-index: 15;
 }
 
 .settingsBtn {
