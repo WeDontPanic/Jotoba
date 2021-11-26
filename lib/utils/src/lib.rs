@@ -14,7 +14,7 @@ where
     }
 
     for i in v1 {
-        if !v2.contains(&i) {
+        if !v2.contains(i) {
             return false;
         }
     }
@@ -32,7 +32,7 @@ where
     }
 
     for i in v1 {
-        if !v2.contains(&i) {
+        if !v2.contains(i) {
             return false;
         }
     }

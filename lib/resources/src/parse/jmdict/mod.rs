@@ -260,7 +260,7 @@ where
                     if let Some(tag) = stack.last() {
                         let value = text.unescape_and_decode_with_custom_entities(
                             &self.reader,
-                            &custom_entities,
+                            custom_entities,
                         )?;
 
                         match tag {
@@ -498,7 +498,7 @@ fn parse_ex_srce(attributes: Option<Attributes>) -> String {
             attributes
                 .into_iter()
                 .filter_map(|i| i.is_ok().then(|| i.unwrap()))
-                .find(|i| str::from_utf8(i.key.as_ref()).unwrap() == "exsrc_type")
+                .find(|i| str::from_utf8(i.key).unwrap() == "exsrc_type")
                 .and_then(|i| String::from_utf8(i.value.as_ref().to_vec()).ok())
         })
         .unwrap_or_default()
@@ -510,7 +510,7 @@ fn get_language(attributes: Option<Attributes>) -> Language {
             attributes
                 .into_iter()
                 .filter_map(|i| i.is_ok().then(|| i.unwrap()))
-                .find(|i| str::from_utf8(i.key.as_ref()).unwrap() == "xml:lang")
+                .find(|i| str::from_utf8(i.key).unwrap() == "xml:lang")
                 .and_then(|i| {
                     let val = str::from_utf8(i.value.as_ref()).unwrap();
                     Language::from_str(val).ok()
@@ -531,7 +531,7 @@ fn parse_gairaigo(attributes: Option<Attributes>) -> Gairaigo {
         .into_iter()
         .filter_map(|i| i.is_ok().then(|| i.unwrap()))
     {
-        let key = str::from_utf8(&attribute.key).unwrap();
+        let key = str::from_utf8(attribute.key).unwrap();
         let val = str::from_utf8(&attribute.value).unwrap();
 
         match key {

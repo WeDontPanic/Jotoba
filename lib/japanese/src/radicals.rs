@@ -1,4 +1,4 @@
-pub const RADICALS: &[(i32, &[&'static str]); 15] = &[
+pub const RADICALS: &[(i32, &[&str]); 15] = &[
     (1, &["一", "｜", "丶", "ノ", "乙", "亅"]),
     (
         2,

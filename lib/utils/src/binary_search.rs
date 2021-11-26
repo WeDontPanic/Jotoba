@@ -60,10 +60,14 @@ pub trait BinarySearchable: Sized {
     fn get(&self, pos: usize) -> Self::Item;
     fn len(&self) -> usize;
 
+    fn is_empty(&self) -> bool {
+        self.len() == 0
+    }
+
     /// Returns an iterator over each matching result
-    fn search<'a, C>(&'a self, cmp: C) -> ResultIter<'a, C, Self, Self::Item>
+    fn search<C>(&self, cmp: C) -> ResultIter<'_, C, Self, Self::Item>
     where
-        C: FnMut(&Self::Item) -> Ordering + 'a + Copy,
+        C: FnMut(&Self::Item) -> Ordering + Copy,
     {
         let first_item = self.find_first(cmp);
         ResultIter::new(cmp, self, first_item)
@@ -102,7 +106,7 @@ pub trait BinarySearchable: Sized {
     {
         // Find using binary search. If multiple results found (which is very likely the case in
         // our implementation), a random item of the matching ones will be found
-        let random_index = self.binary_search_by(|a| cmp(&a))?;
+        let random_index = self.binary_search_by(|a| cmp(a))?;
 
         let mut curr_pos = random_index.saturating_sub(100);
 

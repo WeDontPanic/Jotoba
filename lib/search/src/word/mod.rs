@@ -36,7 +36,7 @@ pub(self) struct Search<'a> {
 /// Search among all data based on the input query
 #[inline]
 pub fn search(query: &Query) -> Result<WordResult, Error> {
-    Ok(Search { query }.do_search()?)
+    Search { query }.do_search()
 }
 
 #[derive(Default)]
@@ -63,7 +63,7 @@ impl<'a> Search<'a> {
         let kanji_results = kanji::load_word_kanji_info(&words)?;
 
         let res = WordResult {
-            contains_kanji: kanji_results.len() > 0,
+            contains_kanji: !kanji_results.is_empty(),
             items: Self::merge_words_with_kanji(words, kanji_results),
             inflection_info: search_result.infl_info,
             count: search_result.count,
@@ -227,9 +227,7 @@ impl<'a> Search<'a> {
 
         let infl_info = inflection_info(&morpheme);
 
-        let searched_query = morpheme
-            .map(|i| i.original_word.to_owned())
-            .unwrap_or(query);
+        let searched_query = morpheme.map(|i| i.original_word).unwrap_or(query);
 
         Ok(ResultData {
             count,
@@ -380,7 +378,7 @@ fn furigana_by_reading(morpheme: &str) -> Option<String> {
     }
 
     let word = word_storage.by_sequence(found[0].item.sequence as u32)?;
-    word.furigana.as_ref().map(|i| i.clone())
+    word.furigana.as_ref().cloned()
 }
 
 /// Guesses the amount of results a search would return with given `query`

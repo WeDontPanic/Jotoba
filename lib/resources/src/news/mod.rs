@@ -64,7 +64,6 @@ impl News {
 
         NEWS_RETRIEVE
             .set(News { entries })
-            .ok()
             .expect("failed to set news");
 
         Ok(())
@@ -110,7 +109,7 @@ fn shorten_markdown(full: &str) -> String {
     let line_count = full.split('\n').count().max(1);
     let conten_len = utils::real_string_len(full);
 
-    let mut text_iter = full.split('\n').filter(|i| !i.trim().starts_with("#"));
+    let mut text_iter = full.split('\n').filter(|i| !i.trim().starts_with('#'));
 
     let out;
     if conten_len > 100 {

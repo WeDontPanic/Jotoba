@@ -22,7 +22,7 @@ pub async fn news(payload: Json<Request>) -> Result<Json<Response>, actix_web::E
     let entry = news::get()
         .by_id(id)
         .map(|i| NewsEntry::from_resource(i, false))
-        .ok_or_else(|| api_error::RestError::NotFound)?;
+        .ok_or(api_error::RestError::NotFound)?;
 
     Ok(Json(Response { entry }))
 }

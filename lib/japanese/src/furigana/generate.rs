@@ -22,7 +22,7 @@ pub fn checked<R: RetrieveKanji>(retrieve: R, kanji: &str, kana: &str) -> String
             let furi_parsed = from_str(&furi).map(|i| i.kana).join("");
             (furi_parsed.to_hiragana() == kana.to_hiragana()).then(|| furi)
         })
-        .unwrap_or(furigana_block(kanji, kana))
+        .unwrap_or_else(|| furigana_block(kanji, kana))
 }
 
 /// Generate a furigana string. Returns None on error
@@ -68,8 +68,8 @@ pub fn retrieve_readings<R: RetrieveKanji>(
         .iter()
         .map(|i| {
             let (kun, on) = retrieve(i.to_string())?;
-            let kun = kun.map(|i| format_readings(i)).unwrap_or_default();
-            let on = on.map(|i| format_readings(i)).unwrap_or_default();
+            let kun = kun.map(format_readings).unwrap_or_default();
+            let on = on.map(format_readings).unwrap_or_default();
             let mut readings = kun.into_iter().chain(on).collect_vec();
             readings.sort_unstable();
             readings.dedup();
@@ -90,8 +90,7 @@ fn find_kanji_combo(
     readings_map: Vec<(char, Vec<String>)>,
     kana: &str,
 ) -> Option<Vec<(String, String)>> {
-    let mut routes: Vec<(usize, Vec<String>, &str)> = Vec::new();
-    routes.push((0, vec![], &kana));
+    let mut routes: Vec<(usize, Vec<String>, &str)> = vec![(0, vec![], kana)];
 
     for (pos, (_, readings)) in readings_map.iter().enumerate() {
         let route_pos = pos + 1;
@@ -106,7 +105,7 @@ fn find_kanji_combo(
         }
 
         for route in last_routes.iter() {
-            let pref = find_prefix(&readings, &route.2);
+            let pref = find_prefix(&readings, route.2);
             for pref in pref {
                 let mut curr_route_readings = route.1.clone();
                 curr_route_readings.push(pref.clone());
@@ -127,7 +126,7 @@ fn find_kanji_combo(
         .collect_vec();
 
     let valid_routes = if valid_routes.is_empty() && !routes.is_empty() {
-        let lasti = routes.last().as_ref().clone().unwrap().2.to_owned();
+        let lasti = routes.last().as_ref().unwrap().2.to_owned();
         let mut last = routes.last().unwrap().to_owned();
         let last_count = routes
             .iter()
@@ -195,7 +194,7 @@ where
                 Some(furigana_block(kanji, reading))
             }
         } else {
-            Some(curr_part.to_owned())
+            Some(curr_part)
         }
     })
 }
@@ -204,11 +203,11 @@ fn furigana_block<S: AsRef<str>>(kanji: S, kana: S) -> String {
     format!("[{}|{}]", kanji.as_ref(), kana.as_ref())
 }
 
-fn find_prefix(prefixe: &Vec<String>, text: &str) -> Vec<String> {
+fn find_prefix(prefixe: &[String], text: &str) -> Vec<String> {
     prefixe
         .iter()
         .filter(|i| text.to_hiragana().starts_with(&i.to_hiragana()))
-        .map(|i| i.to_owned().to_owned())
+        .cloned()
         .collect_vec()
 }
 

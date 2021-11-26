@@ -158,7 +158,7 @@ impl Word {
 
         let res = accent_iter
             .map(|(pos, (part, is_high))| {
-                if part.len() == 0 {
+                if part.is_empty() {
                     // Don't render under/overline for empty character -- handles the case where the
                     // pitch changes from the end of the word to the particle
                     return vec![];
@@ -293,7 +293,7 @@ impl Word {
 
         filter_languages(words.iter_mut(), language, show_english);
 
-        let words = words
+        words
             .into_iter()
             .map(|word| {
                 let senses: Vec<String> = word
@@ -310,9 +310,7 @@ impl Word {
 
                 (reading, senses.join(", "))
             })
-            .collect();
-
-        words
+            .collect()
     }
 
     /// Returns an iterator over all reading elements
@@ -397,7 +395,7 @@ impl<'a> Iterator for ReadingIter<'a> {
         }
         if !self.did_kanji && self.reading.kanji.is_some() {
             self.did_kanji = true;
-            return Some(&self.reading.kanji.as_ref().unwrap());
+            return Some(self.reading.kanji.as_ref().unwrap());
         }
         let i = self.reading.alternative.get(self.alternative_pos)?;
         self.alternative_pos += 1;

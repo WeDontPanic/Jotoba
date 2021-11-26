@@ -70,10 +70,10 @@ impl From<&resources::models::words::Sense> for Sense {
             language: sense.language,
             dialect: sense.dialect,
             field: sense.field,
-            information: sense.information.as_ref().map(|i| i.clone()),
-            antonym: sense.antonym.as_ref().map(|i| i.clone()),
+            information: sense.information.as_ref().cloned(),
+            antonym: sense.antonym.as_ref().cloned(),
             misc: sense.misc,
-            xref: sense.xref.as_ref().map(|i| i.clone()),
+            xref: sense.xref.as_ref().cloned(),
         }
     }
 }
