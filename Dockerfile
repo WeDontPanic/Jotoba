@@ -3,6 +3,7 @@ FROM rust:1.56-bullseye as build
 WORKDIR app
 
 COPY ./lib ./lib
+COPY ./.git ./.git
 COPY ./locales ./locales
 COPY ./Cargo.lock ./
 COPY ./Cargo.toml ./
