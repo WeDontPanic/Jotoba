@@ -22,5 +22,5 @@ jobs:
         command: /home/jotoba/update.sh
         host: ${{ secrets.HOST }}
         port: ${{ secrets.PORT }}
-        username: ${{ SSH_USER }}
+        username: ${{ secrets.SSH_USER }}
         privateKey: ${{ secrets.SSH_KEY}}
