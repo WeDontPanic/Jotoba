@@ -14,7 +14,7 @@ jobs:
       run: docker build . --file Dockerfile --tag ghcr.io/wedontpanic/jotoba:latest
     - name: Export image
       run: |
-        echo ${{ secrets.GH_TOKEN }} | docker login ghcr.io -u ${{ secret.GH_USER }} --password-stdin
+        echo ${{ secrets.GH_TOKEN }} | docker login ghcr.io -u ${{ secrets.GH_USER }} --password-stdin
         docker push ghcr.io/wedontpanic/jotoba:latest
     - name: Update server
       uses: garygrossgarten/github-action-ssh@release
