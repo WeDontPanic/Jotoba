@@ -32,6 +32,7 @@ pub struct ServerConfig {
     pub img_upload_dir: Option<String>,
     pub tess_data: Option<String>,
     pub news_folder: Option<String>,
+    pub debug_mode: Option<bool>,
 }
 
 #[derive(Serialize, Deserialize, Clone)]
@@ -132,6 +133,11 @@ impl Config {
             .cloned()
             .unwrap_or(ServerConfig::default().img_upload_dir.unwrap())
     }
+
+    /// Returns `true` if system is in debug mode
+    pub fn is_debug(&self) -> bool {
+        self.server.debug_mode.unwrap_or(false)
+    }
 }
 
 impl Default for ServerConfig {
@@ -147,6 +153,7 @@ impl Default for ServerConfig {
             img_upload_dir: Some(String::from("./img_scan_tmp")),
             tess_data: None,
             news_folder: Some(String::from("./news")),
+            debug_mode: Some(false),
         }
     }
 }

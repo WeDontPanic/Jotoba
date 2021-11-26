@@ -17,6 +17,7 @@ pub mod web_error;
 
 use std::fmt::Display;
 
+use config::Config;
 use localization::{
     language::Language,
     traits::{Translatable, TranslatablePlural},
@@ -38,6 +39,7 @@ pub struct BaseData<'a> {
     pub user_settings: UserSettings,
     pub pagination: Option<Pagination>,
     pub asset_hash: &'a str,
+    pub config: &'a Config,
 }
 
 /// The site to display
@@ -114,6 +116,7 @@ impl<'a> BaseData<'a> {
         dict: &'a TranslationDict,
         user_settings: UserSettings,
         asset_hash: &'a str,
+        config: &'a Config,
     ) -> Self {
         Self {
             site: Site::Index,
@@ -121,6 +124,7 @@ impl<'a> BaseData<'a> {
             user_settings,
             pagination: None,
             asset_hash,
+            config,
         }
     }
 

@@ -21,6 +21,6 @@ pub async fn index(
 
     Ok(HttpResponse::Ok().body(render!(
         templates::base_index,
-        BaseData::new(&locale_dict, settings, &config.asset_hash).with_site(Site::Index)
+        BaseData::new(&locale_dict, settings, &config.asset_hash, &config).with_site(Site::Index)
     )))
 }

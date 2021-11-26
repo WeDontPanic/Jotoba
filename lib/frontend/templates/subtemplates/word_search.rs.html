@@ -202,6 +202,14 @@
                       <span class="info-dropdown-txt"><a class="no-highlight" draggable="false" href="/audio/@audio">@data.gettext("Download audio")</a></span> 
                     </li>
                   }
+
+                  @if data.config.is_debug() {
+                    <li disabled class="mdl-menu__item" style="height: 10px;"><hr style="margin: 0px; margin-top: 5px;"></li>
+                    <li class="info-entry noselect" class="mdl-menu__item">
+                     <div class="info-dropdown-vl"></div>
+                     <span class="info-dropdown-txt">Seq: @word.sequence</span> 
+                    </li>
+                  }
                 </ul>
 
                 @for (spos, senses_compound) in word.get_senses_orderd(query.settings.english_on_top, query.settings.user_lang).iter().enumerate() { 

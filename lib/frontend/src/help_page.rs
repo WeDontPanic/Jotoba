@@ -21,6 +21,7 @@ pub async fn help(
 
     Ok(HttpResponse::Ok().body(render!(
         templates::base,
-        BaseData::new(&locale_dict, settings, &config.asset_hash).with_site(Site::InfoPage)
+        BaseData::new(&locale_dict, settings, &config.asset_hash, &config)
+            .with_site(Site::InfoPage)
     )))
 }

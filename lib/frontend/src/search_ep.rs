@@ -100,7 +100,7 @@ async fn do_search<'a>(
     query: &'a Query,
     config: &'a Config,
 ) -> Result<BaseData<'a>, web_error::Error> {
-    let mut base_data = BaseData::new(locale_dict, settings, &config.asset_hash);
+    let mut base_data = BaseData::new(locale_dict, settings, &config.asset_hash, &config);
 
     let result_data = match querytype {
         QueryType::Kanji => kanji_search(&mut base_data, &query).await,
