@@ -55,6 +55,10 @@
     padding-left: 1vw;
 }
 
+.definition-wrapper {
+    max-width: 93%;
+}
+
 /* Example Sentences */
 .example-sentence {
     padding-top: 5px;
