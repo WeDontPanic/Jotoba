@@ -70,3 +70,8 @@ Util.setMdlCheckboxState = function(id, state) {
 Util.toLocaleDateString = function(unixTime) {
   return new Date(unixTime).toLocaleDateString("de-DE", dateSettings);
 }   
+
+// Returns whether the current page is index or not
+Util.isIndexPage = function() {
+  return window.location.origin+"/" == document.location.href;
+}

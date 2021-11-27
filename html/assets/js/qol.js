@@ -25,27 +25,27 @@ $(document).on("keypress", (event) => {
             break
         case 'w': // Focus search bar
             changeSearchType(null, "0");
-            if (window.umami)
+            if (window.umami && Util.isIndexPage())
                 umami('shortcut: w');
             break;
         case 'k': // Change to Word Tab
             changeSearchType(null, "1");
-            if (window.umami)
+            if (window.umami && !Util.isIndexPage())
                 umami('shortcut: k');
             break;
         case 's': // Change to Sentence Tab
             changeSearchType(null, "2");
-            if (window.umami)
+            if (window.umami && !Util.isIndexPage())
                 umami('shortcut: s');
             break;
         case 'n': // Change to Names Tab
             changeSearchType(null, "3");
-            if (window.umami)
+            if (window.umami && !Util.isIndexPage())
                 umami('shortcut: n');
             break;
         case 'p': // Play first Audio on page
             $(".audioBtn").first().trigger("click");
-            if (window.umami)
+            if (window.umami && !Util.isIndexPage())
                 umami('shortcut: p');
             break;
         case "Enter": // Do a search while rad-picker is opened
