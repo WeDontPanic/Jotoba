@@ -59,7 +59,7 @@ function loadCookieData() {
 
     // Display Settings
     let theme = localStorage.getItem("theme");
-    let kanji_speed = localStorage.getItem("kanji_speed");
+    let kanji_speed = localStorage.getItem("kanji_speed") || 1;
 
     // Other Settings
     let cookies_allowed = Util.toBoolean(Cookies.get("allow_cookies"));
@@ -147,9 +147,6 @@ async function setDisplaySettings(theme, kanji_speed) {
     Util.setMdlCheckboxState("use_dark_mode_settings", theme === "dark");
 
     // Kanji speed
-    if (!kanji_speed) {
-        kanji_speed = 1;
-    }
     $('#show_anim_speed_settings').val(kanji_speed);
     $('#show_anim_speed_settings_slider').html(kanji_speed);
 }
