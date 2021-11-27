@@ -13,7 +13,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"PO-Revision-Date: 2021-11-27 00:07+0100\n"
+"PO-Revision-Date: 2021-11-27 16:31+0100\n"
 "Last-Translator:  <jojii@gmx.net>\n"
 "Language-Team: English\n"
 "Language: en\n"
@@ -863,6 +863,12 @@ msgid "Passive"
 msgstr ""
 
 msgid "Causative"
+msgstr ""
+
+msgid "Causative Passive"
+msgstr ""
+
+msgid "Imperative"
 msgstr ""
 
 msgid "Play audio"
