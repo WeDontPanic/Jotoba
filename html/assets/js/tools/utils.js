@@ -2,6 +2,9 @@
  * This JS-File contains some functions that are commonly used
  */
 
+// Constants
+const dateSettings = { year: 'numeric', month: 'numeric', day: 'numeric' };
+
 // The util "parent"
 function Util () {};
 
@@ -62,3 +65,8 @@ Util.setMdlCheckboxState = function(id, state) {
     }
   }
 }
+
+// Parses the given Unix time to a date of the given language
+Util.toLocaleDateString = function(unixTime, language) {
+  return new Date(unixTime).toLocaleDateString(language, dateSettings);
+}   

@@ -1,6 +1,3 @@
-// Date display settings
-const dateSettings = { year: 'numeric', month: 'numeric', day: 'numeric' };
-
 // On Start -> Try and load the latest data
 requestShortData();
 
@@ -37,8 +34,7 @@ async function parseShortNotificationResults(results) {
     // Else, show the results
     let notifiContent = document.getElementById("notification-content");
     for (let result of results.entries) {
-        let creationDate = new Date(result.creation_time * 1000);
-        let creationDateString = creationDate.toLocaleDateString(Cookies.get("page_lang") || "en-US", dateSettings);
+        let creationDateString = Util.toLocaleDateString(result.creation_time * 1000, Cookies.get("page_lang") || "en-US");
 
         var entryHtml = '<div class="notification-entry" onclick="requestLongData('+result.id+');">'
                             + '<div class="entry-title">' + result.title + '</div>'

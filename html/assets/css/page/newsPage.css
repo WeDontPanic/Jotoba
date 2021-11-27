@@ -34,6 +34,19 @@
     top: 5px;
 }
 
+.news-date {
+    position: relative;
+    text-align: right;
+    margin: 10px 10px -30px;
+    color: var(--tagColor);
+}
+
+@media only screen and (max-width: 600px) {
+    .news-date {
+        margin: 0 10px -20px;
+    }
+}
+
 .news-body {
     padding: 1.125rem;
 }

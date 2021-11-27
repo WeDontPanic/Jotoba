@@ -12,7 +12,8 @@
 <script>
   const news = [
       @for news_entry in news.into_iter().rev() {
-        @{
+        @{  
+          creation_time: '@news_entry.creation_time',
           title: '@news_entry.title',
           html: '@news_entry.long.replace("\n", "")'
         @},
