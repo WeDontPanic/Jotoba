@@ -29,7 +29,7 @@ use result::Item;
 use japanese::jp_parsing::{InputTextParser, ParseResult, WordItem};
 use utils::to_option;
 
-pub(self) struct Search<'a> {
+pub struct Search<'a> {
     query: &'a Query,
 }
 
@@ -125,7 +125,7 @@ impl<'a> Search<'a> {
 
             let index = self.query.word_index.clamp(0, parsed.items.len() - 1);
             let res = parsed.items[index].clone();
-            let sentence = Self::format_setence_parts(self, parsed);
+            let sentence = Self::format_setence_parts(parsed);
 
             Ok((res.get_lexeme().to_string(), Some(res), sentence))
         } else {
@@ -133,7 +133,7 @@ impl<'a> Search<'a> {
         }
     }
 
-    fn format_setence_parts(&self, parsed: ParseResult<'static, 'a>) -> Option<Vec<SentencePart>> {
+    pub fn format_setence_parts(parsed: ParseResult<'static, 'a>) -> Option<Vec<SentencePart>> {
         if parsed.items.len() == 1 {
             return None;
         }
