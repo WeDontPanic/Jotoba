@@ -36,7 +36,7 @@ async function parseShortNotificationResults(results) {
     for (let result of results.entries) {
         let creationDateString = Util.toLocaleDateString(result.creation_time * 1000, Cookies.get("page_lang") || "en-US");
 
-        var entryHtml = '<div class="notification-entry" onclick="requestLongData('+result.id+');">'
+        var entryHtml = '<div class="notification-entry" onclick="requestLongData(event,'+result.id+');">'
                             + '<div class="entry-title">' + result.title + '</div>'
                             + '<div class="date-tag">' + creationDateString + '</div>'
                             + '<div class="content">' + result.html + '</div>'
@@ -48,7 +48,11 @@ async function parseShortNotificationResults(results) {
 }
 
 // Shows the detailed information of the target element using its ID
-function requestLongData(id) {
+function requestLongData(event, id) {
+    if (event.target.nodeName === "IMG") {
+        return;
+    }
+
     var data = {"id": id};
     
     $.ajax({ 
