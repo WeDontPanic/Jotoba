@@ -142,7 +142,7 @@
                  </div>
                  <span class="slider-output noselect currentAnimationSpeed">@data.gettext_fmt("Animation speed: {}", &[1])</span>
               </div>
-              <div class="kanjisvgParent">
+              <div class="kanjisvgParent umami--click--kanji-replay">
                 <svg class="kanjisvg" width="109px" height="109px">
                 @for (del, d) in k_item.get_animation_entries() {
                   <path style="animation-delay: @del;" class="draw2" stroke-linejoin="round" stroke="black" fill="none" stroke-width="5" d="@d">

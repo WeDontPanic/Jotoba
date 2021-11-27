@@ -35,10 +35,10 @@
                               <div class="input-group">
                                  <input id="search" name="s" type="text" value="" placeholder='@data.gettext("Search...")' tabindex="1" lang="ja" autocapitalize="off" autocomplete="off" data-autoload="false" data-effective-keyword="">
                                  <span id="shadow-text"></span>
-                                 <button  type="button" class="btn bg-transparent search-embedded-btn" onclick="toggleImageSearchOverlay()">
+                                 <button type="button" class="btn bg-transparent search-embedded-btn umami--click--image-upload-button" onclick="toggleImageSearchOverlay()">
                                     <div class="cameraSvg index"></div>
                                  </button>
-                                 <button type="button" class="btn bg-transparent search-embedded-btn" onclick="toggleSpeakOverlay()">
+                                 <button type="button" class="btn bg-transparent search-embedded-btn umami--click--speak-button" onclick="toggleSpeakOverlay()">
                                     <div class="voiceSvg index"></div> 
                                  </button>
                               </div>
@@ -63,7 +63,7 @@
                         @data.gettext("No new notifications")
                      </div>
                      <div class="button-container">
-                        <button class="overlay-button" onclick="showAllNotifications()">@data.gettext("Show all")</button> <!-- TODO -->
+                        <button class="overlay-button umami--click--nofitication-show-all-button" onclick="showAllNotifications()">@data.gettext("Show all")</button> <!-- TODO -->
                         <button class="overlay-button" onclick="closeNotifications()">@data.gettext("Close")</button>
                      </div>
                   </div>
@@ -111,13 +111,13 @@
 
          <!-- Settings Button -->
          <div class="btn-container">
-            <div class="settingsSvg settingsBtn index"  data-toggle="modal" data-target="#settingsModal"></div>
+            <div class="settingsSvg settingsBtn index umami--click--settings-button"  data-toggle="modal" data-target="#settingsModal"></div>
          </div>
 
          <!-- Info / Notification Button-->
          <div class="btn-container">
-            <div class="infoSvg infoBtn index" onclick='openHelpPage()'></div>
-            <div class="notificationSvg notificationBtn index" onclick="toggleNotifications(event)"></div>
+            <div class="infoSvg infoBtn index umami--click--help-button" onclick='openHelpPage()'></div>
+            <div class="notificationSvg notificationBtn index umami--click--notification-button" onclick="toggleNotifications(event)"></div>
          </div>      
       </div>
 

@@ -9,7 +9,7 @@
 <div class="modal fade" id="imageCroppingModal">
    <div class="modal-body cropping-target-body">
       <div class="cropping-target-border">
-         <button class="btn-search crop" onclick="uploadCroppedImage()">
+         <button class="btn-search crop umami--click--image-upload-send-button" onclick="uploadCroppedImage()">
             <div class="flex-center">
                <div>@data.gettext("Search")</div>
                <div class="searchSvg index"></div>
@@ -63,7 +63,7 @@
                                  </div>
                               </div>
                               <div class="choices__list choices__list--dropdown">
-                                 <div id="search-lang-select" class="choices__list">
+                                 <div id="search-lang-select" class="choices__list umami--change--search-language-change">
                                     <div data-value="en-US" class="choices__item choices__item--choice choices__item--selectable">@data.gettext("English")</div>
                                     <div data-value="de-DE" class="choices__item choices__item--choice choices__item--selectable">@data.gettext("German")</div>
                                     <div data-value="es-ES" class="choices__item choices__item--choice choices__item--selectable">@data.gettext("Spanish")</div>
@@ -88,7 +88,7 @@
                                     <div class="choices__item choices__item--selectable">@data.gettext("English")</div>
                                  </div>
                               </div>
-                              <div class="choices__list choices__list--dropdown">
+                              <div class="choices__list choices__list--dropdown umami--change--page-language-change">
                                  <div id="page-lang-select" class="choices__list">
                                     <div data-value="en-US" class="choices__item choices__item--choice choices__item--selectable">@data.gettext("English")</div>
                                     <div data-value="de-DE" class="choices__item choices__item--choice choices__item--selectable">@data.gettext("German")</div>
@@ -190,7 +190,7 @@
                            <div class="settings-entry"> <!-- TODO translate -->
                               <span class="inner-title display">@data.gettext("Use dark mode"):</span>
                               <label for="use_dark_mode_settings" class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect">
-                                 <input checked id="use_dark_mode_settings" type="checkbox" class="mdl-checkbox__input" onchange="onBtnSettingsChange_darkTheme(event)">
+                                 <input checked id="use_dark_mode_settings" type="checkbox" class="mdl-checkbox__input umami--click--dark-mode-button" onchange="onBtnSettingsChange_darkTheme(event)">
                               </label>
                            </div>
                            <div class="settings-entry"> <!-- TODO translate -->

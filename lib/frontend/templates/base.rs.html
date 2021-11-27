@@ -17,13 +17,13 @@
 
                <!-- Settings Button -->
                <div class="btn-container"> 
-                  <div class="settingsSvg settingsBtn" data-toggle="modal" data-target="#settingsModal"></div>
+                  <div class="settingsSvg settingsBtn umami--click--settings-button" data-toggle="modal" data-target="#settingsModal"></div>
                </div>
 
                <!-- Home / Info Button -->
                <div class="btn-container right">
                   <div class="homeBtn noselect" onclick='Util.loadUrl(JotoTools.getPageUrl(""));'>home</div>
-                  <div class="infoSvg infoBtn" onclick='openHelpPage()'></div>
+                  <div class="infoSvg infoBtn umami--click--help-button" onclick='openHelpPage()'></div>
                </div>
 
                <!-- Search Bar -->
@@ -45,7 +45,7 @@
                                  <button id="searchBtn" class="search-embedded-btn search" type="submit">
                                     <div class="searchSvg"></div>
                                  </button>
-                                 <button type="button" id="voiceBtn" class="search-embedded-btn" onclick='toggleSpeakOverlay()'>
+                                 <button type="button" id="voiceBtn" class="search-embedded-btn umami--click--speak-button" onclick='toggleSpeakOverlay()'>
                                     <div class="voiceSvg"></div> 
                                  </button>
                                  <button type="button" class="search-embedded-btn radical" onclick="toggleRadicalOverlay()">
