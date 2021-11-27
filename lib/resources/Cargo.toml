@@ -26,7 +26,7 @@ sorted_intersection = "1.2.0"
 bitflags = {git = "https://github.com/JojiiOfficial/BitFlags"}
 intmap = { git = "https://github.com/JojiiOfficial/rust-intmap"}
 #markdown = { git = "https://github.com/johannhof/markdown.rs"}
-comrak = { version =  "*", default-features = false}
+comrak = { version = "0.12.1", default-features = false }
 
 [lib]
 name = "resources"
