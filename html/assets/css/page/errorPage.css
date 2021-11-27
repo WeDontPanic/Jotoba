@@ -15,6 +15,10 @@ body {
 	margin: 100px auto;
 }
 
+.err-parent > *:not(:first-child) {
+	margin-bottom: 10px;
+}
+
 .err-code {
 	font-size: 220px;
 	position: relative;
