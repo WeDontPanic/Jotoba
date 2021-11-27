@@ -87,10 +87,6 @@
         margin: 13px 15px;
     }
 	
-    .main-container {
-        width: 98vw;
-    }
-
     #content-container {
         flex-direction: column!important;
     }
