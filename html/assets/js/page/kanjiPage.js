@@ -47,7 +47,7 @@ kanjis.each(function() {
 sliders.each(function() {
     this.textField = $(this).parent().parent().find('span')[0];
     this.kanjisvg = $(this).parent().parent().parent().children('.kanjisvgParent').children()[0];
-    let speed = localStorage.getItem("kanji_speed");
+    let speed = localStorage.getItem("kanji_speed") || 1;
     this.value = speed;
     this.textField.innerHTML = "Animation speed: "+ speed;
 });
