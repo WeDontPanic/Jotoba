@@ -270,6 +270,7 @@ thead > tr > th {
 }
 
 table th {
+    padding: 0.75rem;
     border-color: var(--searchTextColor) !important;
     border-bottom: 2px solid var(--lineColor) !important;
     border-top: 1px solid var(--lineColor) !important;
