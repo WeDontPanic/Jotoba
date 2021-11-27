@@ -131,19 +131,26 @@ function startEventTimeout(targetElement, durationMs, disableClick = true, disab
 function copyTranslationAndShowMessage(textParent) {
     let fullContent = "";
     let onlyKanji = true;
+    let onlyKana = true;
 
     // Find all childs that are of interest
     $(textParent).find('.kanji-preview, .inline-kana-preview').each((i, element) => {
         let txt = element.innerHTML.trim();
         fullContent += txt
-        if (txt.charCodeAt(0) < 19968) {
-            onlyKanji = false;
+
+        for (char of txt) {
+            let isKanji = char.match(kanjiRegEx);
+            if (isKanji) {
+                onlyKana = false;
+            } else {
+                onlyKanji = false;
+            }
         }
     });
 
     // Copy and visual feedback
     Util.copyToClipboard(fullContent);
-    Util.showMessage("success", onlyKanji ? "kanji copied to clipboard." : "kana copied to clipboard.");
+    Util.showMessage("success", onlyKanji ? "kanji copied to clipboard." : (onlyKana ? "kana copied to clipboard." : "word copied to clipboard."));
 }
 
 // Changes the search type in the upper row depending on the users input
