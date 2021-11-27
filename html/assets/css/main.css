@@ -476,6 +476,15 @@ a:hover {
 
 /* SVG Colors */
 
+:root.dark .mobile-nav-btn > div, :root.dark .mobile-nav-inner-btn > div:not(.jumpSvg) {
+    background-color: var(--searchTextColor) !important;
+    color: var(--searchTextColor) !important;
+}
+
+:root.dark .mobile-nav-inner-btn > span {
+    color: var(--searchTextColor) !important;
+}
+
 .searchSvg, .settingsSvg, .clearSvg, .voiceSvg {
     mask-size: cover !important;
     -webkit-mask-size: cover !important; 
@@ -579,7 +588,7 @@ a:hover {
     margin-left: -1px;
     height: 26px;
     width: 26px;
-    background-color: var(--primaryColor);
+    background-color: var(--primaryColor) !important;
     mask: url("/assets/svg/ui/jump.svg") no-repeat center;
     -webkit-mask: url("/assets/svg/ui/jump.svg") no-repeat center;
 }
