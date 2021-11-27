@@ -1403,9 +1403,8 @@ dependencies = [
 
 [[package]]
 name = "jp_inflections"
-version = "0.1.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f827a6a1495da6bea015e524b2b14ba7cc7fdd4d621df2a0569f73cc364bea19"
+version = "0.1.3"
+source = "git+https://github.com/JojiiOfficial/Japanese_Inflections#4734de6180d35ee35fefcbe0876b15ef34eecaca"
 
 [[package]]
 name = "js-sys"
@@ -2179,7 +2178,6 @@ dependencies = [
  "futures",
  "itertools",
  "japanese",
- "jp_inflections",
  "levenshtein",
  "localization",
  "log",

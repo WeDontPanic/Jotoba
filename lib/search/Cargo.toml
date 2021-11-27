@@ -19,7 +19,6 @@ itertools = "0.10.1"
 futures = "0.3.18"
 once_cell = "1.8.0"
 levenshtein = "1.0.5"
-jp_inflections = "0.1.1"
 strsim = "0.10.0"
 eudex = { git = "https://github.com/JojiiOfficial/eudex"}
 regex = "1.5.4"
