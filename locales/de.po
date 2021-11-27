@@ -13,7 +13,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"PO-Revision-Date: 2021-11-25 23:45+0100\n"
+"PO-Revision-Date: 2021-11-27 00:07+0100\n"
 "Last-Translator:  <>\n"
 "Language-Team: English\n"
 "Language: en\n"
@@ -388,6 +388,10 @@ msgstr "Ainuischen"
 msgctxt "foreign_lang"
 msgid "Algonquian"
 msgstr "Algonkinischen"
+
+msgctxt "foreign_lang"
+msgid "French"
+msgstr "Französischen"
 
 # Settings
 msgid "Language"

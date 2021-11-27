@@ -118,6 +118,8 @@ pub enum ForeignLanguage {
     Ainu,
     #[strum(serialize = "alg")]
     Algonquian,
+    #[strum(serialize = "fre")]
+    French,
 }
 
 impl Translatable for ForeignLanguage {
@@ -179,6 +181,7 @@ impl Translatable for ForeignLanguage {
             ForeignLanguage::Finnish => "Finnish",
             ForeignLanguage::Ainu => "Ainu",
             ForeignLanguage::Algonquian => "Algonquian",
+            ForeignLanguage::French => "French",
         }
     }
 }
