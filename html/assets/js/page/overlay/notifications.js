@@ -34,7 +34,7 @@ async function parseShortNotificationResults(results) {
     // Else, show the results
     let notifiContent = document.getElementById("notification-content");
     for (let result of results.entries) {
-        let creationDateString = Util.toLocaleDateString(result.creation_time * 1000, Cookies.get("page_lang") || "en-US");
+        let creationDateString = Util.toLocaleDateString(result.creation_time * 1000);
 
         var entryHtml = '<div class="notification-entry" onclick="requestLongData(event,'+result.id+');">'
                             + '<div class="entry-title">' + result.title + '</div>'

@@ -3,7 +3,7 @@
  */
 
 // Constants
-const dateSettings = { year: 'numeric', month: 'numeric', day: 'numeric' };
+const dateSettings = { year: 'numeric', month: 'short', day: 'numeric' };
 
 // The util "parent"
 function Util () {};
@@ -67,6 +67,6 @@ Util.setMdlCheckboxState = function(id, state) {
 }
 
 // Parses the given Unix time to a date of the given language
-Util.toLocaleDateString = function(unixTime, language) {
-  return new Date(unixTime).toLocaleDateString(language, dateSettings);
+Util.toLocaleDateString = function(unixTime) {
+  return new Date(unixTime).toLocaleDateString("de-DE", dateSettings);
 }   
