@@ -20,6 +20,7 @@ function cookiesAccepted(manuallyCalled) {
     $('#cookie-footer').addClass("hidden");
 
     Util.loadScript(analyticsUrl, true, analyticsAttributes);
+    Util.setMdlCheckboxState("cookie_settings", true);
 }
 
 // Revokes the right to store user Cookies
@@ -31,6 +32,7 @@ function revokeCookieAgreement(manuallyCalled) {
 
     Util.deleteSelectedCookies(trackingCookies);
     Cookies.set("allow_cookies", "0", {path: '/'});
+    Util.setMdlCheckboxState("cookie_settings", false);
 }
 
 /* ------------------------------------------------------------------- */
@@ -162,10 +164,11 @@ async function setDisplaySettings(theme, kanji_speed) {
 // Prepare the others tab
 async function setOtherSettings(allow_cookies) {
     if (allow_cookies === undefined) {
-        Cookies.set("allow_cookies", false);
-    } 
-
-    Util.setMdlCheckboxState("cookie_settings", allow_cookies);
+        $("#cookie-footer").removeClass("hidden");
+        Util.setMdlCheckboxState("cookie_settings", false);
+    } else {
+        Util.setMdlCheckboxState("cookie_settings", allow_cookies);
+    }
 }
 
 // Handles an event caused by an input field
