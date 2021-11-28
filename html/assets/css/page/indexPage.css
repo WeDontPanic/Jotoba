@@ -195,8 +195,20 @@ form {
         left: 10px !important;
     }
 
+    .btn-container {
+        display: block !important;
+    }
+
     .infoBtn, .notificationBtn {
         display: unset !important;
+    }
+
+    .infoBtn {
+        right: 50px;
+    }
+
+    .notificationBtn {
+        right: 15px;
     }
 
     .input-field.third-wrap:not(.rad) {
