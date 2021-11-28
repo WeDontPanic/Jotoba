@@ -121,8 +121,9 @@ async function setSearchSettings(english_always, english_on_top, example_sentenc
     }
 
     // Default items val
-    if (items_per_page == undefined) {
-       items_per_page = 10;
+    if (!items_per_page) {
+        Cookies.set("items_per_page", 10);
+        items_per_page = 10;
     }
 
     // Set items val
@@ -131,7 +132,8 @@ async function setSearchSettings(english_always, english_on_top, example_sentenc
     itemsInput.parent().addClass("is-dirty")
 
     // Default kanji val
-    if (kanji_per_page == undefined) {
+    if (!kanji_per_page) {
+        Cookies.set("kanji_page_size", 4);
         kanji_per_page = 4;
     }
 
