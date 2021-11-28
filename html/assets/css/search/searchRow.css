@@ -117,14 +117,14 @@ svg {
 
 .infoBtn {
     top: 21px;
-    right: 60px;
+    right: 3em;
 }
 
 .homeBtn {
     font-family: 'Material Icons';
     font-size: 27px;
     top: 16px;
-    right: 25px;
+    right: 0.5em;
     color: var(--tagColor);
 }
 
@@ -193,23 +193,21 @@ svg {
 }
 
 /* Adjustments for the upper buttons */
-@media only screen and (max-width: 1330px) {
+@media only screen and (max-width: 1350px) {
     #searchDiv {
         width: 90%;
         padding-right: 30px;
     }
-
-    .homeBtn {
-        right: 10px;
-    }
-
-    .infoBtn {
-        right: 50px;
-    }
 }
-@media only screen and (max-width: 850px) {
+@media only screen and (max-width: 875px) {
     #searchDiv {
         padding-right: 45px;
+    }
+    .homeBtn {
+        right: 0.25em;
+    }
+    .infoBtn {
+        right: 2.5em;
     }
 }
 @media only screen and (max-width: 600px) {

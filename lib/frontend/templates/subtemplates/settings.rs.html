@@ -127,14 +127,14 @@
                               </label>
                            </div>
 
-                           <div class="settings-entry"> <!-- TODO translate -->
+                           <div class="settings-entry">
                               <span class="inner-title">@data.gettext("Focus search bar on load"):</span>
                               <label for="focus_search_bar_settings" class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect">
                                  <input id="focus_search_bar_settings" type="checkbox" class="mdl-checkbox__input" onchange="onBtnSettingsChange('focus_searchbar', event)">
                               </label>
                            </div>
 
-                           <div class="settings-entry txt-input"> <!-- TODO translate -->
+                           <div class="settings-entry txt-input">
                               <span id="rpr" class="inner-title txt-input">@data.gettext("Results per page"):</span>
                               <form action="#" onsubmit="return false">
                                  <div class="mdl-textfield mdl-js-textfield">
@@ -143,14 +143,14 @@
                                    <span class="mdl-textfield__error">@data.gettext("Input has to be in range of 1 and 100!")</span>
                                  </div>
                                </form>
-                               <div class="mdl-tooltip" for="rpr">  <!-- TODO translate -->
+                               <div class="mdl-tooltip" for="rpr">
                                  @data.gettext("max amount of names/words/sentences shown per page")
                                </div>
                            </div>
 
                            <div class="inner-header">@data.gettext("Sentences")</div>
                            
-                           <div class="settings-entry"> <!-- TODO translate -->
+                           <div class="settings-entry">
                               <span class="inner-title">@data.gettext("Show Furigana"):</span>
                               <label for="show_sentence_furigana_settings" class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect">
                                  <input checked id="show_sentence_furigana_settings" type="checkbox" class="mdl-checkbox__input" onchange="onBtnSettingsChange('sentence_furigana', event)">
@@ -159,7 +159,7 @@
 
                            <div class="inner-header">@data.gettext("Words")</div>
 
-                           <div class="settings-entry"> <!-- TODO translate -->
+                           <div class="settings-entry">
                               <span class="inner-title">@data.gettext("Show example sentences"):</span>
                               <label for="show_example_sentences_settings" class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect">
                                  <input checked id="show_example_sentences_settings" type="checkbox" class="mdl-checkbox__input" onchange="onBtnSettingsChange('show_sentences', event)">
@@ -168,7 +168,7 @@
                            
                            <div class="inner-header">@data.gettext("Kanji")</div>
                            
-                           <div class="settings-entry no-gap"> <!-- TODO implement; translate -->
+                           <div class="settings-entry no-gap">
                               <span id="krp" class="inner-title txt-input">@data.gettext("Items per page"):</span>
                               <form action="#" onsubmit="return false">
                                  <div class="mdl-textfield mdl-js-textfield">
@@ -177,7 +177,7 @@
                                    <span class="mdl-textfield__error">@data.gettext("Input has to be in range of 1 and 100!")</span>
                                  </div>
                                </form>
-                               <div class="mdl-tooltip" for="krp">  <!-- TODO translate -->
+                               <div class="mdl-tooltip" for="krp">
                                  @data.gettext("max amount of kanji shown per page")
                                </div>
                            </div>
@@ -187,13 +187,13 @@
                  <section class="mdl-layout__tab-panel" id="scroll-tab-3">
                      <div class="page-content">
                         <div class="d-flex flex-column">
-                           <div class="settings-entry"> <!-- TODO translate -->
+                           <div class="settings-entry">
                               <span class="inner-title display">@data.gettext("Use dark mode"):</span>
                               <label for="use_dark_mode_settings" class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect">
                                  <input checked id="use_dark_mode_settings" type="checkbox" class="mdl-checkbox__input umami--click--dark-mode-button" onchange="onBtnSettingsChange_darkTheme(event)">
                               </label>
                            </div>
-                           <div class="settings-entry"> <!-- TODO translate -->
+                           <div class="settings-entry">
                               <span class="inner-title">@data.gettext("Default kanji animation speed"):</span>
                               <div class="slidercontainer settings">
                                  <input id="show_anim_speed_settings" type="range" min="0.05" max="2" value="1" step="0.05" class="slider speedSlider" oninput="onSettingsChange_AnimationSpeed(event)">
@@ -206,7 +206,7 @@
                  <section class="mdl-layout__tab-panel" id="scroll-tab-4">
                      <div class="page-content">
                         <div class="d-flex flex-column">
-                           <div class="settings-entry"> <!-- TODO translate -->
+                           <div class="settings-entry">
                               <span class="inner-title">@data.gettext("Accept Cookies"):</span>
                               <label for="cookie_settings" class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect">
                                  <input checked id="cookie_settings" type="checkbox" class="mdl-checkbox__input" onchange="onCookiesAcceptChange(event)">
