@@ -338,7 +338,7 @@ impl<'dict, 'input> InputTextParser<'dict, 'input> {
             .iter()
             .filter_map(|i| {
                 inflection_from_morpheme(
-                    &i,
+                    i,
                     main_morpheme.map(Some).unwrap_or_else(|| {
                         self.get_no_inflection_morphemes()
                             .get(0)

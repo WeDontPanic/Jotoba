@@ -1,7 +1,7 @@
 use crate::parse::jmnedict::name_type::NameType;
 use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Name {
     pub sequence: u32,
     pub kana: String,
@@ -9,6 +9,13 @@ pub struct Name {
     pub transcription: String,
     pub name_type: Option<Vec<NameType>>,
     pub xref: Option<String>,
+}
+
+impl PartialEq for Name {
+    #[inline]
+    fn eq(&self, other: &Self) -> bool {
+        self.sequence == other.sequence
+    }
 }
 
 impl std::hash::Hash for Name {

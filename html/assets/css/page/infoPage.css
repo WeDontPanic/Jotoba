@@ -2,18 +2,20 @@
     padding-top: 25px;
 }
 
-table {
+.table {
+    display: flex;
+    flex-direction: column;
     margin-left: 25px;
 }
 
-.help-list ul:first-child {
-    color: var(--primaryColor);
-    width: 150px;
+.row {
+    display: flex;
+    flex-direction: row;
 }
 
-td:first-child {
+.row span:first-child {
     color: var(--primaryColor);
-    width: 150px;
+    flex: 0 0 150px;
 }
 
 article {

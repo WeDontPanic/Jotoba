@@ -13,7 +13,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"PO-Revision-Date: 2021-11-11 18:56+0100\n"
+"PO-Revision-Date: 2021-11-27 16:31+0100\n"
 "Last-Translator:  <>\n"
 "Language-Team: English\n"
 "Language: en\n"
@@ -111,6 +111,27 @@ msgstr "Lade ein Bild hoch oder füge direkt die URL ein ein und Jotoba wird ver
 
 msgid "Enter Image URL..."
 msgstr "Bild-URL einfügen..."
+
+# Rad Picker overlay
+
+msgid "Select Radicals"
+msgstr "Wähle Radikale"
+
+msgid "Select Kanji"
+msgstr "Wähle Kanji"
+
+msgid "Search Radicals..."
+msgstr "Suche Radikale..."
+
+# Notification overlay
+msgid "Notifications"
+msgstr "Benachrichtigungen"
+
+msgid "No new notifications"
+msgstr "Keine Benachrichtigungen"
+
+msgid "Show all"
+msgstr "Zeige alle"
 
 # Languages
 
@@ -368,96 +389,67 @@ msgctxt "foreign_lang"
 msgid "Algonquian"
 msgstr "Algonkinischen"
 
-# Settings
-msgid "Default search language"
-msgstr "Standardmäßige Suchsprache"
+msgctxt "foreign_lang"
+msgid "French"
+msgstr "Französischen"
 
-msgid "Results will try to match the selected language"
-msgstr "Die gewählte Sprache wird für Suchen verwendet"
+# Settings
+msgid "Language"
+msgstr "Sprache"
+
+msgid "Display"
+msgstr "Design"
+
+msgid "General"
+msgstr "Allgemein"
+
+msgid "Default search language"
+msgstr "Sprache für Suchanfragen"
 
 msgid "Page language"
-msgstr "Seitensprache"
-
-msgid "Displays the website in the selected language"
-msgstr "Die gewählte Sprache bestimmt die UI Sprache"
-
-msgid "This language has not been translated yet."
-msgstr "Diese Sprache wurde noch nicht übersetzt."
-
-msgid "Contributions are welcome!"
-msgstr "Kontributionen sind willkommen!"
-
-msgid "Result settings"
-msgstr "Ergebnis Einstellungen"
+msgstr "Sprache der Webseite"
 
 msgid "Always show english results"
-msgstr "Zeige immer englische Ergebnisse"
+msgstr "Zeige englische Ergebnisse immer"
 
 msgid "Show english results on top"
 msgstr "Zeige englische Ergebnisse als erstes"
 
-msgid "Display settings"
-msgstr "Ansichts Einstellungen"
+msgid "Focus search bar on load"
+msgstr "Fokussiere die Suchleiste nach dem Suchen"
+
+msgid "Results per page"
+msgstr "Ergebnisse pro Seite"
+
+msgid "Number..."
+msgstr "Nummer..."
+
+msgid "Input has to be in range of 1 and 100!"
+msgstr "Eingabe muss zwischen 1 und 100 liegen!"
+
+msgid "max amount of names/words/sentences shown per page"
+msgstr "Anzahl der Namen/Wörter/Sätze auf einer Seite"
+
+msgid "Show Furigana"
+msgstr "Zeige Furigana"
+
+msgid "Show example sentences"
+msgstr "Zeige Beispielsätze"
+
+msgid "Items per page"
+msgstr "Anzahl pro Seite"
+
+msgid "max amount of kanji shown per page"
+msgstr "Anzahl der Kanji auf einer Seite"
+
+msgid "Use dark mode"
+msgstr "Dark Mode"
 
 msgid "Default kanji animation speed"
 msgstr "Kanji Animationsgeschwindigkeit"
 
-msgid "Select color scheme"
-msgstr "Wähle ein Farbschema aus"
-
-msgid "Use theme"
-msgstr "Presets"
-
-msgid "Light"
-msgstr "Hell"
-
-msgid "Dark"
-msgstr "Dunkel"
-
-msgid "background"
-msgstr "Hintergrund"
-
-msgid "overlay"
-msgstr "Overlay"
-
-msgid "primary"
-msgstr "Primär"
-
-msgid "primHover"
-msgstr "PrimHover"
-
-msgid "secondary"
-msgstr "Sekundär"
-
-msgid "text"
-msgstr "Text"
-
-msgid "overlayText"
-msgstr "OverlayText"
-
-msgid "searchBG"
-msgstr "SuchBG"
-
-msgid "searchText"
-msgstr "SuchText"
-
-msgid "shadow"
-msgstr "Schatten"
-
-msgid "tags"
-msgstr "Tags"
-
-msgid "itemBG"
-msgstr "ItemBG"
-
-msgid "scheme code"
-msgstr "Farbcode"
-
-msgid "Using the code you can share color schemes"
-msgstr "Mit diesem Code kannst du dein Farbschema mit anderen teilen"
-
-msgid "Cookie management"
-msgstr "Cookie Einstellungen"
+msgid "Accept Cookies"
+msgstr "Cookies akzeptieren"
 
 # Cookie text
 msgid "To use this feature you have to accept to the use of cookies."
@@ -584,6 +576,12 @@ msgstr "[Wörter] Suche"
 msgid "Play the first possible audio"
 msgstr "Spiele die Audio vom ersten Ergebnis ab"
 
+msgid "[Kanji] search"
+msgstr "[Kanji] Suche"
+
+msgid "Show / Collapse compounds"
+msgstr "Zeige / Verstecke Wortverbindungen"
+
 msgid "To specify what kind of results your search should offer, you can use shortcuts."
 msgstr "Um deine Suche genauer zu spezifizieren, können Hashtags verwendet werden."
 
@@ -670,6 +668,9 @@ msgstr "Verfügbare Hashtags für die [Sätze] Suche"
 
 msgid "Search for sentences included in the specific JLPT level"
 msgstr "Suche nach Sätzen aus dem jeweiligen JLPT Level"
+
+msgid "Hide translations by default to translate them yourself and check if its correct"
+msgstr "Zeige Übersetzungen eingeklappt an, damit du die Sätze selber übersetzen und gegenprüfen kannst"
 
 msgid "Available Hashtags for [Kanji] search"
 msgstr "Verfügbare Hashtags für die [Kanji] Suche"
@@ -862,6 +863,12 @@ msgstr "Passiv"
 msgid "Causative"
 msgstr "Kausativ"
 
+msgid "Causative Passive"
+msgstr "Kausativ-Passiv"
+
+msgid "Imperative"
+msgstr "Imperativ"
+
 msgid "Play audio"
 msgstr "Vorlesen"
 
@@ -886,6 +893,12 @@ msgid "From {}: {}"
 msgstr "Vom {}: {}"
 
 ## Sentence search
+
+msgid "hide"
+msgstr "verstecken"
+
+msgid "show"
+msgstr "zeigen"
 
 # "No sentences found"
 msgid "sentences"

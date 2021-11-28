@@ -171,7 +171,7 @@ impl ResourceStorage {
     }
 
     /// Returns an iterator over all words with given `jlpt` level
-    pub fn word_jlpt<'a>(&'a self, jlpt: u8) -> Option<impl Iterator<Item = &'a Word>> {
+    pub fn word_jlpt(&self, jlpt: u8) -> Option<impl Iterator<Item = &'_ Word>> {
         let word = self.words();
 
         Some(
@@ -185,7 +185,7 @@ impl ResourceStorage {
     }
 
     /// Returns an iterator over all sentences with given `jlpt` level
-    pub fn sentence_jlpt<'a>(&'a self, jlpt: u8) -> Option<impl Iterator<Item = &'a Sentence>> {
+    pub fn sentence_jlpt(&self, jlpt: u8) -> Option<impl Iterator<Item = &'_ Sentence>> {
         let sentences = self.sentences();
 
         Some(
@@ -210,7 +210,7 @@ impl ResourceStorage {
 
     /// Returns a `WordRetrieve` which can be used to retrieve names from the `ResourceStorage`
     #[inline]
-    pub fn names<'a>(&'a self) -> NameRetrieve<'a> {
+    pub fn names(&self) -> NameRetrieve<'_> {
         NameRetrieve::new(self)
     }
 
@@ -228,7 +228,7 @@ impl ResourceStorage {
 
     /// Returns a `SentenceRetrieve` which can be used to retrieve sentences from the `ResourceStorage`
     #[inline]
-    pub fn sentences<'a>(&'a self) -> SentenceRetrieve<'a> {
+    pub fn sentences(&self) -> SentenceRetrieve<'_> {
         SentenceRetrieve::new(self)
     }
 }

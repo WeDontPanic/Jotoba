@@ -34,7 +34,7 @@ impl From<&names::Name> for Name {
 impl From<Vec<&names::Name>> for Response {
     #[inline]
     fn from(name: Vec<&names::Name>) -> Self {
-        let names: Vec<Name> = name.into_iter().map(|i| Name::from(i)).collect();
+        let names: Vec<Name> = name.into_iter().map(Name::from).collect();
         Self { names }
     }
 }

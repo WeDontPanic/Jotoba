@@ -5,11 +5,18 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    height: -webkit-fit-content;
-    height: -moz-fit-content;
-    height: fit-content;
+    overflow-y: auto;
+    max-height: 150px;
+    height: -webkit-max-content;
+    height: -moz-max-content;
+    height: max-content;
     padding-right: 75px;
     padding-left: 75px;
+    scrollbar-width: none;
+}
+
+.search-annotation::-webkit-scrollbar {
+    width: 0px;
 }
 
 .search-inflection {
@@ -24,9 +31,13 @@
 
 /* Mobile only */
 @media only screen and (max-width: 600px) {
+    .search-annotation {
+        padding-right: 30px;
+        padding-left: 30px;
+    }
+    
     .search-inflection {
         padding: 0.5rem 0rem 0.5rem 0rem;
         width: 80vw;
-
     }
 }

@@ -25,7 +25,7 @@ use std::path::Path;
 use self::inflection::Inflections;
 
 /// A single word item
-#[derive(Debug, Clone, Default, Serialize, Deserialize, Eq, PartialEq, Hash)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize, Eq)]
 pub struct Word {
     pub sequence: u32,
     pub priorities: Option<Vec<Priority>>,
@@ -38,6 +38,20 @@ pub struct Word {
     pub transive_verion: Option<u32>,
     pub intransive_verion: Option<u32>,
     pub sentences_available: u16,
+}
+
+impl std::hash::Hash for Word {
+    #[inline]
+    fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
+        self.sequence.hash(state);
+    }
+}
+
+impl PartialEq for Word {
+    #[inline]
+    fn eq(&self, other: &Self) -> bool {
+        self.sequence == other.sequence
+    }
 }
 
 /// Various readings of a word
@@ -123,9 +137,12 @@ impl Word {
 
     /// Get the audio path of a word
     #[inline]
-    pub fn audio_file(&self) -> Option<String> {
+    pub fn audio_file(&self, file_ending: &str) -> Option<String> {
         self.reading.kanji.as_ref().and_then(|kanji| {
-            let file = format!("{}【{}】.ogg", kanji.reading, self.reading.kana.reading);
+            let file = format!(
+                "{}/{}【{}】.{}",
+                file_ending, kanji.reading, self.reading.kana.reading, file_ending
+            );
             Path::new(&format!("html/audio/{}", file))
                 .exists()
                 .then(|| file)
@@ -141,6 +158,11 @@ impl Word {
 
         let res = accent_iter
             .map(|(pos, (part, is_high))| {
+                if part.is_empty() {
+                    // Don't render under/overline for empty character -- handles the case where the
+                    // pitch changes from the end of the word to the particle
+                    return vec![];
+                }
                 let borders = vec![if *is_high {
                     Border::Top
                 } else {
@@ -271,7 +293,7 @@ impl Word {
 
         filter_languages(words.iter_mut(), language, show_english);
 
-        let words = words
+        words
             .into_iter()
             .map(|word| {
                 let senses: Vec<String> = word
@@ -288,15 +310,18 @@ impl Word {
 
                 (reading, senses.join(", "))
             })
-            .collect();
-
-        words
+            .collect()
     }
 
     /// Returns an iterator over all reading elements
     #[inline]
     pub fn reading_iter(&self, allow_kana: bool) -> ReadingIter<'_> {
         self.reading.iter(allow_kana)
+    }
+
+    /// Returns true if word has `reading`
+    pub fn has_reading(&self, reading: &str) -> bool {
+        self.reading_iter(true).any(|j| j.reading == reading)
     }
 
     fn pretty_print_senses(senses: &[Sense]) -> String {
@@ -370,7 +395,7 @@ impl<'a> Iterator for ReadingIter<'a> {
         }
         if !self.did_kanji && self.reading.kanji.is_some() {
             self.did_kanji = true;
-            return Some(&self.reading.kanji.as_ref().unwrap());
+            return Some(self.reading.kanji.as_ref().unwrap());
         }
         let i = self.reading.alternative.get(self.alternative_pos)?;
         self.alternative_pos += 1;

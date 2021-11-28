@@ -16,7 +16,7 @@ pub(super) fn search(query: &Query) -> Result<SentenceResult, Error> {
     if let Tag::Jlpt(jlpt) = filter_tag {
         return jlpt_search(query, *jlpt);
     } else {
-        return Err(Error::Unexpected);
+        return Ok(SentenceResult::default());
     }
 }
 
@@ -47,8 +47,10 @@ fn jlpt_search(query: &Query, jlpt: u8) -> Result<SentenceResult, Error> {
         .filter_map(|i| super::map_sentence_to_item(i, query.settings.user_lang, query))
         .collect::<Vec<_>>();
 
+    let hidden = query.has_tag(Tag::Hidden);
     Ok(SentenceResult {
         items: sentences,
         len,
+        hidden,
     })
 }

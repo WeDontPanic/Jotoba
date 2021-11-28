@@ -1,4 +1,8 @@
-use std::{io::Write, time::Duration};
+use std::{
+    fs::DirEntry,
+    io::{BufReader, Read, Write},
+    time::Duration,
+};
 
 use serde::{Deserialize, Serialize};
 
@@ -12,6 +16,9 @@ pub struct Config {
     pub server: ServerConfig,
     pub sentry: Option<SentryConfig>,
     pub search: Option<SearchConfig>,
+
+    #[serde(skip)]
+    pub asset_hash: String,
 }
 
 #[derive(Serialize, Deserialize, Clone)]
@@ -24,6 +31,8 @@ pub struct ServerConfig {
     pub sentences: Option<String>,
     pub img_upload_dir: Option<String>,
     pub tess_data: Option<String>,
+    pub news_folder: Option<String>,
+    pub debug_mode: Option<bool>,
 }
 
 #[derive(Serialize, Deserialize, Clone)]
@@ -66,7 +75,7 @@ impl Config {
     pub fn get_indexes_source(&self) -> &str {
         self.search
             .as_ref()
-            .and_then(|i| i.indexes_source.as_ref().map(|i| i.as_str()))
+            .and_then(|i| i.indexes_source.as_deref())
             .unwrap_or("./indexes")
     }
 
@@ -74,7 +83,7 @@ impl Config {
     pub fn get_suggestion_sources(&self) -> &str {
         self.search
             .as_ref()
-            .and_then(|i| i.suggestion_sources.as_ref().map(|i| i.as_str()))
+            .and_then(|i| i.suggestion_sources.as_deref())
             .unwrap_or("./suggestions")
     }
 
@@ -95,7 +104,7 @@ impl Config {
             .storage_data
             .as_ref()
             .cloned()
-            .unwrap_or(ServerConfig::default().storage_data.unwrap())
+            .unwrap_or_else(|| ServerConfig::default().storage_data.unwrap())
     }
 
     /// Returns the configured (or default) path for the sentences resource file
@@ -104,7 +113,7 @@ impl Config {
             .sentences
             .as_ref()
             .cloned()
-            .unwrap_or(ServerConfig::default().sentences.unwrap())
+            .unwrap_or_else(|| ServerConfig::default().sentences.unwrap())
     }
 
     /// Returns the configured (or default) path for the radical map
@@ -113,7 +122,7 @@ impl Config {
             .radical_map
             .as_ref()
             .cloned()
-            .unwrap_or(ServerConfig::default().radical_map.unwrap())
+            .unwrap_or_else(|| ServerConfig::default().radical_map.unwrap())
     }
 
     /// Returns the configured (or default) path for the radical map
@@ -122,7 +131,12 @@ impl Config {
             .img_upload_dir
             .as_ref()
             .cloned()
-            .unwrap_or(ServerConfig::default().img_upload_dir.unwrap())
+            .unwrap_or_else(|| ServerConfig::default().img_upload_dir.unwrap())
+    }
+
+    /// Returns `true` if system is in debug mode
+    pub fn is_debug(&self) -> bool {
+        self.server.debug_mode.unwrap_or(false)
     }
 }
 
@@ -138,6 +152,8 @@ impl Default for ServerConfig {
             radical_map: Some(String::from("./resources/radical_map")),
             img_upload_dir: Some(String::from("./img_scan_tmp")),
             tess_data: None,
+            news_folder: Some(String::from("./news")),
+            debug_mode: Some(false),
         }
     }
 }
@@ -154,16 +170,24 @@ impl ServerConfig {
     pub fn get_locale_path(&self) -> &str {
         "./locales"
     }
+
+    pub fn get_news_folder(&self) -> &str {
+        self.news_folder.as_deref().unwrap_or("./news")
+    }
 }
 
 impl Config {
     /// Create a new config object
-    pub fn new() -> Result<Self, String> {
-        let config_file = std::env::var("JOTOBA_CONFIG")
-            .map(|i| Path::new(&i).to_owned())
+    pub fn new(src: Option<PathBuf>) -> Result<Self, String> {
+        let config_file = src
+            .or_else(|| {
+                std::env::var("JOTOBA_CONFIG")
+                    .map(|i| Path::new(&i).to_owned())
+                    .ok()
+            })
             .unwrap_or(Self::get_config_file()?);
 
-        let config = if !config_file.exists()
+        let mut config = if !config_file.exists()
             // Check if file is empty
             || fs::metadata(&config_file).map(|i| i.len()).unwrap_or(1)
                 == 0
@@ -184,28 +208,20 @@ impl Config {
         }
         */
 
+        config.asset_hash = variable_asset_hash(&config).map_err(|i| i.to_string())?;
+
         Ok(config)
     }
 
     // Save the config
-    pub fn save(self) -> Result<Self, String> {
+    fn save(self) -> Result<Self, String> {
         let config_file = Self::get_config_file()?;
 
         let s = toml::to_string_pretty(&self).map_err(|e| e.to_string())?;
         let mut f = File::create(&config_file).map_err(|e| e.to_string())?;
-        f.write_all(&s.as_bytes()).map_err(|e| e.to_string())?;
+        f.write_all(s.as_bytes()).map_err(|e| e.to_string())?;
 
         Ok(self)
-    }
-
-    // load a config
-    pub fn load(&mut self) -> Result<(), String> {
-        let config_file = Self::get_config_file()?;
-
-        let conf_data = fs::read_to_string(&config_file).map_err(|e| e.to_string())?;
-        *self = toml::from_str(&conf_data).map_err(|e| e.to_string())?;
-
-        Ok(())
     }
 
     // Create missing folders and return the config file
@@ -218,4 +234,57 @@ impl Config {
 
         Ok(conf_dir.join("config.toml"))
     }
+}
+
+fn variable_asset_hash(config: &Config) -> std::io::Result<String> {
+    let asset_path = Path::new(config.server.get_html_files());
+    let js_files = dir_content(&asset_path.join("js"))?;
+    let css_files = dir_content(&asset_path.join("css"))?;
+
+    let mut files = js_files
+        .into_iter()
+        .chain(css_files.into_iter())
+        .collect::<Vec<_>>();
+
+    files.sort_by(|a, b| a.file_name().cmp(&b.file_name()));
+
+    let mut hash = sha1::Sha1::new();
+    let mut buf: Vec<u8> = vec![0u8; 100];
+
+    for file in files {
+        let mut content = BufReader::new(File::open(file)?);
+
+        loop {
+            let read = content.read(&mut buf[..])?;
+            if read == 0 {
+                break;
+            }
+            hash.update(&buf[..read]);
+        }
+    }
+
+    Ok(hash.digest().to_string())
+}
+
+fn dir_content(path: &Path) -> std::io::Result<Vec<PathBuf>> {
+    let mut files = Vec::new();
+
+    visit_dirs(path, &mut files)?;
+
+    Ok(files.into_iter().map(|i| i.path()).collect::<Vec<_>>())
+}
+
+fn visit_dirs(dir: &Path, out: &mut Vec<DirEntry>) -> std::io::Result<()> {
+    if dir.is_dir() {
+        for entry in std::fs::read_dir(dir)? {
+            let entry = entry?;
+            let path = entry.path();
+            if path.is_dir() {
+                visit_dirs(&path, out)?;
+            } else {
+                out.push(entry)
+            }
+        }
+    }
+    Ok(())
 }

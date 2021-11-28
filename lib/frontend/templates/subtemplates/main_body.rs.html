@@ -1,4 +1,4 @@
-@use super::{word_search_html, kanji_details, name_search, sentence_search, about_html, info_page_html};
+@use super::{word_search_html, kanji_details, name_search, sentence_search, about_html, info_page_html, news_html};
 @use crate::{BaseData, ResultData, Site};
 @(data: &BaseData)
 
@@ -34,6 +34,9 @@
            Site::InfoPage => {
               @:info_page_html(&data)
            }
+           Site::News(news) => {
+              @:news_html(&data, news)
+           }
         }
 
       </div>
@@ -55,6 +58,10 @@
      <button class="mobile-nav-inner-btn" onclick="toggleSpeakOverlay(); toggleMobileNav();">
          <div class="voiceSvg mobile"></div> 
      </button>
+     <!-- Home Btn -->
+      <button class="mobile-nav-inner-btn" onclick='Util.loadUrl(JotoTools.getPageUrl(""));'>
+         <span class="homeBtn mobile noselect">home</span> 
+      </button>
      <!-- Jump Up / Down -->
      <button onclick="jumpToTop()" id="jmp-btn" class="mobile-nav-inner-btn hidden">
          <div class="jumpSvg mobile"></div> 

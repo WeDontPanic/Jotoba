@@ -1,0 +1,19 @@
+{
+    "name": "Jotoba",
+    "short_name": "Jotoba",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#fff",
+    "description": "Jotoba is a powerful and free Japanese dictionary.",
+    "icons": [
+    {
+      "src": "/assets/jotokun/JotoHead.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }, {
+      "src": "/assets/jotokun/favicon.png",
+      "sizes": "32x32",
+      "type": "image/png"
+    }]
+  }
+  

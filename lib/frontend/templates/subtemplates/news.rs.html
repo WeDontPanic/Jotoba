@@ -1,0 +1,23 @@
+@use crate::BaseData;
+@use resources::news::NewsEntry;
+@type News = Vec<&'static NewsEntry>;
+@(data: &BaseData, news: News)
+
+<link rel="stylesheet" type="text/css" href="/variable_assets/@data.asset_hash/assets/css/page/newsPage.css">
+<link rel="stylesheet" type="text/css" href="variable_assets/@data.asset_hash/assets/css/page/multiPage/markdown.css">
+
+<div id="news-list">
+</div>
+
+<script>
+  const news = [
+      @for news_entry in news.into_iter().rev() {
+        @{  
+          creation_time: '@news_entry.creation_time',
+          title: '@news_entry.title',
+          html: '@news_entry.long.replace("\n", "")'
+        @},
+      }
+  ];
+</script>
+<script src="/variable_assets/@data.asset_hash/assets/js/page/newsPage.js"></script>

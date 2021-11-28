@@ -55,6 +55,10 @@
     padding-left: 1vw;
 }
 
+.definition-wrapper {
+    max-width: 93%;
+}
+
 /* Example Sentences */
 .example-sentence {
     padding-top: 5px;
@@ -95,8 +99,14 @@
     font-size: 15px;
 }
 
+.furigana-preview {
+    font-size: inherit;
+}
+
 .tags .furigana-preview {
     font-size: 10px;
+    margin-bottom: 5px;
+    margin-top: 2px;
 }
 
 .tags .inline-kana-preview {
@@ -260,6 +270,7 @@ thead > tr > th {
 }
 
 table th {
+    padding: 0.75rem;
     border-color: var(--searchTextColor) !important;
     border-bottom: 2px solid var(--lineColor) !important;
     border-top: 1px solid var(--lineColor) !important;

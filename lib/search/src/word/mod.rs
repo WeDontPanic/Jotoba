@@ -3,8 +3,6 @@ pub mod order;
 pub mod result;
 pub mod tag_only;
 
-use std::time::Instant;
-
 use crate::{
     engine::{
         guess::Guess,
@@ -31,14 +29,14 @@ use result::Item;
 use japanese::jp_parsing::{InputTextParser, ParseResult, WordItem};
 use utils::to_option;
 
-pub(self) struct Search<'a> {
+pub struct Search<'a> {
     query: &'a Query,
 }
 
 /// Search among all data based on the input query
 #[inline]
 pub fn search(query: &Query) -> Result<WordResult, Error> {
-    Ok(Search { query }.do_search()?)
+    Search { query }.do_search()
 }
 
 #[derive(Default)]
@@ -54,7 +52,6 @@ pub(crate) struct ResultData {
 impl<'a> Search<'a> {
     /// Do the search
     fn do_search(&self) -> Result<WordResult, Error> {
-        let start = Instant::now();
         let search_result = match self.query.form {
             Form::KanjiReading(_) => kanji::by_reading(self)?,
             Form::TagOnly => tag_only::search(self)?,
@@ -66,7 +63,7 @@ impl<'a> Search<'a> {
         let kanji_results = kanji::load_word_kanji_info(&words)?;
 
         let res = WordResult {
-            contains_kanji: kanji_results.len() > 0,
+            contains_kanji: !kanji_results.is_empty(),
             items: Self::merge_words_with_kanji(words, kanji_results),
             inflection_info: search_result.infl_info,
             count: search_result.count,
@@ -74,7 +71,6 @@ impl<'a> Search<'a> {
             sentence_index: search_result.sentence_index,
             searched_query: search_result.searched_query,
         };
-        println!("search took: {:?}", start.elapsed());
         Ok(res)
     }
 
@@ -129,7 +125,7 @@ impl<'a> Search<'a> {
 
             let index = self.query.word_index.clamp(0, parsed.items.len() - 1);
             let res = parsed.items[index].clone();
-            let sentence = Self::format_setence_parts(self, parsed);
+            let sentence = Self::format_setence_parts(parsed);
 
             Ok((res.get_lexeme().to_string(), Some(res), sentence))
         } else {
@@ -137,7 +133,7 @@ impl<'a> Search<'a> {
         }
     }
 
-    fn format_setence_parts(&self, parsed: ParseResult<'static, 'a>) -> Option<Vec<SentencePart>> {
+    pub fn format_setence_parts(parsed: ParseResult<'static, 'a>) -> Option<Vec<SentencePart>> {
         if parsed.items.len() == 1 {
             return None;
         }
@@ -231,9 +227,7 @@ impl<'a> Search<'a> {
 
         let infl_info = inflection_info(&morpheme);
 
-        let searched_query = morpheme
-            .map(|i| i.original_word.to_owned())
-            .unwrap_or(query);
+        let searched_query = morpheme.map(|i| i.original_word).unwrap_or(query);
 
         Ok(ResultData {
             count,
@@ -384,7 +378,7 @@ fn furigana_by_reading(morpheme: &str) -> Option<String> {
     }
 
     let word = word_storage.by_sequence(found[0].item.sequence as u32)?;
-    word.furigana.as_ref().map(|i| i.clone())
+    word.furigana.as_ref().cloned()
 }
 
 /// Guesses the amount of results a search would return with given `query`

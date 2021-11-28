@@ -8,8 +8,9 @@
   @:search_help(&data, data.gettext("kanji"))
 }
 
-<link rel="stylesheet" type="text/css" href="/assets/css/page/multiPage/kanji.css">
-<link rel="stylesheet" type="text/css" href="/assets/css/page/kanjiPage.css">
+<script defer src="/variable_assets/@data.asset_hash/assets/js/page/kanjiPage.js"></script>
+<link rel="stylesheet" type="text/css" href="/variable_assets/@data.asset_hash/assets/css/page/multiPage/kanji.css">
+<link rel="stylesheet" type="text/css" href="/variable_assets/@data.asset_hash/assets/css/page/kanjiPage.css">
 
 <!-- Inner Main Body -->
 @for (kpos, k_item) in kanji.iter().enumerate() {
@@ -24,7 +25,6 @@
          </span>
          <div class="kanji-preview-info">
            <div class="notes stroke"><b>@k_item.kanji.stroke_count</b> @data.gettext("strokes") </div>
-            <!--TODO-->
             <div class="rad-parts-parent">
               <div class="notes rad"><b>@data.gettext("Radical"):</b>
                 <br>
@@ -129,18 +129,20 @@
          @if k_item.kanji.has_stroke_frames() {
            <hr/>
            <div class="stroke-container">
-                <img src="@k_item.kanji.get_stroke_frames_url()">
+              <object data="@k_item.kanji.get_stroke_frames_url()" type="image/svg+xml"></object>
            </div>
          }
+
          @if k_item.kanji.has_animation_file() {
-           <div class="animation-container d-flex flex-row">
+         
+          <div class="animation-container d-flex flex-row">
               <div class="d-flex flex-column slider-parent">
                  <div class="slidecontainer">
                     <input type="range" min="0.05" max="2" value="1" step="0.05" class="slider speedSlider">
                  </div>
                  <span class="slider-output noselect currentAnimationSpeed">@data.gettext_fmt("Animation speed: {}", &[1])</span>
               </div>
-              <div class="kanjisvgParent">
+              <div class="kanjisvgParent umami--click--kanji-replay">
                 <svg class="kanjisvg" width="109px" height="109px">
                 @for (del, d) in k_item.get_animation_entries() {
                   <path style="animation-delay: @del;" class="draw2" stroke-linejoin="round" stroke="black" fill="none" stroke-width="5" d="@d">
@@ -149,10 +151,28 @@
                 </svg>
               </div>
            </div>
-         }
-         <hr/>
-         <!-- Reading Compounds -->
-         <div class="kanji-entry d-flex flex-row">
+          }
+        
+          @if k_item.kanji.has_compounds() {
+            <div>
+              @if data.kanji_copounds_collapsed() {
+                <hr class="compounds-dropdown closed"/>
+              }else{
+                <hr class="compounds-dropdown"/>
+              }
+              <div class="compounds-click-area" onclick="toggleCompounds(event)"></div>
+            </div>
+          }else{
+            <hr/>
+          }
+
+            <!-- Reading Compounds -->
+            @if data.kanji_copounds_collapsed() {
+             <div class="compounds-parent d-flex flex-row hidden">
+            }else{
+             <div class="compounds-parent d-flex flex-row">
+            }
+
             <!-- On Reading -->
             @if let Some(ref ons) = k_item.on_dicts {
               <div class="on-reading">
@@ -190,7 +210,4 @@
          </div>
       </div>
    </div>
-
-   <!-- Load this page's script -->
-   <script src="/assets/js/page/kanji/kanjiAnimation.js"></script>
 }

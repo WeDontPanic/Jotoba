@@ -22,6 +22,9 @@ use self::{
 };
 use serde::{Deserialize, Serialize};
 
+/// Static git hash of current build
+pub const GIT_HASH: &str = env!("GIT_HASH");
+
 #[derive(Debug, Serialize, Deserialize)]
 pub struct DictResources {
     // words

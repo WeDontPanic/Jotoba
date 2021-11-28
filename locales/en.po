@@ -13,7 +13,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"PO-Revision-Date: 2021-11-11 18:57+0100\n"
+"PO-Revision-Date: 2021-11-27 16:31+0100\n"
 "Last-Translator:  <jojii@gmx.net>\n"
 "Language-Team: English\n"
 "Language: en\n"
@@ -68,9 +68,6 @@ msgstr ""
 msgid "create"
 msgstr ""
 
-msgid "Close"
-msgstr ""
-
 msgid "here"
 msgstr ""
 
@@ -120,7 +117,20 @@ msgstr ""
 msgid "Select Kanji"
 msgstr ""
 
-msgid "Search Kanji..."
+msgid "Search Radicals..."
+msgstr ""
+
+# Notification overlay
+msgid "Notifications"
+msgstr ""
+
+msgid "No new notifications"
+msgstr ""
+
+msgid "Show all"
+msgstr ""
+
+msgid "Close"
 msgstr ""
 
 # Languages
@@ -371,34 +381,32 @@ msgctxt "foreign_lang"
 msgid "Finnish"
 msgstr "Finnish"
 
-msgctxt "ain"
+msgctxt "foreign_lang"
 msgid "Ainu"
 msgstr "Ainu"
 
-msgctxt "alg"
+msgctxt "foreign_lang"
 msgid "Algonquian"
 msgstr "Algonquian"
 
+msgctxt "foreign_lang"
+msgid "French"
+msgstr "French"
+
 # Settings
+msgid "Language"
+msgstr ""
+
+msgid "Display"
+msgstr ""
+
+msgid "General"
+msgstr ""
+
 msgid "Default search language"
 msgstr ""
 
-msgid "Results will try to match the selected language"
-msgstr ""
-
 msgid "Page language"
-msgstr ""
-
-msgid "Displays the website in the selected language"
-msgstr ""
-
-msgid "This language has not been translated yet."
-msgstr ""
-
-msgid "Contributions are welcome!"
-msgstr ""
-
-msgid "Result settings"
 msgstr ""
 
 msgid "Always show english results"
@@ -407,67 +415,40 @@ msgstr ""
 msgid "Show english results on top"
 msgstr ""
 
-msgid "Display settings"
+msgid "Focus search bar on load"
+msgstr ""
+
+msgid "Results per page"
+msgstr ""
+
+msgid "Number..."
+msgstr ""
+
+msgid "Input has to be in range of 1 and 100!"
+msgstr ""
+
+msgid "max amount of names/words/sentences shown per page"
+msgstr ""
+
+msgid "Show Furigana"
+msgstr ""
+
+msgid "Show example sentences"
+msgstr ""
+
+msgid "Items per page"
+msgstr ""
+
+msgid "max amount of kanji shown per page"
+msgstr ""
+
+msgid "Use dark mode"
 msgstr ""
 
 msgid "Default kanji animation speed"
 msgstr ""
 
-msgid "Select color scheme"
-msgstr ""
-
-msgid "Use theme"
-msgstr ""
-
-msgid "Light"
-msgstr ""
-
-msgid "Dark"
-msgstr ""
-
-msgid "background"
-msgstr ""
-
-msgid "overlay"
-msgstr ""
-
-msgid "primary"
-msgstr ""
-
-msgid "primHover"
-msgstr ""
-
-msgid "secondary"
-msgstr ""
-
-msgid "text"
-msgstr ""
-
-msgid "overlayText"
-msgstr ""
-
-msgid "searchBG"
-msgstr ""
-
-msgid "searchText"
-msgstr ""
-
-msgid "shadow"
-msgstr ""
-
-msgid "tags"
-msgstr ""
-
-msgid "itemBG"
-msgstr ""
-
-msgid "scheme code"
-msgstr ""
-
-msgid "Using the code you can share color schemes"
-msgstr ""
-
-msgid "Cookie management"
+msgid "Accept Cookies"
 msgstr ""
 
 # Cookie text
@@ -597,6 +578,12 @@ msgstr ""
 msgid "Play the first possible audio"
 msgstr ""
 
+msgid "[Kanji] search"
+msgstr ""
+
+msgid "Show / Collapse compounds"
+msgstr ""
+
 msgid "To specify what kind of results your search should offer, you can use shortcuts."
 msgstr ""
 
@@ -682,6 +669,9 @@ msgid "Available Hashtags for [Sentence] search"
 msgstr ""
 
 msgid "Search for sentences included in the specific JLPT level"
+msgstr ""
+
+msgid "Hide translations by default to translate them yourself and check if its correct"
 msgstr ""
 
 msgid "Available Hashtags for [Kanji] search"
@@ -875,6 +865,12 @@ msgstr ""
 msgid "Causative"
 msgstr ""
 
+msgid "Causative Passive"
+msgstr ""
+
+msgid "Imperative"
+msgstr ""
+
 msgid "Play audio"
 msgstr ""
 
@@ -899,6 +895,12 @@ msgid "From {}: {}"
 msgstr ""
 
 ## Sentence search
+
+msgid "hide"
+msgstr ""
+
+msgid "show"
+msgstr ""
 
 # "No sentences found"
 msgid "sentences"

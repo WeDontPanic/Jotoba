@@ -232,6 +232,6 @@ impl Translatable for Field {
 
     // Translate to eg "Zoology term"
     fn gettext_custom(&self, dict: &TranslationDict, language: Option<Language>) -> String {
-        dict.gettext_fmt("{} term", &[self.gettext(&dict, language)], language)
+        dict.gettext_fmt("{} term", &[self.gettext(dict, language)], language)
     }
 }

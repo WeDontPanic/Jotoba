@@ -1,3 +1,5 @@
+use crate::parse::jmdict::part_of_speech::{self, IrregularVerb, PartOfSpeech};
+
 use super::Word;
 
 use jp_inflections::{Verb, VerbType, WordForm};
@@ -15,6 +17,9 @@ pub struct Inflections {
     pub potential: InflectionPair,
     pub passive: InflectionPair,
     pub causative: InflectionPair,
+
+    pub causative_passive: InflectionPair,
+    pub imperative: InflectionPair,
 }
 
 pub struct InflectionPair {
@@ -60,6 +65,14 @@ pub(super) fn of_word(word: &Word) -> Option<Inflections> {
                 positive: verb.causative()?.get_reading(),
                 negative: verb.negative_causative()?.get_reading(),
             },
+            causative_passive: InflectionPair {
+                positive: verb.causative_passive()?.get_reading(),
+                negative: verb.negative_causative_passive()?.get_reading(),
+            },
+            imperative: InflectionPair {
+                positive: verb.imperative()?.get_reading(),
+                negative: verb.imperative_negative()?.get_reading(),
+            },
         })
     }()
     .ok()?;
@@ -69,10 +82,23 @@ pub(super) fn of_word(word: &Word) -> Option<Inflections> {
 
 /// Returns a jp_inflections::Verb if [`self`] is a verb
 fn get_jp_verb(word: &Word) -> Option<Verb> {
+    let is_suru = word.get_pos().any(|i| match i {
+        PartOfSpeech::Verb(v) => match v {
+            part_of_speech::VerbType::Irregular(i) => match i {
+                IrregularVerb::Suru => true,
+                _ => false,
+            },
+            _ => false,
+        },
+        _ => false,
+    });
+
     let verb_type = if word.get_pos().any(|i| i.is_ichidan()) {
         VerbType::Ichidan
     } else if word.get_pos().any(|i| i.is_godan()) {
         VerbType::Godan
+    } else if is_suru {
+        VerbType::Exception
     } else {
         return None;
     };

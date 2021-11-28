@@ -12,7 +12,7 @@ localization = { path = "../localization" }
 error = { path = "../error" }
 itertools = "0.10.1"
 romaji = "0.1.1"
-strum = "0.22.0"
-strum_macros = "0.22.0"
+strum = "0.23.0"
+strum_macros = "0.23.1"
 once_cell = "1.8.0"
 igo-unidic = { git = "https://github.com/JojiiOfficial/igo-unidic" }

@@ -14,7 +14,7 @@ pub(super) type Index = vector_space_model::Index<SentenceDocument, DefaultMetad
 pub(super) static INDEX: OnceCell<Index> = OnceCell::new();
 
 /// Load japanese sentence index
-pub(crate) fn load(config: &Config) {
+pub fn load(config: &Config) {
     let file = Path::new(config.get_indexes_source()).join("sentences_jp_index");
     let index = Index::open(file).expect("Could not load japanese sentence index");
     info!("Loaded japanese sentence index");

@@ -1,7 +1,7 @@
 @use crate::BaseData;
 @(data: &BaseData)
 
-<link rel="stylesheet" type="text/css" href="/assets/css/page/aboutPage.css">
+<link rel="stylesheet" type="text/css" href="/variable_assets/@data.asset_hash/assets/css/page/aboutPage.css">
 
 
 <br>
@@ -26,7 +26,7 @@
 				<p>
 					@data.gettext("Joto-kun was created by a good friend of ours who is truly a wizard when it comes down to design!")
 				</p>
-				<img class="joto-wizard" src="./assets/jotokun/JotoStaff.svg" >
+				<img class="joto-wizard" src="/variable_assets/@data.asset_hash/assets/jotokun/JotoStaff.svg" >
 			</div>
 			<hr>
 			<a class="clickable title no-align" href="https://jisho.org" >@data.gettext("Jisho")</a>

@@ -7,6 +7,7 @@ pub mod about;
 pub mod example_sentence;
 pub mod help_page;
 pub mod index;
+pub mod news;
 mod pagination;
 pub mod search_ep;
 mod session;
@@ -16,18 +17,19 @@ pub mod web_error;
 
 use std::fmt::Display;
 
+use config::Config;
 use localization::{
     language::Language,
     traits::{Translatable, TranslatablePlural},
     TranslationDict,
 };
 use pagination::Pagination;
-use resources::models::names::Name;
-use search::{engine::guess::Guess, query::Query};
+use resources::{models::names::Name, news::NewsEntry};
+use search::{engine::guess::Guess, query::Query, sentence::result::SentenceResult};
 
 use search::{
     kanji::result::Item as KanjiItem, query::UserSettings, query_parser::QueryType,
-    sentence::result::Item as SentenceItem, word::result::WordResult,
+    word::result::WordResult,
 };
 
 /// Data for the base template
@@ -36,6 +38,8 @@ pub struct BaseData<'a> {
     pub dict: &'a TranslationDict,
     pub user_settings: UserSettings,
     pub pagination: Option<Pagination>,
+    pub asset_hash: &'a str,
+    pub config: &'a Config,
 }
 
 /// The site to display
@@ -45,6 +49,7 @@ pub enum Site<'a> {
     Index,
     About,
     InfoPage,
+    News(Vec<&'static NewsEntry>),
 }
 
 /// Search result data. Required by individual templates to render the result items
@@ -61,7 +66,7 @@ pub enum ResultData {
     Word(WordResult),
     KanjiInfo(Vec<KanjiItem>),
     Name(Vec<&'static Name>),
-    Sentence(Vec<SentenceItem>),
+    Sentence(SentenceResult),
 }
 
 /// Structure containing information for better search help in case no item was
@@ -107,12 +112,19 @@ impl<'a> BaseData<'a> {
     }
 
     #[inline]
-    pub fn new(dict: &'a TranslationDict, user_settings: UserSettings) -> Self {
+    pub fn new(
+        dict: &'a TranslationDict,
+        user_settings: UserSettings,
+        asset_hash: &'a str,
+        config: &'a Config,
+    ) -> Self {
         Self {
             site: Site::Index,
             dict,
             user_settings,
             pagination: None,
+            asset_hash,
+            config,
         }
     }
 
@@ -223,6 +235,11 @@ impl<'a> BaseData<'a> {
             ""
         }
     }
+
+    /// Returns true if the kanji compounds should be collapsed by default
+    pub fn kanji_copounds_collapsed(&self) -> bool {
+        self.pagination.as_ref().map(|i| i.get_last()).unwrap_or(0) > 1
+    }
 }
 
 impl<'a> Site<'a> {
@@ -244,7 +261,7 @@ impl ResultData {
             ResultData::Word(w) => w.items.is_empty(),
             ResultData::KanjiInfo(k) => k.is_empty(),
             ResultData::Name(n) => n.is_empty(),
-            ResultData::Sentence(s) => s.is_empty(),
+            ResultData::Sentence(s) => s.items.is_empty(),
         }
     }
 }

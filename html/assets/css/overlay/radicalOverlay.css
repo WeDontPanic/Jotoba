@@ -75,7 +75,6 @@
     margin-right: 5px;
     padding-bottom: 1px;
     font-size: 18px;
-    /* font-family: "Overpass"; */
     width: 45px;
     text-align: center;
     cursor: pointer;
@@ -152,6 +151,11 @@
     margin-bottom: -10px;
     padding: 5px;
     height: 86px;
+    scrollbar-width: none;
+}
+
+.rad-picker::-webkit-scrollbar {
+    width: 0px;
 }
 
 .rad-btn {

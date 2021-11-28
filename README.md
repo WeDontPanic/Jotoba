@@ -22,7 +22,7 @@ Public instance: [jotoba.de](https://jotoba.de)<br>
 
 # Dictionary licenses
 Almost all of the data used by [jotoba.de](https://jotoba.de) comes from external sources like [edrdg](http://www.edrdg.org/) 
-for Words, Kanji, Names and Radicales or [WaniKanji](https://www.wanikani.com/) and [Kanjialive](https://kanjialive.com/) for audio sources.
+for Words, Kanji, Names and Radicales or [WaniKani](https://www.wanikani.com/) and [Kanjialive](https://kanjialive.com/) for audio sources.
 For a detailed list of used resources and their licenses please visit [jotoba.de/about](https://jotoba.de/about).
 
 # Roadmap

@@ -1,5 +1,10 @@
 use std::{
-    cmp::min, collections::BinaryHeap, fmt::Debug, ops::Index, time::Instant, vec::IntoIter,
+    cmp::min,
+    collections::{BinaryHeap, HashSet},
+    fmt::Debug,
+    hash::Hash,
+    ops::Index,
+    vec::IntoIter,
 };
 
 use super::result_item::ResultItem;
@@ -30,7 +35,7 @@ impl<T: PartialEq + Debug> Debug for SearchResult<T> {
     }
 }
 
-impl<T: PartialEq> SearchResult<T> {
+impl<T: PartialEq + Hash + Clone + Eq> SearchResult<T> {
     /// Returns a `SearchResult` from a BinaryHeap
     pub(crate) fn from_binary_heap(
         mut heap: BinaryHeap<ResultItem<T>>,
@@ -75,18 +80,27 @@ impl<T: PartialEq> SearchResult<T> {
     }
 
     pub fn merge(&mut self, other: Self) {
-        let start = Instant::now();
         merge_sorted_list(&mut self.items, other.items);
-        println!("merging took: {:?}", start.elapsed());
     }
 }
 
 /// Merges two sorted sequences `other` and `src` and stores result into `src`. Ignores duplicates.
-fn merge_sorted_list<T: PartialEq>(src: &mut Vec<ResultItem<T>>, other: Vec<ResultItem<T>>) {
-    // TODO: they're already sorted... make this O(n)
-    src.extend(other);
-    src.sort_unstable_by(|a, b| a.cmp(&b).reverse());
-    src.dedup_by(|a, b| a.item.eq(&b.item));
+fn merge_sorted_list<T: PartialEq + Clone + Hash + Eq>(
+    src: &mut Vec<ResultItem<T>>,
+    other: Vec<ResultItem<T>>,
+) {
+    // Use a hashset to be able to look up whether an element from `other` is already in `src` the
+    // fastest way possible
+    let hash_set = HashSet::<T>::from_iter(src.clone().into_iter().map(|i| i.item));
+
+    for i in other {
+        if !hash_set.contains(&i.item) {
+            src.push(i);
+        }
+    }
+
+    // We might have changed the ordering
+    src.sort_by(|a, b| a.cmp(&b).reverse());
 }
 
 impl<T: PartialEq> IntoIterator for SearchResult<T> {

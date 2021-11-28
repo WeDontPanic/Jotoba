@@ -2,7 +2,7 @@ use actix_files::NamedFile;
 use localization::TranslationDict;
 
 use actix_web::{
-    http::header::{ACCESS_CONTROL_ALLOW_ORIGIN, CACHE_CONTROL},
+    http::header::{ACCESS_CONTROL_ALLOW_HEADERS, ACCESS_CONTROL_ALLOW_ORIGIN, CACHE_CONTROL},
     middleware::{self, Compat, Compress},
     web::{self as actixweb, Data},
     App, HttpRequest, HttpServer,
@@ -22,7 +22,7 @@ pub(super) async fn start() -> std::io::Result<()> {
 
     let mut threads = Vec::with_capacity(4);
 
-    let config = Config::new().expect("config failed");
+    let config = Config::new(None).expect("config failed");
 
     let c2 = config.clone();
     threads.push(
@@ -81,6 +81,10 @@ pub(super) async fn start() -> std::io::Result<()> {
 
     let address = config.server.listen_address.clone();
 
+    if let Err(err) = resources::news::News::load(config.server.get_news_folder()) {
+        warn!("Failed to load news: {}", err);
+    }
+
     debug!("Resource loading took {:?}", start.elapsed());
 
     HttpServer::new(move || {
@@ -106,14 +110,29 @@ pub(super) async fn start() -> std::io::Result<()> {
                     .route(actixweb::get().to(privacy)),
             )
             .service(
+                actixweb::resource("/service-worker.js")
+                    .wrap(Compat::new(middleware::Compress::default()))
+                    .route(actixweb::get().to(service_worker)),
+            )
+            .service(
                 actixweb::resource("/search/{query}")
                     .wrap(Compat::new(middleware::Compress::default()))
-                    .route(actixweb::get().to(frontend::search_ep::search)),
+                    .route(actixweb::get().to(frontend::search_ep::search_ep)),
+            )
+            .service(
+                actixweb::resource("/search")
+                    .wrap(Compat::new(middleware::Compress::default()))
+                    .route(actixweb::get().to(frontend::search_ep::search_ep_no_js)),
             )
             .service(
                 actixweb::resource("/about")
                     .wrap(Compat::new(middleware::Compress::default()))
                     .route(actixweb::get().to(frontend::about::about)),
+            )
+            .service(
+                actixweb::resource("/news")
+                    .wrap(Compat::new(middleware::Compress::default()))
+                    .route(actixweb::get().to(frontend::news::news)),
             )
             .service(
                 actixweb::resource("/help")
@@ -125,7 +144,9 @@ pub(super) async fn start() -> std::io::Result<()> {
             .service(
                 actixweb::scope("/api")
                     .wrap(
-                        middleware::DefaultHeaders::new().header(ACCESS_CONTROL_ALLOW_ORIGIN, "*"),
+                        middleware::DefaultHeaders::new()
+                            .header(ACCESS_CONTROL_ALLOW_ORIGIN, "*")
+                            .header(ACCESS_CONTROL_ALLOW_HEADERS, "Content-Type"),
                     )
                     .wrap(Compat::new(Compress::default()))
                     .service(
@@ -153,7 +174,12 @@ pub(super) async fn start() -> std::io::Result<()> {
                         "/suggestion",
                         actixweb::post().to(api::completions::suggestion_ep),
                     )
-                    .route("/img_scan", actixweb::post().to(api::img::scan_ep)),
+                    .route("/img_scan", actixweb::post().to(api::img::scan_ep))
+                    .route("/news/short", actixweb::post().to(api::news::short::news))
+                    .route(
+                        "/news/detailed",
+                        actixweb::post().to(api::news::detailed::news),
+                    ),
             )
             // Static files
             .service(
@@ -178,6 +204,18 @@ pub(super) async fn start() -> std::io::Result<()> {
                         actix_files::Files::new("", config.server.get_html_files())
                             .show_files_listing(),
                     ),
+            )
+            .service(
+                actixweb::scope("/variable_assets/{oma}/assets")
+                    .wrap(
+                        middleware::DefaultHeaders::new()
+                            .header(CACHE_CONTROL, format!("max-age={}", ASSET_CACHE_MAX_AGE)),
+                    )
+                    .wrap(Compat::new(Compress::default()))
+                    .service(
+                        actix_files::Files::new("", config.server.get_html_files())
+                            .show_files_listing(),
+                    ),
             );
 
         //#[cfg(feature = "sentry_error")]
@@ -188,6 +226,10 @@ pub(super) async fn start() -> std::io::Result<()> {
     .bind(&address)?
     .run()
     .await
+}
+
+async fn service_worker(_req: HttpRequest) -> actix_web::Result<NamedFile> {
+    Ok(NamedFile::open("html/assets/js/tools/service-worker.js")?)
 }
 
 async fn privacy(_req: HttpRequest) -> actix_web::Result<NamedFile> {
@@ -202,7 +244,7 @@ fn setup_logger() {
     env_logger::init_from_env(env_logger::Env::new().default_filter_or("debug"));
 }
 
-fn load_tokenizer() {
+pub fn load_tokenizer() {
     use japanese::jp_parsing::{JA_NL_PARSER, NL_PARSER_PATH};
 
     if !Path::new(NL_PARSER_PATH).exists() {
@@ -224,7 +266,7 @@ fn clean_img_scan_dir(config: &Config) {
     std::fs::remove_dir_all(&path).expect("Failed to clear img scan director");
 }
 
-fn load_resources(config: Config) {
+pub fn load_resources(config: Config) {
     resources::initialize_resources(
         config.get_storage_data_path().as_str(),
         config.get_suggestion_sources(),
@@ -250,6 +292,6 @@ fn load_translations(config: &Config) -> Arc<TranslationDict> {
     Arc::new(locale_dict)
 }
 
-fn load_indexes(config: Config) {
+pub fn load_indexes(config: Config) {
     search::engine::load_indexes(&config).expect("Failed to load v2 index files");
 }

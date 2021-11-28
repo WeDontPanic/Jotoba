@@ -48,32 +48,27 @@ form {
 }
 
 .settingsBtn, .infoBtn, .notificationBtn {
-    top: 15px;
     position: absolute !important;
+    cursor: pointer;
+}
+
+.settingsBtn {
+    top: 20px;
+    left: 20px;
 }
 
 .notificationBtn {
-    top: 22px;
-    right: 10px;
+    top: 29px;
+    right: 25px;
 }
 
 .infoBtn {
-    top: 22px;
-    right: 45px;
+    top: 29px;
+    right: 60px;
 }
 
-.notificationBtn.update::after, .infoBtn.new::after {
-    content: "";
-    position: absolute;
-    top: 0.5rem;
-    right: 1.25rem;
-    padding: .25rem;
-    border-radius: 1rem;
-    background-color: var(--bgPrimaryColor);
-}
-
-.infoBtn.new::after {
-    right: 0.95rem;
+.notificationBtn.update, .infoBtn.new {
+    background-color: var(--primaryColor);
 }
 
 .inner-form {

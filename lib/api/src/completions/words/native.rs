@@ -1,7 +1,9 @@
 use std::{cmp::min, collections::BinaryHeap, time::Instant};
 
 use itertools::Itertools;
+use japanese::jp_parsing::InputTextParser;
 use resources::models::{suggestions::native_words::NativeSuggestion, words::Word};
+use search::engine::SearchTask;
 use utils::binary_search::BinarySearchable;
 
 use super::super::*;
@@ -10,9 +12,12 @@ use super::super::*;
 pub fn suggestions(query_str: &str) -> Option<Vec<WordPair>> {
     let start = Instant::now();
 
-    let mut items = suggest_words(query_str)?;
+    // parsing
+    let query_str = align_query_str(query_str).unwrap_or_else(|| query_str.to_string());
+
+    let mut items = suggest_words(&query_str)?;
     if items.len() <= 4 && !query_str.is_katakana() {
-        if let Some(other) = suggest_words(&romaji::RomajiExt::to_katakana(query_str)) {
+        if let Some(other) = suggest_words(&romaji::RomajiExt::to_katakana(query_str.as_str())) {
             items.extend(other);
         }
     }
@@ -20,6 +25,21 @@ pub fn suggestions(query_str: &str) -> Option<Vec<WordPair>> {
     println!("suggesting took: {:?}", start.elapsed());
 
     Some(items.into_iter().map(|i| i.0).unique().take(30).collect())
+}
+
+/// Transforms inflections to the main lexeme of the given query
+fn align_query_str(query_str: &str) -> Option<String> {
+    let in_db = SearchTask::<search::engine::words::native::Engine>::new(query_str).has_term();
+    let parser =
+        InputTextParser::new(query_str, &japanese::jp_parsing::JA_NL_PARSER, in_db).ok()?;
+
+    if let Some(parsed) = parser.parse() {
+        if parsed.items.len() == 1 {
+            return Some(parsed.items[0].get_lexeme().to_string());
+        }
+    }
+
+    None
 }
 
 #[derive(PartialEq, Eq)]

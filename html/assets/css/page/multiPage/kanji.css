@@ -11,7 +11,6 @@
 }
 
 .kanji-preview {
-    display: block;
     line-height: 1.1;
     font-size: xx-large;
 }
@@ -40,9 +39,8 @@
     word-spacing: 10px;
 }
 
-.kun-reading {
-    padding-left: 10px;
-    width: 120%;
+.furigana-preview {
+    margin-bottom: 15px;
 }
 
 .draw2 {

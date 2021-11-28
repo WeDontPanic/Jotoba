@@ -116,7 +116,11 @@ function changeSuggestionIndex(direction, setDirectly) {
 function getSuggestionApiData() {
 
     // Check if API call should be prevented
-    if (preventApiCallUntilDelete) {
+    if (preventNextApiCall) {
+        preventNextApiCall = false;
+        return;
+    }
+    else if (preventApiCallUntilDelete) {
         if (textToPrevent.length <= input.value.length && input.value.substring(0, textToPrevent.length) === textToPrevent) {
             return;
         } else {
@@ -217,24 +221,22 @@ function loadSuggestionApiData(result) {
         // Get target page
         var currentPage = JotoTools.getCurrentSearchType();
 
+        // Generate the /search/
+        let searchValue = currentSuggestionType === "kanji_reading" ? encodeURIComponent(primaryResult) + " " + encodeURIComponent(result.suggestions[i].primary) : encodeURIComponent(primaryResult);
+
         // Add to Page
         if (rad_overlay.classList.contains("hidden")) {
             container.innerHTML += 
-            ' <a href="/search/'+encodeURIComponent(primaryResult)+'?t='+currentPage+'" class="search-suggestion"> ' +
+            ' <a href="/search/'+searchValue+'?t='+currentPage+'" class="search-suggestion"> ' +
             '   <span class="primary-suggestion">'+primaryResult+'</span> ' +
             '   <span class="secondary-suggestion">'+secondaryResult+'</span> ' +
             ' </a> ';      
         } else {
             container_rad.innerHTML += 
-            ' <a href="/search/'+encodeURIComponent(primaryResult)+'?t='+currentPage+'" class="search-suggestion"> ' +
+            ' <a href="/search/'+searchValue+'?t='+currentPage+'" class="search-suggestion"> ' +
             '   <span class="primary-suggestion">'+primaryResult+'</span> ' +
             ' </a> ';      
         }
-    }
-
-    // Activate first suggestion
-    if (!suggestionChosen) {
-        //changeSuggestionIndex(1, true);
     }
 
     // Load Container if there is text present

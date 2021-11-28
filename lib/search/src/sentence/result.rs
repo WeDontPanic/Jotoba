@@ -5,6 +5,7 @@ use resources::parse::jmdict::languages::Language;
 pub struct SentenceResult {
     pub items: Vec<Item>,
     pub len: usize,
+    pub hidden: bool,
 }
 
 #[derive(PartialEq, Clone)]
@@ -56,8 +57,8 @@ impl Sentence {
     }
 }
 
-impl From<(Vec<Item>, usize)> for SentenceResult {
-    fn from((items, len): (Vec<Item>, usize)) -> Self {
-        Self { items, len }
+impl From<(Vec<Item>, usize, bool)> for SentenceResult {
+    fn from((items, len, hidden): (Vec<Item>, usize, bool)) -> Self {
+        Self { items, len, hidden }
     }
 }

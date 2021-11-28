@@ -1,0 +1,26 @@
+name: Docker Image CI
+
+on:
+  push:
+    branches: [ master ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Build the Docker image
+      run: docker build . --file Dockerfile --tag ghcr.io/wedontpanic/jotoba:latest
+    - name: Export image
+      run: |
+        echo ${{ secrets.GH_TOKEN }} | docker login ghcr.io -u ${{ secrets.GH_USER }} --password-stdin
+        docker push ghcr.io/wedontpanic/jotoba:latest
+    - name: Update server
+      uses: garygrossgarten/github-action-ssh@release
+      with:
+        command: /home/jotoba/update.sh
+        host: ${{ secrets.HOST }}
+        port: ${{ secrets.PORT }}
+        username: ${{ secrets.SSH_USER }}
+        privateKey: ${{ secrets.SSH_KEY}}

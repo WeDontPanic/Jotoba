@@ -34,9 +34,12 @@ impl<'a> AccentChar<'a> {
 }
 
 /// Returns a vec of all compounds with the same pitch assigned to the accent (true = pitch up) in
-/// the order they appeared in the word text
+/// the order they appeared in the word text. Note that if the pitch changes from the last mora to
+/// the particle, there will be an entry at the end of the vec with an empty string with the pitch 
+/// for the particle. This allows us to distinguish between odaka and heiban patterns.
 pub fn calc_pitch(kana_word: &str, drop: i32) -> Option<Vec<(&str, bool)>> {
-    let kana_items = split_kana(kana_word).collect::<Vec<_>>();
+    let mut kana_items = split_kana(kana_word).collect::<Vec<_>>();
+    kana_items.push("");
     let syllable_count = kana_items.len();
 
     if syllable_count == 0 || drop < 0 || drop > 6 {
@@ -57,26 +60,19 @@ pub fn calc_pitch(kana_word: &str, drop: i32) -> Option<Vec<(&str, bool)>> {
         }
     }
 
-    if syllable_count == drop as usize {
-        return Some(vec![
-            (first_kana, false),
-            (&kana_word[first_kana.bytes().len()..], true),
-        ]);
-    } else {
-        let up: usize = kana_items
-            .by_ref()
-            .take((drop - 1) as usize)
-            .map(|i| i.bytes().len())
-            .sum();
-        return Some(vec![
-            (first_kana, false),
-            (
-                &kana_word[first_kana.bytes().len()..first_kana.bytes().len() + up],
-                true,
-            ),
-            (&kana_word[first_kana.bytes().len() + up..], false),
-        ]);
-    }
+    let up: usize = kana_items
+        .by_ref()
+        .take((drop - 1) as usize)
+        .map(|i| i.bytes().len())
+        .sum();
+    return Some(vec![
+        (first_kana, false),
+        (
+            &kana_word[first_kana.bytes().len()..first_kana.bytes().len() + up],
+            true,
+        ),
+        (&kana_word[first_kana.bytes().len() + up..], false),
+    ]);
 }
 
 /// Returns an iterator over all kana characters. The reason for Item to be &str is that 'きゅう'

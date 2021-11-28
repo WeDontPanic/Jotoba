@@ -24,7 +24,57 @@ JotoTools.createUrl = function(searchText, searchType, targetPage) {
     return url;
 }
 
+// Creates a Jotoba URL for the given page
+JotoTools.getPageUrl = function(pageName) {
+    let url = window.location.origin;
+    url += "/" + pageName;
+
+    return url;
+}
+
 // Returns the value of the current Search [Words, Sentence...]
 JotoTools.getCurrentSearchType = function() {
     return $(".choices__item.choices__item--choice.choices__item--selectable.selected").attr("data-value");
+}
+
+// Parses a language code into the Joto needs
+JotoTools.toJotobaLaguage = function(code) {
+    code = code.toLowerCase().substr(0, 2);
+    switch (code) {
+        case "en":
+            code = "en-US";
+            break;
+        case "sv":
+            code = "sv-SE";
+            break;
+        case "ru":
+            code = "ru";
+            break;
+        case "hu":
+            code = "hu";
+            break;
+        default:
+            code += "-"+code.toUpperCase();
+            if (!JotoTools.isSupportedSearchLang(code))
+                code = "en-US";
+    }
+    return code;
+}
+
+// Checks if a given language code is supported as a search lang
+JotoTools.isSupportedSearchLang = function(code) {
+    switch (code) {
+        case "en-US":
+        case "de-DE":
+        case "es-ES":
+        case "fr-FR":
+        case "nl-NL":
+        case "sv-SE":
+        case "ru":
+        case "hu":
+        case "sl-SI":
+            return true;
+        default:
+            return false;
+    }
 }

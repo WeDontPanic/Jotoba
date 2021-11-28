@@ -5,18 +5,19 @@
 @use crate::BaseData;
 @use japanese::furigana::from_str as furi_from_str;
 @use crate::example_sentence::ext_sentence;
+@use super::render_sentence_html;
 
 @(data: &BaseData, query: &Query, result: WordResult)
 
-<link rel="stylesheet" type="text/css" media="print" onload="this.media='all'" href="/assets/css/tools/ripple.css">
+<link rel="stylesheet" type="text/css" media="print" onload="this.media='all'" href="/variable_assets/@data.asset_hash/assets/css/tools/ripple.css">
 
-<link rel="stylesheet" type="text/css" href="/assets/css/page/multiPage/kanji.css">
-<link rel="stylesheet" type="text/css" href="/assets/css/page/multiPage/kana.css">
-<link rel="stylesheet" type="text/css" href="/assets/css/page/wordPage.css">
-<link rel="stylesheet" type="text/css" href="/assets/css/page/wordExtensions/sentenceReader.css">
-<link rel="stylesheet" type="text/css" href="/assets/css/page/wordExtensions/searchAnnotation.css">
+<link rel="stylesheet" type="text/css" href="/variable_assets/@data.asset_hash/assets/css/page/multiPage/kanji.css">
+<link rel="stylesheet" type="text/css" href="/variable_assets/@data.asset_hash/assets/css/page/multiPage/kana.css">
+<link rel="stylesheet" type="text/css" href="/variable_assets/@data.asset_hash/assets/css/page/wordPage.css">
+<link rel="stylesheet" type="text/css" href="/variable_assets/@data.asset_hash/assets/css/page/wordExtensions/sentenceReader.css">
+<link rel="stylesheet" type="text/css" href="/variable_assets/@data.asset_hash/assets/css/page/wordExtensions/searchAnnotation.css">
 
-<script defer src="/assets/js/page/wordPage.js"></script>
+<script defer src="/variable_assets/@data.asset_hash/assets/js/page/wordPage.js"></script>
 
   @if let Some(ref inflection) = result.inflection_info {
     <div class="search-annotation">
@@ -43,32 +44,27 @@
 
   @if let Some(ref sentence_parts) = result.sentence_parts {
     <div class="search-annotation">
-      <!-- Sentence Info -->
-      <div id="sr" class="d-flex flex-row wrap sentence-reader">
-        @for part in sentence_parts {
-          @if let Some(ref furigana) = part.furigana {
-            <a id="p@part.pos" href="/search/@query.query?i=@part.pos" class="@part.get_add_class() d-flex flex-row sentence-part @selected(part.pos, result.sentence_index)">
-              @for furi_part in furi_from_str(furigana) {
-                @if let Some(kanji) = furi_part.kanji {
-                  <div class="furigana-kanji-container">
-                    <span class="furigana-preview noselect">
-                      @furi_part.kana
-                    </span>
-                    <span class="kanji-preview">
-                      @kanji
-                    </span>
-                  </div>
-                } else {
-                  <div class="inline-kana-preview">
-                    @furi_part.kana
-                  </div>
-                }
-              }
-            </a>
-          } else {
-            <a id="p@part.pos" href="/search/@query.query?i=@part.pos" class="@part.get_add_class() inline-kana-preview sentence-part @selected(part.pos, result.sentence_index)">@part.text</a>
+      <div>
+        <!-- Sentence Info -->
+        <div id="sr" class="d-flex flex-row wrap sentence-reader">
+          @for part in sentence_parts {
+            @if let Some(ref furigana) = part.furigana {
+              <a id="p@part.pos" href="/search/@query.query?i=@part.pos" class="@part.get_add_class() sentence-part @selected(part.pos, result.sentence_index)">
+                @:render_sentence_html(furi_from_str(furigana).collect(), "", true)
+                </a>
+            } else {
+              <!-- TODO find a better way to keep this consistent. Implement with reader_sentence.rs.html -->
+              <a id="p@part.pos" href="/search/@query.query?i=@part.pos" class="@part.get_add_class() sentence-part @selected(part.pos, result.sentence_index)">
+                <div class="furigana-kanji-container">
+                  <ruby>
+                    <span class="kanji-preview">@part.text</span>
+                    <rt class="furigana-preview">&nbsp;</rt>
+                  </ruby>
+                </div>
+              </a>
+            }
           }
-        }
+        </div>
       </div>
 
       <!-- Sentence Tooltips -->
@@ -100,22 +96,7 @@
           @if word.get_reading().len() > 3 {
             <div class="d-flex flex-row wrap"> 
               @if let Some(s_pairs) = word.get_furigana() {
-                @for spair in s_pairs {
-                  @if spair.kanji.is_some() {
-                     <div class="furigana-kanji-container">
-                        <span class="furigana-preview noselect">
-                           @spair.kana
-                        </span>
-                        <span class="kanji-preview">
-                           @spair.kanji.unwrap()
-                        </span>
-                     </div>
-                  } else {
-                     <div class="inline-kana-preview">
-                        @spair.kana
-                     </div>
-                  }
-                }
+                @:render_sentence_html(s_pairs, "", true)
               } else {
                 <div class="inline-kana-preview">
                   @word.get_reading().reading
@@ -131,22 +112,7 @@
               @if word.get_reading().len() <= 3 {
                 <div class="d-flex flex-row"> 
                   @if let Some(s_pairs) = word.get_furigana() {
-                    @for spair in s_pairs {
-                      @if spair.kanji.is_some() {
-                         <div class="furigana-kanji-container">
-                            <span class="furigana-preview noselect">
-                               @spair.kana
-                            </span>
-                            <span class="kanji-preview">
-                               @spair.kanji.unwrap()
-                            </span>
-                         </div>
-                      } else {
-                         <div class="inline-kana-preview">
-                            @spair.kana
-                         </div>
-                      }
-                    }
+                    @:render_sentence_html(s_pairs, "", true)
                   } else {
                     <div class="inline-kana-preview">
                       @word.get_reading().reading
@@ -165,10 +131,13 @@
                   @data.gettext("JLPT") n@lvl
                 </div>
               }
-              @if let Some(audio) = word.audio_file() {
-                <span class="clickable audioBtn" data="/audio/@audio">@data.gettext("Play audio")
+              @if let Some(audio) = word.audio_file("ogg") {
+                <span class="clickable audioBtn umami--click--play-audio-button" data="/audio/@audio">@data.gettext("Play audio")
                   <audio preload="none">
                     <source src="/audio/@audio" type="audio/ogg">
+                    @if let Some(audio) = word.audio_file("mp3") {
+                      <source src="/audio/@audio" type="audio/mp3">
+                    }
                   </audio>
                 </span>
               }
@@ -185,7 +154,7 @@
                   <span>.</span>
                 </div>
 
-                <ul id="info-dropdown" class="mdl-menu mdl-menu--bottom-right mdl-js-menu mdl-js-ripple-effect" for="m@word.sequence">
+                <ul id="info-dropdown" class="mdl-menu mdl-menu--bottom-right mdl-js-menu mdl-js-ripple-effect umami--click--info-dropdown" for="m@word.sequence">
                   @if word.get_inflections().is_some() {
                     <li id="conjugationBtn" class="info-entry noselect" data-toggle="modal" data-target="#conj@word.sequence" class="mdl-menu__item">
                       <div class="conjugationSvg"></div> 
@@ -195,7 +164,7 @@
                   }
                   
                   @if let Some(ref collocations) = word.collocations {
-                    <li id="collocationBtn" class="info-entry noselect" data-toggle="modal" data-target="#coll@word.sequence" class="mdl-menu__item">
+                    <li id="collocationBtn" class="info-entry noselect umami--click--collocation-button" data-toggle="modal" data-target="#coll@word.sequence" class="mdl-menu__item">
                       <div class="conjugationSvg"></div> <!-- TODO -->
                       <span class="info-dropdown-txt">@data.ngettext("Show collocation", collocations.len() as u64)</span>
                     </li>
@@ -203,7 +172,7 @@
                   }
 
                   @if let Some(intransitive) = word.get_intransitive_counterpart() {
-                    <li class="info-entry noselect" class="mdl-menu__item"> 
+                    <li class="info-entry noselect umami--click--intransitive-button" class="mdl-menu__item"> 
                       <div class="transitivitySvg"></div>
                       <span class="info-dropdown-txt"><a class="no-highlight" draggable="false" href="/search/@intransitive.get_reading().reading">@data.gettext("Intransitive word")</a></span>
                     </li>
@@ -211,7 +180,7 @@
                   }
 
                   @if let Some(transitive) = word.get_transitive_counterpart() {
-                    <li class="info-entry noselect" class="mdl-menu__item">
+                    <li class="info-entry noselect umami--click--transitive-button" class="mdl-menu__item">
                       <div class="transitivitySvg"></div>
                       <span class="info-dropdown-txt"><a class="no-highlight" draggable="false" href="/search/@transitive.get_reading().reading">@data.gettext("Transitive word")</a></span> 
                     </li>
@@ -219,18 +188,26 @@
                   }
 
                   @if word.has_sentence(data.user_settings.user_lang) || (data.user_settings.show_english && word.has_sentence(Language::English)) {
-                    <li class="info-entry noselect" class="mdl-menu__item">
+                    <li class="info-entry noselect umami--click--sentences-button" class="mdl-menu__item">
                       <div class="sentenceSvg"></div>
                       <div class="info-dropdown-vl"></div>
                       <span class="info-dropdown-txt"><a class="no-highlight" draggable="false" href="/search/@word.get_reading().reading?t=2">@data.gettext("Sentence search")</a></span> 
                     </li>
                   }
 
-                  @if let Some(audio) = word.audio_file() {
-                    <li disabled class="mdl-menu__item" style="height: 10px;"><hr style="margin: 0px; margin-top: 5px;"></li>
+                  @if let Some(audio) = word.audio_file("ogg") {
+                    <li disabled class="mdl-menu__item umami--click--audio-download-button" style="height: 10px;"><hr style="margin: 0px; margin-top: 5px;"></li>
                     <li id="AudioDlBtn" class="info-entry noselect" class="mdl-menu__item">
                       <div class="downloadSvg"></div>
                       <span class="info-dropdown-txt"><a class="no-highlight" draggable="false" href="/audio/@audio">@data.gettext("Download audio")</a></span> 
+                    </li>
+                  }
+
+                  @if data.config.is_debug() {
+                    <li disabled class="mdl-menu__item" style="height: 10px;"><hr style="margin: 0px; margin-top: 5px;"></li>
+                    <li class="info-entry noselect" class="mdl-menu__item">
+                     <div class="info-dropdown-vl"></div>
+                     <span class="info-dropdown-txt">Seq: @word.sequence</span> 
                     </li>
                   }
                 </ul>
@@ -276,35 +253,23 @@
                             }
                           </div>
                         }
-                        @if let Some((furi, translation)) = ext_sentence(sense, &query.settings.user_lang) {
-                          <div class="d-flex flex-row">
-                            <div class="tags no-margin example-sentence collapsed"> 
-                              <div class="d-flex flex-row wrap">               
-                                @for spair in furi {
-                                  @if spair.kanji.is_some() {
-                                    <div class="furigana-kanji-container">
-                                      <span class="furigana-preview noselect">
-                                        @spair.kana
-                                      </span>
-                                      <span class="kanji-preview">
-                                        @spair.kanji.unwrap()
-                                      </span>
-                                    </div>
-                                  } else {
-                                    <div class="inline-kana-preview">
-                                      @spair.kana
-                                    </div>
-                                  }
-                                }
+
+                        @if query.settings.show_example_sentences {
+                          @if let Some((furi, translation)) = ext_sentence(sense, &query.settings.user_lang) {
+                            <div class="d-flex flex-row">
+                              <div class="tags no-margin example-sentence collapsed"> 
+                                <div class="d-flex flex-row wrap">               
+                                  @:render_sentence_html(furi, "", true)
+                                </div>
+                              </div>
+                              <div class="expander">
+
                               </div>
                             </div>
-                            <div class="expander">
-
+                            <div class="tags no-margin">
+                              @translation
                             </div>
-                          </div>
-                          <div class="tags no-margin">
-                            @translation
-                          </div>
+                          }
                         }
                       </div>
                     }
@@ -427,18 +392,16 @@
                                <td>@inflections.causative.negative</td>
                             </tr>
 
-                           <!--
                             <tr>
-                               <th scope="row">Causative Passive</th>
-                               <td>聞いた</td>
-                               <td>聞かなかった</td>
+                               <th scope="row">@data.gettext("Causative Passive")</th>
+                               <td>@inflections.causative_passive.positive</td>
+                               <td>@inflections.causative_passive.negative</td>
                             </tr>
                             <tr>
-                               <th scope="row">Imperative</th>
-                               <td>聞いた</td>
-                               <td>聞かなかった</td>
+                               <th scope="row">@data.gettext("Imperative")</th>
+                               <td>@inflections.imperative.positive</td>
+                               <td>@inflections.imperative.negative</td>
                             </tr>
-                           -->
                          </tbody>
                        </table>
                       </div>

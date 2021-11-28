@@ -433,9 +433,153 @@
           }
         }
       }
+    },
+    "/api/news/short": {
+      "post": {
+        "tags": [
+          "News"
+        ],
+        "summary": "Retrieve latest Jotoba news in short form",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ShortNewsPayload"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success response",
+            "schema": {
+              "$ref": "#/definitions/ShortNewsResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/news/detailed": {
+      "post": {
+        "tags": [
+          "News"
+        ],
+        "summary": "Retrieve single news entry detailed",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/DetailedNewsPayload"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success response",
+            "schema": {
+              "$ref": "#/definitions/DetailedNewsResponse"
+            }
+          },
+          "404": {
+            "description": "ID was not found",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
     }
   },
   "definitions": {
+    "ShortNewsPayload": {
+      "type": "object",
+      "required": [
+        "after"
+      ],
+      "properties": {
+        "after": {
+          "type": "integer",
+          "example": 1637499806,
+          "description": "Show news after"
+        }
+      }
+    },
+    "DetailedNewsPayload": {
+      "type": "object",
+      "required": [
+        "id"
+      ],
+      "properties": {
+        "id": {
+          "type": "integer",
+          "example": 3,
+          "description": "ID of the news enttry"
+        }
+      }
+    },
+    "ShortNewsResponse": {
+      "type": "object",
+      "properties": {
+        "entries": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/NewsEntry"
+          }
+        }
+      }
+    },
+    "DetailedNewsResponse": {
+      "type": "object",
+      "properties": {
+        "entry": {
+          "$ref": "#/definitions/NewsEntry"
+        }
+      }
+    },
+    "NewsEntry": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "example": 3,
+          "description": "The ID of the news entry"
+        },
+        "title": {
+          "type": "string",
+          "example": "V1.1",
+          "description": "The news entry title"
+        },
+        "html": {
+          "type": "string",
+          "example": "<h1 id='featuring'>Featuring</h1><br><br><ul><br><li>New radical-picker</li><br><br><li>Image to text sear</li><br></ul><br>",
+          "description": "The HTML formatted news content"
+        },
+        "creation_time": {
+          "type": "integer",
+          "example": 1637499806,
+          "description": "The unix timestamp of the time the given newes entry was released"
+        },
+        "trimmed": {
+          "type": "boolean",
+          "description": "Whether the html content was trimmed or not"
+        }
+      }
+    },
     "RequestPayload": {
       "type": "object",
       "required": [

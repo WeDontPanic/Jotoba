@@ -6,7 +6,7 @@
 const hashtags = [
     "#adverb", "#auxilary", "#conjungation", "#noun", "#prefix", "#suffix", "#particle", "#sfx",
     "#verb", "#adjective", "#counter", "#expression", "#interjection", "#pronoun", "#numeric", "#transitive", "#intransitive",
-    "#unclassified", "#word", "#sentence", "#name", "#kanji", "#abbreviation", "#N5", "#N4", "#N3", "#N2", "#N1"
+    "#unclassified", "#word", "#sentence", "#name", "#kanji", "#abbreviation", "#N5", "#N4", "#N3", "#N2", "#N1", "#hidden"
 ];
 
 // Elements used
@@ -26,6 +26,7 @@ var availableSuggestions = 0;
 var keepSuggestions = false;
 var oldInputValue = "";
 var lastRequest = undefined;
+var preventNextApiCall = false;
 var preventApiCallUntilDelete = false;
 var textToPrevent = "";
 
@@ -215,4 +216,12 @@ function closeAllSubSearchbarOverlays(overlayToIgnore) {
         $('.overlay.radical').addClass('hidden');
     if (overlayToIgnore !== "image")
         $('.overlay.image').addClass('hidden');
+}
+
+// Opens the Help Page
+function openHelpPage() {
+    document.getElementsByClassName("infoBtn")[0].classList.remove("new");
+    if (localStorage != null)
+        localStorage.setItem("first_time", "false");
+    Util.loadUrl("/help");
 }

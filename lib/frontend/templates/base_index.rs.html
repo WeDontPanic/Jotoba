@@ -6,15 +6,17 @@
 <!DOCTYPE html>
 <html lang="en">
    @:head_html(&data)
-   <link rel="stylesheet" type="text/css" href="assets/css/page/indexPage.css">
-   <script defer src="/assets/js/page/indexPage.js"></script>
+   <link rel="stylesheet" type="text/css" href="variable_assets/@data.asset_hash/assets/css/page/indexPage.css">
+   <link rel="stylesheet" type="text/css" href="variable_assets/@data.asset_hash/assets/css/page/multiPage/markdown.css">
+   <link rel="stylesheet" type="text/css" href="variable_assets/@data.asset_hash/assets/css/overlay/notificationOverlay.css">
+   <script defer src="/variable_assets/@data.asset_hash/assets/js/page/overlay/notifications.js"></script>
 
    <body>
       <div class="index-noselect">
 
           <!-- Title Icon -->
          <div onmousedown="return false" class="title">
-            <img class="titleImg" src="assets/jotokun/JotoTitle.svg"> 
+            <img class="titleImg" src="variable_assets/@data.asset_hash/assets/jotokun/JotoTitle.svg"> 
          </div>
 
          <!-- Search Row -->
@@ -31,12 +33,12 @@
 
                            <div class="input-field second-wrap">
                               <div class="input-group">
-                                 <input id="search" name="search" type="text" value="" placeholder='@data.gettext("Search...")' tabindex="1" lang="ja" autocapitalize="off" autocomplete="off" data-autoload="false" data-effective-keyword="">
+                                 <input id="search" name="s" type="text" value="" placeholder='@data.gettext("Search...")' tabindex="1" lang="ja" autocapitalize="off" autocomplete="off" data-autoload="false" data-effective-keyword="">
                                  <span id="shadow-text"></span>
-                                 <button  type="button" class="btn bg-transparent search-embedded-btn" onclick="toggleImageSearchOverlay()">
+                                 <button type="button" class="btn bg-transparent search-embedded-btn umami--click--image-upload-button" onclick="toggleImageSearchOverlay()">
                                     <div class="cameraSvg index"></div>
                                  </button>
-                                 <button type="button" class="btn bg-transparent search-embedded-btn" onclick="toggleSpeakOverlay()">
+                                 <button type="button" class="btn bg-transparent search-embedded-btn umami--click--speak-button" onclick="toggleSpeakOverlay()">
                                     <div class="voiceSvg index"></div> 
                                  </button>
                               </div>
@@ -51,6 +53,23 @@
                </div>
             </div>
 
+            <div id="notifications-container" class="hidden">
+               <div class="notifications-info-container">
+                  <div class="notification-title">
+                     @data.gettext("Notifications")
+                  </div>
+                  <div id="notification-content">
+                     <div id="no-result" class="notification-entry hidden">
+                        @data.gettext("No new notifications")
+                     </div>
+                     <div class="button-container">
+                        <button class="overlay-button umami--click--nofitication-show-all-button" onclick="showAllNotifications()">@data.gettext("Show all")</button> <!-- TODO -->
+                        <button class="overlay-button" onclick="closeNotifications()">@data.gettext("Close")</button>
+                     </div>
+                  </div>
+               </div>
+            </div>
+
             @:settings_html(&data)
 
             <div class="modal fade" id="notificationModal">
@@ -59,80 +78,20 @@
            
                      <!-- Modal Header -->
                      <div class="modal-header">
-                        <h3 class="modal-title">@data.gettext("Patchnotes")</h4>
+                        <h3 id="notification-detail-head" class="modal-title"></h3>
                         <button type="button" class="close" data-dismiss="modal">&times;</button>
                      </div>
                      
                      <!-- Modal body -->
-                     <div class="modal-body">
-                        <b>Featuring</b>
-                        <ul>
-                           <li>New radical-picker</li>
-                           <li>Image to text search</li>
-                           <li>Genki hashtags (kanji only)</li>
-                           <li>Transitive/Intransitive pairs</li>
-                           <li>JLPT hashtags for words and kanji</li>
-                           <li>Example sentences for some words</li>
-                           <li>New paginator</li>
-                           <li>Suggest other search types if no result was found</li>
-                        </ul>
-                        <b>Fixes</b>
-                        <ul>
-                           <li>Furigana fix</li>
-                           <li>Fixed dialect not being formatted properly</li>
-                           <li>Fixed audio</li>
-                           <li>Fixed lots of frontend bugs</li>
-                        </ul>
-                        
-                        <b>Improvements</b>
-                        <ul>
-                           <li>Improved romaji search</li>
-                           <li>Improved search algorithm</li>
-                           <li>Much better backend performance</li>
-                           <li>Much better frontend performance</li>
-                           <li>Improved Word inflection view</li>
-                           <li>Improved input language detection</li>
-                           <li>Improved 3-dot menu</li>
-                           <li>Improved Cookie banner</li>
-                        </ul>
-                        
-                        <b>Additions</b>
-                        <ul>
-                           <li>Middle mouse button on search suggestions opens a new tab</li>
-                           <li>Added wiki</li>
-                           <li>Show japanese suggestions for romaji input</li>
-                           <li>Show katakana word origins</li>
-                        
-                        </ul>
-                        
-                        <b>Other</b>
-                        <ul>
-                           <li>Full rewrite of search engine implementation</li>
-                           <li>Refactored parts of frontend code</li>
-                           <li>Switched from Database to in-memory storage</li>
-                           <li>Lots of other internal improvements, fixes, code style and performance improvements</li>
-                        </ul>
-                     </div>
+                     <div id="notification-detail-body" class="modal-body"></div>
                   </div>
                </div>
             </div>
 
          </div>
        
-         <!-- Special Buttons -->
+         <!-- Search / Radical Button -->
          <div class="index-btn-container">
-            <div class="btn-container settingsBtn index" data-toggle="modal" data-target="#settingsModal">
-               <div class="settingsSvg"></div>
-            </div>
-
-            <div class="btn-container infoBtn index" onclick='openHelpPage()'>
-               <div class="infoSvg"></div>
-            </div>
-
-            <div class="btn-container notificationBtn index" onclick="openNotifications()" data-toggle="modal" data-target="#notificationModal">
-               <div class="notificationSvg"></div>
-            </div>
-   
             <div class="input-field third-wrap index">
                <button id="searchBtn" class="btn-search" onclick="onSearchStart()">
                   <div class="flex-center">
@@ -149,7 +108,17 @@
                </button>
             </div>
          </div> 
-      
+
+         <!-- Settings Button -->
+         <div class="btn-container">
+            <div class="settingsSvg settingsBtn index umami--click--settings-button"  data-toggle="modal" data-target="#settingsModal"></div>
+         </div>
+
+         <!-- Info / Notification Button-->
+         <div class="btn-container">
+            <div class="infoSvg infoBtn index umami--click--help-button" onclick='openHelpPage()'></div>
+            <div class="notificationSvg notificationBtn index umami--click--notification-button" onclick="toggleNotifications(event)"></div>
+         </div>      
       </div>
 
       @:footer_html(&data)

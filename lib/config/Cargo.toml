@@ -10,3 +10,4 @@ edition = "2021"
 serde = "1.0.130"
 serde_derive = "1.0.130"
 toml = "0.5.8"
+sha1 = { git = "https://github.com/mitsuhiko/rust-sha1"}

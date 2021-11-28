@@ -21,6 +21,7 @@ function recognitionSetup() {
     // On recognition start
     recognition.onstart = function() {
         $('#currentlyListening').html("Yes");
+        $('.voiceSvg').toggleClass("active");
     };
     
     // On recognition error
@@ -40,12 +41,14 @@ function recognitionSetup() {
                 Util.showMessage("error", "Your browser does not support speech recognition!");
         }
         $('#currentlyListening').html("No");
+        $('.voiceSvg').toggleClass("active");
     }
     
     // On speech end
     recognition.onspeechend = function() {
         recognition.stop();
         $('#currentlyListening').html("No");
+        $('.voiceSvg').toggleClass("active");
     }
     
     // On recognition result

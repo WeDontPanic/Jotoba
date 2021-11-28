@@ -86,7 +86,7 @@ pub fn pairs_checked(kanji: &str, kana: &str) -> Option<Vec<SentencePart>> {
 ///
 /// Input format: [拝金主義|はい|きん|しゅ|ぎ]
 ///
-pub fn from_str<'a>(input: &'a str) -> impl Iterator<Item = SentencePartRef<'a>> {
+pub fn from_str(input: &str) -> impl Iterator<Item = SentencePartRef<'_>> {
     let mut char_iter = input.char_indices().multipeek();
     let mut kanji_pos: Option<i8> = None;
     std::iter::from_fn(move || {
@@ -107,7 +107,7 @@ pub fn from_str<'a>(input: &'a str) -> impl Iterator<Item = SentencePartRef<'a>>
 
             if a_start == '|' {
                 kanji_pos = None;
-                while let Some(v) = char_iter.next() {
+                for v in &mut char_iter {
                     if v.1 == ']' {
                         pos = v.0 + v.1.len_utf8();
                         break;
@@ -172,11 +172,9 @@ pub fn default_pair(kanji: &str, kana: &str) -> SentencePart {
 }
 
 pub fn last_kana_part(input: &str) -> Option<usize> {
-    let mut iter = input.char_indices().rev();
-
     let mut start_index = 0;
 
-    while let Some((po, las)) = iter.next() {
+    for (po, las) in input.char_indices().rev() {
         if !las.is_kana() {
             break;
         }
@@ -260,7 +258,7 @@ fn furi_count(start: char, char_iter: &mut MultiPeek<CharIndices>) -> i32 {
         if *c == ']' {
             // Don't count empty furi
             if last == '|' {
-                furiparts = furiparts - 1;
+                furiparts -= 1;
             }
             break;
         }
@@ -319,7 +317,7 @@ fn calc_kanji_readings(kanji: &str, kana: &str) -> Option<Vec<(String, String)>>
             }
 
             if starts_with(
-                &curr_kana,
+                curr_kana,
                 &curr_kanji,
                 &part_kana,
                 !has_kanji_after(&kk, part_kanji.len() + part_kana.len()),

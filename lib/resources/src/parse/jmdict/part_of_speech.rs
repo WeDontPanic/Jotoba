@@ -179,10 +179,7 @@ impl PartOfSpeech {
     /// Returns true if [`self`] is a godan PartOfSpeech variant
     pub fn is_godan(&self) -> bool {
         if let PartOfSpeech::Verb(v) = self {
-            match v {
-                VerbType::Godan(_) => true,
-                _ => false,
-            }
+            matches!(v, VerbType::Godan(_))
         } else {
             false
         }

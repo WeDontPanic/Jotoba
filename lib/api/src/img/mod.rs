@@ -44,12 +44,13 @@ pub async fn scan_ep(
 
     // Scan image
     let local_file_cloned = local_file.clone();
-    let res = web::block(move || scan_image(local_file_cloned, &args, &config)).await??;
+    let res = web::block(move || scan_image(local_file_cloned, &args, &config)).await;
 
     // Cleanup file
     web::block(move || std::fs::remove_file(local_file)).await??;
 
-    Ok(Json(res))
+    // Handle result after cleaning up files
+    Ok(Json(res??))
 }
 
 /// Scans an image and returns a `Response` with the recognized text or an error

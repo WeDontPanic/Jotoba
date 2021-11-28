@@ -9,7 +9,7 @@
 <div class="modal fade" id="imageCroppingModal">
    <div class="modal-body cropping-target-body">
       <div class="cropping-target-border">
-         <button class="btn-search crop" onclick="uploadCroppedImage()">
+         <button class="btn-search crop umami--click--image-upload-send-button" onclick="uploadCroppedImage()">
             <div class="flex-center">
                <div>@data.gettext("Search")</div>
                <div class="searchSvg index"></div>
@@ -30,138 +30,194 @@
     <div class="modal-dialog">
        <div class="modal-content">
 
-          <!-- Modal Header -->
-          <div class="modal-header">
-             <h3 class="modal-title">@data.gettext("Settings")</h4>
-             <button type="button" class="close" data-dismiss="modal">&times;</button>
-          </div>
-
           <!-- Modal body -->
           <div class="modal-body">
-             <span class="inner-title">@data.gettext("Default search language")</span>
-             <br>
-             <div class="choices noselect" data-type="select-one" tabindex="1">
-                <div class="choices__inner">
-                   <select data-trigger="" name="type" data-onchange="onSettingsChange_DefaultLanguage" class="hidden">
-                      <option value="0">@data.gettext("English")</option>
-                   </select>
-                   <div class="choices__list choices__list--single">
-                      <div class="choices__item choices__item--selectable">@data.gettext("English")</div>
+            <div class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
+               <header class="mdl-layout__header">
+                 <div class="mdl-layout__header-row">
+                   <!-- Title -->
+                   <span class="mdl-layout-title">Settings</span>
+                   <button type="button" class="close" data-dismiss="modal">×</button>
+                 </div>
+                 <!-- Tabs -->
+                 <div class="mdl-layout__tab-bar mdl-js-ripple-effect">
+                   <a href="#scroll-tab-1" class="mdl-layout__tab is-active">@data.gettext("Language")</a>
+                   <a href="#scroll-tab-2" class="mdl-layout__tab">@data.gettext("Search")</a>
+                   <a href="#scroll-tab-3" class="mdl-layout__tab">@data.gettext("Display")</a>
+                   <a href="#scroll-tab-4" class="mdl-layout__tab">@data.gettext("Other")</a>
+                 </div>
+               </header>
+               <main class="mdl-layout__content">
+                 <section class="mdl-layout__tab-panel is-active" id="scroll-tab-1">
+                   <div class="page-content">
+                     <div class="d-flex flex-column">
+                        <div class="settings-entry">
+                           <span class="inner-title">@data.gettext("Default search language")</span>
+                           <div class="choices noselect" data-type="select-one" tabindex="1">
+                              <div class="choices__inner">
+                                 <select data-trigger="" name="type" data-onchange="onSettingsChange_DefaultLanguage" class="hidden">
+                                    <option value="0">@data.gettext("English")</option>
+                                 </select>
+                                 <div class="choices__list choices__list--single">
+                                    <div class="choices__item choices__item--selectable">@data.gettext("English")</div>
+                                 </div>
+                              </div>
+                              <div class="choices__list choices__list--dropdown">
+                                 <div id="search-lang-select" class="choices__list umami--change--search-language-change">
+                                    <div data-value="en-US" class="choices__item choices__item--choice choices__item--selectable">@data.gettext("English")</div>
+                                    <div data-value="de-DE" class="choices__item choices__item--choice choices__item--selectable">@data.gettext("German")</div>
+                                    <div data-value="es-ES" class="choices__item choices__item--choice choices__item--selectable">@data.gettext("Spanish")</div>
+                                    <div data-value="fr-FR" class="choices__item choices__item--choice choices__item--selectable">@data.gettext("French")</div>
+                                    <div data-value="nl-NL" class="choices__item choices__item--choice choices__item--selectable">@data.gettext("Dutch")</div>
+                                    <div data-value="sv-SE" class="choices__item choices__item--choice choices__item--selectable">@data.gettext("Swedish")</div>
+                                    <div data-value="ru" class="choices__item choices__item--choice choices__item--selectable">@data.gettext("Russian")</div>
+                                    <div data-value="hu" class="choices__item choices__item--choice choices__item--selectable">@data.gettext("Hungarian")</div>
+                                    <div data-value="sl-SI" class="choices__item choices__item--choice choices__item--selectable">@data.gettext("Slovenian")</div>
+                                 </div>
+                              </div>
+                           </div>
+                        </div>
+                        <div class="settings-entry">
+                           <span class="inner-title">@data.gettext("Page language")</span>
+                           <div class="choices noselect" data-type="select-one" tabindex="1">
+                              <div class="choices__inner">
+                                 <select data-trigger="" name="type" data-onchange="onSettingsChange_PageLanguage" class="hidden">
+                                    <option value="0">@data.gettext("English")</option>
+                                 </select>
+                                 <div class="choices__list choices__list--single">
+                                    <div class="choices__item choices__item--selectable">@data.gettext("English")</div>
+                                 </div>
+                              </div>
+                              <div class="choices__list choices__list--dropdown umami--change--page-language-change">
+                                 <div id="page-lang-select" class="choices__list">
+                                    <div data-value="en-US" class="choices__item choices__item--choice choices__item--selectable">@data.gettext("English")</div>
+                                    <div data-value="de-DE" class="choices__item choices__item--choice choices__item--selectable">@data.gettext("German")</div>
+                                    <div id="dis1" data-value="ja-JP" class="choices__item choices__item--choice choices__item--disabled">@data.gettext("Japanese")</div>
+                                    <div id="dis2" data-value="es-ES" class="choices__item choices__item--choice choices__item--disabled">@data.gettext("Spanish")</div>
+                                    <div id="dis3" data-value="fr-FR" class="choices__item choices__item--choice choices__item--disabled">@data.gettext("French")</div>
+                                    <div id="dis4" data-value="nl-NL" class="choices__item choices__item--choice choices__item--disabled">@data.gettext("Dutch")</div>
+                                    <div id="dis5" data-value="sv-SE" class="choices__item choices__item--choice choices__item--disabled">@data.gettext("Swedish")</div>
+                                    <div id="dis6" data-value="ru" class="choices__item choices__item--choice choices__item--disabled">@data.gettext("Russian")</div>
+                                    <div id="dis7" data-value="hu" class="choices__item choices__item--choice choices__item--disabled">@data.gettext("Hungarian")</div>
+                                    <div id="dis8" data-value="sl-SI" class="choices__item choices__item--choice choices__item--disabled">@data.gettext("Slovenian")</div>
+                                 </div>
+                              </div>
+                           </div>
+                        </div>
+                     </div>
                    </div>
-                </div>
-                <div class="choices__list choices__list--dropdown">
-                   <div id="search-lang-select" class="choices__list">
-                      <div data-value="en-US" class="choices__item choices__item--choice choices__item--selectable">@data.gettext("English")</div>
-                      <div data-value="de-DE" class="choices__item choices__item--choice choices__item--selectable">@data.gettext("German")</div>
-                      <div data-value="es-ES" class="choices__item choices__item--choice choices__item--selectable">@data.gettext("Spanish")</div>
-                      <div data-value="fr-FR" class="choices__item choices__item--choice choices__item--selectable">@data.gettext("French")</div>
-                      <div data-value="nl-NL" class="choices__item choices__item--choice choices__item--selectable">@data.gettext("Dutch")</div>
-                      <div data-value="sv-SE" class="choices__item choices__item--choice choices__item--selectable">@data.gettext("Swedish")</div>
-                      <div data-value="ru" class="choices__item choices__item--choice choices__item--selectable">@data.gettext("Russian")</div>
-                      <div data-value="hu" class="choices__item choices__item--choice choices__item--selectable">@data.gettext("Hungarian")</div>
-                      <div data-value="sl-SI" class="choices__item choices__item--choice choices__item--selectable">@data.gettext("Slovenian")</div>
-                   </div>
-                </div>
-             </div>
-             <span class="tags search-lang-txt">@data.gettext("Results will try to match the selected language")</span>
+                 </section>
+                 <section class="mdl-layout__tab-panel" id="scroll-tab-2">
+                     <div class="page-content">
+                        <div class="d-flex flex-column">
 
-             <br>
+                           <div class="inner-header">@data.gettext("General")</div>
 
-             <span class="inner-title">@data.gettext("Page language")</span>
-             <br>
-             <div class="choices noselect" data-type="select-one" tabindex="1">
-                <div class="choices__inner">
-                   <select data-trigger="" name="type" data-onchange="onSettingsChange_PageLanguage" class="hidden">
-                      <option value="0">@data.gettext("English")</option>
-                   </select>
-                   <div class="choices__list choices__list--single">
-                      <div class="choices__item choices__item--selectable">@data.gettext("English")</div>
-                   </div>
-                </div>
-                <div class="choices__list choices__list--dropdown">
-                   <div id="page-lang-select" class="choices__list">
-                      <div data-value="en-US" class="choices__item choices__item--choice choices__item--selectable">@data.gettext("English")</div>
-                      <div data-value="de-DE" class="choices__item choices__item--choice choices__item--selectable">@data.gettext("German")</div>
-                      <div id="dis1" data-value="ja-JP" class="choices__item choices__item--choice choices__item--disabled">@data.gettext("Japanese")</div>
-                      <div id="dis2" data-value="es-ES" class="choices__item choices__item--choice choices__item--disabled">@data.gettext("Spanish")</div>
-                      <div id="dis3" data-value="fr-FR" class="choices__item choices__item--choice choices__item--disabled">@data.gettext("French")</div>
-                      <div id="dis4" data-value="nl-NL" class="choices__item choices__item--choice choices__item--disabled">@data.gettext("Dutch")</div>
-                      <div id="dis5" data-value="sv-SE" class="choices__item choices__item--choice choices__item--disabled">@data.gettext("Swedish")</div>
-                      <div id="dis6" data-value="ru" class="choices__item choices__item--choice choices__item--disabled">@data.gettext("Russian")</div>
-                      <div id="dis7" data-value="hu" class="choices__item choices__item--choice choices__item--disabled">@data.gettext("Hungarian")</div>
-                      <div id="dis8" data-value="sl-SI" class="choices__item choices__item--choice choices__item--disabled">@data.gettext("Slovenian")</div>
-                   </div>
-                </div>
-             </div>
-             <span class="tags search-lang-txt">@data.gettext("Displays the website in the selected language")</span>
+                           <div class="settings-entry no-gap">
+                              <span class="inner-title">@data.gettext("Always show english results"):</span>
 
-             <!-- Tooltip for disabled texts. TODO Remove when 100% translated. -->
-             <div class="mdl-tooltip" for="dis1">
-             @data.gettext("This language has not been translated yet.") <br> @data.gettext("Contributions are welcome!")
-             </div>
-             <div class="mdl-tooltip" for="dis2">
-             @data.gettext("This language has not been translated yet.") <br> @data.gettext("Contributions are welcome!")
-             </div>
-             <div class="mdl-tooltip" for="dis3">
-             @data.gettext("This language has not been translated yet.") <br> @data.gettext("Contributions are welcome!")
-             </div>
-             <div class="mdl-tooltip" for="dis4">
-             @data.gettext("This language has not been translated yet.") <br> @data.gettext("Contributions are welcome!")
-             </div>
-             <div class="mdl-tooltip" for="dis5">
-             @data.gettext("This language has not been translated yet.") <br> @data.gettext("Contributions are welcome!")
-             </div>
-             <div class="mdl-tooltip" for="dis6">
-             @data.gettext("This language has not been translated yet.") <br> @data.gettext("Contributions are welcome!")
-             </div>
-             <div class="mdl-tooltip" for="dis7">
-             @data.gettext("This language has not been translated yet.") <br> @data.gettext("Contributions are welcome!")
-             </div>
-             <div class="mdl-tooltip" for="dis8">
-             @data.gettext("This language has not been translated yet.") <br> @data.gettext("Contributions are welcome!")
-             </div>
+                              <label for="show_eng_settings" class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect">
+                                 <input checked id="show_eng_settings" type="checkbox" class="mdl-checkbox__input" onchange="onBtnSettingsChange_englishAlways(event)">
+                              </label>
+                           </div>
+                           <div class="settings-entry" id="eng_on_top_parent">
+                              <span class="inner-title">@data.gettext("Show english results on top"):</span>
+                              <label for="show_eng_on_top_settings" class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect">
+                                 <input id="show_eng_on_top_settings" type="checkbox" class="mdl-checkbox__input" onchange="onBtnSettingsChange('show_english_on_top', event)">
+                              </label>
+                           </div>
 
-             <br class="desktop-br">
-             <br>
-             <span class="inner-title">@data.gettext("Result settings")</span>
-             <br>
-             <span>@data.gettext("Always show english results"):</span>
-             <input id="show_eng_settings" type="checkbox" checked onchange="onSettingsChange_ShowEnglish(event)">
-             <br>
-             <div id="show_eng_on_top_settings_parent">
-                <span>@data.gettext("Show english results on top"):</span>
-                <input id="show_eng_on_top_settings" type="checkbox" onchange="onSettingsChange_ShowEnglishOnTop(event)">
+                           <div class="settings-entry">
+                              <span class="inner-title">@data.gettext("Focus search bar on load"):</span>
+                              <label for="focus_search_bar_settings" class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect">
+                                 <input id="focus_search_bar_settings" type="checkbox" class="mdl-checkbox__input" onchange="onBtnSettingsChange('focus_searchbar', event)">
+                              </label>
+                           </div>
+
+                           <div class="settings-entry txt-input">
+                              <span id="rpr" class="inner-title txt-input">@data.gettext("Results per page"):</span>
+                              <form action="#" onsubmit="return false">
+                                 <div class="mdl-textfield mdl-js-textfield">
+                                   <input class="mdl-textfield__input" type="text" pattern="\b(0*(?:[1-9][0-9]?|100))\b" id="items_per_page_input" onblur="onInputSettingsChange('items_per_page', event)">
+                                   <label class="mdl-textfield__label" for="items_per_page_input">@data.gettext("Number...")</label>
+                                   <span class="mdl-textfield__error">@data.gettext("Input has to be in range of 1 and 100!")</span>
+                                 </div>
+                               </form>
+                               <div class="mdl-tooltip" for="rpr">
+                                 @data.gettext("max amount of names/words/sentences shown per page")
+                               </div>
+                           </div>
+
+                           <div class="inner-header">@data.gettext("Sentences")</div>
+                           
+                           <div class="settings-entry">
+                              <span class="inner-title">@data.gettext("Show Furigana"):</span>
+                              <label for="show_sentence_furigana_settings" class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect">
+                                 <input checked id="show_sentence_furigana_settings" type="checkbox" class="mdl-checkbox__input" onchange="onBtnSettingsChange('sentence_furigana', event)">
+                              </label>
+                           </div>
+
+                           <div class="inner-header">@data.gettext("Words")</div>
+
+                           <div class="settings-entry">
+                              <span class="inner-title">@data.gettext("Show example sentences"):</span>
+                              <label for="show_example_sentences_settings" class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect">
+                                 <input checked id="show_example_sentences_settings" type="checkbox" class="mdl-checkbox__input" onchange="onBtnSettingsChange('show_sentences', event)">
+                              </label>
+                           </div>
+                           
+                           <div class="inner-header">@data.gettext("Kanji")</div>
+                           
+                           <div class="settings-entry no-gap">
+                              <span id="krp" class="inner-title txt-input">@data.gettext("Items per page"):</span>
+                              <form action="#" onsubmit="return false">
+                                 <div class="mdl-textfield mdl-js-textfield">
+                                   <input class="mdl-textfield__input" type="text" pattern="\b(0*(?:[1-9][0-9]?|100))\b" id="kanji_per_page_input" onblur="onInputSettingsChange('kanji_page_size', event)">
+                                   <label class="mdl-textfield__label" for="kanji_per_page_input">@data.gettext("Number...")</label>
+                                   <span class="mdl-textfield__error">@data.gettext("Input has to be in range of 1 and 100!")</span>
+                                 </div>
+                               </form>
+                               <div class="mdl-tooltip" for="krp">
+                                 @data.gettext("max amount of kanji shown per page")
+                               </div>
+                           </div>
+                        </div>
+                     </div>
+                 </section>
+                 <section class="mdl-layout__tab-panel" id="scroll-tab-3">
+                     <div class="page-content">
+                        <div class="d-flex flex-column">
+                           <div class="settings-entry">
+                              <span class="inner-title display">@data.gettext("Use dark mode"):</span>
+                              <label for="use_dark_mode_settings" class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect">
+                                 <input checked id="use_dark_mode_settings" type="checkbox" class="mdl-checkbox__input umami--click--dark-mode-button" onchange="onBtnSettingsChange_darkTheme(event)">
+                              </label>
+                           </div>
+                           <div class="settings-entry">
+                              <span class="inner-title">@data.gettext("Default kanji animation speed"):</span>
+                              <div class="slidercontainer settings">
+                                 <input id="show_anim_speed_settings" type="range" min="0.05" max="2" value="1" step="0.05" class="slider speedSlider" oninput="onSettingsChange_AnimationSpeed(event)">
+                                 <span id="show_anim_speed_settings_slider">2</span>
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+                 </section>
+                 <section class="mdl-layout__tab-panel" id="scroll-tab-4">
+                     <div class="page-content">
+                        <div class="d-flex flex-column">
+                           <div class="settings-entry">
+                              <span class="inner-title">@data.gettext("Accept Cookies"):</span>
+                              <label for="cookie_settings" class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect">
+                                 <input checked id="cookie_settings" type="checkbox" class="mdl-checkbox__input" onchange="onCookiesAcceptChange(event)">
+                              </label>
+                           </div>
+                        </div>
+                     </div>
+                 </section>
+               </main>
              </div>
-             <br>
-             <span class="inner-title">@data.gettext("Display settings")</span>
-             <br>
-             <span>@data.gettext("Default kanji animation speed"):</span>
-             <div class="slidecontainer">
-                <input id="show_anim_speed_settings" type="range" min="0.05" max="2" value="1" step="0.05" class="slider speedSlider" oninput="onSettingsChange_AnimationSpeed(event)">
-                <span id="show_anim_speed_settings_slider">1.0</span>
-             </div>
-             <br>
-             <span class="inner-title">@data.gettext("Select color scheme")</span>
-             <div class="d-flex flex-column top-padding-05-rem">
-                <div class="d-flex flex-row">
-                   <span class="colorLbl">@data.gettext("Use theme"):</span>
-                   <span onclick='setTheme("light");' class="clickable" style="padding-right: 0.5em;">@data.gettext("Light")</span>
-                   <span onclick='setTheme("dark");' class="clickable">@data.gettext("Dark")</span>
-                </div>
-             </div>
-             <br>
-             <span class="inner-title">@data.gettext("Cookie management")</span>
-             <br>
-                  <span id="cookie-agreement-revoke" class="hidden">@data.gettext("Click") <span onclick="revokeCookieAgreement(true)" class="clickable">@data.gettext("here")</span> @data.gettext("to revoke your Cookies agreement")</span>
-                  <span id="cookie-agreement-accept" class="hidden">@data.gettext("Click") <span onclick="cookiesAccepted(true)" class="clickable">@data.gettext("here")</span> @data.gettext("to enable Cookies")</span>
-             <br>
           </div>
-
-          <!-- Modal footer -->
-          <div class="modal-footer">
-             <button type="button" class="btn btn-danger" data-dismiss="modal">@data.gettext("Close")</button>
-          </div>
-
         </div>
     </div>
  </div>

@@ -1,9 +1,13 @@
 /*
-    Used to make mobile shit ~p~r~e~t~t~y~ less ugly
+    Used to make mobile stuff less ugly. Will be transfered into the others file bit-by-bit.
 */
 
 @media only screen and (max-width: 600px) {
 	
+    .modal-open {
+        margin-right: 0px;
+    }
+
     /* -------- Index -------- */
    
     .circle {
@@ -82,41 +86,11 @@
         width: 100%;
     }
 
-    .search-annotation {
-        width: 80%;
-        margin-left: 10%;
-        padding-left: 0px;
-        padding-right: 0px;
-    }
-
     #shadow-text {
         padding: 0px;
         margin: 13px 15px;
     }
 	
-    .main-container {
-        width: 98vw;
-    }
-
-    .sentence-reader {
-        overflow-x: scroll;
-        max-width: 90vw !important;
-        padding-top: 20px;
-        flex-wrap: unset !important;
-    }
-
-    .sentence-reader::-webkit-scrollbar {
-        width: 0px;
-    }
-
-    .sentence-part {
-        min-width: -webkit-max-content;
-        min-width: -moz-max-content;
-        min-width: max-content;
-        margin-right: 20px;
-    }
-    
-
     #content-container {
         flex-direction: column!important;
     }
@@ -129,10 +103,6 @@
 
     .searchDivInner form .inner-form .input-field.first-wrap .choices__inner .choices__list--single .choices__item {
         display: none;
-    }
-
-    .choices[data-type*="select-one"]:after {
-        margin-right: -16px;
     }
 
     .searchDivInner form .inner-form .input-field.first-wrap {
@@ -264,129 +234,6 @@
     .table.conjugation {
         margin-left: 0px;
         width: 101%;
-    }
-    
-	/* -------- Kanji Details -------- */
-	
-	.main-container > .d-flex {
-		flex-direction: column;
-        /* margin-left: 1rem; */
-	}
-
-	.kanji-entry.left.detail {
-        width: 100%;
-		align-self: center;
-		padding-left: 0px;
-	}
-	
-	.kanji-preview.x-large {
-		align-self: center;
-	}
-
-    .translation.big {
-        font-size: 20px;
-        padding-bottom: 10px;
-    }
-	
-	.kanji-preview-info {
-		padding-left: 0px;
-        text-align: left;
-	}
-	
-	.kanji-entry.right.detail {
-		width: unset;
-		padding-left: 0px;
-	}
-	
-	.kanji-entry.right.detail > .kanji-entry {
-		flex-direction: column !important;
-	}
-	
-	.kanji-preview-left {
-		padding: 0;
-		width: 100%;
-		text-align: center;
-        text-align: -webkit-center;
-	}	
-
-    .rad-parts-parent {
-        display: flex !important;
-        flex-direction: row !important;
-    }
-
-    .notes.stroke {
-        text-align: center;
-        text-align: -webkit-center;
-    }
-
-    .notes.rad {
-        width: 50%;
-    }
-
-    .notes.parts {
-        width: 50%;
-        padding-right: 20px;
-        text-align: right;
-    }
-	
-	.kanji-preview-left > .d-flex {
-		padding-left: 10px;
-	}
-	
-	.kanji-preview-right {
-        max-width: unset;
-		padding-top: 10px;
-	}
-
-    .notes {
-        padding-left: 10px;
-    }
-
-    .tags.fat {
-        font-size: 15px;
-    }
-
-    .clickable.fat {
-        font-size: 15px;
-    }
-	
-	.stroke-container {
-        max-width: 99vw;
-        padding-left: 1vw;
-	}
-	
-	.on-reading {
-		padding-top: 10px;
-	}
-	
-	.kun-reading {
-		width: 100%;
-		padding-top: 20px;
-	}
-
-    .animation-container {
-        padding-left: 15vw;
-    }
-
-    .slider {
-        width: 100px;
-        height: 10px;
-    }
-
-    .slider::-webkit-slider-thumb {
-        width: 20px;
-        height: 20px;
-        border-radius: 50%; 
-    }
-
-    .slider::-moz-range-thumb {
-        width: 20px;
-        height: 20px;
-        border-radius: 50%; 
-    }
-
-    .slider-output {
-        margin-left: -10px;
     }
 
     /* -------- Radical Picker -------- */
