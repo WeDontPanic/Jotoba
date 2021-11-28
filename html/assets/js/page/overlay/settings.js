@@ -2,11 +2,6 @@
 * This JS-File everything related to the settings overlay
 */
 
-// Cookies that track the user
-const trackingCookies = [
-    "allow_cookies"
-];
-
 // Analytics. Use your own or leave empty
 var analyticsUrl = '';
 var analyticsAttributes = null;
@@ -30,7 +25,6 @@ function revokeCookieAgreement(manuallyCalled) {
     if (manuallyCalled)
         Util.showMessage("success", "Successfully deleted your cookie data.");
 
-    Util.deleteSelectedCookies(trackingCookies);
     Cookies.set("allow_cookies", "0", {path: '/'});
     Util.setMdlCheckboxState("cookie_settings", false);
 }
@@ -68,7 +62,7 @@ function loadCookieData() {
 
     // Set essentials
     if (Cookies.get("default_lang") === undefined) {
-        Cookies.set("default_lang", search_lang);
+        Cookies.set("default_lang", search_lang, {path: '/'});
     }
 
     // Execute 
@@ -124,7 +118,7 @@ async function setSearchSettings(english_always, english_on_top, example_sentenc
 
     // Default items val
     if (!items_per_page) {
-        Cookies.set("items_per_page", 10);
+        Cookies.set("items_per_page", 10, {path: '/'});
         items_per_page = 10;
     }
 
@@ -176,7 +170,7 @@ function onInputSettingsChange(relatedCookie, event) {
     let value = event.target.value;
 
     if (value > 0 && value < 101) {
-        Cookies.set(relatedCookie, event.target.value);
+        Cookies.set(relatedCookie, event.target.value, {path: '/'});
     } else {
         event.target.value = Cookies.get(relatedCookie);
         $(event.target).parent().addClass("is-dirty");
@@ -185,7 +179,7 @@ function onInputSettingsChange(relatedCookie, event) {
 
 // Handles an event caused by a settings-btn
 function onBtnSettingsChange(relatedCookie, event) {
-    Cookies.set(relatedCookie, event.target.checked);
+    Cookies.set(relatedCookie, event.target.checked, {path: '/'});
 }
 
 // Special handling for english_always
