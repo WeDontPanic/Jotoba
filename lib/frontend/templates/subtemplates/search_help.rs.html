@@ -10,9 +10,9 @@
   <div class="small-12 medium-6 columns small-centered">
 
     @if let Some(search_help) = data.get_search_help() {
-      <p class="fat">@data.gettext("Found in multiple other languages")</p>
 
       @if !search_help.other_langs.is_empty() {
+        <p class="fat">@data.gettext("Found in multiple other languages")</p>
         @for (lang, l_code) in search_help.iter_langs() {
           <b> - @data.gettext(lang)</b><br>
           <a href="/search/@l_code: @data.site.as_search_result().unwrap().query.get_query_encoded()">Temporarily search</a>
