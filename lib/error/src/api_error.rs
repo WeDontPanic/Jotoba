@@ -103,6 +103,7 @@ impl ResponseError for RestError {
 impl From<super::Error> for RestError {
     #[inline]
     fn from(err: super::Error) -> Self {
+        eprintln!("Error: {:?}", err);
         match err {
             crate::Error::NotFound => Self::NotFound,
             _ => Self::Internal,
