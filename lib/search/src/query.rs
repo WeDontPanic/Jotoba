@@ -8,10 +8,13 @@ use crate::query_parser;
 use super::query_parser::QueryType;
 
 use itertools::Itertools;
+use percent_encoding::{utf8_percent_encode, AsciiSet, CONTROLS};
 use resources::{
     models::kanji,
     parse::jmdict::{languages::Language, misc::Misc, part_of_speech::PosSimple},
 };
+
+const QUERY_ENCODE_SET: &AsciiSet = &CONTROLS.add(b'/');
 
 /// A single user provided query in a parsed format
 #[derive(Debug, Clone, PartialEq, Default, Hash)]
@@ -364,6 +367,11 @@ impl Query {
                 (is_tag && !is_search_type_tag) || !is_tag
             })
             .join(" ")
+    }
+
+    /// Encodes the query using percent encoding
+    pub fn get_query_encoded(&self) -> String {
+        utf8_percent_encode(&self.query, QUERY_ENCODE_SET).to_string()
     }
 }
 
