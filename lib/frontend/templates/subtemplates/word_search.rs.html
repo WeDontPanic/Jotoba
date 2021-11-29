@@ -83,6 +83,11 @@
   <div id="content-container" class="d-flex left">
     <div class="main-info d-flex flex-column">
 
+      @*
+      @if let Some(new_lang) = result.changed_lang {
+        @data.gettext_fmt("Temporarily switched language to {}", &[data.gettext(new_lang)])
+      }*@
+
       @if result.has_word() {
         <h3 class="noselect word-title">@data.gettext("Words")</h3>
       } else {

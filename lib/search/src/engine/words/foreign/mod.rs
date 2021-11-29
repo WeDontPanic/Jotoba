@@ -5,7 +5,9 @@ use resources::{
 use utils::to_option;
 use vector_space_model::{document_vector, DocumentVector};
 
-use crate::engine::{document::MultiDocument, metadata::Metadata, Indexable, SearchEngine};
+use crate::engine::{
+    document::MultiDocument, metadata::Metadata, Indexable, SearchEngine, SearchTask,
+};
 use gen::GenDoc;
 
 pub mod gen;
@@ -99,5 +101,96 @@ impl SearchEngine for Engine {
         }
         res.sort_by(|a, b| a.1.cmp(&b.1));
         res.get(0).map(|i| i.0.as_str())
+    }
+}
+
+/// Guesses the language of `query`. Returns multiple if it can't be exactly determined cause of
+/// same/similar words across multiple languages
+pub fn guess_language(query: &str) -> Vec<Language> {
+    let possible_langs = Language::word_iter()
+        .filter(|language| {
+            // Filter languages that can theoretically build valid document vectors
+            Engine::gen_query_vector(index::get(*language).unwrap(), query).is_some()
+        })
+        .collect::<Vec<_>>();
+
+    // Stopwords or short queries can have lots of possible languages, filter most unlikely
+    // ones out
+    if possible_langs.len() > 1 {
+        let mut scored = Vec::with_capacity(possible_langs.len());
+
+        for lang in &possible_langs {
+            let mut guess_task = SearchTask::<Engine>::with_language(query, *lang);
+            guess_task.set_align(false);
+            let guess = guess_task.estimate_result_count().unwrap(); // Only fails if index is not loaded, which is never the case
+            scored.push((*lang, guess.value));
+        }
+
+        let max = scored.iter().max_by(|a, b| a.1.cmp(&b.1)).unwrap();
+        // allow all languages which have >= than 40% of max estimated results
+        let threshold = max.1 as f32 * 0.4f32;
+        scored.retain(|(_, est)| (*est) as f32 >= threshold);
+        return scored.into_iter().map(|i| i.0).collect::<Vec<_>>();
+    }
+
+    possible_langs
+}
+
+#[cfg(test)]
+mod test {
+    use std::{path::PathBuf, time::Instant};
+
+    use config::{Config, SearchConfig, ServerConfig};
+
+    use super::*;
+
+    #[test]
+    fn test_guess_lang() {
+        load_data();
+        let test_set = &[
+            ("hausaufgabe", vec![Language::German]),
+            ("Regen", vec![Language::German, Language::Dutch]),
+            ("musique", vec![Language::French]),
+            ("dog", vec![Language::English]),
+            ("Möbel", vec![Language::German]),
+            ("sugar", vec![Language::English]),
+            ("to correct", vec![Language::English]),
+        ];
+
+        for (query, expected) in test_set {
+            println!("testing query: {}", query);
+            let start = Instant::now();
+            assert_eq!(&guess_language(query), expected);
+            println!("lang guessing: {:?}", start.elapsed());
+        }
+    }
+
+    fn load_data() {
+        // never do this in production!
+        let mut config = Config::new(Some(PathBuf::from("../../data/config.toml"))).unwrap();
+        config.search = Some(SearchConfig {
+            indexes_source: Some(String::from("../../indexes")),
+            search_timeout: None,
+            suggestion_timeout: None,
+            suggestion_sources: Some(String::from("../../suggestions")),
+            report_queries_after: None,
+        });
+
+        config.server = ServerConfig {
+            storage_data: Some(String::from("../../resources/storage_data")),
+            sentences: Some(String::from("../../resources/sentences.bin")),
+            radical_map: Some(String::from("../../resources/radical_map")),
+            ..ServerConfig::default()
+        };
+
+        resources::initialize_resources(
+            config.get_storage_data_path().as_str(),
+            config.get_suggestion_sources(),
+            config.get_radical_map_path().as_str(),
+            config.get_sentences_path().as_str(),
+        )
+        .expect("Failed to load resources");
+
+        index::load("../../indexes").unwrap();
     }
 }

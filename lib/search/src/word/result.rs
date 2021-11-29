@@ -1,5 +1,8 @@
 use japanese::inflection::{Inflection, SentencePart};
-use resources::models::{kanji::Kanji, words::Word};
+use resources::{
+    models::{kanji::Kanji, words::Word},
+    parse::jmdict::languages::Language,
+};
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct WordResult {
@@ -10,6 +13,7 @@ pub struct WordResult {
     pub sentence_parts: Option<Vec<SentencePart>>,
     pub sentence_index: i32,
     pub searched_query: String,
+    pub changed_lang: Option<Language>,
 }
 
 impl WordResult {

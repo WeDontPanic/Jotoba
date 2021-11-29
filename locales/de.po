@@ -13,7 +13,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"PO-Revision-Date: 2021-11-27 16:31+0100\n"
+"PO-Revision-Date: 2021-11-29 21:46+0100\n"
 "Last-Translator:  <>\n"
 "Language-Team: English\n"
 "Language: en\n"
@@ -754,6 +754,9 @@ msgstr "Wörter und Kanjis"
 
 msgid "{} could be an inflection of"
 msgstr "{} könnte eine Flexion sein von"
+
+msgid "Temporarily switched language to {}"
+msgstr "Vorübergehend zu {} gewechselt"
 
 msgctxt "inflection"
 msgid "Negative"

@@ -33,6 +33,39 @@ pub enum Language {
     Japanese,
 }
 
+impl Language {
+    /// Returns an iterator over all Languages which have words with this language
+    pub fn word_iter() -> impl Iterator<Item = Self> {
+        [
+            Language::English,
+            Language::German,
+            Language::Russian,
+            Language::Spanish,
+            Language::Swedish,
+            Language::French,
+            Language::Dutch,
+            Language::Hungarian,
+            Language::Slovenian,
+        ]
+        .into_iter()
+    }
+
+    pub fn to_query_format(&self) -> &'static str {
+        match *self {
+            Language::English => "eng",
+            Language::German => "ger",
+            Language::Russian => "rus",
+            Language::Spanish => "spa",
+            Language::Swedish => "swe",
+            Language::French => "fre",
+            Language::Dutch => "dut",
+            Language::Hungarian => "hun",
+            Language::Slovenian => "slv",
+            Language::Japanese => "jpn",
+        }
+    }
+}
+
 impl Default for Language {
     #[inline]
     fn default() -> Self {

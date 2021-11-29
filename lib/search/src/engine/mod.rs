@@ -24,14 +24,15 @@ use vector_space_model::{
 pub fn load_indexes(config: &Config) -> Result<(), Box<dyn std::error::Error>> {
     let mut joins = Vec::with_capacity(5);
 
+    let index_path = config.get_indexes_source().to_owned();
+
     let config1 = config.clone();
     joins.push(thread::spawn(move || {
         words::native::index::load(config1.get_indexes_source());
     }));
 
-    let config1 = config.clone();
     joins.push(thread::spawn(move || {
-        words::foreign::index::load(&config1).expect("failed to load index");
+        words::foreign::index::load(index_path).expect("failed to load index");
     }));
 
     let config1 = config.clone();

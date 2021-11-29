@@ -173,6 +173,10 @@ fn build_search_help(querytype: QueryType, query: &Query) -> Option<SearchHelp> 
         }
     }
 
+    if querytype == QueryType::Words {
+        help.other_langs = search::word::guess_inp_language(query);
+    }
+
     (!help.is_empty()).then(|| help)
 }
 

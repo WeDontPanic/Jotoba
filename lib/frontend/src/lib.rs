@@ -24,7 +24,9 @@ use localization::{
     TranslationDict,
 };
 use pagination::Pagination;
-use resources::{models::names::Name, news::NewsEntry};
+use resources::{
+    models::names::Name, news::NewsEntry, parse::jmdict::languages::Language as ResLanguage,
+};
 use search::{engine::guess::Guess, query::Query, sentence::result::SentenceResult};
 
 use search::{
@@ -77,6 +79,7 @@ pub struct SearchHelp {
     names: Option<Guess>,
     sentences: Option<Guess>,
     kanji: Option<Guess>,
+    other_langs: Vec<ResLanguage>,
 }
 
 impl SearchHelp {
@@ -100,6 +103,12 @@ impl SearchHelp {
             .filter(|i| i.1.value != 0)
             .collect::<Vec<_>>()
             .into_iter()
+    }
+
+    pub fn iter_langs(&self) -> impl Iterator<Item = (ResLanguage, &'static str)> + '_ {
+        self.other_langs
+            .iter()
+            .map(|lang| (*lang, lang.to_query_format()))
     }
 }
 

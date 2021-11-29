@@ -5,6 +5,7 @@ pub mod tag_only;
 
 use crate::{
     engine::{
+        self,
         guess::Guess,
         result::SearchResult,
         words::{foreign, native},
@@ -48,6 +49,7 @@ pub(crate) struct ResultData {
     pub(crate) sentence_index: i32,
     pub(crate) sentence_parts: Option<Vec<SentencePart>>,
     pub(crate) searched_query: String,
+    pub(crate) changed_lang: Option<Language>,
 }
 
 impl<'a> Search<'a> {
@@ -71,6 +73,7 @@ impl<'a> Search<'a> {
             sentence_parts: search_result.sentence_parts,
             sentence_index: search_result.sentence_index,
             searched_query: search_result.searched_query,
+            changed_lang: search_result.changed_lang,
         };
         Ok(res)
     }
@@ -99,6 +102,7 @@ impl<'a> Search<'a> {
             sentence_parts,
             sentence_index: self.query.word_index as i32,
             searched_query: native_word_res.searched_query,
+            changed_lang: gloss_word_res.changed_lang,
         })
     }
 
@@ -261,6 +265,7 @@ impl<'a> Search<'a> {
             sentence_parts: sentence,
             sentence_index: self.query.word_index as i32,
             searched_query,
+            ..Default::default()
         })
     }
 
@@ -268,12 +273,16 @@ impl<'a> Search<'a> {
     /// the search
     fn gloss_search_task(&self) -> SearchTask<foreign::Engine> {
         let mut search_task: SearchTask<foreign::Engine> =
-            SearchTask::with_language(&self.query.query, self.query.settings.user_lang)
+            SearchTask::with_language(&self.query.query, self.query.get_lang_with_override())
                 .limit(self.query.settings.page_size as usize)
                 .offset(self.query.page_offset)
                 .threshold(0.3f32);
 
-        if self.query.settings.show_english && self.query.settings.user_lang != Language::English {
+        if self.query.settings.show_english
+            && self.query.settings.user_lang != Language::English
+            // Don't show english results if user wants to search in a specified language
+            && self.query.language_override.is_none()
+        {
             search_task.add_language_query(&self.query.query, Language::English);
         }
 
@@ -283,7 +292,7 @@ impl<'a> Search<'a> {
         search_task.set_result_filter(move |word| Self::word_filter(&q_cloned, word, &pos_filter));
 
         // Set order function
-        let user_lang = self.query.settings.user_lang;
+        let user_lang = self.query.get_lang_with_override();
         search_task.set_order_fn(move |word, relevance, query, language| {
             order::foreign_search_order(word, relevance, query, language.unwrap(), user_lang)
         });
@@ -321,11 +330,16 @@ impl<'a> Search<'a> {
             res.merge(native_res);
         }
 
+        // If there aren't any results, check if there is another language
+        if res.len() == 0 {
+            return self.check_other_lang();
+        }
+
         let mut wordresults = res.item_iter().cloned().collect::<Vec<_>>();
 
         filter_languages(
             wordresults.iter_mut(),
-            self.query.settings.user_lang,
+            self.query.get_lang_with_override(),
             self.query.settings.show_english,
         );
 
@@ -338,6 +352,23 @@ impl<'a> Search<'a> {
             searched_query,
             ..Default::default()
         })
+    }
+
+    fn check_other_lang(&self) -> Result<ResultData, Error> {
+        let guessed_langs = engine::words::foreign::guess_language(&self.query.query)
+            .into_iter()
+            .filter(|i| *i != self.query.get_lang_with_override())
+            .collect::<Vec<_>>();
+
+        if guessed_langs.len() == 1 {
+            let mut new_query = self.query.clone();
+            new_query.language_override = Some(guessed_langs[0]);
+            let mut res = Search { query: &new_query }.gloss_results()?;
+            res.changed_lang = Some(guessed_langs[0]);
+            return Ok(res);
+        }
+
+        Ok(ResultData::default())
     }
 
     fn get_pos_filter(&self, is_sentence: bool) -> Option<Vec<PosSimple>> {
@@ -414,6 +445,13 @@ fn furigana_by_reading(morpheme: &str) -> Option<String> {
 
     let word = word_storage.by_sequence(found[0].item.sequence as u32)?;
     word.furigana.as_ref().cloned()
+}
+
+pub fn guess_inp_language(query: &Query) -> Vec<Language> {
+    engine::words::foreign::guess_language(&query.query)
+        .into_iter()
+        .filter(|i| *i != query.get_lang_with_override())
+        .collect()
 }
 
 /// Guesses the amount of results a search would return with given `query`
