@@ -1,4 +1,5 @@
 use crate::SearchMode;
+use itertools::Itertools;
 use japanese::JapaneseExt;
 use levenshtein::levenshtein;
 use once_cell::sync::Lazy;
@@ -79,7 +80,34 @@ pub fn foreign_search_order(
     }
 
     if word.jlpt_lvl.is_some() {
-        score += (word.jlpt_lvl.unwrap() * 2) as usize;
+        //score += (word.jlpt_lvl.unwrap() * 2) as usize;
+    }
+
+    let cust_freq = resources::models::storage::TEST_STRUCT
+        .freq_map
+        .get(&word.sequence)
+        .copied()
+        .unwrap_or(0);
+    let e = (cust_freq.max(1) as f64).log(1f64);
+    //score += (e * 8f64) as usize;
+
+    let sense_map = &resources::models::storage::TEST_STRUCT.sense_map;
+
+    let add = word
+        .senses
+        .iter()
+        .filter(|sense| {
+            sense
+                .glosses
+                .iter()
+                .any(|gl| gl.gloss.to_lowercase().contains(&query_str.to_lowercase()))
+        })
+        .filter_map(|i| sense_map.get(&(word.sequence, i.id)))
+        .max();
+
+    if let Some(sense_m) = add {
+        //println!("{} {}", word.get_reading().reading, sense_m);
+        score += (((*sense_m).max(1) as f64).log(4f64) * 11f64) as usize;
     }
 
     /*

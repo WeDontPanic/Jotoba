@@ -56,6 +56,7 @@ pub struct EntryElement {
 /// A single 'sense' item for an entry
 #[derive(Debug, Default, Clone)]
 pub struct EntrySense {
+    pub id: u8,
     pub glosses: Vec<GlossValue>,
     pub misc: Option<Misc>,
     pub part_of_speech: Vec<PartOfSpeech>,
@@ -239,7 +240,8 @@ where
                         // Push parsed sense
                         Tag::Sense => {
                             if !sense.glosses.is_empty() {
-                                entry.senses.push(sense.clone())
+                                entry.senses.push(sense.clone());
+                                sense.id += 1;
                             }
                         }
                         _ => (),
@@ -381,6 +383,7 @@ impl EntrySense {
         self.part_of_speech.clear();
         self.example_sentence = None;
         self.gairaigo = None;
+        //self.id = 0;
     }
 }
 

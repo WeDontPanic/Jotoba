@@ -5,6 +5,7 @@ pub mod suggestion;
 pub mod word;
 
 use intmap::IntMap;
+use once_cell::sync::Lazy;
 
 use crate::parse::jmdict::languages::Language;
 use serde::{Deserialize, Serialize};
@@ -24,12 +25,26 @@ use super::{
     words::Word,
     DictResources,
 };
-use std::collections::HashMap;
+use std::{collections::HashMap, fs::File};
 
 pub type WordStorage = IntMap<Word>;
 type NameStorage = IntMap<Name>;
 type KanjiStorage = HashMap<char, Kanji>;
 pub(super) type RadicalStorage = HashMap<char, Vec<char>>;
+
+#[derive(Debug, Deserialize)]
+pub struct Output {
+    pub item_count: usize,
+    pub freq_map: HashMap<u32, usize>,
+    pub sense_map: HashMap<(u32, u8), usize>,
+}
+
+pub static TEST_STRUCT: Lazy<Output> = Lazy::new(|| {
+    bincode::deserialize_from(
+        File::open("/home/jojii/programming/rust/word_freq/word_freq").unwrap(),
+    )
+    .unwrap()
+});
 
 /// A dictionary of words, names, kanji, and radicals. This is the main data structure for the dictionary.
 #[derive(Default)]

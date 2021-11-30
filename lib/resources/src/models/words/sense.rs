@@ -15,6 +15,7 @@ use serde::{Deserialize, Serialize};
 /// one misc item and 1..n glosses
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize, Hash)]
 pub struct Sense {
+    pub id: u8,
     pub misc: Option<Misc>,
     pub field: Option<Field>,
     pub dialect: Option<Dialect>,
