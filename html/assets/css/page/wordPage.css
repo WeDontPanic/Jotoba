@@ -138,6 +138,14 @@
     width: 100%;
 }
 
+.mdl-menu__item:last-child[disabled], .mdl-menu__item:first-child[disabled] {
+    display: none;
+}
+
+.mdl-menu__item[disabled] + .mdl-menu__item[disabled] {
+    display: none;
+}
+
 #info-dropdown {
     background-color: var(--background);
     width: -webkit-max-content;

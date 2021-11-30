@@ -170,7 +170,7 @@
                   
                   @if let Some(ref collocations) = word.collocations {
                     <li id="collocationBtn" class="info-entry noselect umami--click--collocation-button" data-toggle="modal" data-target="#coll@word.sequence" class="mdl-menu__item">
-                      <div class="conjugationSvg"></div> <!-- TODO -->
+                      <div class="conjugationSvg"></div>
                       <span class="info-dropdown-txt">@data.ngettext("Show collocation", collocations.len() as u64)</span>
                     </li>
                     <li disabled class="mdl-menu__item dot-menu" style="height: 10px;"><hr style="margin: 0px; margin-top: 5px;"></li>
