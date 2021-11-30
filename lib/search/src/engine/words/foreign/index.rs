@@ -1,7 +1,6 @@
-use std::{collections::HashMap, error::Error};
+use std::{collections::HashMap, error::Error, path::Path};
 
 use bktree::BkTree;
-use config::Config;
 use log::{error, info};
 use once_cell::sync::OnceCell;
 use resources::parse::jmdict::languages::Language;
@@ -25,15 +24,15 @@ pub struct TermTree {
 }
 
 /// Load all available foreign-word indexes into memory
-pub(crate) fn load(config: &Config) -> Result<(), Box<dyn Error>> {
-    load_index(config)?;
-    load_term_trees(config)?;
+pub(crate) fn load<P: AsRef<Path>>(path: P) -> Result<(), Box<dyn Error>> {
+    load_index(path.as_ref())?;
+    load_term_trees(path)?;
     Ok(())
 }
 
-fn load_term_trees(config: &Config) -> Result<(), Box<dyn Error>> {
+fn load_term_trees<P: AsRef<Path>>(path: P) -> Result<(), Box<dyn Error>> {
     // All index files in index source folder
-    let tree_files = std::fs::read_dir(config.get_indexes_source()).and_then(|i| {
+    let tree_files = std::fs::read_dir(path).and_then(|i| {
         i.map(|res| res.map(|e| e.path()))
             .collect::<Result<Vec<_>, std::io::Error>>()
     })?;
@@ -63,9 +62,9 @@ fn load_term_trees(config: &Config) -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
-fn load_index(config: &Config) -> Result<(), Box<dyn Error>> {
+fn load_index<P: AsRef<Path>>(path: P) -> Result<(), Box<dyn Error>> {
     // All index files in index source folder
-    let index_files = std::fs::read_dir(config.get_indexes_source()).and_then(|i| {
+    let index_files = std::fs::read_dir(path).and_then(|i| {
         i.map(|res| res.map(|e| e.path()))
             .collect::<Result<Vec<_>, std::io::Error>>()
     })?;

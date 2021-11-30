@@ -49,12 +49,12 @@
         <div id="sr" class="d-flex flex-row wrap sentence-reader">
           @for part in sentence_parts {
             @if let Some(ref furigana) = part.furigana {
-              <a id="p@part.pos" href="/search/@query.query?i=@part.pos" class="@part.get_add_class() sentence-part @selected(part.pos, result.sentence_index)">
+              <a id="p@part.pos" href="/search/@query.get_query_encoded()?i=@part.pos" class="@part.get_add_class() sentence-part @selected(part.pos, result.sentence_index)">
                 @:render_sentence_html(furi_from_str(furigana).collect(), "", true)
                 </a>
             } else {
               <!-- TODO find a better way to keep this consistent. Implement with reader_sentence.rs.html -->
-              <a id="p@part.pos" href="/search/@query.query?i=@part.pos" class="@part.get_add_class() sentence-part @selected(part.pos, result.sentence_index)">
+              <a id="p@part.pos" href="/search/@query.get_query_encoded()?i=@part.pos" class="@part.get_add_class() sentence-part @selected(part.pos, result.sentence_index)">
                 <div class="furigana-kanji-container">
                   <ruby>
                     <span class="kanji-preview">@part.text</span>
@@ -82,6 +82,11 @@
   <!-- Inner Main Body -->
   <div id="content-container" class="d-flex left">
     <div class="main-info d-flex flex-column">
+
+      @*
+      @if let Some(new_lang) = result.changed_lang {
+        @data.gettext_fmt("Temporarily switched language to {}", &[data.gettext(new_lang)])
+      }*@
 
       @if result.has_word() {
         <h3 class="noselect word-title">@data.gettext("Words")</h3>

@@ -70,7 +70,7 @@ fn search<'a>(main_lang: Language, query_str: &'a str) -> Vec<WordPair> {
             }
 
             let hira_query = query.to_hiragana();
-            if let Some(hira_res) = super::native::suggest_words(&hira_query) {
+            if let Some(hira_res) = super::native::suggest_words(&[&hira_query]) {
                 hira_res.into_iter().for_each(|i| {
                     let exact_match = i.0.primary == hira_query;
 
@@ -79,18 +79,29 @@ fn search<'a>(main_lang: Language, query_str: &'a str) -> Vec<WordPair> {
                     } else {
                         (((i.1 + 1) as f32 * 4f32).log2() + 65f32) as u32
                     };
+
                     res.push((
                         ForeignSuggestion {
                             secondary: i.0.secondary,
                             text: i.0.primary,
-                            sequence: 0,
-                            hash: eudex::Hash::new(""),
                             occurrences: i.1,
+                            ..ForeignSuggestion::default()
                         },
                         Language::Japanese,
                         score,
                     ));
                 });
+            }
+
+            if res.is_empty() {
+                res.push((
+                    ForeignSuggestion {
+                        text: query.to_hiragana(),
+                        ..ForeignSuggestion::default()
+                    },
+                    Language::Japanese,
+                    0,
+                ));
             }
         }
     }
