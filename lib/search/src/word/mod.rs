@@ -49,7 +49,6 @@ pub(crate) struct ResultData {
     pub(crate) sentence_index: i32,
     pub(crate) sentence_parts: Option<Vec<SentencePart>>,
     pub(crate) searched_query: String,
-    pub(crate) changed_lang: Option<Language>,
 }
 
 impl<'a> Search<'a> {
@@ -73,7 +72,6 @@ impl<'a> Search<'a> {
             sentence_parts: search_result.sentence_parts,
             sentence_index: search_result.sentence_index,
             searched_query: search_result.searched_query,
-            changed_lang: search_result.changed_lang,
         };
         Ok(res)
     }
@@ -102,7 +100,6 @@ impl<'a> Search<'a> {
             sentence_parts,
             sentence_index: self.query.word_index as i32,
             searched_query: native_word_res.searched_query,
-            changed_lang: gloss_word_res.changed_lang,
         })
     }
 
@@ -363,9 +360,7 @@ impl<'a> Search<'a> {
         if guessed_langs.len() == 1 {
             let mut new_query = self.query.clone();
             new_query.language_override = Some(guessed_langs[0]);
-            let mut res = Search { query: &new_query }.gloss_results()?;
-            res.changed_lang = Some(guessed_langs[0]);
-            return Ok(res);
+            return Search { query: &new_query }.gloss_results();
         }
 
         Ok(ResultData::default())

@@ -80,7 +80,7 @@ impl<T: PartialEq + Hash + Clone + Eq> SearchResult<T> {
     }
 
     pub fn merge(&mut self, other: Self) {
-        merge_sorted_list(&mut self.items, other.items);
+        self.total_items += merge_sorted_list(&mut self.items, other.items);
     }
 }
 
@@ -88,19 +88,23 @@ impl<T: PartialEq + Hash + Clone + Eq> SearchResult<T> {
 fn merge_sorted_list<T: PartialEq + Clone + Hash + Eq>(
     src: &mut Vec<ResultItem<T>>,
     other: Vec<ResultItem<T>>,
-) {
+) -> usize {
+    let mut add_cnt = 0;
+
     // Use a hashset to be able to look up whether an element from `other` is already in `src` the
     // fastest way possible
     let hash_set = HashSet::<T>::from_iter(src.clone().into_iter().map(|i| i.item));
 
     for i in other {
         if !hash_set.contains(&i.item) {
+            add_cnt += 1;
             src.push(i);
         }
     }
 
     // We might have changed the ordering
     src.sort_by(|a, b| a.cmp(&b).reverse());
+    add_cnt
 }
 
 impl<T: PartialEq> IntoIterator for SearchResult<T> {

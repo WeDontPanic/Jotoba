@@ -10,6 +10,18 @@ pub struct ForeignSuggestion {
     pub hash: eudex::Hash,
 }
 
+impl Default for ForeignSuggestion {
+    fn default() -> Self {
+        Self {
+            text: Default::default(),
+            secondary: Default::default(),
+            sequence: Default::default(),
+            occurrences: Default::default(),
+            hash: eudex::Hash::new(""),
+        }
+    }
+}
+
 impl From<Vec<u8>> for ForeignSuggestion {
     #[inline]
     fn from(data: Vec<u8>) -> Self {
