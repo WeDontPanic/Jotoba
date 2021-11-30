@@ -320,11 +320,13 @@ impl<'a> Search<'a> {
             && japanese::guessing::could_be_romaji(&self.query.query)
         {
             let hg_query = self.query.query.to_hiragana();
-            let (native_res, inflection_info, sent, sq) = self.native_search(&hg_query)?;
-            infl_info = inflection_info;
-            sentence = sent;
-            searched_query = sq;
-            res.merge(native_res);
+            let hg_search = self.native_search(&hg_query);
+            if let Ok((native_res, inflection_info, sent, sq)) = hg_search {
+                infl_info = inflection_info;
+                sentence = sent;
+                searched_query = sq;
+                res.merge(native_res);
+            }
         }
 
         // If there aren't any results, check if there is another language
