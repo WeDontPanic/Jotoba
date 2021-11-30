@@ -75,6 +75,10 @@
     --buttonBgActive: #515151;
 }
 
+:root.dark ::selection {
+    background: var(--secondaryColor);
+}
+
 /* ------------------- Scrollbar Adjustments ------------------- */
 
 * {

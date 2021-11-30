@@ -253,13 +253,14 @@
 /* ---------- Scrollbar changes ---------- */
 
 /* Firefox */
-.rad-results, .rad-picker, .overlay.radical {
+.rad-results, .rad-picker, .overlay.radical, .rad-page-toggle {
     scrollbar-width: none;
 }
 
 /* Literally everyone else */
-.rad-results::-webkit-scrollbar, .rad-picker::-webkit-scrollbar {
+.rad-results::-webkit-scrollbar, .rad-picker::-webkit-scrollbar, .overlay.radical::-webkit-scrollbar, .rad-page-toggle::-webkit-scrollbar {
     width: 0px;
+    height: 0px;
 }
 
 /* Mobile Adjustments */
@@ -275,7 +276,7 @@
 
     .rad-page-toggle {
         height: 30px;
-        overflow-x: scroll;
+        overflow-x: auto;
         white-space: nowrap;
         max-width: 90%;
     }

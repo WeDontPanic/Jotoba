@@ -177,7 +177,10 @@ function changeSearchType(html, newType) {
 Util.awaitDocumentReady(() => {
     if (Util.toBoolean(Cookies.get("focus_searchbar")) || document.location.href.slice(0, -1) == document.location.origin) {
         preventNextApiCall = true;
-        $('#search').focus();
+
+        let s = $('#search');
+        s.focus();
+        s[0].setSelectionRange(0, s[0].value.length);
         Util.setCaretPosition("search", -1);
     }
 });
