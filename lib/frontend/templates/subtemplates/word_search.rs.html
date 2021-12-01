@@ -1,10 +1,10 @@
 @use search::word::result::{Item, WordResult, selected};
 @use resources::parse::jmdict::languages::Language;
 @use search::query::Query;
-@use super::search_help;
+@use super::{search_help};
 @use crate::BaseData;
 @use japanese::furigana::from_str as furi_from_str;
-@use crate::example_sentence::ext_sentence;
+@use crate::{example_sentence::ext_sentence, templ_utils::*};
 @use super::render_sentence_html;
 
 @(data: &BaseData, query: &Query, result: WordResult)
@@ -152,70 +152,73 @@
               <div class="entry-min-height-@word.get_word_tag_count()">
                 <!-- Right side: Info -->
 
+                
                 <!-- Tooltip -->
-                <div id="m@word.sequence" class="word-tooltip d-flex flex-column noselect">
-                  <span>.</span>
-                  <span>.</span>
-                  <span>.</span>
-                </div>
+                @if need_3dot(&data, &word) {
+                  <div id="m@word.sequence" class="word-tooltip d-flex flex-column noselect">
+                    <span>.</span>
+                    <span>.</span>
+                    <span>.</span>
+                  </div>
 
-                <ul id="info-dropdown" class="mdl-menu mdl-menu--bottom-right mdl-js-menu mdl-js-ripple-effect umami--click--info-dropdown" for="m@word.sequence">
-                  @if word.get_inflections().is_some() {
-                    <li id="conjugationBtn" class="info-entry noselect" data-toggle="modal" data-target="#conj@word.sequence" class="mdl-menu__item">
-                      <div class="conjugationSvg"></div> 
-                      <span class="info-dropdown-txt">@data.gettext("Show Conjugations")</span>
-                    </li>
-                    <li disabled class="mdl-menu__item" style="height: 10px;"><hr style="margin: 0px; margin-top: 5px;"></li>
-                  }
-                  
-                  @if let Some(ref collocations) = word.collocations {
-                    <li id="collocationBtn" class="info-entry noselect umami--click--collocation-button" data-toggle="modal" data-target="#coll@word.sequence" class="mdl-menu__item">
-                      <div class="conjugationSvg"></div>
-                      <span class="info-dropdown-txt">@data.ngettext("Show collocation", collocations.len() as u64)</span>
-                    </li>
-                    <li disabled class="mdl-menu__item dot-menu" style="height: 10px;"><hr style="margin: 0px; margin-top: 5px;"></li>
-                  }
+                  <ul id="info-dropdown" class="mdl-menu mdl-menu--bottom-right mdl-js-menu mdl-js-ripple-effect umami--click--info-dropdown" for="m@word.sequence">
+                    @if word.get_inflections().is_some() {
+                      <li id="conjugationBtn" class="info-entry noselect" data-toggle="modal" data-target="#conj@word.sequence" class="mdl-menu__item">
+                        <div class="conjugationSvg"></div> 
+                        <span class="info-dropdown-txt">@data.gettext("Show Conjugations")</span>
+                      </li>
+                      <li disabled class="mdl-menu__item" style="height: 10px;"><hr style="margin: 0px; margin-top: 5px;"></li>
+                    }
+                    
+                    @if let Some(ref collocations) = word.collocations {
+                      <li id="collocationBtn" class="info-entry noselect umami--click--collocation-button" data-toggle="modal" data-target="#coll@word.sequence" class="mdl-menu__item">
+                        <div class="conjugationSvg"></div>
+                        <span class="info-dropdown-txt">@data.ngettext("Show collocation", collocations.len() as u64)</span>
+                      </li>
+                      <li disabled class="mdl-menu__item dot-menu" style="height: 10px;"><hr style="margin: 0px; margin-top: 5px;"></li>
+                    }
 
-                  @if let Some(intransitive) = word.get_intransitive_counterpart() {
-                    <li class="info-entry noselect umami--click--intransitive-button" class="mdl-menu__item"> 
-                      <div class="transitivitySvg"></div>
-                      <span class="info-dropdown-txt"><a class="no-highlight" draggable="false" href="/search/@intransitive.get_reading().reading">@data.gettext("Intransitive word")</a></span>
-                    </li>
-                    <li disabled class="mdl-menu__item dot-menu" style="height: 10px;"><hr style="margin: 0px; margin-top: 5px;"></li>
-                  }
+                    @if let Some(intransitive) = word.get_intransitive_counterpart() {
+                      <li class="info-entry noselect umami--click--intransitive-button" class="mdl-menu__item"> 
+                        <div class="transitivitySvg"></div>
+                        <span class="info-dropdown-txt"><a class="no-highlight" draggable="false" href="/search/@intransitive.get_reading().reading">@data.gettext("Intransitive word")</a></span>
+                      </li>
+                      <li disabled class="mdl-menu__item dot-menu" style="height: 10px;"><hr style="margin: 0px; margin-top: 5px;"></li>
+                    }
 
-                  @if let Some(transitive) = word.get_transitive_counterpart() {
-                    <li class="info-entry noselect umami--click--transitive-button" class="mdl-menu__item">
-                      <div class="transitivitySvg"></div>
-                      <span class="info-dropdown-txt"><a class="no-highlight" draggable="false" href="/search/@transitive.get_reading().reading">@data.gettext("Transitive word")</a></span> 
-                    </li>
-                    <li disabled class="mdl-menu__item dot-menu" style="height: 10px;"><hr style="margin: 0px; margin-top: 5px;"></li>
-                  }
+                    @if let Some(transitive) = word.get_transitive_counterpart() {
+                      <li class="info-entry noselect umami--click--transitive-button" class="mdl-menu__item">
+                        <div class="transitivitySvg"></div>
+                        <span class="info-dropdown-txt"><a class="no-highlight" draggable="false" href="/search/@transitive.get_reading().reading">@data.gettext("Transitive word")</a></span> 
+                      </li>
+                      <li disabled class="mdl-menu__item dot-menu" style="height: 10px;"><hr style="margin: 0px; margin-top: 5px;"></li>
+                    }
 
-                  @if word.has_sentence(data.user_settings.user_lang) || (data.user_settings.show_english && word.has_sentence(Language::English)) {
-                    <li class="info-entry noselect umami--click--sentences-button" class="mdl-menu__item">
-                      <div class="sentenceSvg"></div>
-                      <div class="info-dropdown-vl"></div>
-                      <span class="info-dropdown-txt"><a class="no-highlight" draggable="false" href="/search/@word.get_reading().reading?t=2">@data.gettext("Sentence search")</a></span> 
-                    </li>
-                  }
+                    @if word.has_sentence(data.user_settings.user_lang) || (data.user_settings.show_english && word.has_sentence(Language::English)) {
+                      <li class="info-entry noselect umami--click--sentences-button" class="mdl-menu__item">
+                        <div class="sentenceSvg"></div>
+                        <div class="info-dropdown-vl"></div>
+                        <span class="info-dropdown-txt"><a class="no-highlight" draggable="false" href="/search/@word.get_reading().reading?t=2">@data.gettext("Sentence search")</a></span> 
+                      </li>
+                    }
 
-                  @if let Some(audio) = word.audio_file("ogg") {
-                    <li disabled class="mdl-menu__item umami--click--audio-download-button" style="height: 10px;"><hr style="margin: 0px; margin-top: 5px;"></li>
-                    <li id="AudioDlBtn" class="info-entry noselect" class="mdl-menu__item">
-                      <div class="downloadSvg"></div>
-                      <span class="info-dropdown-txt"><a class="no-highlight" draggable="false" href="/audio/@audio">@data.gettext("Download audio")</a></span> 
-                    </li>
-                  }
+                    @if let Some(audio) = word.audio_file("ogg") {
+                      <li disabled class="mdl-menu__item umami--click--audio-download-button" style="height: 10px;"><hr style="margin: 0px; margin-top: 5px;"></li>
+                      <li id="AudioDlBtn" class="info-entry noselect" class="mdl-menu__item">
+                        <div class="downloadSvg"></div>
+                        <span class="info-dropdown-txt"><a class="no-highlight" draggable="false" href="/audio/@audio">@data.gettext("Download audio")</a></span> 
+                      </li>
+                    }
 
-                  @if data.config.is_debug() {
-                    <li disabled class="mdl-menu__item" style="height: 10px;"><hr style="margin: 0px; margin-top: 5px;"></li>
-                    <li class="info-entry noselect" class="mdl-menu__item">
-                     <div class="info-dropdown-vl"></div>
-                     <span class="info-dropdown-txt">Seq: @word.sequence</span> 
-                    </li>
-                  }
-                </ul>
+                    @if data.config.is_debug() {
+                      <li disabled class="mdl-menu__item" style="height: 10px;"><hr style="margin: 0px; margin-top: 5px;"></li>
+                      <li class="info-entry noselect" class="mdl-menu__item">
+                       <div class="info-dropdown-vl"></div>
+                       <span class="info-dropdown-txt">Seq: @word.sequence</span> 
+                      </li>
+                    }
+                  </ul>
+                }
 
                 @for (spos, senses_compound) in word.get_senses_orderd(query.settings.english_on_top, query.settings.user_lang).iter().enumerate() { 
                   @for (pos, sense) in senses_compound.iter().enumerate() {

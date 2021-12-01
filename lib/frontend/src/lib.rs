@@ -11,6 +11,7 @@ pub mod news;
 mod pagination;
 pub mod search_ep;
 mod session;
+pub mod templ_utils;
 mod url_query;
 pub mod user_settings;
 pub mod web_error;

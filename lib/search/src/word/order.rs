@@ -75,7 +75,7 @@ pub fn foreign_search_order(
     let mut score: usize = (relevance * 20f32) as usize;
 
     if word.is_common() {
-        score += 10;
+        //score += 10;
     }
 
     if word.jlpt_lvl.is_some() {
@@ -88,7 +88,7 @@ pub fn foreign_search_order(
         .copied()
         .unwrap_or(0);
     let e = (cust_freq.max(1) as f64).log(1f64);
-    //score += (e * 8f64) as usize;
+    score += (e * 8f64) as usize;
 
     let sense_map = &resources::models::storage::TEST_STRUCT.sense_map;
 
