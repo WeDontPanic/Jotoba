@@ -37,6 +37,7 @@ impl Eq for Sense {}
 pub struct Gloss {
     pub gloss: String,
     pub g_type: Option<GType>,
+    pub occurrence: u32,
 }
 
 impl Sense {

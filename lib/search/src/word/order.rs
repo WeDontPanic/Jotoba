@@ -4,7 +4,10 @@ use levenshtein::levenshtein;
 use once_cell::sync::Lazy;
 use regex::Regex;
 use resources::{
-    models::{kanji, words::Word},
+    models::{
+        kanji,
+        words::{Gloss, Word},
+    },
     parse::jmdict::languages::Language,
 };
 
@@ -72,7 +75,7 @@ pub fn foreign_search_order(
     language: Language,
     user_lang: Language,
 ) -> usize {
-    let mut score: usize = (relevance * 20f32) as usize;
+    let mut score: usize = (relevance * 10f32) as usize;
 
     if word.is_common() {
         //score += 10;
@@ -81,39 +84,6 @@ pub fn foreign_search_order(
     if word.jlpt_lvl.is_some() {
         //score += (word.jlpt_lvl.unwrap() * 2) as usize;
     }
-
-    let cust_freq = resources::models::storage::TEST_STRUCT
-        .freq_map
-        .get(&word.sequence)
-        .copied()
-        .unwrap_or(0);
-    let e = (cust_freq.max(1) as f64).log(1f64);
-    score += (e * 8f64) as usize;
-
-    let sense_map = &resources::models::storage::TEST_STRUCT.sense_map;
-
-    let add = word
-        .senses
-        .iter()
-        .filter(|sense| {
-            sense
-                .glosses
-                .iter()
-                .any(|gl| gl.gloss.to_lowercase().contains(&query_str.to_lowercase()))
-        })
-        .filter_map(|i| sense_map.get(&(word.sequence, i.id)))
-        .max();
-
-    if let Some(sense_m) = add {
-        //println!("{} {}", word.get_reading().reading, sense_m);
-        score += (((*sense_m).max(1) as f64).log(4f64) * 11f64) as usize;
-    }
-
-    /*
-    if !word.is_katakana_word() {
-        score += 4;
-    }
-    */
 
     // Result found within users specified language
     if language == user_lang {
@@ -127,6 +97,10 @@ pub fn foreign_search_order(
         }
     };
 
+    let occ = (found.gloss_full.occurrence + 1) as f64;
+    score += (occ.log(4f64) * 11f64) as usize;
+
+    /*
     let divisor = match (found.mode, found.case_ignored) {
         (SearchMode::Exact, false) => 10,
         (SearchMode::Exact, true) => 10,
@@ -135,6 +109,7 @@ pub fn foreign_search_order(
     };
 
     score += (calc_likeliness(word, &found) / divisor) as usize;
+    */
 
     if found.in_parentheses {
         score = score.saturating_sub(10);
@@ -229,6 +204,7 @@ struct FindResult {
     in_parentheses: bool,
     sense: resources::models::words::Sense,
     sense_pos: usize,
+    gloss_full: Gloss,
 }
 
 fn find_reading(word: &Word, query: &str) -> Option<FindResult> {
@@ -261,17 +237,18 @@ fn find_in_senses(
             }
         }
 
-        let (sense_pos, gloss) = found.unwrap();
+        let (sense_pos, gloss_str, gloss) = found.unwrap();
 
         return Some(FindResult {
             mode,
             pos,
             language: sense.language,
             case_ignored: ign_case,
-            gloss,
+            gloss: gloss_str,
             in_parentheses,
             sense: sense.clone(),
             sense_pos,
+            gloss_full: gloss,
         });
     }
 
@@ -284,7 +261,7 @@ fn try_find_in_sense(
     mode: SearchMode,
     ign_case: bool,
     ign_parentheses: bool,
-) -> Option<(usize, String)> {
+) -> Option<(usize, String, Gloss)> {
     sense.glosses.iter().enumerate().find_map(|(pos, g)| {
         let gloss = if ign_parentheses {
             let gloss = REMOVE_PARENTHESES.replace(&g.gloss, "");
@@ -293,6 +270,6 @@ fn try_find_in_sense(
             g.gloss.to_owned()
         };
         mode.str_eq(&gloss.as_str(), &query_str, ign_case)
-            .then(|| (pos, gloss.to_owned()))
+            .then(|| (pos, gloss.to_owned(), g.clone()))
     })
 }
