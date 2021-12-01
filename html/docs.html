@@ -747,6 +747,13 @@
           "type": "string",
           "example": "/assets/audio/走る【はしる】.ogg",
           "description": "Path of the audio file for the given word. Only provided if audio file exists"
+        },
+        "pitch": {
+          "type": "array",
+          "description": "Pitch accent of the word",
+          "items": {
+            "$ref": "#/definitions/PitchItem"
+          }
         }
       }
     },
@@ -794,6 +801,22 @@
           "$ref": "#/definitions/Language"
         }
       }
+    },
+    "PitchItem": {
+      "type": "object",
+      "properties": {
+        "part": {
+          "type": "string",
+          "example": "かお",
+          "description": "A part of the kana reading with the same pitch"
+        },
+        "high": {
+          "type": "boolean",
+          "example": false,
+          "description": "Whether its a high or low pitch"
+        }
+      },
+      "description": "A part of a Japanese word with the same pitch"
     },
     "KanjiResponse": {
       "type": "object",
