@@ -120,8 +120,8 @@
                                  <input checked id="show_eng_settings" type="checkbox" class="mdl-checkbox__input" onchange="onBtnSettingsChange_englishAlways(event)">
                               </label>
                            </div>
-                           <div class="settings-entry" id="eng_on_top_parent">
-                              <span class="inner-title">@data.gettext("Show english results on top"):</span>
+                           <div class="settings-entry sub" id="eng_on_top_parent">
+                              <span class="inner-title"> @data.gettext("Show english results on top"):</span>
                               <label for="show_eng_on_top_settings" class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect">
                                  <input id="show_eng_on_top_settings" type="checkbox" class="mdl-checkbox__input" onchange="onBtnSettingsChange('show_english_on_top', event)">
                               </label>
@@ -130,7 +130,14 @@
                            <div class="settings-entry">
                               <span class="inner-title">@data.gettext("Focus search bar on load"):</span>
                               <label for="focus_search_bar_settings" class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect">
-                                 <input id="focus_search_bar_settings" type="checkbox" class="mdl-checkbox__input" onchange="onBtnSettingsChange('focus_searchbar', event)">
+                                 <input id="focus_search_bar_settings" type="checkbox" class="mdl-checkbox__input" onchange="onBtnSettingsChange_focusSearchBar(event)">
+                              </label>
+                           </div>
+
+                           <div class="settings-entry sub" id="select_searchbar_content_parent">
+                              <span class="inner-title">@data.gettext("Select input on load"):</span>
+                              <label for="select_searchbar_content_settings" class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect">
+                                 <input id="select_searchbar_content_settings" type="checkbox" class="mdl-checkbox__input" onchange="onBtnSettingsChange('select_searchbar_content', event)">
                               </label>
                            </div>
 

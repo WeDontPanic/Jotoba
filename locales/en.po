@@ -418,6 +418,9 @@ msgstr ""
 msgid "Focus search bar on load"
 msgstr ""
 
+msgid "Select input on load"
+msgstr ""
+
 msgid "Results per page"
 msgstr ""
 

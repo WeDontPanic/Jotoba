@@ -418,6 +418,9 @@ msgstr "Zeige englische Ergebnisse als erstes"
 msgid "Focus search bar on load"
 msgstr "Fokussiere die Suchleiste nach dem Suchen"
 
+msgid "Select input on load"
+msgstr "Markiere den Input nach dem Suchen"
+
 msgid "Results per page"
 msgstr "Ergebnisse pro Seite"
 
