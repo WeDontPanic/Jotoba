@@ -18,4 +18,20 @@ impl<'a> WordRetrieve<'a> {
     pub fn by_sequence(&self, seq_id: u32) -> Option<&'a Word> {
         self.storage.dict_data.word_data.words.get(seq_id as u64)
     }
+
+    /// returns an iterator over all irregular ichidan words
+    pub fn irregular_ichidan(&'a self) -> impl Iterator<Item = &'a Word> {
+        self.storage
+            .dict_data
+            .word_data
+            .irregular_ichidan
+            .iter()
+            .copied()
+            .filter_map(|seq| self.by_sequence(seq))
+    }
+
+    /// returns an iterator over all irregular ichidan words
+    pub fn irregular_ichidan_len(&self) -> usize {
+        self.storage.dict_data.word_data.irregular_ichidan.len()
+    }
 }

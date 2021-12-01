@@ -69,6 +69,7 @@ pub struct DictionaryData {
 pub struct WordData {
     words: WordStorage,
     jlpt_word_map: HashMap<u8, Vec<u32>>,
+    irregular_ichidan: Vec<u32>,
     // genki_levels: HashMap<u8, Vec<u32>>,
 }
 
@@ -161,6 +162,7 @@ impl ResourceStorage {
         let word_data = WordData {
             words,
             jlpt_word_map: resources.word_jlpt,
+            irregular_ichidan: resources.irregular_iru_eru,
             // genki_levels: HashMap::new(),
         };
 

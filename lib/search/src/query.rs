@@ -90,6 +90,7 @@ pub enum Tag {
     Jlpt(u8),
     GenkiLesson(u8),
     Hidden,
+    IrregularIruEru,
 }
 
 /// Hashtag based search tags
@@ -166,9 +167,12 @@ impl Default for QueryLang {
 impl Tag {
     /// Parse a tag from a string
     pub fn parse_from_str(s: &str) -> Option<Tag> {
-        if let Some(tag) = s.strip_prefix("#") {
+        if let Some(tag) = s.to_lowercase().strip_prefix("#") {
             match tag {
                 "hidden" | "hide" => return Some(Tag::Hidden),
+                "irrichidan" | "irregularichidan" | "irregular-ichidan" => {
+                    return Some(Tag::IrregularIruEru)
+                }
                 _ => (),
             }
         }
@@ -224,7 +228,7 @@ impl Tag {
     /// Returns true if the tag is allowed to be used without a query
     #[inline]
     pub fn is_empty_allowed(&self) -> bool {
-        self.is_jlpt() || self.is_genki_lesson()
+        self.is_jlpt() || self.is_genki_lesson() || self.is_irregular_iru_eru()
     }
 
     /// Returns `true` if the tag is [`SearchType`].
@@ -304,6 +308,13 @@ impl Tag {
         } else {
             None
         }
+    }
+
+    /// Returns `true` if the tag is [`IrregularIruEru`].
+    ///
+    /// [`IrregularIruEru`]: Tag::IrregularIruEru
+    pub fn is_irregular_iru_eru(&self) -> bool {
+        matches!(self, Self::IrregularIruEru)
     }
 }
 
