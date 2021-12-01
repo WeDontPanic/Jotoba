@@ -318,6 +318,11 @@ impl<'a> Search<'a> {
         if !self.query.use_original
             && count < 50
             && japanese::guessing::could_be_romaji(&self.query.query)
+            && !SearchTask::<foreign::Engine>::with_language(
+                &self.query.query,
+                self.query.get_lang_with_override(),
+            )
+            .has_term()
         {
             let hg_query = self.query.query.to_hiragana();
             let hg_search = self.native_search(&hg_query);

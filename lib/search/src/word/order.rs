@@ -1,5 +1,4 @@
 use crate::SearchMode;
-use itertools::Itertools;
 use japanese::JapaneseExt;
 use levenshtein::levenshtein;
 use once_cell::sync::Lazy;
