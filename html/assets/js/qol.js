@@ -180,8 +180,10 @@ Util.awaitDocumentReady(() => {
 
         let s = $('#search');
         s.focus();
-        s[0].setSelectionRange(0, s[0].value.length);
         Util.setCaretPosition("search", -1);
+        if (Util.toBoolean(Cookies.get("select_searchbar_content"))) {
+            s[0].setSelectionRange(0, s[0].value.length);
+        }
     }
 });
 
