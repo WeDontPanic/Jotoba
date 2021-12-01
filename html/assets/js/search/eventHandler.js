@@ -25,8 +25,9 @@ $(document).on("keydown", (event) => {
             if (currentSuggestionIndex > 0) {
                 event.preventDefault();
                 activateSelection();
+            } else {
+                $('#searchBtn').click();
             }
-            $('#searchBtn').click();
             break;
     }
 });
