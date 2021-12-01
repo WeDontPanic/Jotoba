@@ -630,6 +630,9 @@ msgstr "Suche nach Suffixen"
 msgid "Search for japanese particles"
 msgstr "Suche nach Japanischen Partikeln [z.B. を]"
 
+msgid "Lists iru/eru ending verbs which are conjugated as godan verbs"
+msgstr "Zeige iru/eru endende Verben, die als Godan verb konjugiert werden"
+
 msgid "Search for sfx words [comic sounds]"
 msgstr "Suche nach sfx-Wörtern [z.b. Sounds in Comics]"
 

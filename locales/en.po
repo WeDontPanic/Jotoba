@@ -632,6 +632,9 @@ msgstr ""
 msgid "Search for japanese particles"
 msgstr ""
 
+msgid "Lists iru/eru ending verbs which are conjugated as godan verbs"
+msgstr ""
+
 msgid "Search for sfx words [comic sounds]"
 msgstr ""
 
