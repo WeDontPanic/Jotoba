@@ -20,8 +20,8 @@ const kanjiRegEx = '([一-龯|々|𥝱|𩺊])';
 
 // Global variables used
 var currentSuggestion = "";
-var currentSuggestionType = "default";
-var currentSuggestionIndex = 0;
+var currentSuggestionType = "default"; // default || kanji_reading || hashtag
+var currentSuggestionIndex = 0; // 0 => nothing
 var availableSuggestions = 0;
 var keepSuggestions = false;
 var oldInputValue = "";
@@ -180,7 +180,8 @@ function getHashtagData(currentText) {
     }
 
     let resultJSON =  {
-        "suggestions": suggestions
+        "suggestions": suggestions,
+        "suggestion_type": "hashtag"
     }
 
     loadSuggestionApiData(resultJSON);
