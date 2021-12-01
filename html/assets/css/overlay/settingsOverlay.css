@@ -102,6 +102,12 @@
     margin-left: 5%;
 }
 
+.settings-entry.sub > .inner-title::before {
+    content: "↪";
+    margin-left: -5px;
+    margin-right: 5px;
+}
+
 .mdl-checkbox {
     width: 0%;
 }
