@@ -10,6 +10,7 @@ use resources::{
     },
     parse::jmdict::languages::Language,
 };
+use strsim::jaro_winkler;
 
 /// A Regex matching parentheses and its contents
 pub(crate) static REMOVE_PARENTHESES: Lazy<Regex> =
@@ -75,10 +76,10 @@ pub fn foreign_search_order(
     language: Language,
     user_lang: Language,
 ) -> usize {
-    let mut score: usize = (relevance * 10f32) as usize;
+    let mut score = relevance as f64 * 10.0;
 
     if word.is_common() {
-        //score += 10;
+        score += 10.0;
     }
 
     if word.jlpt_lvl.is_some() {
@@ -87,18 +88,21 @@ pub fn foreign_search_order(
 
     // Result found within users specified language
     if language == user_lang {
-        score += 12;
+        score += 12.0;
     }
 
     let found = match find_reading(word, query_str) {
         Some(v) => v,
         None => {
-            return score;
+            return score as usize;
         }
     };
 
+    let jaro = jaro_winkler(query_str, &found.gloss);
     let occ = (found.gloss_full.occurrence + 1) as f64;
-    score += (occ.log(4f64) * 11f64) as usize;
+
+    score += occ.log(4f64) * 100.0;
+    score *= jaro;
 
     /*
     let divisor = match (found.mode, found.case_ignored) {
@@ -112,12 +116,13 @@ pub fn foreign_search_order(
     */
 
     if found.in_parentheses {
-        score = score.saturating_sub(10);
+        score -= 10f64.min(score);
+        //score = score.saturating_sub(10.0);
     } else {
-        score += 30;
+        score += 30.0;
     }
 
-    score
+    score as usize
 }
 
 pub(super) fn kanji_reading_search(
