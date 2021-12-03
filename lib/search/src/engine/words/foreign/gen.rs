@@ -35,6 +35,10 @@ impl GenDoc {
     pub fn get_terms(&self) -> &Vec<String> {
         &self.terms
     }
+
+    pub fn get_terms_mut(&mut self) -> &mut Vec<String> {
+        &mut self.terms
+    }
 }
 
 impl DocumentGenerateable for GenDoc {

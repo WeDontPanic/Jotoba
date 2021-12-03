@@ -10,7 +10,6 @@ use resources::{
     },
     parse::jmdict::languages::Language,
 };
-use strsim::jaro_winkler;
 
 /// A Regex matching parentheses and its contents
 pub(crate) static REMOVE_PARENTHESES: Lazy<Regex> =
@@ -98,22 +97,16 @@ pub fn foreign_search_order(
         }
     };
 
-    let jaro = jaro_winkler(query_str, &found.gloss);
-    let occ = (found.gloss_full.occurrence + 1) as f64;
+    score += found.gloss_full.occurrence as f64;
 
-    score += occ.log(4f64) * 100.0;
-    score *= jaro;
-
-    /*
     let divisor = match (found.mode, found.case_ignored) {
-        (SearchMode::Exact, false) => 10,
-        (SearchMode::Exact, true) => 10,
-        (_, false) => 50,
-        (_, true) => 80,
+        (SearchMode::Exact, false) => 130,
+        (SearchMode::Exact, true) => 129,
+        (_, false) => 10,
+        (_, true) => 8,
     };
 
-    score += (calc_likeliness(word, &found) / divisor) as usize;
-    */
+    score *= divisor as f64;
 
     if found.in_parentheses {
         score -= 10f64.min(score);

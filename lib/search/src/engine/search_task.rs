@@ -208,18 +208,9 @@ where
     ) -> impl Iterator<Item = (&'b str, DocumentVector<T::GenDoc>, Option<Language>)> {
         self.queries.iter().filter_map(move |(q_str, lang)| {
             let index = T::get_index(*lang).expect("Lang not loaded");
-
             let align = self.allow_align && !self.has_term();
-
-            // align query
-            let aligned_query = align
-                .then(|| T::align_query(q_str, index, *lang))
-                .flatten()
-                .unwrap_or(q_str);
-
-            let vec = T::gen_query_vector(index, aligned_query)?;
-
-            Some((aligned_query, vec, *lang))
+            let vec = T::gen_query_vector(index, q_str, align, *lang)?;
+            Some((*q_str, vec, *lang))
         })
     }
 

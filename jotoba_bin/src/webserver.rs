@@ -9,7 +9,7 @@ use actix_web::{
 };
 use config::Config;
 use log::{debug, warn};
-use std::{path::Path, sync::Arc, thread, time::Instant};
+use std::{path::Path, sync::Arc, time::Instant};
 
 /// How long frontend assets are going to be cached by the clients. Currently 1 week
 const ASSET_CACHE_MAX_AGE: u64 = 604800;
@@ -20,70 +20,16 @@ pub(super) async fn start() -> std::io::Result<()> {
 
     let start = Instant::now();
 
-    let mut threads = Vec::with_capacity(4);
-
     let config = Config::new(None).expect("config failed");
 
-    let c2 = config.clone();
-    threads.push(
-        thread::Builder::new()
-            .name("Resource loader".into())
-            .spawn(move || load_resources(c2)),
-    );
-
-    let c2 = config.clone();
-    threads.push(
-        thread::Builder::new()
-            .name("Suggestion loader".into())
-            .spawn(move || load_suggestions(c2)),
-    );
-
-    let c2 = config.clone();
-    threads.push(
-        thread::Builder::new()
-            .name("Index loader".into())
-            .spawn(move || load_indexes(c2)),
-    );
-
-    threads.push(
-        thread::Builder::new()
-            .name("Tokenizer loader".into())
-            .spawn(move || {
-                load_tokenizer();
-            }),
-    );
+    prepare_data(&config);
 
     let locale_dict_arc = load_translations(&config);
 
     #[cfg(feature = "sentry_error")]
-    if let Some(ref sentry_config) = config.sentry {
-        use std::mem::ManuallyDrop;
-
-        // We want to run sentry all the time so don't drop here
-        let _guard = ManuallyDrop::new(sentry::init((
-            sentry_config.dsn.as_str(),
-            sentry::ClientOptions {
-                release: sentry::release_name!(),
-                ..Default::default()
-            },
-        )));
-
-        std::env::set_var("RUST_BACKTRACE", "1");
-    }
-
-    clean_img_scan_dir(&config);
-
-    for thr in threads {
-        thr.expect("Failed to spawn thread")
-            .join()
-            .expect("Failed to join threads");
-    }
+    setup_sentry(&config);
 
     let address = config.server.listen_address.clone();
-
-    if let Err(err) = resources::news::News::load(config.server.get_news_folder()) {
-        warn!("Failed to load news: {}", err);
-    }
 
     debug!("Resource loading took {:?}", start.elapsed());
 
@@ -240,6 +186,37 @@ async fn docs(_req: HttpRequest) -> actix_web::Result<NamedFile> {
     Ok(NamedFile::open("html/docs.html")?)
 }
 
+fn prepare_data(ccf: &Config) {
+    rayon::scope(move |s| {
+        let cf = ccf.clone();
+        s.spawn(move |_| {
+            load_resources(&cf);
+        });
+
+        let cf = ccf.clone();
+        s.spawn(move |_| {
+            load_suggestions(&cf);
+        });
+
+        let cf = ccf.clone();
+        s.spawn(move |_| {
+            load_indexes(&cf);
+        });
+
+        s.spawn(|_| load_tokenizer());
+
+        let cf = ccf.clone();
+        s.spawn(move |_| clean_img_scan_dir(&cf));
+
+        let cf = ccf.clone();
+        s.spawn(move |_| {
+            if let Err(err) = resources::news::News::load(cf.server.get_news_folder()) {
+                warn!("Failed to load news: {}", err);
+            }
+        })
+    });
+}
+
 fn setup_logger() {
     env_logger::init_from_env(env_logger::Env::new().default_filter_or("debug"));
 }
@@ -266,7 +243,7 @@ fn clean_img_scan_dir(config: &Config) {
     std::fs::remove_dir_all(&path).expect("Failed to clear img scan director");
 }
 
-pub fn load_resources(config: Config) {
+pub fn load_resources(config: &Config) {
     resources::initialize_resources(
         config.get_storage_data_path().as_str(),
         config.get_suggestion_sources(),
@@ -276,8 +253,8 @@ pub fn load_resources(config: Config) {
     .expect("Failed to load resources");
 }
 
-fn load_suggestions(config: Config) {
-    if let Err(err) = api::completions::load_suggestions(&config) {
+fn load_suggestions(config: &Config) {
+    if let Err(err) = api::completions::load_suggestions(config) {
         warn!("Failed to load suggestions: {}", err);
     }
 }
@@ -292,6 +269,24 @@ fn load_translations(config: &Config) -> Arc<TranslationDict> {
     Arc::new(locale_dict)
 }
 
-pub fn load_indexes(config: Config) {
-    search::engine::load_indexes(&config).expect("Failed to load v2 index files");
+pub fn load_indexes(config: &Config) {
+    search::engine::load_indexes(config).expect("Failed to load v2 index files");
+}
+
+#[cfg(feature = "sentry_error")]
+fn setup_sentry(config: &Config) {
+    if let Some(ref sentry_config) = config.sentry {
+        use std::mem::ManuallyDrop;
+
+        // We want to run sentry all the time so don't drop here
+        let _guard = ManuallyDrop::new(sentry::init((
+            sentry_config.dsn.as_str(),
+            sentry::ClientOptions {
+                release: sentry::release_name!(),
+                ..Default::default()
+            },
+        )));
+
+        std::env::set_var("RUST_BACKTRACE", "1");
+    }
 }

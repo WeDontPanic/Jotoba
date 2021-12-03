@@ -42,6 +42,8 @@ impl SearchEngine for Engine {
     fn gen_query_vector(
         index: &vector_space_model::Index<Self::Document, Self::Metadata>,
         query: &str,
+        _allow_align: bool,
+        _language: Option<Language>,
     ) -> Option<DocumentVector<Self::GenDoc>> {
         let query_document = GenDoc::new(vec![query]);
         let mut doc = DocumentVector::new(index.get_indexer(), query_document.clone())?;

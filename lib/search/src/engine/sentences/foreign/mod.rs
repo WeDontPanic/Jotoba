@@ -38,6 +38,8 @@ impl SearchEngine for Engine {
     fn gen_query_vector(
         index: &vector_space_model::Index<Self::Document, Self::Metadata>,
         query: &str,
+        _allow_align: bool,
+        _language: Option<Language>,
     ) -> Option<DocumentVector<Self::GenDoc>> {
         let mut terms = all_terms(&query.to_lowercase());
         terms.push(query.to_string().to_lowercase());

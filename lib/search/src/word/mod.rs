@@ -38,7 +38,10 @@ pub struct Search<'a> {
 /// Search among all data based on the input query
 #[inline]
 pub fn search(query: &Query) -> Result<WordResult, Error> {
-    Search { query }.do_search()
+    //let start = Instant::now();
+    let res = Search { query }.do_search();
+    //println!("Search took {:?}", start.elapsed());
+    res
 }
 
 #[derive(Default)]

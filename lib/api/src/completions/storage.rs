@@ -21,9 +21,23 @@ pub(crate) static K_MEANING_SUGGESTIONS: OnceCell<TextSearch<Vec<KanjiMeaningSug
 
 /// Load all available suggestions
 pub fn load_suggestions(config: &Config) -> Result<(), Box<dyn Error>> {
-    load_meaning_suggestions(&config)?;
-    load_native_names(&config)?;
-    load_name_transcriptions(&config)?;
+    rayon::scope(|s| {
+        s.spawn(|_| {
+            if let Err(err) = load_meaning_suggestions(config) {
+                eprintln!("Error loading meaning suggestions {}", err);
+            }
+        });
+        s.spawn(|_| {
+            if let Err(err) = load_name_transcriptions(config) {
+                eprintln!("Error loading name suggestions {}", err);
+            }
+        });
+        s.spawn(|_| {
+            if let Err(err) = load_native_names(config) {
+                eprintln!("Error loading name suggestions {}", err);
+            }
+        });
+    });
     Ok(())
 }
 
