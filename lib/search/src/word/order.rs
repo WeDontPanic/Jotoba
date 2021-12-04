@@ -87,7 +87,7 @@ pub fn foreign_search_order(
 
     // Result found within users specified language
     if language == user_lang {
-        score += 12.0;
+        score += 100.0;
     }
 
     let found = match find_reading(word, query_str) {
@@ -97,7 +97,9 @@ pub fn foreign_search_order(
         }
     };
 
-    score += found.gloss_full.occurrence as f64;
+    if found.sense.language == language {
+        score += found.gloss_full.occurrence as f64;
+    }
 
     let divisor = match (found.mode, found.case_ignored) {
         (SearchMode::Exact, false) => 130,
