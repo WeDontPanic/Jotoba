@@ -34,7 +34,7 @@ JotoTools.getPageUrl = function(pageName) {
 
 // Returns the value of the current Search [Words, Sentence...]
 JotoTools.getCurrentSearchType = function() {
-    return $(".choices__item.choices__item--choice.choices__item--selectable.selected").attr("data-value");
+    return $("#search-type > option").attr("value");
 }
 
 // Parses a language code into the Joto needs

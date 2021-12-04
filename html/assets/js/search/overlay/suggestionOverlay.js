@@ -62,7 +62,7 @@ function getSuggestionApiData() {
 
     // Create the JSON
     let lang = Cookies.get("default_lang");
-    let type = $('#search-type').val();
+    let type = JotoTools.getCurrentSearchType();
     let txt = input.value;
     
     if (txt.length == 0) {
