@@ -2,8 +2,9 @@ use std::{cmp::min, collections::BinaryHeap, time::Instant};
 
 use itertools::Itertools;
 use japanese::jp_parsing::InputTextParser;
-use resources::models::{suggestions::native_words::NativeSuggestion, words::Word};
+use resources::models::suggestions::native_words::NativeSuggestion;
 use search::engine::SearchTask;
+use types::jotoba::words::Word;
 use utils::binary_search::BinarySearchable;
 
 use super::super::*;

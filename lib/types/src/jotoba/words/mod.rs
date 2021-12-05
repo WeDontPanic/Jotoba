@@ -213,20 +213,23 @@ impl Word {
         inflection::of_word(self)
     }
 
-    /*
-     * TODO: to change+replace
     #[inline]
     pub fn get_transitive_counterpart(&self) -> Option<Word> {
+        /*
         let seq_id = self.transive_verion.as_ref()?;
         crate::get().words().by_sequence(*seq_id).cloned()
+        */
+        None
     }
 
     #[inline]
     pub fn get_intransitive_counterpart(&self) -> Option<Word> {
+        /*
         let seq_id = self.intransive_verion.as_ref()?;
         crate::get().words().by_sequence(*seq_id).cloned()
+        */
+        None
     }
-    */
 
     /// Returns `true` if the word has at least one sentence in the given language
     #[inline]
@@ -324,7 +327,7 @@ impl Word {
             })
             .collect()
             */
-        // TODO: change
+        // TODO: aaaa
         vec![]
     }
 

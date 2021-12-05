@@ -1,5 +1,6 @@
-use resources::parse::jmdict::{
-    dialect::Dialect, field::Field, languages::Language, misc::Misc, part_of_speech::PartOfSpeech,
+use types::jotoba::{
+    languages::Language,
+    words::{dialect::Dialect, field::Field, misc::Misc, part_of_speech::PartOfSpeech},
 };
 
 use search::word::result::{Item, WordResult};
@@ -62,8 +63,8 @@ pub struct Sense {
     xref: Option<String>,
 }
 
-impl From<&resources::models::words::Sense> for Sense {
-    fn from(sense: &resources::models::words::Sense) -> Self {
+impl From<&types::jotoba::words::sense::Sense> for Sense {
+    fn from(sense: &types::jotoba::words::sense::Sense) -> Self {
         let pos = sense.part_of_speech.clone();
 
         let glosses = sense
@@ -86,9 +87,9 @@ impl From<&resources::models::words::Sense> for Sense {
     }
 }
 
-impl From<&resources::models::words::Word> for Word {
+impl From<&types::jotoba::words::Word> for Word {
     #[inline]
-    fn from(word: &resources::models::words::Word) -> Self {
+    fn from(word: &types::jotoba::words::Word) -> Self {
         let kanji = word.reading.kanji.as_ref().map(|i| i.reading.clone());
         let kana = word.reading.kana.clone().reading;
         let furigana = word.furigana.clone();

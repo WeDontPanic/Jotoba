@@ -3,6 +3,10 @@ use japanese::JapaneseExt;
 use levenshtein::levenshtein;
 use once_cell::sync::Lazy;
 use regex::Regex;
+use types::jotoba::{
+    languages::Language,
+    words::{sense::Gloss, Word},
+};
 
 /// A Regex matching parentheses and its contents
 pub(crate) static REMOVE_PARENTHESES: Lazy<Regex> =
@@ -249,11 +253,11 @@ pub fn get_query_pos_in_gloss(
 struct FindResult {
     mode: SearchMode,
     case_ignored: bool,
-    language: resources::types::jotoba::languages::Language,
+    language: types::jotoba::languages::Language,
     pos: usize,
     gloss: String,
     in_parentheses: bool,
-    sense: resources::models::words::Sense,
+    sense: types::jotoba::words::sense::Sense,
     sense_pos: usize,
     gloss_full: Gloss,
 }
@@ -284,7 +288,7 @@ fn find_reading(
 }
 
 fn find_in_senses(
-    senses: &[resources::models::words::Sense],
+    senses: &[types::jotoba::words::sense::Sense],
     query_str: &str,
     mode: SearchMode,
     ign_case: bool,
@@ -334,7 +338,7 @@ fn find_in_senses(
 }
 
 fn try_find_in_sense(
-    sense: &resources::models::words::Sense,
+    sense: &types::jotoba::words::sense::Sense,
     query_str: &str,
     mode: SearchMode,
     ign_case: bool,

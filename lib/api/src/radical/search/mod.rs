@@ -9,7 +9,7 @@ use std::{
 use actix_web::{web::Json, HttpRequest};
 use error::api_error::RestError;
 use japanese::JapaneseExt;
-use resources::types::jotoba::languages::Language;
+use types::jotoba::languages::Language;
 use serde::{Deserialize, Serialize};
 
 /// Request struct for kanji_by_radicals endpoint

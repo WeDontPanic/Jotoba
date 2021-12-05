@@ -1,6 +1,5 @@
 use japanese::furigana::SentencePartRef;
-use resources::{models::words::Sense, types::jotoba::languages::Language};
-use types::jotoba::sentences::Sentence;
+use types::jotoba::{languages::Language, sentences::Sentence, words::sense::Sense};
 
 /// Returns the example sentence of a sense if available
 #[inline]
@@ -14,15 +13,11 @@ pub fn ext_sentence(
 ) -> Option<(Vec<SentencePartRef<'static>>, &'static str)> {
     let sentence = get_ext_sentence(sense)?;
 
-    /*
-     * TODO: aaaa
     let translation = sentence
         .get_translations(*language)
         .or_else(|| sentence.get_translations(Language::English))?;
-        */
 
     let furigana = japanese::furigana::from_str(&sentence.furigana).collect::<Vec<_>>();
-    let translation = "";
 
     Some((furigana, translation))
 }

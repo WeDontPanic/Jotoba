@@ -1,5 +1,5 @@
 use japanese::{furigana, furigana::SentencePartRef};
-use resources::types::jotoba::languages::Language;
+use types::jotoba::languages::Language;
 
 #[derive(PartialEq, Clone, Default)]
 pub struct SentenceResult {

@@ -1,5 +1,5 @@
 use error::Error;
-use resources::models::words::filter_languages;
+use types::jotoba::words::filter_languages;
 use utils::to_option;
 
 use crate::query::Tag;

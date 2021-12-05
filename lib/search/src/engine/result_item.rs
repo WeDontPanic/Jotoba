@@ -1,5 +1,5 @@
-use resources::types::jotoba::languages::Language;
 use std::{cmp::Ordering, hash::Hash};
+use types::jotoba::languages::Language;
 
 /// A single item (result) in a set of search results
 #[derive(Clone, Copy, Default, Debug)]

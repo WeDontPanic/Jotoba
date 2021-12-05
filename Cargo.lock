@@ -277,11 +277,11 @@ dependencies = [
  "actix-web",
  "bincode",
  "config",
- "error 0.1.0",
+ "error",
  "eudex",
  "futures",
  "itertools",
- "japanese 0.1.0",
+ "japanese",
  "leptess",
  "log",
  "once_cell",
@@ -293,7 +293,7 @@ dependencies = [
  "serde",
  "strsim 0.10.0",
  "types",
- "utils 0.1.0",
+ "utils",
 ]
 
 [[package]]
@@ -938,17 +938,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "error"
-version = "0.1.0"
-source = "git+https://github.com/WeDontPanic/Jotoba#c9c06a7c36a9f955bc22a50d90d07f5fbe42586b"
-dependencies = [
- "actix-web",
- "serde",
- "strum",
- "thiserror",
-]
-
-[[package]]
 name = "eudex"
 version = "0.1.1"
 source = "git+https://github.com/JojiiOfficial/eudex#b97f002b10dfe21047d130acf2e4f6d3f77779c4"
@@ -1026,9 +1015,9 @@ version = "0.1.0"
 dependencies = [
  "actix-web",
  "config",
- "error 0.1.0",
- "japanese 0.1.0",
- "localization 0.1.0",
+ "error",
+ "japanese",
+ "localization",
  "log",
  "percent-encoding",
  "resources",
@@ -1037,7 +1026,7 @@ dependencies = [
  "sentry",
  "serde",
  "types",
- "utils 0.1.0",
+ "utils",
 ]
 
 [[package]]
@@ -1415,31 +1404,15 @@ checksum = "b71991ff56294aa922b450139ee08b3bfc70982c6b2c7562771375cf73542dd4"
 name = "japanese"
 version = "0.1.0"
 dependencies = [
- "error 0.1.0",
+ "error",
  "igo-unidic",
  "itertools",
- "localization 0.1.0",
+ "localization",
  "once_cell",
  "romaji",
  "strum",
  "strum_macros",
- "utils 0.1.0",
-]
-
-[[package]]
-name = "japanese"
-version = "0.1.0"
-source = "git+https://github.com/WeDontPanic/Jotoba#c9c06a7c36a9f955bc22a50d90d07f5fbe42586b"
-dependencies = [
- "error 0.1.0 (git+https://github.com/WeDontPanic/Jotoba)",
- "igo-unidic",
- "itertools",
- "localization 0.1.0 (git+https://github.com/WeDontPanic/Jotoba)",
- "once_cell",
- "romaji",
- "strum",
- "strum_macros",
- "utils 0.1.0 (git+https://github.com/WeDontPanic/Jotoba)",
+ "utils",
 ]
 
 [[package]]
@@ -1462,17 +1435,17 @@ dependencies = [
  "argparse",
  "config",
  "env_logger 0.9.0",
- "error 0.1.0",
+ "error",
  "frontend",
- "japanese 0.1.0",
- "localization 0.1.0",
+ "japanese",
+ "localization",
  "log",
  "rayon",
  "resources",
  "search",
  "sentry",
  "serde",
- "utils 0.1.0",
+ "utils",
 ]
 
 [[package]]
@@ -1594,18 +1567,6 @@ checksum = "84f9a2d3e27ce99ce2c3aad0b09b1a7b916293ea9b2bf624c13fe646fadd8da4"
 [[package]]
 name = "localization"
 version = "0.1.0"
-dependencies = [
- "dyn-fmt",
- "gettext",
- "log",
- "strum",
- "strum_macros",
-]
-
-[[package]]
-name = "localization"
-version = "0.1.0"
-source = "git+https://github.com/WeDontPanic/Jotoba#c9c06a7c36a9f955bc22a50d90d07f5fbe42586b"
 dependencies = [
  "dyn-fmt",
  "gettext",
@@ -2183,9 +2144,9 @@ dependencies = [
  "indexed_file",
  "intmap",
  "itertools",
- "japanese 0.1.0",
+ "japanese",
  "jp_inflections",
- "localization 0.1.0",
+ "localization",
  "once_cell",
  "quick-xml",
  "regex",
@@ -2195,7 +2156,7 @@ dependencies = [
  "strum",
  "strum_macros",
  "types",
- "utils 0.1.0",
+ "utils",
  "utilsrs",
 ]
 
@@ -2285,13 +2246,13 @@ dependencies = [
  "bktree",
  "byteorder",
  "config",
- "error 0.1.0",
+ "error",
  "eudex",
  "futures",
  "itertools",
- "japanese 0.1.0",
+ "japanese",
  "levenshtein",
- "localization 0.1.0",
+ "localization",
  "log",
  "once_cell",
  "percent-encoding",
@@ -2302,7 +2263,7 @@ dependencies = [
  "strsim 0.10.0",
  "tinysegmenter",
  "types",
- "utils 0.1.0",
+ "utils",
  "vector_space_model",
 ]
 
@@ -2955,9 +2916,9 @@ version = "0.1.0"
 dependencies = [
  "bitflags 0.1.0",
  "itertools",
- "japanese 0.1.0 (git+https://github.com/WeDontPanic/Jotoba)",
+ "japanese",
  "jp_inflections",
- "localization 0.1.0",
+ "localization",
  "romaji",
  "serde",
  "strum",
@@ -3050,15 +3011,6 @@ dependencies = [
 [[package]]
 name = "utils"
 version = "0.1.0"
-dependencies = [
- "itertools",
- "rand",
-]
-
-[[package]]
-name = "utils"
-version = "0.1.0"
-source = "git+https://github.com/WeDontPanic/Jotoba#c9c06a7c36a9f955bc22a50d90d07f5fbe42586b"
 dependencies = [
  "itertools",
  "rand",
