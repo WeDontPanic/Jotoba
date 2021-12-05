@@ -40,11 +40,12 @@ impl SearchEngine for Engine {
         query: &str,
         _allow_align: bool,
         _language: Option<Language>,
-    ) -> Option<DocumentVector<Self::GenDoc>> {
+    ) -> Option<(DocumentVector<Self::GenDoc>, String)> {
         let mut terms = all_terms(&query.to_lowercase());
         terms.push(query.to_string().to_lowercase());
         let query_document = GenDoc::new(terms);
-        DocumentVector::new(index.get_indexer(), query_document.clone())
+        let doc = DocumentVector::new(index.get_indexer(), query_document.clone())?;
+        Some((doc, query.to_string()))
     }
 }
 

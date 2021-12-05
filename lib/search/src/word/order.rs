@@ -72,12 +72,12 @@ pub fn foreign_search_order(
     word: &Word,
     relevance: f32,
     query_str: &str,
-    language: Language,
+    query_lang: Language,
     user_lang: Language,
 ) -> usize {
     let mut score = relevance as f64 * 10.0;
 
-    let found = match find_reading(word, query_str) {
+    let found = match find_reading(word, query_str, user_lang, query_lang) {
         Some(v) => v,
         None => {
             return score as usize;
@@ -90,22 +90,25 @@ pub fn foreign_search_order(
         // found.sense.language == language &&
         score += found.gloss_full.occurrence as f64;
     } else {
-        return foreign_search_fall_back(word, relevance, query_str, language, user_lang);
+        return foreign_search_fall_back(word, relevance, query_str, query_lang, user_lang);
     }
 
-    let divisor = match (found.mode, found.case_ignored) {
+    let mut divisor = match (found.mode, found.case_ignored) {
         (SearchMode::Exact, false) => 130,
         (SearchMode::Exact, true) => 130,
         (_, false) => 10,
         (_, true) => 8,
     };
 
-    score *= divisor as f64;
-
     // Result found within users specified language
-    if language == user_lang {
-        score += 100.0;
+    if query_lang != user_lang {
+        //score += 1000.0;
+        divisor /= 20
+    } else {
+        divisor *= 2;
     }
+
+    score *= divisor as f64;
 
     if word.is_common() {
         score += 10.0;
@@ -125,7 +128,7 @@ pub fn foreign_search_fall_back(
     word: &Word,
     relevance: f32,
     query_str: &str,
-    language: Language,
+    query_lang: Language,
     user_lang: Language,
 ) -> usize {
     let mut score: usize = (relevance * 20f32) as usize;
@@ -139,11 +142,11 @@ pub fn foreign_search_fall_back(
     }
 
     // Result found within users specified language
-    if language == user_lang {
+    if query_lang == user_lang {
         score += 12;
     }
 
-    let found = match find_reading(word, query_str) {
+    let found = match find_reading(word, query_str, user_lang, query_lang) {
         Some(v) => v,
         None => {
             return score;
@@ -233,7 +236,14 @@ pub fn get_query_pos_in_gloss(
     ign_case: bool,
 ) -> Option<usize> {
     for lang_senes in this.get_senses() {
-        let res = find_in_senses(&lang_senes, query_str, s_mode, ign_case);
+        let res = find_in_senses(
+            &lang_senes,
+            query_str,
+            s_mode,
+            ign_case,
+            Language::English,
+            Language::English,
+        );
         if let Some(res) = res {
             return Some(res.pos);
         }
@@ -255,10 +265,22 @@ struct FindResult {
     gloss_full: Gloss,
 }
 
-fn find_reading(word: &Word, query: &str) -> Option<FindResult> {
+fn find_reading(
+    word: &Word,
+    query: &str,
+    user_lang: Language,
+    expected_lang: Language,
+) -> Option<FindResult> {
     for mode in SearchMode::ordered_iter() {
         for ign_case in &[false, true] {
-            let res = find_in_senses(&word.senses, query, *mode, *ign_case);
+            let res = find_in_senses(
+                &word.senses,
+                query,
+                *mode,
+                *ign_case,
+                user_lang,
+                expected_lang,
+            );
             if res.is_some() {
                 return res;
             }
@@ -273,9 +295,14 @@ fn find_in_senses(
     query_str: &str,
     mode: SearchMode,
     ign_case: bool,
+    user_lang: Language,
+    expected_lang: Language,
 ) -> Option<FindResult> {
     let mut res: Option<FindResult> = None;
     for (pos, sense) in senses.iter().enumerate() {
+        if sense.language != expected_lang && sense.language != user_lang {
+            continue;
+        }
         let mut found = try_find_in_sense(&sense, query_str, mode, ign_case, true);
         let in_parentheses = found.is_none();
 

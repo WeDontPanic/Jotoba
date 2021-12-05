@@ -49,7 +49,7 @@ impl SearchEngine for Engine {
         query: &str,
         allow_align: bool,
         language: Option<Language>,
-    ) -> Option<DocumentVector<Self::GenDoc>> {
+    ) -> Option<(DocumentVector<Self::GenDoc>, String)> {
         //let query_str = self.fixed_term(index).unwrap_or(self.get_query_str());
         let query_str = query;
 
@@ -63,6 +63,7 @@ impl SearchEngine for Engine {
             for term in query_document.get_terms_mut() {
                 if let Some(aligned) = Self::align_query(term, index, language) {
                     *term = aligned.to_string();
+                    println!("Aligned: {} to {}", &query, term);
                 }
             }
         }
@@ -88,7 +89,7 @@ impl SearchEngine for Engine {
             query.add_terms(term_indexer, &sub_terms, true, Some(0.3));
         }
 
-        Some(query)
+        Some((query, query_document.as_query()))
     }
 
     fn align_query<'b>(

@@ -44,9 +44,10 @@ impl SearchEngine for Engine {
         query: &str,
         _allow_align: bool,
         _language: Option<Language>,
-    ) -> Option<DocumentVector<Self::GenDoc>> {
+    ) -> Option<(DocumentVector<Self::GenDoc>, String)> {
         let query_document = GenDoc::new(format_word(query));
-        DocumentVector::new(index.get_indexer(), query_document.clone())
+        let vec = DocumentVector::new(index.get_indexer(), query_document.clone())?;
+        Some((vec, query.to_string()))
     }
 
     fn align_query<'b>(

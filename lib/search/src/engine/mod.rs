@@ -80,7 +80,7 @@ pub trait SearchEngine: Indexable {
         query: &str,
         align: bool,
         language: Option<Language>,
-    ) -> Option<DocumentVector<Self::GenDoc>>;
+    ) -> Option<(DocumentVector<Self::GenDoc>, String)>;
 
     fn align_query<'b>(
         _original: &'b str,

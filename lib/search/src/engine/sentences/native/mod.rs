@@ -38,9 +38,10 @@ impl SearchEngine for Engine {
         query: &str,
         _allow_align: bool,
         _language: Option<Language>,
-    ) -> Option<DocumentVector<Self::GenDoc>> {
+    ) -> Option<(DocumentVector<Self::GenDoc>, String)> {
         let terms = tinysegmenter::tokenize(query);
         let query_document = GenDoc::new(terms);
-        DocumentVector::new(index.get_indexer(), query_document.clone())
+        let vec = DocumentVector::new(index.get_indexer(), query_document.clone())?;
+        Some((vec, query.to_string()))
     }
 }

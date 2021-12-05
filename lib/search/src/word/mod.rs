@@ -278,6 +278,8 @@ impl<'a> Search<'a> {
                 .offset(self.query.page_offset)
                 .threshold(0.3f32);
 
+        println!("searching in {}", self.query.get_lang_with_override());
+
         if self.query.settings.show_english
             && self.query.settings.user_lang != Language::English
             // Don't show english results if user wants to search in a specified language
