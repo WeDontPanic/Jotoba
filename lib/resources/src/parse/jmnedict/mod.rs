@@ -1,5 +1,3 @@
-pub mod name_type;
-
 use std::{
     collections::HashMap,
     io::BufRead,
