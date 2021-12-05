@@ -3,10 +3,6 @@ use japanese::JapaneseExt;
 use levenshtein::levenshtein;
 use once_cell::sync::Lazy;
 use regex::Regex;
-use resources::{
-    models::words::{Gloss, Word},
-    parse::jmdict::languages::Language,
-};
 
 /// A Regex matching parentheses and its contents
 pub(crate) static REMOVE_PARENTHESES: Lazy<Regex> =

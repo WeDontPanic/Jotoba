@@ -1,15 +1,16 @@
-use crate::parse::jmdict::{
+use crate::jotoba::languages::Language;
+
+use super::{
     dialect::Dialect,
     field::Field,
+    foreign_language::ForeignLanguage,
     gtype::GType,
-    languages::Language,
     misc::Misc,
     part_of_speech::{PartOfSpeech, PosSimple},
 };
 use itertools::Itertools;
 use localization::{language::Language as LocLanguage, traits::Translatable, TranslationDict};
 use serde::{Deserialize, Serialize};
-use types::raw::jmdict::Gairaigo;
 
 /// A single sense for a word. Represents one language,
 /// one misc item and 1..n glosses
@@ -27,6 +28,13 @@ pub struct Sense {
     pub language: Language,
     pub example_sentence: Option<u32>,
     pub gairaigo: Option<Gairaigo>,
+}
+
+#[derive(Debug, Default, Clone, PartialEq, Deserialize, Serialize, Hash)]
+pub struct Gairaigo {
+    pub language: ForeignLanguage,
+    pub fully_derived: bool,
+    pub original: String,
 }
 
 impl Eq for Sense {}

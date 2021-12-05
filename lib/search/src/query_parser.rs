@@ -2,12 +2,12 @@ use std::{cmp::Ordering, str::FromStr};
 
 use itertools::Itertools;
 use localization::{language::Language, traits::Translatable, TranslationDict};
-use resources::parse::jmdict::languages::Language as ContentLanguage;
 use serde::Deserialize;
 
 use japanese::JapaneseExt;
-use resources::parse::jmdict::part_of_speech::PosSimple;
-use types::jotoba::kanji;
+use types::jotoba::{
+    kanji, languages::Language as ContentLanguage, words::part_of_speech::PosSimple,
+};
 
 use super::query::{Form, Query, QueryLang, SearchTypeTag, Tag, UserSettings};
 

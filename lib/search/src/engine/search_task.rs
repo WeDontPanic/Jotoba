@@ -7,8 +7,9 @@ use super::{
 use crate::engine::DocumentGenerateable;
 use error::Error;
 use itertools::Itertools;
-use resources::{models::storage::ResourceStorage, parse::jmdict::languages::Language};
+use resources::models::storage::ResourceStorage;
 use std::{collections::BinaryHeap, marker::PhantomData};
+use types::jotoba::languages::Language;
 use vector_space_model::DocumentVector;
 
 pub struct SearchTask<'a, T>

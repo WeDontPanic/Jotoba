@@ -1,4 +1,4 @@
-use crate::parse::jmdict::part_of_speech::{self, IrregularVerb, PartOfSpeech};
+use super::part_of_speech::{self, IrregularVerb, PartOfSpeech};
 
 use super::Word;
 

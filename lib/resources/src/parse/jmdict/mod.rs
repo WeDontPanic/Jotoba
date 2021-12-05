@@ -26,9 +26,10 @@ use types::jotoba::{
     words::{
         dialect::Dialect, field::Field, foreign_language::ForeignLanguage, gtype::GType,
         information::Information, misc::Misc, part_of_speech::PartOfSpeech, priority::Priority,
+        sense::Gairaigo,
     },
 };
-use types::raw::jmdict::{Entry, EntryElement, EntrySense, Gairaigo, GlossValue};
+use types::raw::jmdict::{Entry, EntryElement, EntrySense, GlossValue};
 
 use crate::parse::{error::Error, parser::Parse};
 

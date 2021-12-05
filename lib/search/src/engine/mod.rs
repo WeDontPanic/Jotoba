@@ -14,8 +14,9 @@ use std::hash::Hash;
 
 use config::Config;
 
-use resources::{models::storage::ResourceStorage, parse::jmdict::languages::Language};
+use resources::models::storage::ResourceStorage;
 pub use search_task::SearchTask;
+use types::jotoba::languages::Language;
 use vector_space_model::{
     document_vector, metadata::Metadata, traits::Decodable, DocumentVector, Index,
 };

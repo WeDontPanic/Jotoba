@@ -1,4 +1,4 @@
-use crate::models::words::Word;
+use types::jotoba::words::Word;
 
 use super::ResourceStorage;
 

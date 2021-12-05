@@ -1,10 +1,10 @@
 use std::{fs::read_to_string, vec};
 
-use resources::{
-    models::words::{filter_languages, Word},
-    parse::jmdict::languages::Language,
+use types::jotoba::{
+    kanji::Kanji,
+    languages::Language,
+    words::{filter_languages, Word},
 };
-use types::jotoba::kanji::Kanji;
 
 #[derive(Debug, PartialEq, Clone)]
 pub struct Item {

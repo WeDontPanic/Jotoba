@@ -1,10 +1,8 @@
 pub mod index;
 
 use crate::engine::{document::SingleDocument, simple_gen_doc::GenDoc, Indexable, SearchEngine};
-use resources::{
-    models::{storage::ResourceStorage, words::Word},
-    parse::jmdict::languages::Language,
-};
+use resources::{models::storage::ResourceStorage, parse::jmdict::languages::Language};
+use types::jotoba::words::Word;
 use vector_space_model::{DefaultMetadata, DocumentVector};
 
 pub struct Engine {}

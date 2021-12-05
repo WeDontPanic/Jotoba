@@ -134,10 +134,14 @@ fn by_meaning(meaning: &str) -> Vec<Kanji> {
 
 #[inline]
 fn to_item(items: Vec<Kanji>, query: &Query) -> Vec<Item> {
+    /*
+     * TODO: aaaaa
     items
         .into_iter()
         .map(|i| Item::load_words(i, query.settings.user_lang, query.settings.show_english))
         .collect()
+        */
+    vec![]
 }
 
 #[inline]

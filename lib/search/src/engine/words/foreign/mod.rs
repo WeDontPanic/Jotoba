@@ -1,7 +1,5 @@
-use resources::{
-    models::{storage::ResourceStorage, words::Word},
-    parse::jmdict::languages::Language,
-};
+use resources::{models::storage::ResourceStorage, parse::jmdict::languages::Language};
+use types::jotoba::words::Word;
 use utils::to_option;
 use vector_space_model::{document_vector, DocumentVector};
 

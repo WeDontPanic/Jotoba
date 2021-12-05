@@ -11,8 +11,7 @@ use crate::{
     query::{Form, QueryLang, Tag},
 };
 use error::Error;
-use resources::parse::jmdict::languages::Language;
-use types::jotoba::sentences::Sentence;
+use types::jotoba::{languages::Language, sentences::Sentence};
 
 /// Searches for sentences
 pub fn search(query: &Query) -> Result<SentenceResult, Error> {

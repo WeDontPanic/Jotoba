@@ -1,6 +1,5 @@
 pub mod storage;
 pub mod suggestions;
-pub mod words;
 
 use std::{
     collections::HashMap,
@@ -10,14 +9,12 @@ use std::{
     path::Path,
 };
 
-use self::{
-    storage::{RadicalStorage, ResourceStorage, SentenceStorage},
-    words::Word,
-};
+use self::storage::{RadicalStorage, ResourceStorage, SentenceStorage};
 use serde::{Deserialize, Serialize};
 use types::jotoba::{
     kanji::{DetailedRadical, Kanji},
     names::Name,
+    words::Word,
 };
 
 /// Static git hash of current build

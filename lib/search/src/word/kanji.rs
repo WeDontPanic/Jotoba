@@ -7,8 +7,10 @@ use crate::{
 use error::Error;
 use itertools::Itertools;
 use japanese::{CharType, JapaneseExt};
-use resources::models::words::Word;
-use types::jotoba::kanji::{self, Kanji, ReadingType};
+use types::jotoba::{
+    kanji::{self, Kanji, ReadingType},
+    words::Word,
+};
 
 /// Runs a kanji reading search
 pub(super) fn by_reading(search: &Search<'_>) -> Result<ResultData, Error> {
@@ -111,11 +113,14 @@ fn words_with_kanji_reading(
     let len = res.len();
     let mut words = res.item_iter().cloned().collect::<Vec<_>>();
 
+    /*
+     * TODO: aaaaa
     super::filter_languages(
         words.iter_mut(),
         query.settings.user_lang,
         query.settings.show_english,
     );
+    */
 
     Ok((words, len))
 }

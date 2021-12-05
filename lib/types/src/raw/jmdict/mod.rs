@@ -1,8 +1,8 @@
 use crate::jotoba::{
     languages::Language,
     words::{
-        dialect::Dialect, field::Field, foreign_language::ForeignLanguage, gtype::GType,
-        information::Information, misc::Misc, part_of_speech::PartOfSpeech, priority::Priority,
+        dialect::Dialect, field::Field, gtype::GType, information::Information, misc::Misc,
+        part_of_speech::PartOfSpeech, priority::Priority, sense::Gairaigo,
     },
 };
 
@@ -79,13 +79,6 @@ impl EntrySense {
 pub struct Translation {
     pub language: Language,
     pub value: String,
-}
-
-#[derive(Debug, Default, Clone, PartialEq, Deserialize, Serialize, Hash)]
-pub struct Gairaigo {
-    pub language: ForeignLanguage,
-    pub fully_derived: bool,
-    pub original: String,
 }
 
 /// A single gloss entry.

@@ -2954,6 +2954,7 @@ name = "types"
 version = "0.1.0"
 dependencies = [
  "bitflags 0.1.0",
+ "itertools",
  "japanese 0.1.0 (git+https://github.com/WeDontPanic/Jotoba)",
  "jp_inflections",
  "localization 0.1.0",

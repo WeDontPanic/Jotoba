@@ -15,6 +15,7 @@ jp_inflections = { git = "https://github.com/JojiiOfficial/Japanese_Inflections"
 bitflags = {git = "https://github.com/JojiiOfficial/BitFlags"}
 localization = { path = "../localization", optional = true}
 japanese = { git = "https://github.com/WeDontPanic/Jotoba", optional = true}
+itertools = "0.10.1"
 #localization = { git = "https://github.com/WeDontPanic/Jotoba", optional = true}
 ### Note: This sub-crate is not allowed to have dependencies to other Jotoba crates
 

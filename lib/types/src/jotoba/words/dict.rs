@@ -1,5 +1,6 @@
-use crate::parse::jmdict::{information::Information, priority::Priority};
 use serde::{Deserialize, Serialize};
+
+use super::{information::Information, priority::Priority};
 
 /// A single dictionary entry representing a words reading
 #[derive(Clone, Debug, Default, PartialEq, Serialize, Deserialize, Hash, Eq)]
