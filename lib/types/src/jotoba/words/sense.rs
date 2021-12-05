@@ -8,9 +8,10 @@ use super::{
     misc::Misc,
     part_of_speech::{PartOfSpeech, PosSimple},
 };
-use itertools::Itertools;
-use localization::{language::Language as LocLanguage, traits::Translatable, TranslationDict};
 use serde::{Deserialize, Serialize};
+
+#[cfg(feature = "jotoba_intern")]
+use localization::{language::Language as LocLanguage, traits::Translatable, TranslationDict};
 
 /// A single sense for a word. Represents one language,
 /// one misc item and 1..n glosses
@@ -49,9 +50,28 @@ pub struct Gloss {
 }
 
 impl Sense {
+    /// Get all pos_simple of a sense
+    pub fn get_pos_simple(&self) -> Vec<PosSimple> {
+        let mut pos_simple = self
+            .part_of_speech
+            .iter()
+            .map(|i| i.to_pos_simple())
+            .flatten()
+            .collect::<Vec<_>>();
+
+        pos_simple.sort_unstable();
+        pos_simple.dedup();
+        pos_simple
+    }
+}
+
+// Jotoba intern only features
+#[cfg(feature = "jotoba_intern")]
+impl Sense {
     /// Get a senses tags prettified
     #[inline]
     pub fn get_glosses(&self) -> String {
+        use itertools::Itertools;
         self.glosses.iter().map(|i| i.gloss.clone()).join("; ")
     }
 
@@ -69,22 +89,9 @@ impl Sense {
             .and_then(|antonym| antonym.split('・').next())
     }
 
-    /// Get all pos_simple of a sense
-    pub fn get_pos_simple(&self) -> Vec<PosSimple> {
-        let mut pos_simple = self
-            .part_of_speech
-            .iter()
-            .map(|i| i.to_pos_simple())
-            .flatten()
-            .collect::<Vec<_>>();
-
-        pos_simple.sort_unstable();
-        pos_simple.dedup();
-        pos_simple
-    }
-
     // Get a senses tags prettified
     pub fn get_parts_of_speech(&self, dict: &TranslationDict, language: LocLanguage) -> String {
+        use itertools::Itertools;
         self.part_of_speech
             .iter()
             .map(|i| i.gettext_custom(dict, Some(language)))
@@ -130,6 +137,7 @@ impl Sense {
         dict: &TranslationDict,
         language: LocLanguage,
     ) -> Option<String> {
+        use itertools::Itertools;
         let arr: [Option<String>; 3] = [
             self.misc
                 .map(|i| i.gettext(dict, Some(language)).to_owned()),
@@ -140,7 +148,7 @@ impl Sense {
         let res = arr
             .iter()
             .filter_map(|i| i.is_some().then(|| i.as_ref().unwrap()))
-            .collect_vec();
+            .collect::<Vec<_>>();
 
         if res.is_empty() {
             return None;

@@ -3,7 +3,6 @@
 pub mod raw;
 
 /// Contains all information holding structures for jotoba resources
-#[cfg(feature = "jotoba")]
 pub mod jotoba;
 
 /// Contains all structures and informations required for the API

@@ -13,14 +13,14 @@ pub mod sense;
 pub use dict::Dict;
 
 use bitflags::BitFlag;
-use itertools::Itertools;
+
+#[cfg(feature = "jotoba_intern")]
 use japanese::{
     accent::{AccentChar, Border},
     furigana::{self, SentencePartRef},
     JapaneseExt,
 };
 use serde::{Deserialize, Serialize};
-use std::path::Path;
 
 use self::{
     inflection::Inflections,
@@ -89,12 +89,6 @@ impl Word {
         self.reading.get_reading()
     }
 
-    /// Return `true` if the word is a katakana word
-    #[inline]
-    pub fn is_katakana_word(&self) -> bool {
-        self.reading.is_katakana()
-    }
-
     /// Return all senses of a language
     #[inline]
     pub fn senses_by_lang(&self, language: Language) -> Option<Vec<Sense>> {
@@ -143,6 +137,82 @@ impl Word {
             .count() as u8
     }
 
+    /// Returns an [`Inflections`] value if [`self`] is a valid verb
+    #[inline]
+    pub fn get_inflections(&self) -> Option<Inflections> {
+        inflection::of_word(self)
+    }
+
+    /// Returns `true` if the word has at least one sentence in the given language
+    #[inline]
+    pub fn has_sentence(&self, language: Language) -> bool {
+        let lang: i32 = language.into();
+        BitFlag::<u16>::from(self.sentences_available).get(lang as u16)
+    }
+    /// Returns true if word has a misc information matching `misc`. This requires english glosses
+    /// to be available since they're the only one holding misc information
+    #[inline]
+    pub fn has_misc(&self, misc: Misc) -> bool {
+        self.senses.iter().filter_map(|i| i.misc).any(|i| i == misc)
+    }
+
+    /// Returns `true` if word has at least one of the provided part of speech
+    #[inline]
+    pub fn has_pos(&self, pos_filter: &[PosSimple]) -> bool {
+        for sense in self.senses.iter().map(|i| i.get_pos_simple()) {
+            if sense.iter().any(|i| pos_filter.contains(i)) {
+                return true;
+            }
+        }
+
+        false
+    }
+
+    /// Returns `true` if a word has at least one translation for the provided language, or english
+    /// if `allow_english` is `true`
+    #[inline]
+    pub fn has_language(&self, language: Language, allow_english: bool) -> bool {
+        self.senses
+            .iter()
+            .any(|i| i.language == language || (allow_english && i.language == Language::English))
+    }
+
+    /// Returns `true` if a word has collocations
+    #[inline]
+    pub fn has_collocations(&self) -> bool {
+        self.collocations.is_some()
+    }
+
+    /// Returns an iterator over all reading elements
+    #[inline]
+    pub fn reading_iter(&self, allow_kana: bool) -> ReadingIter<'_> {
+        self.reading.iter(allow_kana)
+    }
+
+    /// Returns true if word has `reading`
+    pub fn has_reading(&self, reading: &str) -> bool {
+        self.reading_iter(true).any(|j| j.reading == reading)
+    }
+
+    /// Returns an iterator over all parts of speech of a word
+    #[inline]
+    fn get_pos(&self) -> impl Iterator<Item = &PartOfSpeech> {
+        self.senses
+            .iter()
+            .map(|i| i.part_of_speech.iter())
+            .flatten()
+    }
+}
+
+// Jotoba intern only features
+#[cfg(feature = "jotoba_intern")]
+impl Word {
+    /// Return `true` if the word is a katakana word
+    #[inline]
+    pub fn is_katakana_word(&self) -> bool {
+        self.reading.is_katakana()
+    }
+
     /// Get the audio path of a word
     #[inline]
     pub fn audio_file(&self, file_ending: &str) -> Option<String> {
@@ -151,7 +221,7 @@ impl Word {
                 "{}/{}【{}】.{}",
                 file_ending, kanji.reading, self.reading.kana.reading, file_ending
             );
-            Path::new(&format!("html/audio/{}", file))
+            std::path::Path::new(&format!("html/audio/{}", file))
                 .exists()
                 .then(|| file)
         })
@@ -200,24 +270,12 @@ impl Word {
     /// Get alternative readings in a beautified, print-ready format
     #[inline]
     pub fn alt_readings_beautified(&self) -> String {
+        use itertools::Itertools;
         self.reading
             .alternative
             .iter()
             .map(|i| i.reading.clone())
             .join(", ")
-    }
-
-    /// Returns an [`Inflections`] value if [`self`] is a valid verb
-    #[inline]
-    pub fn get_inflections(&self) -> Option<Inflections> {
-        inflection::of_word(self)
-    }
-
-    /// Returns `true` if the word has at least one sentence in the given language
-    #[inline]
-    pub fn has_sentence(&self, language: Language) -> bool {
-        let lang: i32 = language.into();
-        BitFlag::<u16>::from(self.sentences_available).get(lang as u16)
     }
 
     pub fn glosses_pretty(&self) -> String {
@@ -232,52 +290,8 @@ impl Word {
         }
     }
 
-    /// Returns true if word has a misc information matching `misc`. This requires english glosses
-    /// to be available since they're the only one holding misc information
-    #[inline]
-    pub fn has_misc(&self, misc: Misc) -> bool {
-        self.senses.iter().filter_map(|i| i.misc).any(|i| i == misc)
-    }
-
-    /// Returns `true` if word has at least one of the provided part of speech
-    #[inline]
-    pub fn has_pos(&self, pos_filter: &[PosSimple]) -> bool {
-        for sense in self.senses.iter().map(|i| i.get_pos_simple()) {
-            if sense.iter().any(|i| pos_filter.contains(i)) {
-                return true;
-            }
-        }
-
-        false
-    }
-
-    /// Returns `true` if a word has at least one translation for the provided language, or english
-    /// if `allow_english` is `true`
-    #[inline]
-    pub fn has_language(&self, language: Language, allow_english: bool) -> bool {
-        self.senses
-            .iter()
-            .any(|i| i.language == language || (allow_english && i.language == Language::English))
-    }
-
-    /// Returns `true` if a word has collocations
-    #[inline]
-    pub fn has_collocations(&self) -> bool {
-        self.collocations.is_some()
-    }
-
-    /// Returns an iterator over all reading elements
-    #[inline]
-    pub fn reading_iter(&self, allow_kana: bool) -> ReadingIter<'_> {
-        self.reading.iter(allow_kana)
-    }
-
-    /// Returns true if word has `reading`
-    pub fn has_reading(&self, reading: &str) -> bool {
-        self.reading_iter(true).any(|j| j.reading == reading)
-    }
-
     fn pretty_print_senses(senses: &[Sense]) -> String {
+        use itertools::Itertools;
         senses
             .iter()
             .map(|i| i.glosses.clone())
@@ -286,24 +300,19 @@ impl Word {
             .map(|i| i.gloss)
             .join(", ")
     }
-
-    /// Returns an iterator over all parts of speech of a word
-    #[inline]
-    fn get_pos(&self) -> impl Iterator<Item = &PartOfSpeech> {
-        self.senses
-            .iter()
-            .map(|i| i.part_of_speech.iter())
-            .flatten()
-    }
 }
 
+// Jotoba intern only features
+#[cfg(feature = "jotoba_intern")]
 impl Reading {
     /// Return `true` if reading represents a katakana only word
     #[inline]
     pub fn is_katakana(&self) -> bool {
         self.kana.reading.is_katakana() && self.kanji.is_none()
     }
+}
 
+impl Reading {
     /// Returns the preferred word-reading of a `Reading`
     #[inline]
     pub fn get_reading(&self) -> &Dict {
@@ -358,6 +367,7 @@ impl<'a> Iterator for ReadingIter<'a> {
 
 /// Removes all senses which ain't in the provided language or english in case `show_english` is
 /// `true`
+#[cfg(feature = "jotoba_intern")]
 pub fn filter_languages<'a, I: 'a + Iterator<Item = &'a mut Word>>(
     iter: I,
     language: Language,

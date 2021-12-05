@@ -18,15 +18,12 @@ itertools = "0.10.1"
 
 [features]
 # This feature adds stuff required for Jotoba to work but not necessarily for extern crates, so its made optional
-jotoba_intern = [ "localization", "japanese" ]
+jotoba_intern = ["localization", "japanese" ]
 
 # Contains raw types of JMdict, KanjiDict, ... which are only required to parse but not directly used by Jotoba
 raw_types = []
 
 # Contains API types, and can be used as rust wrapper around the Jotoba API
-api = ["jotoba"]
+api = []
 
-# Contains all core-types which are used by Jotoba internally. This contains words, sentences, kanji and names
-jotoba = []
-
-default = ["jotoba"]
+default = []
