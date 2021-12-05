@@ -2,10 +2,11 @@ pub mod dict;
 pub mod inflection;
 pub mod sense;
 
-use bitflags::BitFlag;
 pub use dict::Dict;
-use itertools::Itertools;
 pub use sense::{Gloss, Sense};
+
+use bitflags::BitFlag;
+use itertools::Itertools;
 use utils::to_option;
 
 use crate::parse::jmdict::{

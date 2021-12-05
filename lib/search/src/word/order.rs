@@ -274,6 +274,7 @@ fn find_in_senses(
     mode: SearchMode,
     ign_case: bool,
 ) -> Option<FindResult> {
+    let mut res: Option<FindResult> = None;
     for (pos, sense) in senses.iter().enumerate() {
         let mut found = try_find_in_sense(&sense, query_str, mode, ign_case, true);
         let in_parentheses = found.is_none();
@@ -286,8 +287,9 @@ fn find_in_senses(
         }
 
         let (sense_pos, gloss_str, gloss) = found.unwrap();
+        let curr_occurrence = gloss.occurrence;
 
-        return Some(FindResult {
+        let this_res = Some(FindResult {
             mode,
             pos,
             language: sense.language,
@@ -298,9 +300,17 @@ fn find_in_senses(
             sense_pos,
             gloss_full: gloss,
         });
+
+        if let Some(ref curr_res) = res {
+            if curr_res.gloss_full.occurrence < curr_occurrence {
+                res = this_res;
+            }
+        } else {
+            res = this_res;
+        }
     }
 
-    None
+    res
 }
 
 fn try_find_in_sense(

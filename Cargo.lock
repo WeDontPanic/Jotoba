@@ -2907,6 +2907,19 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b63708a265f51345575b27fe43f9500ad611579e764c79edbc2037b1121959ec"
 
 [[package]]
+name = "types"
+version = "0.1.0"
+dependencies = [
+ "bitflags 0.1.0",
+ "jp_inflections",
+ "romaji",
+ "serde",
+ "strum",
+ "strum_macros",
+ "utilsrs",
+]
+
+[[package]]
 name = "ucd-trie"
 version = "0.1.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"

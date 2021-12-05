@@ -72,6 +72,9 @@
     @if let Some(search_res) =  data.site.as_search_result() {
       <meta property="og:title" content="Jotoba @search_res.search_type_ogg() search result for &quot;@search_res.query.query&quot;">
       <meta property="og:description" content="@search_res.og_tag_info()">
+      <meta name="twitter:card" content="summary" />
+      <meta name="twitter:title" content="Jotoba @search_res.search_type_ogg() search result for &quot;@search_res.query.query&quot;" />
+      <meta name="twitter:description" content="@search_res.og_tag_info()" />
     }else{
       <meta property="og:title" content="Jotoba">
       <meta property="og:description" content="description" content="A powerful and free Japanese dictionary supporting words, kanji, sentences, and many different languages.">
