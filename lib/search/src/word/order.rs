@@ -4,10 +4,7 @@ use levenshtein::levenshtein;
 use once_cell::sync::Lazy;
 use regex::Regex;
 use resources::{
-    models::{
-        kanji,
-        words::{Gloss, Word},
-    },
+    models::words::{Gloss, Word},
     parse::jmdict::languages::Language,
 };
 
@@ -173,13 +170,13 @@ pub fn foreign_search_fall_back(
 
 pub(super) fn kanji_reading_search(
     word: &Word,
-    kanji_reading: &resources::models::kanji::Reading,
+    kanji_reading: &types::jotoba::kanji::Reading,
     relevance: f32,
 ) -> usize {
     let mut score: usize = (relevance * 25f32) as usize;
 
     // This function should only be called for kanji reading search queries!
-    let formatted_reading = kanji::format_reading(&kanji_reading.reading);
+    let formatted_reading = types::jotoba::kanji::format_reading(&kanji_reading.reading);
     let kana_reading = &word.reading.kana.reading;
 
     if formatted_reading.is_hiragana() {

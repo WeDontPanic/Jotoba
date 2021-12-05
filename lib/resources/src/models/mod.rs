@@ -1,5 +1,4 @@
 pub mod accents;
-pub mod kanji;
 pub mod sentences;
 pub mod storage;
 pub mod suggestions;
@@ -14,12 +13,14 @@ use std::{
 };
 
 use self::{
-    kanji::{DetailedRadical, Kanji},
     storage::{RadicalStorage, ResourceStorage, SentenceStorage},
     words::Word,
 };
 use serde::{Deserialize, Serialize};
-use types::jotoba::names::Name;
+use types::jotoba::{
+    kanji::{DetailedRadical, Kanji},
+    names::Name,
+};
 
 /// Static git hash of current build
 pub const GIT_HASH: &str = env!("GIT_HASH");

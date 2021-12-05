@@ -9,10 +9,8 @@ use super::query_parser::QueryType;
 
 use itertools::Itertools;
 use percent_encoding::{utf8_percent_encode, AsciiSet, CONTROLS};
-use resources::{
-    models::kanji,
-    parse::jmdict::{languages::Language, misc::Misc, part_of_speech::PosSimple},
-};
+use resources::parse::jmdict::{languages::Language, misc::Misc, part_of_speech::PosSimple};
+use types::jotoba::kanji;
 
 const QUERY_ENCODE_SET: &AsciiSet = &CONTROLS.add(b'/');
 

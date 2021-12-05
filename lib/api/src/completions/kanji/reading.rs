@@ -1,7 +1,7 @@
 use std::cmp::Ordering;
 
 use error::api_error::RestError;
-use resources::models::kanji;
+use types::jotoba::kanji;
 
 use crate::completions::{
     response::{SuggestionType, WordPair},

@@ -13,7 +13,7 @@ use config::Config;
 use error::api_error::RestError;
 use japanese::JapaneseExt;
 use query_parser::QueryType;
-use resources::{models, parse::jmdict::languages::Language};
+use resources::parse::jmdict::languages::Language;
 use response::Response;
 use search::{
     query::{Form, Query, QueryLang},
@@ -83,7 +83,7 @@ async fn kanji_suggestions(query: Query) -> Result<Response, RestError> {
 }
 
 /// Returns Some(KanjiReading) if query is or 'could be' a kanji reading query
-fn as_kanji_reading(query: &Query) -> Option<models::kanji::Reading> {
+fn as_kanji_reading(query: &Query) -> Option<types::jotoba::kanji::Reading> {
     match &query.form {
         Form::KanjiReading(r) => Some(r.clone()),
         _ => {
@@ -92,7 +92,7 @@ fn as_kanji_reading(query: &Query) -> Option<models::kanji::Reading> {
             let second = query_str.next()?;
 
             if first.is_kanji() && second == ' ' {
-                Some(models::kanji::Reading {
+                Some(types::jotoba::kanji::Reading {
                     reading: String::new(),
                     literal: first,
                 })

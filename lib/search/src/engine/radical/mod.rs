@@ -1,4 +1,4 @@
-use resources::models::kanji::SearchRadicalInfo;
+use types::jotoba::kanji::SearchRadicalInfo;
 
 pub mod index;
 

@@ -36,9 +36,9 @@ pub struct Kanji {
     stroke_frames: Option<String>,
 }
 
-impl From<&resources::models::kanji::Kanji> for Kanji {
+impl From<&types::jotoba::kanji::Kanji> for Kanji {
     #[inline]
-    fn from(kanji: &resources::models::kanji::Kanji) -> Self {
+    fn from(kanji: &types::jotoba::kanji::Kanji) -> Self {
         let frames = kanji
             .has_stroke_frames()
             .then(|| kanji.get_stroke_frames_url());

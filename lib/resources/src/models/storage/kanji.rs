@@ -1,7 +1,6 @@
-use crate::models::kanji::{DetailedRadical, Kanji};
-
 use super::ResourceStorage;
 use sorted_intersection::SortedIntersection;
+use types::jotoba::kanji::{DetailedRadical, Kanji};
 
 #[derive(Clone, Copy)]
 pub struct KanjiRetrieve<'a> {

@@ -20,15 +20,13 @@ use error::Error;
 use itertools::Itertools;
 use japanese::{inflection::SentencePart, JapaneseExt};
 use resources::{
-    models::{
-        kanji::Kanji,
-        words::{filter_languages, Word},
-    },
+    models::words::{filter_languages, Word},
     parse::jmdict::{languages::Language, part_of_speech::PosSimple},
 };
 use result::Item;
 
 use japanese::jp_parsing::{InputTextParser, ParseResult, WordItem};
+use types::jotoba::kanji::Kanji;
 use utils::to_option;
 
 pub struct Search<'a> {

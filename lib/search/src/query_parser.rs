@@ -6,7 +6,8 @@ use resources::parse::jmdict::languages::Language as ContentLanguage;
 use serde::Deserialize;
 
 use japanese::JapaneseExt;
-use resources::{models::kanji, parse::jmdict::part_of_speech::PosSimple};
+use resources::parse::jmdict::part_of_speech::PosSimple;
+use types::jotoba::kanji;
 
 use super::query::{Form, Query, QueryLang, SearchTypeTag, Tag, UserSettings};
 

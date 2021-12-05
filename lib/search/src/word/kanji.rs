@@ -7,10 +7,8 @@ use crate::{
 use error::Error;
 use itertools::Itertools;
 use japanese::{CharType, JapaneseExt};
-use resources::models::{
-    kanji::{self, Kanji, ReadingType},
-    words::Word,
-};
+use resources::models::words::Word;
+use types::jotoba::kanji::{self, Kanji, ReadingType};
 
 /// Runs a kanji reading search
 pub(super) fn by_reading(search: &Search<'_>) -> Result<ResultData, Error> {

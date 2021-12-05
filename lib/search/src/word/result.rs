@@ -1,5 +1,6 @@
 use japanese::inflection::{Inflection, SentencePart};
-use resources::models::{kanji::Kanji, words::Word};
+use resources::models::words::Word;
+use types::jotoba::kanji::Kanji;
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct WordResult {

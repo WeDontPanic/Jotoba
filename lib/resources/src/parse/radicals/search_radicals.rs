@@ -3,7 +3,9 @@ use std::{
     io::{BufRead, BufReader},
 };
 
-use crate::{models::kanji::SearchRadical, parse::error::Error};
+use types::jotoba::kanji::SearchRadical;
+
+use crate::parse::error::Error;
 
 /// Parses a search radicals file
 pub fn parse(path: &str) -> Result<impl Iterator<Item = SearchRadical>, Error> {

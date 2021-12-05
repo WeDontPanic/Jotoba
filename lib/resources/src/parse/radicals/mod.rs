@@ -1,8 +1,8 @@
 pub mod search_radicals;
 
+use types::jotoba::kanji::DetailedRadical;
 use utils::to_option;
 
-use crate::models::kanji::DetailedRadical;
 use std::{
     fs::File,
     io::{BufRead, BufReader},

@@ -4,8 +4,8 @@ use bktree::BkTree;
 use config::Config;
 use log::info;
 use once_cell::sync::OnceCell;
-use resources::models::kanji::SearchRadicalInfo;
 use serde::{Deserialize, Serialize};
+use types::jotoba::kanji::SearchRadicalInfo;
 
 /// Radicals indexed by its meanings
 #[derive(Serialize, Deserialize)]

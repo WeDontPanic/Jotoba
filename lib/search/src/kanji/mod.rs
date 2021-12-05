@@ -3,11 +3,11 @@ pub mod result;
 mod tag_only;
 
 use itertools::Itertools;
-use resources::models::kanji::Kanji;
 use result::Item;
 
 use error::Error;
 use japanese::JapaneseExt;
+use types::jotoba::kanji::Kanji;
 
 use crate::{
     engine::{
