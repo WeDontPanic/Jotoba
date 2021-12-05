@@ -10,6 +10,7 @@ pub mod index;
 pub mod news;
 mod pagination;
 pub mod search_ep;
+pub mod search_help;
 mod session;
 pub mod templ_utils;
 mod url_query;
@@ -25,15 +26,14 @@ use localization::{
     TranslationDict,
 };
 use pagination::Pagination;
-use resources::{
-    models::names::Name, news::NewsEntry, parse::jmdict::languages::Language as ResLanguage,
-};
-use search::{engine::guess::Guess, query::Query, sentence::result::SentenceResult};
+use resources::{models::names::Name, news::NewsEntry};
+use search::{query::Query, sentence::result::SentenceResult};
 
 use search::{
     kanji::result::Item as KanjiItem, query::UserSettings, query_parser::QueryType,
     word::result::WordResult,
 };
+use search_help::SearchHelp;
 
 /// Data for the base template
 pub struct BaseData<'a> {
@@ -72,55 +72,7 @@ pub enum ResultData {
     Sentence(SentenceResult),
 }
 
-/// Structure containing information for better search help in case no item was
-/// found in a search
-#[derive(Clone, Default, Debug)]
-pub struct SearchHelp {
-    words: Option<Guess>,
-    names: Option<Guess>,
-    sentences: Option<Guess>,
-    kanji: Option<Guess>,
-    other_langs: Vec<ResLanguage>,
-}
-
-impl SearchHelp {
-    /// Returns `true` if `SearchHelp` is not helpful at all (empty)
-    pub fn is_empty(&self) -> bool {
-        self.iter_items().next().is_none()
-    }
-
-    /// Returns an iterator over all (QueryType, Guess) pairs that have a value
-    pub fn iter_items(&self) -> impl Iterator<Item = (QueryType, Guess)> {
-        let types = &[
-            (self.words, QueryType::Words),
-            (self.names, QueryType::Names),
-            (self.sentences, QueryType::Sentences),
-            (self.kanji, QueryType::Kanji),
-        ];
-
-        types
-            .iter()
-            .filter_map(|i| i.0.is_some().then(|| (i.1, i.0.unwrap())))
-            .filter(|i| i.1.value != 0)
-            .collect::<Vec<_>>()
-            .into_iter()
-    }
-
-    pub fn iter_langs(&self) -> impl Iterator<Item = (ResLanguage, &'static str)> + '_ {
-        self.other_langs
-            .iter()
-            .map(|lang| (*lang, lang.to_query_format()))
-    }
-}
-
 impl<'a> BaseData<'a> {
-    #[inline]
-    pub fn get_search_help(&self) -> Option<&SearchHelp> {
-        let help = self.site.as_search_result()?.search_help.as_ref()?;
-        println!("{}", help.is_empty());
-        (!help.is_empty()).then(|| help)
-    }
-
     #[inline]
     pub fn new(
         dict: &'a TranslationDict,
@@ -174,6 +126,12 @@ impl<'a> BaseData<'a> {
     #[inline]
     pub fn with_pages(&mut self, items: u32, curr_page: u32) {
         self.with_cust_pages(items, curr_page, self.user_settings.page_size, 100);
+    }
+
+    #[inline]
+    pub fn get_search_help(&self) -> Option<&SearchHelp> {
+        let help = self.site.as_search_result()?.search_help.as_ref()?;
+        (!help.is_empty()).then(|| help)
     }
 
     #[inline]
@@ -272,6 +230,30 @@ impl ResultData {
             ResultData::KanjiInfo(k) => k.is_empty(),
             ResultData::Name(n) => n.is_empty(),
             ResultData::Sentence(s) => s.items.is_empty(),
+        }
+    }
+}
+
+impl<'a> SearchResult<'a> {
+    pub(crate) fn og_tag_info(&self) -> String {
+        format!("{} results. See more...", self.result_count())
+    }
+
+    pub(crate) fn search_type_ogg(&self) -> &'static str {
+        match self.result {
+            ResultData::Word(_) => "words",
+            ResultData::KanjiInfo(_) => "kanji",
+            ResultData::Sentence(_) => "sentences",
+            ResultData::Name(_) => "names",
+        }
+    }
+
+    fn result_count(&self) -> usize {
+        match &self.result {
+            ResultData::Word(w) => w.count,
+            ResultData::KanjiInfo(k) => k.len(),
+            ResultData::Name(n) => n.len(),
+            ResultData::Sentence(s) => s.items.len(),
         }
     }
 }
