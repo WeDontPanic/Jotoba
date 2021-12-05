@@ -95,6 +95,8 @@ pub(super) async fn start() -> std::io::Result<()> {
                             .header(ACCESS_CONTROL_ALLOW_HEADERS, "Content-Type"),
                     )
                     .wrap(Compat::new(Compress::default()))
+                    .route("/", actixweb::get().to(docs))
+                    .default_service(actix_web::Route::new().to(docs))
                     .service(
                         actixweb::scope("search")
                             .route("words", actixweb::post().to(api::search::word::word_search))
