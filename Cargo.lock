@@ -292,6 +292,7 @@ dependencies = [
  "search",
  "serde",
  "strsim 0.10.0",
+ "types",
  "utils",
 ]
 
@@ -1024,6 +1025,7 @@ dependencies = [
  "search",
  "sentry",
  "serde",
+ "types",
  "utils",
 ]
 
@@ -2153,6 +2155,7 @@ dependencies = [
  "sorted_intersection",
  "strum",
  "strum_macros",
+ "types",
  "utils",
  "utilsrs",
 ]
@@ -2259,6 +2262,7 @@ dependencies = [
  "serde",
  "strsim 0.10.0",
  "tinysegmenter",
+ "types",
  "utils",
  "vector_space_model",
 ]
@@ -2912,6 +2916,7 @@ version = "0.1.0"
 dependencies = [
  "bitflags 0.1.0",
  "jp_inflections",
+ "localization",
  "romaji",
  "serde",
  "strum",

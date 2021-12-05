@@ -13,3 +13,15 @@ romaji = "0.1.1"
 utilsrs = { git = "https://github.com/JojiiOfficial/utilsrs", features = ["vectools"]}
 jp_inflections = { git = "https://github.com/JojiiOfficial/Japanese_Inflections"}
 bitflags = {git = "https://github.com/JojiiOfficial/BitFlags"}
+localization = { path = "../localization", optional = true}
+#localization = { git = "https://github.com/WeDontPanic/Jotoba", optional = true}
+### Note: This sub-crate is not allowed to have dependencies to other Jotoba crates
+
+[features]
+# This feature adds stuff required for Jotoba to work but not necessarily for extern crates, so its made optional
+jotoba_intern = [ "localization" ]
+
+# Contains raw types of JMdict, KanjiDict, ... which are only required to parse but not directly used by Jotoba
+raw_types = []
+
+default = ["raw_types"]

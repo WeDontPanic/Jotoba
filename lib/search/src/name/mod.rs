@@ -16,7 +16,7 @@ use super::query::Query;
 use error::Error;
 
 use japanese::JapaneseExt;
-use resources::models::names::Name;
+use types::jotoba::names::Name;
 use utils::to_option;
 
 /// Search for names

@@ -5,11 +5,11 @@ use crate::parse::jmdict::{
     languages::Language,
     misc::Misc,
     part_of_speech::{PartOfSpeech, PosSimple},
-    Gairaigo,
 };
 use itertools::Itertools;
 use localization::{language::Language as LocLanguage, traits::Translatable, TranslationDict};
 use serde::{Deserialize, Serialize};
+use types::raw::jmdict::Gairaigo;
 
 /// A single sense for a word. Represents one language,
 /// one misc item and 1..n glosses

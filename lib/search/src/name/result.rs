@@ -1,6 +1,6 @@
 use itertools::Itertools;
 use localization::{language::Language, traits::Translatable, TranslationDict};
-use resources::models::names::Name;
+use types::jotoba::names::Name;
 
 use crate::engine::result::SearchResult;
 

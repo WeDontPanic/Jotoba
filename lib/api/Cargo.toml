@@ -27,6 +27,7 @@ futures = "0.3.18"
 leptess = { version = "0.13.1", optional = true }
 regex = "1.5.4"
 rayon = "*"
+types = { path = "../types" , default-features = false}
 
 [features]
 default = []

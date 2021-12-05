@@ -8,87 +8,29 @@ pub mod misc;
 pub mod part_of_speech;
 pub mod priority;
 
-use std::str::FromStr;
-use std::{collections::HashMap, convert::TryFrom, str};
-use std::{fmt::Display, io::BufRead};
+use std::{
+    collections::HashMap,
+    convert::TryFrom,
+    fmt::Display,
+    io::BufRead,
+    str::{self, FromStr},
+};
 
-use quick_xml::events::{attributes::Attributes, Event};
-use quick_xml::Reader;
+use quick_xml::{
+    events::{attributes::Attributes, Event},
+    Reader,
+};
 use regex::Regex;
-
-use dialect::Dialect;
-use field::Field;
-use gtype::GType;
-use information::Information;
-use languages::Language;
-use misc::Misc;
-use part_of_speech::PartOfSpeech;
-use priority::Priority;
-use serde::{Deserialize, Serialize};
+use types::jotoba::{
+    languages::Language,
+    words::{
+        dialect::Dialect, field::Field, foreign_language::ForeignLanguage, gtype::GType,
+        information::Information, misc::Misc, part_of_speech::PartOfSpeech, priority::Priority,
+    },
+};
+use types::raw::jmdict::{Entry, EntryElement, EntrySense, Gairaigo, GlossValue};
 
 use crate::parse::{error::Error, parser::Parse};
-
-use self::foreign_language::ForeignLanguage;
-
-/// An dict entry. Represents one word, phrase or expression
-#[derive(Debug, Default, Clone)]
-pub struct Entry {
-    pub sequence: u32,
-    /// Different readings of a word
-    pub elements: Vec<EntryElement>,
-    /// Translations into various languages
-    pub senses: Vec<EntrySense>,
-}
-
-/// A single element for an entry. Defines reading, kanji and additional
-/// information for the japanese word
-#[derive(Debug, Default, Clone)]
-pub struct EntryElement {
-    /// Is kanji reading
-    pub kanji: bool,
-    /// The reading
-    pub value: String,
-    pub priorities: Vec<Priority>,
-    pub reading_info: Vec<Information>,
-    pub no_true_reading: bool,
-}
-
-/// A single 'sense' item for an entry
-#[derive(Debug, Default, Clone)]
-pub struct EntrySense {
-    pub id: u8,
-    pub glosses: Vec<GlossValue>,
-    pub misc: Option<Misc>,
-    pub part_of_speech: Vec<PartOfSpeech>,
-    pub antonym: Option<String>,
-    pub field: Option<Field>,
-    pub xref: Option<String>,
-    pub dialect: Option<Dialect>,
-    pub information: Option<String>,
-    pub gairaigo: Option<Gairaigo>,
-    pub example_sentence: Option<u32>,
-}
-
-#[derive(Debug, Default, Clone, PartialEq, Deserialize, Serialize, Hash)]
-pub struct Translation {
-    pub language: Language,
-    pub value: String,
-}
-
-#[derive(Debug, Default, Clone, PartialEq, Deserialize, Serialize, Hash)]
-pub struct Gairaigo {
-    pub language: ForeignLanguage,
-    pub fully_derived: bool,
-    pub original: String,
-}
-
-/// A single gloss entry.
-#[derive(Debug, Clone, PartialEq)]
-pub struct GlossValue {
-    pub language: Language,
-    pub g_type: Option<GType>,
-    pub value: String,
-}
 
 /// A jmdict parser
 pub struct Parser<R>
@@ -219,7 +161,7 @@ where
 
                     // Clear necessary items for new usage
                     if tag == Tag::KEle || tag == Tag::REle {
-                        element.clear();
+                        clear_entry_element(&mut element);
                     }
                     if tag == Tag::Sense {
                         sense.clear();
@@ -314,7 +256,7 @@ where
                             }
 
                             // Other
-                            _ => entry.apply_tag(tag, value)?,
+                            _ => entry_apply_tag(&mut entry, tag, value)?,
                         }
                     }
                 }
@@ -336,55 +278,21 @@ where
     }
 }
 
-impl Entry {
-    /// Apply a given Tag to the Entry
-    fn apply_tag(&mut self, tag: &Tag, value: String) -> Result<(), Error> {
-        #[allow(clippy::collapsible_match)]
-        match *tag {
-            Tag::EntSeq => self.sequence = value.parse()?,
-            _ => (),
-        }
-        Ok(())
+/// Apply a given Tag to the Entry
+fn entry_apply_tag(entry: &mut Entry, tag: &Tag, value: String) -> Result<(), Error> {
+    #[allow(clippy::collapsible_match)]
+    match *tag {
+        Tag::EntSeq => entry.sequence = value.parse()?,
+        _ => (),
     }
+    Ok(())
 }
 
-impl EntryElement {
-    #[inline]
-    fn clear(&mut self) {
-        self.kanji = false;
-        self.value.clear();
-        self.priorities.clear();
-        self.reading_info.clear();
-    }
-}
-
-impl EntrySense {
-    fn clear(&mut self) {
-        self.glosses.clear();
-
-        if let Some(ref mut ant) = self.antonym {
-            ant.clear();
-            self.antonym = None;
-        }
-
-        if let Some(ref mut information) = self.information {
-            information.clear();
-            self.information = None;
-        }
-
-        if let Some(ref mut xref) = self.xref {
-            xref.clear();
-            self.xref = None;
-        }
-
-        self.field = None;
-        self.dialect = None;
-        self.misc = None;
-        self.part_of_speech.clear();
-        self.example_sentence = None;
-        self.gairaigo = None;
-        //self.id = 0;
-    }
+fn clear_entry_element(element: &mut EntryElement) {
+    element.kanji = false;
+    element.value.clear();
+    element.priorities.clear();
+    element.reading_info.clear();
 }
 
 /// An XML tag
@@ -422,39 +330,37 @@ enum Tag {
     Unknown, // Parsing error
 }
 
-impl GlossValue {
-    pub fn new(attributes: Option<Attributes>) -> Self {
-        let (g_type, language) = {
-            attributes
-                .map(|attributes| {
-                    let map = attributes
-                        .into_iter()
-                        .filter(|i| i.is_ok())
-                        .map(|i| i.unwrap())
-                        .map(|i| {
-                            (
-                                String::from_utf8(i.key.to_vec()).unwrap(),
-                                String::from_utf8(i.value.to_vec()).unwrap(),
-                            )
-                        })
-                        .collect::<HashMap<String, String>>();
+pub fn new_gloss_value(attributes: Option<Attributes>) -> GlossValue {
+    let (g_type, language) = {
+        attributes
+            .map(|attributes| {
+                let map = attributes
+                    .into_iter()
+                    .filter(|i| i.is_ok())
+                    .map(|i| i.unwrap())
+                    .map(|i| {
+                        (
+                            String::from_utf8(i.key.to_vec()).unwrap(),
+                            String::from_utf8(i.value.to_vec()).unwrap(),
+                        )
+                    })
+                    .collect::<HashMap<String, String>>();
 
-                    (
-                        map.get("g_type")
-                            .and_then(|gtype| GType::from_str(gtype.as_str()).ok()),
-                        map.get("xml:lang")
-                            .map(|i| Language::from_str(i.as_str()).unwrap_or(Language::English))
-                            .unwrap_or(Language::English),
-                    )
-                })
-                .unwrap_or((None, Language::English))
-        };
+                (
+                    map.get("g_type")
+                        .and_then(|gtype| GType::from_str(gtype.as_str()).ok()),
+                    map.get("xml:lang")
+                        .map(|i| Language::from_str(i.as_str()).unwrap_or(Language::English))
+                        .unwrap_or(Language::English),
+                )
+            })
+            .unwrap_or((None, Language::English))
+    };
 
-        GlossValue {
-            value: String::default(),
-            language,
-            g_type,
-        }
+    GlossValue {
+        value: String::default(),
+        language,
+        g_type,
     }
 }
 
@@ -483,7 +389,7 @@ impl Tag {
             "misc" => Tag::Misc,
             "lsource" => Tag::LSource(parse_gairaigo(attributes)),
             "dial" => Tag::Dialect,
-            "gloss" => Tag::Gloss(GlossValue::new(attributes)),
+            "gloss" => Tag::Gloss(new_gloss_value(attributes)),
             "pri" => Tag::Pri,
             "example" => Tag::Example,
             "ex_text" => Tag::ExampleText,

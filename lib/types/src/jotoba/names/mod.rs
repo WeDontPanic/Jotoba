@@ -1,5 +1,8 @@
-use crate::parse::jmnedict::name_type::NameType;
+pub mod name_type;
+
 use serde::{Deserialize, Serialize};
+
+use self::name_type::NameType;
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Name {

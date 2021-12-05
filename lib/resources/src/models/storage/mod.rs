@@ -19,13 +19,13 @@ use self::{
 };
 use super::{
     kanji::{DetailedRadical, Kanji},
-    names::Name,
     sentences::Sentence,
     suggestions::{foreign_words::ForeignSuggestion, native_words::NativeSuggestion},
     words::Word,
     DictResources,
 };
 use std::{collections::HashMap, fs::File};
+use types::jotoba::names::Name;
 
 pub type WordStorage = IntMap<Word>;
 type NameStorage = IntMap<Name>;

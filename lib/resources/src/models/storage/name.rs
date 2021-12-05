@@ -1,4 +1,4 @@
-use crate::models::names::Name;
+use types::jotoba::names::Name;
 
 use super::ResourceStorage;
 

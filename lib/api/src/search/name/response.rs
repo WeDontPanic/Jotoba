@@ -1,5 +1,5 @@
-use resources::{models::names, parse::jmnedict::name_type::NameType};
 use serde::Serialize;
+use types::jotoba::names::{self, name_type::NameType};
 
 #[derive(Serialize)]
 pub struct Response {

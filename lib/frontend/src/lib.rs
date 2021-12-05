@@ -26,7 +26,7 @@ use localization::{
     TranslationDict,
 };
 use pagination::Pagination;
-use resources::{models::names::Name, news::NewsEntry};
+use resources::news::NewsEntry;
 use search::{query::Query, sentence::result::SentenceResult};
 
 use search::{
@@ -34,6 +34,7 @@ use search::{
     word::result::WordResult,
 };
 use search_help::SearchHelp;
+use types::jotoba::names::Name;
 
 /// Data for the base template
 pub struct BaseData<'a> {

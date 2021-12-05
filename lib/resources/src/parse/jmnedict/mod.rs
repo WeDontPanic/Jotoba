@@ -6,10 +6,10 @@ use std::{
     str::{self, FromStr},
 };
 
-use name_type::NameType;
 use quick_xml::{events::Event, Reader};
 use regex::Regex;
 use strum_macros::Display;
+use types::{jotoba::names::name_type::NameType, raw::jmnedict::NameEntry};
 
 use crate::parse::{error::Error, parser::Parse};
 
@@ -155,7 +155,7 @@ where
                             &self.entity_mappings,
                         )?;
 
-                        entry.apply_tag(tag, value)?;
+                        entry_apply_tag(&mut entry, tag, value)?;
                     }
                 }
 
@@ -167,39 +167,26 @@ where
     }
 }
 
-/// An dict entry. Represents one word, phrase or expression
-#[derive(Default)]
-pub struct NameEntry {
-    pub sequence: i32,
-    pub kana_element: String,
-    pub kanji_element: Option<String>,
-    pub transcription: String,
-    pub name_type: Option<Vec<NameType>>,
-    pub xref: Option<String>,
-}
+/// Apply a given Tag to the Entry
+fn entry_apply_tag(entry: &mut NameEntry, tag: &Tag, value: String) -> Result<(), Error> {
+    match *tag {
+        Tag::Sequence => entry.sequence = value.parse()?,
+        Tag::Transcription => entry.transcription = value,
+        Tag::Xref => entry.xref = Some(value),
+        Tag::KanjiB => entry.kanji_element = Some(value),
+        Tag::ReadingB => entry.kana_element = value,
+        Tag::NameType => {
+            let nt = NameType::from_str(&value)?;
 
-impl NameEntry {
-    /// Apply a given Tag to the Entry
-    fn apply_tag(&mut self, tag: &Tag, value: String) -> Result<(), Error> {
-        match *tag {
-            Tag::Sequence => self.sequence = value.parse()?,
-            Tag::Transcription => self.transcription = value,
-            Tag::Xref => self.xref = Some(value),
-            Tag::KanjiB => self.kanji_element = Some(value),
-            Tag::ReadingB => self.kana_element = value,
-            Tag::NameType => {
-                let nt = NameType::from_str(&value)?;
-
-                if let Some(ref mut arr) = self.name_type {
-                    arr.push(nt);
-                } else {
-                    self.name_type = Some(vec![nt]);
-                }
+            if let Some(ref mut arr) = entry.name_type {
+                arr.push(nt);
+            } else {
+                entry.name_type = Some(vec![nt]);
             }
-            _ => (),
         }
-        Ok(())
+        _ => (),
     }
+    Ok(())
 }
 
 /// An XML tag

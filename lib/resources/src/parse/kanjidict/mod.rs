@@ -4,6 +4,7 @@ use quick_xml::{
     events::{attributes::Attributes, Event},
     Reader,
 };
+use types::raw::kanjidict::Character;
 
 use crate::parse::{error::Error, parser::Parse};
 
@@ -136,7 +137,7 @@ where
                 Event::Text(text) => {
                     if let Some(tag) = stack.last() {
                         let value = text.unescape_and_decode(&self.reader)?;
-                        character.apply_tag(tag, value)?;
+                        character_apply_tag(&mut character, tag, value)?;
                     }
                 }
 
@@ -148,62 +149,41 @@ where
     }
 }
 
-/// An kanji character. Represents one Kanji
-#[derive(Default, Clone, Debug)]
-pub struct Character {
-    pub literal: char,
-    pub on_readings: Vec<String>,
-    pub kun_readings: Vec<String>,
-    pub chinese_readings: Vec<String>,
-    pub korean_romanized: Vec<String>,
-    pub korean_hangul: Vec<String>,
-    pub meaning: Vec<String>,
-    pub grade: Option<u8>,
-    pub stroke_count: u8,
-    pub variant: Vec<String>,
-    pub frequency: Option<u16>,
-    pub jlpt: Option<u8>,
-    pub natori: Vec<String>,
-    pub radical: Option<i32>,
-}
-
-impl Character {
-    /// Apply a given Tag to the Entry
-    fn apply_tag(&mut self, tag: &Tag, value: String) -> Result<(), Error> {
-        match *tag {
-            Tag::Literal => {
-                // Its always only one char
-                self.literal = value.chars().into_iter().next().unwrap()
-            }
-            Tag::Jlpt => self.jlpt = Some(value.parse()?),
-            Tag::Grade => self.grade = Some(value.parse()?),
-            Tag::StrokeCount => self.stroke_count = value.parse()?,
-            Tag::Variant => self.variant.push(value),
-            Tag::Frequency => self.frequency = Some(value.parse()?),
-            Tag::Nanori => self.natori.push(value),
-            Tag::Meaning(is_jp) => {
-                if is_jp {
-                    self.meaning.push(value)
-                }
-            }
-            Tag::RadValue(v) => {
-                if v && self.radical.is_none() {
-                    self.radical = value.parse().ok();
-                }
-            }
-
-            Tag::Reading(ref r) => match r {
-                ReadingType::JapaneseOn => self.on_readings.push(value),
-                ReadingType::JapaneseKun => self.kun_readings.push(value),
-                ReadingType::KoreanRomanized => self.korean_romanized.push(value),
-                ReadingType::KoreanHangul => self.korean_hangul.push(value),
-                ReadingType::Chinese => self.chinese_readings.push(value),
-                _ => (),
-            },
-            _ => (),
+/// Apply a given Tag to the Entry
+fn character_apply_tag(element: &mut Character, tag: &Tag, value: String) -> Result<(), Error> {
+    match *tag {
+        Tag::Literal => {
+            // Its always only one char
+            element.literal = value.chars().into_iter().next().unwrap()
         }
-        Ok(())
+        Tag::Jlpt => element.jlpt = Some(value.parse()?),
+        Tag::Grade => element.grade = Some(value.parse()?),
+        Tag::StrokeCount => element.stroke_count = value.parse()?,
+        Tag::Variant => element.variant.push(value),
+        Tag::Frequency => element.frequency = Some(value.parse()?),
+        Tag::Nanori => element.natori.push(value),
+        Tag::Meaning(is_jp) => {
+            if is_jp {
+                element.meaning.push(value)
+            }
+        }
+        Tag::RadValue(v) => {
+            if v && element.radical.is_none() {
+                element.radical = value.parse().ok();
+            }
+        }
+
+        Tag::Reading(ref r) => match r {
+            ReadingType::JapaneseOn => element.on_readings.push(value),
+            ReadingType::JapaneseKun => element.kun_readings.push(value),
+            ReadingType::KoreanRomanized => element.korean_romanized.push(value),
+            ReadingType::KoreanHangul => element.korean_hangul.push(value),
+            ReadingType::Chinese => element.chinese_readings.push(value),
+            _ => (),
+        },
+        _ => (),
     }
+    Ok(())
 }
 
 /// An XML tag

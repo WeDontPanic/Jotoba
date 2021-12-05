@@ -26,6 +26,7 @@ sorted_intersection = "1.2.0"
 bitflags = {git = "https://github.com/JojiiOfficial/BitFlags"}
 intmap = { git = "https://github.com/JojiiOfficial/rust-intmap"}
 comrak = { version = "0.12.1", default-features = false }
+types = { path = "../types" , features = ["raw_types", "jotoba_intern"]}
 
 [lib]
 name = "resources"

@@ -2,7 +2,8 @@ use std::cmp::Ordering;
 
 use japanese::JapaneseExt;
 use levenshtein::levenshtein;
-use resources::models::{kanji, names::Name};
+use resources::models::kanji;
+use types::jotoba::names::Name;
 
 /// Represents the ordering for name search
 /// result based on non-native search-input

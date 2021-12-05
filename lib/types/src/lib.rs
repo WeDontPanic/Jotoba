@@ -1,8 +1,6 @@
-#[cfg(test)]
-mod tests {
-    #[test]
-    fn it_works() {
-        let result = 2 + 2;
-        assert_eq!(result, 4);
-    }
-}
+#[cfg(feature = "raw_types")]
+/// Contains raw data structures used for parsing and generating the 'real' resources
+pub mod raw;
+
+/// Contains all information holding structures for jotoba resources
+pub mod jotoba;
