@@ -2919,11 +2919,9 @@ dependencies = [
  "japanese",
  "jp_inflections",
  "localization",
- "romaji",
  "serde",
  "strum",
  "strum_macros",
- "utilsrs",
 ]
 
 [[package]]

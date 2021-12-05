@@ -1,4 +1,3 @@
-// TODO: remove duplicate code if everything is properly implemented
 #![allow(dead_code)]
 
 pub mod engine;

@@ -43,14 +43,10 @@ impl Sentence {
         language: Language,
         allow_english: bool,
     ) -> Option<Self> {
-        /*
-         Todo: aaaaa
         let mut translation = s.get_translations(language);
         if translation.is_none() && allow_english {
             translation = s.get_translations(Language::English);
         }
-        */
-        let translation = Some("");
         Some(Self {
             translation: translation?.to_string(),
             content: s.japanese,

@@ -75,12 +75,9 @@ fn sort_fn<T: SearchEngine<Output = Sentence> + Send>(
     search_task.set_order_fn(move |sentence, relevance, _, _| {
         let mut rel = (relevance * 1000f32) as usize;
 
-        /*
-           TODO: aaaaa
         if sentence.has_translation(query.settings.user_lang) {
             rel += 550;
         }
-        */
 
         if japanese && sentence.japanese.contains(&query.query) {
             rel += 900;
@@ -99,12 +96,8 @@ fn lang_filter<T: SearchEngine<Output = Sentence> + Send>(
     let show_english = query.settings.show_english;
 
     search_task.set_result_filter(move |sentence| {
-        /*
-         TODO: aaaaa
         sentence.has_translation(lang)
             || (show_english && sentence.has_translation(Language::English))
-            */
-        true
     })
 }
 

@@ -25,7 +25,7 @@ use japanese::jp_parsing::{InputTextParser, ParseResult, WordItem};
 use types::jotoba::{
     kanji::Kanji,
     languages::Language,
-    words::{part_of_speech::PosSimple, Word},
+    words::{filter_languages, part_of_speech::PosSimple, Word},
 };
 use utils::to_option;
 
@@ -250,14 +250,11 @@ impl<'a> Search<'a> {
 
         let mut wordresults = res.item_iter().cloned().collect::<Vec<_>>();
 
-        /*
-         * TODO: aaaaaa
         filter_languages(
             wordresults.iter_mut(),
             self.query.settings.user_lang,
             self.query.settings.show_english,
         );
-        */
 
         Ok(ResultData {
             count,
@@ -347,13 +344,11 @@ impl<'a> Search<'a> {
 
         let mut wordresults = res.item_iter().cloned().collect::<Vec<_>>();
 
-        /* TODO: aaaaa
         filter_languages(
             wordresults.iter_mut(),
             self.query.get_lang_with_override(),
             self.query.settings.show_english,
         );
-        */
 
         Ok(ResultData {
             count,

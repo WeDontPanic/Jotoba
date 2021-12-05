@@ -178,7 +178,7 @@
                       <li disabled class="mdl-menu__item dot-menu" style="height: 10px;"><hr style="margin: 0px; margin-top: 5px;"></li>
                     }
 
-                    @if let Some(intransitive) = word.get_intransitive_counterpart() {
+                    @if let Some(intransitive) = get_intransitive_counterpart(&word) {
                       <li class="info-entry noselect umami--click--intransitive-button" class="mdl-menu__item"> 
                         <div class="transitivitySvg"></div>
                         <span class="info-dropdown-txt"><a class="no-highlight" draggable="false" href="/search/@intransitive.get_reading().reading">@data.gettext("Intransitive word")</a></span>
@@ -186,7 +186,7 @@
                       <li disabled class="mdl-menu__item dot-menu" style="height: 10px;"><hr style="margin: 0px; margin-top: 5px;"></li>
                     }
 
-                    @if let Some(transitive) = word.get_transitive_counterpart() {
+                    @if let Some(transitive) = get_transitive_counterpart(&word) {
                       <li class="info-entry noselect umami--click--transitive-button" class="mdl-menu__item">
                         <div class="transitivitySvg"></div>
                         <span class="info-dropdown-txt"><a class="no-highlight" draggable="false" href="/search/@transitive.get_reading().reading">@data.gettext("Transitive word")</a></span> 
@@ -317,7 +317,7 @@
                         <h3 class="info-h3">@data.gettext("Collocations")</h3>
                         <table class="table collocation">
                           <tbody>
-                            @for collocation in word.get_collocations(data.user_settings.user_lang, data.user_settings.show_english) {
+                            @for collocation in get_collocations(&word, data.user_settings.user_lang, data.user_settings.show_english) {
                               <tr>
                                   <th scope="row"><a class="clickable no-align green" href="/search/@collocation.0">@collocation.0</a></th>
                                   <td>@collocation.1</td>

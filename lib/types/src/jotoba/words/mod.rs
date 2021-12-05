@@ -213,24 +213,6 @@ impl Word {
         inflection::of_word(self)
     }
 
-    #[inline]
-    pub fn get_transitive_counterpart(&self) -> Option<Word> {
-        /*
-        let seq_id = self.transive_verion.as_ref()?;
-        crate::get().words().by_sequence(*seq_id).cloned()
-        */
-        None
-    }
-
-    #[inline]
-    pub fn get_intransitive_counterpart(&self) -> Option<Word> {
-        /*
-        let seq_id = self.intransive_verion.as_ref()?;
-        crate::get().words().by_sequence(*seq_id).cloned()
-        */
-        None
-    }
-
     /// Returns `true` if the word has at least one sentence in the given language
     #[inline]
     pub fn has_sentence(&self, language: Language) -> bool {
@@ -282,53 +264,6 @@ impl Word {
     #[inline]
     pub fn has_collocations(&self) -> bool {
         self.collocations.is_some()
-    }
-
-    /// Returns a list of all collocations of a word
-    pub fn get_collocations(
-        &self,
-        language: Language,
-        show_english: bool,
-    ) -> Vec<(String, String)> {
-        if !self.has_collocations() {
-            return vec![];
-        }
-
-        /*
-        let word_storage = crate::get().words();
-
-        let mut words = self
-            .collocations
-            .as_ref()
-            .unwrap()
-            .iter()
-            .filter_map(|i| word_storage.by_sequence(*i))
-            .cloned()
-            .collect::<Vec<_>>();
-
-        filter_languages(words.iter_mut(), language, show_english);
-
-        words
-            .into_iter()
-            .map(|word| {
-                let senses: Vec<String> = word
-                    .get_senses()
-                    .into_iter()
-                    .flatten()
-                    .take(5)
-                    .map(|i| i.glosses)
-                    .flatten()
-                    .map(|i| i.gloss)
-                    .collect();
-
-                let reading = word.reading.kanji.unwrap_or(word.reading.kana).reading;
-
-                (reading, senses.join(", "))
-            })
-            .collect()
-            */
-        // TODO: aaaa
-        vec![]
     }
 
     /// Returns an iterator over all reading elements

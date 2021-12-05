@@ -113,14 +113,11 @@ fn words_with_kanji_reading(
     let len = res.len();
     let mut words = res.item_iter().cloned().collect::<Vec<_>>();
 
-    /*
-     * TODO: aaaaa
     super::filter_languages(
         words.iter_mut(),
         query.settings.user_lang,
         query.settings.show_english,
     );
-    */
 
     Ok((words, len))
 }
