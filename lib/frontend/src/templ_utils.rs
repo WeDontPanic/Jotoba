@@ -1,4 +1,4 @@
-use resources::{models::words::Word, parse::jmdict::languages::Language};
+use resources::{models::words::Word, types::jotoba::languages::Language};
 
 use crate::BaseData;
 

@@ -1,7 +1,7 @@
 use error::Error;
 use itertools::Itertools;
 use japanese::JapaneseExt;
-use resources::parse::jmdict::languages::Language;
+use resources::types::jotoba::languages::Language;
 use search::engine::{self, SearchTask};
 
 pub fn search(query: &str, language: Language) -> Vec<char> {

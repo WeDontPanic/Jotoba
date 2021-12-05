@@ -1,9 +1,8 @@
 use std::{error::Error, path::Path, str::FromStr};
 
-use crate::{
-    models::storage::{suggestion::SuggestionDictionary, SuggestionData},
-    parse::jmdict::languages::Language,
-};
+use types::jotoba::languages::Language;
+
+use crate::models::storage::{suggestion::SuggestionDictionary, SuggestionData};
 
 pub(crate) fn load<P: AsRef<Path>>(
     suggestion_path: P,

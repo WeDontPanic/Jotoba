@@ -1,4 +1,4 @@
-use resources::parse::jmdict::languages::Language;
+use resources::types::jotoba::languages::Language;
 use search::sentence;
 use sentence::result;
 use serde::Serialize;

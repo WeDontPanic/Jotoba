@@ -1,4 +1,4 @@
-use resources::parse::jmdict::languages::Language as ResLanguage;
+use resources::types::jotoba::languages::Language as ResLanguage;
 use search::{engine::guess::Guess, query_parser::QueryType};
 
 /// Structure containing information for better search help in case no item was

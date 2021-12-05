@@ -7,8 +7,8 @@ pub mod word;
 use intmap::IntMap;
 use once_cell::sync::Lazy;
 
-use crate::parse::jmdict::languages::Language;
 use serde::{Deserialize, Serialize};
+use types::jotoba::languages::Language;
 
 use self::{
     kanji::KanjiRetrieve,

@@ -1,5 +1,5 @@
 use japanese::furigana::SentencePartRef;
-use resources::{models::words::Sense, parse::jmdict::languages::Language};
+use resources::{models::words::Sense, types::jotoba::languages::Language};
 use types::jotoba::sentences::Sentence;
 
 /// Returns the example sentence of a sense if available

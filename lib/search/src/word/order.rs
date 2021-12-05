@@ -249,7 +249,7 @@ pub fn get_query_pos_in_gloss(
 struct FindResult {
     mode: SearchMode,
     case_ignored: bool,
-    language: resources::parse::jmdict::languages::Language,
+    language: resources::types::jotoba::languages::Language,
     pos: usize,
     gloss: String,
     in_parentheses: bool,

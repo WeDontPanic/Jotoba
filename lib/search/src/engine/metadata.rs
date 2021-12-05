@@ -1,7 +1,7 @@
 use std::{convert::TryFrom, io::Read};
 
 use byteorder::{ByteOrder, ReadBytesExt, WriteBytesExt};
-use resources::parse::jmdict::languages::Language;
+use types::jotoba::languages::Language;
 use vector_space_model::{
     metadata::IndexVersion,
     traits::{Decodable, Encodable},

@@ -2,7 +2,7 @@ use std::io::Read;
 
 use bitflags::BitFlag;
 use byteorder::{ByteOrder, ReadBytesExt};
-use resources::parse::jmdict::languages::Language;
+use types::jotoba::languages::Language;
 use vector_space_model::traits::Decodable;
 
 /// A document belongs to a document-vector and contains the seq_ids of all items who represent

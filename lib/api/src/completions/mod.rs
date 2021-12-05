@@ -13,7 +13,7 @@ use config::Config;
 use error::api_error::RestError;
 use japanese::JapaneseExt;
 use query_parser::QueryType;
-use resources::parse::jmdict::languages::Language;
+use resources::types::jotoba::languages::Language;
 use response::Response;
 use search::{
     query::{Form, Query, QueryLang},

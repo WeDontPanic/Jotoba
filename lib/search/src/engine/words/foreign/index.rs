@@ -3,7 +3,7 @@ use std::{collections::HashMap, error::Error, path::Path};
 use bktree::BkTree;
 use log::{error, info};
 use once_cell::sync::OnceCell;
-use resources::parse::jmdict::languages::Language;
+use resources::types::jotoba::languages::Language;
 use serde::{Deserialize, Serialize};
 
 use crate::engine::{document::MultiDocument, metadata::Metadata};

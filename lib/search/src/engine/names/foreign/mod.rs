@@ -1,8 +1,8 @@
 pub mod index;
 
 use crate::engine::{document::MultiDocument, simple_gen_doc::GenDoc, Indexable, SearchEngine};
-use resources::{models::storage::ResourceStorage, parse::jmdict::languages::Language};
-use types::jotoba::names::Name;
+use resources::models::storage::ResourceStorage;
+use types::jotoba::{languages::Language, names::Name};
 use utils::to_option;
 use vector_space_model::{DefaultMetadata, DocumentVector};
 

@@ -1,12 +1,10 @@
-use crate::{
-    models::{
-        storage::ResourceStorage,
-        suggestions::{foreign_words::ForeignSuggestion, native_words::NativeSuggestion},
-    },
-    parse::jmdict::languages::Language,
+use crate::models::{
+    storage::ResourceStorage,
+    suggestions::{foreign_words::ForeignSuggestion, native_words::NativeSuggestion},
 };
 
 use super::SuggestionDictionary;
+use types::jotoba::languages::Language;
 
 pub struct SuggestionProvider<'a> {
     data: &'a ResourceStorage,

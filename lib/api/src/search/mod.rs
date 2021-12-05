@@ -5,7 +5,7 @@ pub mod word;
 
 use actix_web::web::Json;
 use error::api_error::RestError;
-use resources::parse::jmdict::languages::Language;
+use resources::types::jotoba::languages::Language;
 use search::{
     query::{Query, UserSettings},
     query_parser::{QueryParser, QueryType},

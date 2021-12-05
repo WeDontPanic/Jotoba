@@ -3,7 +3,7 @@ use std::collections::HashMap;
 use config::Config;
 use log::{error, info};
 use once_cell::sync::OnceCell;
-use resources::parse::jmdict::languages::Language;
+use resources::types::jotoba::languages::Language;
 
 use crate::engine::{document::SentenceDocument, metadata::Metadata};
 

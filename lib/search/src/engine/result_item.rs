@@ -1,4 +1,4 @@
-use resources::parse::jmdict::languages::Language;
+use resources::types::jotoba::languages::Language;
 use std::{cmp::Ordering, hash::Hash};
 
 /// A single item (result) in a set of search results
