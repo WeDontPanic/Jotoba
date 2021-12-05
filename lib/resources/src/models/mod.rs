@@ -1,5 +1,3 @@
-pub mod accents;
-pub mod sentences;
 pub mod storage;
 pub mod suggestions;
 pub mod words;

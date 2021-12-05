@@ -1,5 +1,6 @@
+use types::jotoba::accents::PitchItem;
+
 use super::error::Error;
-use crate::models::accents::PitchItem;
 use std::{
     fs::File,
     io::{BufRead, BufReader, Seek, SeekFrom},

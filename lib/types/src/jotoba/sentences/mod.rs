@@ -1,6 +1,7 @@
-use crate::parse::jmdict::languages::Language;
 use bitflags::BitFlag;
 use serde::{Deserialize, Serialize};
+
+use super::languages::Language;
 
 /// A single Sentence with multiple translations.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, Eq, Hash, Default)]
@@ -45,6 +46,7 @@ impl Sentence {
 
     /// Returns the kana reading of a sentence
     #[inline]
+    #[cfg(feature = "jotoba_intern")]
     pub fn get_kana(&self) -> String {
         japanese::furigana::from_str(&self.furigana)
             .map(|i| i.kana)

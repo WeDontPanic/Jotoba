@@ -32,8 +32,12 @@ fn jlpt_search(query: &Query, jlpt: u8) -> Result<SentenceResult, Error> {
 
     let senences = sentence_jlpt
         .filter(|sentence| {
+            /*
+             * TODO: aaaaa
             sentence.has_translation(query.settings.user_lang)
                 && (sentence.has_translation(Language::English) && query.settings.show_english)
+                */
+            true
         })
         .take(10000)
         .collect::<Vec<_>>();

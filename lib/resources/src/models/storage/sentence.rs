@@ -1,4 +1,4 @@
-use crate::models::sentences::Sentence;
+use types::jotoba::sentences::Sentence;
 
 use super::ResourceStorage;
 
