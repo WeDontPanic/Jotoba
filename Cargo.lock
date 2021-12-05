@@ -2138,26 +2138,21 @@ name = "resources"
 version = "0.1.0"
 dependencies = [
  "bincode",
- "bitflags 0.1.0",
  "comrak",
  "eudex",
  "indexed_file",
  "intmap",
  "itertools",
  "japanese",
- "jp_inflections",
- "localization",
  "once_cell",
  "quick-xml",
  "regex",
- "romaji",
  "serde",
  "sorted_intersection",
  "strum",
  "strum_macros",
  "types",
  "utils",
- "utilsrs",
 ]
 
 [[package]]
