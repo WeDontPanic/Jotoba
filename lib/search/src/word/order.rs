@@ -77,19 +77,6 @@ pub fn foreign_search_order(
 ) -> usize {
     let mut score = relevance as f64 * 10.0;
 
-    if word.is_common() {
-        score += 10.0;
-    }
-
-    if word.jlpt_lvl.is_some() {
-        //score += (word.jlpt_lvl.unwrap() * 2) as usize;
-    }
-
-    // Result found within users specified language
-    if language == user_lang {
-        score += 100.0;
-    }
-
     let found = match find_reading(word, query_str) {
         Some(v) => v,
         None => {
@@ -97,18 +84,32 @@ pub fn foreign_search_order(
         }
     };
 
-    if found.sense.language == language {
+    // Each gloss considered in a frequency analysis has been normalized to 1. Thus we require it
+    // to be 1 or more. Otherwise run the fall-back scoring method
+    if found.gloss_full.occurrence >= 1 {
+        // found.sense.language == language &&
         score += found.gloss_full.occurrence as f64;
+    } else {
+        return foreign_search_fall_back(word, relevance, query_str, language, user_lang);
     }
 
     let divisor = match (found.mode, found.case_ignored) {
         (SearchMode::Exact, false) => 130,
-        (SearchMode::Exact, true) => 129,
+        (SearchMode::Exact, true) => 130,
         (_, false) => 10,
         (_, true) => 8,
     };
 
     score *= divisor as f64;
+
+    // Result found within users specified language
+    if language == user_lang {
+        score += 100.0;
+    }
+
+    if word.is_common() {
+        score += 10.0;
+    }
 
     if found.in_parentheses {
         score -= 10f64.min(score);
@@ -118,6 +119,53 @@ pub fn foreign_search_order(
     }
 
     score as usize
+}
+
+pub fn foreign_search_fall_back(
+    word: &Word,
+    relevance: f32,
+    query_str: &str,
+    language: Language,
+    user_lang: Language,
+) -> usize {
+    let mut score: usize = (relevance * 20f32) as usize;
+
+    if word.is_common() {
+        score += 10;
+    }
+
+    if word.jlpt_lvl.is_some() {
+        score += (word.jlpt_lvl.unwrap() * 2) as usize;
+    }
+
+    // Result found within users specified language
+    if language == user_lang {
+        score += 12;
+    }
+
+    let found = match find_reading(word, query_str) {
+        Some(v) => v,
+        None => {
+            return score;
+        }
+    };
+
+    let divisor = match (found.mode, found.case_ignored) {
+        (SearchMode::Exact, false) => 10,
+        (SearchMode::Exact, true) => 10,
+        (_, false) => 50,
+        (_, true) => 80,
+    };
+
+    score += (calc_likeliness(word, &found) / divisor) as usize;
+
+    if found.in_parentheses {
+        score = score.saturating_sub(10);
+    } else {
+        score += 30;
+    }
+
+    score
 }
 
 pub(super) fn kanji_reading_search(
