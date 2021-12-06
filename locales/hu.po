@@ -1,0 +1,1761 @@
+# SINGULAR
+# msgctxt ""
+# msgid ""
+# msgstr ""
+
+# PLURAL
+# msgctxt ""
+# msgid ""
+# msgid_plural ""
+# msgstr[0] ""
+# OPTIONAL: msgstr[1] "" 
+
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"PO-Revision-Date: 2021-11-29 21:47+0100\n"
+"Last-Translator:  <jojii@gmx.net>\n"
+"Language-Team: English\n"
+"Language: en\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "Jotoba"
+msgstr ""
+
+#### Base template
+msgid "Search..."
+msgstr "Keresés..."
+
+msgid "Search"
+msgstr "Keresés"
+
+msgid "Settings"
+msgstr "Beállítások"
+
+msgid "Radicals"
+msgstr "Gyökök"
+
+msgid "Voice"
+msgstr "Hang"
+
+# Rad Help Msg
+msgid "This tool allows you to find Kanji by their core components (Radicals)"
+msgstr "Ezzel az eszközzel rákereshetsz Kanjikra az alkotórészeik alapján (Gyökök)"
+
+msgid "You can select Radicals below and add found Kanji to the search bar"
+msgstr "Alul kiválaszthatod a gyököket és a megtalált kanjit hozzáadhatod a keresősávhoz"
+
+msgid "Enter"
+msgstr ""
+
+msgid "to start searching"
+msgstr "a keresés elkezdéséhez"
+
+# Rad Btns
+
+msgid "Reset"
+msgstr "Visszaállítás"
+
+msgid "reset"
+msgstr "visszaállítás"
+
+msgid "apply"
+msgstr "beállítás"
+
+msgid "create"
+msgstr "létrehozás"
+
+msgid "here"
+msgstr "itt"
+
+msgid "Accept"
+msgstr "Elfogadás"
+
+msgid "Decline"
+msgstr "Visszautasítás"
+
+# Search type / Dropdown
+msgid "Words"
+msgstr "Szavak"
+
+msgid "Kanji"
+msgstr "Kanjik"
+
+msgid "Sentences"
+msgstr "Mondatok"
+
+msgid "Names"
+msgstr "Nevek"
+
+# Speech overlay
+
+msgid "Current language"
+msgstr "Kiválasztott nyelv"
+
+msgid "Currently listening"
+msgstr "Éppen figyel"
+
+msgid "To change your language, select one of the following"
+msgstr "A nyelv megváltoztatásához válaszd ki az egyiket az alábbiak közül"
+
+# Image search overlay
+
+msgid "Enter a URL or upload your image directly and Jotoba will try to search for japanese words contained in the picture."
+msgstr "Írj be egy webcímet vagy tölts fel egy képet közvetlenül és a Jotoba megpróbál rákeresni a szavakra a képen"
+
+msgid "Enter Image URL..."
+msgstr "Add meg a kép címét..."
+
+# Rad Picker overlay
+
+msgid "Select Radicals"
+msgstr "Gyökök Kiválasztása"
+
+msgid "Select Kanji"
+msgstr "Kanji Kiválasztása"
+
+msgid "Search Radicals..."
+msgstr "Gyökök Keresése..."
+
+# Notification overlay
+msgid "Notifications"
+msgstr "Értesítések"
+
+msgid "No new notifications"
+msgstr "Nincs új értesítés"
+
+msgid "Show all"
+msgstr "Mind mutatása"
+
+msgid "Close"
+msgstr "Bezárás"
+
+# Languages
+
+msgid "English"
+msgstr "Angol"
+
+msgid "German"
+msgstr "Német"
+
+msgid "Russian"
+msgstr "Orosz"
+
+msgid "Spanish"
+msgstr "Spanyol"
+
+msgid "Swedish"
+msgstr "Svéd"
+
+msgid "French"
+msgstr "Francia"
+
+msgid "Dutch"
+msgstr "Holland"
+
+msgid "Hungarian"
+msgstr "Magyar"
+
+msgid "Slovenian"
+msgstr "Szlovák"
+
+msgid "Japanese"
+msgstr "Japán"
+
+msgctxt "foreign_lang"
+msgid "German"
+msgstr "Német"
+
+msgctxt "foreign_lang"
+msgid "English"
+msgstr "Angol"
+
+msgctxt "foreign_lang"
+msgid "Georgian"
+msgstr "Grúz"
+
+msgctxt "foreign_lang"
+msgid "Chinese"
+msgstr "Kínai"
+
+msgctxt "foreign_lang"
+msgid "Manchu"
+msgstr "Mandzsu"
+
+msgctxt "foreign_lang"
+msgid "Kurdish"
+msgstr "Krud"
+
+msgctxt "foreign_lang"
+msgid "ChinookJargon"
+msgstr "Csinuk"
+
+msgctxt "foreign_lang"
+msgid "Italian"
+msgstr "Olasz"
+
+msgctxt "foreign_lang"
+msgid "Malayalam"
+msgstr "Malajálam"
+
+msgctxt "foreign_lang"
+msgid "Tibetian"
+msgstr "Tibeti"
+
+msgctxt "foreign_lang"
+msgid "Mongolian"
+msgstr "Mongol"
+
+msgctxt "foreign_lang"
+msgid "Romanian"
+msgstr "Román"
+
+msgctxt "foreign_lang"
+msgid "Bantu"
+msgstr "Bantu"
+
+msgctxt "foreign_lang"
+msgid "Norwegian"
+msgstr "Norvég"
+
+msgctxt "foreign_lang"
+msgid "Icelandic"
+msgstr "Izlandi"
+
+msgctxt "foreign_lang"
+msgid "Breton"
+msgstr "Breton"
+
+msgctxt "foreign_lang"
+msgid "Maori"
+msgstr "Maori"
+
+msgctxt "foreign_lang"
+msgid "Latin"
+msgstr "Latin"
+
+msgctxt "foreign_lang"
+msgid "Amharic"
+msgstr "Amhara"
+
+msgctxt "foreign_lang"
+msgid "Khmer"
+msgstr "Khmer"
+
+msgctxt "foreign_lang"
+msgid "Swahili"
+msgstr "Szuahéli"
+
+msgctxt "foreign_lang"
+msgid "Hebrew"
+msgstr "Héber"
+
+msgctxt "foreign_lang"
+msgid "Galician"
+msgstr "Galiciai"
+
+msgctxt "foreign_lang"
+msgid "Korean"
+msgstr "Koreai"
+
+msgctxt "foreign_lang"
+msgid "Tamil"
+msgstr "Tamil"
+
+msgctxt "foreign_lang"
+msgid "Viatnamese"
+msgstr "Vietnám"
+
+msgctxt "foreign_lang"
+msgid "Polish"
+msgstr "Lengyel"
+
+msgctxt "foreign_lang"
+msgid "Sanskrit"
+msgstr "Szanszkrit"
+
+msgctxt "foreign_lang"
+msgid "Persian"
+msgstr "Perzsa"
+
+msgctxt "foreign_lang"
+msgid "Filipino"
+msgstr "Filippínó"
+
+msgctxt "foreign_lang"
+msgid "Moldavian"
+msgstr "Moldáv"
+
+msgctxt "foreign_lang"
+msgid "Croatian"
+msgstr "Horvát"
+
+msgctxt "foreign_lang"
+msgid "Thai"
+msgstr "Thai"
+
+msgctxt "foreign_lang"
+msgid "Burmese"
+msgstr "Burmai"
+
+msgctxt "foreign_lang"
+msgid "Slovak"
+msgstr "Szlovák"
+
+msgctxt "foreign_lang"
+msgid "Czech"
+msgstr "Cseh"
+
+msgctxt "foreign_lang"
+msgid "Hindi"
+msgstr "Hindi"
+
+msgctxt "foreign_lang"
+msgid "Mapudungun"
+msgstr "Mapudungun"
+
+msgctxt "foreign_lang"
+msgid "Turkish"
+msgstr "Török"
+
+msgctxt "foreign_lang"
+msgid "Hawaiian"
+msgstr "Hawaii"
+
+msgctxt "foreign_lang"
+msgid "Afrikaans"
+msgstr "Afrikaans"
+
+msgctxt "foreign_lang"
+msgid "Esperanto"
+msgstr "Eszperantó"
+
+msgctxt "foreign_lang"
+msgid "Yiddish"
+msgstr "Jiddis"
+
+msgctxt "foreign_lang"
+msgid "Somali"
+msgstr "Szomáli"
+
+msgctxt "foreign_lang"
+msgid "Tahitian"
+msgstr "Tahiti"
+
+msgctxt "foreign_lang"
+msgid "Urdu"
+msgstr "Urdu"
+
+msgctxt "foreign_lang"
+msgid "Indonesian"
+msgstr "Indonéz"
+
+msgctxt "foreign_lang"
+msgid "Estonian"
+msgstr "Észt"
+
+msgctxt "foreign_lang"
+msgid "Bulgarian"
+msgstr "Bolgár"
+
+msgctxt "foreign_lang"
+msgid "Arabic"
+msgstr "Arab"
+
+msgctxt "foreign_lang"
+msgid "Danish"
+msgstr "Dán"
+
+msgctxt "foreign_lang"
+msgid "Portuguese"
+msgstr "Portugál"
+
+msgctxt "foreign_lang"
+msgid "Greek"
+msgstr "Görög"
+
+msgctxt "foreign_lang"
+msgid "Finnish"
+msgstr "Finn"
+
+msgctxt "foreign_lang"
+msgid "Ainu"
+msgstr "Ainu"
+
+msgctxt "foreign_lang"
+msgid "Algonquian"
+msgstr "Algonking"
+
+msgctxt "foreign_lang"
+msgid "French"
+msgstr "Francia"
+
+# Settings
+msgid "Language"
+msgstr "Nyelv"
+
+msgid "Display"
+msgstr "Megjelenítés"
+
+msgid "General"
+msgstr "Általános"
+
+msgid "Default search language"
+msgstr "Alapértelmezett keresési nyelv"
+
+msgid "Page language"
+msgstr "Weboldal nyelve"
+
+msgid "Always show english results"
+msgstr "Mindig angol eredmények mutatása"
+
+msgid "Show english results on top"
+msgstr "Angol eredmények felül"
+
+msgid "Focus search bar on load"
+msgstr "Keresősáv fókuszálása betöltéskor"
+
+msgid "Select input on load"
+msgstr "Bemenet kiválasztása betöltéskor"
+
+msgid "Results per page"
+msgstr "Eredmények száma egy oldalon"
+
+msgid "Number..."
+msgstr "Szám..."
+
+msgid "Input has to be in range of 1 and 100!"
+msgstr "A bemenetnek 1 és 100 között kell lennie!"
+
+msgid "max amount of names/words/sentences shown per page"
+msgstr "nevek/szavak/mondatok maximális száma egy oldalon"
+
+msgid "Show Furigana"
+msgstr "Furigana Mutatása"
+
+msgid "Show example sentences"
+msgstr "Példamondatok mutatása"
+
+msgid "Items per page"
+msgstr "Eredmények egy oldalon"
+
+msgid "max amount of kanji shown per page"
+msgstr "kanjik maximális száma egy oldalon"
+
+msgid "Use dark mode"
+msgstr "Sötét téma használata"
+
+msgid "Default kanji animation speed"
+msgstr "Alapértelmezett kanji animáció sebessége"
+
+msgid "Accept Cookies"
+msgstr "Sütik Elfogadása"
+
+# Cookie text
+msgid "To use this feature you have to accept to the use of cookies."
+msgstr "Ennek a funkciónak a használatához el kell fogadnod a sütiket."
+
+msgid "Your data will only be used for your personal website settings."
+msgstr "Az adataid csak a személyes beállításaidhoz lesznek felhasználva."
+
+# Prefix of cookie revoke text
+msgid "Click"
+msgstr "Kattints"
+
+# Suffix of Cookie revoke text
+msgid "to revoke your Cookies agreement"
+msgstr "a sütik visszavonásához"
+
+# Suffix of Cookie agree text
+msgid "to enable Cookies"
+msgstr "a sütik engedélyezéséhez"
+
+# Footer
+msgid "Jotoba wouldn't be able to exist without the help of many open-source data sources"
+msgstr "A Jotoba nem jöhetett volna létre rengeteg nyílt-forráskódú adatforrás nélkül"
+
+msgid "About Page"
+msgstr "Rólunk Oldalunkat"
+
+# Cookie Footer
+msgid "We use cookies to improve your experience and deliver personalized content."
+msgstr "Sütiket használunk az élményed javítására és a személyre szabott tartalmakhoz"
+
+msgid "By using Jotoba you agree to our"
+msgstr "A Jotoba használatával elfogadod a"
+
+#  - End of the above sentence -
+msgid "."  
+msgstr "-ünket."
+
+msgid "privacy policy"
+msgstr "adatvédelmi házirend"
+
+msgid "Only use necessary"
+msgstr "Csak a szükségeseket"
+
+msgid "Allow Cookies"
+msgstr "Sütik Engedélyezése"
+
+### About Page
+
+msgid "is a multilingual Japanese dictionary"
+msgstr "egy többnyelvű japán szótár"
+
+msgid "It is easy to find translations for words or kanji, see example sentences and the way names can be written."
+msgstr "Könnyen megtalálhatod szavak és kanjik fordítását, láthatsz példamondatokat és azt, hogy hogyan kell egyes neveket írni."
+
+msgid "Here are some examples on how to use this page"
+msgstr "Itt van pár példa az oldal használatához"
+
+msgid "Quickly change the search type by pressing"
+msgstr "Gyorsan megváltoztathatod a keresési típust"
+
+msgid "You can specify your search by typing"
+msgstr "Egyszerűen megadhatod a keresésedet"
+
+msgid "You can find verbs that are conjugated"
+msgstr "Ragozott igékre is kereshetsz"
+
+msgid "You can search multiple kanji at once"
+msgstr "Egyszerre több kanjira is kereshetsz"
+
+msgid "is open source"
+msgstr "nyílt forráskódú"
+
+msgid "Check out our"
+msgstr "Tekintsd meg a"
+
+msgid "Check out the"
+msgstr "Tekintsd meg a"
+
+msgid "aswell if you are interested in upcoming features and what we are currently working on"
+msgstr "-nkat is, ha érdekelnek a közelgő funkciók és szeretnéd látni, hogy éppen mind dolgozunk"
+
+msgid "for a list of all contributors in this project."
+msgstr "a projekt körzeműködői listájának a megtekintéséhez."
+
+msgctxt "index"
+msgid "or"
+msgstr "vagy"
+
+msgctxt "index"
+msgid "Press"
+msgstr "Nyomd meg a"
+
+msgid "to instantly focus the search bar"
+msgstr "gombot a keresősáv fókuszálásához"
+
+### Info / Help Page
+
+msgid "Shortcuts"
+msgstr "Gyorsgombok"
+
+msgid "To improve the quality of life on Jotoba, we offer some shortcuts to quickly navigate the page:"
+msgstr "A Jotoba használatának megkönnyítésére létrehoztunk néhány gyorsgombot az oldal navigálásához:"
+
+msgid "Everywhere"
+msgstr "Mindenhol"
+
+msgid "Quickly change between words | sentences | names | kanji tabs"
+msgstr "Válts a szavak | mondatok | nevek | kanji lapok között"
+
+msgid "Focus the search bar"
+msgstr "Keresősáv fókuszálása"
+
+msgid "Focussed search bar"
+msgstr "Fókuszált keresősáv"
+
+msgid "Iterate suggestions up | down"
+msgstr "Felajánlások közötti lépés fel | le"
+
+msgid "Iterate suggestions down"
+msgstr "Felajánlások közötti lépés le"
+
+msgid "[Words] search"
+msgstr "[Szavak] keresés"
+
+msgid "Play the first possible audio"
+msgstr "Az első létező hanganyag lejátszása"
+
+msgid "[Kanji] search"
+msgstr "[Kanji] keresés"
+
+msgid "Show / Collapse compounds"
+msgstr "Összetételek mutatása / elrejtése"
+
+msgid "To specify what kind of results your search should offer, you can use shortcuts."
+msgstr "A keresés eredményének típusának beállításához használhatsz gyorsgombokat."
+
+msgid "Hashtags should be written at end end of your input like this:"
+msgstr "A hashtag-ek a keresés végére kerüljenek a következőképpen:"
+
+msgid "Available Hashtags for [Words] search"
+msgstr "Hashtag-ek [Szavak] kereséséhez"
+
+msgid "Search for nouns"
+msgstr "Főnevek keresése"
+
+msgid "Search for verbs"
+msgstr "Igék keresése"
+
+msgid "Search for transitive verbs"
+msgstr "Tranzitív igék keresése"
+
+msgid "Search for intransitive verbs"
+msgstr "Intranzitív igék keresése"
+
+msgid "Search for adverb"
+msgstr "Határozószavak keresése"
+
+msgid "Search for auxilary verbs"
+msgstr "Segédigék keresése"
+
+msgid "Search for adjectives"
+msgstr "Melléknevek keresése"
+
+msgid "Search for pronouns"
+msgstr "Névmások keresése"
+
+msgid "Search for conjugations"
+msgstr "Ragozások keresése"
+
+msgid "Search for prefixes"
+msgstr "Előtagok keresése"
+
+msgid "Search for suffixes"
+msgstr "Utótagok keresése"
+
+msgid "Search for japanese particles"
+msgstr "Japán partikulák keresése"
+
+msgid "Lists iru/eru ending verbs which are conjugated as godan verbs"
+msgstr "Godan igékhez hasonlóan ragozott iru/eru igék listázása"
+
+msgid "Search for sfx words [comic sounds]"
+msgstr "Hangutánzó szavak keresése"
+
+msgid "Search for words used for counting"
+msgstr "Számlálószavak keresése"
+
+msgid "Search for expressions"
+msgstr "Kifejezések keresése"
+
+msgid "Search for words used as interjections"
+msgstr "Indulatszavakként használt szavak keresése"
+
+msgid "Search for numeric words"
+msgstr "Numerikus szavak keresése"
+
+msgid "Search for abbreviations"
+msgstr "Rövidítések keresése"
+
+msgid "Search for words that don't fit in any category"
+msgstr "Más kategóriákba nem illő szavak keresése"
+
+msgid "Search for words included in the specific JLPT level"
+msgstr "JLPT szintekhez tartozó szavak keresése"
+
+msgid "Search in the [words] category"
+msgstr "Keresés a [szavak] kategóriában"
+
+msgid "Search in the [sentences] category"
+msgstr "Keresés a [mondatok] kategóriában"
+
+msgid "Search in the [name] category"
+msgstr "Keresés a [nevek] kategóriában"
+
+msgid "Search in the [kanji] category"
+msgstr "Keresés a [kanjik] kategóriában"
+
+msgid "Available Hashtags for [Sentence] search"
+msgstr "Hashtag-ek [Mondatok] kereséséhez"
+
+msgid "Search for sentences included in the specific JLPT level"
+msgstr "JLPT szintekhez tartotó mondatok keresése"
+
+msgid "Hide translations by default to translate them yourself and check if its correct"
+msgstr "Fordítások elrejtése, hogy lefordíthassad és ellenőrizhesd, hogy helyes-e"
+
+msgid "Available Hashtags for [Kanji] search"
+msgstr "Hashtag-ek [Kanjik] kereséséhez"
+
+msgid "Search for kanji included in the specific Genki chapter"
+msgstr "Kanjik keresése a megadott Genki fejezetben"
+
+msgid "Radical search"
+msgstr "Gyök keresés"
+
+msgid "The radical picker allows searching for radicals to make the process of picking radicals even faster. The supported inputs are as following:"
+msgstr "A gyökválasztóban lehet gyökökre keresni, így felgyorsítva a folyamatot. A megengedett bemenetek a következők:"
+
+msgid "Results in all radicals used to build given kanji characters"
+msgstr "Visszaadja a megadott kanjit felépítő gyököket"
+
+msgid "Searches in words for the given query and returns in result-matching radicals"
+msgstr "Rákeres a kifejezésre és visszatér az abban használt gyökökkel"
+
+msgid "Tries to find the given query in radicals names, otherwise does a word search and returns the result's kanji"
+msgstr "Gyököket keres a neveik alapján, vagy, ha ez sikertelen, kanjira keres"
+
+## Name search
+msgid "Full name"
+msgstr "Teljes név"
+
+msgid "Sex"
+msgstr "Nem"
+
+msgid "Name origin"
+msgstr "Név eredete"
+
+## Kanji results
+
+# strokes suffix
+
+msgid "Part"
+msgid_plural "Parts"
+msgstr[0] "Rész"
+msgstr[1] "Részek"
+
+msgid "strokes"
+msgstr "vonás"
+
+msgid "Radical"
+msgstr "Gyök"
+
+msgid "Kun"
+msgstr "Kun"
+
+msgid "On"
+msgstr "On"
+
+msgid "On reading compounds"
+msgstr "On olvasat összetétel"
+
+msgid "Kun reading compounds"
+msgstr "Kun olvasat összetétel"
+
+msgid "JLPT level"
+msgstr "JLPT szint"
+
+msgid "of 2500 most used kanji in newspapers"
+msgstr " a 2500 újságokban leggyakrabban használt kanji közül"
+
+msgid "Similar Kanji"
+msgstr "Hasonló kanjik"
+
+msgid "Chinese reading"
+msgstr "Kínai olvasat"
+
+msgid "Korean reading"
+msgstr "Koreai olvasat"
+
+msgid "Japanese names"
+msgstr "Japán nevek"
+
+## Word results
+msgid "Words and kanji"
+msgstr "Szavak és kanjik"
+
+msgid "{} could be an inflection of"
+msgstr "{} egy ragozott alakja lehet annak, hogy"
+
+msgid "Temporarily switched language to {}"
+msgstr "Átmenetileg a nyelv megváltozott {}-ra/re"
+
+msgctxt "inflection"
+msgid "Negative"
+msgstr "Negatív"
+
+msgctxt "inflection"
+msgid "Polite"
+msgstr "Udvarias"
+
+msgctxt "inflection"
+msgid "Present"
+msgstr "Jelen"
+
+msgctxt "inflection"
+msgid "Past"
+msgstr "Múlt"
+
+msgctxt "inflection"
+msgid "TeForm"
+msgstr "Te alak"
+
+msgctxt "inflection"
+msgid "Potential"
+msgstr "Feltételes"
+
+msgctxt "inflection"
+msgid "Passive"
+msgstr "Szenvedő"
+
+msgctxt "inflection"
+msgid "Causative"
+msgstr "Okhatározó"
+
+msgctxt "inflection"
+msgid "CausativePassive"
+msgstr "Okhatározó vagy Szenvedp"
+
+msgctxt "inflection"
+msgid "Imperative"
+msgstr "Felszólító"
+
+msgctxt "inflection"
+msgid "Tai"
+msgstr "Tai"
+
+msgid ", with this form:"
+msgid_plural ", with these forms:"
+msgstr[0] ", ebben a formában:"
+msgstr[1] ", ezekben a formákban:"
+
+msgid "Taught in {} grade"
+msgstr "{}. évben oktatott"
+
+msgid "Show Conjugations"
+msgstr "Ragozás Mutatása"
+
+msgid "Show collocation"
+msgid_plural "Show collocations"
+msgstr[0] "Besorolás mutatása"
+msgstr[1] "Besorolások mutatása"
+
+msgid "Collocations"
+msgstr "Besorolások"
+
+msgid "Conjugations"
+msgstr "Ragozások"
+
+msgid "Antonym of"
+msgstr "Ellentetje:"
+
+msgid "See also"
+msgstr "Lásd még"
+
+msgid "Pitch accent"
+msgstr "Zenei hangsúly"
+
+msgid "Other forms"
+msgstr "Más formák"
+
+msgid "Affirmative"
+msgstr "Igenlő"
+
+msgid "Negative"
+msgstr "Negatív"
+
+msgid "Present"
+msgstr "Jelen"
+
+msgid "Present, polite"
+msgstr "Jelen, udvarias"
+
+msgid "Past"
+msgstr "Múlt"
+
+msgid "Past, polite"
+msgstr "Múlt, udvarias"
+
+msgid "Te-form"
+msgstr "Te alak"
+
+msgid "Potential"
+msgstr "Feltételes"
+
+msgid "Passive"
+msgstr "Szenvedő"
+
+msgid "Causative"
+msgstr "Okhatározó"
+
+msgid "Causative Passive"
+msgstr "Szenvedő Okhatározó"
+
+msgid "Imperative"
+msgstr "Felszólító"
+
+msgid "Play audio"
+msgstr "Hanganyag lejátszása"
+
+msgid "common word"
+msgstr "gyakori szó"
+
+msgid "JLPT"
+msgstr "JLPT"
+
+msgid "Download audio"
+msgstr "Hanganyag letöltése"
+
+msgid "Sentence search"
+msgstr "Mondatok keresése"
+
+# "no words found"
+msgid "words"
+msgstr "szó"
+
+# gairaigo
+msgid "From {}: {}"
+msgstr "{}-ból/ből: {}"
+
+## Sentence search
+
+msgid "hide"
+msgstr "elrejtés"
+
+msgid "show"
+msgstr "mutatás"
+
+# "No sentences found"
+msgid "sentences"
+msgstr "mondat"
+
+## About page
+
+# Title 1
+msgid "About"
+msgstr "Rólunk"
+
+msgid "Jotoba is a multilingual Japanese dictionary. It is easy to find translations for words or kanji, see example sentences and the way names can be written."
+msgstr "A Jotoba egy többnyelvű japán szótár. Könnyen megtalálhatod szavak és kanjik fordítását, láthatsz példamondatokat és azt, hogy hogyan kell egyes neveket írni."
+
+msgid "Jotoba is open source. Check out our"
+msgstr "A Jotoba nyílt forráskódú. Tekintsd meg a"
+
+msgid "Github page"
+msgstr "Github oldalunkat"
+
+msgid "if you want to contribute or host Jotoba yourself."
+msgstr "ha szeretnél közreműködni, vagy magad futtatni a Jotoba-t."
+
+msgid "Trello Board"
+msgstr "Trello Táblánk"
+
+msgid "aswell if you are interested in upcoming features and what we are currently working on!"
+msgstr "is, ha érdekelnek a közelgő funkciók és, hogy min dolgozunk éppen!"
+
+# Title 2
+msgid "Data Sources and Inspiration"
+msgstr "Adatforrások és Inspirációk"
+
+msgid "Of course this project wouldn't have been possible without the help of some great data sources."
+msgstr "Természetesen ez a projekt nem lett volna lehetséges néhány remek adatforrás nélkül."
+
+msgid "Many thanks to every one of them for providing such a variety of data people can use to learn the japanese language."
+msgstr "Ezer köszönet mindegyikőjüknek az általuk biztosított adatokért, hogy mindenki használhassa japánul tanuláshoz."
+
+# Source
+msgid "Jisho"
+msgstr "Jisho"
+
+msgid "Joto-kun"
+msgstr "Joto-kun"
+
+msgid "Joto-kun was created by a good friend of ours who is truly a wizard when it comes down to design!"
+msgstr "Joto-kunt egy jóbarátunk készítette, aki varázsolni tud, ha dizájnról van szó!"
+
+msgid "Jisho, created by Kim Ahlström, Miwa Ahlström and Andrew Plummer is a pretty and powerful english-japanese dictionary."
+msgstr "Jisho, Kim Ahlström, Miwa Ahlström és Andrew Plummer által egy gyönyörű és erőteljes angol-japán szótár."
+
+msgid "We took inspiration in their work and design to improve on their concept and offer it to a wider variety of people."
+msgstr "Ihletet merítettünk a munkájukból és dizájnukból, hogy javíthassunk az ötletükön és egy szélesebb körben felajánlhassuk."
+
+# Source
+msgid "Words (except sound effects), Kanji and Names available on this site are publicly provided and maintained by"
+msgstr "Az ezen az oldalon található szavakat (a hangutázószavak kivételével), kanjikat és neveket publikusan elérhetővé tette és karbantartja az"
+
+msgid "and available under the license"
+msgstr "és az alábbi licensz alatt publikálta:"
+
+msgid "Additionally, the RADKFILE by Jin Breen is used to link Radicals to Kanji."
+msgstr "Ezenkívül a Jin Breen által készített RADKFILE segítségével társítunk gyököket a kanjikhoz."
+
+# Source
+msgid "Audio Files"
+msgstr "Hanganyagok"
+
+msgid "The audio files #1 were graciously made public by"
+msgstr "Az #1-es hanganyagokat kegyesen publikusan elérhetővé tette a"
+
+msgid "WaniKani"
+msgstr "WaniKani"
+
+msgid "and"
+msgstr "és"
+
+msgid "Tofugo"
+msgstr "Tofugu"
+
+msgid "and uploaded to Github under the CC-BY-4.0 licence."
+msgstr "és feltöltötték Githubra CC-BY-4.0 licensz alatt."
+
+msgid "The audio files #2 are provided by the"
+msgstr "A #2-es hanganyagokat a"
+
+msgid "Kanji alive project"
+msgstr "Kanji alive projekt"
+
+msgid "and are also available under the CC-BY-4.0 license."
+msgstr "biztosította és tette elérhetővé CC-BY-4.0 licensz alatt."
+
+msgid "Manga Sound Effects"
+msgstr "Manga Hang Effektek"
+
+msgid "The data about Sound Effects is graciously provided by Chris Kincaid and is used as additional data in the word search."
+msgstr "A hangeffektekről szóló adatokat Chris Kincaid biztosította, hogy megjeleníthessük a szókeresés közben."
+
+# Source
+msgid "Sentences are provided by Tatoeba under the Creative Commons CC 1.0 and 2.0 licences. "
+msgstr "A mondatokat a Tatoeba biztosította Creative Commons CC 1.0 és 2.0 licensz alatt. "
+
+# Source
+msgid "Kanji Animations"
+msgstr "Kanji Animációk"
+
+msgid "The raw data used for kanji animations is publicly provided by KanjiVG, a project by Ulrich Apel."
+msgstr "A nyers adatokat a kanji animációkhoz az Ulrich Apel által létrehozott KanjiVG biztosította."
+
+msgid "The conversion into images and animated SVG is done by a ruby script which was made by"
+msgstr "A képekké és SVG-ké alakítást végző ruby szkript készítette"
+
+msgid "Kimtaro"
+msgstr "Kimtaro"
+
+msgid "and altered by"
+msgstr "és módosította"
+
+msgid "Yukáru"
+msgstr "Yukáru"
+
+# Source
+msgid "JLPT Data"
+msgstr "JLPT Adatok"
+
+msgid "Data about JLPT proficiencies are by provided by Jonathan Waller."
+msgstr "A JLPT szintek adatait Jonathan Waller biztosította."
+
+msgid "There is also some non-free data available on his website, so check it out if you are interested."
+msgstr "A weboldalán elérhető néhány nem ingyenes adatforrás is, úgyhogy nézz be, ha érdekel."
+
+# Source
+msgid "Word tokenization"
+msgstr "Szó elemekre bontésa"
+
+msgid "Word tokenization is done using a project from Hideki Yamane and used for Japanese morphological analysis implementations."
+msgstr "A szavak elemekre bontását egy, Hideki Yamane által létrehozott projekt biztosítja, amit a japán szóelemzésnél használunk."
+
+#Source
+msgid "Pitch Accents and Radicals"
+msgstr "Zenei Hangsúly és Gyökök"
+
+msgid "Data about Pitch Accents and Radicals used in specific Kanji are provided by Kanjium"
+msgstr "A zenei hangsúlyokról és gyökökről szóló adatot a Kanjium biztosította"
+
+msgid "On the project's Github Page you can find lots of data about Kanji."
+msgstr "A projekt weboldalán rengeteg, kanjikról szóló adatot találhatsz."
+
+## Jmdict
+
+# Dialect(s)
+msgid "{} dialect"
+msgstr "{} dialektus"
+
+# Information
+msgid "ateji"
+msgstr "ateji"
+
+msgid "irregular kana"
+msgstr "szabálytalan kana"
+
+msgid "irregular kanji"
+msgstr "szabálytalan kanji"
+
+msgid "irregular okurigana"
+msgstr "szabálytalan okurigana"
+
+msgid "outdated kana"
+msgstr "elavult kana"
+
+msgid "outdated kanji"
+msgstr "elavult kanji"
+
+msgid "gikun"
+msgstr "gikun"
+
+msgid "usually written in kana"
+msgstr "általában kanával írják"
+
+msgid "rarely used kanji form"
+msgstr "ritkán használt kanji forma"
+
+# Misc
+
+msgid "Abbreviation"
+msgstr "Rövidítés"
+
+msgid "Anarchism"
+msgstr "Rendbomlás"
+
+msgid "Character"
+msgstr "Karakter"
+
+msgid "Childrens language"
+msgstr "Gyereknyelv"
+
+msgid "Colloquialism"
+msgstr "Köznyelvi kifejezés"
+
+msgid "Company name"
+msgstr "Cégnév"
+
+msgid "Creature"
+msgstr "Élőlény"
+
+msgid "Dated term"
+msgstr "Régimódi kifejezés"
+
+msgid "Deity"
+msgstr "Istenség"
+
+msgid "Derogatory"
+msgstr "Lekicsinylő"
+
+msgid "Event"
+msgstr "Esemény"
+
+msgid "Document"
+msgstr "Dokumentum"
+
+msgid "Familiar language"
+msgstr "Intim nyelv"
+
+msgid "Female term/language"
+msgstr "Női kifejezés/nyelv"
+
+msgid "Fiction"
+msgstr "Fikció"
+
+msgid "Given name"
+msgstr "Keresztnév"
+
+msgid "Group"
+msgstr "Csoport"
+
+msgid "Historical term"
+msgstr "Történelmi kifejezés"
+
+msgid "Honorific language"
+msgstr "Megtisztelő nyelvezet"
+
+msgid "Humble language"
+msgstr "Szerény nyelvezet"
+
+msgid "Idiomatic expression"
+msgstr "Szólás"
+
+msgid "Jocular humorous term"
+msgstr "Tréfás kifejezés"
+
+msgid "Legend"
+msgstr "Legenda"
+
+msgid "Literary/formal term"
+msgstr "Irodalmi/hivatalos kifejezés"
+
+msgid "Manga slang"
+msgstr "Manga szleng"
+
+msgid "Male term/language"
+msgstr "Férfi nyelvezet"
+
+msgid "Mythology"
+msgstr "Mitológia"
+
+msgid "Internet slang"
+msgstr "Internet szleng"
+
+msgid "Object"
+msgstr "Tárgy"
+
+msgid "Obsolete term"
+msgstr "Elavult kifejezls"
+
+msgid "Obscure term"
+msgstr "Homályos kifejezés"
+
+msgid "Onomatopoetic or mimetic word"
+msgstr "Hangutánzó szó"
+
+msgid "Organization name"
+msgstr "Szervezet neve"
+
+msgid "Other"
+msgstr "Egyéb"
+
+msgid "Person name"
+msgstr "Személynév"
+
+msgid "Place name"
+msgstr "Helynév"
+
+msgid "Poetical term"
+msgstr "Költői kifejezés"
+
+msgid "Polite language"
+msgstr "Udvarias nyelv"
+
+msgid "Product name"
+msgstr "Termék név"
+
+msgid "Proverb"
+msgstr "Közmondás"
+
+msgid "Qutation"
+msgstr "Idézet"
+
+msgid "Rare"
+msgstr "Ritka"
+
+msgid "Religion"
+msgstr "Vallás"
+
+msgid "Sensitive"
+msgstr "Érzékeny"
+
+msgid "Service"
+msgstr "Szolgáltatás"
+
+msgid "Slang"
+msgstr "Szleng"
+
+msgid "Railway station"
+msgstr "Vasútállomás"
+
+msgid "Family or surname"
+msgstr "Vezetéknév"
+
+msgid "Usually written in kana"
+msgstr "Általában kanával írják"
+
+msgid "Unclassified name"
+msgstr "Rendszerezetlen név"
+
+msgid "Vulgar expression/word"
+msgstr "Vulgáris kifejezés/szó"
+
+msgid "Artwork"
+msgstr "Műalkotás"
+
+msgid "Rude/x-rated term"
+msgstr "Sértő/X-besorolású kifejezés"
+
+msgid "Yojijukugo"
+msgstr "Yojijukugo"
+
+# Fields
+
+msgid "{} term"
+msgstr "{} kifejezés"
+
+msgid "Agriculture"
+msgstr "Mezőgazdaság"
+
+msgid "Anatomy"
+msgstr "Anatómia"
+
+msgid "Archeology"
+msgstr "Régészet"
+
+msgid "Architecture"
+msgstr "Építészet"
+
+msgid "Art aesthetics"
+msgstr "Művészet"
+
+msgid "Astronomy"
+msgstr "Űrtudomány"
+
+msgid "Audio/visual"
+msgstr "Audiovizuális"
+
+msgid "Aviation"
+msgstr "Repülés"
+
+msgid "Baseball"
+msgstr "Baseball"
+
+msgid "Biochemistry"
+msgstr "Biokémia"
+
+msgid "Biology"
+msgstr "Biológia"
+
+msgid "Botany"
+msgstr "Botanika"
+
+msgid "Buddhism"
+msgstr "Buddhizmus"
+
+msgid "Business"
+msgstr "Biznisz"
+
+msgid "Chemistry"
+msgstr "Kémia"
+
+msgid "Christianity"
+msgstr "Kereszténység"
+
+msgid "Computing"
+msgstr "Számítógépes tudomány"
+
+msgid "Clothing"
+msgstr "Ruházat"
+
+msgid "Crystallography"
+msgstr "Kristálytan"
+
+msgid "Ecology"
+msgstr "Ökológia"
+
+msgid "Economics"
+msgstr "Ökonómia"
+
+msgid "Electricity"
+msgstr "Elektromosság"
+
+msgid "Electronics"
+msgstr "Elektronika"
+
+msgid "Embryology"
+msgstr "Embriológia"
+
+msgid "Engineering"
+msgstr "Gépészet"
+
+msgid "Entomology"
+msgstr "Entomológia"
+
+msgid "Finance"
+msgstr "Pénzügytan"
+
+msgid "Fishing"
+msgstr "Horgászat"
+
+msgid "FoodCooking"
+msgstr "Főzés"
+
+msgid "Gardening"
+msgstr "Kertészkedés"
+
+msgid "Genetics"
+msgstr "Genetika"
+
+msgid "Geography"
+msgstr "Földrajz"
+
+msgid "Geology"
+msgstr "Geológia"
+
+msgid "Geometry"
+msgstr "Geometria"
+
+msgid "Go (game)"
+msgstr "Go (játék)"
+
+msgid "Golf"
+msgstr "Golf"
+
+msgid "Grammar"
+msgstr "Nyelvtan"
+
+msgid "Greek mythology"
+msgstr "Görög mitológia"
+
+msgid "Hanafuda"
+msgstr "Hanafuda"
+
+msgid "Horseracing"
+msgstr "Lóverseny"
+
+msgid "Law"
+msgstr "Jog"
+
+msgid "Linguistics"
+msgstr "Nyelvészet"
+
+msgid "Logic"
+msgstr "Logika"
+
+msgid "Martial arts"
+msgstr "Harcművészet"
+
+msgid "Mahjong"
+msgstr "Mahjong"
+
+msgid "Mathematics"
+msgstr "Matematika"
+
+msgid "MechanicalEngineering"
+msgstr "Gépészmérnök"
+
+msgid "Medicine"
+msgstr "Orvostudomány"
+
+msgid "Climate/weather"
+msgstr "Időjárás"
+
+msgid "Military"
+msgstr "Katonaság"
+
+msgid "Music"
+msgstr "Zene"
+
+msgid "Ornithology"
+msgstr "Orniológia"
+
+msgid "Paleontology"
+msgstr "Paleontológia"
+
+msgid "Pathology"
+msgstr "Patológia"
+
+msgid "Pharmacy"
+msgstr "Gyógyszerészet"
+
+msgid "Philosophy"
+msgstr "Filozófia"
+
+msgid "Photography"
+msgstr "Fényképezés"
+
+msgid "Physics"
+msgstr "Fizika"
+
+msgid "Physiology"
+msgstr "Fiziológia"
+
+msgid "Printing"
+msgstr "Nyomtatás"
+
+msgid "Psychology"
+msgstr "Pszichológia"
+
+msgid "Psychiatry"
+msgstr "Pszichiátria"
+
+msgid "Railway"
+msgstr "Vasút"
+
+msgid "Shinto"
+msgstr "Shinto"
+
+msgid "Shogi"
+msgstr "Shogi"
+
+msgid "Sports"
+msgstr "Sport"
+
+msgid "Statistics"
+msgstr "Statisztika"
+
+msgid "Sumo"
+msgstr "Szumó"
+
+msgid "Telecommunications"
+msgstr "Telekommunikáció"
+
+msgid "Trademark"
+msgstr "Védjegy"
+
+msgid "Videogame"
+msgstr "Videójáték"
+
+msgid "Zoology"
+msgstr "Zoológia"
+
+# Part of speech
+msgid "Godan verb"
+msgstr "Godan ige"
+
+msgid "Irregular verb with {} ending"
+msgstr "Szabálytalan ige {} végződéssel"
+
+msgid "SoundFx"
+msgstr "Hangeffekt"
+
+msgid "Expression"
+msgstr "Kifejezés"
+
+msgid "Counter"
+msgstr "Számlálószó"
+
+msgid "Suffix"
+msgstr "Utótag"
+
+msgid "Prefix"
+msgstr "Előtag"
+
+msgid "Particle"
+msgstr "Partikula"
+
+msgid "Interjection"
+msgstr "Indulatszó"
+
+msgid "Symbol"
+msgstr "Szimbólum"
+
+msgid "Pronoun"
+msgstr "Névmás"
+
+msgid "Auxilary"
+msgstr "Segédige"
+
+msgid "Numeric"
+msgstr "Szám"
+
+msgid "Adverb-To"
+msgstr "To Határozószó"
+
+msgid "Adverb"
+msgstr "Határozószó"
+
+msgid "Adjective"
+msgstr "Melléknév"
+
+msgid "Auxilary adjective"
+msgstr "Segédmelléknév"
+
+msgid "Auxilary Verb"
+msgstr "Segédige"
+
+msgid "Verb"
+msgstr "Ige"
+
+msgid "Conjugation"
+msgstr "Ragozás"
+
+msgid "Unclassified"
+msgstr "Csoportosítatlan"
+
+msgid "Noun or verb describing a noun"
+msgstr "Főnév, vagy főnevet leíró ige"
+
+msgid "I adjective"
+msgstr "I melléknév"
+
+msgid "I adjective (conjugated like いい)"
+msgstr "I melléknév (いい-ként ragozva)"
+
+msgid "Ku adjective"
+msgstr "Ku melléknév"
+
+msgid "Na adjective"
+msgstr "Na melléknév"
+
+msgid "Formal form of na adjective"
+msgstr "Na melléknév hivatalos alakja"
+
+msgid "No adjective"
+msgstr "No melléknév"
+
+msgid "Pre noun adjective"
+msgstr "Főnév előtti melléknév"
+
+msgid "Shiku adjective"
+msgstr "Skiku melléknév"
+
+msgid "Taru adjective"
+msgstr "Taru melléknév"
+
+msgid "Noun"
+msgstr "Főnév"
+
+msgid "Noun adverbial"
+msgstr "Határozói Főnév"
+
+msgid "Prefix (noun)"
+msgstr "Előtag (főnév)"
+
+msgid "Suffix (noun)"
+msgstr "Utótag (főnév)"
+
+msgid "Temporal noun"
+msgstr "Időt leíró főnév"
+
+msgid "Unspecified verb"
+msgstr "Csoportosítatlan ige"
+
+msgid "Intransitive verb"
+msgstr "Intransitív ige"
+
+msgid "Transitive verb"
+msgstr "Tranzitív ige"
+
+msgid "Ichidan verb"
+msgstr "Ichidan ige"
+
+msgid "Ichidan zuru verb"
+msgstr "Ichidan zuru ige"
+
+msgid "Ichidan kureru verb"
+msgstr "Ichidan kureru ige"
+
+msgid "Kuru verb"
+msgstr "Kuru ige"
+
+msgid "Noun taking suru"
+msgstr "Suru-t felvevő főnév"
+
+msgid "Suru verb"
+msgstr "Suru ige"
+
+msgid "Suru special"
+msgstr "Speciális suru"
+
+msgid "Pre-noun"
+msgstr "Főnév előtti"
+
+# this thingy -> " "
+msgid "Space"
+msgstr "Szóköz"
+
+## Name search
+msgctxt "name_type"
+msgid "Company"
+msgstr "Cég"
+
+msgctxt "name_type"
+msgid "Female"
+msgstr "Női"
+
+msgctxt "name_type"
+msgid "Male"
+msgstr "Férfi"
+
+msgctxt "name_type"
+msgid "Organization"
+msgstr "Szervezet"
+
+msgctxt "name_type"
+msgid "Persons name"
+msgstr "Személy"
+
+msgctxt "name_type"
+msgid "Place"
+msgstr "Hely"
+
+msgctxt "name_type"
+msgid "Product"
+msgstr "Termék"
+
+msgctxt "name_type"
+msgid "(Railway)Station"
+msgstr "Vasútállomás"
+
+msgctxt "name_type"
+msgid "Surname"
+msgstr "Vezetéknév"
+
+msgctxt "name_type"
+msgid "Unknown"
+msgstr "Ismeretlen"
+
+msgctxt "name_type"
+msgid "Art work"
+msgstr "Műalkotás"
+
+msgctxt "name_type"
+msgid "Character"
+msgstr "Karakter"
+
+msgctxt "name_type"
+msgid "Deity"
+msgstr "Istenség"
+
+msgctxt "name_type"
+msgid "Document"
+msgstr "Dokumetum"
+
+msgctxt "name_type"
+msgid "Event"
+msgstr "Esemény"
+
+msgctxt "name_type"
+msgid "Fiction"
+msgstr "Fikció"
+
+msgctxt "name_type"
+msgid "Group"
+msgstr "Csoport"
+
+msgctxt "name_type"
+msgid "Legend"
+msgstr "Legenda"
+
+msgctxt "name_type"
+msgid "Mythology"
+msgstr "Mitológia"
+
+msgctxt "name_type"
+msgid "Object"
+msgstr "Tárgy"
+
+msgctxt "name_type"
+msgid "Other"
+msgstr "Egyéb"
+
+msgctxt "name_type"
+msgid "Religion"
+msgstr "Vallás"
+
+msgctxt "name_type"
+msgid "Service"
+msgstr "Szolgáltatás"
+
+# "No names found"
+msgid "names"
+msgstr "név"
+
+## Search help
+msgid "Search Help"
+msgstr "Keresési segéd"
+
+msgid "No {} found"
+msgstr "Nincs a keresésnek megfelelő {}"
+
+msgid "Your default search language might not fit your input"
+msgstr "Az alapértelmezett keresési nyelved lehet, hogy nem passzol a bemenethez"
+
+msgid "Check your search for typos"
+msgstr "Ellenőrizd, hogy nem írtad-e el a keresési kifejezésedet"
+
+msgid "Use more generic search terms"
+msgstr "Használj általánosabb keresési kifejezéseket"
+
+msgid "Try finding your search in a different category using"
+msgstr "Próbáld a kifejezésedet egy másik kategóriában megkeresni:"
+
+msgid "Your search request might not be included in our database yet"
+msgstr "Lehet, hogy az adatbázisunk még nem tartalmazza a keresési kifejezésedet"
+
+msgid "If you think your search should be contained in our database, submit an issue on"
+msgstr "Ha úgy gondolod, hogy az adatbázisunknak tartalmaznia kéne a keresésedet, küldj be egy kérelmet:"
+
+# Also check our Trello board since we might be working on it
+msgid "Also check our"
+msgstr "Ellenőrizd a"
+
+msgid "since we might be working on it!"
+msgstr ", hátha épp dolgozunk rajta"
+ 
+# Paginator
+msgid "First"
+msgstr "Első"
+ 
+msgid "Last"
+msgstr "Utolsó"
