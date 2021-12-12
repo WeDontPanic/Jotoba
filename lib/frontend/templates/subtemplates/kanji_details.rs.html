@@ -24,7 +24,7 @@
            @k_item.kanji.literal
          </span>
          <div class="kanji-preview-info">
-           <div class="notes stroke"><b>@k_item.kanji.stroke_count</b> @data.gettext("strokes") </div>
+           <div class="notes stroke"><b>@data.ngettext_fmt("{} stroke", k_item.kanji.stroke_count as u64, &[k_item.kanji.stroke_count])</b> </div>
             <div class="rad-parts-parent">
               <div class="notes rad"><b>@data.gettext("Radical"):</b>
                 <br>
