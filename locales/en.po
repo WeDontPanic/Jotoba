@@ -713,15 +713,16 @@ msgstr ""
 
 ## Kanji results
 
-# strokes suffix
-
 msgid "Part"
 msgid_plural "Parts"
 msgstr[0] "Part"
 msgstr[1] "Parts"
 
-msgid "strokes"
-msgstr ""
+# strokes suffix
+msgid "{} stroke"
+msgid_plural "{} strokes"
+msgstr[0] "{} stroke"
+msgstr[1] "{} strokes"
 
 msgid "Radical"
 msgstr ""
@@ -760,8 +761,10 @@ msgstr ""
 msgid "Words and kanji"
 msgstr ""
 
-msgid "{} could be an inflection of"
-msgstr ""
+msgid "{} could be an inflection of {}, with this form:"
+msgid_plural "{} could be an inflection of {}, with this forms:"
+msgstr[0] "{} could be an inflection of {}, with this form:"
+msgstr[1] "{} could be an inflection of {}, with this forms:"
 
 msgid "Temporarily switched language to {}"
 msgstr ""
@@ -832,10 +835,10 @@ msgstr ""
 msgid "Conjugations"
 msgstr ""
 
-msgid "Antonym of"
-msgstr ""
+msgid "Antonym of {}"
+msgstr "Antonym of {}"
 
-msgid "See also"
+msgid "See also {}"
 msgstr ""
 
 msgid "Pitch accent"
@@ -886,7 +889,7 @@ msgstr ""
 msgid "common word"
 msgstr ""
 
-msgid "JLPT"
+msgid "JLPT N{}"
 msgstr ""
 
 msgid "Download audio"

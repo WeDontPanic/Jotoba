@@ -713,15 +713,16 @@ msgstr "Név eredete"
 
 ## Kanji results
 
-# strokes suffix
-
 msgid "Part"
 msgid_plural "Parts"
 msgstr[0] "Rész"
 msgstr[1] "Részek"
 
-msgid "strokes"
-msgstr "vonás"
+# strokes suffix
+msgid "{} stroke"
+msgid_plural "{} strokes"
+msgstr[0] "{} stroke"
+msgstr[1] "{} strokes"
 
 msgid "Radical"
 msgstr "Gyök"
@@ -760,8 +761,10 @@ msgstr "Japán nevek"
 msgid "Words and kanji"
 msgstr "Szavak és kanjik"
 
-msgid "{} could be an inflection of"
-msgstr "{} egy ragozott alakja lehet annak, hogy"
+msgid "{} could be an inflection of {}, with this form:"
+msgid_plural "{} could be an inflection of {}, with this forms:"
+msgstr[0] "{} could be an inflection of {}, with this form:"
+msgstr[1] "{} could be an inflection of {}, with this forms:"
 
 msgid "Temporarily switched language to {}"
 msgstr "Átmenetileg a nyelv megváltozott {}-ra/re"
@@ -832,11 +835,11 @@ msgstr "Besorolások"
 msgid "Conjugations"
 msgstr "Ragozások"
 
-msgid "Antonym of"
-msgstr "Ellentetje:"
+msgid "Antonym of {}"
+msgstr "Ellentetje: {}"
 
-msgid "See also"
-msgstr "Lásd még"
+msgid "See also {}"
+msgstr "Lásd még {}"
 
 msgid "Pitch accent"
 msgstr "Zenei hangsúly"
@@ -886,8 +889,8 @@ msgstr "Hanganyag lejátszása"
 msgid "common word"
 msgstr "gyakori szó"
 
-msgid "JLPT"
-msgstr "JLPT"
+msgid "JLPT N{}"
+msgstr ""
 
 msgid "Download audio"
 msgstr "Hanganyag letöltése"

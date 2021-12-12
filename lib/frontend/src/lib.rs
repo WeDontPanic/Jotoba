@@ -303,7 +303,7 @@ impl<'a> BaseData<'a> {
     // Format functions
 
     #[inline]
-    pub fn gettext_fmt<T: Translatable, V: Display + Sized>(
+    pub fn gettext_fmt<T: Translatable, V: Display + Sized + Clone>(
         &self,
         t: T,
         values: &[V],
@@ -313,7 +313,7 @@ impl<'a> BaseData<'a> {
     }
 
     #[inline]
-    pub fn pgettext_fmt<T: Translatable, V: Display + Sized>(
+    pub fn pgettext_fmt<T: Translatable, V: Display + Sized + Clone>(
         &self,
         t: T,
         context: &'a str,
@@ -324,7 +324,7 @@ impl<'a> BaseData<'a> {
     }
 
     #[inline]
-    pub fn ngettext_fmt<T: TranslatablePlural, V: Display + Sized>(
+    pub fn ngettext_fmt<T: TranslatablePlural, V: Display + Sized + Clone>(
         &self,
         t: T,
         n: u64,
@@ -335,7 +335,7 @@ impl<'a> BaseData<'a> {
     }
 
     #[inline]
-    pub fn pngettext_fmt<T: TranslatablePlural, V: Display + Sized>(
+    pub fn pngettext_fmt<T: TranslatablePlural, V: Display + Sized + Clone>(
         &self,
         t: T,
         context: &'a str,
@@ -345,4 +345,49 @@ impl<'a> BaseData<'a> {
         t.npgettext_fmt(&self.dict, context, n, values, Some(self.get_lang()))
             .into()
     }
+
+    #[inline]
+    pub fn gt_search_link<T: Translatable, V: Display + Sized + Clone>(
+        &self,
+        t: T,
+        value: V,
+    ) -> UnescapedString {
+        let link = format_search_link(value);
+        t.gettext_fmt(&self.dict, &[link], Some(self.get_lang()))
+            .into()
+    }
+
+    #[inline]
+    pub fn gt_search_links<T: Translatable, V: Display + Sized + Clone>(
+        &self,
+        t: T,
+        link: usize,
+        values: &[V],
+    ) -> UnescapedString {
+        let mut values = values.iter().map(|i| i.to_string()).collect::<Vec<_>>();
+        values[link] = format_search_link(&values[link]);
+        t.gettext_fmt(&self.dict, &values, Some(self.get_lang()))
+            .into()
+    }
+
+    #[inline]
+    pub fn ngt_search_links<T: TranslatablePlural, V: Display + Sized + Clone>(
+        &self,
+        t: T,
+        link: usize,
+        values: &[V],
+        n: u64,
+    ) -> UnescapedString {
+        let mut values = values.iter().map(|i| i.to_string()).collect::<Vec<_>>();
+        values[link] = format_search_link(&values[link]);
+        t.ngettext_fmt(&self.dict, n, &values, Some(self.get_lang()))
+            .into()
+    }
+}
+
+fn format_search_link<V: Display + Sized + Clone>(input: V) -> String {
+    format!(
+        "<a class='clickable no-align green' href='/search/{}'>{}</a>",
+        input, input
+    )
 }

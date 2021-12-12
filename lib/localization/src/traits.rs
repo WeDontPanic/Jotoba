@@ -41,7 +41,7 @@ pub trait Translatable {
 
     /// Returns the singular translation of `msg_id` from the given catalog
     /// or `msg_id` itself if a translation does not exist.
-    fn gettext_fmt<'a, T: Display + Sized>(
+    fn gettext_fmt<'a, T: Display + Sized + Clone>(
         &self,
         dict: &'a TranslationDict,
         values: &[T],
@@ -52,7 +52,7 @@ pub trait Translatable {
 
     /// Returns the singular translation of `msg_id` in the context `msg_context`
     /// or `msg_id` itself if a translation does not exist.
-    fn pgettext_fmt<T: Display + Sized>(
+    fn pgettext_fmt<T: Display + Sized + Clone>(
         &self,
         dict: &TranslationDict,
         context: &str,
@@ -98,7 +98,7 @@ pub trait TranslatablePlural: Translatable {
 
     /// Returns the singular translation of `msg_id` from the given catalog
     /// or `msg_id` itself if a translation does not exist.
-    fn ngettext_fmt<'a, T: Display + Sized>(
+    fn ngettext_fmt<'a, T: Display + Sized + Clone>(
         &self,
         dict: &'a TranslationDict,
         n: u64,
@@ -110,7 +110,7 @@ pub trait TranslatablePlural: Translatable {
 
     /// Returns the singular translation of `msg_id` in the context `msg_context`
     /// or `msg_id` itself if a translation does not exist.
-    fn npgettext_fmt<T: Display + Sized>(
+    fn npgettext_fmt<T: Display + Sized + Clone>(
         &self,
         dict: &TranslationDict,
         context: &str,

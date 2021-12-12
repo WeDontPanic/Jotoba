@@ -711,15 +711,17 @@ msgstr "Namensherkunft"
 
 ## Kanji results
 
-# strokes suffix
 
 msgid "Part"
 msgid_plural "Parts"
 msgstr[0] "Bestandteil"
 msgstr[1] "Bestandteile"
 
-msgid "strokes"
-msgstr "Striche"
+# strokes suffix
+msgid "{} stroke"
+msgid_plural "{} strokes"
+msgstr[0] "{} Strich"
+msgstr[1] "{} Striche"
 
 msgid "Radical"
 msgstr "Radikal"
@@ -758,8 +760,10 @@ msgstr "Japanische Namen"
 msgid "Words and kanji"
 msgstr "Wörter und Kanjis"
 
-msgid "{} could be an inflection of"
-msgstr "{} könnte eine Flexion sein von"
+msgid "{} could be an inflection of {}, with this form:"
+msgid_plural "{} könnte eine Flexion sein von {}, mit diesen Formen:"
+msgstr[0] "{} könnte eine Flexion sein von {}, mit dieser Form:"
+msgstr[1] "{} könnte eine Flexion sein von {}, mit diesen Formen:"
 
 msgid "Temporarily switched language to {}"
 msgstr "Vorübergehend zu {} gewechselt"
@@ -830,11 +834,11 @@ msgstr "Kollokationen"
 msgid "Conjugations"
 msgstr "Konjugationen"
 
-msgid "Antonym of"
-msgstr "Antonym von"
+msgid "Antonym of {}"
+msgstr "Antonym von {}"
 
-msgid "See also"
-msgstr "Siehe auch"
+msgid "See also {}"
+msgstr "Siehe auch {}"
 
 msgid "Pitch accent"
 msgstr "Tonhöhenakzent"
@@ -884,7 +888,7 @@ msgstr "Vorlesen"
 msgid "common word"
 msgstr "häufiges Wort"
 
-msgid "JLPT"
+msgid "JLPT N{}"
 msgstr ""
 
 msgid "Sentence search"

@@ -113,7 +113,7 @@ impl TranslationDict {
 
     /// Returns the singular translation of `msg_id` from the given catalog
     /// or `msg_id` itself if a translation does not exist.
-    pub fn gettext_fmt<T: Display + Sized>(
+    pub fn gettext_fmt<T: Display + Sized + Clone>(
         &self,
         msg_id: &str,
         values: &[T],
@@ -126,7 +126,7 @@ impl TranslationDict {
     /// with the correct plural form for the number `n` of objects.
     /// Returns msg_id if a translation does not exist and `n == 1`,
     /// msg_id_plural otherwise.
-    pub fn ngettext_fmt<T: Display + Sized>(
+    pub fn ngettext_fmt<T: Display + Sized + Clone>(
         &self,
         msg_id: &str,
         msg_id_plural: &str,
@@ -140,7 +140,7 @@ impl TranslationDict {
     /// Returns the singular translation of `msg_id`
     /// in the context `msg_context`
     /// or `msg_id` itself if a translation does not exist.
-    pub fn pgettext_fmt<T: Display + Sized>(
+    pub fn pgettext_fmt<T: Display + Sized + Clone>(
         &self,
         msg_context: &str,
         msg_id: &str,
@@ -154,7 +154,7 @@ impl TranslationDict {
     /// with the correct plural form for the number `n` of objects.
     /// Returns msg_id if a translation does not exist and `n == 1`,
     /// msg_id_plural otherwise.
-    pub fn npgettext_fmt<T: Display + Sized>(
+    pub fn npgettext_fmt<T: Display + Sized + Clone>(
         &self,
         msg_context: &str,
         msg_id: &str,
@@ -186,7 +186,24 @@ impl TranslationDict {
 }
 
 /// Formats the input with the passed values and returns a newly allocated owned String
-fn format<T: Display + Sized>(inp: &str, values: &[T]) -> String {
+fn format<T: Display + Sized + Clone>(inp: &str, values: &[T]) -> String {
     use dyn_fmt::AsStrFormatExt;
+
+    let placeholder_count = count_placeholder(inp);
+    if placeholder_count != values.len() {
+        if values.len() == 1 {
+            let first = values[0].clone();
+            let mut values = values.to_vec();
+            for _ in 0..placeholder_count - 1 {
+                values.push(first.clone());
+            }
+            return inp.format(&values);
+        }
+    }
+
     inp.format(values)
+}
+
+fn count_placeholder(inp: &str) -> usize {
+    inp.matches("{}").count()
 }

@@ -25,7 +25,7 @@
       <!-- Search Inflections -->
       <div class="search-inflection">
         <span>
-          @data.gettext_fmt("{} could be an inflection of", &[&result.searched_query]) <a class="clickable no-align green" href="/search/@inflection.lexeme">@inflection.lexeme</a>@data.ngettext(", with this form:", inflection.forms.len() as u64)
+          @data.ngt_search_links("{} could be an inflection of {}, with this form:", 1, &[&result.searched_query, &inflection.lexeme], inflection.forms.len() as u64)
           <br>
           <span class="forms">
             @for form in inflection.forms.iter() {
@@ -133,7 +133,7 @@
               }
               @if let Some(lvl) =  word.jlpt_lvl {
                 <div class="word-frequency">
-                  @data.gettext("JLPT") n@lvl
+                  @data.gettext_fmt("JLPT N{}", &[lvl])
                 </div>
               }
               @if let Some(audio) = word.audio_file("ogg") {
@@ -251,13 +251,13 @@
                               @data.gettext_custom(*dialect)
                             }
                             @if let Some(ref antonym) = antonym {
-                              @data.gettext("Antonym of") <a class="clickable no-align green" href="/search/@antonym">@antonym</a>
+                              @data.gt_search_link("Antonym of {}", antonym) 
                             }
                             @if let Some(ref xref) = xref {
                               @if antonym.is_some() || dialect.is_some() {
                                 .
                               }
-                              @data.gettext("See also") <a class="clickable no-align green" href="/search/@xref">@xref</a>
+                              @data.gt_search_link("See also {}", xref) 
                             }
                           </div>
                         }
@@ -433,11 +433,10 @@
           <div class="kanji-parent">
             <!-- Tags -->
             <div class="tags">
-              @kanji.stroke_count @data.gettext("strokes").
-              @if let Some(jplt_lvl) = kanji.jlpt {
-                JLPT N@jplt_lvl.
-              }
-              @if let Some(grade) = kanji.grade {
+              @data.ngettext_fmt("{} stroke", kanji.stroke_count as u64, &[kanji.stroke_count]).
+              @if let Some(jlpt_lvl) = kanji.jlpt {
+                @data.gettext_fmt("JLPT N{}", &[jlpt_lvl])}@*
+            *@@if let Some(grade) = kanji.grade {@if kanji.jlpt.is_some() {. }
                 @data.gettext_fmt("Taught in {} grade", &[grade])
               }
             </div>
