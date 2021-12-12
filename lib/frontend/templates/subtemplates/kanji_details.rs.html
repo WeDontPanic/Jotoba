@@ -5,7 +5,7 @@
 @(data: &BaseData, kanji: Vec<Item>)
 
 @if kanji.is_empty() {
-  @:search_help(&data, data.gettext("kanji"))
+  @:search_help(&data, data.gettext("kanji").as_str())
 }
 
 <script defer src="/variable_assets/@data.asset_hash/assets/js/page/kanjiPage.js"></script>

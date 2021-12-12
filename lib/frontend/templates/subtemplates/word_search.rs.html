@@ -91,7 +91,7 @@
       @if result.has_word() {
         <h3 class="noselect word-title">@data.gettext("Words")</h3>
       } else {
-        @:search_help(&data, data.gettext("words"))
+        @:search_help(&data, data.gettext("words").as_str())
       }
 
       <!-- Word, Sentence, Name Templates here -->

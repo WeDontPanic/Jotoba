@@ -12,7 +12,7 @@
   <div class="main-info d-flex flex-column">
 
     @if names.is_empty() {
-      @:search_help(&data, data.gettext("names"))
+      @:search_help(&data, data.gettext("names").as_str())
     }
 
     @for name in names.iter() {

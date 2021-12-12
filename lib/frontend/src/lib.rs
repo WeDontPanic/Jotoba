@@ -13,6 +13,7 @@ pub mod search_ep;
 pub mod search_help;
 mod session;
 pub mod templ_utils;
+pub mod unescaped;
 mod url_query;
 pub mod user_settings;
 pub mod web_error;
@@ -35,6 +36,7 @@ use search::{
 };
 use search_help::SearchHelp;
 use types::jotoba::names::Name;
+use unescaped::{UnescapedStr, UnescapedString};
 
 /// Data for the base template
 pub struct BaseData<'a> {
@@ -153,14 +155,14 @@ impl<'a> BaseData<'a> {
     pub fn get_search_site_name(&self) -> &str {
         if let Site::SearchResult(ref res) = self.site {
             return match res.result {
-                ResultData::Word(_) => self.gettext("Words"),
-                ResultData::KanjiInfo(_) => self.gettext("Kanji"),
-                ResultData::Sentence(_) => self.gettext("Sentences"),
-                ResultData::Name(_) => self.gettext("Names"),
+                ResultData::Word(_) => self.gettext("Words").as_str(),
+                ResultData::KanjiInfo(_) => self.gettext("Kanji").as_str(),
+                ResultData::Sentence(_) => self.gettext("Sentences").as_str(),
+                ResultData::Name(_) => self.gettext("Names").as_str(),
             };
         }
 
-        self.gettext("Words")
+        self.gettext("Words").as_str()
     }
 
     #[inline]
@@ -267,35 +269,47 @@ impl<'a> BaseData<'a> {
     }
 
     #[inline]
-    pub fn gettext<T: Translatable>(&self, t: T) -> &'a str {
-        t.gettext(&self.dict, Some(self.get_lang()))
+    pub fn gettext<T: Translatable>(&self, t: T) -> UnescapedStr<'a> {
+        t.gettext(&self.dict, Some(self.get_lang())).into()
     }
 
     #[inline]
-    pub fn gettext_custom<T: Translatable>(&self, t: T) -> String {
-        t.gettext_custom(&self.dict, Some(self.get_lang()))
+    pub fn gettext_custom<T: Translatable>(&self, t: T) -> UnescapedString {
+        t.gettext_custom(&self.dict, Some(self.get_lang())).into()
     }
 
     #[inline]
-    pub fn pgettext<T: Translatable>(&self, t: T, context: &'a str) -> &'a str {
+    pub fn pgettext<T: Translatable>(&self, t: T, context: &'a str) -> UnescapedStr<'a> {
         t.pgettext(&self.dict, context, Some(self.get_lang()))
+            .into()
     }
 
     #[inline]
-    pub fn ngettext<T: TranslatablePlural>(&self, t: T, n: u64) -> &'a str {
-        t.ngettext(&self.dict, n, Some(self.get_lang()))
+    pub fn ngettext<T: TranslatablePlural>(&self, t: T, n: u64) -> UnescapedStr<'a> {
+        t.ngettext(&self.dict, n, Some(self.get_lang())).into()
     }
 
     #[inline]
-    pub fn pngettext<T: TranslatablePlural>(&self, t: T, context: &'a str, n: u64) -> &'a str {
+    pub fn pngettext<T: TranslatablePlural>(
+        &self,
+        t: T,
+        context: &'a str,
+        n: u64,
+    ) -> UnescapedStr<'a> {
         t.npgettext(&self.dict, context, n, Some(self.get_lang()))
+            .into()
     }
 
     // Format functions
 
     #[inline]
-    pub fn gettext_fmt<T: Translatable, V: Display + Sized>(&self, t: T, values: &[V]) -> String {
+    pub fn gettext_fmt<T: Translatable, V: Display + Sized>(
+        &self,
+        t: T,
+        values: &[V],
+    ) -> UnescapedString {
         t.gettext_fmt(&self.dict, values, Some(self.get_lang()))
+            .into()
     }
 
     #[inline]
@@ -304,8 +318,9 @@ impl<'a> BaseData<'a> {
         t: T,
         context: &'a str,
         values: &[V],
-    ) -> String {
+    ) -> UnescapedString {
         t.pgettext_fmt(&self.dict, context, values, Some(self.get_lang()))
+            .into()
     }
 
     #[inline]
@@ -314,8 +329,9 @@ impl<'a> BaseData<'a> {
         t: T,
         n: u64,
         values: &[V],
-    ) -> String {
+    ) -> UnescapedString {
         t.ngettext_fmt(&self.dict, n, values, Some(self.get_lang()))
+            .into()
     }
 
     #[inline]
@@ -325,7 +341,8 @@ impl<'a> BaseData<'a> {
         context: &'a str,
         n: u64,
         values: &[V],
-    ) -> String {
+    ) -> UnescapedString {
         t.npgettext_fmt(&self.dict, context, n, values, Some(self.get_lang()))
+            .into()
     }
 }

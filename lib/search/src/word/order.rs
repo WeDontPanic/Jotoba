@@ -25,7 +25,7 @@ pub fn japanese_search_order(
     let kana = &word.reading.kana.reading;
 
     if reading.reading == *query_str || word.reading.kana.reading == *query_str {
-        score += 50;
+        score += 80;
 
         // Show kana only readings on top if they match with query
         if word.reading.kanji.is_none() {
@@ -39,7 +39,7 @@ pub fn japanese_search_order(
         if (original_query == reading.reading || original_query == kana)
             && query_str != reading.reading
         {
-            score += 20;
+            score += 500;
         }
     }
 
