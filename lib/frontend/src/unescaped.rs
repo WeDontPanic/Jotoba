@@ -3,7 +3,7 @@ use std::{
     io::{self, Write},
 };
 
-use ructe::templates::ToHtml;
+use crate::templates::ToHtml;
 
 /// Unescaped owned String
 pub type UnescapedString = Unescaped<String>;
