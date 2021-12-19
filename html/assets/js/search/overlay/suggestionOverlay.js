@@ -110,6 +110,9 @@ function loadSuggestionApiData(result) {
     // Return if no suggestions were found
     if (result.suggestions.length == 0) {
 
+        // Hide (Rad-)Container
+        container_rad.classList.add("hidden");
+
         // Prevent future requests if no result was found and input was > 8 chars
         if (input.value >= 8) { 
             preventApiCallUntilDelete = true;
@@ -176,6 +179,9 @@ function loadSuggestionApiData(result) {
             ' <a href="/search/'+searchValue+'?t='+currentPage+'" class="search-suggestion"> ' +
             '   <span class="primary-suggestion">'+primaryResult+'</span> ' +
             ' </a> ';      
+
+            // Show Rad Container
+            container_rad.classList.remove("hidden");
         }
     }
 
