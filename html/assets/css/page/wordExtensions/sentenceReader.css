@@ -62,7 +62,6 @@
 @media only screen and (max-width: 600px) { 
 
     .sentence-reader {
-        overflow-x: scroll;
         flex-wrap: unset !important;
         justify-content: flex-start !important;
         scrollbar-width: none;

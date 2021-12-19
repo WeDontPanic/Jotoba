@@ -3,8 +3,6 @@
     display: flex;
     align-items: flex-start;
     flex-direction: column;
-    justify-content: center;
-    align-items: center;
     overflow-y: auto;
     max-height: 150px;
     height: -webkit-max-content;
@@ -32,8 +30,8 @@
 /* Mobile only */
 @media only screen and (max-width: 600px) {
     .search-annotation {
-        padding-right: 30px;
-        padding-left: 30px;
+        padding-left: 0;
+        margin-top: -15px;
     }
     
     .search-inflection {
