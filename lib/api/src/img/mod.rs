@@ -10,7 +10,7 @@ use error::api_error::RestError;
 use itertools::Itertools;
 use once_cell::sync::Lazy;
 use regex::Regex;
-use serde::{Deserialize, Serialize};
+use types::api::image::{Request, Response};
 
 // MAX 2MB
 const MAX_UPLOAD_SIZE: usize = 2 * 1024 * 1024;
@@ -18,20 +18,6 @@ const MAX_UPLOAD_SIZE: usize = 2 * 1024 * 1024;
 // Filter japanese from image text
 const FILTER_JP_REGEX: Lazy<Regex> =
     Lazy::new(|| Regex::new("[あ-ん一-龯一-龯０-９Ａ-ｚア-ン』『]").unwrap());
-
-/// Scan endpoint response
-#[derive(Serialize)]
-pub struct Response {
-    pub text: String,
-}
-
-#[derive(Deserialize)]
-pub struct Request {
-    /// The min amount of confidence the image scan resulted in. Everything below will be treated
-    /// as fail
-    #[serde(default = "default_conf_threshold")]
-    pub threshold: i32,
-}
 
 /// Get search suggestions endpoint
 pub async fn scan_ep(
@@ -95,12 +81,6 @@ fn format_text(text: String) -> Option<String> {
         .join("");
 
     (!modded_text.is_empty()).then(|| modded_text)
-}
-
-/// Default mit threshold value for detection confidence
-#[inline]
-fn default_conf_threshold() -> i32 {
-    75
 }
 
 /// Scans an image and returns a `Response` with the recognized text or an error

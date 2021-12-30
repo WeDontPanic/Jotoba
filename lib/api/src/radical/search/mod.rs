@@ -9,34 +9,16 @@ use std::{
 use actix_web::{web::Json, HttpRequest};
 use error::api_error::RestError;
 use japanese::JapaneseExt;
-use types::jotoba::languages::Language;
-use serde::{Deserialize, Serialize};
-
-/// Request struct for kanji_by_radicals endpoint
-#[derive(Deserialize)]
-pub struct RadSearchRequest {
-    pub query: String,
-}
-
-/// Response struct for kanji_by_radicals endpoint
-#[derive(Serialize, Default)]
-pub struct RadSearchResponse {
-    pub radicals: HashMap<u8, BTreeSet<ResRadical>>,
-}
-
-/// Single radical with its enabled/disabled state, representing whether it can be used together
-/// with the currently picked radicals or not.
-#[derive(Serialize, Hash, Eq, PartialEq, Ord, PartialOrd)]
-pub struct ResRadical {
-    #[serde(rename = "l")]
-    literal: char,
-}
+use types::{
+    api::radical::search::{Request, ResRadical, Response},
+    jotoba::languages::Language,
+};
 
 /// Search for radicals
 pub async fn search_radical(
-    mut payload: Json<RadSearchRequest>,
+    mut payload: Json<Request>,
     request: HttpRequest,
-) -> Result<Json<RadSearchResponse>, actix_web::Error> {
+) -> Result<Json<Response>, actix_web::Error> {
     verify_payload(&mut payload)?;
 
     let user_lang = request
@@ -51,10 +33,10 @@ pub async fn search_radical(
     };
 
     if res.is_empty() {
-        return Ok(Json(RadSearchResponse::default()));
+        return Ok(Json(Response::default()));
     }
 
-    Ok(Json(RadSearchResponse {
+    Ok(Json(Response {
         radicals: map_radicals(&res),
     }))
 }
@@ -77,7 +59,7 @@ fn map_radicals(inp: &[char]) -> HashMap<u8, BTreeSet<ResRadical>> {
 }
 
 /// Verifies the payload itself and returns a proper error if the request is invalid
-fn verify_payload(payload: &mut RadSearchRequest) -> Result<(), RestError> {
+fn verify_payload(payload: &mut Request) -> Result<(), RestError> {
     if payload.query.trim().is_empty() {
         return Err(RestError::BadRequest);
     }
