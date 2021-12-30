@@ -30,12 +30,9 @@ use pagination::Pagination;
 use resources::news::NewsEntry;
 use search::{query::Query, sentence::result::SentenceResult};
 
-use search::{
-    kanji::result::Item as KanjiItem, query::UserSettings, query_parser::QueryType,
-    word::result::WordResult,
-};
+use search::{kanji::result::Item as KanjiItem, query::UserSettings, word::result::WordResult};
 use search_help::SearchHelp;
-use types::jotoba::names::Name;
+use types::jotoba::{names::Name, search::QueryType};
 use unescaped::{UnescapedStr, UnescapedString};
 
 /// Data for the base template

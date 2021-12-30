@@ -113,7 +113,10 @@ fn search<'a>(main_lang: Language, query_str: &'a str) -> Vec<WordPair> {
 
     res.sort_by(|a, b| a.2.cmp(&b.2).reverse());
 
-    res.into_iter().take(30).map(|i| i.0.into()).collect()
+    res.into_iter()
+        .take(30)
+        .map(|i| foreign_suggestion_to_pair(i.0))
+        .collect()
 }
 
 fn search_by_lang<'a>(
@@ -173,12 +176,10 @@ fn beg_match(e: &ForeignSuggestion, inp: &str) -> Ordering {
     }
 }
 
-impl From<ForeignSuggestion> for WordPair {
-    #[inline]
-    fn from(suggestion: ForeignSuggestion) -> Self {
-        WordPair {
-            primary: suggestion.text,
-            secondary: suggestion.secondary,
-        }
+#[inline]
+fn foreign_suggestion_to_pair(suggestion: ForeignSuggestion) -> WordPair {
+    WordPair {
+        primary: suggestion.text,
+        secondary: suggestion.secondary,
     }
 }

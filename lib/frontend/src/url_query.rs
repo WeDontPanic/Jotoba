@@ -1,9 +1,6 @@
-use search::{
-    self,
-    query::UserSettings,
-    query_parser::{QueryParser, QueryType},
-};
+use search::{self, query::UserSettings, query_parser::QueryParser};
 use serde::Deserialize;
+use types::jotoba::search::QueryType;
 
 #[derive(Deserialize)]
 pub struct QueryStruct {

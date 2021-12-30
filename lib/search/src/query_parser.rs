@@ -1,12 +1,11 @@
 use std::{cmp::Ordering, str::FromStr};
 
 use itertools::Itertools;
-use localization::{language::Language, traits::Translatable, TranslationDict};
-use serde::Deserialize;
 
 use japanese::JapaneseExt;
 use types::jotoba::{
-    kanji, languages::Language as ContentLanguage, words::part_of_speech::PosSimple,
+    kanji, languages::Language as ContentLanguage, search::QueryType,
+    words::part_of_speech::PosSimple,
 };
 
 use super::query::{Form, Query, QueryLang, SearchTypeTag, Tag, UserSettings};
@@ -23,62 +22,6 @@ pub struct QueryParser {
     word_index: usize,
     use_original: bool,
     language_override: Option<ContentLanguage>,
-}
-
-#[derive(Deserialize, Debug, Copy, Clone, PartialEq, Hash)]
-pub enum QueryType {
-    #[serde(rename = "1")]
-    Kanji,
-    #[serde(rename = "2")]
-    Sentences,
-    #[serde(rename = "3")]
-    Names,
-    #[serde(rename = "0", other)]
-    Words,
-}
-
-impl QueryType {
-    /// Iterate over all query types
-    pub fn iterate() -> impl Iterator<Item = Self> {
-        vec![Self::Kanji, Self::Sentences, Self::Names, Self::Words].into_iter()
-    }
-
-    pub fn get_translated<'a>(
-        &self,
-        dict: &'a TranslationDict,
-        language: Option<Language>,
-    ) -> &'a str {
-        dict.gettext(self.get_id(), language)
-    }
-
-    #[inline]
-    pub fn get_type_id(&self) -> u8 {
-        match self {
-            QueryType::Kanji => 1,
-            QueryType::Sentences => 2,
-            QueryType::Names => 3,
-            QueryType::Words => 0,
-        }
-    }
-}
-
-impl Translatable for QueryType {
-    #[inline]
-    fn get_id(&self) -> &'static str {
-        match self {
-            QueryType::Kanji => "Kanji",
-            QueryType::Sentences => "Sentences",
-            QueryType::Names => "Names",
-            QueryType::Words => "Words",
-        }
-    }
-}
-
-impl Default for QueryType {
-    #[inline]
-    fn default() -> Self {
-        Self::Words
-    }
 }
 
 impl QueryParser {

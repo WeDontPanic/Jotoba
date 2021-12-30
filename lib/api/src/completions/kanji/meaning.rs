@@ -1,7 +1,7 @@
 use error::api_error::{Origin, RestError};
 use search::{query::Query, suggestions};
 
-use crate::completions::response::WordPair;
+use types::api::completions::WordPair;
 
 use super::super::{storage::K_MEANING_SUGGESTIONS, Response};
 

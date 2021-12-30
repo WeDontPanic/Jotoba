@@ -8,6 +8,7 @@ use super::user_settings;
 use actix_web::{rt::time::timeout, web, HttpRequest, HttpResponse};
 use localization::TranslationDict;
 use percent_encoding::percent_decode;
+use types::jotoba::search::QueryType;
 
 use crate::{
     templates,
@@ -18,7 +19,6 @@ use config::Config;
 use search::{
     self,
     query::{Query, UserSettings},
-    query_parser::QueryType,
 };
 
 use super::web_error;

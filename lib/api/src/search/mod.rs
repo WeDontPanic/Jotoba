@@ -5,12 +5,12 @@ pub mod word;
 
 use actix_web::web::Json;
 use error::api_error::RestError;
-use types::jotoba::languages::Language;
 use search::{
     query::{Query, UserSettings},
-    query_parser::{QueryParser, QueryType},
+    query_parser::QueryParser,
 };
 use serde::Deserialize;
+use types::jotoba::{languages::Language, search::QueryType};
 
 pub type Result<T> = std::result::Result<T, RestError>;
 

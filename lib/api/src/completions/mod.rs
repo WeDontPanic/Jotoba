@@ -1,7 +1,6 @@
 mod kanji;
 mod names;
 mod request;
-mod response;
 mod storage;
 mod words;
 
@@ -12,12 +11,11 @@ use std::cmp::Ordering;
 use config::Config;
 use error::api_error::RestError;
 use japanese::JapaneseExt;
-use query_parser::QueryType;
-use types::jotoba::languages::Language;
-use response::Response;
-use search::{
-    query::{Form, Query, QueryLang},
-    query_parser,
+use search::query::{Form, Query, QueryLang};
+use types::api::completions::{Response, WordPair};
+use types::{
+    api::completions::Request,
+    jotoba::{languages::Language, search::QueryType},
 };
 use utils::bool_ord;
 
@@ -25,9 +23,6 @@ use actix_web::{
     rt::time,
     web::{self, Json},
 };
-use response::WordPair;
-
-use self::request::Request;
 
 /// Get search suggestions endpoint
 pub async fn suggestion_ep(
@@ -37,7 +32,7 @@ pub async fn suggestion_ep(
     request::validate(&payload)?;
 
     // Adjust payload and parse to query
-    let query = payload.adjust().get_query()?;
+    let query = request::get_query(&request::adjust(&payload))?;
 
     // time we allow the suggestion to use in total loaded from the configuration file
     let timeout = config.get_suggestion_timeout();

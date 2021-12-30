@@ -1,8 +1,8 @@
 use error::api_error::RestError;
 use search::query::Query;
+use types::api::completions::WordPair;
 
 use super::{
-    response::WordPair,
     storage::{NAME_NATIVE, NAME_TRANSCRIPTIONS},
     Response,
 };

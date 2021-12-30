@@ -118,24 +118,6 @@ fn search_cmp(e: &NativeSuggestion, query_str: &str) -> Ordering {
     }
 }
 
-impl From<&Word> for WordPair {
-    #[inline]
-    fn from(word: &Word) -> Self {
-        let main_reading = word.get_reading().reading.to_owned();
-        if word.reading.kanji.is_some() {
-            WordPair {
-                secondary: Some(main_reading),
-                primary: word.reading.kana.reading.clone(),
-            }
-        } else {
-            WordPair {
-                primary: main_reading,
-                secondary: None,
-            }
-        }
-    }
-}
-
 impl Ord for WordPairOrder {
     #[inline]
     fn cmp(&self, other: &Self) -> Ordering {

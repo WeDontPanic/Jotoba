@@ -1,5 +1,5 @@
 use actix_web::web::{self, Json};
-use search::query_parser::QueryType::Kanji;
+use types::jotoba::search::QueryType;
 
 use self::response::Response;
 
@@ -9,7 +9,7 @@ pub mod response;
 
 /// Do a Sentence search via API
 pub async fn sentence_search(payload: Json<SearchRequest>) -> Result<Json<Response>> {
-    let query = SearchRequest::parse(payload, Kanji)?;
+    let query = SearchRequest::parse(payload, QueryType::Kanji)?;
 
     let result = web::block(move || search::sentence::search(&query)).await??;
 
