@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use crate::jotoba::{search::QueryType, words::Word};
+use crate::jotoba::search::QueryType;
 
 /// Request payload structure for suggestion endpoint
 #[derive(Deserialize)]
@@ -63,9 +63,9 @@ impl WordPair {
 }
 
 #[cfg(feature = "jotoba_intern")]
-impl From<&Word> for WordPair {
+impl From<&crate::jotoba::words::Word> for WordPair {
     #[inline]
-    fn from(word: &Word) -> Self {
+    fn from(word: &crate::jotoba::words::Word) -> Self {
         let main_reading = word.get_reading().reading.to_owned();
         if word.reading.kanji.is_some() {
             WordPair {

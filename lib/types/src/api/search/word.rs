@@ -87,6 +87,7 @@ impl From<&crate::jotoba::words::sense::Sense> for Sense {
     }
 }
 
+#[cfg(feature = "jotoba_intern")]
 impl From<&crate::jotoba::words::Word> for Word {
     #[inline]
     fn from(word: &crate::jotoba::words::Word) -> Self {
@@ -119,6 +120,7 @@ impl From<&crate::jotoba::words::Word> for Word {
     }
 }
 
+#[cfg(feature = "jotoba_intern")]
 impl
     From<(
         Vec<&crate::jotoba::words::Word>,
@@ -139,16 +141,19 @@ impl
     }
 }
 
+#[cfg(feature = "jotoba_intern")]
 #[inline]
 fn convert_kanji(wres: Vec<&crate::jotoba::kanji::Kanji>) -> Vec<Kanji> {
     wres.into_iter().map(|i| i.into()).collect()
 }
 
+#[cfg(feature = "jotoba_intern")]
 #[inline]
 fn convert_words(wres: Vec<&crate::jotoba::words::Word>) -> Vec<Word> {
     wres.into_iter().map(|i| i.into()).collect()
 }
 
+#[cfg(feature = "jotoba_intern")]
 impl From<(&str, bool)> for PitchItem {
     #[inline]
     fn from((part, high): (&str, bool)) -> Self {
