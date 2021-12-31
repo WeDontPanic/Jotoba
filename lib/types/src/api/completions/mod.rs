@@ -18,14 +18,14 @@ pub struct Request {
 }
 
 /// Response struct for suggestion endpoint
-#[derive(Serialize, Default)]
+#[derive(Serialize, Deserialize, Default)]
 pub struct Response {
     pub suggestions: Vec<WordPair>,
     pub suggestion_type: SuggestionType,
 }
 
 /// The type of suggestion. `Default` in most cases
-#[derive(Serialize)]
+#[derive(Deserialize, Serialize)]
 #[serde(rename_all = "snake_case")]
 pub enum SuggestionType {
     /// Default suggestion type
@@ -42,7 +42,7 @@ impl Default for SuggestionType {
 }
 
 /// A word with kana and kanji reading used within [`SuggestionResponse`]
-#[derive(Serialize, Default, PartialEq, Eq, Debug, Hash, Clone)]
+#[derive(Serialize, Deserialize, Default, PartialEq, Eq, Debug, Hash, Clone)]
 pub struct WordPair {
     pub primary: String,
     #[serde(skip_serializing_if = "Option::is_none")]

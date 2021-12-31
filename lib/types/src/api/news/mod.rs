@@ -1,9 +1,9 @@
 pub mod long;
 pub mod short;
 
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 
-#[derive(Serialize, Clone)]
+#[derive(Serialize, Deserialize, Clone)]
 pub struct NewsEntry {
     pub id: u32,
     pub title: String,

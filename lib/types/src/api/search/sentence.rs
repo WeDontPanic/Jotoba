@@ -1,13 +1,13 @@
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 
 use crate::jotoba::languages::Language;
 
-#[derive(Serialize)]
+#[derive(Serialize, Deserialize)]
 pub struct Response {
     sentences: Vec<Sentence>,
 }
 
-#[derive(Serialize)]
+#[derive(Serialize, Deserialize)]
 pub struct Sentence {
     pub content: String,
     pub furigana: String,

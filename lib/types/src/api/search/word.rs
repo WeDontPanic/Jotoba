@@ -6,17 +6,17 @@ use crate::{
     },
 };
 
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 
 /// The API response struct for a word search
-#[derive(Serialize)]
+#[derive(Serialize, Deserialize)]
 pub struct Response {
     kanji: Vec<Kanji>,
     words: Vec<Word>,
 }
 
 /// Represents a single Word result with 1 (main) Japanese reading and n glosses
-#[derive(Serialize)]
+#[derive(Serialize, Deserialize)]
 pub struct Word {
     reading: Reading,
     common: bool,
@@ -29,13 +29,13 @@ pub struct Word {
     pitch: Option<Vec<PitchItem>>,
 }
 
-#[derive(Serialize)]
+#[derive(Serialize, Deserialize)]
 pub struct PitchItem {
     part: String,
     high: bool,
 }
 
-#[derive(Serialize)]
+#[derive(Serialize, Deserialize)]
 pub struct Reading {
     kana: String,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -44,7 +44,7 @@ pub struct Reading {
     furigana: Option<String>,
 }
 
-#[derive(Serialize)]
+#[derive(Serialize, Deserialize)]
 pub struct Sense {
     glosses: Vec<String>,
     pos: Vec<PartOfSpeech>,

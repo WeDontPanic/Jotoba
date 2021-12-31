@@ -7,7 +7,7 @@ pub struct Request {
     pub id: u32,
 }
 
-#[derive(Serialize)]
+#[derive(Serialize, Deserialize)]
 pub struct Response {
     pub entry: NewsEntry,
 }

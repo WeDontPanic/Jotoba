@@ -1,13 +1,13 @@
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 
 use crate::jotoba::names::name_type::NameType;
 
-#[derive(Serialize)]
+#[derive(Serialize, Deserialize)]
 pub struct Response {
     names: Vec<Name>,
 }
 
-#[derive(Serialize)]
+#[derive(Serialize, Deserialize)]
 pub struct Name {
     pub kana: String,
     #[serde(skip_serializing_if = "Option::is_none")]

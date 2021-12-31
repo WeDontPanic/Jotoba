@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 
 /// Scan endpoint response
-#[derive(Serialize)]
+#[derive(Serialize, Deserialize)]
 pub struct Response {
     pub text: String,
 }

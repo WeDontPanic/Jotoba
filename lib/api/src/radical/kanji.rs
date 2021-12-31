@@ -1,11 +1,11 @@
 use actix_web::web::Json;
 use std::collections::{HashMap, HashSet};
-use types::api::radical::find_kanji::{RadicalsRequest, RadicalsResponse};
+use types::api::radical::find_kanji::{Request, Response};
 
 /// Get kanji by its radicals
 pub async fn kanji_by_radicals(
-    payload: Json<RadicalsRequest>,
-) -> Result<Json<RadicalsResponse>, actix_web::Error> {
+    payload: Json<Request>,
+) -> Result<Json<Response>, actix_web::Error> {
     let kanji_retr = resources::get().kanji();
 
     let mut possible_radicals: HashSet<char> = HashSet::new();
@@ -24,7 +24,7 @@ pub async fn kanji_by_radicals(
 
     let possible_radicals = possible_radicals.into_iter().collect();
 
-    Ok(Json(RadicalsResponse {
+    Ok(Json(Response {
         possible_radicals,
         kanji: kanji_res,
     }))

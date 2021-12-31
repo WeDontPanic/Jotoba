@@ -8,14 +8,14 @@ pub struct Request {
 }
 
 /// Response struct for kanji_by_radicals endpoint
-#[derive(Serialize, Default)]
+#[derive(Serialize, Deserialize, Default)]
 pub struct Response {
     pub radicals: HashMap<u8, BTreeSet<ResRadical>>,
 }
 
 /// Single radical with its enabled/disabled state, representing whether it can be used together
 /// with the currently picked radicals or not.
-#[derive(Serialize, Hash, Eq, PartialEq, Ord, PartialOrd)]
+#[derive(Serialize, Deserialize, Hash, Eq, PartialEq, Ord, PartialOrd)]
 pub struct ResRadical {
     #[serde(rename = "l")]
     pub literal: char,
