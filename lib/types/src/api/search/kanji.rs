@@ -1,9 +1,8 @@
-use search::kanji::result;
 use serde::Serialize;
 
 #[derive(Serialize)]
 pub struct Response {
-    kanji: Vec<Kanji>,
+    pub kanji: Vec<Kanji>,
 }
 
 #[derive(Serialize)]
@@ -36,9 +35,9 @@ pub struct Kanji {
     stroke_frames: Option<String>,
 }
 
-impl From<&types::jotoba::kanji::Kanji> for Kanji {
+impl From<&crate::jotoba::kanji::Kanji> for Kanji {
     #[inline]
-    fn from(kanji: &types::jotoba::kanji::Kanji) -> Self {
+    fn from(kanji: &crate::jotoba::kanji::Kanji) -> Self {
         let frames = kanji
             .has_stroke_frames()
             .then(|| kanji.get_stroke_frames_url());
@@ -63,20 +62,5 @@ impl From<&types::jotoba::kanji::Kanji> for Kanji {
             radical: kanji.radical.literal.to_string(),
             stroke_frames: frames,
         }
-    }
-}
-
-impl From<result::Item> for Kanji {
-    #[inline]
-    fn from(item: result::Item) -> Self {
-        Kanji::from(&item.kanji)
-    }
-}
-
-impl From<Vec<result::Item>> for Response {
-    #[inline]
-    fn from(items: Vec<result::Item>) -> Self {
-        let kanji = items.into_iter().map(|i| Kanji::from(i)).collect();
-        Response { kanji }
     }
 }

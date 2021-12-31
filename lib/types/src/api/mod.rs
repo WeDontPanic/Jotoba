@@ -3,5 +3,3 @@ pub mod image;
 pub mod news;
 pub mod radical;
 pub mod search;
-
-// TODO: make this here

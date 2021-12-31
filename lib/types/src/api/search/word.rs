@@ -1,12 +1,12 @@
-use types::jotoba::{
-    languages::Language,
-    words::{dialect::Dialect, field::Field, misc::Misc, part_of_speech::PartOfSpeech},
+use crate::{
+    api::search::kanji::Kanji,
+    jotoba::{
+        languages::Language,
+        words::{dialect::Dialect, field::Field, misc::Misc, part_of_speech::PartOfSpeech},
+    },
 };
 
-use search::word::result::{Item, WordResult};
 use serde::Serialize;
-
-use crate::search::kanji::response::Kanji;
 
 /// The API response struct for a word search
 #[derive(Serialize)]
@@ -63,8 +63,8 @@ pub struct Sense {
     xref: Option<String>,
 }
 
-impl From<&types::jotoba::words::sense::Sense> for Sense {
-    fn from(sense: &types::jotoba::words::sense::Sense) -> Self {
+impl From<&crate::jotoba::words::sense::Sense> for Sense {
+    fn from(sense: &crate::jotoba::words::sense::Sense) -> Self {
         let pos = sense.part_of_speech.clone();
 
         let glosses = sense
@@ -87,9 +87,9 @@ impl From<&types::jotoba::words::sense::Sense> for Sense {
     }
 }
 
-impl From<&types::jotoba::words::Word> for Word {
+impl From<&crate::jotoba::words::Word> for Word {
     #[inline]
-    fn from(word: &types::jotoba::words::Word) -> Self {
+    fn from(word: &crate::jotoba::words::Word) -> Self {
         let kanji = word.reading.kanji.as_ref().map(|i| i.reading.clone());
         let kana = word.reading.kana.clone().reading;
         let furigana = word.furigana.clone();
@@ -119,36 +119,34 @@ impl From<&types::jotoba::words::Word> for Word {
     }
 }
 
-impl From<WordResult> for Response {
+impl
+    From<(
+        Vec<&crate::jotoba::words::Word>,
+        Vec<&crate::jotoba::kanji::Kanji>,
+    )> for Response
+{
     #[inline]
-    fn from(wres: WordResult) -> Self {
-        let kanji = convert_kanji(&wres);
-        let words = convert_words(&wres);
+    fn from(
+        wres: (
+            Vec<&crate::jotoba::words::Word>,
+            Vec<&crate::jotoba::kanji::Kanji>,
+        ),
+    ) -> Self {
+        let kanji = convert_kanji(wres.1);
+        let words = convert_words(wres.0);
 
         Self { kanji, words }
     }
 }
 
 #[inline]
-fn convert_kanji(wres: &WordResult) -> Vec<Kanji> {
-    wres.items
-        .iter()
-        .filter_map(|i| match i {
-            Item::Kanji(k) => Some(k.into()),
-            _ => None,
-        })
-        .collect()
+fn convert_kanji(wres: Vec<&crate::jotoba::kanji::Kanji>) -> Vec<Kanji> {
+    wres.into_iter().map(|i| i.into()).collect()
 }
 
 #[inline]
-fn convert_words(wres: &WordResult) -> Vec<Word> {
-    wres.items
-        .iter()
-        .filter_map(|i| match i {
-            Item::Word(w) => Some(w.into()),
-            _ => None,
-        })
-        .collect()
+fn convert_words(wres: Vec<&crate::jotoba::words::Word>) -> Vec<Word> {
+    wres.into_iter().map(|i| i.into()).collect()
 }
 
 impl From<(&str, bool)> for PitchItem {

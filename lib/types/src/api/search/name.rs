@@ -1,5 +1,6 @@
 use serde::Serialize;
-use types::jotoba::names::{self, name_type::NameType};
+
+use crate::jotoba::names::name_type::NameType;
 
 #[derive(Serialize)]
 pub struct Response {
@@ -18,9 +19,9 @@ pub struct Name {
     pub xref: Option<String>,
 }
 
-impl From<&names::Name> for Name {
+impl From<&crate::jotoba::names::Name> for Name {
     #[inline]
-    fn from(name: &names::Name) -> Self {
+    fn from(name: &crate::jotoba::names::Name) -> Self {
         Self {
             kana: name.kana.clone(),
             kanji: name.kanji.clone(),
@@ -31,9 +32,9 @@ impl From<&names::Name> for Name {
     }
 }
 
-impl From<Vec<&names::Name>> for Response {
+impl From<Vec<&crate::jotoba::names::Name>> for Response {
     #[inline]
-    fn from(name: Vec<&names::Name>) -> Self {
+    fn from(name: Vec<&crate::jotoba::names::Name>) -> Self {
         let names: Vec<Name> = name.into_iter().map(Name::from).collect();
         Self { names }
     }
