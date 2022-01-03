@@ -112,7 +112,7 @@ impl From<&crate::jotoba::words::Word> for Word {
             senses,
             alt_readings: None,
             audio: word
-                .audio_file("mp3")
+                .audio_file("ogg")
                 .as_ref()
                 .map(|i| format!("/audio/{}", i)),
             pitch,
