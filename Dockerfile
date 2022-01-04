@@ -12,7 +12,7 @@ COPY ./jotoba_bin ./jotoba_bin
 COPY ./LICENSE ./
 
 RUN apt clean
-RUN apt-get update --allow-releaseinfo-change
+RUN apt-get update --allow-releaseinfo-change -y
 RUN apt upgrade -y
 RUN apt install build-essential pkg-config libssl-dev libleptonica-dev libtesseract-dev clang tesseract-ocr-jpn -y
 
