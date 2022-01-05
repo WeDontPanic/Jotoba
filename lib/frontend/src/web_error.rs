@@ -50,11 +50,14 @@ impl ResponseError for Error {
 
     fn error_response(&self) -> HttpResponse {
         // Render the error template
-        HttpResponse::Ok().body(render!(
-            templates::error_page,
-            self.status_code().as_u16(),
-            self.get_info_text()
-        ))
+        HttpResponse::Ok().body(
+            render!(
+                templates::error_page,
+                self.status_code().as_u16(),
+                self.get_info_text()
+            )
+            .render(),
+        )
     }
 }
 

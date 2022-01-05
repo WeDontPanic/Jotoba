@@ -19,8 +19,12 @@ pub async fn index(
 
     //session::init(&session, &settings);
 
-    Ok(HttpResponse::Ok().body(render!(
-        templates::base_index,
-        BaseData::new(&locale_dict, settings, &config.asset_hash, &config).with_site(Site::Index)
-    )))
+    Ok(HttpResponse::Ok().body(
+        render!(
+            templates::base_index,
+            BaseData::new(&locale_dict, settings, &config.asset_hash, &config)
+                .with_site(Site::Index)
+        )
+        .render(),
+    ))
 }

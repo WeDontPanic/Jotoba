@@ -22,9 +22,12 @@ pub async fn news(
 
     let news: Vec<&'static NewsEntry> = resources::news::get().last_entries(5).collect::<Vec<_>>();
 
-    Ok(HttpResponse::Ok().body(render!(
-        templates::base,
-        BaseData::new(&locale_dict, settings, &config.asset_hash, &config)
-            .with_site(Site::News(news))
-    )))
+    Ok(HttpResponse::Ok().body(
+        render!(
+            templates::base,
+            BaseData::new(&locale_dict, settings, &config.asset_hash, &config)
+                .with_site(Site::News(news))
+        )
+        .render(),
+    ))
 }

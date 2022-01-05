@@ -91,8 +91,8 @@ pub(super) async fn start() -> std::io::Result<()> {
                 actixweb::scope("/api")
                     .wrap(
                         middleware::DefaultHeaders::new()
-                            .header(ACCESS_CONTROL_ALLOW_ORIGIN, "*")
-                            .header(ACCESS_CONTROL_ALLOW_HEADERS, "Content-Type"),
+                            .add((ACCESS_CONTROL_ALLOW_ORIGIN, "*"))
+                            .add((ACCESS_CONTROL_ALLOW_HEADERS, "Content-Type")),
                     )
                     .wrap(Compat::new(Compress::default()))
                     .route("/", actixweb::get().to(docs))
@@ -134,7 +134,7 @@ pub(super) async fn start() -> std::io::Result<()> {
                 actixweb::scope("/audio")
                     .wrap(
                         middleware::DefaultHeaders::new()
-                            .header(CACHE_CONTROL, format!("max-age={}", ASSET_CACHE_MAX_AGE)),
+                            .add((CACHE_CONTROL, format!("max-age={}", ASSET_CACHE_MAX_AGE))),
                     )
                     .service(
                         actix_files::Files::new("", config.server.get_audio_files())
@@ -145,7 +145,7 @@ pub(super) async fn start() -> std::io::Result<()> {
                 actixweb::scope("/assets")
                     .wrap(
                         middleware::DefaultHeaders::new()
-                            .header(CACHE_CONTROL, format!("max-age={}", ASSET_CACHE_MAX_AGE)),
+                            .add((CACHE_CONTROL, format!("max-age={}", ASSET_CACHE_MAX_AGE))),
                     )
                     .wrap(Compat::new(Compress::default()))
                     .service(
@@ -157,7 +157,7 @@ pub(super) async fn start() -> std::io::Result<()> {
                 actixweb::scope("/variable_assets/{oma}/assets")
                     .wrap(
                         middleware::DefaultHeaders::new()
-                            .header(CACHE_CONTROL, format!("max-age={}", ASSET_CACHE_MAX_AGE)),
+                            .add((CACHE_CONTROL, format!("max-age={}", ASSET_CACHE_MAX_AGE))),
                     )
                     .wrap(Compat::new(Compress::default()))
                     .service(

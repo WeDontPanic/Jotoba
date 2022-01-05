@@ -19,9 +19,12 @@ pub async fn help(
 
     //session::init(&session, &settings);
 
-    Ok(HttpResponse::Ok().body(render!(
-        templates::base,
-        BaseData::new(&locale_dict, settings, &config.asset_hash, &config)
-            .with_site(Site::InfoPage)
-    )))
+    Ok(HttpResponse::Ok().body(
+        render!(
+            templates::base,
+            BaseData::new(&locale_dict, settings, &config.asset_hash, &config)
+                .with_site(Site::InfoPage)
+        )
+        .render(),
+    ))
 }

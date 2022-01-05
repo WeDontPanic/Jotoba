@@ -89,7 +89,7 @@ async fn search(
         }
     }
 
-    Ok(HttpResponse::Ok().body(render!(templates::base, search_result)))
+    Ok(HttpResponse::Ok().body(render!(templates::base, search_result).render()))
 }
 
 /// Run the search and return the `BaseData` for the result page to render
