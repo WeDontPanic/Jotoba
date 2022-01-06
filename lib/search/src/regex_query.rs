@@ -5,7 +5,8 @@
 //! "宇宙*行士" => "宇宙飛行士"
 //!
 //! # Supported syntax
-//! `*` - Allows 0-n other characters
+//! `*` - Allows 0-n of other characters
+//! `?` - Allows 0-1 of other characters
 //!
 //! # Note
 //! All queries containing (custom)regex syntax will be handled as full-word matches. In other words if
