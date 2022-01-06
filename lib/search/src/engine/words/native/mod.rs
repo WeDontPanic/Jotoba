@@ -1,4 +1,6 @@
 pub mod index;
+pub mod regex;
+pub mod regex_index;
 
 use crate::engine::{document::SingleDocument, simple_gen_doc::GenDoc, Indexable, SearchEngine};
 use resources::models::storage::ResourceStorage;

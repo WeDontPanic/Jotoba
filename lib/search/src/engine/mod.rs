@@ -30,6 +30,9 @@ pub fn load_indexes(config: &Config) -> Result<(), Box<dyn std::error::Error>> {
             words::native::index::load(config.get_indexes_source());
         });
         s.spawn(|_| {
+            words::native::regex_index::load(config.get_indexes_source());
+        });
+        s.spawn(|_| {
             words::foreign::index::load(index_path).expect("failed to load index");
         });
         s.spawn(|_| {

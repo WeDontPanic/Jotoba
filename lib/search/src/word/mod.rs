@@ -1,7 +1,10 @@
 mod kanji;
 pub mod order;
+mod regex;
 pub mod result;
 pub mod tag_only;
+
+use std::time::Instant;
 
 use crate::{
     engine::{
@@ -27,7 +30,7 @@ use types::jotoba::{
     languages::Language,
     words::{filter_languages, part_of_speech::PosSimple, Word},
 };
-use utils::to_option;
+use utils::{real_string_len, to_option};
 
 pub struct Search<'a> {
     query: &'a Query,
@@ -36,9 +39,9 @@ pub struct Search<'a> {
 /// Search among all data based on the input query
 #[inline]
 pub fn search(query: &Query) -> Result<WordResult, Error> {
-    //let start = Instant::now();
+    let start = Instant::now();
     let res = Search { query }.do_search();
-    //println!("Search took {:?}", start.elapsed());
+    println!("Search took {:?}", start.elapsed());
     res
 }
 
@@ -217,6 +220,17 @@ impl<'a> Search<'a> {
     > {
         if self.query.language != QueryLang::Japanese && !query_str.is_japanese() {
             return Err(Error::NotFound);
+        }
+
+        // Try regex search
+        // prevent heavy queries
+        if real_string_len(query_str) >= 2 || query_str.has_kanji() {
+            if let Some(regex_query) = self.query.as_regex_query() {
+                let limit = self.query.settings.page_size;
+                let offset = self.query.page_offset;
+                let res = regex::search(regex_query, limit, offset)?;
+                return Ok((res, None, None, query_str.to_string()));
+            }
         }
 
         let (query, morpheme, sentence) = self.get_query(query_str)?;

@@ -3,7 +3,7 @@ use std::{
     str::FromStr,
 };
 
-use crate::query_parser;
+use crate::{query_parser, regex_query::RegexSQuery};
 
 use itertools::Itertools;
 use percent_encoding::{utf8_percent_encode, AsciiSet, CONTROLS};
@@ -389,6 +389,18 @@ impl Query {
     /// Returns the language with lang override applied
     pub fn get_lang_with_override(&self) -> Language {
         self.language_override.unwrap_or(self.settings.user_lang)
+    }
+
+    /// Returns a `RegexSQuery` if the query contains a valid regex
+    pub fn as_regex_query(&self) -> Option<RegexSQuery> {
+        // Only japanese regex support (for now)
+        if self.language != QueryLang::Japanese {
+            return None;
+        }
+        println!("try regex: {}", self.query);
+
+        // returns `None` if no regex given, so we don't need to check for that here
+        RegexSQuery::new(&self.query)
     }
 }
 

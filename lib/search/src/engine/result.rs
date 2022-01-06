@@ -35,6 +35,22 @@ impl<T: PartialEq + Debug> Debug for SearchResult<T> {
     }
 }
 
+impl<T: PartialEq> SearchResult<T> {
+    pub fn from_items<U: Into<ResultItem<T>>>(items: Vec<U>, total_len: usize) -> Self {
+        let mut items = items
+            .into_iter()
+            .map(|item| item.into())
+            .collect::<Vec<_>>();
+
+        items.sort_by(|a, b| a.cmp(&b).reverse());
+
+        Self {
+            total_items: total_len,
+            items,
+        }
+    }
+}
+
 impl<T: PartialEq + Hash + Clone + Eq> SearchResult<T> {
     /// Returns a `SearchResult` from a BinaryHeap
     pub(crate) fn from_binary_heap(
