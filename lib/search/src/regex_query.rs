@@ -24,11 +24,13 @@ pub struct RegexSQuery {
 impl RegexSQuery {
     /// Create a new regex query. Returns `None` if invalid or no regex given
     pub fn new(query: &str) -> Option<Self> {
-        if !Self::is_regex(query) {
+        let query = adjust_regex(query);
+
+        if !Self::is_regex(&query) {
             return None;
         }
 
-        let regex = Regex::new(&Self::convert_regex(query)).ok()?;
+        let regex = Regex::new(&Self::convert_regex(&query)).ok()?;
         Some(RegexSQuery {
             query: query.to_string(),
             regex,
@@ -53,6 +55,7 @@ impl RegexSQuery {
         out
     }
 
+    /// Returns a real regex expression which will be used to match words
     fn convert_regex(query: &str) -> String {
         let mut out = String::with_capacity(query.len() + 2);
         out.push('^');
@@ -67,4 +70,10 @@ impl RegexSQuery {
     fn is_regex(query: &str) -> bool {
         query.contains('*')
     }
+}
+
+/// Adjusts the query to a consistent format
+#[inline]
+fn adjust_regex(query: &str) -> String {
+    query.replace("＊", "*")
 }

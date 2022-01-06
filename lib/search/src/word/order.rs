@@ -1,16 +1,49 @@
-use crate::SearchMode;
+use crate::{regex_query::RegexSQuery, SearchMode};
 use japanese::JapaneseExt;
 use levenshtein::levenshtein;
 use once_cell::sync::Lazy;
 use regex::Regex;
+use strsim::jaro_winkler;
 use types::jotoba::{
     languages::Language,
     words::{sense::Gloss, Word},
 };
+use utils::real_string_len;
 
 /// A Regex matching parentheses and its contents
 pub(crate) static REMOVE_PARENTHESES: Lazy<Regex> =
     Lazy::new(|| regex::Regex::new("\\(.*\\)").unwrap());
+
+/// Order for regex-search results
+pub fn regex_order(word: &Word, found_in: &str, query: &RegexSQuery) -> usize {
+    let mut score = 100;
+    let comp_query = query.get_chars().into_iter().collect::<String>();
+
+    if !word
+        .reading
+        .alternative
+        .iter()
+        .any(|i| i.reading == found_in)
+    {
+        score += 20;
+    }
+
+    if word.is_common() {
+        score += 10;
+    }
+
+    if word.get_jlpt_lvl().is_some() {
+        score += 5;
+    }
+
+    // Similarity to query
+    score += (jaro_winkler(found_in, &comp_query) * 100f64) as usize;
+
+    // Show shorter words more on top
+    score = score.saturating_sub(real_string_len(&word.get_reading().reading));
+
+    score
+}
 
 /// Search order for words searched by japanese meaning/kanji/reading
 pub fn japanese_search_order(

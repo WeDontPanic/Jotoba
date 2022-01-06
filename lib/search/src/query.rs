@@ -397,7 +397,6 @@ impl Query {
         if self.language != QueryLang::Japanese {
             return None;
         }
-        println!("try regex: {}", self.query);
 
         // returns `None` if no regex given, so we don't need to check for that here
         RegexSQuery::new(&self.query)
