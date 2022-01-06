@@ -7,6 +7,7 @@ use std::{
     fs::File,
     io::{BufRead, BufReader, Read, Write},
     path::Path,
+    time::Instant,
 };
 
 use self::storage::{RadicalStorage, ResourceStorage, SentenceStorage};
@@ -97,5 +98,7 @@ fn load_rad_map<P: AsRef<Path>>(rad_map_file: P) -> Result<RadicalStorage, Box<d
 
 /// Load sentences from sentence file
 fn load_sentences<P: AsRef<Path>>(sentences: P) -> Result<SentenceStorage, Box<dyn Error>> {
-    Ok(bincode::deserialize_from(File::open(sentences)?)?)
+    Ok(bincode::deserialize_from(BufReader::new(File::open(
+        sentences,
+    )?))?)
 }

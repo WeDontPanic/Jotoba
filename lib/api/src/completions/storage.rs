@@ -1,4 +1,4 @@
-use std::{error::Error, fs::File, path::Path};
+use std::{error::Error, fs::File, io::BufReader, path::Path};
 
 use config::Config;
 use log::info;
@@ -140,7 +140,7 @@ fn load_meaning_suggestions(config: &Config) -> Result<(), Box<dyn std::error::E
     }
 
     let kanji_items: Vec<KanjiMeaningSuggestionItem> =
-        bincode::deserialize_from(File::open(file)?)?;
+        bincode::deserialize_from(BufReader::new(File::open(file)?))?;
 
     K_MEANING_SUGGESTIONS.set(TextSearch::new(kanji_items)).ok();
 
@@ -157,7 +157,7 @@ fn load_native_names(config: &Config) -> Result<(), Box<dyn std::error::Error>> 
         return Ok(());
     }
 
-    let items: Vec<NameNative> = bincode::deserialize_from(File::open(file)?)?;
+    let items: Vec<NameNative> = bincode::deserialize_from(BufReader::new(File::open(file)?))?;
 
     NAME_NATIVE.set(TextSearch::new(items)).ok();
 
@@ -174,7 +174,8 @@ fn load_name_transcriptions(config: &Config) -> Result<(), Box<dyn std::error::E
         return Ok(());
     }
 
-    let items: Vec<NameTranscription> = bincode::deserialize_from(File::open(file)?)?;
+    let items: Vec<NameTranscription> =
+        bincode::deserialize_from(BufReader::new(File::open(file)?))?;
 
     NAME_TRANSCRIPTIONS.set(TextSearch::new(items)).ok();
 

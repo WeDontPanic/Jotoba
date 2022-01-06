@@ -1,4 +1,4 @@
-use std::{collections::HashMap, error::Error, fs::File, path::Path};
+use std::{collections::HashMap, error::Error, fs::File, io::BufReader, path::Path};
 
 use bktree::BkTree;
 use config::Config;
@@ -19,7 +19,7 @@ pub(super) static RADICAL_INDEX: OnceCell<RadicalIndex> = OnceCell::new();
 /// Load the radical index
 pub(crate) fn load(config: &Config) -> Result<(), Box<dyn Error>> {
     let file = File::open(Path::new(config.get_indexes_source()).join("radical_index"))?;
-    let index: RadicalIndex = bincode::deserialize_from(file)?;
+    let index: RadicalIndex = bincode::deserialize_from(BufReader::new(file))?;
     RADICAL_INDEX.set(index).ok();
     info!("Loaded radical index");
     Ok(())

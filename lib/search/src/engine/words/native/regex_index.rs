@@ -4,6 +4,7 @@ use serde::{Deserialize, Serialize};
 use std::{
     collections::{HashMap, HashSet},
     fs::File,
+    io::BufReader,
     path::Path,
 };
 
@@ -11,9 +12,9 @@ use std::{
 pub(super) static INDEX: OnceCell<RegexSearchIndex> = OnceCell::new();
 
 pub fn load<P: AsRef<Path>>(path: P) {
-    let file = path.as_ref().join("regex_index");
-    let file = File::open(file).expect("Missing regex index");
-    let index: RegexSearchIndex = bincode::deserialize_from(file).expect("Invaild regex index");
+    let file = File::open(path.as_ref().join("regex_index")).expect("Missing regex index");
+    let index: RegexSearchIndex =
+        bincode::deserialize_from(BufReader::new(file)).expect("Invaild regex index");
     info!("Loaded japanese regex index");
     INDEX.set(index).ok();
 }

@@ -1,4 +1,4 @@
-use std::{fs::File, path::Path};
+use std::{fs::File, io::BufReader, path::Path};
 
 use bktree::BkTree;
 use config::Config;
@@ -31,7 +31,8 @@ pub(crate) fn load(config: &Config) {
 pub fn load_term_treepath(config: &Config) {
     let path = Path::new(config.get_indexes_source()).join("name_foreign_index.tree");
     let file = File::open(path).expect("Failed to parse name term tree");
-    let tt = bincode::deserialize_from(file).expect("Failed to parse name term tree");
+    let tt =
+        bincode::deserialize_from(BufReader::new(file)).expect("Failed to parse name term tree");
     info!("Loaded name term tree");
 
     TERM_TREE.set(tt).ok();

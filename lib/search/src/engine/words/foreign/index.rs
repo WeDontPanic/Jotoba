@@ -1,10 +1,10 @@
-use std::{collections::HashMap, error::Error, path::Path};
+use std::{collections::HashMap, error::Error, io::BufReader, path::Path};
 
 use bktree::BkTree;
 use log::{error, info};
 use once_cell::sync::OnceCell;
-use types::jotoba::languages::Language;
 use serde::{Deserialize, Serialize};
+use types::jotoba::languages::Language;
 
 use crate::engine::{document::MultiDocument, metadata::Metadata};
 
@@ -46,7 +46,7 @@ fn load_term_trees<P: AsRef<Path>>(path: P) -> Result<(), Box<dyn Error>> {
         }
 
         let file = std::fs::File::open(tree_file)?;
-        let tt: TermTree = bincode::deserialize_from(file)?;
+        let tt: TermTree = bincode::deserialize_from(BufReader::new(file))?;
 
         map.insert(tt.language, tt.tree);
 
