@@ -70,10 +70,8 @@ impl RegexSearchIndex {
             };
 
             if let Some(v) = self.data.get(first) {
-                for u in v.iter() {
-                    out.insert(u);
-                }
-
+                out.reserve(v.len());
+                out.extend(v.iter());
                 // exit first found character
                 break;
             }
@@ -81,6 +79,9 @@ impl RegexSearchIndex {
 
         for c in chars_iter {
             if let Some(v) = self.data.get(c) {
+                if out.is_empty() {
+                    return vec![];
+                }
                 out.retain(|i| v.contains(*i));
             }
         }

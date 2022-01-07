@@ -107,9 +107,21 @@ fn all_kanji_from_text(text: &str) -> Vec<Kanji> {
 }
 
 fn by_korean_reading(query: &str) -> Vec<Kanji> {
-    // TODO: implement
-    println!("korean");
-    vec![]
+    let kanji = resources::get().kanji();
+    let res = kanji
+        .all()
+        .filter(|k| {
+            let korean = &k.korean_h;
+            if korean.is_none() {
+                return false;
+            }
+            let korean = korean.as_ref().unwrap();
+            korean.iter().any(|kw| kw == query)
+        })
+        .cloned()
+        .collect::<Vec<_>>();
+
+    res
 }
 
 /// Guesses the amount of results a search would return with given `query`

@@ -69,8 +69,8 @@ pub fn japanese_search_order(
     }
 
     if let Some(original_query) = original_query {
-        if (original_query == reading.reading || original_query == kana)
-            && query_str != reading.reading
+        if original_query == reading.reading || original_query == kana
+        //&& query_str != reading.reading
         {
             score += 500;
         }
