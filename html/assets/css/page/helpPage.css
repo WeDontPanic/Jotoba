@@ -4,3 +4,11 @@
     margin-top: -320px;
     margin-left: 530px;
 }
+
+div > .fat:not(:first-child) {
+    margin-top: 1rem;
+}
+
+article .fat {
+    margin-top: 1rem;
+}

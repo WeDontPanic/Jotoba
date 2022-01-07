@@ -59,7 +59,7 @@ function loadCookieData() {
     let kanji_speed = localStorage.getItem("kanji_speed");
 
     // Other Settings
-    let cookies_allowed = Util.toBoolean(Cookies.get("allow_cookies"));
+    let cookies_allowed = Cookies.get("allow_cookies");
 
     // Set essentials
     if (Cookies.get("default_lang") === undefined) {

@@ -307,5 +307,7 @@ Util.toBoolean = function(value) {
         case "true":
         case true:
             return true;
+        default:
+            return false;
     }
 }
