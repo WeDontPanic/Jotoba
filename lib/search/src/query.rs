@@ -107,6 +107,7 @@ pub enum SearchTypeTag {
 pub enum QueryLang {
     Japanese,
     Foreign,
+    Korean,
     Undetected,
 }
 

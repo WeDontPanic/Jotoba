@@ -1,4 +1,5 @@
 pub mod binary_search;
+pub mod korean;
 
 use itertools::Itertools;
 use rand::{distributions::Alphanumeric, thread_rng, Rng};

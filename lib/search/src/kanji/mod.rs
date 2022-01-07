@@ -37,11 +37,17 @@ pub fn search(query: &Query) -> Result<KanjiResult, Error> {
 
     let res;
 
-    if query.language == QueryLang::Japanese {
-        res = by_literals(&query.query)
-    } else {
-        res = by_meaning(&query.query)
-    };
+    match query.language {
+        QueryLang::Japanese => {
+            res = by_literals(&query.query);
+        }
+        QueryLang::Foreign | QueryLang::Undetected => {
+            res = by_meaning(&query.query);
+        }
+        QueryLang::Korean => {
+            res = by_korean_reading(&query.query);
+        }
+    }
 
     let mut items = to_item(res, &query);
     if !query_str.is_japanese() {
@@ -98,6 +104,12 @@ fn all_kanji_from_text(text: &str) -> Vec<Kanji> {
         .cloned()
         .take(100)
         .collect()
+}
+
+fn by_korean_reading(query: &str) -> Vec<Kanji> {
+    // TODO: implement
+    println!("korean");
+    vec![]
 }
 
 /// Guesses the amount of results a search would return with given `query`

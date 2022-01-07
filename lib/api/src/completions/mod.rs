@@ -120,7 +120,7 @@ async fn try_word_suggestions(query: &Query) -> Option<Vec<WordPair>> {
     // Get sugesstions for matching language
     let word_pairs = match query.language {
         QueryLang::Japanese => words::native::suggestions(&query.query)?,
-        QueryLang::Foreign | QueryLang::Undetected => {
+        QueryLang::Foreign | QueryLang::Undetected | QueryLang::Korean => {
             let mut res = words::foreign::suggestions(&query, &query.query)
                 .await
                 .unwrap_or_default();

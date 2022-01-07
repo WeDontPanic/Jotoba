@@ -253,6 +253,10 @@ fn get_jp_part(inp: &str) -> u8 {
 
 /// Tries to determine between Japanese/Non japnaese
 pub fn parse_language(query: &str) -> QueryLang {
+    if utils::korean::is_hangul_str(query) {
+        return QueryLang::Korean;
+    }
+
     let query = format_kanji_reading(query);
 
     // how many percent of the characters have to be japanese in order to rank a text as japanese text

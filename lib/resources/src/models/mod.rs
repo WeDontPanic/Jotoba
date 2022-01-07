@@ -7,7 +7,6 @@ use std::{
     fs::File,
     io::{BufRead, BufReader, Read, Write},
     path::Path,
-    time::Instant,
 };
 
 use self::storage::{RadicalStorage, ResourceStorage, SentenceStorage};
