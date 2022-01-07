@@ -6,7 +6,7 @@ pub mod text_store;
 use self::{jaro_search::AsyncSearch, store_item::Item};
 use binary_search::Search as BinarySearch;
 use jaro_search::Search as JaroSearch;
-use std::cmp::Ordering;
+use std::{cmp::Ordering, collections::HashMap, time::Instant};
 use strsim::jaro_winkler;
 use text_store::TextStore;
 use utils::diff;
@@ -18,7 +18,8 @@ pub async fn japanese<'a, T: TextStore>(
 ) -> Vec<&'a T::Item> {
     let mut items: Vec<_> = dict.find_binary(query.to_owned()).take(100).collect();
 
-    items.sort_by(|a, b| result_order::<T>(a, b, query));
+    let mut cache = HashMap::with_capacity(items.len());
+    items.sort_by(|a, b| result_order::<T>(a, b, query, &mut cache));
 
     items
 }
@@ -34,7 +35,10 @@ pub async fn generic<'a, T: TextStore>(
         items.extend(jaro_res);
     }
 
-    items.sort_by(|a, b| result_order::<T>(a, b, query));
+    let mut cache = HashMap::with_capacity(items.len());
+    let start = Instant::now();
+    items.sort_by(|a, b| result_order::<T>(a, b, query, &mut cache));
+    println!("{:?}", start.elapsed());
 
     items
 }
@@ -51,18 +55,25 @@ pub async fn kanji_meaning<'a, T: TextStore>(
         items.extend(jaro_res);
     }
 
-    items.sort_by(|a, b| result_order::<T>(a, b, query));
+    let mut cache = HashMap::with_capacity(items.len());
+    items.sort_by(|a, b| result_order::<T>(a, b, query, &mut cache));
 
     items
 }
 
 // Order by best match against `query`
-// TODO don't use jaro_winkler algorithm within order function since its way to heavy
-// Idea: calculate jaro_winkler for each entry once and then use this set to compare the
-// values
-fn result_order<T: TextStore>(a: &T::Item, b: &T::Item, query: &str) -> Ordering {
-    let a_jaro = result_order_value(query, a.get_text());
-    let b_jaro = result_order_value(query, b.get_text());
+fn result_order<'a, T: TextStore>(
+    a: &'a T::Item,
+    b: &'a T::Item,
+    query: &str,
+    cache: &mut HashMap<&'a str, u32>,
+) -> Ordering {
+    let a_jaro = *cache
+        .entry(a.get_text())
+        .or_insert_with(|| result_order_value(query, a.get_text()));
+    let b_jaro = *cache
+        .entry(b.get_text())
+        .or_insert_with(|| result_order_value(query, b.get_text()));
 
     if diff(b_jaro, 100) > 10 && diff(a_jaro, 100) > 10 && (b.ord() > 0 || b.ord() > 0) {
         b.ord().cmp(&a.ord())
