@@ -6,7 +6,7 @@ pub mod text_store;
 use self::{jaro_search::AsyncSearch, store_item::Item};
 use binary_search::Search as BinarySearch;
 use jaro_search::Search as JaroSearch;
-use std::{cmp::Ordering, collections::HashMap, time::Instant};
+use std::{cmp::Ordering, collections::HashMap};
 use strsim::jaro_winkler;
 use text_store::TextStore;
 use utils::diff;
@@ -36,9 +36,7 @@ pub async fn generic<'a, T: TextStore>(
     }
 
     let mut cache = HashMap::with_capacity(items.len());
-    let start = Instant::now();
     items.sort_by(|a, b| result_order::<T>(a, b, query, &mut cache));
-    println!("{:?}", start.elapsed());
 
     items
 }

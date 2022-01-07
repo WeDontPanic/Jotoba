@@ -83,6 +83,7 @@ impl<'dict, 'input> WordItem<'dict, 'input> {
             pos,
             info: self.word_class_to_str(),
             furigana: None,
+            furi_guessed: false,
             add_class: self
                 .word_class_to_str()
                 .map(|i| i.to_owned().to_lowercase()),
