@@ -295,7 +295,7 @@ Util.deleteAllCookies = function() {
 }
 
 // Parses the given value into a boolean
-Util.toBoolean = function(value) {
+Util.toBoolean = function(value, inverseDefault) {
     switch (value) {
         case 0:
         case "0":
@@ -308,6 +308,8 @@ Util.toBoolean = function(value) {
         case true:
             return true;
         default:
+            if (inverseDefault)
+                return true;
             return false;
     }
 }

@@ -45,7 +45,7 @@ function loadCookieData() {
     let page_lang = Cookies.get("page_lang") || "en-US";
 
     // Search Settings
-    let english_always = Util.toBoolean(Cookies.get("show_english"));
+    let english_always = Util.toBoolean(Cookies.get("show_english"), true);
     let english_on_top = Util.toBoolean(Cookies.get("show_english_on_top"));
     let example_sentences = Util.toBoolean(Cookies.get("show_sentences"));
     let sentence_furigana = Util.toBoolean(Cookies.get("sentence_furigana"));
