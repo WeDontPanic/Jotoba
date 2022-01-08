@@ -162,7 +162,7 @@ function copyTranslationAndShowMessage(textParent) {
 
     // Copy and visual feedback
     Util.copyToClipboard(fullContent);
-    Util.showMessage("success", onlyKanji ? "kanji copied to clipboard." : (onlyKana ? "kana copied to clipboard." : "word copied to clipboard."));
+    Util.showMessage("success", onlyKanji ? "kanji copied to clipboard." : (onlyKana ? "kana copied to clipboard." : "copied to clipboard."));
 }
 
 // Changes the search type in the upper row depending on the users input
