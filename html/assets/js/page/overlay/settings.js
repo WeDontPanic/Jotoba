@@ -8,7 +8,7 @@ var analyticsAttributes = null;
 
 // Opens the Settings Overlay and accepts cookie usage
 function cookiesAccepted(manuallyCalled) {
-    Cookies.set("allow_cookies", "1", {path: '/'});
+    Cookies.set("allow_cookies", "1", {path: '/', expires: 365});
     if (manuallyCalled)
         Util.showMessage("success", "Thanks for making Jotoba better!");
 
@@ -25,7 +25,7 @@ function revokeCookieAgreement(manuallyCalled) {
     if (manuallyCalled)
         Util.showMessage("success", "Successfully deleted your cookie data.");
 
-    Cookies.set("allow_cookies", "0", {path: '/'});
+    Cookies.set("allow_cookies", "0", {path: '/', expires: 365});
     Util.setMdlCheckboxState("cookie_settings", false);
 }
 
@@ -63,7 +63,7 @@ function loadCookieData() {
 
     // Set essentials
     if (Cookies.get("default_lang") === undefined) {
-        Cookies.set("default_lang", search_lang, {path: '/'});
+        Cookies.set("default_lang", search_lang, {path: '/', expires: 365});
     }
 
     // Execute 
@@ -127,7 +127,7 @@ async function setSearchSettings(english_always, english_on_top, example_sentenc
 
     // Default items val
     if (!items_per_page) {
-        Cookies.set("items_per_page", 10, {path: '/'});
+        Cookies.set("items_per_page", 10, {path: '/', expires: 365});
         items_per_page = 10;
     }
 
@@ -138,7 +138,7 @@ async function setSearchSettings(english_always, english_on_top, example_sentenc
 
     // Default kanji val
     if (!kanji_per_page) {
-        Cookies.set("kanji_page_size", 4);
+        Cookies.set("kanji_page_size", 4, {path: '/', expires: 365});
         kanji_per_page = 4;
     }
 
@@ -179,7 +179,7 @@ function onInputSettingsChange(relatedCookie, event) {
     let value = event.target.value;
 
     if (value > 0 && value < 101) {
-        Cookies.set(relatedCookie, event.target.value, {path: '/'});
+        Cookies.set(relatedCookie, event.target.value, {path: '/', expires: 365});
     } else {
         event.target.value = Cookies.get(relatedCookie);
         $(event.target).parent().addClass("is-dirty");
@@ -188,7 +188,7 @@ function onInputSettingsChange(relatedCookie, event) {
 
 // Handles an event caused by a settings-btn
 function onBtnSettingsChange(relatedCookie, event) {
-    Cookies.set(relatedCookie, event.target.checked, {path: '/'});
+    Cookies.set(relatedCookie, event.target.checked, {path: '/', expires: 365});
 }
 
 // Special handling for english_always
@@ -235,7 +235,7 @@ function onCookiesAcceptChange(event) {
 
 // Changes the Default Language to search for
 function onSettingsChange_DefaultLanguage(html, value) {
-    Cookies.set('default_lang', value, {path: '/'});
+    Cookies.set('default_lang', value, {path: '/', expires: 365});
     if (window.location.href.includes("/search")) {
         location.reload();
     }
@@ -243,7 +243,7 @@ function onSettingsChange_DefaultLanguage(html, value) {
 
 // Changes the Page's UI Language
 function onSettingsChange_PageLanguage(html, value) {
-    Cookies.set('page_lang', value, {path: '/'});
+    Cookies.set('page_lang', value, {path: '/', expires: 365});
     location.reload();
 }
 
