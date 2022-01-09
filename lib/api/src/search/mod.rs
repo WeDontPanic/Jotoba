@@ -20,7 +20,8 @@ pub(crate) fn parse_query(payload: Json<SearchRequest>, q_type: QueryType) -> Re
         ..UserSettings::default()
     };
 
-    let query = QueryParser::new(payload.query_str.clone(), q_type, settings, 0, 0, true)
+    let q_str = payload.query_str.clone();
+    let query = QueryParser::new(q_str, q_type, settings, 0, 0, true, None)
         .parse()
         .ok_or(RestError::BadRequest)?;
 

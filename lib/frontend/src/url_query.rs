@@ -1,6 +1,8 @@
+use std::str::FromStr;
+
 use search::{self, query::UserSettings, query_parser::QueryParser};
-use serde::Deserialize;
-use types::jotoba::search::QueryType;
+use serde::{Deserialize, Deserializer};
+use types::jotoba::{languages::Language, search::QueryType};
 
 #[derive(Deserialize)]
 pub struct QueryStruct {
@@ -10,6 +12,9 @@ pub struct QueryStruct {
     pub word_index: Option<usize>,
     #[serde(rename = "p", default = "default_page")]
     pub page: usize,
+
+    #[serde(default, rename = "l", deserialize_with = "deserialize_lang")]
+    pub lang_overwrite: Option<Language>,
 
     #[serde(skip)]
     pub query_str: String,
@@ -32,6 +37,7 @@ impl QueryStruct {
             search_type: Some(self.search_type.unwrap_or_default()),
             page,
             word_index: self.word_index,
+            lang_overwrite: self.lang_overwrite,
         }
     }
 
@@ -45,6 +51,7 @@ impl QueryStruct {
             self.page,
             self.word_index.unwrap_or_default(),
             true,
+            self.lang_overwrite,
         )
     }
 }
@@ -66,6 +73,9 @@ pub struct NoJSQueryStruct {
     pub word_index: Option<usize>,
     #[serde(rename = "p", default = "default_page")]
     pub page: usize,
+
+    #[serde(default, rename = "l", deserialize_with = "deserialize_lang")]
+    pub lang_overwrite: Option<Language>,
 }
 
 impl NoJSQueryStruct {
@@ -76,8 +86,18 @@ impl NoJSQueryStruct {
             word_index: self.word_index,
             search_type: self.search_type,
             query_str: String::new(),
+            lang_overwrite: self.lang_overwrite,
         };
 
         (query_struct, self.query)
     }
+}
+
+/// Deserializes a field into a Option<Language>. None if invalid lang-str or Deserializing str
+/// failed
+fn deserialize_lang<'de, D>(s: D) -> Result<Option<Language>, D::Error>
+where
+    D: Deserializer<'de>,
+{
+    return Ok(Language::from_str(&String::deserialize(s)?).ok());
 }

@@ -32,8 +32,13 @@ impl QueryParser {
         page: usize,
         word_index: usize,
         trim: bool,
+        url_l_overr: Option<ContentLanguage>,
     ) -> QueryParser {
-        let (query_stripped, language_override) = strip_lang_override(&query);
+        let (query_stripped, mut language_override) = strip_lang_override(&query);
+
+        if language_override.is_none() && url_l_overr.is_some() {
+            language_override = url_l_overr;
+        }
 
         // Split query into the actual query and possibly available tags
         let (parsed_query, tags) = Self::partition_tags_query(&query_stripped, trim);

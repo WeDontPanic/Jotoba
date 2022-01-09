@@ -53,7 +53,7 @@ pub(crate) fn get_query(request: &Request) -> Result<Query, RestError> {
     };
 
     // Build and parse the query
-    let query = QueryParser::new(query_str, search_type, settings, 0, 0, false)
+    let query = QueryParser::new(query_str, search_type, settings, 0, 0, false, None)
         .parse()
         .ok_or(RestError::BadRequest)?;
 
