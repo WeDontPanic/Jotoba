@@ -6,7 +6,7 @@
 function JotoTools () {};
 
 // Creates a Jotoba-Search URL using the given parameters
-JotoTools.createUrl = function(searchText, searchType, targetPage) {
+JotoTools.createUrl = function(searchText, searchType, targetPage, languageCode) {
     let url = window.location.origin;
 
     if (searchText !== undefined) {
@@ -19,6 +19,10 @@ JotoTools.createUrl = function(searchText, searchType, targetPage) {
 
     if (targetPage !== undefined) {
         url += "&p=" + targetPage;
+    }
+
+    if (languageCode !== undefined) {
+        url += "&l=" + languageCode;
     }
 
     return url;
