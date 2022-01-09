@@ -170,7 +170,7 @@ async function setOtherSettings(allow_cookies) {
         $("#cookie-footer").removeClass("hidden");
         Util.setMdlCheckboxState("cookie_settings", false);
     } else {
-        Util.setMdlCheckboxState("cookie_settings", allow_cookies);
+        Util.setMdlCheckboxState("cookie_settings", Util.toBoolean(allow_cookies));
     }
 }
 
