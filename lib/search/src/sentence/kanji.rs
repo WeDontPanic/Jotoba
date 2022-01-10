@@ -36,7 +36,13 @@ pub(crate) fn get_reading(reading: &Reading) -> Option<(Kanji, String)> {
         return None;
     }
 
-    let k_reading = reading.reading.to_hiragana();
+    let mut k_reading = reading.reading.to_hiragana();
+
+    if k_reading.contains('.') {
+        k_reading = k_reading.split('.').next().unwrap().to_string();
+    }
+
+    println!("reading: {}", k_reading);
 
     Some((kanji.to_owned(), k_reading))
 }
