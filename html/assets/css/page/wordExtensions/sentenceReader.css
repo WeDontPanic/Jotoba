@@ -61,6 +61,7 @@
 
     #sr {
         scrollbar-width: none;
+        flex-wrap: nowrap;
     }
 
     #sr::-webkit-scrollbar {
