@@ -44,27 +44,25 @@
 
   @if let Some(ref sentence_parts) = result.sentence_parts {
     <div class="search-annotation">
-      <div>
-        <!-- Sentence Info -->
-        <div id="sr" class="d-flex flex-row wrap sentence-reader">
-          @for part in sentence_parts {
-            @if let Some(ref furigana) = part.furigana {
-              <a id="p@part.pos" href="/search/@query.get_query_encoded()?i=@part.pos" class="@part.get_add_class() sentence-part @selected(part.pos, result.sentence_index)">
-                @:render_sentence_html(furi_from_str(furigana).collect(), "", true)
-                </a>
-            } else {
-              <!-- TODO find a better way to keep this consistent. Implement with reader_sentence.rs.html -->
-              <a id="p@part.pos" href="/search/@query.get_query_encoded()?i=@part.pos" class="@part.get_add_class() sentence-part @selected(part.pos, result.sentence_index)">
-                <div class="furigana-kanji-container">
-                  <ruby>
-                    <span class="kanji-preview">@part.text</span>
-                    <rt class="furigana-preview">&nbsp;</rt>
-                  </ruby>
-                </div>
+      <!-- Sentence Info -->
+      <div id="sr" class="d-flex">
+        @for part in sentence_parts {
+          @if let Some(ref furigana) = part.furigana {
+            <a id="p@part.pos" href="/search/@query.get_query_encoded()?i=@part.pos" class="@part.get_add_class() sentence-part @selected(part.pos, result.sentence_index)">
+              @:render_sentence_html(furi_from_str(furigana).collect(), "", true)
               </a>
-            }
+          } else {
+            <!-- TODO find a better way to keep this consistent. Implement with reader_sentence.rs.html -->
+            <a id="p@part.pos" href="/search/@query.get_query_encoded()?i=@part.pos" class="@part.get_add_class() sentence-part @selected(part.pos, result.sentence_index)">
+              <div class="furigana-kanji-container">
+                <ruby>
+                  <span class="kanji-preview">@part.text</span>
+                  <rt class="furigana-preview">&nbsp;</rt>
+                </ruby>
+              </div>
+            </a>
           }
-        </div>
+        }
       </div>
 
       <!-- Sentence Tooltips -->

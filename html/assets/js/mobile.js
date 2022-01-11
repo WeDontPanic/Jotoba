@@ -18,7 +18,7 @@ function scrollSentenceReaderIntoView() {
         if (document.readyState == "complete") {
             let selected = $(".sentence-part.selected")[0];
             if (selected !== undefined) {
-                $(".sentence-reader")[0].scrollLeft = selected.offsetLeft - 150;
+                $("#sr").scrollLeft = selected.offsetLeft - 150;
             }
             window.clearTimeout(docWait);
         }

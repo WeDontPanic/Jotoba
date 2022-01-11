@@ -42,6 +42,20 @@ Util.loadScript = function(url, async, attributes, callback) {
     document.head.appendChild(s);
 }
 
+// Checks if a given element is overflown
+Util.checkOverflow = function checkOverflow(el) {
+  var curOverflow = el.style.overflow;
+
+  if (!curOverflow || curOverflow === "visible")
+     el.style.overflow = "hidden";
+
+  var isOverflowing = el.clientWidth < el.scrollWidth || el.clientHeight < el.scrollHeight;
+
+  el.style.overflow = curOverflow;
+
+  return isOverflowing;
+}
+
 // Re-Encodes a decoded HTML
 Util.decodeHtml = function(html) {
   var doc = new DOMParser().parseFromString(html, "text/html");

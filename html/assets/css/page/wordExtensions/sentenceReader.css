@@ -1,8 +1,4 @@
-.sentence-reader {
-    max-width: 1000px;
-    width: 100%;
-    max-height: 150px;
-    height: 100%;
+#sr.center {
     justify-content: center;
 }
 
@@ -11,6 +7,8 @@
     border-bottom: 2px solid var(--lineColor);
     margin-right: 15px;
     margin-top: 9px;
+    flex-grow: 0;
+    flex-shrink: 0;
     cursor: pointer;
 }
 
@@ -61,13 +59,11 @@
 
 @media only screen and (max-width: 600px) { 
 
-    .sentence-reader {
-        flex-wrap: unset !important;
-        justify-content: flex-start !important;
+    #sr {
         scrollbar-width: none;
     }
 
-    .sentence-reader::-webkit-scrollbar {
+    #sr::-webkit-scrollbar {
         width: 0px;
     }
 
