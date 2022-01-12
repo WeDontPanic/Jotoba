@@ -24,6 +24,21 @@ function centerSentenceReaderIfNeeded() {
     }
 }
 
+// Scrolls the sentence reader onto the selected element
+Util.awaitDocumentReady(scrollSentenceReaderIntoView);
+function scrollSentenceReaderIntoView() {
+    // Wait for document to be completly ready
+    let docWait = window.setInterval(() => {
+        if (document.readyState == "complete") {
+            let selected = $(".sentence-part.selected")[0];
+            if (selected !== undefined) {
+                $(".search-annotation").scrollLeft(selected.offsetLeft - $(".search-annotation")[0].offsetLeft);
+            }
+            window.clearTimeout(docWait);
+        }
+    }, 10);
+}
+
 // Check if the expander-triangle should be hidden
 function hideUnusedExpanders() {
     $(".expander").each((i,e) => {

@@ -45,7 +45,7 @@
   @if let Some(ref sentence_parts) = result.sentence_parts {
     <div class="search-annotation">
       <!-- Sentence Info -->
-      <div id="sr" class="d-flex">
+      <div id="sr" class="d-flex wrap">
         @for part in sentence_parts {
           @if let Some(ref furigana) = part.furigana {
             <a id="p@part.pos" href="/search/@query.get_query_encoded()?i=@part.pos" class="@part.get_add_class() sentence-part @selected(part.pos, result.sentence_index)">

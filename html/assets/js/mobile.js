@@ -9,21 +9,6 @@ function toggleMobileNav() {
 
 // On Start, check if mobile view is enabled. If yes, activate the btn
 Util.awaitDocumentReady(prepareMobilePageBtn);
-Util.awaitDocumentReady(scrollSentenceReaderIntoView);
-
-// Scrolls the sentence reader onto the selected element on mobile
-function scrollSentenceReaderIntoView() {
-    // Wait for document to be completly ready
-    let docWait = window.setInterval(() => {
-        if (document.readyState == "complete") {
-            let selected = $(".sentence-part.selected")[0];
-            if (selected !== undefined) {
-                $("#sr").scrollLeft = selected.offsetLeft - 150;
-            }
-            window.clearTimeout(docWait);
-        }
-    }, 10);
-}
 
 // Variables used in mobiles' easy-use btn
 var jmpBtn;
