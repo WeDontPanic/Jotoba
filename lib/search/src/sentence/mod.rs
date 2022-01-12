@@ -117,8 +117,8 @@ fn lang_filter<T: SearchEngine<Output = Sentence> + Send>(
             return false;
         }
 
-        if let Some((k, reading)) = &kanji_reading {
-            return kanji::sentence_matches(sentence, &k, &reading);
+        if let Some(reading) = &kanji_reading {
+            return kanji::sentence_matches(sentence, &reading);
         }
 
         lang_filter

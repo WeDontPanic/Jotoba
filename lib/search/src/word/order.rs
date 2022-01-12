@@ -203,7 +203,7 @@ pub fn foreign_search_fall_back(
 
 pub(super) fn kanji_reading_search(
     word: &Word,
-    kanji_reading: &types::jotoba::kanji::Reading,
+    kanji_reading: &types::jotoba::kanji::ReadingSearch,
     relevance: f32,
 ) -> usize {
     let mut score: usize = (relevance * 25f32) as usize;

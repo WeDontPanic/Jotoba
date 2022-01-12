@@ -1,25 +1,40 @@
-use japanese::JapaneseExt;
+use japanese::{jp_parsing::JA_NL_PARSER, JapaneseExt};
 use types::jotoba::{
-    kanji::{Kanji, Reading},
+    kanji::{Reading, ReadingSearch},
     sentences::Sentence,
 };
 
-pub(crate) fn sentence_matches(sentence: &Sentence, kanji: &Kanji, reading: &str) -> bool {
-    let lit = kanji.literal.to_string();
+pub(crate) fn sentence_matches(sentence: &Sentence, reading: &Reading) -> bool {
+    let lit = reading.get_lit_str();
 
-    let parsed_furi = japanese::furigana::from_str(&sentence.furigana);
+    if reading.is_full_reading() {
+        let parsed_furi = japanese::furigana::from_str(&sentence.furigana);
+        let reading_hira = reading.get_raw().to_hiragana();
 
-    for i in parsed_furi {
-        if i.kanji.is_none() {
-            continue;
+        for i in parsed_furi {
+            if i.kanji.is_none() {
+                continue;
+            }
+
+            let curr_kanji = i.kanji.unwrap();
+            if !curr_kanji.contains(&lit) {
+                continue;
+            }
+
+            if i.kana.to_hiragana().contains(&reading_hira) {
+                return true;
+            }
         }
 
-        let curr_kanji = i.kanji.unwrap();
-        if !curr_kanji.contains(&lit) {
-            continue;
-        }
+        return false;
+    }
 
-        if i.kana.to_hiragana().contains(reading) {
+    // Kunyomi
+
+    let formatted = reading.format_reading_with_literal();
+    for morph in JA_NL_PARSER.parse(&sentence.japanese) {
+        let reading = morph.lexeme;
+        if reading == formatted {
             return true;
         }
     }
@@ -27,22 +42,9 @@ pub(crate) fn sentence_matches(sentence: &Sentence, kanji: &Kanji, reading: &str
     false
 }
 
-pub(crate) fn get_reading(reading: &Reading) -> Option<(Kanji, String)> {
+pub(crate) fn get_reading(reading: &ReadingSearch) -> Option<Reading> {
     let kanji_storage = resources::get().kanji();
-
     let kanji = kanji_storage.by_literal(reading.literal)?;
-
-    if !kanji.has_reading(&reading.reading) {
-        return None;
-    }
-
-    let mut k_reading = reading.reading.to_hiragana();
-
-    if k_reading.contains('.') {
-        k_reading = k_reading.split('.').next().unwrap().to_string();
-    }
-
-    println!("reading: {}", k_reading);
-
-    Some((kanji.to_owned(), k_reading))
+    let reading = kanji.find_reading(&reading.reading)?;
+    Some(reading)
 }
