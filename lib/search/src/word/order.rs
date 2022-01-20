@@ -85,6 +85,12 @@ pub fn japanese_search_order(
         score += 20;
     }
 
+    if word.get_reading().reading.starts_with(query_str)
+        || (query_str.is_kana() && word.reading.kana.reading.starts_with(query_str))
+    {
+        score += 20;
+    }
+
     // If alternative reading matches query exactly
     if word
         .reading
