@@ -82,6 +82,8 @@ function getSuggestionApiData(radicals) {
         lastRequest.abort();
     }
 
+    console.log("request");
+
     // Send Request to backend
     lastRequest = $.ajax({ 
         type : "POST", 
