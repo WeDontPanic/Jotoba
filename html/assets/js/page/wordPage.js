@@ -17,6 +17,9 @@ $(window).resize(() => {
 
 // If the reader is overflown, remove the center to avoid weird style errors
 function centerSentenceReaderIfNeeded() {
+    if (sr === undefined || sr === null)
+        return;
+        
     if (Util.checkOverflow(sr)) {
         sr.classList.remove("center");
     } else {
@@ -27,16 +30,10 @@ function centerSentenceReaderIfNeeded() {
 // Scrolls the sentence reader onto the selected element
 Util.awaitDocumentReady(scrollSentenceReaderIntoView);
 function scrollSentenceReaderIntoView() {
-    // Wait for document to be completly ready
-    let docWait = window.setInterval(() => {
-        if (document.readyState == "complete") {
-            let selected = $(".sentence-part.selected")[0];
-            if (selected !== undefined) {
-                $(".search-annotation").scrollLeft(selected.offsetLeft - $(".search-annotation")[0].offsetLeft);
-            }
-            window.clearTimeout(docWait);
-        }
-    }, 10);
+    let selected = $(".sentence-part.selected")[0];
+    if (selected !== undefined) {
+        $(".search-annotation").scrollLeft(selected.offsetLeft - $(".search-annotation")[0].offsetLeft);
+    }
 }
 
 // Check if the expander-triangle should be hidden
@@ -47,5 +44,5 @@ function hideUnusedExpanders() {
         } else {
             e.classList.remove("hidden");
         }
-     });
+    });
 }

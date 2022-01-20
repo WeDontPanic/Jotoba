@@ -239,7 +239,8 @@ Util.awaitDocumentReady(() => {
         let txt = input.value; 
         let type = $('#search-type').val();
         let lang = Cookies.get("default_lang");
+        let page = $(".pagination-circle.active").html();
 
-        history.replaceState({}, 'Jotoba', JotoTools.createUrl(txt, type, 0, lang));
+        history.replaceState({}, 'Jotoba', JotoTools.createUrl(txt, type, page || 0, lang));
     }
 });
