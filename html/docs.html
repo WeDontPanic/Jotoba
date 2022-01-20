@@ -26,7 +26,8 @@
     <script>
       document.addEventListener('DOMContentLoaded', (event) => {
         let docEl = document.getElementById("thedoc");
-        let strSpec = `{
+        let strSpec = `
+            {
   "swagger": "2.0",
   "info": {
     "description": "Jotoba search API<br><br>(Note: Jotoba doesn't own any of the provided resources! Please refer to https://jotoba.de/about for a list of used resources and their licenses. If you're using data provided by jotoba, you have to acknowledge the autors and creators of the used resoure and follow the terms and contiditons of the original license)",
@@ -1002,6 +1003,11 @@
     },
     "CompletionPayload": {
       "type": "object",
+      "required": [
+        "input",
+        "lang",
+        "search_type"
+      ],
       "properties": {
         "input": {
           "type": "string",
@@ -1024,6 +1030,16 @@
         },
         "search_type": {
           "$ref": "#/definitions/SearchType"
+        },
+        "radicals": {
+          "type": "array",
+          "example": [
+            "⺡"
+          ],
+          "description": "Restrict results to certain radicals. This field is optional",
+          "items": {
+            "type": "string"
+          }
         }
       },
       "description": "Payload for completion request"
@@ -1084,7 +1100,8 @@
       ]
     }
   }
-}`;
+}
+              `;
         let objSpec = JSON.parse(strSpec);
         docEl.loadSpec(objSpec);
       })

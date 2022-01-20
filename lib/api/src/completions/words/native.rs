@@ -69,7 +69,9 @@ pub(super) fn suggest_words(
                     let word = word_storage.by_sequence(sugg_item.sequence)?;
 
                     // Filter out non radical matching words if radicals are given
-                    if !filter_radicals.is_empty() && !word_rad_filter(&word, filter_radicals) {
+                    if !filter_radicals.is_empty()
+                        && !word_rad_filter(&query, &word, filter_radicals)
+                    {
                         return None;
                     }
 
@@ -89,7 +91,7 @@ pub(super) fn suggest_words(
     Some(items)
 }
 
-fn word_rad_filter(word: &Word, radicals: &[char]) -> bool {
+fn word_rad_filter(query: &str, word: &Word, radicals: &[char]) -> bool {
     let kanji = match word.reading.kanji.as_ref() {
         Some(k) => &k.reading,
         None => return false,
@@ -97,8 +99,12 @@ fn word_rad_filter(word: &Word, radicals: &[char]) -> bool {
 
     let retrieve = resources::get().kanji();
 
+    let query_kanji = query.chars().filter(|i| i.is_kanji()).collect::<Vec<_>>();
+
     kanji
         .chars()
+        // Don't apply on existing kanji
+        .filter(|i| !query_kanji.contains(&i))
         .filter_map(|k| k.is_kanji().then(|| retrieve.by_literal(k)).flatten())
         .any(|k| {
             if let Some(k_parts) = &k.parts {
