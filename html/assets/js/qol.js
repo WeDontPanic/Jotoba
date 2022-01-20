@@ -235,9 +235,11 @@ Util.awaitDocumentReady(() => {
     }
 
     // Change URL to contain the language code
-    let txt = input.value; 
-    let type = $('#search-type').val();
-    let lang = Cookies.get("default_lang");
+    if (!Util.isIndexPage()) {
+        let txt = input.value; 
+        let type = $('#search-type').val();
+        let lang = Cookies.get("default_lang");
 
-    history.replaceState({}, 'Jotoba', JotoTools.createUrl(txt, type, 0, lang));
+        history.replaceState({}, 'Jotoba', JotoTools.createUrl(txt, type, 0, lang));
+    }
 });

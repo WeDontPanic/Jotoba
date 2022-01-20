@@ -20,7 +20,7 @@ function recognitionSetup() {
     
     // On recognition start
     recognition.onstart = function() {
-        $('#currentlyListening').html("Yes");
+        $('#currentlyListening').html(getText("SPEECH_LISTEN_YES"));
         $('.voiceSvg').toggleClass("active");
     };
     
@@ -29,25 +29,25 @@ function recognitionSetup() {
         console.log(event.error);
         switch(event.error) {
             case "not-allowed":
-                Util.showMessage("error", "Need permissions to perform speech recognition!");
+                Util.showMessage("error", getText("SPEECH_NO_PERMISSION"));
                 break;
             case "aborted":
-                Util.showMessage("info", "Speech recognition aborted.");
+                Util.showMessage("info", getText("SPEECH_ABORT"));
                 break;
             case "no-speech":
-                Util.showMessage("info", "No voice input received!");
+                Util.showMessage("info", getText("SPEECH_NO_VOICE"));
                 break;
             default:
-                Util.showMessage("error", "Your browser does not support speech recognition!");
+                Util.showMessage("error", getText("SPEECH_NOT_SUPPORTED"));
         }
-        $('#currentlyListening').html("No");
+        $('#currentlyListening').html(getText("SPEECH_LISTEN_NO"));
         $('.voiceSvg').toggleClass("active");
     }
     
     // On speech end
     recognition.onspeechend = function() {
         recognition.stop();
-        $('#currentlyListening').html("No");
+        $('#currentlyListening').html(getText("SPEECH_LISTEN_NO"));
         $('.voiceSvg').toggleClass("active");
     }
     
@@ -61,7 +61,7 @@ function recognitionSetup() {
 // Toggles the overlay on and off
 function toggleSpeakOverlay() {
     if (recognition == undefined) {
-        Util.showMessage("error", "This feature is not supported in your browser.");
+        Util.showMessage("error", getText("SPEECH_NOT_SUPPORTED"));
         return;
     }
 
@@ -83,43 +83,43 @@ function setRecognitionLang(lang) {
     switch(lang) {
         case "jap":
             recognition.lang = "ja";
-            $('#currentSpeechLang').html("Japanese");
+            $('#currentSpeechLang').html(getText("LANG_JAP"));
             break
         case "ger":
             recognition.lang = "de-DE";
-            $('#currentSpeechLang').html("German");
+            $('#currentSpeechLang').html(getText("LANG_GER"));
             break
         case "eng":
             recognition.lang = "en-US";
-            $('#currentSpeechLang').html("English");
+            $('#currentSpeechLang').html(getText("LANG_ENG"));
             break
         case "rus":
             recognition.lang = "ru";
-            $('#currentSpeechLang').html("Russian");
+            $('#currentSpeechLang').html(getText("LANG_RUS"));
             break
         case "spa":
             recognition.lang = "es-ES";
-            $('#currentSpeechLang').html("Spanish");
+            $('#currentSpeechLang').html(getText("LANG_SPA"));
             break
         case "swe":
             recognition.lang = "sv-SE";
-            $('#currentSpeechLang').html("Swedish");
+            $('#currentSpeechLang').html(getText("LANG_SWE"));
             break
         case "fre":
             recognition.lang = "fr-FR";
-            $('#currentSpeechLang').html("French");
+            $('#currentSpeechLang').html(getText("LANG_FRE"));
             break
         case "dut":
             recognition.lang = "nl-NL";
-            $('#currentSpeechLang').html("Dutch");
+            $('#currentSpeechLang').html(getText("LANG_DUT"));
             break
         case "hun":
             recognition.lang = "hu";
-            $('#currentSpeechLang').html("Hungarian");
+            $('#currentSpeechLang').html(getText("LANG_HUN"));
             break
         case "slv":
             recognition.lang = "sl-SI";
-            $('#currentSpeechLang').html("Slovenian");
+            $('#currentSpeechLang').html(getText("LANG_SLV"));
             break
     }
 
