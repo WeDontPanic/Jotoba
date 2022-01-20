@@ -44,7 +44,8 @@ function changeSuggestionIndex(direction) {
 }
 
 // Calls the API to get input suggestions
-function getSuggestionApiData() {
+// @args radicals -> Array containing radicals that need to be contained in searched kanji
+function getSuggestionApiData(radicals) {
 
     // Check if API call should be prevented
     if (preventNextApiCall) {
@@ -72,7 +73,8 @@ function getSuggestionApiData() {
     let inputJSON = {
         "input": txt,
         "search_type": type,
-        "lang": lang === undefined ? "en-US" : lang
+        "lang": lang === undefined ? "en-US" : lang,
+        "radicals": radicals || []
     }
 
     // Abort any requests sent earlier

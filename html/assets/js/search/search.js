@@ -80,7 +80,8 @@ function emptySearchInput() {
 }
 
 // Function to be called by input events. Updates the API data and shadow txt
-function callApiAndSetShadowText() {
+// @args radicals -> Array containing radicals that need to be contained in searched kanji
+function callApiAndSetShadowText(radicals) {
 
     // Tooltips for # - searches
     let lastWord = Util.getLastWordOfString(input.value);
@@ -89,7 +90,7 @@ function callApiAndSetShadowText() {
     }
     // Load new API data
     else if (input.value.length > 0) {
-        getSuggestionApiData();
+        getSuggestionApiData(radicals);
     } else {
         removeSuggestions();
     }
