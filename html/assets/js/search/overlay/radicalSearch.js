@@ -117,9 +117,6 @@ function handleRadicalSelect(event) {
         return;
     }
 
-    // Update search bar
-    callApiAndSetShadowText(getSelectedRadicalArray());
-
     // Update Radical Map
     if (target.hasClass("selected")) {
         radicalMask[target.attr("index")][target.attr("position")] = 0;
@@ -138,6 +135,9 @@ function handleRadicalSelect(event) {
     
     // Focus the last search bar
     currentSearchInput.focus();
+
+    // Update search bar
+    callApiAndSetShadowText(getSelectedRadicalArray());
 }
 
 // Opens the Radical Page at the given index
