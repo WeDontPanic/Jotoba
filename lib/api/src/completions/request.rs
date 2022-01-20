@@ -11,7 +11,7 @@ use types::jotoba::languages::Language;
 use utils::real_string_len;
 
 /// Adjust the query and returns a newly allocated one
-pub(crate) fn adjust(request: &Request) -> Request {
+pub(crate) fn adjust(request: Request) -> Request {
     let mut query_str = request.input.as_str();
     let query_len = real_string_len(&request.input);
 
@@ -36,8 +36,9 @@ pub(crate) fn adjust(request: &Request) -> Request {
 
     Request {
         input: query_str.to_owned(),
-        lang: request.lang.to_owned(),
+        lang: request.lang,
         search_type: request.search_type,
+        radicals: request.radicals,
     }
 }
 

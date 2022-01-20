@@ -1,11 +1,20 @@
 use error::api_error::RestError;
-use search::query::Query;
+use search::query::{Query, QueryLang};
 use types::api::completions::WordPair;
 
 use super::{
     storage::{NAME_NATIVE, NAME_TRANSCRIPTIONS},
     Response,
 };
+
+/// Returns name suggestions for the matching input language
+pub(crate) async fn suggestions(query: Query) -> Result<Response, RestError> {
+    Ok(match query.language {
+        QueryLang::Japanese => native_suggestions(&query).await?,
+        QueryLang::Foreign => transcription_suggestions(&query).await?,
+        _ => Response::default(),
+    })
+}
 
 /// Returns trascripted name suggestions based on the input query
 pub async fn transcription_suggestions(query: &Query) -> Result<Response, RestError> {

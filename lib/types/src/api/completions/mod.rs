@@ -15,6 +15,9 @@ pub struct Request {
     /// The search type the input is designed for
     #[serde(default)]
     pub search_type: QueryType,
+
+    #[serde(default)]
+    pub radicals: Vec<char>,
 }
 
 /// Response struct for suggestion endpoint
