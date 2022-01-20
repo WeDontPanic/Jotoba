@@ -31,12 +31,12 @@ pub async fn suggestion_ep(
     request::validate(&payload)?;
 
     // Adjust payload and parse to query
-    let query = request::get_query(&request::adjust(payload.into_inner()))?;
+    let (query, radicals) = request::get_query(request::adjust(payload.into_inner()))?;
 
     // time we allow the suggestion to use in total loaded from the configuration file
     let timeout = config.get_suggestion_timeout();
 
-    let result = time::timeout(timeout, get_suggestions(query))
+    let result = time::timeout(timeout, get_suggestions(query, radicals))
         .await
         .map_err(|_| RestError::Timeout)??;
 
@@ -44,13 +44,15 @@ pub async fn suggestion_ep(
 }
 
 /// Returns best matching suggestions for the given query
-async fn get_suggestions(query: Query) -> Result<Response, RestError> {
+async fn get_suggestions(query: Query, radicals: Vec<char>) -> Result<Response, RestError> {
     match query.type_ {
         QueryType::Sentences | QueryType::Words => {
             if let Some(kanji_reading) = as_kanji_reading(&query) {
                 kanji::reading::suggestions(kanji_reading).await
             } else {
-                Ok(words::suggestions(query).await.unwrap_or_default())
+                Ok(words::suggestions(query, &radicals)
+                    .await
+                    .unwrap_or_default())
             }
         }
         QueryType::Kanji => kanji::suggestions(query).await,

@@ -43,13 +43,13 @@ pub(crate) fn adjust(request: Request) -> Request {
 }
 
 /// Returns a `Query` based on the `Request`
-pub(crate) fn get_query(request: &Request) -> Result<Query, RestError> {
+pub(crate) fn get_query(request: Request) -> Result<(Query, Vec<char>), RestError> {
     let query_str = request.input.trim_start().to_string();
 
     let search_type = request.search_type;
 
     let settings = UserSettings {
-        user_lang: get_language(request),
+        user_lang: get_language(&request),
         ..UserSettings::default()
     };
 
@@ -58,7 +58,7 @@ pub(crate) fn get_query(request: &Request) -> Result<Query, RestError> {
         .parse()
         .ok_or(RestError::BadRequest)?;
 
-    Ok(query)
+    Ok((query, request.radicals))
 }
 
 /// Returns the user configured language of the [`Request`]

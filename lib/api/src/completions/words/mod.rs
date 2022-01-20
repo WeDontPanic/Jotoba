@@ -9,12 +9,12 @@ use types::api::completions::{Response, WordPair};
 use utils::bool_ord;
 
 /// Returns word suggestions based on the query. Applies various approaches to give better results
-pub(crate) async fn suggestions(query: Query) -> Option<Response> {
-    let response = try_word_suggestions(&query).await?;
+pub(crate) async fn suggestions(query: Query, radicals: &[char]) -> Option<Response> {
+    let response = try_word_suggestions(&query, radicals).await?;
 
     // Tries to do a katakana search if nothing was found
     let result = if response.is_empty() && query.query.is_hiragana() {
-        try_word_suggestions(&get_katakana_query(&query)).await?
+        try_word_suggestions(&get_katakana_query(&query), radicals).await?
     } else {
         response
     };
@@ -26,10 +26,10 @@ pub(crate) async fn suggestions(query: Query) -> Option<Response> {
 }
 
 /// Returns Ok(suggestions) for the given query ordered and ready to display
-async fn try_word_suggestions(query: &Query) -> Option<Vec<WordPair>> {
+async fn try_word_suggestions(query: &Query, radicals: &[char]) -> Option<Vec<WordPair>> {
     // Get sugesstions for matching language
     let word_pairs = match query.language {
-        QueryLang::Japanese => native::suggestions(&query.query)?,
+        QueryLang::Japanese => native::suggestions(&query, radicals)?,
         QueryLang::Foreign | QueryLang::Undetected | QueryLang::Korean => {
             let mut res = foreign::suggestions(&query, &query.query)
                 .await

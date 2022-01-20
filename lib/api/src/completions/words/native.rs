@@ -10,15 +10,17 @@ use utils::binary_search::BinarySearchable;
 use super::super::*;
 
 /// Get suggestions for foreign search input
-pub fn suggestions(query_str: &str) -> Option<Vec<WordPair>> {
+pub fn suggestions(query: &Query, radicals: &[char]) -> Option<Vec<WordPair>> {
+    let query_str = query.query.as_str();
     let start = Instant::now();
 
     // parsing
     let query_str_aligned = align_query_str(query_str).unwrap_or_else(|| query_str.to_string());
 
-    let mut items = suggest_words(&[&query_str, &query_str_aligned])?;
+    let mut items = suggest_words(&[&query_str, &query_str_aligned], &radicals)?;
     if items.len() <= 4 && !query_str.is_katakana() {
-        if let Some(other) = suggest_words(&[&romaji::RomajiExt::to_katakana(query_str)]) {
+        if let Some(other) = suggest_words(&[&romaji::RomajiExt::to_katakana(query_str)], &radicals)
+        {
             items.extend(other);
         }
     }
@@ -46,7 +48,10 @@ fn align_query_str(query_str: &str) -> Option<String> {
 #[derive(PartialEq, Eq)]
 struct WordPairOrder((WordPair, u32));
 
-pub(super) fn suggest_words(queries: &[&str]) -> Option<Vec<(WordPair, u32)>> {
+pub(super) fn suggest_words(
+    queries: &[&str],
+    filter_radicals: &[char],
+) -> Option<Vec<(WordPair, u32)>> {
     let suggestion_provider = resources::get().suggestions();
     let dict = suggestion_provider.japanese_words()?;
     let word_storage = resources::get().words();
@@ -60,13 +65,18 @@ pub(super) fn suggest_words(queries: &[&str]) -> Option<Vec<(WordPair, u32)>> {
         heap.extend(
             dict.search(|e: &NativeSuggestion| search_cmp(e, query))
                 // Fetch a few more to allow sort-function to give better results
-                .take(500)
                 .filter_map(|sugg_item| {
-                    word_storage.by_sequence(sugg_item.sequence).map(|word| {
-                        let score = score(word, &sugg_item, query, &query_romaji);
-                        WordPairOrder((word.into(), score))
-                    })
-                }),
+                    let word = word_storage.by_sequence(sugg_item.sequence)?;
+
+                    // Filter out non radical matching words if radicals are given
+                    if !filter_radicals.is_empty() && !word_rad_filter(&word, filter_radicals) {
+                        return None;
+                    }
+
+                    let score = score(word, &sugg_item, query, &query_romaji);
+                    Some(WordPairOrder((word.into(), score)))
+                })
+                .take(500),
         );
     }
 
@@ -77,6 +87,38 @@ pub(super) fn suggest_words(queries: &[&str]) -> Option<Vec<(WordPair, u32)>> {
     }
 
     Some(items)
+}
+
+fn word_rad_filter(word: &Word, radicals: &[char]) -> bool {
+    let kanji = match word.reading.kanji.as_ref() {
+        Some(k) => &k.reading,
+        None => return false,
+    };
+
+    let retrieve = resources::get().kanji();
+
+    kanji
+        .chars()
+        .filter_map(|k| k.is_kanji().then(|| retrieve.by_literal(k)).flatten())
+        .any(|k| {
+            if let Some(k_parts) = &k.parts {
+                return is_subset(radicals, &k_parts);
+            }
+            false
+        })
+}
+
+/// Returns `true` if `subs` is a subset of `full`
+pub fn is_subset<T: PartialEq>(subs: &[T], full: &[T]) -> bool {
+    if subs.is_empty() || full.is_empty() || subs.len() > full.len() {
+        return false;
+    }
+    for i in subs {
+        if !full.contains(i) {
+            return false;
+        }
+    }
+    true
 }
 
 /// Calculate a score for each word result to give better suggestion results
