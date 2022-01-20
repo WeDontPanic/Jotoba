@@ -33,6 +33,7 @@ function scrollSentenceReaderIntoView() {
     let selected = $(".sentence-part.selected")[0];
     if (selected !== undefined) {
         $(".search-annotation").scrollLeft(selected.offsetLeft - $(".search-annotation")[0].offsetLeft);
+        $(".search-annotation").scrollTop(selected.offsetTop - $(".search-annotation")[0].offsetTop);
     }
 }
 
