@@ -101,6 +101,9 @@ msgstr "Aktuelle Sprache"
 msgid "Currently listening"
 msgstr "Am Zuhören"
 
+msgid "No"
+msgstr "Nein"
+
 msgid "To change your language, select one of the following"
 msgstr "Um deine Sprache zu wechseln, wähle eins der folgenden"
 

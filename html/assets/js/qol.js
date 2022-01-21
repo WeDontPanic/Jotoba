@@ -71,7 +71,7 @@ $('.furigana-preview').on("click", (event) => {
 
     // Copy and show message
     preventDefaultHighlight(event, 100, true, false);
-    Util.showMessage("success", "furigana copied to clipboard.");
+    Util.showMessage("success", getText("QOL_FURI_COPIED"));
     Util.copyToClipboard($(event.target).html().trim());
 });
 
@@ -92,7 +92,7 @@ $('.furigana-preview').on("dblclick", (event) => {
     preventDefaultHighlight(event, 100, false);
     Util.copyToClipboard(furi);
     $('.msg-message.msg-success.msg-visible').last().remove();
-    $('.msg-message.msg-success.msg-visible').last().html("<b>full</b> furigana copied to clipboard");
+    $('.msg-message.msg-success.msg-visible').last().html(getText("QOL_FURI_COPIED_ALL"));
 });
 
 // Check conditions for copying Furigana 
@@ -173,7 +173,7 @@ function copyTranslationAndShowMessage(textParent) {
 
     // Copy and visual feedback
     Util.copyToClipboard(fullContent);
-    Util.showMessage("success", onlyKanji ? "kanji copied to clipboard." : (onlyKana ? "kana copied to clipboard." : "copied to clipboard."));
+    Util.showMessage("success", onlyKanji ? getText("QOL_KANJI_COPIED") : (onlyKana ? getText("QOL_KANA_COPIED") : getText("QOL_SENTENCE_COPIED")));
 }
 
 // Changes the search type in the upper row depending on the users input
@@ -216,7 +216,7 @@ Util.awaitDocumentReady(() => {
         event.preventDefault();
         var url = window.location.origin + $(event.target).attr('data');
         Util.copyToClipboard(url);
-        Util.showMessage("success", "Audio URL copied to clipboard");
+        Util.showMessage("success", getText("QOL_AUDIO_COPIED"));
     });
 
     // Disables the dropdown's animation until the first onclick event
@@ -241,6 +241,6 @@ Util.awaitDocumentReady(() => {
         let lang = Cookies.get("default_lang");
         let page = $(".pagination-circle.active").html();
 
-        history.replaceState({}, 'Jotoba', JotoTools.createUrl(txt, type, page || 0, lang));
+        history.replaceState({}, 'Jotoba', JotoTools.createUrl(txt, type, page || 1, lang));
     }
 });

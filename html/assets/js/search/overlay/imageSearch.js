@@ -92,7 +92,7 @@ function openImageCropOverlay(pastedFile) {
         });
         toggleCroppingModal();
     } else {
-        Util.showMessage("error", "You need to enter a URL or upload a file!");
+        Util.showMessage("error", getText("UPLOAD_NO_INPUT"));
     }
 }
 

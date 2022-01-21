@@ -10,7 +10,7 @@ var analyticsAttributes = null;
 function cookiesAccepted(manuallyCalled) {
     Cookies.set("allow_cookies", "1", {path: '/', expires: 365});
     if (manuallyCalled)
-        Util.showMessage("success", "Thanks for making Jotoba better!");
+        Util.showMessage("success", getText("SETTINGS_COOKIE_ACCEPT"));
 
     $('#cookie-footer').addClass("hidden");
 
@@ -23,7 +23,7 @@ function revokeCookieAgreement(manuallyCalled) {
     $('#cookie-footer').addClass("hidden");
 
     if (manuallyCalled)
-        Util.showMessage("success", "Successfully deleted your cookie data.");
+        Util.showMessage("success",  getText("SETTINGS_COOKIE_REJECT"));
 
     Cookies.set("allow_cookies", "0", {path: '/', expires: 365});
     Util.setMdlCheckboxState("cookie_settings", false);

@@ -98,6 +98,9 @@ msgstr ""
 msgid "Currently listening"
 msgstr ""
 
+msgid "No"
+msgstr ""
+
 msgid "To change your language, select one of the following"
 msgstr ""
 

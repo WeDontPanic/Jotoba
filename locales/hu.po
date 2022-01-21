@@ -98,6 +98,9 @@ msgstr "Kiválasztott nyelv"
 msgid "Currently listening"
 msgstr "Éppen figyel"
 
+msgid "No"
+msgstr "Nem"
+
 msgid "To change your language, select one of the following"
 msgstr "A nyelv megváltoztatásához válaszd ki az egyiket az alábbiak közül"
 

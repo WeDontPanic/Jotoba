@@ -419,7 +419,7 @@ function getRadicalInfo() {
         },
         error: function (result) {
             // Print Error
-            Util.showMessage("error", "Could not reach Radical API.")
+            Util.showMessage("error", getText("RADICAL_API_UNREACHABLE"))
         }
     });
 }
