@@ -181,7 +181,7 @@
 .word-tooltip {
     position: absolute;
     top: -5px;
-    right: 25px;
+    right: 10px;
     width: 20px;
     height: 30px;
     color: var(--tagColor);

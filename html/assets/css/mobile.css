@@ -93,6 +93,7 @@
 	
     #content-container {
         flex-direction: column!important;
+        min-width: 350px;
     }
     
     body {
