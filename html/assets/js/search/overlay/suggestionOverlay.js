@@ -164,7 +164,7 @@ function loadSuggestionApiData(result) {
                 break;
             case "hashtag":
                 let s = input.value.split(" ");
-                searchValue = s.slice(0, s.length-1).join(" ") + " " + encodeURIComponent(primaryResult);
+                searchValue = encodeURIComponent(s.slice(0, s.length-1).join(" ")) + " " + encodeURIComponent(primaryResult);
                 break;
             default:
                 searchValue = encodeURIComponent(primaryResult);
