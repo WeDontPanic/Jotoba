@@ -287,18 +287,19 @@ impl<'a> Search<'a> {
     /// Returns a `SearchTask` for the current query. This will be used to find all words for
     /// the search
     fn gloss_search_task(&self) -> SearchTask<foreign::Engine> {
+        let used_lang = self.query.get_lang_with_override();
+
         let mut search_task: SearchTask<foreign::Engine> =
-            SearchTask::with_language(&self.query.query, self.query.get_lang_with_override())
+            SearchTask::with_language(&self.query.query, used_lang)
                 .limit(self.query.settings.page_size as usize)
                 .offset(self.query.page_offset)
                 .threshold(0.3f32);
 
-        println!("searching in {}", self.query.get_lang_with_override());
+        println!("searching in {}", used_lang);
 
-        if self.query.settings.show_english
-            && self.query.settings.user_lang != Language::English
-            // Don't show english results if user wants to search in a specified language
-            && self.query.language_override.is_none()
+        if self.query.settings.show_english && used_lang != Language::English
+        // Don't show english results if user wants to search in a specified language
+        //&& self.query.language_override.is_none()
         {
             search_task.add_language_query(&self.query.query, Language::English);
         }
@@ -309,9 +310,8 @@ impl<'a> Search<'a> {
         search_task.set_result_filter(move |word| Self::word_filter(&q_cloned, word, &pos_filter));
 
         // Set order function
-        let user_lang = self.query.get_lang_with_override();
         search_task.set_order_fn(move |word, relevance, query, language| {
-            order::foreign_search_order(word, relevance, query, language.unwrap(), user_lang)
+            order::foreign_search_order(word, relevance, query, language.unwrap(), used_lang)
         });
 
         search_task
