@@ -32,7 +32,7 @@ pub async fn direct_ep(
     let result_data = match query_type {
         QueryType::Words => find_direct_word(&id, &settings).await,
         QueryType::Names => find_direct_name(&id).await,
-        QueryType::Sentences => find_direct_sentence(&id).await,
+        QueryType::Sentences => find_direct_sentence(&id, &settings).await,
         QueryType::Kanji => return Ok(redirect_home()),
     };
 
@@ -60,11 +60,13 @@ pub async fn find_direct_word(id: &str, settings: &UserSettings) -> Result<Resul
         .ok_or(web_error::Error::NotFound)?
         .clone();
 
-    let mut restults = vec![res_name];
+    let mut results = vec![res_name];
 
-    filter_languages(restults.iter_mut(), settings.user_lang, true);
+    // also show enlgish if otherwise no results would be shown due users settings
+    let show_english = !results[0].has_language(settings.user_lang, false) || settings.show_english;
+    filter_languages(results.iter_mut(), settings.user_lang, show_english);
 
-    let word = restults.remove(0);
+    let word = results.remove(0);
 
     Ok(ResultData::Word(WordResult {
         items: vec![word::result::Item::Word(word)],
@@ -90,7 +92,7 @@ pub async fn find_direct_name(id: &str) -> Result<ResultData, Error> {
 }
 
 /// Find direct sentence
-pub async fn find_direct_sentence(id: &str) -> Result<ResultData, Error> {
+pub async fn find_direct_sentence(id: &str, settings: &UserSettings) -> Result<ResultData, Error> {
     let sequence_id: u32 = id.parse().map_err(|_| Error::NotFound)?;
 
     let res_sentence = resources::get()
@@ -99,12 +101,9 @@ pub async fn find_direct_sentence(id: &str) -> Result<ResultData, Error> {
         .ok_or(web_error::Error::NotFound)?
         .clone();
 
-    let res_sentence = sentence::result::Sentence::from_m_sentence(
-        res_sentence,
-        types::jotoba::languages::Language::English,
-        true,
-    )
-    .unwrap();
+    let res_sentence =
+        sentence::result::Sentence::from_m_sentence(res_sentence, settings.user_lang, true)
+            .unwrap();
 
     Ok(ResultData::Sentence(SentenceResult {
         items: vec![sentence::result::Item {
