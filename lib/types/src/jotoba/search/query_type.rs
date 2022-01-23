@@ -41,6 +41,21 @@ impl QueryType {
     }
 }
 
+impl TryFrom<u8> for QueryType {
+    type Error = ();
+
+    #[inline]
+    fn try_from(value: u8) -> Result<Self, Self::Error> {
+        Ok(match value {
+            0 => Self::Words,
+            1 => Self::Kanji,
+            2 => Self::Sentences,
+            3 => Self::Names,
+            _ => return Err(()),
+        })
+    }
+}
+
 impl Default for QueryType {
     #[inline]
     fn default() -> Self {

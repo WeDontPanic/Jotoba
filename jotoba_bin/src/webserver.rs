@@ -71,6 +71,11 @@ pub(super) async fn start() -> std::io::Result<()> {
                     .route(actixweb::get().to(frontend::search_ep::search_ep_no_js)),
             )
             .service(
+                actixweb::resource("/direct/{type}/{id}")
+                    .wrap(Compat::new(middleware::Compress::default()))
+                    .route(actixweb::get().to(frontend::direct::direct_ep)),
+            )
+            .service(
                 actixweb::resource("/about")
                     .wrap(Compat::new(middleware::Compress::default()))
                     .route(actixweb::get().to(frontend::about::about)),
