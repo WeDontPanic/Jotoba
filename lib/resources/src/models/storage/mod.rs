@@ -221,7 +221,7 @@ impl ResourceStorage {
 
     /// Returns a `WordRetrieve` which can be used to retrieve names from the `ResourceStorage`
     #[inline]
-    pub fn names(&self) -> NameRetrieve<'_> {
+    pub fn names(&'static self) -> NameRetrieve<'static> {
         NameRetrieve::new(self)
     }
 

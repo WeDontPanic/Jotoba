@@ -226,7 +226,7 @@ fn sentry_request_from_http(request: &HttpRequest) -> sentry::protocol::Request 
     sentry_req
 }
 
-fn redirect_home() -> HttpResponse {
+pub(crate) fn redirect_home() -> HttpResponse {
     HttpResponse::MovedPermanently()
         .append_header(("Location", "/"))
         .finish()
