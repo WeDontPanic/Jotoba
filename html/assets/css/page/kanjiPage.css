@@ -22,6 +22,7 @@
 
 .kanji-preview-right {
     max-width: 350px;
+    text-align: right;
 }
 
 .translation.big {
@@ -154,6 +155,7 @@ object {
 	.kanji-preview-right {
         max-width: unset;
 		padding-top: 10px;
+        text-align: left;
 	}
 
     .notes {

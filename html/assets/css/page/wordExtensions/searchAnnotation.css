@@ -2,7 +2,8 @@
     color: var(--tagColor);
     max-height: 150px;
     overflow: scroll;
-    margin: 0 150px 0 150px;
+    display: flex;
+    justify-content: center;
 }
 
 .search-annotation::-webkit-scrollbar {
@@ -22,8 +23,7 @@
 /* Mobile only */
 @media only screen and (max-width: 600px) {
     .search-annotation {
-        padding-left: 0;
-        margin: -15px 5px 0 5px;
+        margin: -15px 0 0 5vw;
     }
     
     .search-inflection {
