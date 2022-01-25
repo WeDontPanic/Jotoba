@@ -188,6 +188,16 @@
     vertical-align: middle;
 }
 
+.info-entry > .extra {
+    border-left: 1px solid var(--lineColor);
+    padding-left: 7px;
+    margin-left: 1px;
+}
+
+.info-entry .copySvg {
+    pointer-events: all;
+}
+
 .word-tooltip {
     position: absolute;
     top: -5px;

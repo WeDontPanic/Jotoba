@@ -25,7 +25,8 @@ const locales = {
         "QOL_KANJI_COPIED": "kanji copied to clipboard.",
         "QOL_KANA_COPIED": "kana copied to clipboard.",
         "QOL_SENTENCE_COPIED": "copied to clipboard.",
-        "QOL_AUDIO_COPIED": "Audio URL copied to clipboard"
+        "QOL_AUDIO_COPIED": "Audio URL copied to clipboard",
+        "QOL_LINK_COPIED": "Link URL copied to clipboard"
     },
     "de-DE": {
         "LANG_JAP": "Japanisch",
@@ -53,7 +54,8 @@ const locales = {
         "QOL_KANJI_COPIED": "Kanji in Zwischenablage kopiert.",
         "QOL_KANA_COPIED": "Kana in Zwischenablage kopiert",
         "QOL_SENTENCE_COPIED": "Text in Zwischenablage kopiert",
-        "QOL_AUDIO_COPIED": "Audio URL in Zwischenablage kopiert"
+        "QOL_AUDIO_COPIED": "Audio URL in Zwischenablage kopiert",
+        "QOL_LINK_COPIED": "Link URL in Zwischenablage kopiert"
     },
     "hu": {
         "LANG_JAP": "Japán",

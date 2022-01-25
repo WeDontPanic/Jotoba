@@ -71,8 +71,7 @@ $('.furigana-preview').on("click", (event) => {
 
     // Copy and show message
     preventDefaultHighlight(event, 100, true, false);
-    Util.showMessage("success", getText("QOL_FURI_COPIED"));
-    Util.copyToClipboard($(event.target).html().trim());
+    JotoTools.copyTextAndEcho($(event.target).html().trim(), "QOL_FURI_COPIED");
 });
 
 // Copies full Furigana to clipboard on dblclick
@@ -172,8 +171,7 @@ function copyTranslationAndShowMessage(textParent) {
     });
 
     // Copy and visual feedback
-    Util.copyToClipboard(fullContent);
-    Util.showMessage("success", onlyKanji ? getText("QOL_KANJI_COPIED") : (onlyKana ? getText("QOL_KANA_COPIED") : getText("QOL_SENTENCE_COPIED")));
+    JotoTools.copyTextAndEcho(fillContent,  onlyKanji ? getText("QOL_KANJI_COPIED") : (onlyKana ? getText("QOL_KANA_COPIED") : getText("QOL_SENTENCE_COPIED")))
 }
 
 // Changes the search type in the upper row depending on the users input
@@ -215,8 +213,7 @@ Util.awaitDocumentReady(() => {
     $(".audioBtn").contextmenu((event) => {
         event.preventDefault();
         var url = window.location.origin + $(event.target).attr('data');
-        Util.copyToClipboard(url);
-        Util.showMessage("success", getText("QOL_AUDIO_COPIED"));
+        JotoTools.copyTextAndEcho(url, "QOL_AUDIO_COPIED");
     });
 
     // Disables the dropdown's animation until the first onclick event

@@ -666,3 +666,32 @@ a:hover {
     cursor: pointer;
     pointer-events: none;
 }
+
+.linkSvg {
+    height: 20px;
+    width: 20px;
+    background-color: var(--tagColor);
+    mask: url("/assets/svg/ui/link.svg") no-repeat center;
+    -webkit-mask: url("/assets/svg/ui/link.svg") no-repeat center;
+    cursor: pointer;
+    pointer-events: none;
+}
+
+.copySvg {
+    height: 21px;
+    width: 21px;
+    background-color: var(--primaryColor);
+    mask: url("/assets/svg/ui/copy.svg") no-repeat center;
+    -webkit-mask: url("/assets/svg/ui/copy.svg") no-repeat center;
+    cursor: pointer;
+    pointer-events: none;
+}
+
+.shareSvg {
+    height: 20px;
+    width: 20px;
+    background-color: var(--primaryColor);
+    mask: url("/assets/svg/ui/share.svg") no-repeat center;
+    -webkit-mask: url("/assets/svg/ui/share.svg") no-repeat center;
+    cursor: pointer;
+}

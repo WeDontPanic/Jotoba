@@ -21,3 +21,16 @@
     font-size: small;
     cursor: pointer;
 }
+
+.sentence-share {
+    width: 100%;
+    font-size: 12px;
+    margin-top: -10px;
+    margin-bottom: -12px;
+    padding-top: 5px;
+    padding-right: 5px;
+    color: var(--primaryColor);
+    -webkit-writing-mode: tb;
+        -ms-writing-mode: tb;
+            writing-mode: tb;
+}
