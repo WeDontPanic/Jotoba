@@ -59,6 +59,7 @@ function loadCookieData() {
     let kanji_speed = localStorage.getItem("kanji_speed");
 
     // Other Settings
+    let dbl_click_copy = Util.toBoolean(localStorage.getItem("dbl_click_copy"), true);
     let cookies_allowed = Cookies.get("allow_cookies");
 
     // Set essentials
@@ -70,7 +71,7 @@ function loadCookieData() {
     setLanguageSettings(search_lang, page_lang);
     setSearchSettings(english_always, english_on_top, example_sentences, sentence_furigana, focus_searchbar, select_searchbar_content, items_per_page, kanji_per_page);
     setDisplaySettings(theme, kanji_speed);
-    setOtherSettings(cookies_allowed);
+    setOtherSettings(dbl_click_copy, cookies_allowed);
 
     // New-User design adjustments
     if (!localStorage.getItem("first_time")) {
@@ -165,7 +166,9 @@ async function setDisplaySettings(theme, kanji_speed) {
 }
 
 // Prepare the others tab
-async function setOtherSettings(allow_cookies) {
+async function setOtherSettings(dbl_click_copy, allow_cookies) {
+    Util.setMdlCheckboxState("dbl_click_copy_settings", dbl_click_copy);
+
     if (allow_cookies === undefined) {
         $("#cookie-footer").removeClass("hidden");
         Util.setMdlCheckboxState("cookie_settings", false);
@@ -187,8 +190,12 @@ function onInputSettingsChange(relatedCookie, event) {
 }
 
 // Handles an event caused by a settings-btn
-function onBtnSettingsChange(relatedCookie, event) {
-    Cookies.set(relatedCookie, event.target.checked, {path: '/', expires: 365});
+function onBtnSettingsChange(identifier, event, useLocalStorage) {
+    if (useLocalStorage) {
+        localStorage.setItem(identifier, event.target.checked);
+    } else {
+        Cookies.set(identifier, event.target.checked, {path: '/', expires: 365});
+    }
 }
 
 // Special handling for english_always

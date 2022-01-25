@@ -454,6 +454,9 @@ msgstr ""
 msgid "Default kanji animation speed"
 msgstr ""
 
+msgid "Enable Quick-Copy"
+msgstr ""
+
 msgid "Accept Cookies"
 msgstr ""
 

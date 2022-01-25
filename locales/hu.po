@@ -454,6 +454,9 @@ msgstr "Sötét téma használata"
 msgid "Default kanji animation speed"
 msgstr "Alapértelmezett kanji animáció sebessége"
 
+msgid "Enable Quick-Copy"
+msgstr ""
+
 msgid "Accept Cookies"
 msgstr "Sütik Elfogadása"
 

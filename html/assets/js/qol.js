@@ -94,6 +94,28 @@ $('.furigana-preview').on("dblclick", (event) => {
     $('.msg-message.msg-success.msg-visible').last().html(getText("QOL_FURI_COPIED_ALL"));
 });
 
+// Copies translations to clipboard on double click
+$('.kanji-preview').on("dblclick", (event) => {
+    // Check if element should not be copied
+    if (!shouldCopyKanji(event))
+        return;
+
+    // Copy
+    preventDefaultHighlight(event, 500, false);
+    copyTranslationAndShowMessage(event.target.parentElement.parentElement);
+});
+
+// Copies translations to clipboard on double click
+$('.inline-kana-preview').on("dblclick", (event) => {
+    // Check if element should not be copied
+    if (!shouldCopyKanji(event))
+        return;
+
+    // Copy
+    preventDefaultHighlight(event, 500, false);
+    copyTranslationAndShowMessage(event.target.parentElement);
+});
+
 // Check conditions for copying Furigana 
 function shouldCopyFurigana(event) {
     // Prevent copying if the text was just a placeholder
@@ -105,20 +127,15 @@ function shouldCopyFurigana(event) {
         return false;
     }
 
-    return true;
+    // Prevent if user has removed the feature
+    return Util.toBoolean(localStorage.getItem("dbl_click_copy"), true);
 }
 
-// Copies translations to clipboard on double click
-$('.kanji-preview').on("dblclick", (event) => {
-    preventDefaultHighlight(event, 500, false);
-    copyTranslationAndShowMessage(event.target.parentElement.parentElement);
-});
-
-// Copies translations to clipboard on double click
-$('.inline-kana-preview').on("dblclick", (event) => {
-    preventDefaultHighlight(event, 500, false);
-    copyTranslationAndShowMessage(event.target.parentElement);
-});
+// Check conditions for copying Kanji 
+function shouldCopyKanji(event) {
+    // Prevent if user has removed the feature
+    return Util.toBoolean(localStorage.getItem("dbl_click_copy"), true);
+}
 
 // Prevents the default User highlighting
 function preventDefaultHighlight(event, timeoutDurationMs, disableClick, disableDoubleClick) {
@@ -171,7 +188,7 @@ function copyTranslationAndShowMessage(textParent) {
     });
 
     // Copy and visual feedback
-    JotoTools.copyTextAndEcho(fillContent,  onlyKanji ? getText("QOL_KANJI_COPIED") : (onlyKana ? getText("QOL_KANA_COPIED") : getText("QOL_SENTENCE_COPIED")))
+    JotoTools.copyTextAndEcho(fullContent,  onlyKanji ? getText("QOL_KANJI_COPIED") : (onlyKana ? getText("QOL_KANA_COPIED") : getText("QOL_SENTENCE_COPIED")))
 }
 
 // Changes the search type in the upper row depending on the users input

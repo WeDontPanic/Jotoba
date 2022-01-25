@@ -214,6 +214,12 @@
                      <div class="page-content">
                         <div class="d-flex flex-column">
                            <div class="settings-entry">
+                              <span class="inner-title">@data.gettext("Enable Quick-Copy"):</span>
+                              <label for="dbl_click_copy_settings" class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect">
+                                 <input checked id="dbl_click_copy_settings" type="checkbox" class="mdl-checkbox__input" onchange="onBtnSettingsChange('dbl_click_copy', event, true)">
+                              </label>
+                           </div>
+                           <div class="settings-entry">
                               <span class="inner-title">@data.gettext("Accept Cookies"):</span>
                               <label for="cookie_settings" class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect">
                                  <input checked id="cookie_settings" type="checkbox" class="mdl-checkbox__input" onchange="onCookiesAcceptChange(event)">

@@ -454,6 +454,9 @@ msgstr "Dark Mode"
 msgid "Default kanji animation speed"
 msgstr "Kanji Animationsgeschwindigkeit"
 
+msgid "Enable Quick-Copy"
+msgstr "\"Quick-Copy\" aktivieren"
+
 msgid "Accept Cookies"
 msgstr "Cookies akzeptieren"
 
