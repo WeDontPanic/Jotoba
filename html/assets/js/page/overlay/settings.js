@@ -47,8 +47,8 @@ function loadCookieData() {
     // Search Settings
     let english_always = Util.toBoolean(Cookies.get("show_english"), true);
     let english_on_top = Util.toBoolean(Cookies.get("show_english_on_top"));
-    let example_sentences = Util.toBoolean(Cookies.get("show_sentences"));
-    let sentence_furigana = Util.toBoolean(Cookies.get("sentence_furigana"));
+    let example_sentences = Util.toBoolean(Cookies.get("show_sentences"), true);
+    let sentence_furigana = Util.toBoolean(Cookies.get("sentence_furigana"), true);
     let focus_searchbar = Util.toBoolean(Cookies.get("focus_searchbar"));
     let select_searchbar_content = Util.toBoolean(Cookies.get("select_searchbar_content"));
     let items_per_page = Cookies.get("items_per_page");
