@@ -37,7 +37,7 @@ Refer to [API-Docs](https://jotoba.de/docs.html) for the API documentations and 
 Jotoba is aimed to be a multi-language dictionary thus the website is aimed to be fully translated into all available languages.<br>
 However, the main developers of this project don't speak ~10 languages.
 If you're interested in contributing to this project we are thankful for each translation contribution.<br>
-For a guide on how to add translations please refer to the [wiki](https://github.com/WeDontPanic/Jotoba/wiki/Translate).
+For a guide on how to add translations please refer to the [wiki](https://github.com/WeDontPanic/Jotoba/wiki/Translate-%5BPage%5D).
 
 # Selfhosting
 Please refer to the [wiki](https://github.com/WeDontPanic/Jotoba/wiki/Selfhost) for a guide on how to host Jotoba yourself.
