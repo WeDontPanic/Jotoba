@@ -1,4 +1,4 @@
-mod kanji;
+pub mod kanji;
 pub mod order;
 mod regex;
 pub mod result;
@@ -66,7 +66,7 @@ impl<'a> Search<'a> {
 
         let words = search_result.words;
 
-        let kanji_results = kanji::load_word_kanji_info(&words)?;
+        let kanji_results = kanji::load_word_kanji_info(&words);
 
         let res = WordResult {
             contains_kanji: !kanji_results.is_empty(),

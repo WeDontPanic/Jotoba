@@ -66,12 +66,21 @@ pub async fn find_direct_word(id: &str, settings: &UserSettings) -> Result<Resul
     let show_english = !results[0].has_language(settings.user_lang, false) || settings.show_english;
     filter_languages(results.iter_mut(), settings.user_lang, show_english);
 
+    let kanji = search::word::kanji::load_word_kanji_info(&results)
+        .into_iter()
+        .map(|k| word::result::Item::Kanji(k))
+        .collect::<Vec<_>>();
+    let contains_kanji = !kanji.is_empty();
+
     let word = results.remove(0);
 
+    let mut items = vec![word::result::Item::Word(word)];
+    items.extend(kanji);
+
     Ok(ResultData::Word(WordResult {
-        items: vec![word::result::Item::Word(word)],
+        items,
         count: 1,
-        contains_kanji: false,
+        contains_kanji,
         inflection_info: None,
         sentence_parts: None,
         sentence_index: 0,

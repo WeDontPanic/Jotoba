@@ -137,7 +137,7 @@ fn alternative_reading_search(search: &Search<'_>) -> Result<ResultData, Error> 
 }
 
 /// Load word assigned kanji
-pub(super) fn load_word_kanji_info(words: &[Word]) -> Result<Vec<Kanji>, Error> {
+pub fn load_word_kanji_info(words: &[Word]) -> Vec<Kanji> {
     let kanji_resources = resources::get().kanji();
 
     let kanji_literals = words
@@ -154,5 +154,5 @@ pub(super) fn load_word_kanji_info(words: &[Word]) -> Result<Vec<Kanji>, Error> 
         .take(10)
         .collect::<Vec<_>>();
 
-    Ok(kanji_literals)
+    kanji_literals
 }
