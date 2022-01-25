@@ -152,7 +152,6 @@
 
                 
                 <!-- Tooltip -->
-                @if need_3dot(&data, &word) {
                   <div id="m@word.sequence" class="word-tooltip d-flex flex-column noselect">
                     <span>.</span>
                     <span>.</span>
@@ -165,7 +164,7 @@
                         <div class="conjugationSvg"></div> 
                         <span class="info-dropdown-txt">@data.gettext("Show Conjugations")</span>
                       </li>
-                      <li disabled class="mdl-menu__item" style="height: 10px;"><hr style="margin: 0px; margin-top: 5px;"></li>
+                      <li disabled class="mdl-menu__item"><hr></li>
                     }
                     
                     @if let Some(ref collocations) = word.collocations {
@@ -173,7 +172,7 @@
                         <div class="conjugationSvg"></div>
                         <span class="info-dropdown-txt">@data.ngettext("Show collocation", collocations.len() as u64)</span>
                       </li>
-                      <li disabled class="mdl-menu__item dot-menu" style="height: 10px;"><hr style="margin: 0px; margin-top: 5px;"></li>
+                      <li disabled class="mdl-menu__item dot-menu"><hr></li>
                     }
 
                     @if let Some(intransitive) = get_intransitive_counterpart(&word) {
@@ -181,7 +180,7 @@
                         <div class="transitivitySvg"></div>
                         <span class="info-dropdown-txt"><a class="no-highlight" draggable="false" href="/search/@intransitive.get_reading().reading">@data.gettext("Intransitive word")</a></span>
                       </li>
-                      <li disabled class="mdl-menu__item dot-menu" style="height: 10px;"><hr style="margin: 0px; margin-top: 5px;"></li>
+                      <li disabled class="mdl-menu__item dot-menu"><hr></li>
                     }
 
                     @if let Some(transitive) = get_transitive_counterpart(&word) {
@@ -189,7 +188,7 @@
                         <div class="transitivitySvg"></div>
                         <span class="info-dropdown-txt"><a class="no-highlight" draggable="false" href="/search/@transitive.get_reading().reading">@data.gettext("Transitive word")</a></span> 
                       </li>
-                      <li disabled class="mdl-menu__item dot-menu" style="height: 10px;"><hr style="margin: 0px; margin-top: 5px;"></li>
+                      <li disabled class="mdl-menu__item dot-menu"><hr></li>
                     }
 
                     @if word.has_sentence(data.user_settings.user_lang) || (data.user_settings.show_english && word.has_sentence(Language::English)) {
@@ -201,7 +200,7 @@
                     }
 
                     @if let Some(audio) = word.audio_file("ogg") {
-                      <li disabled class="mdl-menu__item umami--click--audio-download-button" style="height: 10px;"><hr style="margin: 0px; margin-top: 5px;"></li>
+                      <li disabled class="mdl-menu__item umami--click--audio-download-button"><hr></li>
                       <li id="AudioDlBtn" class="info-entry noselect" class="mdl-menu__item">
                         <div class="downloadSvg"></div>
                         <span class="info-dropdown-txt"><a class="no-highlight" draggable="false" href="/audio/@audio">@data.gettext("Download audio")</a></span> 
@@ -209,14 +208,21 @@
                     }
 
                     @if data.config.is_debug() {
-                      <li disabled class="mdl-menu__item" style="height: 10px;"><hr style="margin: 0px; margin-top: 5px;"></li>
+                      <li disabled class="mdl-menu__item"><hr></li>
                       <li class="info-entry noselect" class="mdl-menu__item">
                        <div class="info-dropdown-vl"></div>
                        <span class="info-dropdown-txt">Seq: @word.sequence</span> 
                       </li>
                     }
+
+                    <li disabled class="mdl-menu__item"><hr></li>
+                    <li class="info-entry double noselect">
+                      <div class="downloadSvg"></div>
+                      <span class="info-dropdown-txt" style="margin-right: 27px;"><a class="no-highlight" draggable="false" href="/direct/0/@word.sequence">@data.gettext("Direct reference")</a></span>
+                      <div class="downloadSvg"></div>
+                    </li>
+
                   </ul>
-                }
 
                 @for (spos, senses_compound) in word.get_senses_orderd(query.settings.english_on_top, query.settings.user_lang).iter().enumerate() { 
                   @for (pos, sense) in senses_compound.iter().enumerate() {

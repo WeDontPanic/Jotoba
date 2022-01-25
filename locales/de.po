@@ -900,6 +900,9 @@ msgstr "Beispielsätze"
 msgid "Download audio"
 msgstr "Audio herunterladen"
 
+msgid "Direct reference"
+msgstr "Einzelnachweis"
+
 # "no words found"
 msgid "words"
 msgstr "Wörter"
