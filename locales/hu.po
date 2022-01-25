@@ -901,6 +901,9 @@ msgstr "Hanganyag letöltése"
 msgid "Sentence search"
 msgstr "Mondatok keresése"
 
+msgid "Direct reference"
+msgstr "Közvetlen hivatkozás"
+
 # "no words found"
 msgid "words"
 msgstr "szó"

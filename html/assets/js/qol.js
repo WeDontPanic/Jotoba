@@ -235,7 +235,7 @@ Util.awaitDocumentReady(() => {
     }
 
     // Change URL to contain the language code
-    if (!Util.isIndexPage()) {
+    if (!Util.isIndexPage() && !Util.isInPath("direct")) {
         let txt = input.value; 
         let type = $('#search-type').val();
         let lang = Cookies.get("default_lang");

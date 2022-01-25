@@ -89,3 +89,8 @@ Util.toLocaleDateString = function(unixTime) {
 Util.isIndexPage = function() {
   return window.location.origin+"/" == document.location.href;
 }
+
+// Returns whether the current page is listed under {index}/{path}
+Util.isInPath = function(path) {
+  return document.location.href.startsWith(window.location.origin+"/"+path);
+}

@@ -901,6 +901,9 @@ msgstr ""
 msgid "Sentence search"
 msgstr ""
 
+msgid "Direct reference"
+msgstr ""
+
 # "no words found"
 msgid "words"
 msgstr ""
