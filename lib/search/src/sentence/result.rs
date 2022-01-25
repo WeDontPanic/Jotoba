@@ -15,6 +15,7 @@ pub struct Item {
 
 #[derive(PartialEq, Clone)]
 pub struct Sentence {
+    pub id: u32,
     pub content: String,
     pub furigana: String,
     pub translation: String,
@@ -48,6 +49,7 @@ impl Sentence {
             translation = s.get_translations(Language::English);
         }
         Some(Self {
+            id: s.id,
             translation: translation?.to_string(),
             content: s.japanese,
             furigana: s.furigana,
