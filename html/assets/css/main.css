@@ -690,7 +690,7 @@ a:hover {
 .shareSvg {
     height: 20px;
     width: 20px;
-    background-color: var(--primaryColor);
+    background-color: var(--disabledColor);
     mask: url("/assets/svg/ui/share.svg") no-repeat center;
     -webkit-mask: url("/assets/svg/ui/share.svg") no-repeat center;
     cursor: pointer;
