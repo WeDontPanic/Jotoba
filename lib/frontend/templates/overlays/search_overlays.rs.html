@@ -1,0 +1,9 @@
+@use super::searchbar::{image_input_html, radicals_html, speech_html, suggestions_html};
+
+@use crate::BaseData;
+@(data: &BaseData)
+
+@:image_input_html(data)
+@:radicals_html(data)
+@:speech_html(data)
+@:suggestions_html(data)

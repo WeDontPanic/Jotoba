@@ -1,0 +1,54 @@
+@use crate::BaseData;
+@(data: &BaseData)
+
+<div class="overlay radical noselect hidden">
+    <span class="x-button noselect" onclick="toggleRadicalOverlay()">x</span>
+
+    <div class="rad-page-toggle">
+        <span id="r-t0" onclick="openRadicalPage(0);" class="selected">1&2</span>
+        <span id="r-t1" onclick="openRadicalPage(1);">3</span>
+        <span id="r-t2" onclick="openRadicalPage(2);">4</span>
+        <span id="r-t3" onclick="openRadicalPage(3);">5</span>
+        <span id="r-t4" onclick="openRadicalPage(4);">6</span>
+        <span id="r-t5" onclick="openRadicalPage(5);">7</span>
+        <span id="r-t6" onclick="openRadicalPage(6);">8</span>
+        <span id="r-t7" onclick="openRadicalPage(7);">9</span>
+        <span id="r-t8" onclick="openRadicalPage(8);">10</span>
+        <span id="r-t9" onclick="openRadicalPage(9);">> 10</span>
+        <span id="r-tc" onclick="openRadicalPage(10);"><div class="searchSvg"></div></span>
+    </div>
+
+    <div class="rad-kanji-wrapper">
+        <div class="rad-wrapper">
+            <span class="rad-kanji-title">@data.gettext("Select Radicals")</span>
+            <div class="d-flex flex-row wrap rad-picker">
+                <!-- Filled by JS -->
+            </div>
+        </div>
+        <div class="kanji-wrapper">
+            <span class="rad-kanji-title">@data.gettext("Select Kanji")</span>
+            <div class="d-flex flex-row wrap rad-results">
+                <!-- Filled by JS -->
+            </div>
+        </div>
+        <div class="rad-suggestion-wrapper">
+            <div id="suggestion-container-rad" class="d-flex flex-row">
+
+            </div>
+        </div>
+        <div class="rad-page-footer">
+            <div class="kanji-search-wrapper">
+                <input type="text" id="kanji-search" name="kanjiSearch" placeholder='@data.gettext("Search Radicals...")'>
+                <span class="searchSvg"></span>
+                <span class="undoSvg" onclick="resetRadPicker()"></span>
+                <button onclick="onSearchStart()" class="btn-search">
+                    <div class="flex-center">
+                       <div>@data.gettext("Search")</div>
+                       <div class="searchSvg index"></div>
+                    </div>
+                 </button>
+            </div>
+        </div>
+    </div>
+    <div id="rad-end-point"></div>
+</div>

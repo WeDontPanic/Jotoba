@@ -1,0 +1,29 @@
+@use crate::BaseData;
+@(_data: &BaseData)
+
+<div class="mobile-nav d-flex flex-column-reverse hidden">
+    <!-- Settings -->
+    <button class="mobile-nav-inner-btn" data-toggle="modal" data-target="#settingsModal" onclick="toggleMobileNav()">
+        <div class="settingsSvg mobile"></div> 
+    </button>
+    <!-- Radical Input -->
+    <button class="mobile-nav-inner-btn" onclick="toggleRadicalOverlay(); toggleMobileNav();">
+       <span class="rad-picker-icon noselect">部</span>
+    </button>
+    <!-- Speech Input -->
+    <button class="mobile-nav-inner-btn" onclick="toggleSpeakOverlay(); toggleMobileNav();">
+        <div class="voiceSvg mobile"></div> 
+    </button>
+    <!-- Home Btn -->
+     <button class="mobile-nav-inner-btn" onclick='Util.loadUrl(JotoTools.getPageUrl(""));'>
+        <span class="homeBtn mobile noselect">home</span> 
+     </button>
+    <!-- Jump Up / Down -->
+    <button onclick="jumpToTop()" id="jmp-btn" class="mobile-nav-inner-btn hidden">
+        <div class="jumpSvg mobile"></div> 
+    </button>
+</div>
+
+<button onclick="toggleMobileNav()" class="mobile-nav-btn">
+    <div class="menuSvg"></div> 
+</button>

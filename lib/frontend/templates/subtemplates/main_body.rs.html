@@ -1,73 +1,45 @@
-@use super::{word_search_html, kanji_details, name_search, sentence_search, about_html, info_page_html, news_html};
+@use crate::templates::pages::{words_html, kanji_html, names_html, sentences_html, about_html, info_html, news_html};
+
 @use crate::{BaseData, ResultData, Site};
 @(data: &BaseData)
 
 <!-- Main Body -->
 <div id="page-container">
-    <div class="d-flex center">
+   <div class="d-flex center">
       <div class="main-container">
-        <br>
+         <br>
 
-        @match data.site.clone() {
-           Site::SearchResult(search_result) => {
-              @match search_result.result {
-                 ResultData::Word(result) => {
-                    @:word_search_html(&data, &search_result.query, result)
-                 }
-                 ResultData::KanjiInfo(result) => {
-                    @:kanji_details(&data, result)
-                 }
-                 ResultData::Name(result) => {
-                    @:name_search(&data, result)
-                 }
-                 ResultData::Sentence(result) => {
-                    @:sentence_search(&data, result)
-                 }
-              }
-           }
-           Site::Index => {
-              @*@:index_html(&data)*@
-           }
-           Site::About => {
-              @:about_html(&data)
-           }
-           Site::InfoPage => {
-              @:info_page_html(&data)
-           }
-           Site::News(news) => {
-              @:news_html(&data, news)
-           }
-        }
+         @match data.site.clone() {
+            Site::SearchResult(search_result) => {
+               @match search_result.result {
+                  ResultData::Word(result) => {
+                     @:words_html(&data, &search_result.query, result)
+                  }
+                  ResultData::KanjiInfo(result) => {
+                     @:kanji_html(&data, result)
+                  }
+                  ResultData::Name(result) => {
+                     @:names_html(&data, result)
+                  }
+                  ResultData::Sentence(result) => {
+                     @:sentences_html(&data, result)
+                  }
+               }
+            }
+            Site::Index => {
+               @*@:index_html(&data)*@
+            }
+            Site::About => {
+               @:about_html(&data)
+            }
+            Site::InfoPage => {
+               @:info_html(&data)
+            }
+            Site::News(news) => {
+               @:news_html(&data, news)
+            }
+         }
 
       </div>
-    </div>
-    
-  </div>
-  
-  <!-- Mobile Menu -->
-  <div class="mobile-nav d-flex flex-column-reverse hidden">
-     <!-- Settings -->
-     <button class="mobile-nav-inner-btn" data-toggle="modal" data-target="#settingsModal" onclick="toggleMobileNav()">
-         <div class="settingsSvg mobile"></div> 
-     </button>
-     <!-- Radical Input -->
-     <button class="mobile-nav-inner-btn" onclick="toggleRadicalOverlay(); toggleMobileNav();">
-        <span class="rad-picker-icon noselect">部</span>
-     </button>
-     <!-- Speech Input -->
-     <button class="mobile-nav-inner-btn" onclick="toggleSpeakOverlay(); toggleMobileNav();">
-         <div class="voiceSvg mobile"></div> 
-     </button>
-     <!-- Home Btn -->
-      <button class="mobile-nav-inner-btn" onclick='Util.loadUrl(JotoTools.getPageUrl(""));'>
-         <span class="homeBtn mobile noselect">home</span> 
-      </button>
-     <!-- Jump Up / Down -->
-     <button onclick="jumpToTop()" id="jmp-btn" class="mobile-nav-inner-btn hidden">
-         <div class="jumpSvg mobile"></div> 
-     </button>
-  </div>
-  <!-- Shows / Hides the buttons above -->
-  <button onclick="toggleMobileNav()" class="mobile-nav-btn">
-      <div class="menuSvg"></div> 
-  </button>
+   </div>
+</div>

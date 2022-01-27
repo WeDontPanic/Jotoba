@@ -1,4 +1,5 @@
-@use super::subtemplates::{head_html, input_dropdown_html, search_overlays_html, settings_html, main_body_html, footer_html};
+@use super::subtemplates::{head_html, input_dropdown_html, main_body_html, footer_html};
+@use super::overlays::{page_overlays_html, search_overlays_html, mobile_overlays_html};
 @use crate::BaseData;
 
 @(data: BaseData)
@@ -9,66 +10,62 @@
 
    <body>
 
-      <div>
+      <header id="search-row" class="wrap-row">
+         <div class="d-flex center">
 
-         <!-- Search Row -->
-         <div id="search-row" class="wrap-row">
-            <div class="d-flex center">
-
-               <!-- Settings Button -->
-               <div class="btn-container"> 
-                  <div class="settingsSvg settingsBtn umami--click--settings-button" data-toggle="modal" data-target="#settingsModal"></div>
-               </div>
-
-               <!-- Home / Info Button -->
-               <div class="btn-container right">
-                  <div class="homeBtn noselect" onclick='Util.loadUrl(JotoTools.getPageUrl(""));'>home</div>
-                  <div class="infoSvg infoBtn umami--click--help-button" onclick='openHelpPage()'></div>
-               </div>
-
-               <!-- Search Bar -->
-               <div id="searchDiv">
-                  <div class="searchDivInner">
-                     <form method="GET" action="/search" onsubmit="return onSearchStart()">
-                        <div class="inner-form form-main">
-                           
-                            @:input_dropdown_html(&data)
-
-                           <div class="input-field second-wrap">
-                              <div class="input-group">
-                                 <input id="search" name="s" type="text" value="@data.get_query_str()" placeholder='@data.gettext("Search...")' tabindex="1" lang="ja" autocapitalize="off" autocomplete="off" data-autoload="false" data-effective-keyword=""/>
-                                 <span id="shadow-text"></span>
-                                 <button id="emptyInput" type="button" class="btn bg-transparent" onclick="emptySearchInput()">
-                                    <div class="clearSvg"></div>
-                                 </button>
-                                 <span id="search-vl"></span>
-                                 <button id="searchBtn" class="search-embedded-btn search" type="submit">
-                                    <div class="searchSvg"></div>
-                                 </button>
-                                 <button type="button" id="voiceBtn" class="search-embedded-btn umami--click--speak-button" onclick='toggleSpeakOverlay()'>
-                                    <div class="voiceSvg"></div> 
-                                 </button>
-                                 <button type="button" class="search-embedded-btn radical" onclick="toggleRadicalOverlay()">
-                                    <span class="rad-picker-icon noselect">部</span>
-                                 </button>
-                             </div>
-                           </div>
-                        </div>
-                     </form>
-                  </div>
-
-                  @:search_overlays_html(&data)
-
-               </div>
+            <!-- Settings Button -->
+            <div class="btn-container"> 
+               <div class="settingsSvg settingsBtn umami--click--settings-button" data-toggle="modal" data-target="#settingsModal"></div>
             </div>
 
-            @:settings_html(&data)
+            <!-- Home / Info Button -->
+            <div class="btn-container right">
+               <div class="homeBtn noselect" onclick='Util.loadUrl(JotoTools.getPageUrl(""));'>home</div>
+               <div class="infoSvg infoBtn umami--click--help-button" onclick='openHelpPage()'></div>
+            </div>
 
+            <!-- Search Bar -->
+            <div id="searchDiv">
+               <div class="searchDivInner">
+                  <form method="GET" action="/search" onsubmit="return onSearchStart()">
+                     <div class="inner-form form-main">
+                        
+                        @:input_dropdown_html(&data)
+
+                        <div class="input-field second-wrap">
+                           <div class="input-group">
+                              <input id="search" name="s" type="text" value="@data.get_query_str()" placeholder='@data.gettext("Search...")' tabindex="1" lang="ja" autocapitalize="off" autocomplete="off" data-autoload="false" data-effective-keyword=""/>
+                              <span id="shadow-text"></span>
+                              <button id="emptyInput" type="button" class="btn bg-transparent" onclick="emptySearchInput()">
+                                 <div class="clearSvg"></div>
+                              </button>
+                              <span id="search-vl"></span>
+                              <button id="searchBtn" class="search-embedded-btn search" type="submit">
+                                 <div class="searchSvg"></div>
+                              </button>
+                              <button type="button" id="voiceBtn" class="search-embedded-btn umami--click--speak-button" onclick='toggleSpeakOverlay()'>
+                                 <div class="voiceSvg"></div> 
+                              </button>
+                              <button type="button" class="search-embedded-btn radical" onclick="toggleRadicalOverlay()">
+                                 <span class="rad-picker-icon noselect">部</span>
+                              </button>
+                          </div>
+                        </div>
+                     </div>
+                  </form>
+               </div>
+               
+               @:search_overlays_html(&data)
+
+            </div>
          </div>
+      </header>
 
+      <main>
          @:main_body_html(&data)
-
-      </div>
+         @:page_overlays_html(&data);
+         @:mobile_overlays_html(&data)
+      </main>
 
       @:footer_html(&data)
 

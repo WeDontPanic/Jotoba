@@ -1,0 +1,15 @@
+@use crate::BaseData;
+@(data: &BaseData)
+
+<div class="overlay image hidden">
+    <span class="x-button noselect" onclick="toggleImageSearchOverlay()">x</span>
+    <div class="d-flex flex-column">
+        <span>@data.gettext("Enter a URL or upload your image directly and Jotoba will try to search for japanese words contained in the picture.")</span>
+        <div class="d-flex flex-row image-upload-parent">
+             <input id="imgUploadUrl" name="image-search" class="image-search-input" type="text" value="" placeholder='@data.gettext("Enter Image URL...")' tabindex="1" autocapitalize="off" autocomplete="off" data-autoload="false" data-effective-keyword="">
+             <input id="imgUploadFile" type="file" class="image-search-upload" accept=".png,.jpg,.jpeg" onchange="imgSearchFileSelected()">
+             <span class="imgUploadSvg" onclick="imgUploadAltClick()"></span>
+             <button class="image-search-upload-btn"  onclick="openImageCropOverlay()">@data.gettext("Search")</button>
+        </div>
+    </div>
+</div>

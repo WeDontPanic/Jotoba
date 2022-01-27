@@ -135,13 +135,11 @@ h3, h4 {
 body {
     min-height: 100vh;
     height: 100vh;
-    display: grid;
-    grid-template-rows: 1fr auto;
 }
 
-footer {
-    grid-row-start: 2;
-    grid-row-end: 3;
+body.index {
+    display: grid;
+    grid-template-rows: 1fr auto;
 }
 
 .noselect, .tags, .clickable, .entry-count, .no-drag {

@@ -1,0 +1,21 @@
+@use crate::BaseData;
+@(data: &BaseData)
+
+<div class="modal fade" id="imageCroppingModal">
+    <div class="modal-body cropping-target-body">
+       <div class="cropping-target-border">
+          <button class="btn-search crop umami--click--image-upload-send-button" onclick="uploadCroppedImage()">
+             <div class="flex-center">
+                <div>@data.gettext("Search")</div>
+                <div class="searchSvg index"></div>
+             </div>
+          </button>
+          <button class="btn-search btn-danger crop" onclick="resetUploadUrlInput();">
+             <div class="flex-center">
+                <div>@data.gettext("Close")</div>
+             </div>
+          </button>
+       </div>
+       <div id="croppingTarget"></div>
+    </div>
+ </div>

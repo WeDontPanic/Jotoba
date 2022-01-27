@@ -1,0 +1,24 @@
+@use crate::BaseData;
+@(data: &BaseData)
+
+<div class="overlay speech hidden">
+    <span class="x-button noselect" onclick="toggleSpeakOverlay()">x</span>
+    <div class="d-flex flex-column">
+        <span>@data.gettext("Current language"): <b id="currentSpeechLang">@data.gettext("English")</b></span>
+        <span>@data.gettext("Currently listening"): <b id="currentlyListening">@data.gettext("No")</b></span>
+        <br />
+        <span>@data.gettext("To change your language, select one of the following"):</span>
+        <div class="d-flex flex-row wrap">
+            <span class="clickable right-padding-10" onclick='setRecognitionLang("jap")'>@data.gettext("Japanese")</span>
+            <span class="clickable right-padding-10" onclick='setRecognitionLang("ger")'>@data.gettext("German")</span>
+            <span class="clickable right-padding-10" onclick='setRecognitionLang("eng")'>@data.gettext("English")</span>
+            <span class="clickable right-padding-10" onclick='setRecognitionLang("rus")'>@data.gettext("Russian")</span>
+            <span class="clickable right-padding-10" onclick='setRecognitionLang("spa")'>@data.gettext("Spanish")</span>
+            <span class="clickable right-padding-10" onclick='setRecognitionLang("swe")'>@data.gettext("Swedish")</span>
+            <span class="clickable right-padding-10" onclick='setRecognitionLang("fre")'>@data.gettext("French")</span>
+            <span class="clickable right-padding-10" onclick='setRecognitionLang("dut")'>@data.gettext("Dutch")</span>
+            <span class="clickable right-padding-10" onclick='setRecognitionLang("hun")'>@data.gettext("Hungarian")</span>
+            <span class="clickable right-padding-10" onclick='setRecognitionLang("svl")'>@data.gettext("Slovenian")</span>
+        </div>
+    </div>
+</div>

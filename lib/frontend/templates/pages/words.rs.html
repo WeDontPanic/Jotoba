@@ -1,0 +1,499 @@
+@use search::word::result::{Item, WordResult, selected};
+@use types::jotoba::languages::Language;
+@use search::query::Query;@use japanese::furigana::from_str as furi_from_str;
+@use crate::{example_sentence::ext_sentence, templ_utils::*};
+
+@use super::{search_help};
+@use crate::templates::functional::{render_sentence_html};
+
+@use crate::BaseData;
+@(data: &BaseData, query: &Query, result: WordResult)
+
+<link rel="stylesheet" type="text/css" media="print" onload="this.media='all'" href="/variable_assets/@data.asset_hash/assets/css/tools/ripple.css">
+
+<link rel="stylesheet" type="text/css" href="/variable_assets/@data.asset_hash/assets/css/page/multiPage/kanji.css">
+<link rel="stylesheet" type="text/css" href="/variable_assets/@data.asset_hash/assets/css/page/multiPage/kana.css">
+<link rel="stylesheet" type="text/css" href="/variable_assets/@data.asset_hash/assets/css/page/wordPage.css">
+<link rel="stylesheet" type="text/css" href="/variable_assets/@data.asset_hash/assets/css/page/wordExtensions/sentenceReader.css">
+<link rel="stylesheet" type="text/css" href="/variable_assets/@data.asset_hash/assets/css/page/wordExtensions/searchAnnotation.css">
+
+<script defer src="/variable_assets/@data.asset_hash/assets/js/page/wordPage.js"></script>
+
+  @if let Some(ref inflection) = result.inflection_info {
+    <div class="search-annotation">
+
+      <!-- Search Inflections -->
+      <div class="search-inflection">
+        <span>
+          @data.ngt_search_links("{} could be an inflection of {}, with this form:", 1, &[&result.searched_query, &inflection.lexeme], inflection.forms.len() as u64)
+          <br>
+          <span class="forms">
+            @for form in inflection.forms.iter() {
+              <li>@data.gettext(*form)</li>
+            }
+          </span>
+        </span>
+      </div>
+
+      @if result.sentence_parts.is_none() {
+        <br>
+      }
+
+    </div>
+  }
+
+  @if let Some(ref sentence_parts) = result.sentence_parts {
+    <div class="search-annotation">
+      <!-- Sentence Info -->
+      <div id="sr" class="d-flex wrap">
+        @for part in sentence_parts {
+          @if let Some(ref furigana) = part.furigana {
+            <a id="p@part.pos" href="/search/@query.get_query_encoded()?i=@part.pos" class="@part.get_add_class() sentence-part @selected(part.pos, result.sentence_index)">
+              @:render_sentence_html(furi_from_str(furigana).collect(), "", true)
+              </a>
+          } else {
+            <!-- TODO find a better way to keep this consistent. Implement with reader_sentence.rs.html -->
+            <a id="p@part.pos" href="/search/@query.get_query_encoded()?i=@part.pos" class="@part.get_add_class() sentence-part @selected(part.pos, result.sentence_index)">
+              <div class="furigana-kanji-container">
+                <ruby>
+                  <span class="kanji-preview">@part.text</span>
+                  <rt class="furigana-preview">&nbsp;</rt>
+                </ruby>
+              </div>
+            </a>
+          }
+        }
+      </div>
+
+      <!-- Sentence Tooltips -->
+      @for part in sentence_parts {
+        @if let Some(ref info) = part.info {
+          <div class="mdl-tooltip" for="p@part.pos">
+            @data.gettext(*info)
+          </div>
+        }
+      }
+    </div>
+    <br>
+  }
+   
+  <!-- Inner Main Body -->
+  <div id="content-container" class="d-flex left">
+    <div class="main-info d-flex flex-column">
+
+      @*
+      @if let Some(new_lang) = result.changed_lang {
+        @data.gettext_fmt("Temporarily switched language to {}", &[data.gettext(new_lang)])
+      }*@
+
+      @if result.has_word() {
+        <h3 class="noselect word-title">@data.gettext("Words")</h3>
+      } else {
+        @:search_help(&data, data.gettext("words").as_str())
+      }
+
+      <!-- Word, Sentence, Name Templates here -->
+      @for i in result.items.iter() {
+        @if let Item::Word(word) = i {
+
+          @if word.get_reading().len() > 3 {
+            <div class="d-flex flex-row wrap"> 
+              @if let Some(s_pairs) = word.get_furigana() {
+                @:render_sentence_html(s_pairs, "", true)
+              } else {
+                <div class="inline-kana-preview">
+                  @word.get_reading().reading
+                </div>
+              }
+            </div>
+          }
+
+          <div class="d-flex center">
+            <!-- Left side: Writing -->
+            <div class="kanji-entry left fixed d-flex flex-column">
+
+              @if word.get_reading().len() <= 3 {
+                <div class="d-flex flex-row"> 
+                  @if let Some(s_pairs) = word.get_furigana() {
+                    @:render_sentence_html(s_pairs, "", true)
+                  } else {
+                    <div class="inline-kana-preview">
+                      @word.get_reading().reading
+                    </div>
+                  }
+                </div>
+              }
+
+              @if word.is_common() {
+                <div class="word-frequency common">
+                  @data.gettext("common word")
+                </div>
+              }
+              @if let Some(lvl) =  word.jlpt_lvl {
+                <div class="word-frequency">
+                  @data.gettext_fmt("JLPT N{}", &[lvl])
+                </div>
+              }
+              @if let Some(audio) = word.audio_file("ogg") {
+                <span class="clickable audioBtn umami--click--play-audio-button" data="/audio/@audio">@data.gettext("Play audio")
+                  <audio preload="none">
+                    <source src="/audio/@audio" type="audio/ogg">
+                    @if let Some(audio) = word.audio_file("mp3") {
+                      <source src="/audio/@audio" type="audio/mp3">
+                    }
+                  </audio>
+                </span>
+              }
+            </div>
+
+            <div class="kanji-entry right">
+              <div class="entry-min-height-@word.get_word_tag_count()">
+                <!-- Right side: Info -->
+
+                
+                <!-- Tooltip -->
+                  <div id="m@word.sequence" class="word-tooltip d-flex flex-column noselect">
+                    <span>.</span>
+                    <span>.</span>
+                    <span>.</span>
+                  </div>
+
+                  <ul id="info-dropdown" class="mdl-menu mdl-menu--bottom-right mdl-js-menu mdl-js-ripple-effect umami--click--info-dropdown" for="m@word.sequence">
+                    @if word.get_inflections().is_some() {
+                      <li id="conjugationBtn" class="info-entry noselect" data-toggle="modal" data-target="#conj@word.sequence" class="mdl-menu__item">
+                        <div class="conjugationSvg"></div> 
+                        <span class="text">@data.gettext("Show Conjugations")</span>
+                      </li>
+                      <li disabled class="mdl-menu__item"><hr></li>
+                    }
+                    
+                    @if let Some(ref collocations) = word.collocations {
+                      <li id="collocationBtn" class="info-entry noselect umami--click--collocation-button" data-toggle="modal" data-target="#coll@word.sequence" class="mdl-menu__item">
+                        <div class="conjugationSvg"></div>
+                        <span class="text">@data.ngettext("Show collocation", collocations.len() as u64)</span>
+                      </li>
+                      <li disabled class="mdl-menu__item dot-menu"><hr></li>
+                    }
+
+                    @if let Some(intransitive) = get_intransitive_counterpart(&word) {
+                      <li class="info-entry noselect umami--click--intransitive-button" class="mdl-menu__item"> 
+                        <div class="transitivitySvg"></div>
+                        <span class="text">
+                          <a class="no-highlight" draggable="false" href="/search/@intransitive.get_reading().reading">@data.gettext("Intransitive word")</a>
+                        </span>
+                      </li>
+                      <li disabled class="mdl-menu__item dot-menu"><hr></li>
+                    }
+
+                    @if let Some(transitive) = get_transitive_counterpart(&word) {
+                      <li class="info-entry noselect umami--click--transitive-button" class="mdl-menu__item">
+                        <div class="transitivitySvg"></div>
+                        <span class="text">
+                          <a class="no-highlight" draggable="false" href="/search/@transitive.get_reading().reading">@data.gettext("Transitive word")</a>
+                        </span> 
+                      </li>
+                      <li disabled class="mdl-menu__item dot-menu"><hr></li>
+                    }
+
+                    @if word.has_sentence(data.user_settings.user_lang) || (data.user_settings.show_english && word.has_sentence(Language::English)) {
+                      <li class="info-entry noselect umami--click--sentences-button" class="mdl-menu__item">
+                        <div class="sentenceSvg"></div>
+                        <span class="text">
+                          <a class="no-highlight" draggable="false" href="/search/@word.get_reading().reading?t=2">@data.gettext("Sentence search")</a>
+                        </span> 
+                      </li>
+                    }
+
+                    @if let Some(audio) = word.audio_file("ogg") {
+                      <li disabled class="mdl-menu__item umami--click--audio-download-button"><hr></li>
+                      <li id="AudioDlBtn" class="info-entry noselect" class="mdl-menu__item">
+                        <div class="downloadSvg"></div>
+                        <span class="text">
+                          <a class="no-highlight" draggable="false" href="/audio/@audio">@data.gettext("Download audio")</a>
+                        </span> 
+                      </li>
+                    }
+
+                    @if data.config.is_debug() {
+                      <li disabled class="mdl-menu__item"><hr></li>
+                      <li class="info-entry noselect" class="mdl-menu__item">
+                        <span class="text">Seq: @word.sequence</span> 
+                      </li>
+                    }
+
+                    <li disabled class="mdl-menu__item"><hr></li>
+                    <li class="info-entry noselect">
+                      <div class="linkSvg"></div>
+                      <span class="text">
+                        <a class="no-highlight" draggable="false" href="/direct/0/@word.sequence">@data.gettext("Direct reference")</a>
+                      </span>
+                      <div class="extra">
+                        <div class="copySvg" onclick='JotoTools.copyTextAndEcho(JotoTools.pathToUrl("/direct/0/@word.sequence"), "QOL_LINK_COPIED");'></div>
+                      </div>
+                    </li>
+
+                  </ul>
+
+                @for (spos, senses_compound) in word.get_senses_orderd(query.settings.english_on_top, query.settings.user_lang).iter().enumerate() { 
+                  @for (pos, sense) in senses_compound.iter().enumerate() {
+                    @if !sense.glosses.is_empty() {
+                      <!-- Sense entry -->
+                      <div class="list-entry">
+                        <div class="tags">
+                          @sense.get_parts_of_speech(&data.dict, data.get_lang())
+                        </div>
+                        <div class="definition-wrapper d-flex flex-row">
+                          <div class="entry-count">
+                            @(pos+1).
+                          </div>
+                          <div class="translation">
+                            @sense.get_glosses()
+                          </div>
+                        </div>
+                        @if let Some((info, xref, antonym, dialect, gairaigo)) = sense.get_infos(&data.dict, data.get_lang()) {
+                          <div class="tags no-margin">
+                            @if let Some(ref gro) = gairaigo {
+                              @gro
+                            }
+                            @if let Some(ref info) = info {
+                              @if gairaigo.is_some() {
+                                .
+                              }
+                              @info
+                            }
+                            @if let Some(ref dialect) = dialect {
+                              @data.gettext_custom(*dialect)
+                            }
+                            @if let Some(ref antonym) = antonym {
+                              @data.gt_search_link("Antonym of {}", antonym) 
+                            }
+                            @if let Some(ref xref) = xref {
+                              @if antonym.is_some() || dialect.is_some() {
+                                .
+                              }
+                              @data.gt_search_link("See also {}", xref) 
+                            }
+                          </div>
+                        }
+
+                        @if query.settings.show_example_sentences {
+                          @if let Some((furi, translation)) = ext_sentence(sense, &query.settings.user_lang) {
+                            <div class="d-flex flex-row">
+                              <div class="tags no-margin example-sentence collapsed"> 
+                                <div class="d-flex flex-row wrap">               
+                                  @:render_sentence_html(furi, "", true)
+                                </div>
+                              </div>
+                              <div class="expander">
+
+                              </div>
+                            </div>
+                            <div class="tags no-margin">
+                              @translation
+                            </div>
+                          }
+                        }
+                      </div>
+                    }
+                  }
+
+                  @if spos == 0 && !word.get_senses()[1].is_empty() && !senses_compound.is_empty() {
+                    <hr class="lang-separator"/>
+                  }
+                }
+              
+                @if let Some(accents) = word.get_accents() {
+                  <div class="tags">@data.gettext("Pitch accent")</div>
+                  <div class="pitch">
+                    @for accent in accents {
+                      <span class="pitch @accent.get_classes()">@accent.c</span>
+                    }
+                  </div>
+                }
+
+                <!-- Additional Informations -->
+                @if !word.reading.alternative.is_empty() {
+                  <div class="tags">@data.gettext("Other forms")</div>
+                  <div class="notes">@word.alt_readings_beautified()</div>
+                }
+              </div>
+
+              <!-- Start of Collocation Modal -->
+              @if word.has_collocations() {
+                <div class="modal fade" id="coll@word.sequence" style="display: none;" aria-hidden="true">
+                  <div class="modal-dialog  modal-lg">
+                    <div class="modal-content">
+                      <!-- Modal Body -->
+                      <div class="modal-body">
+                        <button type="button" class="close" data-dismiss="modal">×</button>
+                        <br>
+                        <!-- Verb conjugation table -->
+                        <h3 class="info-h3">@data.gettext("Collocations")</h3>
+                        <table class="table collocation">
+                          <tbody>
+                            @for collocation in get_collocations(&word, data.user_settings.user_lang, data.user_settings.show_english) {
+                              <tr>
+                                  <th scope="row"><a class="clickable no-align green" href="/search/@collocation.0">@collocation.0</a></th>
+                                  <td>@collocation.1</td>
+                              </tr>
+                            }
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              }
+
+              @if let Some(inflections) = word.get_inflections() {
+              <div class="modal fade" id="conj@word.sequence">
+                <div class="modal-dialog  modal-lg">
+                  <div class="modal-content">
+                   <!-- Modal Body -->
+                   <div class="modal-body">
+                      <button type="button" class="close" data-dismiss="modal">×</button>
+                      <!-- Verb conjugation table -->
+       
+                      <!-- TODO -->
+                      <!--<h3 class="info-h3">Godan verb with ku ending</h3>-->
+       
+                      <table class="table conjugation">
+                         <thead>
+                           <tr>
+                             <th scope="col"></th>
+                             <th scope="col">@data.gettext("Affirmative")</th>
+                             <th scope="col">@data.gettext("Negative")</th>
+                           </tr>
+                         </thead>
+                         <tbody>
+                            <tr>
+                               <th scope="row">@data.gettext("Present")</th>
+                               <td>@inflections.present.positive</td>
+                               <td>@inflections.present.negative</td>
+                            </tr>
+
+                            <tr>
+                               <th scope="row">@data.gettext("Present, polite")</th>
+                               <td>@inflections.present_polite.positive</td>
+                               <td>@inflections.present_polite.negative</td>
+                            </tr>
+
+                            <tr>
+                               <th scope="row">@data.gettext("Past")</th>
+                               <td>@inflections.past.positive</td>
+                               <td>@inflections.past.negative</td>
+                            </tr>
+
+                            <tr>
+                               <th scope="row">@data.gettext("Past, polite")</th>
+                               <td>@inflections.past_polite.positive</td>
+                               <td>@inflections.past_polite.negative</td>
+                            </tr>
+
+                            <tr>
+                               <th scope="row">@data.gettext("Te-form")</th>
+                               <td>@inflections.te_form.positive</td>
+                               <td>@inflections.te_form.negative</td>
+                            </tr>
+
+                            <tr>
+                               <th scope="row">@data.gettext("Potential")</th>
+                               <td>@inflections.potential.positive</td>
+                               <td>@inflections.potential.negative</td>
+                            </tr>
+
+                            <tr>
+                               <th scope="row">@data.gettext("Passive")</th>
+                               <td>@inflections.passive.positive</td>
+                               <td>@inflections.passive.negative</td>
+                            </tr>
+
+                            <tr>
+                               <th scope="row">@data.gettext("Causative")</th>
+                               <td>@inflections.causative.positive</td>
+                               <td>@inflections.causative.negative</td>
+                            </tr>
+
+                            <tr>
+                               <th scope="row">@data.gettext("Causative Passive")</th>
+                               <td>@inflections.causative_passive.positive</td>
+                               <td>@inflections.causative_passive.negative</td>
+                            </tr>
+                            <tr>
+                               <th scope="row">@data.gettext("Imperative")</th>
+                               <td>@inflections.imperative.positive</td>
+                               <td>@inflections.imperative.negative</td>
+                            </tr>
+                         </tbody>
+                       </table>
+                      </div>
+                   </div>
+                </div>
+             </div>
+              }
+             <!-- !!! END OF INFO OVERLAY -->
+              <hr class="res-separator" />
+            </div>
+          </div>
+        }
+      }
+      
+    </div>
+    <div id="secondaryInfo" class="secondary-info @if !result.contains_kanji { hidden }">
+      <h3 class="noselect">@data.gettext("Kanji")</h3>
+      <!-- Kanji Templates here -->
+      @for i in result.items.iter() {
+        @if let Item::Kanji(kanji) = i {
+          <div class="kanji-parent">
+            <!-- Tags -->
+            <div class="tags">
+              @data.ngettext_fmt("{} stroke", kanji.stroke_count as u64, &[kanji.stroke_count]).
+              @if let Some(jlpt_lvl) = kanji.jlpt {
+                @data.gettext_fmt("JLPT N{}", &[jlpt_lvl])}@*
+            *@@if let Some(grade) = kanji.grade {@if kanji.jlpt.is_some() {. }
+                @data.gettext_fmt("Taught in {} grade", &[grade])
+              }
+            </div>
+
+            <!-- Kanji and translation -->
+            <div class="kanji-entry left d-flex flex-row">
+              <a class="kanji-preview large black" href="/search/@kanji.literal?t=1">
+                @kanji.literal
+              </a>
+              <div class="translation kanji">
+                @kanji.meanings.join(", ")
+              </div>
+            </div>
+
+            <!-- Kun readings -->
+            @if let Some(ref kun) = kanji.kunyomi {
+              <div class="tags no-margin">@data.gettext("Kun")</div>
+              <div class="d-flex flex-row wrap noselect">
+                @for (pos, reading) in kun.iter().enumerate() {
+                  @if pos > 0 {
+                    <span class="tags no-margin fat right-padding-10">,</span>
+                  }
+                  <a class="clickable no-align green" href="/search/@kanji.literal @reading">@reading</a>
+                }
+              </div>
+            }
+
+            <!-- On readings -->
+            @if let Some(ref on) = kanji.onyomi {
+              <div class="tags no-margin">@data.gettext("On")</div>
+              <div class="d-flex flex-row wrap noselect">
+                @for (pos, reading) in on.iter().enumerate() {
+                  @if pos > 0 {
+                    <span class="tags no-margin fat right-padding-10">,</span>
+                  }
+                  <a class="clickable no-align green" href="/search/@kanji.literal @reading">@reading</a>
+                }
+              </div>
+            }
+
+            <hr />
+          </div>
+        }
+      }
+    </div>
+  </div>

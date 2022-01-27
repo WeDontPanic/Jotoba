@@ -1,4 +1,5 @@
-@use super::subtemplates::{head_html, input_dropdown_html, search_overlays_html, settings_html, footer_html};
+@use super::subtemplates::{head_html, input_dropdown_html, footer_html};
+@use super::overlays::{page_overlays_html, search_overlays_html};
 @use crate::BaseData;
 
 @(data: BaseData)
@@ -11,8 +12,8 @@
    <link rel="stylesheet" type="text/css" href="variable_assets/@data.asset_hash/assets/css/overlay/notificationOverlay.css">
    <script defer src="/variable_assets/@data.asset_hash/assets/js/page/overlay/notifications.js"></script>
 
-   <body>
-      <div class="index-noselect">
+   <body class="index">
+      <main class="noselect">
 
           <!-- Title Icon -->
          <div onmousedown="return false" class="title">
@@ -70,7 +71,7 @@
                </div>
             </div>
 
-            @:settings_html(&data)
+            @:page_overlays_html(&data)
 
             <div class="modal fade" id="notificationModal">
                <div class="modal-dialog">
@@ -119,7 +120,7 @@
             <div class="infoSvg infoBtn index umami--click--help-button" onclick='openHelpPage()'></div>
             <div class="notificationSvg notificationBtn index umami--click--notification-button" onclick="toggleNotifications(event)"></div>
          </div>      
-      </div>
+      </main>
 
       @:footer_html(&data)
 

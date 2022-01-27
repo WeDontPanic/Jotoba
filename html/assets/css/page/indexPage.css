@@ -1,14 +1,5 @@
 /* ----------------- Index Page ----------------- */
 
-.index-noselect {
-    -webkit-touch-callout: none; /* iOS Safari */
-    -webkit-user-select: none; /* Safari */ /* Konqueror HTML */
-    -moz-user-select: none; /* Old versions of Firefox */
-    -ms-user-select: none; /* Internet Explorer/Edge */
-    -o-user-select:none; /* Opera */
-    user-select: none; /* Non-prefixed version, currently supported by Chrome, Edge, Opera and Firefox */;
-}
-
 .title {
     padding-top: 5%;
     padding-bottom: 2.25%;

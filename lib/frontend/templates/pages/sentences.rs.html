@@ -1,0 +1,57 @@
+@use search::sentence::result::SentenceResult;
+@use super::search_help;
+
+@use crate::templates::functional::{render_sentence_html};
+
+@use crate::BaseData;
+@(data: &BaseData, sentences: SentenceResult)
+
+  <link rel="stylesheet" type="text/css" href="/variable_assets/@data.asset_hash/assets/css/page/multiPage/kanji.css">
+  <link rel="stylesheet" type="text/css" href="/variable_assets/@data.asset_hash/assets/css/page/multiPage/kana.css">
+  <link rel="stylesheet" type="text/css" href="/variable_assets/@data.asset_hash/assets/css/page/sentencePage.css">
+  <script defer src="/variable_assets/@data.asset_hash/assets/js/page/sentencePage.js"></script>
+
+<!-- Inner Main Body -->
+<div class="d-flex center">
+  <div class="main-info d-flex flex-column">
+
+    @if sentences.items.is_empty() {
+      @:search_help(&data, data.gettext("sentences").as_str())
+    }
+
+    @for sentence in sentences.items {
+      <div class="list-entry sentence">
+
+        <!-- Share Icon -->
+        <div class="sentence-share">
+          <div class="shareSvg" onclick='JotoTools.copyTextAndEcho(JotoTools.pathToUrl("/direct/2/@sentence.sentence.id"), "QOL_LINK_COPIED");'></div>
+        </div>
+
+        <!-- Sentence -->
+        <div class="d-flex flex-row wrap sentence">
+          @:render_sentence_html(sentence.sentence.furigana_pairs().collect(), "small", data.user_settings.sentence_furigana)
+        </div>
+
+         <!-- Translation -->
+        <div class="sentence-translation original" style="@if sentences.hidden { display: none; }">
+          @sentence.sentence.translation
+        </div>
+        @if let Some(ref english) = sentence.sentence.get_english() {
+          <hr class="lang-separator" style="@if sentences.hidden { display: none; }"/>
+          <div class="sentence-translation" style="@if sentences.hidden { display: none; }">
+            @english
+          </div>
+        }
+
+        <!-- Toggle Btn -->
+        @if sentences.hidden {
+          <div class="sentence-toggle hide hidden noselect" onclick='toggleTranslation(this)'>[@data.gettext("hide")]</div>
+          <div class="sentence-toggle show noselect" onclick='toggleTranslation(this)'>[@data.gettext("show")]</div>
+        }
+      </div>
+     <hr class="res-separator sentence" />
+    }
+
+  </div>
+</div>
+

@@ -3,34 +3,20 @@
 @use resources::models::GIT_HASH;
 @(data: &BaseData)
 
-<!-- Footer -->
 <footer>
 
    @:paginator(data)
 
-    <div class="center-text">
-       <hr class="footer-hr">
-       <span>
-          @data.gettext("Jotoba wouldn't be able to exist without the help of many open-source data sources.") <br> @data.gettext("Check out the") <a class="clickable no-align green" href="/about">@data.gettext("About Page")</a> @data.gettext("for a list of all contributors in this project.")
-       </span>
-       @if data.config.is_debug() {
+   <div class="center-text">
+
+      <hr class="footer-hr">
+      <span>
+         @data.gettext("Jotoba wouldn't be able to exist without the help of many open-source data sources.") <br> @data.gettext("Check out the") <a class="clickable no-align green" href="/about">@data.gettext("About Page")</a> @data.gettext("for a list of all contributors in this project.")
+      </span>
+      @if data.config.is_debug() {
          <br><br> Git hash: @(GIT_HASH)
-       }
-    </div>
+      }
+      
+   </div>
 
-    <!-- Cookies -->
-    <div id="cookie-footer" class="cookie-footer hidden">
-       <div class="d-flex flex-row">
-         <img class="joto-cookie" src="/variable_assets/@data.asset_hash/assets/jotokun/JotoCookie.svg" >
-         <div class="d-flex flex-column">
-            <span>@data.gettext("We use cookies to improve your experience and deliver personalized content.")</span>
-            <span>@data.gettext("By using Jotoba you agree to our") <a class="clickable no-select" href="/privacy">@data.gettext("privacy policy")</a>@data.gettext(".")</span>
-
-            <div style="margin-top: 10px;">
-               <button type="button" class="btn btn-danger cookie-btn" onclick="revokeCookieAgreement(false)">@data.gettext("Only use necessary")</button>
-               <button type="button" class="btn btn-success cookie-btn" onclick="cookiesAccepted(false)">@data.gettext("Allow Cookies")</button>
-            </div>
-         </div>
-      </div>
-    </div>
  </footer>

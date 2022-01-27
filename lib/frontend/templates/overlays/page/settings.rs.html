@@ -1,39 +1,12 @@
 @use crate::BaseData;
 @(data: &BaseData)
 
-<!-- Blocking Overlay aka. Loading Overlay -->
-<div id="loading-screen">
-   <div class="loading-animation"></div>
-</div> 
-
-<div class="modal fade" id="imageCroppingModal">
-   <div class="modal-body cropping-target-body">
-      <div class="cropping-target-border">
-         <button class="btn-search crop umami--click--image-upload-send-button" onclick="uploadCroppedImage()">
-            <div class="flex-center">
-               <div>@data.gettext("Search")</div>
-               <div class="searchSvg index"></div>
-            </div>
-         </button>
-         <button class="btn-search btn-danger crop" onclick="resetUploadUrlInput();">
-            <div class="flex-center">
-               <div>@data.gettext("Close")</div>
-            </div>
-         </button>
-      </div>
-      <div id="croppingTarget"></div>
-   </div>
-</div>
-
-<!-- Start of Settings Modal -->
 <div class="modal fade" id="settingsModal">
     <div class="modal-dialog">
        <div class="modal-content">
-
-          <!-- Modal body -->
           <div class="modal-body">
             <div class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
-               <header class="mdl-layout__header">
+               <div class="mdl-layout__header">
                  <div class="mdl-layout__header-row">
                    <!-- Title -->
                    <span class="mdl-layout-title">Settings</span>
@@ -46,23 +19,27 @@
                    <a href="#scroll-tab-3" class="mdl-layout__tab">@data.gettext("Display")</a>
                    <a href="#scroll-tab-4" class="mdl-layout__tab">@data.gettext("Other")</a>
                  </div>
-               </header>
-               <main class="mdl-layout__content">
-                 <section class="mdl-layout__tab-panel is-active" id="scroll-tab-1">
-                   <div class="page-content">
-                     <div class="d-flex flex-column">
-                        <div class="settings-entry">
-                           <span class="inner-title">@data.gettext("Default search language")</span>
-                           <div class="choices noselect" data-type="select-one" tabindex="1">
-                              <div class="choices__inner">
-                                 <select data-trigger="" name="type" data-onchange="onSettingsChange_DefaultLanguage" class="hidden">
-                                    <option value="0">@data.gettext("English")</option>
-                                 </select>
-                                 <div class="choices__list choices__list--single">
-                                    <div class="choices__item choices__item--selectable">@data.gettext("English")</div>
+               </div>
+
+               <!-- Content -->
+               <div class="mdl-layout__content">
+
+                  <!-- Page 1 -->
+                  <section class="mdl-layout__tab-panel is-active" id="scroll-tab-1">
+                     <div class="page-content">
+                        <div class="d-flex flex-column">
+                           <div class="settings-entry">
+                              <span class="inner-title">@data.gettext("Default search language")</span>
+                              <div class="choices noselect" data-type="select-one" tabindex="1">
+                                 <div class="choices__inner">
+                                    <select data-trigger="" name="type" data-onchange="onSettingsChange_DefaultLanguage" class="hidden">
+                                       <option value="0">@data.gettext("English")</option>
+                                    </select>
+                                    <div class="choices__list choices__list--single">
+                                       <div class="choices__item choices__item--selectable">@data.gettext("English")</div>
+                                    </div>
                                  </div>
-                              </div>
-                              <div class="choices__list choices__list--dropdown">
+                                 <div class="choices__list choices__list--dropdown">
                                  <div id="search-lang-select" class="choices__list umami--change--search-language-change">
                                     <div data-value="en-US" class="choices__item choices__item--choice choices__item--selectable">@data.gettext("English")</div>
                                     <div data-value="de-DE" class="choices__item choices__item--choice choices__item--selectable">@data.gettext("German")</div>
@@ -77,6 +54,7 @@
                               </div>
                            </div>
                         </div>
+
                         <div class="settings-entry">
                            <span class="inner-title">@data.gettext("Page language")</span>
                            <div class="choices noselect" data-type="select-one" tabindex="1">
@@ -107,15 +85,14 @@
                      </div>
                    </div>
                  </section>
+
+                 <!-- Page 2 -->
                  <section class="mdl-layout__tab-panel" id="scroll-tab-2">
                      <div class="page-content">
                         <div class="d-flex flex-column">
-
                            <div class="inner-header">@data.gettext("General")</div>
-
                            <div class="settings-entry no-gap">
                               <span class="inner-title">@data.gettext("Always show english results"):</span>
-
                               <label for="show_eng_settings" class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect">
                                  <input checked id="show_eng_settings" type="checkbox" class="mdl-checkbox__input" onchange="onBtnSettingsChange_englishAlways(event)">
                               </label>
@@ -126,21 +103,18 @@
                                  <input id="show_eng_on_top_settings" type="checkbox" class="mdl-checkbox__input" onchange="onBtnSettingsChange('show_english_on_top', event)">
                               </label>
                            </div>
-
                            <div class="settings-entry">
                               <span class="inner-title">@data.gettext("Focus search bar on load"):</span>
                               <label for="focus_search_bar_settings" class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect">
                                  <input id="focus_search_bar_settings" type="checkbox" class="mdl-checkbox__input" onchange="onBtnSettingsChange_focusSearchBar(event)">
                               </label>
                            </div>
-
                            <div class="settings-entry sub" id="select_searchbar_content_parent">
                               <span class="inner-title">@data.gettext("Select input on load"):</span>
                               <label for="select_searchbar_content_settings" class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect">
                                  <input id="select_searchbar_content_settings" type="checkbox" class="mdl-checkbox__input" onchange="onBtnSettingsChange('select_searchbar_content', event)">
                               </label>
                            </div>
-
                            <div class="settings-entry txt-input">
                               <span id="rpr" class="inner-title txt-input">@data.gettext("Results per page"):</span>
                               <form action="#" onsubmit="return false">
@@ -156,7 +130,6 @@
                            </div>
 
                            <div class="inner-header">@data.gettext("Sentences")</div>
-                           
                            <div class="settings-entry">
                               <span class="inner-title">@data.gettext("Show Furigana"):</span>
                               <label for="show_sentence_furigana_settings" class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect">
@@ -165,16 +138,14 @@
                            </div>
 
                            <div class="inner-header">@data.gettext("Words")</div>
-
                            <div class="settings-entry">
                               <span class="inner-title">@data.gettext("Show example sentences"):</span>
                               <label for="show_example_sentences_settings" class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect">
                                  <input checked id="show_example_sentences_settings" type="checkbox" class="mdl-checkbox__input" onchange="onBtnSettingsChange('show_sentences', event)">
                               </label>
                            </div>
-                           
+                        
                            <div class="inner-header">@data.gettext("Kanji")</div>
-                           
                            <div class="settings-entry no-gap">
                               <span id="krp" class="inner-title txt-input">@data.gettext("Items per page"):</span>
                               <form action="#" onsubmit="return false">
@@ -191,6 +162,8 @@
                         </div>
                      </div>
                  </section>
+
+                 <!-- Page 3 -->
                  <section class="mdl-layout__tab-panel" id="scroll-tab-3">
                      <div class="page-content">
                         <div class="d-flex flex-column">
@@ -210,6 +183,8 @@
                         </div>
                      </div>
                  </section>
+
+                 <!-- Page 4 -->
                  <section class="mdl-layout__tab-panel" id="scroll-tab-4">
                      <div class="page-content">
                         <div class="d-flex flex-column">
@@ -228,7 +203,7 @@
                         </div>
                      </div>
                  </section>
-               </main>
+               </div>
              </div>
           </div>
         </div>

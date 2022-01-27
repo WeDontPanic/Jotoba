@@ -1,0 +1,61 @@
+@use types::jotoba::names::Name;
+@use super::search_help;
+@use search::name::result::get_types_humanized;
+@use crate::BaseData;
+
+@(data: &BaseData, names: Vec<&Name>)
+
+  <link rel="stylesheet" type="text/css" href="/variable_assets/@data.asset_hash/assets/css/page/multiPage/kanji.css">
+  <link rel="stylesheet" type="text/css" href="/variable_assets/@data.asset_hash/assets/css/page/namePage.css">
+
+<div class="d-flex center">
+  <div class="main-info d-flex flex-column">
+
+    @if names.is_empty() {
+      @:search_help(&data, data.gettext("names").as_str())
+    }
+
+    @for name in names.iter() {
+      <div class="list-entry">
+         <div class="d-flex flex-row">
+            @if let Some(ref kanji) = name.kanji {
+              <div class="kanji-preview small">
+                 @kanji
+              </div>
+            }
+            <div class="kanji-preview small">
+              @if name.kanji.is_some() {
+               【@name.kana】
+              } else {
+                @name.kana
+              }
+            </div>
+         </div>
+         <div class="d-flex flex-row">
+            <div class="row-tag-entry">
+               <div class="tags">@data.gettext("Full name")</div>
+               <div class="notes">@name.transcription</div>
+            </div>
+
+            @if name.name_type.is_some() {
+              @if let Some(gender) = name.get_gender() {
+                <div class="row-tag-entry">
+                  <div class="tags">@data.gettext("Sex")</div>
+                   <div class="notes">@data.gettext(gender)</div>
+                </div>
+              } 
+
+              @if name.has_non_gender_tags() {
+                <div class="row-tag-entry">
+                  <div class="tags">@data.gettext("Name origin")</div>
+                   <div class="notes">@get_types_humanized(name, data.dict, data.get_lang())</div>
+                </div>
+              }
+            }
+         </div>
+         <hr/>
+      </div>
+    }
+
+  </div>
+</div>

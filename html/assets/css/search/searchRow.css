@@ -163,35 +163,6 @@ svg {
     justify-content: left;
 }
 
-.overlay {
-    z-index: -1;
-    margin-top: 2px;
-    position: absolute;
-    width: 100%;
-    height: -webkit-max-content;
-    height: -moz-max-content;
-    height: max-content;
-    border: 2px solid var(--searchBackground);
-    border-radius: 20px;
-    border-top: none;
-    background-color: var(--searchBackground);
-    box-shadow: 0px 8px 20px 0px var(--backgroundShadow)
-}
-
-.overlay > .flex-column {
-    margin: 5px 10px;
-}
-
-.x-button {
-    position: absolute;
-    right: 10px;
-    font-size: larger;
-}
-
-.x-button:hover {
-    cursor: pointer;
-}
-
 /* Adjustments for the upper buttons */
 @media only screen and (max-width: 1350px) {
     #searchDiv {
