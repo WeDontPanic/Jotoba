@@ -63,7 +63,7 @@ function toggleRadicalOverlay() {
     // Reset on close
     if (overlay.hasClass("hidden")) {
         resetRadPicker()
-        container.classList.add("hidden");
+        container.parentElement.classList.add("hidden");
         container_rad.classList.add("hidden");
         recognition.stop();
     } else {

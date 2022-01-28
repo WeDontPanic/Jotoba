@@ -60,7 +60,7 @@ document.querySelector("#kanji-search").addEventListener("input", e => {
 document.addEventListener("click", e => {
     // When clicking anything but the search bar or dropdown
     if (!Util.isChildOf(searchRow, e.target)) {
-        container.classList.add("hidden");
+        container.parentElement.classList.add("hidden");
         keepSuggestions = true;
     }
 });

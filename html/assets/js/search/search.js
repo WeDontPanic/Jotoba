@@ -52,12 +52,12 @@ function markCurrentSearchType() {
 // Shows the suggestion container if availableSuggestions > 0 and something was typed
 function showContainer() {
     if (availableSuggestions > 0 && input.value.length > 0) {
-        container.classList.remove("hidden");
+        container.parentElement.classList.remove("hidden");
         if (typeof scrollSearchIntoView === "function") {
             scrollSearchIntoView();
         }
     } else {
-        container.classList.add("hidden");
+        container.parentElement.classList.add("hidden");
     } 
 }
 

@@ -70,7 +70,6 @@ function getSuggestionApiData(radicals) {
         return;
     }
 
-    console.log(radicals);
     let inputJSON = {
         "input": txt,
         "search_type": type,

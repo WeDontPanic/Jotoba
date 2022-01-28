@@ -1,7 +1,6 @@
 /* ----------------- Color Themes ----------------- */
 
 :root, :root.light {
-    /* Editable */
     --background: #f2f1f0;
     --overlay: #f3f3f3;
 
@@ -322,6 +321,12 @@ a:hover {
     width: 35%;
     padding-bottom: 10px;
     padding-left: 10px;
+}
+
+@media only screen and (max-width: 600px) {
+    .secondary-info {
+        padding-left: 0px;
+    }
 }
 
 .tags {
