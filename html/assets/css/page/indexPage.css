@@ -176,9 +176,9 @@ form {
         display: none;
     }
 
-    div:not(.inner-form) > .index-btn-container {
-        flex-direction: row-reverse;
-        place-content: flex-start;
+    main > .index-btn-container {
+        flex-direction: row;
+        place-content: flex-end;
     }
 
     .settingsBtn {
