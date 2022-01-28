@@ -1,7 +1,3 @@
-#sr.center {
-    justify-content: center;
-}
-
 .sentence-part {
     color: var(--primaryTextColor) !important;
     border-bottom: 2px solid var(--lineColor);

@@ -6,6 +6,10 @@
     justify-content: center;
 }
 
+.search-annotation.no-center {
+    justify-content: unset;
+}
+
 .search-annotation::-webkit-scrollbar {
     width: 0px;
 }

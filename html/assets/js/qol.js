@@ -253,10 +253,11 @@ Util.awaitDocumentReady(() => {
         let currentParams = new URLSearchParams(document.location.search);
 
         let txt = input.value; 
+        let index = currentParams.get("i") || undefined;
         let type = currentParams.get("t") || $('#search-type').val();
         let lang = currentParams.get("l") || Cookies.get("default_lang");
         let page = currentParams.get("p") || $(".pagination-circle.active").html();
 
-        history.replaceState({}, 'Jotoba', JotoTools.createUrl(txt, type, page || 1, lang));
+        history.replaceState({}, 'Jotoba', JotoTools.createUrl(txt, type, page || 1, lang, index));
     }
 });

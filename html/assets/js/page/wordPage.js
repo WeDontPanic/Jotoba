@@ -21,9 +21,9 @@ function centerSentenceReaderIfNeeded() {
         return;
         
     if (Util.checkOverflow(sr)) {
-        sr.classList.remove("center");
+        sr.parentElement.classList.add("no-center");
     } else {
-        sr.classList.add("center");
+        sr.parentElement.classList.remove("no-center");
     }
 }
 
