@@ -250,10 +250,12 @@ Util.awaitDocumentReady(() => {
 
     // Change URL to contain the language code
     if (!Util.isIndexPage() && !Util.isInPath("direct")) {
+        let currentParams = new URLSearchParams(document.location.search);
+
         let txt = input.value; 
-        let type = $('#search-type').val();
-        let lang = Cookies.get("default_lang");
-        let page = $(".pagination-circle.active").html();
+        let type = currentParams.get("t") || $('#search-type').val();
+        let lang = currentParams.get("l") || Cookies.get("default_lang");
+        let page = currentParams.get("p") || $(".pagination-circle.active").html();
 
         history.replaceState({}, 'Jotoba', JotoTools.createUrl(txt, type, page || 1, lang));
     }
