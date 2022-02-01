@@ -1,0 +1,85 @@
+@use crate::BaseData;
+@use types::jotoba::words::{Word, inflection::Inflections};
+
+@(data: &BaseData, word: &Word, inflections: &Inflections)
+
+<div class="modal fade" id="conj@word.sequence">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+     <div class="modal-body">
+        <button type="button" class="close" data-dismiss="modal">×</button>
+        
+        <!-- Verb conjugation table -->
+        <table class="table conjugation">
+           <thead>
+             <tr>
+               <th scope="col"></th>
+               <th scope="col">@data.gettext("Affirmative")</th>
+               <th scope="col">@data.gettext("Negative")</th>
+             </tr>
+           </thead>
+           <tbody>
+              <tr>
+                 <th scope="row">@data.gettext("Present")</th>
+                 <td>@inflections.present.positive</td>
+                 <td>@inflections.present.negative</td>
+              </tr>
+
+              <tr>
+                 <th scope="row">@data.gettext("Present, polite")</th>
+                 <td>@inflections.present_polite.positive</td>
+                 <td>@inflections.present_polite.negative</td>
+              </tr>
+
+              <tr>
+                 <th scope="row">@data.gettext("Past")</th>
+                 <td>@inflections.past.positive</td>
+                 <td>@inflections.past.negative</td>
+              </tr>
+
+              <tr>
+                 <th scope="row">@data.gettext("Past, polite")</th>
+                 <td>@inflections.past_polite.positive</td>
+                 <td>@inflections.past_polite.negative</td>
+              </tr>
+
+              <tr>
+                 <th scope="row">@data.gettext("Te-form")</th>
+                 <td>@inflections.te_form.positive</td>
+                 <td>@inflections.te_form.negative</td>
+              </tr>
+
+              <tr>
+                 <th scope="row">@data.gettext("Potential")</th>
+                 <td>@inflections.potential.positive</td>
+                 <td>@inflections.potential.negative</td>
+              </tr>
+
+              <tr>
+                 <th scope="row">@data.gettext("Passive")</th>
+                 <td>@inflections.passive.positive</td>
+                 <td>@inflections.passive.negative</td>
+              </tr>
+
+              <tr>
+                 <th scope="row">@data.gettext("Causative")</th>
+                 <td>@inflections.causative.positive</td>
+                 <td>@inflections.causative.negative</td>
+              </tr>
+
+              <tr>
+                 <th scope="row">@data.gettext("Causative Passive")</th>
+                 <td>@inflections.causative_passive.positive</td>
+                 <td>@inflections.causative_passive.negative</td>
+              </tr>
+              <tr>
+                 <th scope="row">@data.gettext("Imperative")</th>
+                 <td>@inflections.imperative.positive</td>
+                 <td>@inflections.imperative.negative</td>
+              </tr>
+           </tbody>
+         </table>
+        </div>
+     </div>
+  </div>
+</div>

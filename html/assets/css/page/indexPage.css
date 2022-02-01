@@ -177,8 +177,8 @@ form {
     }
 
     main > .index-btn-container {
-        flex-direction: row;
-        place-content: flex-end;
+        flex-direction: row-reverse;
+        place-content: flex-start;
     }
 
     .settingsBtn {

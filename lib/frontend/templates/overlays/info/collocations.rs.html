@@ -1,0 +1,31 @@
+@use crate::BaseData;
+@use types::jotoba::words::Word;
+@use crate::{templ_utils::*};
+
+@(data: &BaseData, word: &Word)
+
+<div class="modal fade" id="coll@word.sequence" style="display: none;" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-body">
+          
+          <button type="button" class="close" data-dismiss="modal">×</button>
+          <br>
+
+          <!-- Verb conjugation table -->
+          <h3 class="info-h3">@data.gettext("Collocations")</h3>
+          <table class="table collocation">
+            <tbody>
+              @for collocation in get_collocations(&word, data.user_settings.user_lang, data.user_settings.show_english) {
+                <tr>
+                    <th scope="row"><a class="clickable no-align green" href="/search/@collocation.0">@collocation.0</a></th>
+                    <td>@collocation.1</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+
+        </div>
+      </div>
+    </div>
+</div>

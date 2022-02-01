@@ -1,10 +1,12 @@
 @use search::word::result::{Item, WordResult, selected};
 @use types::jotoba::languages::Language;
-@use search::query::Query;@use japanese::furigana::from_str as furi_from_str;
+@use search::query::Query;
+@use japanese::furigana::from_str as furi_from_str;
 @use crate::{example_sentence::ext_sentence, templ_utils::*};
 
 @use super::{search_help};
 @use crate::templates::functional::{render_sentence_html};
+@use crate::templates::overlays::info::*;
 
 @use crate::BaseData;
 @(data: &BaseData, query: &Query, result: WordResult)
@@ -175,6 +177,15 @@
                       <li disabled class="mdl-menu__item dot-menu"><hr></li>
                     }
 
+                    <!-- TODO Implement if statement here + Translate -->
+                    @@if 
+                      <li id="jdefBtn" class="info-entry noselect umami--click--jdef-button" data-toggle="modal" data-target="#jdef@word.sequence" class="mdl-menu__item">
+                        <div class="conjugationSvg"></div>
+                        <span class="text">@data.gettext("Japanese definitions")</span>
+                      </li>
+                      <li disabled class="mdl-menu__item dot-menu"><hr></li>
+                    @@if_end
+
                     @if let Some(intransitive) = get_intransitive_counterpart(&word) {
                       <li class="info-entry noselect umami--click--intransitive-button" class="mdl-menu__item"> 
                         <div class="transitivitySvg"></div>
@@ -318,120 +329,22 @@
                 }
               </div>
 
-              <!-- Start of Collocation Modal -->
+              <!-- Collocation Modal -->
               @if word.has_collocations() {
-                <div class="modal fade" id="coll@word.sequence" style="display: none;" aria-hidden="true">
-                  <div class="modal-dialog  modal-lg">
-                    <div class="modal-content">
-                      <!-- Modal Body -->
-                      <div class="modal-body">
-                        <button type="button" class="close" data-dismiss="modal">×</button>
-                        <br>
-                        <!-- Verb conjugation table -->
-                        <h3 class="info-h3">@data.gettext("Collocations")</h3>
-                        <table class="table collocation">
-                          <tbody>
-                            @for collocation in get_collocations(&word, data.user_settings.user_lang, data.user_settings.show_english) {
-                              <tr>
-                                  <th scope="row"><a class="clickable no-align green" href="/search/@collocation.0">@collocation.0</a></th>
-                                  <td>@collocation.1</td>
-                              </tr>
-                            }
-                          </tbody>
-                        </table>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+                @:collocations_html(&data, &word)
               }
 
+              <!-- Inflections Modal -->
               @if let Some(inflections) = word.get_inflections() {
-              <div class="modal fade" id="conj@word.sequence">
-                <div class="modal-dialog  modal-lg">
-                  <div class="modal-content">
-                   <!-- Modal Body -->
-                   <div class="modal-body">
-                      <button type="button" class="close" data-dismiss="modal">×</button>
-                      <!-- Verb conjugation table -->
-       
-                      <!-- TODO -->
-                      <!--<h3 class="info-h3">Godan verb with ku ending</h3>-->
-       
-                      <table class="table conjugation">
-                         <thead>
-                           <tr>
-                             <th scope="col"></th>
-                             <th scope="col">@data.gettext("Affirmative")</th>
-                             <th scope="col">@data.gettext("Negative")</th>
-                           </tr>
-                         </thead>
-                         <tbody>
-                            <tr>
-                               <th scope="row">@data.gettext("Present")</th>
-                               <td>@inflections.present.positive</td>
-                               <td>@inflections.present.negative</td>
-                            </tr>
-
-                            <tr>
-                               <th scope="row">@data.gettext("Present, polite")</th>
-                               <td>@inflections.present_polite.positive</td>
-                               <td>@inflections.present_polite.negative</td>
-                            </tr>
-
-                            <tr>
-                               <th scope="row">@data.gettext("Past")</th>
-                               <td>@inflections.past.positive</td>
-                               <td>@inflections.past.negative</td>
-                            </tr>
-
-                            <tr>
-                               <th scope="row">@data.gettext("Past, polite")</th>
-                               <td>@inflections.past_polite.positive</td>
-                               <td>@inflections.past_polite.negative</td>
-                            </tr>
-
-                            <tr>
-                               <th scope="row">@data.gettext("Te-form")</th>
-                               <td>@inflections.te_form.positive</td>
-                               <td>@inflections.te_form.negative</td>
-                            </tr>
-
-                            <tr>
-                               <th scope="row">@data.gettext("Potential")</th>
-                               <td>@inflections.potential.positive</td>
-                               <td>@inflections.potential.negative</td>
-                            </tr>
-
-                            <tr>
-                               <th scope="row">@data.gettext("Passive")</th>
-                               <td>@inflections.passive.positive</td>
-                               <td>@inflections.passive.negative</td>
-                            </tr>
-
-                            <tr>
-                               <th scope="row">@data.gettext("Causative")</th>
-                               <td>@inflections.causative.positive</td>
-                               <td>@inflections.causative.negative</td>
-                            </tr>
-
-                            <tr>
-                               <th scope="row">@data.gettext("Causative Passive")</th>
-                               <td>@inflections.causative_passive.positive</td>
-                               <td>@inflections.causative_passive.negative</td>
-                            </tr>
-                            <tr>
-                               <th scope="row">@data.gettext("Imperative")</th>
-                               <td>@inflections.imperative.positive</td>
-                               <td>@inflections.imperative.negative</td>
-                            </tr>
-                         </tbody>
-                       </table>
-                      </div>
-                   </div>
-                </div>
-             </div>
+                @:inflections_html(&data, &word, &inflections)
               }
-             <!-- !!! END OF INFO OVERLAY -->
+
+              <!-- JP definitions Modal -->
+              <!-- TODO Implement + Translate -->
+              @@if @@_get_me_some_html!
+                @:definitions_jp(&data, &word)
+              @@if_end
+
               <hr class="res-separator" />
             </div>
           </div>
