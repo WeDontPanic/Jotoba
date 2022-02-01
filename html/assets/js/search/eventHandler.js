@@ -42,13 +42,23 @@ document.querySelector("#search").addEventListener("input", e => {
     toggleSearchIcon(200);
 });
 
-// Check if input was focussed / not focussed to show / hide overlay 長い
-document.querySelector("#search").addEventListener("focus", e => {
+function containerShow() {
     if (!keepSuggestions) {
         callApiAndSetShadowText();
     }
     showContainer();
     keepSuggestions = false;
+}
+
+// Check if input was focussed / not focussed to show / hide overlay 長い
+document.querySelector("#search").addEventListener("focus", e => {
+    containerShow();
+});
+
+// Also show shadow text if user clicked before focus event could be caught
+Util.awaitDocumentReady(() => {
+    if ($(input).is(":focus"))
+        containerShow();
 });
 
 // Event whenever the user types into the search bar
@@ -61,7 +71,7 @@ document.addEventListener("click", e => {
     // When clicking anything but the search bar or dropdown
     if (!Util.isChildOf(searchRow, e.target)) {
         container.parentElement.classList.add("hidden");
-        keepSuggestions = true;
+        keepSuggestions = true && availableSuggestions > 0;
     }
 });
 
