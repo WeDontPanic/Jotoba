@@ -2,29 +2,10 @@
  * This JS-File contains functions handling the website search (e.g. Search suggestions)
  */
 
-// #-QuickSearches, hardcoded to reduce server callbacks
-const hashtags = [
-    "#adverb", "#auxilary", "#conjungation", "#noun", "#prefix", "#suffix", "#particle", "#sfx",
-    "#verb", "#adjective", "#counter", "#expression", "#interjection", "#pronoun", "#numeric", "#transitive", "#intransitive",
-    "#unclassified", "#word", "#sentence", "#name", "#kanji", "#abbreviation", "#N5", "#N4", "#N3", "#N2", "#N1", "#hidden", "#Irregular-Ichidan"
-];
-
 // Prepare Search / Voice Icon when loading the page
 Util.awaitDocumentReady(() => {
     toggleSearchIcon(0);
 });
-
-// Shows the suggestion container if availableSuggestions > 0 and something was typed
-function showContainer() {
-    if (availableSuggestions > 0 && input.value.length > 0) {
-        sContainer.parentElement.classList.remove("hidden");
-        if (typeof scrollSearchIntoView === "function") {
-            scrollSearchIntoView();
-        }
-    } else {
-        sContainer.parentElement.classList.add("hidden");
-    } 
-}
 
 // Shows the Voice / Search Icon when possible
 function toggleSearchIcon(duration) {
@@ -42,56 +23,6 @@ function emptySearchInput() {
     $('#search').val("");
     $('#search').focus();
     toggleSearchIcon(200);
-}
-
-// Function to be called by input events. Updates the API data and shadow txt
-// @args radicals -> Array containing radicals that need to be contained in searched kanji
-function callApiAndSetShadowText(radicals) {
-
-    // Tooltips for # - searches
-    let lastWord = Util.getLastWordOfString(input.value);
-    if (lastWord.includes("#")) {
-        getHashtagData(lastWord);
-    }
-    // Load new API data
-    else if (input.value.length > 0) {
-        getSuggestionApiData(radicals);
-    } else {
-        removeSuggestions();
-    }
-
-    // Set shadow text
-    setShadowText();
-}
-
-// Sets the shadow's text whenever possible
-function setShadowText() {
-    // If input is overflown, dont show text
-    if (Util.checkOverflow(shadowText) && shadowText.innerHTML != "") {
-        shadowText.innerHTML = "";
-        return
-    }
-
-    // Make invisible temporarily
-    shadowText.style.opacity = 0;
-
-    // Check how much of suggestion is typed already
-    let currentSubstr = getCurrentSubstring();
-
-    // Add missing suggestion to shadow text
-    if (currentSubstr.length > 0) {
-        shadowText.innerHTML = input.value + currentSuggestion.substring(currentSubstr.length);
-    } else {
-        shadowText.innerHTML = "";
-    }   
-
-    // If it would overflow with new text, don't show
-    if (Util.checkOverflow(shadowText)) {
-        shadowText.innerHTML = "";
-    }
-
-    // Make visible again
-    shadowText.style.opacity = 0.4;
 }
 
 // Returns the substring of what the user already typed for the current suggestion
@@ -119,38 +50,6 @@ function getCurrentSubstring(target) {
     }
 
     return foundSubstr ? currentSubstr : "";
-}
-
-// Removes all current suggestions including shadowText
-function removeSuggestions() {
-    sContainer.innerHTML = "";
-    rContainer.innerHTML = "";
-    shadowText.innerHTML = "";
-    currentSuggestion = "";
-    currentSuggestionIndex = 0;
-    availableSuggestions = 0;
-    showContainer();
-}
-
-// Loads API data by creating the json from known values instead of calling backend
-function getHashtagData(currentText) {
-    let suggestions = [];
-    for (let i = 0; i < hashtags.length; i++) {
-        if (hashtags[i].toLowerCase().includes(currentText.toLowerCase())) {
-            suggestions.push({"primary": hashtags[i]});
-
-            if (suggestions.length == 10) {
-                break;
-            }
-        }
-    }
-
-    let resultJSON =  {
-        "suggestions": suggestions,
-        "suggestion_type": "hashtag"
-    }
-
-    loadSuggestionApiData(resultJSON);
 }
 
 // Interrupts the form's submit and makes the user visit the correct page

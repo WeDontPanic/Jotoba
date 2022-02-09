@@ -2,9 +2,6 @@
 *   Made to Handle search related events. Loads after search.js!
 */
 
-// If set to true, the rad picker won't call API when opened
-var keepSuggestions = false;
-
 // Key Events focussing on the search
 $(document).on("keydown", (event) => {
     if (!$('#search').is(":focus")) return;
@@ -27,7 +24,7 @@ $(document).on("keydown", (event) => {
         case "Enter": // Start the search
             if (currentSuggestionIndex > 0) {
                 event.preventDefault();
-                activateSelection();
+                Suggestions.overlay.show();
             } else {
                 $('#searchBtn').click();
             }
@@ -35,30 +32,23 @@ $(document).on("keydown", (event) => {
     }
 });
 
-function containerShow() {
-    if (!keepSuggestions) {
-        callApiAndSetShadowText();
-    }
-    showContainer();
-    keepSuggestions = false;
-}
-
 // Adding listeners
 Util.awaitDocumentReady(() => {
 
     // Also show shadow text if user clicked before focus event could be caught
-    if ($(input).is(":focus"))
-        containerShow();
+    if ($(input).is(":focus")) {
+        Suggestions.updateSuggestions();
+    }
 
     // Event whenever the user types into the search bar
     document.getElementById("search").addEventListener("input", e => {
-        containerShow();
+        Suggestions.updateSuggestions();
         toggleSearchIcon(200);
     });
 
     // Check if input was focussed / not focussed to show / hide overlay
     document.getElementById("search").addEventListener("focus", e => {
-        containerShow();
+        Suggestions.updateSuggestions();
     });
 
     // Event whenever the user types into the search bar
@@ -70,7 +60,6 @@ Util.awaitDocumentReady(() => {
     document.addEventListener("click", e => {
         if (!Util.isChildOf(searchRow, e.target)) {
             sContainer.parentElement.classList.add("hidden");
-            keepSuggestions = availableSuggestions > 0;
         }
     });
 

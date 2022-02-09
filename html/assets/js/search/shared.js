@@ -3,6 +3,11 @@
  */
 
 const kanjiRegEx = '([一-龯|々|𥝱|𩺊])';
+const hashtags = [
+    "#adverb", "#auxilary", "#conjungation", "#noun", "#prefix", "#suffix", "#particle", "#sfx",
+    "#verb", "#adjective", "#counter", "#expression", "#interjection", "#pronoun", "#numeric", "#transitive", "#intransitive",
+    "#unclassified", "#word", "#sentence", "#name", "#kanji", "#abbreviation", "#N5", "#N4", "#N3", "#N2", "#N1", "#hidden", "#Irregular-Ichidan"
+];
 
 var currentSuggestion = ""; 
 var currentSuggestionIndex = 0; // 0 => nothing

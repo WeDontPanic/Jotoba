@@ -66,11 +66,11 @@ function toggleRadicalOverlay() {
     if (overlay.hasClass("hidden")) {
         resetRadPicker()
         rContainer.classList.add("hidden");
-        recognition.stop();
+        Suggestions.overlay.show();
     } else {
         $('.rad-results').html(baseRadResult);
         $('.rad-results').removeClass("hidden");
-        getSuggestionApiData();
+        Suggestions.updateSuggestions();
         scrollSearchIntoView();
         $('#kanji-search').focus();
     }
@@ -102,7 +102,7 @@ function handleKanjiSelect(event) {
     $('#search').val($('#search').val() + event.target.innerHTML);
 
     // Update search bar
-    callApiAndSetShadowText(getSelectedRadicalArray());
+    Suggestions.updateSuggestions(getSelectedRadicalArray());
     toggleSearchIcon(200);
 
     // Focus the last search bar
@@ -138,7 +138,7 @@ function handleRadicalSelect(event) {
     currentSearchInput.focus();
 
     // Update search bar
-    callApiAndSetShadowText(getSelectedRadicalArray());
+    Suggestions.updateSuggestions(getSelectedRadicalArray());
 }
 
 // Opens the Radical Page at the given index
