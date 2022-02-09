@@ -6,7 +6,7 @@
     padding-left: 5px;
     padding-top: 10px;
     min-height: 90px;
-    max-height: 85px;
+    max-height: 25vh;
     overflow-y: scroll;
 }
 
