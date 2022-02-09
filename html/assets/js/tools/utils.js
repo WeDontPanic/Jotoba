@@ -8,7 +8,17 @@ const dateSettings = { year: 'numeric', month: 'short', day: 'numeric' };
 // The util "parent"
 function Util () {};
 
-// Runs callback fn on document ready
+// Runs callback fn when document is done loading DOM-Elements
+Util.awaitDocumentInteractive = function(callback) {
+  let readyWait = window.setInterval(() => {
+      if (document.readyState == "interactive" || document.readyState == "complete") {
+          callback();
+          window.clearInterval(readyWait);
+      }
+  }, 10);
+}
+
+// Runs callback fn when document is done loading
 Util.awaitDocumentReady = function(callback) {
     let readyWait = window.setInterval(() => {
         if (document.readyState == "complete") {

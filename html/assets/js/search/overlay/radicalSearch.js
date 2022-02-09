@@ -37,14 +37,15 @@ var radicalMask = [
     [0]
 ];
 
-const baseRadResult = $('.rad-results')[0].innerHTML;
+var baseRadResult;
 var currentSearchInput;
 var lastRadicalSearchResult;
 
 Util.awaitDocumentReady(() => {
+    baseRadResult = $('.rad-results')[0].innerHTML;
     loadRadicals(0);
 
-    // Used to re-focus upon using Radical Btns
+    // Used to re-focus searchbar upon using Radical Btns
     $("#kanji-search").focus(e => {
         currentSearchInput = $("#kanji-search");
     });
@@ -59,12 +60,12 @@ function toggleRadicalOverlay() {
 
     let overlay = $('.overlay.radical');
     overlay.toggleClass('hidden');
+    sContainer.parentElement.classList.add("hidden");
 
     // Reset on close
     if (overlay.hasClass("hidden")) {
         resetRadPicker()
-        container.parentElement.classList.add("hidden");
-        container_rad.classList.add("hidden");
+        rContainer.classList.add("hidden");
         recognition.stop();
     } else {
         $('.rad-results').html(baseRadResult);

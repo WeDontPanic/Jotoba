@@ -45,8 +45,11 @@ function imgSearchFileSelected() {
 
 // Toggles the URL input active / disabled
 var urlInputDisabled = false;
-var originalMsg = document.getElementById("imgUploadUrl").placeholder;
-var cropTarget;
+var originalMsg, cropTarget;
+
+Util.awaitDocumentReady(() => {
+    originalMsg = document.getElementById("imgUploadUrl").placeholder;
+});
 
 function resetUploadUrlInput() {
     let urlInput = document.getElementById("imgUploadUrl")

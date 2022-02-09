@@ -201,7 +201,7 @@ function changeSearchType(html, newType) {
 
 // Focus Search Bar on load if the user wants it to (or on index page)
 Util.awaitDocumentReady(() => {
-    if (Util.toBoolean(Cookies.get("focus_searchbar")) || document.location.href.slice(0, -1) == document.location.origin) {
+    if (Util.toBoolean(Cookies.get("focus_searchbar")) || Util.isIndexPage()) {
         preventNextApiCall = true;
 
         let s = $('#search');
@@ -252,7 +252,7 @@ Util.awaitDocumentReady(() => {
     if (!Util.isIndexPage() && !Util.isInPath("direct")) {
         let currentParams = new URLSearchParams(document.location.search);
 
-        let txt = input.value; 
+        let txt = document.getElementById("search").value; 
         let index = currentParams.get("i") || undefined;
         let type = currentParams.get("t") || $('#search-type').val();
         let lang = currentParams.get("l") || Cookies.get("default_lang");

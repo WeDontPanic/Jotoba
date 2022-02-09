@@ -4,66 +4,31 @@
 
 // #-QuickSearches, hardcoded to reduce server callbacks
 const hashtags = [
-  "#adverb", "#auxilary", "#conjungation", "#noun", "#prefix", "#suffix", "#particle", "#sfx",
-  "#verb", "#adjective", "#counter", "#expression", "#interjection", "#pronoun", "#numeric", "#transitive", "#intransitive",
+    "#adverb", "#auxilary", "#conjungation", "#noun", "#prefix", "#suffix", "#particle", "#sfx",
+    "#verb", "#adjective", "#counter", "#expression", "#interjection", "#pronoun", "#numeric", "#transitive", "#intransitive",
     "#unclassified", "#word", "#sentence", "#name", "#kanji", "#abbreviation", "#N5", "#N4", "#N3", "#N2", "#N1", "#hidden", "#Irregular-Ichidan"
 ];
 
-// Elements used
-const searchRow = document.querySelector("#search-row");
-const input = document.querySelector("#search");
-const shadowText = document.getElementById("shadow-text");
-const container = document.getElementById("suggestion-container");
-const rad_overlay = document.querySelector(".overlay.radical");
-const container_rad = document.getElementById("suggestion-container-rad");
-const kanjiRegEx = '([一-龯|々|𥝱|𩺊])';
-
-// Global variables used
-var currentSuggestion = "";
-var currentSuggestionType = "default"; // default || kanji_reading || hashtag
-var currentSuggestionIndex = 0; // 0 => nothing
-var availableSuggestions = 0;
-var keepSuggestions = false;
-var oldInputValue = "";
-var lastRequest = undefined;
-var preventNextApiCall = false;
-var preventApiCallUntilDelete = false;
-var textToPrevent = "";
-
 // Prepare Search / Voice Icon when loading the page
-toggleSearchIcon(0);
-
-// Mark the currently selected search type (only used for mobile so far)
-markCurrentSearchType();
-
-// Marks the current search's type, so it can be displayed in another color
-function markCurrentSearchType() {
-    let searchType = $('#search-type').val();
-
-    for (let i = 0; i < 4; i ++) {
-        if (i == searchType) {
-            $('.choices__item[data-value="'+i+'"]').addClass('selected');
-        } else {
-            $('.choices__item[data-value="'+i+'"]').removeClass('selected');
-        }
-    }
-}
+Util.awaitDocumentReady(() => {
+    toggleSearchIcon(0);
+});
 
 // Shows the suggestion container if availableSuggestions > 0 and something was typed
 function showContainer() {
     if (availableSuggestions > 0 && input.value.length > 0) {
-        container.parentElement.classList.remove("hidden");
+        sContainer.parentElement.classList.remove("hidden");
         if (typeof scrollSearchIntoView === "function") {
             scrollSearchIntoView();
         }
     } else {
-        container.parentElement.classList.add("hidden");
+        sContainer.parentElement.classList.add("hidden");
     } 
 }
 
 // Shows the Voice / Search Icon when possible
 function toggleSearchIcon(duration) {
-    if (input.value.length == 0) {
+    if (document.getElementById("search").value.length == 0) {
         $('#searchBtn.search-embedded-btn').hide(duration);
         $('#voiceBtn.search-embedded-btn').show(duration);
     } else {
@@ -158,9 +123,9 @@ function getCurrentSubstring(target) {
 
 // Removes all current suggestions including shadowText
 function removeSuggestions() {
+    sContainer.innerHTML = "";
+    rContainer.innerHTML = "";
     shadowText.innerHTML = "";
-    container.innerHTML = "";
-    container_rad.innerHTML = "";
     currentSuggestion = "";
     currentSuggestionIndex = 0;
     availableSuggestions = 0;

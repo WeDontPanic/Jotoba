@@ -2,10 +2,8 @@
  * This JS-File contains some Improvements specifically for mobile views
  */
 
-// Toggles the options for different input and page jumping on / off
-function toggleMobileNav() {
-    $('.mobile-nav').toggleClass('hidden');
-}
+// Mark the currently selected search type (only used for mobile so far)
+markCurrentSearchType();
 
 // On Start, check if mobile view is enabled. If yes, activate the btn
 Util.awaitDocumentReady(prepareMobilePageBtn);
@@ -14,6 +12,19 @@ Util.awaitDocumentReady(prepareMobilePageBtn);
 var jmpBtn;
 var kanjiDiv;
 var jmpBtnPointsTop;
+
+// Marks the current search's type, so it can be displayed in another color
+function markCurrentSearchType() {
+    let searchType = $('#search-type').val();
+
+    for (let i = 0; i < 4; i ++) {
+        if (i == searchType) {
+            $('.choices__item[data-value="'+i+'"]').addClass('selected');
+        } else {
+            $('.choices__item[data-value="'+i+'"]').removeClass('selected');
+        }
+    }
+}
 
 // Prepares the easy-use Btn for mobile devices
 function prepareMobilePageBtn() {
@@ -51,3 +62,9 @@ function jumpToTop() {
         (!window.requestAnimationFrame) ? window.scrollTo(0, topOffset) : Util.scrollTo(topOffset, 400);
     }
 }
+
+// Toggles the options for different input and page jumping on / off
+function toggleMobileNav() {
+    $('.mobile-nav').toggleClass('hidden');
+}
+

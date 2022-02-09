@@ -74,6 +74,10 @@
     --buttonBgActive: #515151;
 }
 
+:root.dark ::-moz-selection {
+    background: var(--secondaryColor);
+}
+
 :root.dark ::selection {
     background: var(--secondaryColor);
 }

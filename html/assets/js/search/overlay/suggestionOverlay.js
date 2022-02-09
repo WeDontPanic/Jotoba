@@ -45,20 +45,20 @@ function changeSuggestionIndex(direction) {
 
 // Calls the API to get input suggestions
 // @args radicals -> Array containing radicals that need to be contained in searched kanji
+var lastRequest = undefined;
+var preventApiCallUntilLength = -1;
 function getSuggestionApiData(radicals) {
-
     // Check if API call should be prevented
     if (preventNextApiCall) {
         preventNextApiCall = false;
         return;
     }
-    else if (preventApiCallUntilDelete) {
-        if (textToPrevent.length <= input.value.length && input.value.substring(0, textToPrevent.length) === textToPrevent) {
-            return;
-        } else {
-            preventApiCallUntilDelete = false;
-            textToPrevent = "";
-        }
+    // Prevent if a request failed and the input is >= the text it failed against
+    if (preventApiCallUntilLength > -1 && input.value.length > preventApiCallUntilLength) {
+        return;
+    }
+    else {
+        preventApiCallUntilLength = -1;
     }
 
     // Create the JSON
@@ -113,12 +113,11 @@ function loadSuggestionApiData(result) {
     if (result.suggestions.length == 0) {
 
         // Hide (Rad-)Container
-        container_rad.classList.add("hidden");
+        rContainer.classList.add("hidden");
 
         // Prevent future requests if no result was found and input was > 8 chars
         if (input.value >= 8) { 
-            preventApiCallUntilDelete = true;
-            textToPrevent = input.value;
+            preventApiCallUntilLength = input.value.length;
         }
 
         // Return
@@ -170,23 +169,20 @@ function loadSuggestionApiData(result) {
         }
 
         // Add to Page
-        if (rad_overlay.classList.contains("hidden")) {
-            container.innerHTML += 
+        if ($(".overlay.radical").hasClass("hidden")) {
+            sContainer.innerHTML += 
             ' <a href="/search/'+searchValue+'?t='+currentPage+'" class="search-suggestion"> ' +
             '   <span class="primary-suggestion">'+primaryResult+'</span> ' +
             '   <span class="secondary-suggestion">'+secondaryResult+'</span> ' +
             ' </a> ';      
         } else {
-            container_rad.innerHTML += 
+            rContainer.innerHTML += 
             ' <a href="/search/'+searchValue+'?t='+currentPage+'" class="search-suggestion"> ' +
             '   <span class="primary-suggestion">'+primaryResult+'</span> ' +
             ' </a> ';      
 
             // Show Rad Container
-            container_rad.classList.remove("hidden");
+            rContainer.classList.remove("hidden");
         }
     }
-
-    // Load Container if there is text present
-    showContainer();
 }

@@ -2,6 +2,9 @@
 *   Made to Handle search related events. Loads after search.js!
 */
 
+// If set to true, the rad picker won't call API when opened
+var keepSuggestions = false;
+
 // Key Events focussing on the search
 $(document).on("keydown", (event) => {
     if (!$('#search').is(":focus")) return;
@@ -32,16 +35,6 @@ $(document).on("keydown", (event) => {
     }
 });
 
-// Event whenever the user types into the search bar
-document.querySelector("#search").addEventListener("input", e => {
-    if (input.value != oldInputValue) {
-        callApiAndSetShadowText();
-    }
-    oldInputValue = input.value;
-
-    toggleSearchIcon(200);
-});
-
 function containerShow() {
     if (!keepSuggestions) {
         callApiAndSetShadowText();
@@ -50,35 +43,43 @@ function containerShow() {
     keepSuggestions = false;
 }
 
-// Check if input was focussed / not focussed to show / hide overlay 長い
-document.querySelector("#search").addEventListener("focus", e => {
-    containerShow();
-});
-
-// Also show shadow text if user clicked before focus event could be caught
+// Adding listeners
 Util.awaitDocumentReady(() => {
+
+    // Also show shadow text if user clicked before focus event could be caught
     if ($(input).is(":focus"))
         containerShow();
+
+    // Event whenever the user types into the search bar
+    document.getElementById("search").addEventListener("input", e => {
+        containerShow();
+        toggleSearchIcon(200);
+    });
+
+    // Check if input was focussed / not focussed to show / hide overlay
+    document.getElementById("search").addEventListener("focus", e => {
+        containerShow();
+    });
+
+    // Event whenever the user types into the search bar
+    document.querySelector("#kanji-search").addEventListener("input", e => {
+        getRadicalSearchResults();
+    });
+
+    // When clicking anything but the search bar or dropdown (used to hide overlays)
+    document.addEventListener("click", e => {
+        if (!Util.isChildOf(searchRow, e.target)) {
+            sContainer.parentElement.classList.add("hidden");
+            keepSuggestions = availableSuggestions > 0;
+        }
+    });
+
+    // Check on resize if shadow text would overflow the search bar and show / hide it
+    window.addEventListener("resize", e => {
+        setShadowText();
+    });
 });
 
-// Event whenever the user types into the search bar
-document.querySelector("#kanji-search").addEventListener("input", e => {
-    getRadicalSearchResults();
-});
-
-// Outside-Click event (used to hide overlays...)
-document.addEventListener("click", e => {
-    // When clicking anything but the search bar or dropdown
-    if (!Util.isChildOf(searchRow, e.target)) {
-        container.parentElement.classList.add("hidden");
-        keepSuggestions = true && availableSuggestions > 0;
-    }
-});
-
-// Check on resize if shadow text would overflow the search bar and show / hide it
-window.addEventListener("resize", e => {
-    setShadowText();
-});
 
 // Scroll sentence-reader to display selected index
 Util.awaitDocumentReady(() => {
