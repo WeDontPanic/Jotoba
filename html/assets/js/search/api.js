@@ -62,3 +62,28 @@ API.getSuggestionApiData = function(radicalArray, successFn, errorFn) {
         } 
     }); 
 }
+
+/**
+ * Emulates the API behaviour for suggestions; returning Hashtag values instead
+ * @param currentText {string} a single word without spaces, representing the #-value
+ * @param callback {function} function to call after collecting suggestions
+ */
+API.getHashtagData = function(currentText, callback) {
+    let suggestions = [];
+    for (let i = 0; i < hashtags.length; i++) {
+        if (hashtags[i].toLowerCase().includes(currentText.toLowerCase())) {
+            suggestions.push({"primary": hashtags[i]});
+
+            if (suggestions.length == 10) {
+                break;
+            }
+        }
+    }
+
+    let resultJSON =  {
+        "suggestions": suggestions,
+        "suggestion_type": "hashtag"
+    }
+
+    callback(resultJSON);
+}

@@ -10,7 +10,7 @@ Suggestions.updateSuggestions = function(radicalArray) {
     // Tooltips for # - searches
     let lastWord = Util.getLastWordOfString(input.value);
     if (lastWord.includes("#")) {
-        getHashtagData(lastWord);
+        API.getHashtagData(lastWord, loadSuggestionApiData);
         
     // Tooltips for everything else
     } else if (input.value.length > 0) {
