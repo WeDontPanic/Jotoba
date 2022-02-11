@@ -10,7 +10,7 @@ $(document).on("keydown", (event) => {
     switch (event.key) {
         case "ArrowUp": // Use suggestion above current
             event.preventDefault();
-            changeSuggestionIndex(-1);
+            Suggestions.overlay.changeSuggestionIndex(-1);
             break;
         case "ArrowDown": // Use suggestion beneath current
         case "Tab":
@@ -19,12 +19,12 @@ $(document).on("keydown", (event) => {
             if (event.key == "Tab" && shiftPressed) {
               direction = -1;
             }
-            changeSuggestionIndex(direction);
+            Suggestions.overlay.changeSuggestionIndex(direction);
             break;
         case "Enter": // Start the search
             if (currentSuggestionIndex > 0) {
                 event.preventDefault();
-                Suggestions.overlay.show();
+                Suggestions.overlay.activateSelection();
             } else {
                 $('#searchBtn').click();
             }

@@ -17,16 +17,16 @@ Suggestions.overlay.show = function() {
 }
 
 // Searches for the currently selected suggestion
-function activateSelection() {
-    $(".search-suggestion")[currentSuggestionIndex-1].click();
+Suggestions.overlay.activateSelection = function() {
+    $("#suggestion-container > .search-suggestion")[currentSuggestionIndex-1].click();
 }
 
 // Selects the suggestion at the index above (-1) or beneath (1)
-function changeSuggestionIndex(direction) {
+Suggestions.overlay.changeSuggestionIndex = function(direction) {
 
     // Remove highlight from last suggestion
     if (currentSuggestionIndex != 0) { 
-        $(".search-suggestion")[currentSuggestionIndex-1].classList.remove("selected");
+        $("#suggestion-container > .search-suggestion")[currentSuggestionIndex-1].classList.remove("selected");
     }
     
     // Calculate new suggestion index
@@ -36,7 +36,7 @@ function changeSuggestionIndex(direction) {
     if (currentSuggestionIndex != 0) { 
         
         // Get current suggestion
-        let suggestion = $(".search-suggestion")[currentSuggestionIndex-1];
+        let suggestion = $("#suggestion-container > .search-suggestion")[currentSuggestionIndex-1];
         let s_children = suggestion.children;
         
         // Add Furigana. If Kanji are used, select the secondary suggestion. If user types kanji, show him kanji instead
