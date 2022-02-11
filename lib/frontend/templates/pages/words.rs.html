@@ -178,13 +178,13 @@
                     }
 
                     <!-- TODO Implement if statement here + Translate -->
-                    @@if 
+                    @* @if 
                       <li id="jdefBtn" class="info-entry noselect umami--click--jdef-button" data-toggle="modal" data-target="#jdef@word.sequence" class="mdl-menu__item">
                         <div class="conjugationSvg"></div>
                         <span class="text">@data.gettext("Japanese definitions")</span>
                       </li>
                       <li disabled class="mdl-menu__item dot-menu"><hr></li>
-                    @@if_end
+                    @if_end *@
 
                     @if let Some(intransitive) = get_intransitive_counterpart(&word) {
                       <li class="info-entry noselect umami--click--intransitive-button" class="mdl-menu__item"> 
@@ -341,9 +341,9 @@
 
               <!-- JP definitions Modal -->
               <!-- TODO Implement + Translate -->
-              @@if @@_get_me_some_html!
+              @* @if @@_get_me_some_html!
                 @:definitions_jp(&data, &word)
-              @@if_end
+              @if_end *@
 
               <hr class="res-separator" />
             </div>
@@ -363,7 +363,7 @@
               @data.ngettext_fmt("{} stroke", kanji.stroke_count as u64, &[kanji.stroke_count]).
               @if let Some(jlpt_lvl) = kanji.jlpt {
                 @data.gettext_fmt("JLPT N{}", &[jlpt_lvl])}@*
-            *@@if let Some(grade) = kanji.grade {@if kanji.jlpt.is_some() {. }
+              *@@if let Some(grade) = kanji.grade {@if kanji.jlpt.is_some() {. }
                 @data.gettext_fmt("Taught in {} grade", &[grade])
               }
             </div>
