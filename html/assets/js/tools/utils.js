@@ -53,7 +53,7 @@ Util.loadScript = function(url, async, attributes, callback) {
 }
 
 // Checks if a given element is overflown
-Util.checkOverflow = function checkOverflow(el) {
+Util.checkOverflow = function(el) {
   var curOverflow = el.style.overflow;
 
   if (!curOverflow || curOverflow === "visible")

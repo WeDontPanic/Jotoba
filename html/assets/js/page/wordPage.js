@@ -10,7 +10,15 @@ $(".expander").on("click", (event) => {
 // On first load and on every page resize: check where the expander-triangle is needed & whether sentence reader should be centered
 hideUnusedExpanders();
 centerSentenceReaderIfNeeded();
+var screenWidth = $(window).width();
+
 $(window).resize(() => {
+    // Mobile scrolling sends resize events because of the (dis-)appearing url input. Simple fix: ignore height changes.
+    if ($(window).width() == screenWidth) {
+        return;
+    }
+
+    screenWidth = $(window).width();
     hideUnusedExpanders();
     centerSentenceReaderIfNeeded();
 });
