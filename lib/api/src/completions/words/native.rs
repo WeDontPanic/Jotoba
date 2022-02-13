@@ -14,7 +14,7 @@ pub fn suggestions(query: &Query, radicals: &[char]) -> Option<Vec<WordPair>> {
     let query_str = query.query.as_str();
     let start = Instant::now();
 
-    // parsing
+    // parsing query
     let query_str_aligned = align_query_str(query_str).unwrap_or_else(|| query_str.to_string());
 
     let mut items = suggest_words(&[&query_str, &query_str_aligned], &radicals)?;
@@ -22,6 +22,12 @@ pub fn suggestions(query: &Query, radicals: &[char]) -> Option<Vec<WordPair>> {
         if let Some(other) = suggest_words(&[&romaji::RomajiExt::to_katakana(query_str)], &radicals)
         {
             items.extend(other);
+        }
+    }
+
+    if items.len() < 50 {
+        if let Some(aligned) = k_reading_align(query_str) {
+            items.extend(aligned);
         }
     }
 
@@ -45,6 +51,28 @@ fn align_query_str(query_str: &str) -> Option<String> {
     None
 }
 
+/// Finds suggestions for all kanji componunds which can be built of the given query
+fn k_reading_align(query: &str) -> Option<Vec<(WordPair, u32)>> {
+    if !query.is_kana() {
+        return None;
+    }
+
+    let words = resources::get().words();
+    let align = storage::K_READING_ALIGN.get().unwrap();
+
+    let res = align
+        .get(query)?
+        .iter()
+        .filter_map(|i| {
+            let word = words.by_sequence(*i)?;
+            let wp: WordPair = word.into();
+            Some((wp, 0))
+        })
+        .collect::<Vec<_>>();
+
+    Some(res)
+}
+
 #[derive(PartialEq, Eq)]
 struct WordPairOrder((WordPair, u32));
 
@@ -62,6 +90,7 @@ pub(super) fn suggest_words(
         let query_romaji = query
             .is_kana()
             .then(|| romaji::RomajiExt::to_romaji(*query));
+
         heap.extend(
             dict.search(|e: &NativeSuggestion| search_cmp(e, query))
                 // Fetch a few more to allow sort-function to give better results
