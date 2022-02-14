@@ -11,6 +11,11 @@
     <link rel="search" type="application/opensearchdescription+xml" title="Jotoba" href="/variable_assets/@data.asset_hash/assets/settings/opensearch.xml">
     <link rel="manifest" href="/variable_assets/@data.asset_hash/assets/settings/manifest.json">
     
+    <!-- OG Tags -->
+  @if let Some(tags) = data.get_og_tags() {
+    @tags.render_unescaped()
+  }
+
     <!-- Fonts -->
     <link rel="stylesheet" type="text/css" media="print" onload="this.media='all'" href="/variable_assets/@data.asset_hash/assets/fonts/fonts.css">
 
@@ -70,23 +75,4 @@
     <script async src="/variable_assets/@data.asset_hash/assets/js/mobile.js"></script>
     <script defer src="/variable_assets/@data.asset_hash/assets/js/page/overlay/settings.js"></script>
     <script defer src="/variable_assets/@data.asset_hash/assets/js/lib/loadAnalytics.js"></script>
-
-    @if let Some(tags) = data.get_og_tags() {
-      @tags.render_unescaped()
-    }
-
-    @*
-    <!-- OG tags -->
-    <meta property="og:type" content="website">
-    @if let Some(search_res) =  data.site.as_search_result() {
-      <meta property="og:title" content="Jotoba @search_res.search_type_ogg() search result for &quot;@search_res.query.query&quot;">
-      <meta property="og:description" content="@search_res.og_tag_info()">
-      <meta name="twitter:card" content="summary" />
-      <meta name="twitter:title" content="Jotoba @search_res.search_type_ogg() search result for &quot;@search_res.query.query&quot;" />
-      <meta name="twitter:description" content="@search_res.og_tag_info()" />
-    }else{
-      <meta property="og:title" content="Jotoba">
-      <meta property="og:description" content="A powerful and free Japanese dictionary supporting words, kanji, sentences, and many different languages.">
-      <meta property="og:url" content="https://jotoba.de">
-    }*@
 </head>

@@ -85,7 +85,7 @@ impl TagSet {
     /// Render the `TagSet`
     #[inline]
     pub fn render(&self) -> String {
-        self.tags.iter().map(|i| i.render()).join("\n")
+        self.tags.iter().map(|i| i.render()).join("\n\t")
     }
 
     /// Render the `TagSet` unescaped (for use in HTML)
@@ -109,7 +109,7 @@ impl Tag {
             TagKey::Og(og) => format!("property=\"og:{}\"", og.as_ref()),
             TagKey::Twitter(twitter) => format!("property=\"twitter:{}\"", twitter.as_ref()),
         };
-        format!("<meta {key_attr} content=\"{}\">", self.value)
+        format!("<meta {key_attr} content=\"{}\"/>", self.value)
     }
 }
 
