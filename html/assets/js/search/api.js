@@ -22,7 +22,7 @@ API.getSuggestionApiData = function(radicalArray, successFn, errorFn) {
     else {
         API.suggestionStop = -1;
     }
-
+    
     // Create the JSON
     let lang = Cookies.get("default_lang");
     let type = JotoTools.getCurrentSearchType();

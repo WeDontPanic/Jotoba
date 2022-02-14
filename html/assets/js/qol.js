@@ -201,9 +201,14 @@ function changeSearchType(html, newType) {
 
 // Focus Search Bar on load if the user wants it to (or on index page)
 Util.awaitDocumentReady(() => {
-    if (Util.toBoolean(Cookies.get("focus_searchbar")) || Util.isIndexPage()) {
-        preventNextApiCall = true;
+    let focus_searchbar = Util.toBoolean(Cookies.get("focus_searchbar"));
+    let is_index = Util.isIndexPage();
 
+    if (focus_searchbar && !is_index) {
+        preventNextApiCall = true;
+    }
+
+    if (focus_searchbar || is_index) {
         let s = $('#search');
         s.focus();
         Util.setCaretPosition("search", -1);
