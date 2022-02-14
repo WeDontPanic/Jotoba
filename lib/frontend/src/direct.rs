@@ -66,10 +66,10 @@ fn set_og_tag(base_data: &mut BaseData, query_type: QueryType) {
 
     let descrption = "Jotoba entry. See more...";
 
-    search_res_og.set_og_tag(TagKeyName::Title, &title);
-    search_res_og.set_twitter_tag(TagKeyName::Title, &title);
-    search_res_og.set_og_tag(TagKeyName::Description, descrption);
-    search_res_og.set_twitter_tag(TagKeyName::Description, descrption);
+    search_res_og.add_og(TagKeyName::Title, &title);
+    search_res_og.add_twitter(TagKeyName::Title, &title);
+    search_res_og.add_og(TagKeyName::Description, descrption);
+    search_res_og.add_twitter(TagKeyName::Description, descrption);
     search_res_og.add_twitter(TagKeyName::Card, "summary");
 
     base_data.set_og_tags(search_res_og);
