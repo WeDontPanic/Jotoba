@@ -8,7 +8,7 @@ use crate::templates::ToHtml;
 /// Unescaped owned String
 pub type UnescapedString = Unescaped<String>;
 
-/// Unescaped owned String
+/// Unescaped &str
 pub type UnescapedStr<'a> = Unescaped<&'a str>;
 
 /// Write something unescaped

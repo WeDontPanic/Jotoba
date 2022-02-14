@@ -1,20 +1,8 @@
+use japanese::furigana::SentencePartRef;
 use types::jotoba::{
     languages::Language,
-    words::{filter_languages, Word},
+    words::{filter_languages, sense::Sense, Word},
 };
-
-use crate::BaseData;
-
-pub fn need_3dot(data: &BaseData, word: &Word) -> bool {
-    word.get_inflections().is_some()
-        || word.collocations.is_some()
-        || get_intransitive_counterpart(word).is_some()
-        || get_transitive_counterpart(word).is_some()
-        || (word.has_sentence(data.user_settings.user_lang)
-            || (data.user_settings.show_english && word.has_sentence(Language::English)))
-        || data.config.is_debug()
-        || word.audio_file("ogg").is_some()
-}
 
 /// Returns a list of all collocations of a word
 pub fn get_collocations(
@@ -59,14 +47,35 @@ pub fn get_collocations(
         .collect()
 }
 
+/// Returns the transive verion of `word`
 #[inline]
 pub fn get_transitive_counterpart(word: &Word) -> Option<Word> {
     let seq_id = word.transive_verion.as_ref()?;
     resources::get().words().by_sequence(*seq_id).cloned()
 }
 
+/// Returns the intransive verion of `word`
 #[inline]
 pub fn get_intransitive_counterpart(word: &Word) -> Option<Word> {
     let seq_id = word.intransive_verion.as_ref()?;
     resources::get().words().by_sequence(*seq_id).cloned()
+}
+
+/// Returns an example sentences of a `sense` if existing.
+/// tries to use a sentence written in `language` or falls back to english
+pub fn ext_sentence(
+    sense: &Sense,
+    language: &Language,
+) -> Option<(Vec<SentencePartRef<'static>>, &'static str)> {
+    let sentence = resources::get()
+        .sentences()
+        .by_id(sense.example_sentence?)?;
+
+    let translation = sentence
+        .get_translations(*language)
+        .or_else(|| sentence.get_translations(Language::English))?;
+
+    let furigana = japanese::furigana::from_str(&sentence.furigana).collect::<Vec<_>>();
+
+    Some((furigana, translation))
 }

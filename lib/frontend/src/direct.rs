@@ -11,10 +11,11 @@ use search::{
 use types::jotoba::{search::QueryType, words::filter_languages};
 
 use crate::{
+    og_tags::{self, TagKeyName},
     search_ep::redirect_home,
     templates, user_settings,
     web_error::{self, Error},
-    BaseData, ResultData,
+    BaseData, ResultData, SearchResult,
 };
 
 /// Endpoint to perform a search
@@ -44,10 +45,42 @@ pub async fn direct_ep(
     }
 
     let query = Query::default();
-    let base_data = BaseData::new(&locale_dict, settings, &config.asset_hash, &config)
+    let mut base_data = BaseData::new(&locale_dict, settings, &config.asset_hash, &config)
         .with_search_result(&query, result_data.unwrap(), None);
 
+    set_og_tag(&mut base_data, query_type);
+
     Ok(HttpResponse::Ok().body(render!(templates::base, base_data).render()))
+}
+
+fn set_og_tag(base_data: &mut BaseData, query_type: QueryType) {
+    let search_result = base_data.site.as_search_result().unwrap();
+    let mut search_res_og = og_tags::TagSet::with_capacity(5);
+
+    let title = match query_type {
+        QueryType::Kanji => return,
+        QueryType::Sentences => "Jotoba sentence".to_string(),
+        QueryType::Names => format!("{} - Jotoba name", search_res_val(&search_result).unwrap()),
+        QueryType::Words => format!("{} - Jotoba word", search_res_val(&search_result).unwrap()),
+    };
+
+    let descrption = "Jotoba entry. See more...";
+
+    search_res_og.set_og_tag(TagKeyName::Title, &title);
+    search_res_og.set_twitter_tag(TagKeyName::Title, &title);
+    search_res_og.set_og_tag(TagKeyName::Description, descrption);
+    search_res_og.set_twitter_tag(TagKeyName::Description, descrption);
+    search_res_og.add_twitter(TagKeyName::Card, "summary");
+
+    base_data.set_og_tags(search_res_og);
+}
+
+fn search_res_val(res: &SearchResult) -> Option<String> {
+    Some(match &res.result {
+        ResultData::Word(w) => w.get_items().0[0].get_reading().reading.clone(),
+        ResultData::Name(n) => n[0].kanji.as_ref().unwrap_or(&n[0].kana).to_string(),
+        _ => return None,
+    })
 }
 
 /// Find direct word

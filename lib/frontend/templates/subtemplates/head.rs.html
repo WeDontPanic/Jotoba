@@ -71,6 +71,11 @@
     <script defer src="/variable_assets/@data.asset_hash/assets/js/page/overlay/settings.js"></script>
     <script defer src="/variable_assets/@data.asset_hash/assets/js/lib/loadAnalytics.js"></script>
 
+    @if let Some(tags) = data.get_og_tags() {
+      @tags.render_unescaped()
+    }
+
+    @*
     <!-- OG tags -->
     <meta property="og:type" content="website">
     @if let Some(search_res) =  data.site.as_search_result() {
@@ -81,7 +86,7 @@
       <meta name="twitter:description" content="@search_res.og_tag_info()" />
     }else{
       <meta property="og:title" content="Jotoba">
-      <meta property="og:description" content="description" content="A powerful and free Japanese dictionary supporting words, kanji, sentences, and many different languages.">
+      <meta property="og:description" content="A powerful and free Japanese dictionary supporting words, kanji, sentences, and many different languages.">
       <meta property="og:url" content="https://jotoba.de">
-    }
+    }*@
 </head>

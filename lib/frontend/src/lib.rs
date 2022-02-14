@@ -5,10 +5,10 @@ mod actix_ructe;
 
 pub mod about;
 pub mod direct;
-pub mod example_sentence;
 pub mod help_page;
 pub mod index;
 pub mod news;
+pub mod og_tags;
 mod pagination;
 pub mod search_ep;
 pub mod search_help;
@@ -27,6 +27,7 @@ use localization::{
     traits::{Translatable, TranslatablePlural},
     TranslationDict,
 };
+use og_tags::TagKeyName;
 use pagination::Pagination;
 use resources::news::NewsEntry;
 use search::{query::Query, sentence::result::SentenceResult};
@@ -44,6 +45,7 @@ pub struct BaseData<'a> {
     pub pagination: Option<Pagination>,
     pub asset_hash: &'a str,
     pub config: &'a Config,
+    pub og_tags: Option<og_tags::TagSet>,
 }
 
 /// The site to display
@@ -88,6 +90,7 @@ impl<'a> BaseData<'a> {
             pagination: None,
             asset_hash,
             config,
+            og_tags: None,
         }
     }
 
@@ -209,6 +212,19 @@ impl<'a> BaseData<'a> {
     pub fn kanji_copounds_collapsed(&self) -> bool {
         self.pagination.as_ref().map(|i| i.get_last()).unwrap_or(0) > 1
     }
+
+    /// Sets og tags which will overwrite the site-defaults if existing
+    pub fn set_og_tags(&mut self, tags: og_tags::TagSet) {
+        self.og_tags = Some(tags);
+    }
+
+    /// returns OG Tags
+    pub fn get_og_tags(&self) -> Option<og_tags::TagSet> {
+        if let Some(override_tags) = &self.og_tags {
+            return Some(override_tags.clone());
+        }
+        self.site.og_tags()
+    }
 }
 
 impl<'a> Site<'a> {
@@ -219,6 +235,14 @@ impl<'a> Site<'a> {
         } else {
             None
         }
+    }
+
+    /// Returns proper OG tags for the current site
+    pub fn og_tags(&self) -> Option<og_tags::TagSet> {
+        Some(match self {
+            Site::SearchResult(rs) => rs.og_tags(),
+            _ => default_og_tags(),
+        })
     }
 }
 
@@ -236,7 +260,24 @@ impl ResultData {
 }
 
 impl<'a> SearchResult<'a> {
-    pub(crate) fn og_tag_info(&self) -> String {
+    pub fn og_tags(&self) -> og_tags::TagSet {
+        let mut tags = og_tags::TagSet::with_capacity(5);
+
+        let search_type_name = self.search_type_ogg();
+        let query = &self.query.query;
+        let title = format!("Jotoba {search_type_name} search result for '{query}'");
+        let description = self.og_tag_description();
+
+        tags.add_og(TagKeyName::Title, &title);
+        tags.add_og(TagKeyName::Description, &description);
+        tags.add_twitter(TagKeyName::Title, &title);
+        tags.add_twitter(TagKeyName::Description, &description);
+        tags.add_twitter(TagKeyName::Card, "summary");
+
+        tags
+    }
+
+    pub(crate) fn og_tag_description(&self) -> String {
         format!("{} results. See more...", self.result_count())
     }
 
@@ -257,6 +298,20 @@ impl<'a> SearchResult<'a> {
             ResultData::Sentence(s) => s.items.len(),
         }
     }
+}
+
+fn default_og_tags() -> og_tags::TagSet {
+    let mut tags = og_tags::TagSet::new();
+    let description =  "A powerful and free Japanese dictionary supporting words, kanji, sentences, and many different languages.";
+
+    tags.add_og(TagKeyName::Title, "Jotoba");
+    tags.add_og(TagKeyName::Description, description);
+    tags.add_og(TagKeyName::URL, "https://jotoba.de");
+
+    tags.add_twitter(TagKeyName::Title, "Jotoba");
+    tags.add_twitter(TagKeyName::Description, description);
+
+    tags
 }
 
 /// Translation helper
