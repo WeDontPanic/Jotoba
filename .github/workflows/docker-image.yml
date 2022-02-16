@@ -15,7 +15,7 @@ jobs:
     - name: Export image
       run: |
         echo ${{ secrets.GH_TOKEN }} | docker login ghcr.io -u ${{ secrets.GH_USER }} --password-stdin
-        docker push ghcr.io/wedontpanic/jotoba:latest
+        docker push ghcr.io/jotoba/jotoba:latest
     - name: Update server
       uses: garygrossgarten/github-action-ssh@release
       with:
