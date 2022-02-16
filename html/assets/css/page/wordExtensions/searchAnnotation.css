@@ -1,9 +1,14 @@
 .search-annotation {
     color: var(--tagColor);
     max-height: 150px;
-    overflow: scroll;
+    margin-bottom: 15px;
+    overflow: auto;
     display: flex;
     justify-content: center;
+}
+
+.search-annotation .kanji-preview {
+    line-height: unset;
 }
 
 .search-annotation.no-center {

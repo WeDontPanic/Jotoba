@@ -125,12 +125,16 @@
 
 .kanji-preview.large {
     font-size: 50px;
-    padding-top: 10px;
+    padding-top: 15px;
 }
 
 .kanji-preview.large:hover {
     text-decoration: none;
 } 
+
+.kanji-entry {
+    padding-bottom: 5px;
+}
 
 /* 3-dot Menu */
 
