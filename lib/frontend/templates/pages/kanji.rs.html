@@ -85,7 +85,7 @@
             <!-- Inner Right Side -->
             <div class="kanji-preview-right">
                 @if let Some(grade) = k_item.kanji.grade {
-                  @data.gettext_fmt("Taught in {} grade", &[grade])
+                  <div class="notes">@data.gettext_fmt("Taught in {} grade", &[grade])</div>
                 }
                 @if let Some(n_lvl) = k_item.kanji.jlpt {
                  <div class="notes">@data.gettext("JLPT level") <b>N@n_lvl</b></div>
