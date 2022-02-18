@@ -60,7 +60,12 @@ impl RegexSQuery {
     fn convert_regex(query: &str) -> String {
         let mut out = String::with_capacity(query.len() + 2);
         out.push('^');
-        out.push_str(&query.replace("*", ".*").replace("?", ".?"));
+        out.push_str(
+            &query
+                .replace("*", ".*")
+                .replace("?", ".{1}")
+                .replace("+", ".{1}"),
+        );
         out.push('$');
         out
     }
@@ -69,12 +74,15 @@ impl RegexSQuery {
     #[inline]
     fn is_regex(query: &str) -> bool {
         let query = adjust_regex(query);
-        query.contains('*') || query.contains('?')
+        query.contains('*') || query.contains('+') || query.contains('?')
     }
 }
 
 /// Adjusts the query to a consistent format
 #[inline]
 fn adjust_regex(query: &str) -> String {
-    query.replace("＊", "*").replace("？", "?")
+    query
+        .replace("＊", "*")
+        .replace("＋", "+")
+        .replace("？", "?")
 }
