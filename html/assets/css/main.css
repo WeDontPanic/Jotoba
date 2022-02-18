@@ -18,6 +18,7 @@
     --tagColor: #808080;
     --itemBG: #d3d3d3;
 
+    --alert: #ff4254;
     --danger: #dc3545;
     --danger2: #dd4c5b;
 
@@ -72,6 +73,8 @@
     --buttonText: #fff;
     --buttonBg: #404040;
     --buttonBgActive: #515151;
+
+    --alert: #e93849;
 }
 
 :root.dark ::-moz-selection {

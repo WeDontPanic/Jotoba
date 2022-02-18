@@ -53,6 +53,24 @@ form {
     right: 25px;
 }
 
+.notificationPoint {
+    display: none;
+    position: absolute;
+    pointer-events: none;
+    top: 32px;
+    right: 30px;
+    padding: 0.25rem;
+    border-radius: 2rem;
+    z-index: 9999;
+    width: 9px;
+    height: 9px;
+    background-color: var(--alert);
+}
+
+.notificationBtn.update ~ .notificationPoint {
+    display: block;
+}
+
 .infoBtn {
     top: 29px;
     right: 60px;
@@ -200,6 +218,11 @@ form {
     }
 
     .notificationBtn {
+        top: 20px;
+        right: 15px;
+    }
+
+    .notificationPoint {
         top: 20px;
         right: 15px;
     }
