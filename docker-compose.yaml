@@ -2,7 +2,7 @@ version: "3.7"
 
 services:
   app:
-    image: ghcr.io/jotoba/jotoba:latest
+    image: ghcr.io/wedontpanic/jotoba:latest
     restart: always
     ports:
       - 8080:8080

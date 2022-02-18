@@ -31,18 +31,18 @@ Please refer to our [Trello board](https://trello.com/b/nmG0xgaW/jotoba-roadmap)
 # Developing
 Jotoba is entirely open source. Contributions are highly welcome and can be made by anyone who wants to help Jotoba grow.<br>
 That being said, all API endpoints exposed by Jotoba are documented and allowed to be used (within a fair amount).<br>
-Refer to [API-Docs](https://jotoba.de/docs.html) for the API documentations and to [CONTRIBUTION](https://github.com/Jotoba/Jotoba/wiki/Contributing) for an introduction in how to contribute code to Jotoba.
+Refer to [API-Docs](https://jotoba.de/docs.html) for the API documentations and to [CONTRIBUTION](https://github.com/WeDontPanic/Jotoba/wiki/Contributing) for an introduction in how to contribute code to Jotoba.
 
 # Translations
 Jotoba is aimed to be a multi-language dictionary thus the website is aimed to be fully translated into all available languages.<br>
 However, the main developers of this project don't speak ~10 languages.
 If you're interested in contributing to this project we are thankful for each translation contribution.<br>
-For a guide on how to add translations please refer to the [wiki](https://github.com/Jotoba/Jotoba/wiki/Translate-%5BPage%5D).
+For a guide on how to add translations please refer to the [wiki](https://github.com/WeDontPanic/Jotoba/wiki/Translate-%5BPage%5D).
 
 # Selfhosting
-Please refer to the [wiki](https://github.com/Jotoba/Jotoba/wiki/Selfhost) for a guide on how to host Jotoba yourself.
+Please refer to the [wiki](https://github.com/WeDontPanic/Jotoba/wiki/Selfhost) for a guide on how to host Jotoba yourself.
 
 # License
 Jotoba itself is licensed under AGPL 3.0 or later. 
-Please refer to the [license file](https://github.com/Jotoba/Jotoba/blob/master/LICENSE) for further information.
+Please refer to the [license file](https://github.com/WeDontPanic/Jotoba/blob/master/LICENSE) for further information.
 Joto-kun (including all of his variants) is licensed under [CC BY-NC-ND 4.0](https://creativecommons.org/licenses/by-nc-nd/4.0/).
