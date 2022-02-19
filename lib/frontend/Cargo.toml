@@ -22,10 +22,10 @@ percent-encoding = "2.1.0"
 types = { path = "../types" , features = ["jotoba_intern"]}
 itertools = "*"
 
-[target.'cfg(target_os="windows")'.dependencies]
+[target.'cfg(windows)'.dependencies]
 resources = { path = "../resources", features = ["news"]}
 
-[target.'cfg(target_os="unix")'.dependencies]
+[target.'cfg(unix)'.dependencies]
 resources = { path = "../resources", features = ["news","news_inotify"]}
 
 [build-dependencies]
