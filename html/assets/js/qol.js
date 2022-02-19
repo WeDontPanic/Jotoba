@@ -137,20 +137,37 @@ document.querySelectorAll(".furigana-kanji-container").forEach(container => {
         let selection = window.getSelection();
         selection.removeAllRanges();
 
-        // Select all non-furigana children
-        container.childNodes.forEach((child) => {
+        // Select all non-furigana children #1 Firefox exclusive: Multiple selection ranges
+        if (navigator.userAgent.search("Firefox") > -1) {
+            container.childNodes.forEach((child) => {
+                var range = document.createRange();
+                range.setStartBefore(child);
+
+                if (child.tagName === "RUBY") {
+                    range.setEndAfter(child.children[0]);
+                } else {
+                    range.setEndAfter(child);
+                }
+
+	            selection.addRange(range);
+            });
+        
+        // Select all non-furigana children #2
+        } else {
             var range = document.createRange();
-            range.setStartBefore(child);
-
-            if (child.tagName === "RUBY") {
-                range.setEndAfter(child.children[0]);
+            range.setStartBefore(container);
+            let lastChild = container.lastChild;
+            
+            if (lastChild.tagName === "RUBY") {
+                range.setEndAfter(lastChild.children[0]);
             } else {
-                range.setEndAfter(child);
+                range.setEndAfter(lastChild);
             }
-
-	        selection.addRange(range);
-        });
+            
+            selection.addRange(range);
+        }
     });
+
 });
 
 // Check conditions for copying Furigana 
