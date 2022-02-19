@@ -16,11 +16,11 @@ jobs:
       run: |
         echo ${{ secrets.GH_TOKEN }} | docker login ghcr.io -u ${{ secrets.GH_USER }} --password-stdin
         docker push ghcr.io/wedontpanic/jotoba:latest
-    - name: Update server
-      uses: garygrossgarten/github-action-ssh@release
-      with:
-        command: /home/jotoba/update.sh
-        host: ${{ secrets.HOST }}
-        port: ${{ secrets.PORT }}
-        username: ${{ secrets.SSH_USER }}
-        privateKey: ${{ secrets.SSH_KEY}}
+    # - name: Update server
+    #   uses: garygrossgarten/github-action-ssh@release
+    #   with:
+    #     command: /home/jotoba/update.sh
+    #     host: ${{ secrets.HOST }}
+    #     port: ${{ secrets.PORT }}
+    #     username: ${{ secrets.SSH_USER }}
+    #     privateKey: ${{ secrets.SSH_KEY}}
