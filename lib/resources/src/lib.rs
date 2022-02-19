@@ -1,4 +1,5 @@
 pub mod models;
+#[cfg(feature = "news")]
 pub mod news;
 pub mod parse;
 

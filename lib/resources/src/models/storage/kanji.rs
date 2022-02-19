@@ -28,7 +28,7 @@ impl<'a> KanjiRetrieve<'a> {
     /// Returns all kanji with the given radicals
     #[inline]
     pub fn by_radicals(&self, radicals: &[char]) -> Vec<&Kanji> {
-        let rad_map = &self.storage.dict_data.rad_map;
+        let rad_map = &self.storage.dict_data.rad_kanji_map;
 
         let mut maps = radicals
             .iter()

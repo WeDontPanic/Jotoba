@@ -1,10 +1,12 @@
-pub mod guessing;
-pub mod jp_parsing;
-
 pub mod accent;
 pub mod furigana;
-pub mod inflection;
+pub mod guessing;
 pub mod radicals;
+
+#[cfg(feature = "inflections")]
+pub mod inflection;
+#[cfg(feature = "inflections")]
+pub mod jp_parsing;
 
 use itertools::Itertools;
 use std::iter;

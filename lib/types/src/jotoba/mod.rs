@@ -4,6 +4,8 @@ pub mod kanji;
 pub mod languages;
 /// Contains all structures and enums for Jotoba names
 pub mod names;
+/// Contains all structures of Jotobas resources
+pub mod resources;
 /// Contains search related structures and enums
 pub mod search;
 pub mod sentences;

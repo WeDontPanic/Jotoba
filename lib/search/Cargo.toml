@@ -7,12 +7,12 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-japanese = { path = "../japanese" }
+japanese = { path = "../japanese", features = ["inflections"] }
 config = { path = "../config" }
 error = { path = "../error" }
 utils = { path = "../utils" }
 localization = { path = "../localization" }
-resources = { path = "../resources"}
+resources = { path = "../resources", features = ["news"]}
 serde = "1.0.135"
 log = "0.4.14"
 itertools = "0.10.3"

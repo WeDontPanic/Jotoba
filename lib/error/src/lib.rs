@@ -1,3 +1,4 @@
+#[cfg(feature = "web_error")]
 pub mod api_error;
 
 use std::{fmt::Display, num::ParseIntError, string::FromUtf8Error};

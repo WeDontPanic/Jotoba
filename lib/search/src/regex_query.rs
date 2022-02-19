@@ -35,10 +35,7 @@ impl RegexSQuery {
         }
 
         let regex = Regex::new(&Self::convert_regex(&query)).ok()?;
-        Some(RegexSQuery {
-            query: query.to_string(),
-            regex,
-        })
+        Some(RegexSQuery { query, regex })
     }
 
     /// Returns `true` if a word matches the regex query
@@ -69,7 +66,9 @@ impl RegexSQuery {
                 .replace('?', ".{1}")
                 .replace('+', ".{1}"),
         );
-        out.push('$');
+        if !out.ends_with('$') {
+            out.push('$');
+        }
         out
     }
 
@@ -85,7 +84,7 @@ impl RegexSQuery {
 #[inline]
 fn adjust_regex(query: &str) -> String {
     query
-        .replace("＊", "*")
-        .replace("＋", "+")
-        .replace("？", "?")
+        .replace('＊', "*")
+        .replace('＋', "+")
+        .replace('？', "?")
 }

@@ -52,12 +52,8 @@ fn jlpt_search(search: &Search<'_>, jlpt: u8) -> Result<ResultData, Error> {
 
     let resources = resources::get();
 
-    let word_jlpt = match resources.word_jlpt(jlpt) {
-        Some(word_jlpt) => word_jlpt,
-        None => return Ok(ResultData::default()),
-    };
-
-    let mut wordresults = word_jlpt
+    let mut wordresults = resources
+        .word_jlpt(jlpt)
         .filter(|word| Search::word_filter(&search.query, word, &pos_filter))
         .cloned()
         .collect::<Vec<_>>();

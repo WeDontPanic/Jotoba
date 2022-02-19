@@ -25,12 +25,8 @@ fn jlpt_search(query: &Query, jlpt: u8) -> Result<SentenceResult, Error> {
 
     let resources = resources::get();
 
-    let sentence_jlpt = match resources.sentence_jlpt(jlpt) {
-        Some(sentence_jlpt) => sentence_jlpt,
-        None => return Ok(SentenceResult::default()),
-    };
-
-    let senences = sentence_jlpt
+    let senences = resources
+        .sentence_jlpt(jlpt)
         .filter(|sentence| {
             sentence.has_translation(query.settings.user_lang)
                 && (sentence.has_translation(Language::English) && query.settings.show_english)
