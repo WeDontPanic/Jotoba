@@ -4,8 +4,10 @@ use std::{
 };
 
 use comrak::ComrakOptions;
+
 #[cfg(feature = "news_inotify")]
 use inotify::{EventMask, Inotify, WatchMask};
+
 use itertools::Itertools;
 use once_cell::sync::Lazy;
 
