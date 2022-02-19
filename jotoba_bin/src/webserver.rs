@@ -217,7 +217,7 @@ fn prepare_data(ccf: &Config) {
 
         let cf = ccf.clone();
         s.spawn(move |_| {
-            if let Err(err) = resources::news::News::load(cf.server.get_news_folder()) {
+            if let Err(err) = resources::news::News::init(cf.server.get_news_folder()) {
                 warn!("Failed to load news: {}", err);
             }
         })

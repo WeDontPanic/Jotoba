@@ -1,6 +1,6 @@
 @use crate::BaseData;
 @use resources::news::NewsEntry;
-@type News = Vec<&'static NewsEntry>;
+@type News = Vec<NewsEntry>;
 @(data: &BaseData, news: News)
 
 <link rel="stylesheet" type="text/css" href="/variable_assets/@data.asset_hash/assets/css/page/newsPage.css">

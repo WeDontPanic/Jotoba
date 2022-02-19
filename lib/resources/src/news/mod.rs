@@ -1,18 +1,24 @@
-use std::path::Path;
+use std::{
+    path::Path,
+    sync::{Arc, Mutex},
+};
 
 use comrak::ComrakOptions;
+#[cfg(feature = "news_inotify")]
+use inotify::{EventMask, Inotify, WatchMask};
 use itertools::Itertools;
-use once_cell::sync::OnceCell;
+use once_cell::sync::Lazy;
 
-pub static NEWS_RETRIEVE: OnceCell<News> = OnceCell::new();
+pub static NEWS_RETRIEVE: Lazy<Mutex<Arc<News>>> =
+    Lazy::new(|| Mutex::new(Arc::new(News::default())));
 
 /// Contains a set of News entries ordered by oldest -> newest
-#[derive(Default, Debug)]
+#[derive(Default, Debug, Clone)]
 pub struct News {
     pub entries: Vec<NewsEntry>,
 }
 
-#[derive(Default, Debug)]
+#[derive(Default, Debug, Clone)]
 pub struct NewsEntry {
     pub id: u32,
     pub title: String,
@@ -24,7 +30,22 @@ pub struct NewsEntry {
 
 impl News {
     /// Load news from a folder
-    pub fn load<P: AsRef<Path>>(path: P) -> Result<(), Box<dyn std::error::Error>> {
+    pub fn init<P: AsRef<Path>>(path: P) -> Result<(), Box<dyn std::error::Error>> {
+        let p = path.as_ref().to_str().unwrap().to_string();
+
+        let update = |p: &str| {
+            *NEWS_RETRIEVE.lock().unwrap() = Arc::new(Self::load(p).unwrap());
+        };
+
+        update(&p);
+
+        #[cfg(feature = "news_inotify")]
+        fs_changed_update(p, update);
+
+        Ok(())
+    }
+
+    pub fn load<P: AsRef<Path>>(path: P) -> Result<Self, Box<dyn std::error::Error>> {
         let mut entries: Vec<NewsEntry> = Vec::new();
 
         for (pos, file) in std::fs::read_dir(path)?.enumerate() {
@@ -62,11 +83,7 @@ impl News {
             .skip(entry_count.saturating_sub(15))
             .collect::<Vec<_>>();
 
-        NEWS_RETRIEVE
-            .set(News { entries })
-            .expect("failed to set news");
-
-        Ok(())
+        Ok(News { entries })
     }
 
     /// Returns an iterator over last `limit` news elements from old -> newest
@@ -84,8 +101,8 @@ impl News {
 
 /// Returns a reference to the loaded news entries
 #[inline]
-pub fn get() -> &'static News {
-    unsafe { NEWS_RETRIEVE.get_unchecked() }
+pub fn get() -> Arc<News> {
+    NEWS_RETRIEVE.lock().unwrap().clone()
 }
 
 fn parse_markdown<P: AsRef<Path>>(file: P) -> Result<(String, String), Box<dyn std::error::Error>> {
@@ -123,4 +140,32 @@ fn shorten_markdown(full: &str) -> String {
     }
 
     out
+}
+
+#[cfg(feature = "news_inotify")]
+fn fs_changed_update<F: Fn(&str) + Send + 'static>(news_folder: String, update: F) {
+    std::thread::spawn(move || {
+        let mut inotify = Inotify::init().expect("Failed to initialize inotify");
+
+        inotify
+            .add_watch(
+                &news_folder,
+                WatchMask::MODIFY | WatchMask::CREATE | WatchMask::DELETE,
+            )
+            .expect("Failed to add inotify watch");
+
+        let mut buffer = [0u8; 4096];
+        loop {
+            let events = inotify
+                .read_events_blocking(&mut buffer)
+                .expect("Failed to read inotify events");
+
+            for event in events {
+                if !event.mask.contains(EventMask::ISDIR) {
+                    println!("update");
+                    update(&news_folder);
+                }
+            }
+        }
+    });
 }

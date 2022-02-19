@@ -14,7 +14,6 @@ error = { path = "../error" }
 utils = { path = "../utils" }
 config = { path = "../config" }
 localization = { path = "../localization" }
-resources = { path = "../resources"}
 actix-web = "4.0.0-beta.21"
 serde = "1.0.135"
 sentry = { version = "0.24.1", optional = true }
@@ -22,6 +21,12 @@ log = "0.4.14"
 percent-encoding = "2.1.0"
 types = { path = "../types" , features = ["jotoba_intern"]}
 itertools = "*"
+
+[target.'cfg( target_os = "windows" )'.dependencies]
+resources = { path = "../resources", features = ["news"]}
+
+[target.'cfg( target_os = "linux" )'.dependencies]
+resources = { path = "../resources", features = ["news","news_inotify"]}
 
 [build-dependencies]
 ructe = "0.13.4"

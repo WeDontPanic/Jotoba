@@ -27,6 +27,10 @@ comrak = { version = "0.12.1", default-features = false, optional = true }
 name = "resources"
 path = "src/lib.rs"
 
+[target.'cfg(unix)'.dependencies]
+inotify = {version = "*", optional = true}
+
 [features]
 default = []
 news = ["comrak"]
+news_inotify = ["inotify"]

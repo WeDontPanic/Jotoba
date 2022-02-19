@@ -55,7 +55,7 @@ pub enum Site<'a> {
     Index,
     About,
     InfoPage,
-    News(Vec<&'static NewsEntry>),
+    News(Vec<NewsEntry>),
 }
 
 /// Search result data. Required by individual templates to render the result items
