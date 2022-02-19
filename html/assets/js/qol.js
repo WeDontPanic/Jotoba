@@ -97,7 +97,7 @@ $('.furigana-preview').on("dblclick", (event) => {
 // Copies translations to clipboard on double click
 $('.kanji-preview').on("dblclick", (event) => {
     // Check if element should not be copied
-    if (!shouldCopyKanji(event))
+    if (!shouldCopyKanji())
         return;
 
     // Copy
@@ -105,15 +105,48 @@ $('.kanji-preview').on("dblclick", (event) => {
     copyTranslationAndShowMessage(event.target.parentElement.parentElement);
 });
 
+// Prevent double click highlight
+document.querySelectorAll(".furigana-kanji-container").forEach(container => {
+    container.addEventListener('mousedown', function (event) {
+        if (event.detail > 1) {
+            event.preventDefault();
+        }
+    }, false);
+});
+
 // Copies translations to clipboard on double click
 $('.inline-kana-preview').on("dblclick", (event) => {
     // Check if element should not be copied
-    if (!shouldCopyKanji(event))
+    if (!shouldCopyKanji())
         return;
 
     // Copy
     preventDefaultHighlight(event, 500, false);
     copyTranslationAndShowMessage(event.target.parentElement);
+});
+
+// <rub>-tag Fix for standard double click 
+document.querySelectorAll(".furigana-kanji-container").forEach(container => {
+    container.addEventListener("dblclick", () => {
+        if (shouldCopyKanji()) {
+            return;
+        }
+
+        let selection = window.getSelection();
+        let range = document.createRange();
+    
+        range.setStartBefore(container);
+
+        let lastChild = container.lastChild;
+        if (lastChild.tagName === "RUBY") {
+            range.setEndAfter(lastChild.children[0]);
+        } else {
+            range.setEndAfter(lastChild);
+        }
+        
+        selection.removeAllRanges();
+        selection.addRange(range);
+    });
 });
 
 // Check conditions for copying Furigana 
@@ -132,7 +165,7 @@ function shouldCopyFurigana(event) {
 }
 
 // Check conditions for copying Kanji 
-function shouldCopyKanji(event) {
+function shouldCopyKanji() {
     // Prevent if user has removed the feature
     return Util.toBoolean(localStorage.getItem("dbl_click_copy"), true);
 }
