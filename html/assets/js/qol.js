@@ -254,7 +254,7 @@ Util.awaitDocumentReady(() => {
     }
 
     // Change URL to contain the language code
-    if (!Util.isIndexPage() && !Util.isInPath("direct")) {
+    if (Util.isInPath("search")) {
         let currentParams = new URLSearchParams(document.location.search);
 
         let txt = document.getElementById("search").value; 
