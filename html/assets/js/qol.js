@@ -140,7 +140,6 @@ document.querySelectorAll(".furigana-kanji-container").forEach(container => {
         // Select all non-furigana children
         container.childNodes.forEach((child) => {
             var range = document.createRange();
-            console.log(child);
             range.setStartBefore(child);
 
             if (child.tagName === "RUBY") {
