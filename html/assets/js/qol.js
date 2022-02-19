@@ -128,24 +128,29 @@ $('.inline-kana-preview').on("dblclick", (event) => {
 // <rub>-tag Fix for standard double click 
 document.querySelectorAll(".furigana-kanji-container").forEach(container => {
     container.addEventListener("dblclick", () => {
+        // Dont do anything if auto-copy is turned on
         if (shouldCopyKanji()) {
             return;
         }
 
+        // Get and clear the selection
         let selection = window.getSelection();
-        let range = document.createRange();
-    
-        range.setStartBefore(container);
-
-        let lastChild = container.lastChild;
-        if (lastChild.tagName === "RUBY") {
-            range.setEndAfter(lastChild.children[0]);
-        } else {
-            range.setEndAfter(lastChild);
-        }
-        
         selection.removeAllRanges();
-        selection.addRange(range);
+
+        // Select all non-furigana children
+        container.childNodes.forEach((child) => {
+            var range = document.createRange();
+            console.log(child);
+            range.setStartBefore(child);
+
+            if (child.tagName === "RUBY") {
+                range.setEndAfter(child.children[0]);
+            } else {
+                range.setEndAfter(child);
+            }
+
+	        selection.addRange(range);
+        });
     });
 });
 
