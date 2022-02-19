@@ -5,8 +5,8 @@
 //! "宇宙*行士" => "宇宙飛行士"
 //!
 //! # Supported syntax
-//! `*` - Allows 0-n of other characters
-//! `?` - Allows 0-1 of other characters
+//! `*` - Allows 0-n other characters
+//! `?` - Allows 1 other characters
 //!
 //! # Note
 //! All queries containing (custom)regex syntax will be handled as full-word matches. In other words if
@@ -14,6 +14,9 @@
 //! an end (eg. right variable) then a regex charecter has to be placed at the end as well
 
 use regex::Regex;
+
+/// All characters treated as regex characters
+pub const REGEX_CHARS: &[char] = &['*', '?', '?'];
 
 /// Regex Search query. Can be used to match words
 #[derive(Clone, Debug)]
@@ -49,7 +52,7 @@ impl RegexSQuery {
     pub fn get_chars(&self) -> Vec<char> {
         let mut out = Vec::with_capacity(self.query.len());
         for c in self.query.chars() {
-            if c != '.' {
+            if !REGEX_CHARS.contains(&c) {
                 out.push(c);
             }
         }
@@ -62,9 +65,9 @@ impl RegexSQuery {
         out.push('^');
         out.push_str(
             &query
-                .replace("*", ".*")
-                .replace("?", ".{1}")
-                .replace("+", ".{1}"),
+                .replace('*', ".*")
+                .replace('?', ".{1}")
+                .replace('+', ".{1}"),
         );
         out.push('$');
         out

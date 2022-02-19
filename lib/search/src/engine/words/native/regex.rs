@@ -6,12 +6,13 @@ use crate::regex_query::RegexSQuery;
 use super::regex_index;
 
 pub fn search(query: &RegexSQuery) -> Result<Vec<(&'static Word, &'static String)>, Error> {
-    let index = regex_index::get();
-    let word_resources = resources::get().words();
+    let reg_index = regex_index::get();
 
-    let possible_results = index.find(&query.get_chars());
+    let possible_results = reg_index.find(&query.get_chars());
 
     let mut out = Vec::with_capacity(possible_results.len());
+
+    let word_resources = resources::get().words();
 
     for result in possible_results {
         if query.matches(&result.text) {

@@ -8,6 +8,8 @@ use types::jotoba::{
     words::part_of_speech::PosSimple,
 };
 
+use crate::regex_query;
+
 use super::query::{Form, Query, QueryLang, SearchTypeTag, Tag, UserSettings};
 
 /// Represents a query
@@ -258,11 +260,12 @@ fn get_jp_part(inp: &str) -> u8 {
 
 /// Tries to determine between Japanese/Non japnaese
 pub fn parse_language(query: &str) -> QueryLang {
-    if utils::korean::is_hangul_str(query) {
+    let query = strip_regex(query).unwrap_or_else(|| query.to_string());
+    if utils::korean::is_hangul_str(&query) {
         return QueryLang::Korean;
     }
 
-    let query = format_kanji_reading(query);
+    let query = format_kanji_reading(&query);
 
     // how many percent of the characters have to be japanese in order to rank a text as japanese text
     let threshold = 40;
@@ -281,6 +284,12 @@ pub fn format_kanji_reading(s: &str) -> String {
 
 pub fn calc_page_offset(page: usize, page_size: usize) -> usize {
     page.saturating_sub(1) * page_size
+}
+
+/// Removes regex parts from a query. Returns `None` if `query` does not contain regex symbols
+fn strip_regex(query: &str) -> Option<String> {
+    let rg_query = regex_query::RegexSQuery::new(query)?;
+    Some(rg_query.get_chars().into_iter().collect())
 }
 
 #[cfg(test)]
