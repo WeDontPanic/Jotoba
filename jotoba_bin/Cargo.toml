@@ -30,4 +30,5 @@ rayon = "1.5.1"
 [features]
 sentry_error = [ "sentry", "frontend/sentry_error" ]
 img_scan = [ "api/img_scan" ]
-default = [ "img_scan" ]
+default = [ "img_scan","news_inotify" ]
+news_inotify = [ "resources/news_inotify"]
