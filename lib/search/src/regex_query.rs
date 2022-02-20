@@ -78,6 +78,11 @@ impl RegexSQuery {
         let query = adjust_regex(query);
         query.contains('*') || query.contains('+') || query.contains('?')
     }
+
+    /// Get a reference to the regex squery's query.
+    pub fn query(&self) -> &str {
+        self.query.as_ref()
+    }
 }
 
 /// Adjusts the query to a consistent format

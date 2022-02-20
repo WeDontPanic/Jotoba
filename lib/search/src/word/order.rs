@@ -3,7 +3,6 @@ use japanese::JapaneseExt;
 use levenshtein::levenshtein;
 use once_cell::sync::Lazy;
 use regex::Regex;
-use strsim::jaro_winkler;
 use types::jotoba::{
     languages::Language,
     words::{sense::Gloss, Word},
@@ -15,9 +14,8 @@ pub(crate) static REMOVE_PARENTHESES: Lazy<Regex> =
     Lazy::new(|| regex::Regex::new("\\(.*\\)").unwrap());
 
 /// Order for regex-search results
-pub fn regex_order(word: &Word, found_in: &str, query: &RegexSQuery) -> usize {
-    let mut score = 100;
-    let comp_query = query.get_chars().into_iter().collect::<String>();
+pub fn regex_order(word: &Word, found_in: &str, _query: &RegexSQuery) -> usize {
+    let mut score: usize = 100;
 
     if !word
         .reading
@@ -29,18 +27,15 @@ pub fn regex_order(word: &Word, found_in: &str, query: &RegexSQuery) -> usize {
     }
 
     if word.is_common() {
-        score += 10;
+        score += 30;
     }
 
-    if word.get_jlpt_lvl().is_some() {
-        score += 5;
+    if let Some(jlpt) = word.get_jlpt_lvl() {
+        score += 10 + (jlpt * 2) as usize;
     }
-
-    // Similarity to query
-    score += (jaro_winkler(found_in, &comp_query) * 100f64) as usize;
 
     // Show shorter words more on top
-    score = score.saturating_sub(real_string_len(&word.get_reading().reading));
+    score = score.saturating_sub(real_string_len(&word.get_reading().reading) * 3);
 
     score
 }
