@@ -242,9 +242,10 @@ function onCookiesAcceptChange(event) {
 
 // Changes the Default Language to search for
 function onSettingsChange_DefaultLanguage(html, value) {
+    let currentLang = Cookies.get("default_lang");
     Cookies.set('default_lang', value, {path: '/', expires: 365});
     if (window.location.href.includes("/search")) {
-        location.reload();
+        window.location.href = window.location.href.replace("&l="+currentLang, "&l="+value);
     }
 }
 
