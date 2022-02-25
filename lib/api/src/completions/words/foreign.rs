@@ -69,7 +69,7 @@ fn search<'a>(main_lang: Language, query_str: &'a str) -> Vec<WordPair> {
                 query = is_romaji_trim;
             }
 
-            let hira_query = query.to_hiragana();
+            let hira_query = utils::format_romaji_nn(query).to_hiragana();
             if let Some(hira_res) = super::native::suggest_words(&[&hira_query], &[]) {
                 hira_res.into_iter().for_each(|i| {
                     let exact_match = i.0.primary == hira_query;

@@ -82,6 +82,10 @@ pub fn could_be_romaji(inp: &str) -> bool {
     let mut last_char = inp.chars().next().unwrap();
 
     for curr_char in inp.chars() {
+        if curr_char == '\'' {
+            continue;
+        }
+
         let mut first_moji = None;
         let mut second_moji = None;
 

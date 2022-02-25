@@ -344,7 +344,7 @@ impl<'a> Search<'a> {
             )
             .has_term()
         {
-            let hg_query = self.query.query.to_hiragana();
+            let hg_query = utils::format_romaji_nn(&self.query.query).to_hiragana();
             let hg_search = self.native_search(&hg_query);
             if let Ok((native_res, inflection_info, sent, sq)) = hg_search {
                 infl_info = inflection_info;
