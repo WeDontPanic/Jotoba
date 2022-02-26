@@ -57,7 +57,25 @@ fn get_rules() -> RuleSet {
     let rule_しまう = Rule::new("しまう", ru_ending);
 
     // Generation/Root
-    let rule_verb = Rule::new("V", &["*"]);
+    let rule_verb = Rule::new(
+        "V",
+        &[
+            "た",
+            "ない",
+            "たい",
+            "て",
+            "てる",
+            "てみる",
+            "いる",
+            "ある",
+            "ます",
+            "られる",
+            "れる",
+            "ちゃう",
+            "しまう",
+        ],
+    );
+
     let rule_adjective = Rule::new("AD", &["ない", "た", "て"]);
     let rule_number = Rule::new("NR", &["NR"]);
 

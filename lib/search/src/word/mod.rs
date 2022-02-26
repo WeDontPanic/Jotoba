@@ -192,8 +192,19 @@ impl<'a> Search<'a> {
 
         let (query, sentence, word_info) = self.parse_sentence(query_str);
 
+        let original_query = if sentence.is_some(){
+            word_info.as_ref().unwrap().get_inflected().clone()
+        }else{
+            self.query.query.clone()
+        };
+
         let mut search_task =
-            self.native_search_task(&query, &self.query.query, sentence.is_some());
+            self.native_search_task(&query, &original_query, sentence.is_some());
+
+        let inflected_version = word_info.as_ref().map(|i| i.get_inflected());
+        if let Some(inflected_version) = &inflected_version{
+            search_task.add_query(inflected_version);
+        }
 
         // If query was modified (ie. through reflection), search for original too
         if query != query_str {

@@ -1434,7 +1434,6 @@ version = "0.1.0"
 dependencies = [
  "error",
  "itertools",
- "localization",
  "romaji",
  "strum",
  "strum_macros",

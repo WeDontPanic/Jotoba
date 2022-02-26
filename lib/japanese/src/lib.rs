@@ -3,9 +3,6 @@ pub mod furigana;
 pub mod guessing;
 pub mod radicals;
 
-#[cfg(feature = "inflections")]
-pub mod inflection;
-
 use itertools::Itertools;
 use std::iter;
 use utils;

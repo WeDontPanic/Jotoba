@@ -112,7 +112,7 @@ impl Part {
 }
 
 fn morph_to_inflection(morph: &Morpheme) -> Option<Inflection> {
-    // Improve inflection detection:
+    // TODO: Improve inflection detection:
     //  - ている
     //  - ていてる
     Some(match morph.lexeme {

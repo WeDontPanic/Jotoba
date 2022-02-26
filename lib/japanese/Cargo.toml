@@ -13,8 +13,3 @@ itertools = "0.10.3"
 romaji = "0.1.1"
 strum = "0.24.0"
 strum_macros = "0.24.0"
-localization = { path = "../localization", optional = true }
-
-[features]
-default = []
-inflections = ["localization"]
