@@ -49,17 +49,19 @@
     <div class="search-annotation">
       <!-- Sentence Info -->
       <div id="sr" class="d-flex wrap">
-        @for part in sentence_parts {
-          @if let Some(ref furigana) = part.furigana {
-            <a id="p@part.pos" href="/search/@query.get_query_encoded()?i=@part.pos" class="@part.get_add_class() sentence-part @selected(part.pos, result.sentence_index)">
+        @for part in sentence_parts.iter() {
+          @if let Some(furigana) = part.furigana() {
+            <a id="p@part.pos()" href="/search/@query.get_query_encoded()?i=@part.pos()"
+              class="@part.word_class_lower().unwrap_or_default() sentence-part @selected(part.pos(), result.sentence_index)">
               @:render_sentence_html(furi_from_str(furigana).collect(), "", true)
               </a>
           } else {
             <!-- TODO find a better way to keep this consistent. Implement with reader_sentence.rs.html -->
-            <a id="p@part.pos" href="/search/@query.get_query_encoded()?i=@part.pos" class="@part.get_add_class() sentence-part @selected(part.pos, result.sentence_index)">
+            <a id="p@part.pos()" href="/search/@query.get_query_encoded()?i=@part.pos()"
+              class="@part.word_class_lower().unwrap_or_default() sentence-part @selected(part.pos(), result.sentence_index)">
               <div class="furigana-kanji-container">
                 <ruby>
-                  <span class="kanji-preview">@part.text</span>
+                  <span class="kanji-preview">@part.get_inflected()</span>
                   <rt class="furigana-preview">&nbsp;</rt>
                 </ruby>
               </div>
@@ -69,9 +71,9 @@
       </div>
 
       <!-- Sentence Tooltips -->
-      @for part in sentence_parts {
-        @if let Some(ref info) = part.info {
-          <div class="mdl-tooltip" for="p@part.pos">
+      @for part in sentence_parts.iter() {
+        @if let Some(ref info) = part.word_class() {
+          <div class="mdl-tooltip" for="p@part.pos()">
             @data.gettext(*info)
           </div>
         }

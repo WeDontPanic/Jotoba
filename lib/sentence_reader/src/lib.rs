@@ -2,11 +2,13 @@ mod analyzer;
 mod grammar;
 pub mod output;
 mod sentence;
-pub mod sentence_part;
 
 use once_cell::sync::Lazy;
-use output::{ParseResult, Sentence};
+use output::ParseResult;
 use sentence::SentenceAnalyer;
+
+pub use output::Sentence;
+pub use sentence::{inflection::Inflection, part::Part};
 
 /// The path of the unidict-mecab dictionary
 pub const NL_PARSER_PATH: &str = "./unidic-mecab";
@@ -18,23 +20,17 @@ pub static JA_NL_PARSER: Lazy<igo_unidic::Parser> =
 /// Parser for sentence
 pub struct Parser<'input> {
     sentence_analyzer: SentenceAnalyer<'input>,
-    original: &'input str,
-    in_db: bool,
 }
 
 impl<'input> Parser<'input> {
     /// Creates a new InputTextParser
-    pub fn new(original: &'input str, in_db: bool) -> Self {
+    pub fn new(original: &'input str) -> Self {
         let sentence_analyzer = SentenceAnalyer::new(
             analyzer::get_grammar_analyzer(),
             JA_NL_PARSER.parse(original),
         );
 
-        Self {
-            sentence_analyzer,
-            original,
-            in_db,
-        }
+        Self { sentence_analyzer }
     }
 
     /// Execute the parsing

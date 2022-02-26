@@ -1,3 +1,5 @@
+#![allow(dead_code)]
+
 use self::{
     rule::{Rule, ToRule},
     rule_set::RuleSet,

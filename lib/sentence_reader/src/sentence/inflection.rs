@@ -13,8 +13,8 @@ pub enum Inflection {
     Tai,
 }
 
-/*
-impl Translatable for Inflection {
+#[cfg(feature = "jotoba_intern")]
+impl localization::traits::Translatable for Inflection {
     fn get_id(&self) -> &'static str {
         match self {
             Inflection::Negative => "Negative",
@@ -25,7 +25,8 @@ impl Translatable for Inflection {
             Inflection::Potential => "Potential",
             Inflection::Passive => "Passive",
             Inflection::Causative => "Causative",
-            Inflection::CausativePassive => "CausativePassive",
+            // TODO: rename in translations
+            Inflection::PotentialOrPassive => "CausativePassive",
             Inflection::Imperative => "Imperative",
             Inflection::Tai => "Tai",
         }
@@ -39,4 +40,3 @@ impl Translatable for Inflection {
         self.pgettext(dict, "inflection", language)
     }
 }
-*/

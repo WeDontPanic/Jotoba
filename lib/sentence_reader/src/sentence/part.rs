@@ -2,13 +2,13 @@ use super::{inflection::Inflection, owned_morpheme::OwnedMorpheme};
 use igo_unidic::{Morpheme, WordClass};
 
 /// A single word within a sentence. This already contains all inflection parts
-#[derive(Debug)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct Part {
     /// All morphemes building the (inflected) word
     morphemes: Vec<OwnedMorpheme<'static>>,
     inflections: Vec<Inflection>,
     pos: usize,
-    furigana: String,
+    furigana: Option<String>,
 }
 
 impl Part {
@@ -29,7 +29,8 @@ impl Part {
 
         let morphemes = morphemes.into_iter().map(|i| i.into()).collect::<Vec<_>>();
 
-        let furigana = String::new();
+        // TODO
+        let furigana: Option<String> = None;
 
         Some(Self {
             morphemes,
@@ -70,18 +71,18 @@ impl Part {
         self.get_main_morpheme().lexeme.to_string()
     }
 
-    /// Returns the morpheme containing the actual 'word' without any inflections
-    fn get_main_morpheme(&self) -> &OwnedMorpheme {
-        &self.morphemes[0]
+    /// Get the part's pos.
+    pub fn pos(&self) -> usize {
+        self.pos
     }
 
     /// Returns furigana of the word
-    fn get_furigana(&self) -> &str {
-        &self.furigana
+    pub fn furigana(&self) -> Option<&str> {
+        self.furigana.as_deref()
     }
 
     /// returns msgid for the current word_class or None if no word_class is set
-    fn word_class_to_str(&self) -> Option<&'static str> {
+    pub fn word_class(&self) -> Option<&'static str> {
         Some(match self.get_main_morpheme().word_class {
             WordClass::Particle(_) => "Particle",
             WordClass::Verb(_) => "Verb",
@@ -98,14 +99,22 @@ impl Part {
             WordClass::Space => "Space",
         })
     }
+
+    /// Gets wordclass in lowercase
+    pub fn word_class_lower(&self) -> Option<String> {
+        self.word_class().map(|i| i.to_lowercase())
+    }
+
+    /// Returns the morpheme containing the actual 'word' without any inflections
+    fn get_main_morpheme(&self) -> &OwnedMorpheme {
+        &self.morphemes[0]
+    }
 }
 
 fn morph_to_inflection(morph: &Morpheme) -> Option<Inflection> {
-    /*
-    if let Some(infl) = inflection_from_conjungation(&morph.conjungation.form){
-        return Some(infl);
-    }
-    */
+    // Improve inflection detection:
+    //  - ている
+    //  - ていてる
     Some(match morph.lexeme {
         "ない" | "ぬ" => Inflection::Negative,
         "ます" | "です" => Inflection::Polite,
@@ -118,15 +127,3 @@ fn morph_to_inflection(morph: &Morpheme) -> Option<Inflection> {
         _ => return None,
     })
 }
-
-/*
-fn inflection_from_conjungation(conj: &ConjungationForm) -> Option<Inflection> {
-    Some(match conj {
-        ConjungationForm::Plain => Inflection::Present,
-        ConjungationForm::Imperative => Inflection::Imperative,
-        ConjungationForm::Negative => Inflection::Negative,
-        ConjungationForm::Conditional => Inflection::Potential,
-        _ => return None,
-    })
-}
-*/
