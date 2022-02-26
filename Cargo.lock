@@ -1470,6 +1470,7 @@ dependencies = [
  "rayon",
  "resources",
  "search",
+ "sentence_reader",
  "sentry",
  "serde",
  "utils",
@@ -2220,6 +2221,7 @@ dependencies = [
  "rayon",
  "regex",
  "resources",
+ "sentence_reader",
  "serde",
  "strsim 0.10.0",
  "tinysegmenter",
@@ -2256,6 +2258,14 @@ name = "semver"
 version = "1.0.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a4a3381e03edd24287172047536f20cabde766e2cd3e65e6b00fb3af51c4f38d"
+
+[[package]]
+name = "sentence_reader"
+version = "0.1.0"
+dependencies = [
+ "igo-unidic",
+ "once_cell",
+]
 
 [[package]]
 name = "sentry"

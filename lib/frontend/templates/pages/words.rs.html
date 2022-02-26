@@ -27,11 +27,12 @@
       <!-- Search Inflections -->
       <div class="search-inflection">
         <span>
-          @data.ngt_search_links("{} could be an inflection of {}, with this form:", 1, &[&result.searched_query, &inflection.lexeme], inflection.forms.len() as u64)
+          @data.ngt_search_links("{} could be an inflection of {}, with this form:", 1,
+          &[&result.searched_query, &inflection.lexeme], inflection.inflections.len() as u64)
           <br>
           <span class="forms">
-            @for form in inflection.forms.iter() {
-              <li>@data.gettext(*form)</li>
+            @for inflection in inflection.inflections.iter() {
+              <li>@data.gettext(*inflection)</li>
             }
           </span>
         </span>

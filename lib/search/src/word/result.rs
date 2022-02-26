@@ -36,8 +36,10 @@ impl WordResult {
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct InflectionInformation {
+    /// Normalized form of the word
     pub lexeme: String,
-    pub forms: Vec<Inflection>,
+    /// Inflections
+    pub inflections: Vec<Inflection>,
 }
 
 #[derive(Debug, Clone, PartialEq)]

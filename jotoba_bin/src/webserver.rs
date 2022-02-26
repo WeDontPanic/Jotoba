@@ -229,7 +229,7 @@ fn setup_logger() {
 }
 
 pub fn load_tokenizer() {
-    use japanese::jp_parsing::{JA_NL_PARSER, NL_PARSER_PATH};
+    use sentence_reader::{JA_NL_PARSER, NL_PARSER_PATH};
 
     if !Path::new(NL_PARSER_PATH).exists() {
         panic!("No NL dict was found! Place the following folder in he binaries root dir: ./unidic-mecab");

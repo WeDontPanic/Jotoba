@@ -112,8 +112,11 @@ impl<'a> Search<'a> {
         query_str: &'a str,
     ) -> Result<
         (
+            // actual word to look for
             String,
+            // word but with inflections
             Option<WordItem<'static, 'b>>,
+            // Senence data
             Option<Vec<SentencePart>>,
         ),
         Error,
@@ -125,6 +128,18 @@ impl<'a> Search<'a> {
         let in_db = SearchTask::<native::Engine>::new(query_str).has_term();
 
         let parser = InputTextParser::new(query_str, &japanese::jp_parsing::JA_NL_PARSER, in_db)?;
+        let parserv2 = sentence_reader::Parser::new(query_str, in_db);
+
+        /*
+        match parserv2.parse() {
+            sentence_reader::output::ParseResult::Sentence(sentence) => todo!(),
+            sentence_reader::output::ParseResult::InflectedWord(inflection) => todo!(),
+            sentence_reader::output::ParseResult::None => todo!(),
+        };
+        */
+
+        let new_parsed = parserv2.parse();
+        println!("{new_parsed:#?}");
 
         if let Some(parsed) = parser.parse() {
             if parsed.items.is_empty() {
@@ -133,53 +148,12 @@ impl<'a> Search<'a> {
 
             let index = self.query.word_index.clamp(0, parsed.items.len() - 1);
             let res = parsed.items[index].clone();
-            let sentence = Self::format_setence_parts(parsed);
+            let sentence = format_setence_parts(parsed);
 
-            Ok((res.get_lexeme().to_string(), Some(res), sentence))
-        } else {
-            Ok((query_str.to_owned(), None, None))
-        }
-    }
-
-    pub fn format_setence_parts(parsed: ParseResult<'static, 'a>) -> Option<Vec<SentencePart>> {
-        if parsed.items.len() == 1 {
-            return None;
+            return Ok((res.get_lexeme().to_string(), Some(res), sentence));
         }
 
-        // Lexemes from `parsed` converted to sentence parts
-        let sentence_parts = parsed
-            .items
-            .into_iter()
-            .enumerate()
-            .map(|(pos, i)| {
-                let wc = i.word_class.clone();
-                let mut part = i.into_sentence_part(pos as i32);
-                if !part.text.has_kanji() {
-                    return part;
-                }
-
-                if let Some((furi, guessed)) = furigana_by_reading(&part.lexeme, &wc) {
-                    part.furigana = Some(furi);
-                    part.furi_guessed = guessed;
-                }
-
-                if let Some(ref furigana) = part.furigana {
-                    let furi_end = match japanese::furigana::last_kana_part(&furigana) {
-                        Some(s) => s,
-                        None => return part,
-                    };
-                    let text_end = match japanese::furigana::last_kana_part(&part.text) {
-                        Some(s) => s,
-                        None => return part,
-                    };
-                    let combined = format!("{}{}", &furigana[..furi_end], &part.text[text_end..]);
-                    part.furigana = Some(combined);
-                }
-                part
-            })
-            .collect_vec();
-
-        Some(sentence_parts)
+        Ok((query_str.to_owned(), None, None))
     }
 
     /// Returns a `SearchTask` for the current query. This will be used to find all words for
@@ -443,7 +417,7 @@ fn inflection_info(morpheme: &Option<WordItem>) -> Option<InflectionInformation>
     morpheme.as_ref().and_then(|i| {
         (!i.inflections.is_empty()).then(|| InflectionInformation {
             lexeme: i.lexeme.to_owned(),
-            forms: i.inflections.clone(),
+            inflections: i.inflections.clone(),
         })
     })
 }
@@ -532,4 +506,45 @@ fn guess_native(search: Search) -> Option<Guess> {
 
 fn guess_foreign(search: Search) -> Option<Guess> {
     search.gloss_search_task().estimate_result_count().ok()
+}
+
+pub fn format_setence_parts<'a>(parsed: ParseResult<'static, 'a>) -> Option<Vec<SentencePart>> {
+    if parsed.items.len() == 1 {
+        return None;
+    }
+
+    // Lexemes from `parsed` converted to sentence parts
+    let sentence_parts = parsed
+        .items
+        .into_iter()
+        .enumerate()
+        .map(|(pos, i)| {
+            let wc = i.word_class.clone();
+            let mut part = i.into_sentence_part(pos as i32);
+            if !part.text.has_kanji() {
+                return part;
+            }
+
+            if let Some((furi, guessed)) = furigana_by_reading(&part.lexeme, &wc) {
+                part.furigana = Some(furi);
+                part.furi_guessed = guessed;
+            }
+
+            if let Some(ref furigana) = part.furigana {
+                let furi_end = match japanese::furigana::last_kana_part(&furigana) {
+                    Some(s) => s,
+                    None => return part,
+                };
+                let text_end = match japanese::furigana::last_kana_part(&part.text) {
+                    Some(s) => s,
+                    None => return part,
+                };
+                let combined = format!("{}{}", &furigana[..furi_end], &part.text[text_end..]);
+                part.furigana = Some(combined);
+            }
+            part
+        })
+        .collect_vec();
+
+    Some(sentence_parts)
 }
