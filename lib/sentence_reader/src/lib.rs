@@ -7,6 +7,8 @@ use once_cell::sync::Lazy;
 use output::ParseResult;
 use sentence::SentenceAnalyer;
 
+pub use igo_unidic;
+
 pub use output::Sentence;
 pub use sentence::{inflection::Inflection, part::Part};
 

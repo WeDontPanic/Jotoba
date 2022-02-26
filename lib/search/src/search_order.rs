@@ -1,7 +1,5 @@
 use super::query::Query;
 
-use japanese::jp_parsing::WordItem;
-
 pub struct SearchOrder<'a, 'parser> {
     pub query: &'a Query,
     pub morpheme: &'a Option<WordItem<'parser, 'a>>,

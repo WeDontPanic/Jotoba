@@ -1,9 +1,7 @@
 use std::{cmp::min, collections::BinaryHeap, time::Instant};
 
 use itertools::Itertools;
-use japanese::jp_parsing::InputTextParser;
 use resources::models::suggestions::native_words::NativeSuggestion;
-use search::engine::SearchTask;
 use types::jotoba::words::Word;
 use utils::binary_search::BinarySearchable;
 
@@ -38,14 +36,11 @@ pub fn suggestions(query: &Query, radicals: &[char]) -> Option<Vec<WordPair>> {
 
 /// Transforms inflections to the main lexeme of the given query
 fn align_query_str(query_str: &str) -> Option<String> {
-    let in_db = SearchTask::<search::engine::words::native::Engine>::new(query_str).has_term();
-    let parser =
-        InputTextParser::new(query_str, &japanese::jp_parsing::JA_NL_PARSER, in_db).ok()?;
+    let parse_res =
+        sentence_reader::Parser::new(query_str).parse();
 
-    if let Some(parsed) = parser.parse() {
-        if parsed.items.len() == 1 {
-            return Some(parsed.items[0].get_lexeme().to_string());
-        }
+    if let sentence_reader::output::ParseResult::InflectedWord(word) = parse_res{
+        return Some(word.get_normalized());
     }
 
     None

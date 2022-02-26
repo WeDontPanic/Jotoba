@@ -5,8 +5,6 @@ pub mod radicals;
 
 #[cfg(feature = "inflections")]
 pub mod inflection;
-#[cfg(feature = "inflections")]
-pub mod jp_parsing;
 
 use itertools::Itertools;
 use std::iter;

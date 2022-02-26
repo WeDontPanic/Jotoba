@@ -9,6 +9,7 @@ edition = "2021"
 [dependencies]
 japanese = { path = "../japanese" }
 error = { path = "../error", features = ["web_error"] }
+sentence_reader = { path = "../sentence_reader"}
 search = { path = "../search" }
 utils = { path = "../utils" }
 config = { path = "../config" }

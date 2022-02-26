@@ -302,6 +302,7 @@ dependencies = [
  "resources",
  "romaji",
  "search",
+ "sentence_reader",
  "serde",
  "strsim 0.10.0",
  "types",
@@ -1432,10 +1433,8 @@ name = "japanese"
 version = "0.1.0"
 dependencies = [
  "error",
- "igo-unidic",
  "itertools",
  "localization",
- "once_cell",
  "romaji",
  "strum",
  "strum_macros",

@@ -21,10 +21,11 @@ use self::result::{InflectionInformation, WordResult};
 use super::query::{Query, QueryLang};
 use error::Error;
 use itertools::Itertools;
-use japanese::{jp_parsing::igo_unidic::WordClass, JapaneseExt};
+use japanese::JapaneseExt;
 use result::Item;
 
 use sentence_reader::output::ParseResult;
+use sentence_reader::igo_unidic::WordClass;
 use types::jotoba::{
     kanji::Kanji,
     languages::Language,

@@ -7,7 +7,7 @@ pub mod query;
 pub mod query_parser;
 pub mod radical;
 pub mod regex_query;
-pub mod search_order;
+//pub mod search_order;
 pub mod sentence;
 pub mod suggestions;
 pub mod word;

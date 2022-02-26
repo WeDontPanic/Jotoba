@@ -148,7 +148,7 @@ fn map_morph_to_rule(pos: usize, morph: &Morpheme<'_, '_>) -> Option<&'static st
         return Some("ちゃう");
     }
 
-    if morph.surface == "ん" {
+    if morph.lexeme == "ぬ" {
         return Some("ん");
     }
 
