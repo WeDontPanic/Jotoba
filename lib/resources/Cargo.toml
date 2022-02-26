@@ -7,10 +7,10 @@ edition = "2021"
 
 [dependencies]
 quick-xml = "0.23.0-alpha3"
-strum = { version = "0.23.0", features = ["derive"] }
-strum_macros = "0.23.1"
+strum = { version = "0.24.0", features = ["derive"] }
+strum_macros = "0.24.0"
 regex = "1.5.4"
-serde = { version = "1.0.135", features = ["derive"] }
+serde = { version = "1.0.136", features = ["derive"] }
 bincode = "1.3.3"
 itertools = "0.10.3"
 japanese = { path = "../japanese"}
@@ -28,7 +28,7 @@ name = "resources"
 path = "src/lib.rs"
 
 [target.'cfg(unix)'.dependencies]
-inotify = {version = "*", optional = true}
+inotify = { version = "0.10.0", optional = true }
 
 [features]
 default = []

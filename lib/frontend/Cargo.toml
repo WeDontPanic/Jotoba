@@ -15,13 +15,13 @@ utils = { path = "../utils" }
 config = { path = "../config" }
 localization = { path = "../localization" }
 resources = { path = "../resources", features = ["news"]}
-actix-web = "4.0.0-beta.21"
-serde = "1.0.135"
-sentry = { version = "0.24.1", optional = true }
+actix-web = "4.0.1"
+serde = "1.0.136"
+sentry = { version = "0.24.3", optional = true }
 log = "0.4.14"
 percent-encoding = "2.1.0"
 types = { path = "../types" , features = ["jotoba_intern"]}
-itertools = "*"
+itertools = "0.10.3"
 
 [build-dependencies]
 ructe = "0.13.4"
