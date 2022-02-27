@@ -53,7 +53,7 @@ fn k_reading_align(query: &str) -> Option<Vec<(WordPair, u32)>> {
     }
 
     let words = resources::get().words();
-    let align = storage::K_READING_ALIGN.get().unwrap();
+    let align = storage::K_READING_ALIGN.get()?;
 
     let res = align
         .get(query)?
