@@ -1,3 +1,5 @@
+use crate::sentence::SentenceAnalyzer;
+
 use super::{inflection::Inflection, owned_morpheme::OwnedMorpheme};
 use igo_unidic::{Morpheme, WordClass};
 
@@ -18,14 +20,7 @@ impl Part {
             return None;
         }
 
-        let mut inflections = morphemes
-            .iter()
-            // skip main morpheme at position 0
-            .skip(1)
-            .filter_map(|i| morph_to_inflection(i))
-            .collect::<Vec<_>>();
-        inflections.sort();
-        //inflections.dedup();
+        let inflections = parse_inflections(&morphemes[1..]);
 
         let morphemes = morphemes.into_iter().map(|i| i.into()).collect::<Vec<_>>();
 
@@ -111,19 +106,50 @@ impl Part {
     }
 }
 
-fn morph_to_inflection(morph: &Morpheme) -> Option<Inflection> {
+fn parse_inflections(morph: &[Morpheme]) -> Vec<Inflection> {
+    //let analyzer = SentenceAnalyer::new()
+    println!("{morph:#?}");
+    return vec![];
+    /*
+    let rule = super::map_morph_to_rule(1, morph)?;
+    println!("{rule}");
+
+    Some(match rule {
+        "てみる" => Inflection::TeIru,
+        _ => match morph.lexeme {
+            "ない" | "ぬ" => Inflection::Negative,
+            "ます" | "です" => Inflection::Polite,
+            "て" => Inflection::TeForm,
+            "だ" | "た" => Inflection::Past,
+            "れる" => Inflection::Passive,
+            "せる" | "させる" => Inflection::Causative,
+            "られる" => Inflection::PotentialOrPassive,
+            "たい" => Inflection::Tai,
+            _ => return None,
+        },
+    })
+    */
+
     // TODO: Improve inflection detection:
     //  - ている
     //  - ていてる
-    Some(match morph.lexeme {
-        "ない" | "ぬ" => Inflection::Negative,
-        "ます" | "です" => Inflection::Polite,
-        "て" => Inflection::TeForm,
-        "だ" | "た" => Inflection::Past,
-        "れる" => Inflection::Passive,
-        "せる" | "させる" => Inflection::Causative,
-        "られる" => Inflection::PotentialOrPassive,
-        "たい" => Inflection::Tai,
-        _ => return None,
-    })
+}
+
+use crate::grammar::{rule::Rule, rule_set::RuleSet, Analyzer};
+use once_cell::sync::Lazy;
+
+static INFLECTION_RULES: Lazy<Analyzer> = Lazy::new(|| Analyzer::new(get_rules()));
+
+/// Returns a set of rules for japanese text analyzing
+fn get_rules() -> RuleSet {
+    // Often used dest rules
+    let end = &[];
+
+    let mut rules = Vec::with_capacity(20);
+
+    // い rule
+    rules.push(Rule::new("た", end));
+
+    // generate ruleset
+    RuleSet::new(&rules)
 }

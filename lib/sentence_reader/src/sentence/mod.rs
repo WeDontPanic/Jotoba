@@ -9,12 +9,12 @@ use crate::grammar;
 use igo_unidic::{Morpheme, WordClass};
 
 /// An analyzer for sentences/text to portion morphemes together based on rules
-pub struct SentenceAnalyer<'input> {
+pub struct SentenceAnalyzer<'input> {
     grammar: &'input grammar::Analyzer,
     morphemes: Vec<Morpheme<'static, 'input>>,
 }
 
-impl<'input> SentenceAnalyer<'input> {
+impl<'input> SentenceAnalyzer<'input> {
     /// Create a new SentenceAnalyer
     pub fn new(
         grammar: &'input grammar::Analyzer,
@@ -95,7 +95,11 @@ impl<'input> SentenceAnalyer<'input> {
     }
 }
 
-fn map_morph_to_rule(pos: usize, morph: &Morpheme<'_, '_>) -> Option<&'static str> {
+pub trait FromMorphemes {
+    fn from(parts: Vec<Morpheme>, pos: usize) -> Self;
+}
+
+pub(crate) fn map_morph_to_rule(pos: usize, morph: &Morpheme<'_, '_>) -> Option<&'static str> {
     if morph.surface == "じゃ" {
         return Some("じゃ");
     }

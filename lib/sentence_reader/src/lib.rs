@@ -5,7 +5,7 @@ mod sentence;
 
 use once_cell::sync::Lazy;
 use output::ParseResult;
-use sentence::SentenceAnalyer;
+use sentence::SentenceAnalyzer;
 
 pub use igo_unidic;
 
@@ -21,13 +21,13 @@ pub static JA_NL_PARSER: Lazy<igo_unidic::Parser> =
 
 /// Parser for sentence
 pub struct Parser<'input> {
-    sentence_analyzer: SentenceAnalyer<'input>,
+    sentence_analyzer: SentenceAnalyzer<'input>,
 }
 
 impl<'input> Parser<'input> {
     /// Creates a new InputTextParser
     pub fn new(original: &'input str) -> Self {
-        let sentence_analyzer = SentenceAnalyer::new(
+        let sentence_analyzer = SentenceAnalyzer::new(
             analyzer::get_grammar_analyzer(),
             JA_NL_PARSER.parse(original),
         );

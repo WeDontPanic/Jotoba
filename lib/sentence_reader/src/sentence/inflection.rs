@@ -11,6 +11,7 @@ pub enum Inflection {
     PotentialOrPassive,
     Imperative,
     Tai,
+    TeIru,
 }
 
 #[cfg(feature = "jotoba_intern")]
@@ -29,6 +30,8 @@ impl localization::traits::Translatable for Inflection {
             Inflection::PotentialOrPassive => "CausativePassive",
             Inflection::Imperative => "Imperative",
             Inflection::Tai => "Tai",
+            // new:
+            Inflection::TeIru => "TeIru",
         }
     }
 
