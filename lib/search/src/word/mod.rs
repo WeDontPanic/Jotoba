@@ -307,7 +307,13 @@ impl<'a> Search<'a> {
             return Ok(ResultData::default());
         }
 
-        let search_task = self.gloss_search_task();
+        let mut search_task = self.gloss_search_task();
+
+        let could_be_romaji = japanese::guessing::could_be_romaji(&self.query.query);
+
+        if could_be_romaji {
+            search_task.set_align(false);
+        }
 
         // Do the search
         let mut res = search_task.find()?;
@@ -318,7 +324,7 @@ impl<'a> Search<'a> {
         let mut searched_query = self.query.query.clone();
         if !self.query.use_original
             && count < 50
-            && japanese::guessing::could_be_romaji(&self.query.query)
+            && could_be_romaji
             && !SearchTask::<foreign::Engine>::with_language(
                 &self.query.query,
                 self.query.get_lang_with_override(),
