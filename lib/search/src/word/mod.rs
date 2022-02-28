@@ -186,7 +186,9 @@ impl<'a> Search<'a> {
                 let limit = self.query.settings.page_size;
                 let offset = self.query.page_offset;
                 let res = regex::search(regex_query, limit, offset)?;
-                return Ok((res, None, None, query_str.to_string()));
+                if !res.is_empty() {
+                    return Ok((res, None, None, query_str.to_string()));
+                }
             }
         }
 
