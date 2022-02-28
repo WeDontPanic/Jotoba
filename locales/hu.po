@@ -808,8 +808,8 @@ msgid "Causative"
 msgstr "Okhatározó"
 
 msgctxt "inflection"
-msgid "CausativePassive"
-msgstr "Okhatározó vagy Szenvedp"
+msgid "PotentialOrPassive"
+msgstr "Feltételes vagy Szenvedp"
 
 msgctxt "inflection"
 msgid "Imperative"

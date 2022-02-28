@@ -6,7 +6,7 @@ use std::{
 use crate::{query_parser, regex_query::RegexSQuery};
 
 use itertools::Itertools;
-use percent_encoding::{utf8_percent_encode, AsciiSet, CONTROLS};
+use percent_encoding::{utf8_percent_encode, AsciiSet, NON_ALPHANUMERIC};
 use types::jotoba::{
     kanji,
     languages::Language,
@@ -14,7 +14,7 @@ use types::jotoba::{
     words::{misc::Misc, part_of_speech::PosSimple},
 };
 
-const QUERY_ENCODE_SET: &AsciiSet = &CONTROLS.add(b'/');
+const QUERY_ENCODE_SET: &AsciiSet = &NON_ALPHANUMERIC.add(b'/');
 
 /// A single user provided query in a parsed format
 #[derive(Debug, Clone, PartialEq, Default, Hash)]

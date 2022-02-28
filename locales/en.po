@@ -808,8 +808,8 @@ msgid "Causative"
 msgstr ""
 
 msgctxt "inflection"
-msgid "CausativePassive"
-msgstr "Causative or Passive"
+msgid "PotentialOrPassive"
+msgstr "Potential or Passive"
 
 msgctxt "inflection"
 msgid "Imperative"

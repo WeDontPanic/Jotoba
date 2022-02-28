@@ -172,6 +172,14 @@ pub(crate) fn map_morph_to_rule(pos: usize, morph: &Morpheme<'_, '_>) -> Option<
         return Some("です");
     }
 
+    if morph.surface == "さ" && morph.lexeme == "する" {
+        return Some("さ");
+    }
+
+    if morph.lexeme == "せる" {
+        return Some("せる");
+    }
+
     // てみる form. Can only be applied if not pos==0. If pos == 0, the word 見る is being used
     // which does not go with the みる rule
     if (morph.surface == "み" || morph.lexeme == "みる") && pos > 0 {

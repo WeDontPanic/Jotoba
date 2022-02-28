@@ -47,6 +47,7 @@ impl<'b> FromMorphemes<'static, 'b> for Inflection {
                 &["て", "いる"] => Inflection::TeIru,
                 &["て", "ある"] => Inflection::TeAru,
                 &["て", "みる"] => Inflection::TeMiru,
+                &["さ", "せる"] => Inflection::Causative,
                 _ => return None,
             })
         }
@@ -84,8 +85,7 @@ impl localization::traits::Translatable for Inflection {
             Inflection::Potential => "Potential",
             Inflection::Passive => "Passive",
             Inflection::Causative => "Causative",
-            // TODO: rename in translations
-            Inflection::PotentialOrPassive => "CausativePassive",
+            Inflection::PotentialOrPassive => "PotentialOrPassive",
             Inflection::Imperative => "Imperative",
             Inflection::Tai => "Tai",
             Inflection::TeIru => "TeIru",
