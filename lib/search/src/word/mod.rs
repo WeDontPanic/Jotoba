@@ -24,8 +24,8 @@ use itertools::Itertools;
 use japanese::JapaneseExt;
 use result::Item;
 
-use sentence_reader::output::ParseResult;
 use sentence_reader::igo_unidic::WordClass;
+use sentence_reader::output::ParseResult;
 use types::jotoba::{
     kanji::Kanji,
     languages::Language,
@@ -190,19 +190,18 @@ impl<'a> Search<'a> {
             }
         }
 
-        let (query, sentence, word_info) = self.parse_sentence(query_str);
+        let (query, mut sentence, word_info) = self.parse_sentence(query_str);
 
-        let original_query = if sentence.is_some(){
+        let original_query = if sentence.is_some() {
             word_info.as_ref().unwrap().get_inflected().clone()
-        }else{
+        } else {
             self.query.query.clone()
         };
 
-        let mut search_task =
-            self.native_search_task(&query, &original_query, sentence.is_some());
+        let mut search_task = self.native_search_task(&query, &original_query, sentence.is_some());
 
         let inflected_version = word_info.as_ref().map(|i| i.get_inflected());
-        if let Some(inflected_version) = &inflected_version{
+        if let Some(inflected_version) = &inflected_version {
             search_task.add_query(inflected_version);
         }
 
@@ -212,6 +211,14 @@ impl<'a> Search<'a> {
         }
 
         let res = search_task.find()?;
+
+        // Put furigana to sentence
+        if let Some(sentence) = &mut sentence {
+            for part in sentence.iter_mut() {
+                let p = part.clone();
+                part.set_furigana(|inp| furigana_by_reading(inp, &p))
+            }
+        }
 
         let infl_info = word_info
             .as_ref()
@@ -411,42 +418,29 @@ impl<'a> Search<'a> {
 }
 
 /// Returns furigana of the given `morpheme` if available
-fn furigana_by_reading(morpheme: &str, wc: &Option<WordClass>) -> Option<(String, bool)> {
+fn furigana_by_reading(morpheme: &str, part: &sentence_reader::Part) -> Option<String> {
     let word_storage = resources::get().words();
 
-    let st = SearchTask::<native::Engine>::new(morpheme)
+    let mut st = SearchTask::<native::Engine>::new(morpheme)
         .threshold(0.7)
-        .limit(2);
+        .limit(10);
+
+    let pos = wc_to_simple_pos(&part.word_class_raw());
+    st.set_order_fn(move |i, rel, _, _| {
+        let mut score = (rel * 100.0) as usize;
+        if let Some(pos) = pos {
+            if !i.has_pos(&[pos]) {
+                score = score.saturating_sub(30);
+            } else {
+                score += 20;
+            }
+        }
+        score
+    });
 
     let found = st.find().ok()?;
-
-    // Don't produce potentially wrong furigana if multiple readings are available
-    if found.len() != 1 {
-        if let Some(wc) = wc {
-            return guess_furigana(found, wc).map(|i| (i, true));
-        }
-        return None;
-    }
-
     let word = word_storage.by_sequence(found[0].item.sequence as u32)?;
-    word.furigana.as_ref().cloned().map(|i| (i, false))
-}
-
-pub fn guess_furigana(res: SearchResult<&Word>, wc: &WordClass) -> Option<String> {
-    let pos = wc_to_simple_pos(wc)?;
-
-    let possible = res
-        .into_iter()
-        .filter(|i| i.item.has_pos(&[pos]))
-        .collect::<Vec<_>>();
-
-    if possible.len() == 1 {
-        let word_storage = resources::get().words();
-        let word = word_storage.by_sequence(possible[0].item.sequence as u32)?;
-        return word.furigana.as_ref().cloned();
-    }
-
-    None
+    word.furigana.as_ref().cloned()
 }
 
 pub fn wc_to_simple_pos(wc: &WordClass) -> Option<PosSimple> {

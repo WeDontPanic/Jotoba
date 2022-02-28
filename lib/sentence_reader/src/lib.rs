@@ -10,7 +10,8 @@ use sentence::SentenceAnalyzer;
 pub use igo_unidic;
 
 pub use output::Sentence;
-pub use sentence::{inflection::Inflection, part::Part};
+pub use sentence::inflection::Inflection;
+pub use sentence::part::Part;
 
 /// The path of the unidict-mecab dictionary
 pub const NL_PARSER_PATH: &str = "./unidic-mecab";
@@ -37,7 +38,7 @@ impl<'input> Parser<'input> {
 
     /// Execute the parsing
     pub fn parse(&self) -> ParseResult {
-        let mut sent_parse = self.sentence_analyzer.analyze();
+        let mut sent_parse = self.sentence_analyzer.analyze::<Part>();
 
         if sent_parse.is_empty() {
             return ParseResult::None;

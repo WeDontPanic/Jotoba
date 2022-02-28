@@ -24,12 +24,21 @@ impl Sentence {
         self.parts.get(pos)
     }
 
-    /// returns amount of words
-    pub fn word_count(&self) -> usize {
-        self.parts.len()
+    /// Returns word at `pos`
+    pub fn get_at_mut(&mut self, pos: usize) -> Option<&mut Part> {
+        self.parts.get_mut(pos)
+    }
+
+    pub fn iter_mut(&mut self) -> impl Iterator<Item = &mut Part> {
+        self.parts.iter_mut()
     }
 
     pub fn iter(&self) -> impl Iterator<Item = &Part> {
         self.parts.iter()
+    }
+
+    /// returns amount of words
+    pub fn word_count(&self) -> usize {
+        self.parts.len()
     }
 }

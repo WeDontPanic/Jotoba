@@ -2262,6 +2262,7 @@ name = "sentence_reader"
 version = "0.1.0"
 dependencies = [
  "igo-unidic",
+ "japanese",
  "localization",
  "once_cell",
 ]

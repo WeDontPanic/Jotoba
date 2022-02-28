@@ -15,7 +15,7 @@ pub struct SentencePart {
 }
 
 /// Same as [`SentencePart`] but with referenced substrings instead of an owned String
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct SentencePartRef<'a> {
     pub kana: &'a str,
     pub kanji: Option<&'a str>,

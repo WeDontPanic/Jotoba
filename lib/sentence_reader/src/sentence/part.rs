@@ -1,7 +1,10 @@
-use crate::sentence::SentenceAnalyzer;
-
-use super::{inflection::Inflection, owned_morpheme::OwnedMorpheme};
+use super::{
+    inflection::{self, Inflection},
+    owned_morpheme::OwnedMorpheme,
+    FromMorphemes,
+};
 use igo_unidic::{Morpheme, WordClass};
+use japanese::JapaneseExt;
 
 /// A single word within a sentence. This already contains all inflection parts
 #[derive(Debug, Clone, PartialEq)]
@@ -14,24 +17,23 @@ pub struct Part {
 }
 
 impl Part {
-    #[inline]
+    /// Creates a new sentence part. Automatically parses additional morphemes to inflections
     pub fn new(morphemes: Vec<Morpheme<'static, '_>>, pos: usize) -> Option<Self> {
         if morphemes.len() == 0 {
             return None;
         }
 
-        let inflections = parse_inflections(&morphemes[1..]);
+        // parse inflections
+        let inflections = inflection::parse_inflections(&morphemes[1..]);
 
+        // get them owned
         let morphemes = morphemes.into_iter().map(|i| i.into()).collect::<Vec<_>>();
 
-        // TODO
-        let furigana: Option<String> = None;
-
         Some(Self {
-            morphemes,
+            furigana: None,
             inflections,
             pos,
-            furigana,
+            morphemes,
         })
     }
 
@@ -71,6 +73,34 @@ impl Part {
         self.pos
     }
 
+    /// Sets the furigana
+    pub fn set_furigana<F>(&mut self, add_fn: F)
+    where
+        F: Fn(&str) -> Option<String>,
+    {
+        let mut out = String::new();
+        let mut has_furigana = false;
+
+        for morpheme in &self.morphemes {
+            if !morpheme.surface.has_kanji() {
+                out.push_str(&morpheme.surface);
+            } else if let Some(furi) = add_fn(morpheme.lexeme) {
+                // check if `furi` really contains furigana. If this is not the case but
+                // `has_furigana` is true, the text will be rendered weird
+                if furi.contains('|') {
+                    has_furigana = true;
+                }
+                out.push_str(&furi);
+            } else {
+                out.push_str(&morpheme.surface);
+            }
+        }
+
+        if has_furigana {
+            self.furigana = Some(out);
+        }
+    }
+
     /// Returns furigana of the word
     pub fn furigana(&self) -> Option<&str> {
         self.furigana.as_deref()
@@ -95,6 +125,10 @@ impl Part {
         })
     }
 
+    pub fn word_class_raw(&self) -> &WordClass<'_> {
+        &self.get_main_morpheme().word_class
+    }
+
     /// Gets wordclass in lowercase
     pub fn word_class_lower(&self) -> Option<String> {
         self.word_class().map(|i| i.to_lowercase())
@@ -106,50 +140,9 @@ impl Part {
     }
 }
 
-fn parse_inflections(morph: &[Morpheme]) -> Vec<Inflection> {
-    //let analyzer = SentenceAnalyer::new()
-    println!("{morph:#?}");
-    return vec![];
-    /*
-    let rule = super::map_morph_to_rule(1, morph)?;
-    println!("{rule}");
-
-    Some(match rule {
-        "てみる" => Inflection::TeIru,
-        _ => match morph.lexeme {
-            "ない" | "ぬ" => Inflection::Negative,
-            "ます" | "です" => Inflection::Polite,
-            "て" => Inflection::TeForm,
-            "だ" | "た" => Inflection::Past,
-            "れる" => Inflection::Passive,
-            "せる" | "させる" => Inflection::Causative,
-            "られる" => Inflection::PotentialOrPassive,
-            "たい" => Inflection::Tai,
-            _ => return None,
-        },
-    })
-    */
-
-    // TODO: Improve inflection detection:
-    //  - ている
-    //  - ていてる
-}
-
-use crate::grammar::{rule::Rule, rule_set::RuleSet, Analyzer};
-use once_cell::sync::Lazy;
-
-static INFLECTION_RULES: Lazy<Analyzer> = Lazy::new(|| Analyzer::new(get_rules()));
-
-/// Returns a set of rules for japanese text analyzing
-fn get_rules() -> RuleSet {
-    // Often used dest rules
-    let end = &[];
-
-    let mut rules = Vec::with_capacity(20);
-
-    // い rule
-    rules.push(Rule::new("た", end));
-
-    // generate ruleset
-    RuleSet::new(&rules)
+impl<'b> FromMorphemes<'static, 'b> for Part {
+    #[inline]
+    fn from(parts: Vec<Morpheme<'static, 'b>>, pos: usize) -> Option<Self> {
+        Self::new(parts, pos)
+    }
 }

@@ -4,9 +4,23 @@ pub mod inflection;
 pub mod owned_morpheme;
 pub mod part;
 
-use self::part::Part;
 use crate::grammar;
 use igo_unidic::{Morpheme, WordClass};
+
+pub trait FromMorphemes<'a, 'b>: Sized {
+    fn from(parts: Vec<Morpheme<'a, 'b>>, pos: usize) -> Option<Self>;
+}
+
+impl<'b> FromMorphemes<'static, 'b> for (Vec<&'static str>, usize) {
+    #[inline]
+    fn from(parts: Vec<Morpheme<'static, 'b>>, pos: usize) -> Option<Self> {
+        let parts = parts.iter().map(|i| i.lexeme).collect::<Vec<_>>();
+        if parts.is_empty() {
+            return None;
+        }
+        Some((parts, pos))
+    }
+}
 
 /// An analyzer for sentences/text to portion morphemes together based on rules
 pub struct SentenceAnalyzer<'input> {
@@ -29,7 +43,7 @@ impl<'input> SentenceAnalyzer<'input> {
     }
 
     /// Executes the analyzation and returns a set of Words which are built out of 1..n morphemes
-    pub fn analyze(&self) -> Vec<Part> {
+    pub fn analyze<O: FromMorphemes<'static, 'input>>(&self) -> Vec<O> {
         let morphs = &self.morphemes;
 
         let mut out = Vec::new();
@@ -64,7 +78,9 @@ impl<'input> SentenceAnalyzer<'input> {
             pos += n_matching;
 
             let word_position = out.len();
-            out.push(Part::new(parts, word_position).unwrap());
+            if let Some(word) = O::from(parts, word_position) {
+                out.push(word);
+            }
         }
 
         out
@@ -82,7 +98,7 @@ impl<'input> SentenceAnalyzer<'input> {
 
         println!();
 
-        for i in self.analyze() {
+        for i in self.analyze::<part::Part>() {
             print!(
                 "{}|",
                 i.morphemes()
@@ -93,10 +109,6 @@ impl<'input> SentenceAnalyzer<'input> {
         }
         println!();
     }
-}
-
-pub trait FromMorphemes {
-    fn from(parts: Vec<Morpheme>, pos: usize) -> Self;
 }
 
 pub(crate) fn map_morph_to_rule(pos: usize, morph: &Morpheme<'_, '_>) -> Option<&'static str> {
