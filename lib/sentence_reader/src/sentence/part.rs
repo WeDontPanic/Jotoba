@@ -90,6 +90,7 @@ impl Part {
                 if furi.contains('|') {
                     has_furigana = true;
                 }
+                // TODO: fix 食ってないこと
                 out.push_str(&furi);
             } else {
                 out.push_str(&morpheme.surface);

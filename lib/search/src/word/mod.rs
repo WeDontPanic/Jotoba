@@ -437,11 +437,18 @@ fn furigana_by_reading(morpheme: &str, part: &sentence_reader::Part) -> Option<S
     st.set_order_fn(move |i, rel, _, _| {
         let mut score = (rel * 100.0) as usize;
         if let Some(pos) = pos {
-            if !i.has_pos(&[pos]) {
-                score = score.saturating_sub(30);
-            } else {
+            if i.has_pos(&[pos]) {
                 score += 20;
+            } else {
+                score = score.saturating_sub(30);
             }
+        }
+        if i.is_common() {
+            score += 2;
+        }
+
+        if i.get_jlpt_lvl().is_some() {
+            score += 2;
         }
         score
     });

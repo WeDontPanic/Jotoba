@@ -112,7 +112,10 @@ impl PartOfSpeech {
             PartOfSpeech::Counter => PosSimple::Counter,
             PartOfSpeech::Expr => PosSimple::Expr,
             PartOfSpeech::Interjection => PosSimple::Interjection,
-            PartOfSpeech::Noun(_) => PosSimple::Noun,
+            PartOfSpeech::Noun(n) => match n {
+                NounType::Suffix => PosSimple::Suffix,
+                _ => PosSimple::Noun,
+            },
             PartOfSpeech::Numeric => PosSimple::Numeric,
             PartOfSpeech::Pronoun => PosSimple::Pronoun,
             PartOfSpeech::Prefix => PosSimple::Prefix,
