@@ -819,6 +819,22 @@ msgctxt "inflection"
 msgid "Tai"
 msgstr "Tai"
 
+msgctxt "inflection"
+msgid "TeIru"
+msgstr "ている ()"
+
+msgctxt "inflection"
+msgid "TeAru"
+msgstr "てある ()"
+
+msgctxt "inflection"
+msgid "TeMiru"
+msgstr "てみる ()"
+
+msgctxt "inflection"
+msgid "Tara"
+msgstr "たら ()"
+
 msgid ", with this form:"
 msgid_plural ", with these forms:"
 msgstr[0] ", ebben a formában:"

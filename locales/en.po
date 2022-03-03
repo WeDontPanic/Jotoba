@@ -817,7 +817,23 @@ msgstr ""
 
 msgctxt "inflection"
 msgid "Tai"
-msgstr ""
+msgstr "たい (Want to do something)"
+
+msgctxt "inflection"
+msgid "TeIru"
+msgstr "ている (It indicates an action that is ongoing)"
+
+msgctxt "inflection"
+msgid "TeAru"
+msgstr "てある (It indicates an action has been done)"
+
+msgctxt "inflection"
+msgid "TeMiru"
+msgstr "てみる (Means to \"Try\" something)"
+
+msgctxt "inflection"
+msgid "Tara"
+msgstr "たら (States a condition)"
 
 msgid ", with this form:"
 msgid_plural ", with these forms:"

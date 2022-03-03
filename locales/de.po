@@ -818,6 +818,22 @@ msgctxt "inflection"
 msgid "Tai"
 msgstr "Tai-form"
 
+msgctxt "inflection"
+msgid "TeIru"
+msgstr "ている (Gibt eine andauernde Aktion an)"
+
+msgctxt "inflection"
+msgid "TeAru"
+msgstr "てある (Bedeutet etwas wurde getan)"
+
+msgctxt "inflection"
+msgid "TeMiru"
+msgstr "てみる (Bedeutet etwas zu \"versuchen\")"
+
+msgctxt "inflection"
+msgid "Tara"
+msgstr "たら (Gibt eine Bedingung an)"
+
 msgid "Taught in {} grade"
 msgstr "Beigebracht in der {}. Klasse"
 
