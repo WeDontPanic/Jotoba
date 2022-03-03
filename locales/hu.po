@@ -817,23 +817,23 @@ msgstr "Felszólító"
 
 msgctxt "inflection"
 msgid "Tai"
-msgstr "たい ()"
+msgstr "たい (Vágyat, kívánságot fejez ki)"
 
 msgctxt "inflection"
 msgid "TeIru"
-msgstr "ている ()"
+msgstr "ている (Egy jelenleg folyamatban lévő cselekvést fejez ki)"
 
 msgctxt "inflection"
 msgid "TeAru"
-msgstr "てある ()"
+msgstr "てある (Egy befejezett cselekvést fejez ki)"
 
 msgctxt "inflection"
 msgid "TeMiru"
-msgstr "てみる ()"
+msgstr "てみる (Egy cselekvés megpróbálását fejezi ki)"
 
 msgctxt "inflection"
 msgid "Tara"
-msgstr "たら ()"
+msgstr "たら (Egy feltételt fejez ki)"
 
 msgid ", with this form:"
 msgid_plural ", with these forms:"
