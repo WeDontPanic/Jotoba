@@ -817,7 +817,7 @@ msgstr "Felszólító"
 
 msgctxt "inflection"
 msgid "Tai"
-msgstr "Tai"
+msgstr "たい ()"
 
 msgctxt "inflection"
 msgid "TeIru"

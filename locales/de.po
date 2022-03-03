@@ -816,7 +816,7 @@ msgstr "Imperativ"
 
 msgctxt "inflection"
 msgid "Tai"
-msgstr "Tai-form"
+msgstr "たい (Gibt an etwas tun zu wollen)"
 
 msgctxt "inflection"
 msgid "TeIru"
