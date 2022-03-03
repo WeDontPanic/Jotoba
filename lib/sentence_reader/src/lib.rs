@@ -40,8 +40,6 @@ impl<'input> Parser<'input> {
     pub fn parse(&self) -> ParseResult {
         let mut sent_parse = self.sentence_analyzer.analyze::<Part>();
 
-        println!("{sent_parse:#?}");
-
         if sent_parse.is_empty() {
             return ParseResult::None;
         } else if sent_parse.len() == 1 {

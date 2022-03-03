@@ -25,3 +25,14 @@ impl<'dict> From<Morpheme<'dict, '_>> for OwnedMorpheme<'dict> {
         }
     }
 }
+
+impl<'dict> OwnedMorpheme<'dict> {
+    /// Gets the main lexeme. Falls back on surface if lexeme is empty
+    pub fn reading(&self) -> &str {
+        if !self.lexeme.is_empty() {
+            self.lexeme
+        } else {
+            &self.surface
+        }
+    }
+}

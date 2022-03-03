@@ -454,6 +454,10 @@ fn furigana_by_reading(morpheme: &str, part: &sentence_reader::Part) -> Option<S
     });
 
     let found = st.find().ok()?;
+    if found.is_empty() {
+        println!("empty {morpheme}");
+        return None;
+    }
     let word = word_storage.by_sequence(found[0].item.sequence as u32)?;
     word.furigana.as_ref().cloned()
 }

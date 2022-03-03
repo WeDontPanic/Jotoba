@@ -84,14 +84,15 @@ impl Part {
         for morpheme in &self.morphemes {
             if !morpheme.surface.has_kanji() {
                 out.push_str(&morpheme.surface);
-            } else if let Some(furi) = add_fn(morpheme.lexeme) {
+            } else if let Some(furi) = add_fn(morpheme.reading()) {
                 // check if `furi` really contains furigana. If this is not the case but
                 // `has_furigana` is true, the text will be rendered weird
-                if furi.contains('|') {
+                if !furi.contains('|') {
+                    out.push_str(&furi);
+                } else {
                     has_furigana = true;
+                    out.push_str(&merge_furigana(&morpheme.surface, &furi));
                 }
-                // TODO: fix 食ってないこと
-                out.push_str(&furi);
             } else {
                 out.push_str(&morpheme.surface);
             }
@@ -139,6 +140,11 @@ impl Part {
     fn get_main_morpheme(&self) -> &OwnedMorpheme {
         &self.morphemes[0]
     }
+
+    /// Gets the main lexeme. Falls back on surface if lexeme is empty
+    fn main_lexeme(&self) -> &str {
+        self.get_main_morpheme().reading()
+    }
 }
 
 impl<'b> FromMorphemes<'static, 'b> for Part {
@@ -146,4 +152,31 @@ impl<'b> FromMorphemes<'static, 'b> for Part {
     fn from(parts: Vec<Morpheme<'static, 'b>>, pos: usize) -> Option<Self> {
         Self::new(parts, pos)
     }
+}
+
+/// Merges a reading with its given furigana. This is required for cases where `furi` does not
+/// represent he same kana reading as `src`.
+///
+/// Example:
+/// src: "行った" furi: "[行|い]く" => [行|い]った
+fn merge_furigana(src: &str, furi: &str) -> String {
+    let mut furi_out = String::with_capacity(furi.len());
+    let mut kana_paths = japanese::all_words_with_ct(src, japanese::CharType::Kana)
+        .into_iter()
+        .rev();
+
+    for furi_part in japanese::furigana::from_str(furi) {
+        if furi_part.kanji.is_none() {
+            let next = match kana_paths.next() {
+                Some(s) => s,
+                None => continue,
+            };
+            furi_out.push_str(&next);
+            continue;
+        }
+
+        furi_out.push_str(&furi_part.encoded());
+    }
+
+    furi_out
 }

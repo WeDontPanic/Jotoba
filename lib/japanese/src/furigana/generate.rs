@@ -199,7 +199,7 @@ where
     })
 }
 
-fn furigana_block<S: AsRef<str>>(kanji: S, kana: S) -> String {
+pub(crate) fn furigana_block<S: AsRef<str>>(kanji: S, kana: S) -> String {
     format!("[{}|{}]", kanji.as_ref(), kana.as_ref())
 }
 
