@@ -20,6 +20,7 @@ pub enum Inflection {
     TeIru,
     TeAru,
     TeMiru,
+    Tara,
 }
 
 impl<'b> FromMorphemes<'static, 'b> for Inflection {
@@ -30,6 +31,10 @@ impl<'b> FromMorphemes<'static, 'b> for Inflection {
         if lexemes.is_empty() {
             None
         } else if lexemes.len() == 1 {
+            if parts[0].surface == "たら"{
+                return Some(Self::Tara);
+            }
+
             Some(match lexemes[0] {
                 "ない" | "ぬ" => Inflection::Negative,
                 "ます" | "です" => Inflection::Polite,
@@ -40,6 +45,7 @@ impl<'b> FromMorphemes<'static, 'b> for Inflection {
                 "られる" => Inflection::PotentialOrPassive,
                 "たい" => Inflection::Tai,
                 "てる" => Inflection::TeIru,
+                //"てる" => Inflection::TeIru,
                 _ => return None,
             })
         } else {
@@ -91,6 +97,7 @@ impl localization::traits::Translatable for Inflection {
             Inflection::TeIru => "TeIru",
             Inflection::TeAru => "TeAru",
             Inflection::TeMiru => "TeMiru",
+            Inflection::Tara=> "Tara",
         }
     }
 
