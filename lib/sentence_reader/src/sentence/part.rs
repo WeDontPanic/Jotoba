@@ -4,7 +4,7 @@ use super::{
     FromMorphemes,
 };
 use igo_unidic::{Morpheme, WordClass};
-use japanese::JapaneseExt;
+use japanese::{CharType, JapaneseExt};
 
 /// A single word within a sentence. This already contains all inflection parts
 #[derive(Debug, Clone, PartialEq)]
@@ -161,17 +161,13 @@ impl<'b> FromMorphemes<'static, 'b> for Part {
 /// src: "行った" furi: "[行|い]く" => [行|い]った
 fn merge_furigana(src: &str, furi: &str) -> String {
     let mut furi_out = String::with_capacity(furi.len());
-    let mut kana_paths = japanese::all_words_with_ct(src, japanese::CharType::Kana)
-        .into_iter()
-        .rev();
+    let mut kana_paths = japanese::all_words_with_ct(src, CharType::Kana).into_iter();
 
     for furi_part in japanese::furigana::from_str(furi) {
         if furi_part.kanji.is_none() {
-            let next = match kana_paths.next() {
-                Some(s) => s,
-                None => continue,
-            };
-            furi_out.push_str(&next);
+            if let Some(next) = kana_paths.next() {
+                furi_out.push_str(&next);
+            }
             continue;
         }
 

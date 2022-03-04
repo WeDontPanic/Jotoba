@@ -1432,11 +1432,8 @@ checksum = "1aab8fc367588b89dcee83ab0fd66b72b50b72fa1904d7095045ace2b0c81c35"
 name = "japanese"
 version = "0.1.0"
 dependencies = [
- "error",
  "itertools",
  "romaji",
- "strum",
- "strum_macros",
  "utils",
 ]
 

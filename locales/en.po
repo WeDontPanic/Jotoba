@@ -821,11 +821,11 @@ msgstr "たい (Want to do something)"
 
 msgctxt "inflection"
 msgid "TeIru"
-msgstr "ている (It indicates an action that is ongoing)"
+msgstr "ている (Indicates an action that is ongoing)"
 
 msgctxt "inflection"
 msgid "TeAru"
-msgstr "てある (It indicates an action has been done)"
+msgstr "てある (Indicates an action that has been done intentionally)"
 
 msgctxt "inflection"
 msgid "TeMiru"

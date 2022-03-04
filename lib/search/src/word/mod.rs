@@ -434,8 +434,12 @@ fn furigana_by_reading(morpheme: &str, part: &sentence_reader::Part) -> Option<S
         .limit(10);
 
     let pos = wc_to_simple_pos(&part.word_class_raw());
-    st.set_order_fn(move |i, rel, _, _| {
-        let mut score = (rel * 100.0) as usize;
+    let morph = morpheme.to_string();
+    st.set_order_fn(move |i, _rel, _, _| {
+        let mut score: usize = 100;
+        if i.get_reading().reading != morph {
+            score = 0;
+        }
         if let Some(pos) = pos {
             if i.has_pos(&[pos]) {
                 score += 20;
@@ -455,7 +459,6 @@ fn furigana_by_reading(morpheme: &str, part: &sentence_reader::Part) -> Option<S
 
     let found = st.find().ok()?;
     if found.is_empty() {
-        println!("empty {morpheme}");
         return None;
     }
     let word = word_storage.by_sequence(found[0].item.sequence as u32)?;
