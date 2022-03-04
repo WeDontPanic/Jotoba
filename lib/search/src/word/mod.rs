@@ -123,6 +123,12 @@ impl<'a> Search<'a> {
         let parse_res = sentence_reader::Parser::new(query_str).parse();
 
         if let ParseResult::Sentence(sentence) = parse_res {
+            // Don't show sentence reader for words that are in DB
+            let in_db = SearchTask::<native::Engine>::new(query_str).has_term();
+            if in_db {
+                return (query_str.to_string(), None, None);
+            }
+
             let index = self.query.word_index.clamp(0, sentence.word_count() - 1);
             let word = sentence.get_at(index).unwrap().clone();
             return (word.get_normalized(), Some(sentence), Some(word));

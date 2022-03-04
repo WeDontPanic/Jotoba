@@ -8,6 +8,29 @@ pub enum ParseResult {
     None,
 }
 
+impl ParseResult {
+    /// Returns `true` if the parse result is [`Sentence`].
+    ///
+    /// [`Sentence`]: ParseResult::Sentence
+    pub fn is_sentence(&self) -> bool {
+        matches!(self, Self::Sentence(..))
+    }
+
+    /// Returns `true` if the parse result is [`InflectedWord`].
+    ///
+    /// [`InflectedWord`]: ParseResult::InflectedWord
+    pub fn is_inflected_word(&self) -> bool {
+        matches!(self, Self::InflectedWord(..))
+    }
+
+    /// Returns `true` if the parse result is [`None`].
+    ///
+    /// [`None`]: ParseResult::None
+    pub fn is_none(&self) -> bool {
+        matches!(self, Self::None)
+    }
+}
+
 /// A split sentence
 #[derive(Debug, Clone, PartialEq)]
 pub struct Sentence {
