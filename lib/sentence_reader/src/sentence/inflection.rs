@@ -37,7 +37,7 @@ impl<'b> FromMorphemes<'static, 'b> for Inflection {
 
             Some(match lexemes[0] {
                 "ない" | "ぬ" => Inflection::Negative,
-                "ます" | "です" => Inflection::Polite,
+                "ます" => Inflection::Polite,
                 "て" => Inflection::TeForm,
                 "だ" | "た" => Inflection::Past,
                 "れる" => Inflection::Passive,
