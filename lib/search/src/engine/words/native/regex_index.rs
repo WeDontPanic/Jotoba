@@ -26,10 +26,24 @@ pub struct RegexSearchIndex {
 }
 
 /// A single `RegexSearchIndex` item
-#[derive(Serialize, Deserialize, Hash, PartialEq, Eq, Debug)]
+#[derive(Serialize, Deserialize, Eq, Debug)]
 pub struct IndexedWord {
     pub text: String,
     pub seq_id: u32,
+}
+
+impl PartialEq for IndexedWord {
+    #[inline]
+    fn eq(&self, other: &Self) -> bool {
+        self.seq_id == other.seq_id
+    }
+}
+
+impl std::hash::Hash for IndexedWord {
+    #[inline]
+    fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
+        self.seq_id.hash(state);
+    }
 }
 
 impl RegexSearchIndex {

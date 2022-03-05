@@ -72,6 +72,9 @@ fn get_rules() -> RuleSet {
     rules.push(Rule::new("さ", &["せる"]));
     rules.push(Rule::new("せる", ru_ending));
 
+    // Exceptions
+    rules.push(Rule::new("いただき", &["ます"]));
+
     // Generation/Root
     rules.push(Rule::new(
         "V",
