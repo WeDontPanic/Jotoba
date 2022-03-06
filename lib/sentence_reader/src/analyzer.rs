@@ -32,6 +32,8 @@ fn get_rules() -> RuleSet {
         "た",
         "ちゃう",
         "たい",
+        "られる",
+        "れる"
     ];
     // \ Often used dest rules
     //
