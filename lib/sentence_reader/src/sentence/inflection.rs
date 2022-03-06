@@ -14,6 +14,7 @@ pub enum Inflection {
     Potential,
     Passive,
     Causative,
+    CausativePassive,
     PotentialOrPassive,
     Imperative,
     Tai,
@@ -54,6 +55,8 @@ impl<'b> FromMorphemes<'static, 'b> for Inflection {
                 &["て", "ある"] => Inflection::TeAru,
                 &["て", "みる"] => Inflection::TeMiru,
                 &["さ", "せる"] => Inflection::Causative,
+                // Fake する; The tokenizer tokenizes the さ of される as a form of する
+                &["する", "れる"] => Inflection::CausativePassive,
                 _ => return None,
             })
         }
@@ -68,13 +71,15 @@ static INFLECTION_RULES: Lazy<Analyzer> = Lazy::new(|| Analyzer::new(get_rules()
 
 /// Returns a set of rules for japanese text analyzing
 fn get_rules() -> RuleSet {
-    let mut rules = Vec::with_capacity(5);
+    let mut rules = Vec::with_capacity(6);
 
     rules.push(Rule::new("いる", &[]));
     rules.push(Rule::new("ある", &[]));
     rules.push(Rule::new("てみる", &[]));
+    rules.push(Rule::new("れる", &[]));
 
     rules.push(Rule::new("て", &["いる", "ある", "てみる"]));
+    rules.push(Rule::new("さ", &["れる"]));
 
     RuleSet::new(&rules)
 }
@@ -91,6 +96,7 @@ impl localization::traits::Translatable for Inflection {
             Inflection::Potential => "Potential",
             Inflection::Passive => "Passive",
             Inflection::Causative => "Causative",
+            Inflection::CausativePassive => "CausativePassive",
             Inflection::PotentialOrPassive => "PotentialOrPassive",
             Inflection::Imperative => "Imperative",
             Inflection::Tai => "Tai",
