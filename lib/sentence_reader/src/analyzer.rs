@@ -32,6 +32,8 @@ fn get_rules() -> RuleSet {
         "た",
         "ちゃう",
         "たい",
+        "られる",
+        "れる"
     ];
     // \ Often used dest rules
     //
@@ -69,7 +71,7 @@ fn get_rules() -> RuleSet {
     rules.push(Rule::new("しまう", ru_ending));
 
     // される causative
-    rules.push(Rule::new("さ", &["せる"]));
+    rules.push(Rule::new("さ", &["せる", "れる"]));
     rules.push(Rule::new("せる", ru_ending));
     rules.push(Rule::new("させる", ru_ending));
 
@@ -95,6 +97,8 @@ fn get_rules() -> RuleSet {
             "しまう",
             "せる",
             "させる",
+            // the さ of される
+            "さ"
         ],
     ));
 
