@@ -42,24 +42,24 @@ impl<'b> FromMorphemes<'static, 'b> for Inflection {
             Some(match lexemes[0] {
                 "ない" | "ぬ" => Inflection::Negative,
                 "ます" => Inflection::Polite,
-                "て" => Inflection::TeForm,
+                "て" | "で"=> Inflection::TeForm,
                 "だ" | "た" => Inflection::Past,
                 "れる" => Inflection::Passive,
                 "せる" | "させる" => Inflection::Causative,
                 "られる" => Inflection::PotentialOrPassive,
                 "たい" => Inflection::Tai,
-                "たり" => Inflection::Tari,
-                "てる" => Inflection::TeIru,
-                "とく" => Inflection::Toku,
+                "たり" | "だり"=> Inflection::Tari,
+                "てる" | "でる"=> Inflection::TeIru,
+                "とく" | "どく"=> Inflection::Toku,
                 //"てる" => Inflection::TeIru,
                 _ => return None,
             })
         } else {
             Some(match lexemes.as_slice() {
-                &["て", "いる"] => Inflection::TeIru,
-                &["て", "ある"] => Inflection::TeAru,
-                &["て", "みる"] => Inflection::TeMiru,
-                &["て", "しまう"] => Inflection::TeShimau,
+                &["て", "いる"] | &["で", "いる"] => Inflection::TeIru,
+                &["て", "ある"] | &["で", "ある"] => Inflection::TeAru,
+                &["て", "みる"] | &["で", "みる"] => Inflection::TeMiru,
+                &["て", "しまう"] | &["で", "しまう"] => Inflection::TeShimau,
                 &["さ", "せる"] => Inflection::Causative,
                 // Fake する; The tokenizer tokenizes the さ of される as a form of する
                 &["する", "れる"] => Inflection::CausativePassive,
