@@ -22,6 +22,7 @@ pub enum Inflection {
     TeAru,
     TeMiru,
     Tara,
+    Tari,
 }
 
 impl<'b> FromMorphemes<'static, 'b> for Inflection {
@@ -45,6 +46,7 @@ impl<'b> FromMorphemes<'static, 'b> for Inflection {
                 "せる" | "させる" => Inflection::Causative,
                 "られる" => Inflection::PotentialOrPassive,
                 "たい" => Inflection::Tai,
+                "たり" => Inflection::Tari,
                 "てる" => Inflection::TeIru,
                 //"てる" => Inflection::TeIru,
                 _ => return None,
@@ -103,7 +105,8 @@ impl localization::traits::Translatable for Inflection {
             Inflection::TeIru => "TeIru",
             Inflection::TeAru => "TeAru",
             Inflection::TeMiru => "TeMiru",
-            Inflection::Tara=> "Tara",
+            Inflection::Tara => "Tara",
+            Inflection::Tari => "Tari"
         }
     }
 

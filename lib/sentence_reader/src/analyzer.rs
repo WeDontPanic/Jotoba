@@ -30,6 +30,7 @@ fn get_rules() -> RuleSet {
         "しまう",
         "ない",
         "た",
+        "たり",
         "ちゃう",
         "たい",
         "られる",
@@ -42,6 +43,7 @@ fn get_rules() -> RuleSet {
 
     // い rule
     rules.push(Rule::new("た", end));
+    rules.push(Rule::new("たり", end));
     rules.push(Rule::new("ない", &["て", "た"]));
     rules.push(Rule::new("たい", &["ない", "た"]));
 
@@ -83,6 +85,7 @@ fn get_rules() -> RuleSet {
         "V",
         &[
             "た",
+            "たり",
             "ない",
             "たい",
             "て",
