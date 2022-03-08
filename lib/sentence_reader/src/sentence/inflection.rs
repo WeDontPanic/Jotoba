@@ -23,6 +23,7 @@ pub enum Inflection {
     TeMiru,
     TeShimau,
     Chau,
+    TeOku,
     Toku,
     Tara,
     Tari,
@@ -61,6 +62,7 @@ impl<'b> FromMorphemes<'static, 'b> for Inflection {
                 &["て", "ある"] | &["で", "ある"] => Inflection::TeAru,
                 &["て", "みる"] | &["で", "みる"] => Inflection::TeMiru,
                 &["て", "しまう"] | &["で", "しまう"] => Inflection::TeShimau,
+                &["て", "おく"] | &["で", "おく"] => Inflection::TeOku,
                 &["さ", "せる"] => Inflection::Causative,
                 // Fake する; The tokenizer tokenizes the さ of される as a form of する
                 &["する", "れる"] => Inflection::CausativePassive,
@@ -84,9 +86,10 @@ fn get_rules() -> RuleSet {
     rules.push(Rule::new("ある", &[]));
     rules.push(Rule::new("てみる", &[]));
     rules.push(Rule::new("しまう", &[]));
+    rules.push(Rule::new("おく", &[]));
     rules.push(Rule::new("れる", &[]));
 
-    rules.push(Rule::new("て", &["いる", "ある", "てみる", "しまう"]));
+    rules.push(Rule::new("て", &["いる", "ある", "てみる", "しまう", "おく"]));
     rules.push(Rule::new("さ", &["れる"]));
 
     RuleSet::new(&rules)
@@ -112,6 +115,7 @@ impl localization::traits::Translatable for Inflection {
             Inflection::TeAru => "TeAru",
             Inflection::TeMiru => "TeMiru",
             Inflection::TeShimau => "TeShimau",
+            Inflection::TeOku => "TeOku",
             Inflection::Chau => "Chau",
             Inflection::Toku => "Toku",
             Inflection::Tara => "Tara",

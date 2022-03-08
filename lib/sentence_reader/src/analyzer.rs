@@ -22,6 +22,7 @@ fn get_rules() -> RuleSet {
         "てみる",
         "いる",
         "ある",
+        "おく",
     ];
     let ru_ending = &[
         "て",
@@ -55,6 +56,7 @@ fn get_rules() -> RuleSet {
     rules.push(Rule::new("て", te_ending));
     rules.push(Rule::new("てみる", ru_ending));
     rules.push(Rule::new("しまう", ru_ending));
+    rules.push(Rule::new("おく", ru_ending));
     rules.push(Rule::new("てる", ru_ending));
 
     // いる/ある
