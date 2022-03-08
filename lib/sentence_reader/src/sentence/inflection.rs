@@ -21,6 +21,7 @@ pub enum Inflection {
     TeIru,
     TeAru,
     TeMiru,
+    TeShimau,
     Tara,
     Tari,
 }
@@ -56,6 +57,7 @@ impl<'b> FromMorphemes<'static, 'b> for Inflection {
                 &["て", "いる"] => Inflection::TeIru,
                 &["て", "ある"] => Inflection::TeAru,
                 &["て", "みる"] => Inflection::TeMiru,
+                &["て", "しまう"] => Inflection::TeShimau,
                 &["さ", "せる"] => Inflection::Causative,
                 // Fake する; The tokenizer tokenizes the さ of される as a form of する
                 &["する", "れる"] => Inflection::CausativePassive,
@@ -73,14 +75,15 @@ static INFLECTION_RULES: Lazy<Analyzer> = Lazy::new(|| Analyzer::new(get_rules()
 
 /// Returns a set of rules for japanese text analyzing
 fn get_rules() -> RuleSet {
-    let mut rules = Vec::with_capacity(6);
+    let mut rules = Vec::with_capacity(7);
 
     rules.push(Rule::new("いる", &[]));
     rules.push(Rule::new("ある", &[]));
     rules.push(Rule::new("てみる", &[]));
+    rules.push(Rule::new("しまう", &[]));
     rules.push(Rule::new("れる", &[]));
 
-    rules.push(Rule::new("て", &["いる", "ある", "てみる"]));
+    rules.push(Rule::new("て", &["いる", "ある", "てみる", "しまう"]));
     rules.push(Rule::new("さ", &["れる"]));
 
     RuleSet::new(&rules)
@@ -105,6 +108,7 @@ impl localization::traits::Translatable for Inflection {
             Inflection::TeIru => "TeIru",
             Inflection::TeAru => "TeAru",
             Inflection::TeMiru => "TeMiru",
+            Inflection::TeShimau => "TeShimau",
             Inflection::Tara => "Tara",
             Inflection::Tari => "Tari"
         }

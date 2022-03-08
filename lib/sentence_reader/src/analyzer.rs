@@ -53,6 +53,7 @@ fn get_rules() -> RuleSet {
     // て
     rules.push(Rule::new("て", te_ending));
     rules.push(Rule::new("てみる", ru_ending));
+    rules.push(Rule::new("しまう", ru_ending));
     rules.push(Rule::new("てる", ru_ending));
 
     // いる/ある
