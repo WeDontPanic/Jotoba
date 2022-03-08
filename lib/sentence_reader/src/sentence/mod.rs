@@ -164,7 +164,7 @@ pub(crate) fn map_morph_to_rule(pos: usize, morph: &Morpheme<'_, '_>) -> Option<
         return Some("しまう");
     }
 
-    if morph.lexeme == "ちゃう" {
+    if morph.lexeme == "ちゃう" || morph.lexeme == "じゃう" {
         return Some("ちゃう");
     }
 
