@@ -32,6 +32,7 @@ fn get_rules() -> RuleSet {
         "た",
         "たり",
         "ちゃう",
+        "とく",
         "たい",
         "られる",
         "れる"
@@ -73,6 +74,9 @@ fn get_rules() -> RuleSet {
     rules.push(Rule::new("ちゃう", ru_ending));
     rules.push(Rule::new("しまう", ru_ending));
 
+    // とく
+    rules.push(Rule::new("とく", ru_ending));
+
     // される causative
     rules.push(Rule::new("さ", &["せる", "れる"]));
     rules.push(Rule::new("せる", ru_ending));
@@ -99,6 +103,7 @@ fn get_rules() -> RuleSet {
             "れる",
             "ちゃう",
             "しまう",
+            "とく",
             "せる",
             "させる",
             // the さ of される

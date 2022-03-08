@@ -168,6 +168,10 @@ pub(crate) fn map_morph_to_rule(pos: usize, morph: &Morpheme<'_, '_>) -> Option<
         return Some("ちゃう");
     }
 
+    if morph.lexeme == "とく" {
+        return Some("とく");
+    }
+
     if morph.lexeme == "ぬ" {
         return Some("ん");
     }
