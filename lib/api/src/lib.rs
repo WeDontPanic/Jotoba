@@ -1,3 +1,4 @@
+pub mod app;
 pub mod completions;
 pub mod img;
 pub mod news;

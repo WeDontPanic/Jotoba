@@ -3,3 +3,4 @@ pub mod image;
 pub mod news;
 pub mod radical;
 pub mod search;
+pub mod app;
