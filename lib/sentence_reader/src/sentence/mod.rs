@@ -124,15 +124,19 @@ pub(crate) fn map_morph_to_rule(pos: usize, morph: &Morpheme<'_, '_>) -> Option<
         return Some("たい");
     }
 
-    if morph.lexeme == "た" {
+    if morph.lexeme == "た" || morph.lexeme == "だ" {
         return Some("た");
     }
 
-    if morph.lexeme == "てる" {
+    if morph.lexeme == "たり" || morph.lexeme == "だり" {
+        return Some("たり");
+    }
+
+    if morph.lexeme == "てる" || morph.lexeme == "でる" {
         return Some("てる");
     }
 
-    if morph.surface == "て" {
+    if morph.lexeme == "て" || morph.lexeme == "で" {
         return Some("て");
     }
 
@@ -160,8 +164,16 @@ pub(crate) fn map_morph_to_rule(pos: usize, morph: &Morpheme<'_, '_>) -> Option<
         return Some("しまう");
     }
 
-    if morph.lexeme == "ちゃう" {
+    if morph.lexeme == "ちゃう" || morph.lexeme == "じゃう" {
         return Some("ちゃう");
+    }
+
+    if morph.lexeme == "おく" {
+        return Some("おく");
+    }
+
+    if morph.lexeme == "とく" || morph.lexeme == "どく" {
+        return Some("とく");
     }
 
     if morph.lexeme == "ぬ" {

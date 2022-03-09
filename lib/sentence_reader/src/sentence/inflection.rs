@@ -21,7 +21,12 @@ pub enum Inflection {
     TeIru,
     TeAru,
     TeMiru,
+    TeShimau,
+    Chau,
+    TeOku,
+    Toku,
     Tara,
+    Tari,
 }
 
 impl<'b> FromMorphemes<'static, 'b> for Inflection {
@@ -39,21 +44,25 @@ impl<'b> FromMorphemes<'static, 'b> for Inflection {
             Some(match lexemes[0] {
                 "ない" | "ぬ" => Inflection::Negative,
                 "ます" => Inflection::Polite,
-                "て" => Inflection::TeForm,
+                "て" | "で"=> Inflection::TeForm,
                 "だ" | "た" => Inflection::Past,
                 "れる" => Inflection::Passive,
                 "せる" | "させる" => Inflection::Causative,
                 "られる" => Inflection::PotentialOrPassive,
                 "たい" => Inflection::Tai,
-                "てる" => Inflection::TeIru,
-                //"てる" => Inflection::TeIru,
+                "たり" | "だり"=> Inflection::Tari,
+                "てる" | "でる"=> Inflection::TeIru,
+                "とく" | "どく"=> Inflection::Toku,
+                "ちゃう" | "じゃう" => Inflection::Chau,
                 _ => return None,
             })
         } else {
             Some(match lexemes.as_slice() {
-                &["て", "いる"] => Inflection::TeIru,
-                &["て", "ある"] => Inflection::TeAru,
-                &["て", "みる"] => Inflection::TeMiru,
+                &["て", "いる"] | &["で", "いる"] => Inflection::TeIru,
+                &["て", "ある"] | &["で", "ある"] => Inflection::TeAru,
+                &["て", "みる"] | &["で", "みる"] => Inflection::TeMiru,
+                &["て", "しまう"] | &["で", "しまう"] => Inflection::TeShimau,
+                &["て", "おく"] | &["で", "おく"] => Inflection::TeOku,
                 &["さ", "せる"] => Inflection::Causative,
                 // Fake する; The tokenizer tokenizes the さ of される as a form of する
                 &["する", "れる"] => Inflection::CausativePassive,
@@ -71,14 +80,16 @@ static INFLECTION_RULES: Lazy<Analyzer> = Lazy::new(|| Analyzer::new(get_rules()
 
 /// Returns a set of rules for japanese text analyzing
 fn get_rules() -> RuleSet {
-    let mut rules = Vec::with_capacity(6);
+    let mut rules = Vec::with_capacity(7);
 
     rules.push(Rule::new("いる", &[]));
     rules.push(Rule::new("ある", &[]));
     rules.push(Rule::new("てみる", &[]));
+    rules.push(Rule::new("しまう", &[]));
+    rules.push(Rule::new("おく", &[]));
     rules.push(Rule::new("れる", &[]));
 
-    rules.push(Rule::new("て", &["いる", "ある", "てみる"]));
+    rules.push(Rule::new("て", &["いる", "ある", "てみる", "しまう", "おく"]));
     rules.push(Rule::new("さ", &["れる"]));
 
     RuleSet::new(&rules)
@@ -103,7 +114,12 @@ impl localization::traits::Translatable for Inflection {
             Inflection::TeIru => "TeIru",
             Inflection::TeAru => "TeAru",
             Inflection::TeMiru => "TeMiru",
-            Inflection::Tara=> "Tara",
+            Inflection::TeShimau => "TeShimau",
+            Inflection::TeOku => "TeOku",
+            Inflection::Chau => "Chau",
+            Inflection::Toku => "Toku",
+            Inflection::Tara => "Tara",
+            Inflection::Tari => "Tari"
         }
     }
 
