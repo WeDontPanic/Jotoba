@@ -9,7 +9,6 @@ pub mod help_page;
 pub mod index;
 pub mod news;
 pub mod og_tags;
-mod pagination;
 pub mod search_ep;
 pub mod search_help;
 mod session;
@@ -28,13 +27,12 @@ use localization::{
     TranslationDict,
 };
 use og_tags::TagKeyName;
-use pagination::Pagination;
 use resources::news::NewsEntry;
 use search::{query::Query, sentence::result::SentenceResult};
 
 use search::{kanji::result::Item as KanjiItem, query::UserSettings, word::result::WordResult};
 use search_help::SearchHelp;
-use types::jotoba::{names::Name, search::QueryType};
+use types::jotoba::{names::Name, pagination::Pagination, search::QueryType};
 use unescaped::{UnescapedStr, UnescapedString};
 
 /// Data for the base template

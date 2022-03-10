@@ -1,18 +1,17 @@
+use crate::app::new_page;
+
 use super::{convert_payload, Result};
 use actix_web::web::{self, Json};
 use types::{
     api::app::{
         query::SearchPayload,
-        responses::{
-            kanji::{self, CompoundWord},
-            paginator::Paginator,
-        },
+        responses::kanji::{self, CompoundWord},
     },
-    jotoba::words::Word,
+    jotoba::{pagination::page::Page, words::Word},
 };
 
 /// API response type
-pub type Resp = Paginator<kanji::Response>;
+pub type Resp = Page<kanji::Response>;
 
 /// Do an app kanji search via API
 pub async fn search(payload: Json<SearchPayload>) -> Result<Json<Resp>> {
@@ -31,11 +30,11 @@ pub async fn search(payload: Json<SearchPayload>) -> Result<Json<Resp>> {
         })
         .collect::<Vec<kanji::Kanji>>();
 
-    let paginator = Paginator::new(kanji::Response::new(items));
+    let len = result.total_items as u32;
+    let kanji = kanji::Response::new(items);
+    let page = new_page(&payload, kanji, len, payload.settings.kanji_page_size);
 
-    // TODO: actually make paginator paginate here and cut off items not being part of current page
-
-    Ok(Json(paginator))
+    Ok(Json(page))
 }
 
 #[inline]

@@ -1,9 +1,13 @@
+pub mod page;
+
+use page::Page;
+use serde::Serialize;
 use std::cmp::min;
 
 /// The amount of buttons the paginator should display max.
 const BUTTONS_TO_DISPLAY: u8 = 5;
 
-/// A Pagination structure holding information about pagination
+/// A Pagination structure holding information about page
 #[derive(Clone, Copy, Default)]
 pub struct Pagination {
     pub curr_page: u32,
@@ -13,6 +17,25 @@ pub struct Pagination {
 }
 
 impl Pagination {
+    pub fn new(curr_page: u32, items: u32, items_per_page: u32, max_pages: u32) -> Self {
+        Self {
+            curr_page,
+            items,
+            items_per_page,
+            max_pages,
+        }
+    }
+
+    pub fn new_page<T: Serialize + Clone>(
+        v: T,
+        curr_page: u32,
+        items: u32,
+        items_per_page: u32,
+        max_pages: u32,
+    ) -> Page<T> {
+        Self::new(curr_page, items, items_per_page, max_pages).with_value(v)
+    }
+
     /// Returns the number of the last page
     #[inline]
     pub fn get_last(&self) -> u32 {
@@ -29,6 +52,10 @@ impl Pagination {
     #[inline]
     pub fn is_last(&self) -> bool {
         self.curr_page == self.get_last()
+    }
+
+    pub fn with_value<T: Serialize + Clone>(&self, v: T) -> Page<T> {
+        Page::with_pages(v, self.curr_page as usize, self.get_last() as usize)
     }
 
     /// Generates the pagination buttons

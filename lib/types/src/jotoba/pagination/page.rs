@@ -3,7 +3,7 @@ use serde::Serialize;
 /// A generic API Response type implementing Serialize that can be used for any kind of Response
 /// that can be a part of multiple pages
 #[derive(Serialize, Clone)]
-pub struct Paginator<T: Serialize + Clone> {
+pub struct Page<T: Serialize + Clone> {
     /// Paginator content
     content: T,
 
@@ -14,7 +14,7 @@ pub struct Paginator<T: Serialize + Clone> {
     current_page: usize,
 }
 
-impl<T: Serialize + Clone> Paginator<T> {
+impl<T: Serialize + Clone> Page<T> {
     /// Creates a new Paginator with default values
     pub fn new(content: T) -> Self {
         Self {
