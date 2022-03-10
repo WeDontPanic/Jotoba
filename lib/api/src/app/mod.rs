@@ -1,4 +1,5 @@
 pub mod kanji;
+pub mod names;
 
 use error::api_error::RestError;
 use search::{query::UserSettings, query_parser::QueryParser};
@@ -10,14 +11,17 @@ use types::{
 
 pub type Result<T> = std::result::Result<T, RestError>;
 
+const FIRST_PAGE: u32 = 1;
+const LAST_PAGE: u32 = 100;
+
 pub(crate) fn new_page<V: Serialize + Clone>(
     pl: &SearchPayload,
     v: V,
     items: u32,
     items_per_page: u32,
 ) -> Page<V> {
-    let page = (pl.page.unwrap_or(1) as u32).max(1);
-    Pagination::new_page(v, page, items, items_per_page, 100)
+    let page = (pl.page.unwrap_or(FIRST_PAGE)).max(FIRST_PAGE);
+    Pagination::new_page(v, page, items, items_per_page, LAST_PAGE)
 }
 
 pub(crate) fn convert_payload(pl: &SearchPayload) -> QueryParser {
@@ -27,7 +31,7 @@ pub(crate) fn convert_payload(pl: &SearchPayload) -> QueryParser {
         pl.query_str.clone(),
         types::jotoba::search::QueryType::Kanji,
         user_settings,
-        pl.page.unwrap_or_default(),
+        pl.page.unwrap_or_default() as usize,
         pl.word_index.unwrap_or_default(),
         false,
         pl.lang_overwrite,

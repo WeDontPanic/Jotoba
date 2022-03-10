@@ -10,7 +10,7 @@ pub struct SearchPayload {
     pub query_str: String,
 
     /// Result page
-    pub page: Option<usize>,
+    pub page: Option<u32>,
 
     /// Index in sentence reader
     pub word_index: Option<usize>,

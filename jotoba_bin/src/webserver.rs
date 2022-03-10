@@ -104,7 +104,8 @@ pub(super) async fn start() -> std::io::Result<()> {
                     .default_service(actix_web::Route::new().to(docs))
                     .service(
                         actixweb::scope("app")
-                            .route("kanji", actixweb::post().to(api::app::kanji::search)),
+                            .route("kanji", actixweb::post().to(api::app::kanji::search))
+                            .route("names", actixweb::post().to(api::app::names::search)),
                     )
                     .service(
                         actixweb::scope("search")

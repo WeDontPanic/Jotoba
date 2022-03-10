@@ -8,7 +8,7 @@ use std::cmp::min;
 const BUTTONS_TO_DISPLAY: u8 = 5;
 
 /// A Pagination structure holding information about page
-#[derive(Clone, Copy, Default)]
+#[derive(Clone, Copy, Default, Debug)]
 pub struct Pagination {
     pub curr_page: u32,
     pub items: u32,
@@ -55,7 +55,10 @@ impl Pagination {
     }
 
     pub fn with_value<T: Serialize + Clone>(&self, v: T) -> Page<T> {
-        Page::with_pages(v, self.curr_page as usize, self.get_last() as usize)
+        // always show at least one page. Otherwise it would panic
+        let last = self.get_last().max(1);
+        let curr = self.curr_page.min(last);
+        Page::with_pages(v, curr, last)
     }
 
     /// Generates the pagination buttons

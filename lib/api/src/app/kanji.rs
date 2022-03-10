@@ -28,7 +28,7 @@ pub async fn search(payload: Json<SearchPayload>) -> Result<Json<Resp>> {
             k.set_kun_compounds(convert_dicts(&i.kun_dicts));
             k
         })
-        .collect::<Vec<kanji::Kanji>>();
+        .collect::<Vec<_>>();
 
     let len = result.total_items as u32;
     let kanji = kanji::Response::new(items);

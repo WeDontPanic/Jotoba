@@ -8,10 +8,10 @@ pub struct Page<T: Serialize + Clone> {
     content: T,
 
     /// Total amount of Pages
-    pages: usize,
+    pages: u32,
 
     /// Current page
-    current_page: usize,
+    current_page: u32,
 }
 
 impl<T: Serialize + Clone> Page<T> {
@@ -29,7 +29,7 @@ impl<T: Serialize + Clone> Page<T> {
     /// # Panics
     ///
     /// Panics if `current_page` > `pages`
-    pub fn with_pages(content: T, current_page: usize, pages: usize) -> Self {
+    pub fn with_pages(content: T, current_page: u32, pages: u32) -> Self {
         assert!(current_page <= pages);
         Self {
             content,
@@ -43,7 +43,7 @@ impl<T: Serialize + Clone> Page<T> {
     /// # Panics
     ///
     /// Panics if `current_page` > `pages`
-    pub fn set_current_page(&mut self, current_page: usize) {
+    pub fn set_current_page(&mut self, current_page: u32) {
         assert!(current_page <= self.pages);
         self.current_page = current_page;
     }
@@ -53,18 +53,18 @@ impl<T: Serialize + Clone> Page<T> {
     /// # Panics
     ///
     /// Panics if `current_page` > `pages`
-    pub fn set_pages(&mut self, pages: usize) {
+    pub fn set_pages(&mut self, pages: u32) {
         assert!(self.current_page <= pages);
         self.pages = pages;
     }
 
     /// Get the paginator's pages.
-    pub fn pages(&self) -> usize {
+    pub fn pages(&self) -> u32 {
         self.pages
     }
 
     /// Get the paginator's current page.
-    pub fn current_page(&self) -> usize {
+    pub fn current_page(&self) -> u32 {
         self.current_page
     }
 }
