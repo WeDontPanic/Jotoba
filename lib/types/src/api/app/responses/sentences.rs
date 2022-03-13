@@ -21,6 +21,7 @@ pub struct Sentence {
 
 impl Sentence {
     /// Create a new sentence
+    #[inline]
     pub fn new(content: String, translation: String) -> Self {
         Self {
             content,
