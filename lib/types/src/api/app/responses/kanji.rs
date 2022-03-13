@@ -53,19 +53,21 @@ impl Kanji {
 #[derive(Clone, Debug, Serialize)]
 pub struct CompoundWord {
     pub jp: String,
+    pub kana: String,
     pub translations: Vec<String>,
 }
 
 impl CompoundWord {
     /// Create a new CompoundWord
-    pub fn new(jp: String, translations: Vec<String>) -> Self {
-        Self { jp, translations }
+    pub fn new(jp: String, kana: String, translations: Vec<String>) -> Self {
+        Self { jp, kana, translations }
     }
 
     /// Convertes a Word to a CompoundWord. Takes ALL senses and ALL glosses. If you only want
     /// some of the glosses, filter them first
     pub fn from_word(word: &crate::jotoba::words::Word) -> Self {
         let jp = word.get_reading().reading.clone();
+        let kana= word.reading.kana.reading.clone();
         let translations = word
             .senses
             .iter()
@@ -73,7 +75,7 @@ impl CompoundWord {
             .flatten()
             .map(|i| i.gloss)
             .collect::<Vec<String>>();
-        Self { jp, translations }
+        Self::new(jp, kana, translations)
     }
 }
 

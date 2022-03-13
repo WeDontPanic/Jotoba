@@ -1,4 +1,6 @@
-use serde::Deserialize;
+use std::str::FromStr;
+
+use serde::{Deserialize, Deserializer};
 
 use crate::jotoba::languages::Language;
 
@@ -10,12 +12,15 @@ pub struct SearchPayload {
     pub query_str: String,
 
     /// Result page
+    #[serde(default)]
     pub page: Option<u32>,
 
     /// Index in sentence reader
+    #[serde(default)]
     pub word_index: Option<usize>,
 
     /// Overwrite
+    #[serde(default, deserialize_with = "deserialize_lang")]
     pub lang_overwrite: Option<Language>,
 }
 
@@ -29,4 +34,17 @@ pub struct UserSettings {
     pub kanji_page_size: u32,
     pub show_example_sentences: bool,
     pub sentence_furigana: bool,
+}
+
+/// Deserializes a field into a Option<Language>. None if invalid lang-str, empty or Deserializing str
+/// failed
+fn deserialize_lang<'de, D>(s: D) -> Result<Option<Language>, D::Error>
+where
+    D: Deserializer<'de>,
+{
+    let s = String::deserialize(s)?;
+    if s.trim().is_empty(){
+        return Ok(None);
+    }
+    return Ok(Language::from_str(&s).ok());
 }
