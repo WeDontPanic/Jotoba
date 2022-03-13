@@ -1,5 +1,6 @@
 pub mod kanji;
 pub mod names;
+pub mod sentences;
 
 use error::api_error::RestError;
 use search::{query::UserSettings, query_parser::QueryParser};

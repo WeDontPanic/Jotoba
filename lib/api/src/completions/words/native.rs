@@ -36,10 +36,9 @@ pub fn suggestions(query: &Query, radicals: &[char]) -> Option<Vec<WordPair>> {
 
 /// Transforms inflections to the main lexeme of the given query
 fn align_query_str(query_str: &str) -> Option<String> {
-    let parse_res =
-        sentence_reader::Parser::new(query_str).parse();
+    let parse_res = sentence_reader::Parser::new(query_str).parse();
 
-    if let sentence_reader::output::ParseResult::InflectedWord(word) = parse_res{
+    if let sentence_reader::output::ParseResult::InflectedWord(word) = parse_res {
         return Some(word.get_normalized());
     }
 

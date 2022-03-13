@@ -36,7 +36,7 @@ fn get_rules() -> RuleSet {
         "とく",
         "たい",
         "られる",
-        "れる"
+        "れる",
     ];
     // \ Often used dest rules
     //
@@ -109,7 +109,7 @@ fn get_rules() -> RuleSet {
             "せる",
             "させる",
             // the さ of される
-            "さ"
+            "さ",
         ],
     ));
 

@@ -1,8 +1,8 @@
 use error::Error;
 use itertools::Itertools;
 use japanese::JapaneseExt;
-use types::jotoba::languages::Language;
 use search::engine::{self, SearchTask};
+use types::jotoba::languages::Language;
 
 pub fn search(query: &str, language: Language) -> Vec<char> {
     if query.len() < 2 {

@@ -31,11 +31,7 @@ impl Sentence {
 
     #[inline]
     pub fn get_english(&self) -> Option<&str> {
-        if self.eng == "-" {
-            None
-        } else {
-            Some(&self.eng)
-        }
+        (self.eng != "-").then(|| self.eng.as_str())
     }
 
     #[inline]
@@ -60,6 +56,7 @@ impl Sentence {
 }
 
 impl From<(Vec<Item>, usize, bool)> for SentenceResult {
+    #[inline]
     fn from((items, len, hidden): (Vec<Item>, usize, bool)) -> Self {
         Self { items, len, hidden }
     }

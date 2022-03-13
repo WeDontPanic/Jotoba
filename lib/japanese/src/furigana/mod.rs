@@ -52,14 +52,14 @@ impl SentencePart {
 
     /// Returns `true` if SentencePart has kanji reading
     #[inline]
-    pub fn has_kanji(&self) -> bool{
+    pub fn has_kanji(&self) -> bool {
         self.as_ref().has_kanji()
     }
 
     /// Returns `true` if SentencePart is empty. Since every part has at least to hold kana data
     /// `empty` is already the case if the kana reading is empmty
     #[inline]
-    pub fn is_empty(&self) -> bool{
+    pub fn is_empty(&self) -> bool {
         self.as_ref().is_empty()
     }
 
@@ -135,7 +135,7 @@ pub fn pairs_checked(kanji: &str, kana: &str) -> Option<Vec<SentencePart>> {
 
 /// Parses a furigana string into corresponding SentencePartRef's
 ///
-/// Input format: [拝金主義|はい|きん|しゅ|ぎ]
+/// Input format: `[拝金主義|はい|きん|しゅ|ぎ]`
 ///
 pub fn from_str(input: &str) -> impl Iterator<Item = SentencePartRef<'_>> {
     let mut char_iter = input.char_indices().multipeek();

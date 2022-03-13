@@ -60,14 +60,18 @@ pub struct CompoundWord {
 impl CompoundWord {
     /// Create a new CompoundWord
     pub fn new(jp: String, kana: String, translations: Vec<String>) -> Self {
-        Self { jp, kana, translations }
+        Self {
+            jp,
+            kana,
+            translations,
+        }
     }
 
     /// Convertes a Word to a CompoundWord. Takes ALL senses and ALL glosses. If you only want
     /// some of the glosses, filter them first
     pub fn from_word(word: &crate::jotoba::words::Word) -> Self {
         let jp = word.get_reading().reading.clone();
-        let kana= word.reading.kana.reading.clone();
+        let kana = word.reading.kana.reading.clone();
         let translations = word
             .senses
             .iter()

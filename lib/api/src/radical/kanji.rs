@@ -3,9 +3,7 @@ use std::collections::{HashMap, HashSet};
 use types::api::radical::find_kanji::{Request, Response};
 
 /// Get kanji by its radicals
-pub async fn kanji_by_radicals(
-    payload: Json<Request>,
-) -> Result<Json<Response>, actix_web::Error> {
+pub async fn kanji_by_radicals(payload: Json<Request>) -> Result<Json<Response>, actix_web::Error> {
     let kanji_retr = resources::get().kanji();
 
     let mut possible_radicals: HashSet<char> = HashSet::new();

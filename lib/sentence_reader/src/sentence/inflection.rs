@@ -37,22 +37,22 @@ impl<'b> FromMorphemes<'static, 'b> for Inflection {
         if lexemes.is_empty() {
             None
         } else if lexemes.len() == 1 {
-            if parts[0].surface == "たら"{
+            if parts[0].surface == "たら" {
                 return Some(Self::Tara);
             }
 
             Some(match lexemes[0] {
                 "ない" | "ぬ" => Inflection::Negative,
                 "ます" => Inflection::Polite,
-                "て" | "で"=> Inflection::TeForm,
+                "て" | "で" => Inflection::TeForm,
                 "だ" | "た" => Inflection::Past,
                 "れる" => Inflection::Passive,
                 "せる" | "させる" => Inflection::Causative,
                 "られる" => Inflection::PotentialOrPassive,
                 "たい" => Inflection::Tai,
-                "たり" | "だり"=> Inflection::Tari,
-                "てる" | "でる"=> Inflection::TeIru,
-                "とく" | "どく"=> Inflection::Toku,
+                "たり" | "だり" => Inflection::Tari,
+                "てる" | "でる" => Inflection::TeIru,
+                "とく" | "どく" => Inflection::Toku,
                 "ちゃう" | "じゃう" => Inflection::Chau,
                 _ => return None,
             })
@@ -89,7 +89,10 @@ fn get_rules() -> RuleSet {
     rules.push(Rule::new("おく", &[]));
     rules.push(Rule::new("れる", &[]));
 
-    rules.push(Rule::new("て", &["いる", "ある", "てみる", "しまう", "おく"]));
+    rules.push(Rule::new(
+        "て",
+        &["いる", "ある", "てみる", "しまう", "おく"],
+    ));
     rules.push(Rule::new("さ", &["れる"]));
 
     RuleSet::new(&rules)
@@ -119,7 +122,7 @@ impl localization::traits::Translatable for Inflection {
             Inflection::Chau => "Chau",
             Inflection::Toku => "Toku",
             Inflection::Tara => "Tara",
-            Inflection::Tari => "Tari"
+            Inflection::Tari => "Tari",
         }
     }
 

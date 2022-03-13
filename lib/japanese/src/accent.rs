@@ -35,7 +35,7 @@ impl<'a> AccentChar<'a> {
 
 /// Returns a vec of all compounds with the same pitch assigned to the accent (true = pitch up) in
 /// the order they appeared in the word text. Note that if the pitch changes from the last mora to
-/// the particle, there will be an entry at the end of the vec with an empty string with the pitch 
+/// the particle, there will be an entry at the end of the vec with an empty string with the pitch
 /// for the particle. This allows us to distinguish between odaka and heiban patterns.
 pub fn calc_pitch(kana_word: &str, drop: i32) -> Option<Vec<(&str, bool)>> {
     let mut kana_items = split_kana(kana_word).collect::<Vec<_>>();
