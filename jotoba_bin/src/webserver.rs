@@ -160,7 +160,9 @@ pub(super) async fn start() -> std::io::Result<()> {
                 actixweb::scope("/assets")
                     .wrap(
                         middleware::DefaultHeaders::new()
-                            .add((CACHE_CONTROL, format!("max-age={}", ASSET_CACHE_MAX_AGE))),
+                            .add((CACHE_CONTROL, format!("max-age={}", ASSET_CACHE_MAX_AGE)))
+                            .add((ACCESS_CONTROL_ALLOW_ORIGIN, "*"))
+                            .add((ACCESS_CONTROL_ALLOW_HEADERS, "Content-Type")),
                     )
                     .wrap(Compat::new(Compress::default()))
                     .service(
