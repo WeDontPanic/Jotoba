@@ -2262,6 +2262,7 @@ dependencies = [
  "japanese",
  "localization",
  "once_cell",
+ "types",
 ]
 
 [[package]]

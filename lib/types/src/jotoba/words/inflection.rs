@@ -3,6 +3,70 @@ use super::part_of_speech::{self, IrregularVerb, PartOfSpeech};
 use super::Word;
 
 use jp_inflections::{Verb, VerbType, WordForm};
+use serde::Serialize;
+
+/// A single Inflection
+#[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Serialize)]
+pub enum Inflection {
+    Negative,
+    Polite,
+    Present,
+    Past,
+    TeForm,
+    Potential,
+    Passive,
+    Causative,
+    CausativePassive,
+    PotentialOrPassive,
+    Imperative,
+    Tai,
+    TeIru,
+    TeAru,
+    TeMiru,
+    TeShimau,
+    Chau,
+    TeOku,
+    Toku,
+    Tara,
+    Tari,
+}
+
+#[cfg(feature = "jotoba_intern")]
+impl localization::traits::Translatable for Inflection {
+    fn get_id(&self) -> &'static str {
+        match self {
+            Inflection::Negative => "Negative",
+            Inflection::Polite => "Polite",
+            Inflection::Present => "Present",
+            Inflection::Past => "Past",
+            Inflection::TeForm => "TeForm",
+            Inflection::Potential => "Potential",
+            Inflection::Passive => "Passive",
+            Inflection::Causative => "Causative",
+            Inflection::CausativePassive => "CausativePassive",
+            Inflection::PotentialOrPassive => "PotentialOrPassive",
+            Inflection::Imperative => "Imperative",
+            Inflection::Tai => "Tai",
+            Inflection::TeIru => "TeIru",
+            Inflection::TeAru => "TeAru",
+            Inflection::TeMiru => "TeMiru",
+            Inflection::TeShimau => "TeShimau",
+            Inflection::TeOku => "TeOku",
+            Inflection::Chau => "Chau",
+            Inflection::Toku => "Toku",
+            Inflection::Tara => "Tara",
+            Inflection::Tari => "Tari",
+        }
+    }
+
+    fn gettext<'a>(
+        &self,
+        dict: &'a localization::TranslationDict,
+        language: Option<localization::language::Language>,
+    ) -> &'a str {
+        self.pgettext(dict, "inflection", language)
+    }
+}
 
 /// A set of different inflections which will be displayed for vebs
 pub struct Inflections {

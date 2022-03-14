@@ -1,5 +1,7 @@
-use sentence_reader::Inflection;
-use types::jotoba::{kanji::Kanji, words::Word};
+use types::jotoba::{
+    kanji::Kanji,
+    words::{inflection::Inflection, Word},
+};
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct WordResult {

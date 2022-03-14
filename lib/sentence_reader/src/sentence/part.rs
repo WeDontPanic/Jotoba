@@ -1,10 +1,7 @@
-use super::{
-    inflection::{self, Inflection},
-    owned_morpheme::OwnedMorpheme,
-    FromMorphemes,
-};
+use super::{inflection, owned_morpheme::OwnedMorpheme, FromMorphemes};
 use igo_unidic::{Morpheme, WordClass};
 use japanese::{CharType, JapaneseExt};
+use types::jotoba::words::inflection::Inflection;
 
 /// A single word within a sentence. This already contains all inflection parts
 #[derive(Debug, Clone, PartialEq)]
@@ -175,4 +172,17 @@ fn merge_furigana(src: &str, furi: &str) -> String {
     }
 
     furi_out
+}
+
+impl Into<types::api::app::responses::words::SentencePart> for Part {
+    #[inline]
+    fn into(self) -> types::api::app::responses::words::SentencePart {
+        let furigana = self.furigana().map(|i| i.to_string());
+        let position = self.pos();
+        let inflected = self.get_inflected();
+        let word_class = self.word_class();
+        types::api::app::responses::words::SentencePart::new(
+            furigana, position, inflected, word_class,
+        )
+    }
 }

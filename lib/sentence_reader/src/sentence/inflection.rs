@@ -3,7 +3,9 @@ use crate::grammar::{rule::Rule, rule_set::RuleSet, Analyzer};
 use crate::sentence::SentenceAnalyzer;
 use igo_unidic::Morpheme;
 use once_cell::sync::Lazy;
+use types::jotoba::words::inflection::Inflection;
 
+/*
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub enum Inflection {
     Negative,
@@ -28,6 +30,7 @@ pub enum Inflection {
     Tara,
     Tari,
 }
+*/
 
 impl<'b> FromMorphemes<'static, 'b> for Inflection {
     /// Parses an inflection from given morpheme(s)
@@ -96,41 +99,4 @@ fn get_rules() -> RuleSet {
     rules.push(Rule::new("さ", &["れる"]));
 
     RuleSet::new(&rules)
-}
-
-#[cfg(feature = "jotoba_intern")]
-impl localization::traits::Translatable for Inflection {
-    fn get_id(&self) -> &'static str {
-        match self {
-            Inflection::Negative => "Negative",
-            Inflection::Polite => "Polite",
-            Inflection::Present => "Present",
-            Inflection::Past => "Past",
-            Inflection::TeForm => "TeForm",
-            Inflection::Potential => "Potential",
-            Inflection::Passive => "Passive",
-            Inflection::Causative => "Causative",
-            Inflection::CausativePassive => "CausativePassive",
-            Inflection::PotentialOrPassive => "PotentialOrPassive",
-            Inflection::Imperative => "Imperative",
-            Inflection::Tai => "Tai",
-            Inflection::TeIru => "TeIru",
-            Inflection::TeAru => "TeAru",
-            Inflection::TeMiru => "TeMiru",
-            Inflection::TeShimau => "TeShimau",
-            Inflection::TeOku => "TeOku",
-            Inflection::Chau => "Chau",
-            Inflection::Toku => "Toku",
-            Inflection::Tara => "Tara",
-            Inflection::Tari => "Tari",
-        }
-    }
-
-    fn gettext<'a>(
-        &self,
-        dict: &'a localization::TranslationDict,
-        language: Option<localization::language::Language>,
-    ) -> &'a str {
-        self.pgettext(dict, "inflection", language)
-    }
 }

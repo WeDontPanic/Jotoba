@@ -10,7 +10,6 @@ use sentence::SentenceAnalyzer;
 pub use igo_unidic;
 
 pub use output::Sentence;
-pub use sentence::inflection::Inflection;
 pub use sentence::part::Part;
 
 /// The path of the unidict-mecab dictionary

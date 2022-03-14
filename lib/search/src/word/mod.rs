@@ -47,13 +47,13 @@ pub fn search(query: &Query) -> Result<WordResult, Error> {
 }
 
 #[derive(Default)]
-pub(crate) struct ResultData {
-    pub(crate) words: Vec<Word>,
-    pub(crate) infl_info: Option<InflectionInformation>,
-    pub(crate) count: usize,
-    pub(crate) sentence_index: usize,
-    pub(crate) sentence_parts: Option<sentence_reader::Sentence>,
-    pub(crate) searched_query: String,
+pub struct ResultData {
+    pub words: Vec<Word>,
+    pub infl_info: Option<InflectionInformation>,
+    pub count: usize,
+    pub sentence_index: usize,
+    pub sentence_parts: Option<sentence_reader::Sentence>,
+    pub searched_query: String,
 }
 
 impl<'a> Search<'a> {

@@ -64,4 +64,10 @@ impl Sentence {
     pub fn word_count(&self) -> usize {
         self.parts.len()
     }
+
+    /// Returns all parts owned
+    #[inline]
+    pub fn into_parts(self) -> Vec<Part> {
+        self.parts
+    }
 }
