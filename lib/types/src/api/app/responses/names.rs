@@ -9,6 +9,7 @@ pub struct Response {
 }
 
 impl Response {
+    #[inline]
     pub fn new(names: Vec<Name>) -> Self {
         Self { names }
     }

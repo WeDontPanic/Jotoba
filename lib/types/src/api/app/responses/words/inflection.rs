@@ -4,6 +4,7 @@ use crate::jotoba::words::inflection::Inflection;
 
 #[derive(Clone, Serialize)]
 pub struct InflectionInfo {
+    #[serde(skip_serializing_if = "Vec::is_empty")]
     inflections: Vec<Inflection>,
     /// The "uninflected" version
     lexeme: String,

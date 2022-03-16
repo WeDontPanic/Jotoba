@@ -21,10 +21,12 @@ pub struct SentencePart {
     inflected: String,
     /// Furigana of the inflected word. None if can't be
     /// calculated or word is completetly in kana
+    #[serde(skip_serializing_if = "Option::is_none")]
     furigana: Option<String>,
     /// Position of the sentence_part in the sentence
     position: usize,
     /// Part of Speech
+    #[serde(skip_serializing_if = "Option::is_none")]
     word_class: Option<&'static str>,
 }
 

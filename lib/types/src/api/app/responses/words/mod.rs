@@ -15,12 +15,15 @@ pub struct Response {
     words: Vec<Word>,
 
     /// Kanji used in words
+    #[serde(skip_serializing_if = "Vec::is_empty")]
     kanji: Vec<super::kanji::Kanji>,
 
     /// Inflection information of the current word
+    #[serde(skip_serializing_if = "Option::is_none")]
     infl_info: Option<InflectionInfo>,
 
     /// Sentence reader data
+    #[serde(skip_serializing_if = "Option::is_none")]
     sentence: Option<Sentence>,
 
     /// Query that has actually been used for search
