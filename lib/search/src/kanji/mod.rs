@@ -142,18 +142,14 @@ pub fn guess_result(query: &Query) -> Option<Guess> {
 
 /// Find kanji by mits meaning
 fn by_meaning(meaning: &str) -> Vec<Kanji> {
-    let mut out = Vec::new();
-
-    let kanji_storage = resources::get().kanji();
-
-    // TODO: implement a proper meaning search algorithm
-    for kanji in kanji_storage.iter() {
-        if kanji.meanings.contains(&meaning.to_string()) {
-            out.push(kanji.clone());
-        }
-    }
-
-    out
+    // TODO: implement proper algo kek
+    let meaning = meaning.to_lowercase();
+    resources::get()
+        .kanji()
+        .iter()
+        .filter(|i| i.meanings.contains(&meaning))
+        .cloned()
+        .collect::<Vec<_>>()
 }
 
 #[inline]
