@@ -2,6 +2,7 @@ use crate::app::new_page;
 
 use super::{convert_payload, Result};
 use actix_web::web::{self, Json};
+use error::api_error::RestError;
 use types::{
     api::app::{query::SearchPayload, responses::sentences},
     jotoba::pagination::page::Page,
@@ -12,7 +13,9 @@ pub type Resp = Page<sentences::Response>;
 
 /// Do an app sentence search via API
 pub async fn search(payload: Json<SearchPayload>) -> Result<Json<Resp>> {
-    let query = convert_payload(&payload).parse().unwrap();
+    let query = convert_payload(&payload)
+        .parse()
+        .ok_or(RestError::BadRequest)?;
 
     let result = web::block(move || search::sentence::search(&query)).await??;
 

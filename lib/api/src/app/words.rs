@@ -2,6 +2,7 @@ use crate::app::new_page;
 
 use super::{convert_payload, Result};
 use actix_web::web::{self, Json};
+use error::api_error::RestError;
 use types::{
     api::app::{
         query::SearchPayload,
@@ -15,7 +16,9 @@ pub type Resp = Page<words::Response>;
 
 /// Do an app word search via API
 pub async fn search(payload: Json<SearchPayload>) -> Result<Json<Resp>> {
-    let query = convert_payload(&payload).parse().unwrap();
+    let query = convert_payload(&payload)
+        .parse()
+        .ok_or(RestError::BadRequest)?;
     let user_lang = query.settings.user_lang;
 
     let result = web::block(move || search::word::search(&query)).await??;
