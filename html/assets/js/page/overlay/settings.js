@@ -41,7 +41,7 @@ Util.awaitDocumentReady(() => {
 function loadCookieData() {
 
     // Language Settings
-    let search_lang = JotoTools.toJotobaLaguage(Cookies.get("default_lang") || navigator.language || navigator.userLanguage || "en-US");
+    let search_lang = JotoTools.toJotobaLanguage(Cookies.get("default_lang") || navigator.language || navigator.userLanguage || "en-US");
     let page_lang = Cookies.get("page_lang") || "en-US";
 
     // Search Settings

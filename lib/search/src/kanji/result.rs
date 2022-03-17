@@ -46,18 +46,11 @@ fn load_dicts(dicts: &Option<Vec<u32>>, lang: Language, show_english: bool) -> O
 
 impl Item {
     /// Return the animation entries for the template
-    pub fn get_animation_entries(&self) -> Vec<(String, String)> {
+    pub fn get_animation(&self) -> String {
         if let Ok(content) = read_to_string(self.kanji.get_animation_path()) {
             content
-                .split('\n')
-                .into_iter()
-                .map(|i| {
-                    let mut s = i.split(';');
-                    (s.next().unwrap().to_owned(), s.next().unwrap().to_owned())
-                })
-                .collect::<Vec<(String, String)>>()
         } else {
-            vec![]
+            "".to_string()
         }
     }
 

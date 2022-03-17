@@ -51,7 +51,7 @@ JotoTools.getCurrentSearchType = function() {
 }
 
 // Parses a language code into the Joto needs
-JotoTools.toJotobaLaguage = function(code) {
+JotoTools.toJotobaLanguage = function(code) {
     code = code.toLowerCase().substr(0, 2);
     switch (code) {
         case "en":

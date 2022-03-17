@@ -249,7 +249,7 @@ impl Kanji {
     /// Returns the local path of the kanjis stroke-animation
     #[inline]
     pub fn get_animation_path(&self) -> String {
-        format!("html/assets/svg/kanji/{}_animated.svgs", self.literal)
+        format!("html/assets/svg/kanji/{}.svg", self.literal)
     }
 
     /// Returns `true` if kanji has on or kun compounds (or both)
