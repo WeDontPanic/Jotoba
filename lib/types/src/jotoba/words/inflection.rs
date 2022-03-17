@@ -29,6 +29,7 @@ pub enum Inflection {
     Toku,
     Tara,
     Tari,
+    Ba,
 }
 
 #[cfg(feature = "jotoba_intern")]
@@ -56,6 +57,7 @@ impl localization::traits::Translatable for Inflection {
             Inflection::Toku => "Toku",
             Inflection::Tara => "Tara",
             Inflection::Tari => "Tari",
+            Inflection::Ba => "Ba",
         }
     }
 

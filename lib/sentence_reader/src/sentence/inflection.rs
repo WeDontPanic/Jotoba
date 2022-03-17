@@ -57,6 +57,7 @@ impl<'b> FromMorphemes<'static, 'b> for Inflection {
                 "てる" | "でる" => Inflection::TeIru,
                 "とく" | "どく" => Inflection::Toku,
                 "ちゃう" | "じゃう" => Inflection::Chau,
+                "ば" => Inflection::Ba,
                 _ => return None,
             })
         } else {
