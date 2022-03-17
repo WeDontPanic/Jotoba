@@ -1,6 +1,7 @@
 @use search::kanji::result::Item;
 @use crate::BaseData;
 @use super::search_help;
+@use crate::templ_utils::*;
 
 @(data: &BaseData, kanji: Vec<Item>)
 
@@ -144,7 +145,7 @@
                  <span class="slider-output noselect currentAnimationSpeed">@data.gettext_fmt("Animation speed: {}", &[1])</span>
               </div>
               <div class="kanjisvgParent umami--click--kanji-replay">
-                @k_item.get_animation()
+                @unescaped_string(k_item.get_animation().unwrap_or_default())
               </div>
            </div>
           }

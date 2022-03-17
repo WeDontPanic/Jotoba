@@ -1,4 +1,4 @@
-use std::{fs::read_to_string, vec};
+use std::fs::read_to_string;
 
 use types::jotoba::{
     kanji::Kanji,
@@ -46,12 +46,8 @@ fn load_dicts(dicts: &Option<Vec<u32>>, lang: Language, show_english: bool) -> O
 
 impl Item {
     /// Return the animation entries for the template
-    pub fn get_animation(&self) -> String {
-        if let Ok(content) = read_to_string(self.kanji.get_animation_path()) {
-            content
-        } else {
-            "".to_string()
-        }
+    pub fn get_animation(&self) -> Option<String> {
+        read_to_string(self.kanji.get_animation_path()).ok()
     }
 
     /// Get a list of korean readings, formatted as: "<Hangul> (<romanized>)"
