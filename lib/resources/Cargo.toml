@@ -9,14 +9,14 @@ edition = "2021"
 quick-xml = "0.23.0-alpha3"
 strum = { version = "0.24.0", features = ["derive"] }
 strum_macros = "0.24.0"
-regex = "1.5.4"
+regex = "1.5.5"
 serde = { version = "1.0.136", features = ["derive"] }
 bincode = "1.3.3"
 itertools = "0.10.3"
 japanese = { path = "../japanese"}
 types = { path = "../types" , features = ["raw_types", "jotoba_intern"]}
 utils = { path = "../utils"}
-once_cell = "1.9.0"
+once_cell = "1.10.0"
 eudex = { git = "https://github.com/JojiiOfficial/eudex"}
 indexed_file = { git = "https://github.com/JojiiOfficial/IndexedFile"}
 sorted_intersection = "1.2.0"
