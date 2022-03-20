@@ -15,7 +15,11 @@ $(".speed-tag").each((i, e) => {
 
 // Initially prepare svg-settings
 $(".anim-container").each((i, e) => {
-    kanjiSettings[e.id.split("_")[0]] = {
+    // The Kanji
+    let kanji = e.id.split("_")[0];
+
+    // Specific settings
+    kanjiSettings[kanji] = {
         strokeCount: parseInt(e.dataset.strokes),
         speed: speed,
         timestamp: 0,
@@ -25,8 +29,16 @@ $(".anim-container").each((i, e) => {
 
     // Needs the settings to be loaded first
     Util.awaitDocumentReady(() => {
-        kanjiSettings[e.id.split("_")[0]].index = Settings.display.showKanjiOnLoad.val ? parseInt(e.dataset.strokes) : 0;
-        kanjiSettings[e.id.split("_")[0]].showNumbers = Settings.display.showKanjiNumbers.val;
+        kanjiSettings[kanji].index = Settings.display.showKanjiOnLoad.val ? parseInt(e.dataset.strokes) : 0;
+        kanjiSettings[kanji].showNumbers = Settings.display.showKanjiNumbers.val;
+
+        // If the user wants to hide Kanji on load
+        if (!Settings.display.showKanjiOnLoad.val) {
+            $("#"+kanji+"_svg > svg path:not(.bg)").each((i, e) => {
+                e.classList.add("hidden");
+                e.style.strokeDashoffset = e.getTotalLength();
+             });
+        }
 
         // If user wants to hide numbers: hide them
         if (!Settings.display.showKanjiNumbers.val) {
