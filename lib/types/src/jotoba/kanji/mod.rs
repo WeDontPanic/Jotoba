@@ -234,10 +234,16 @@ impl Kanji {
         Path::new(&self.get_animation_path()).exists()
     }
 
-    /// Returns the local path to stroke-frames svg
+    /// Returns the url to stroke-frames svg
     #[inline]
     pub fn get_stroke_frames_url(&self) -> String {
         format!("/assets/svg/kanji/{}_frames.svg", self.literal)
+    }
+
+    /// Returns the local path of the stroke-frames
+    #[inline]
+    pub fn get_stroke_frames_path(&self) -> String {
+        format!("html/assets/svg/kanji/{}_frames.svg", self.literal)
     }
 
     /// Returns `true` if the kanji has a stroke animation file

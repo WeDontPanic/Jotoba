@@ -45,6 +45,12 @@ fn load_dicts(dicts: &Option<Vec<u32>>, lang: Language, show_english: bool) -> O
 }
 
 impl Item {
+
+    /// Returns the entries' frames (svg)
+    pub fn get_frames(&self) -> Option<String> {
+        read_to_string(self.kanji.get_stroke_frames_path()).ok()
+    }
+
     /// Return the animation entries for the template
     pub fn get_animation(&self) -> Option<String> {
         read_to_string(self.kanji.get_animation_path()).ok()

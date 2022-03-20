@@ -2,13 +2,138 @@
 * This JS-File everything related to the settings overlay
 */
 
+function Settings() { }
+
 // Analytics. Use your own or leave empty
 var analyticsUrl = '';
 var analyticsAttributes = null;
 
+// Default "language" settings
+Settings.language = {
+    searchLang: { isCookie: true, id: "default_lang", dataType: "string", val: JotoTools.toJotobaLanguage(Cookies.get("default_lang") || navigator.language || navigator.userLanguage || "en-US") },
+    pageLang: { isCookie: true, id: "page_lang", dataType: "string", val: Cookies.get("page_lang") || "en-US" },
+}
+
+// Default "search" settings
+Settings.search = {
+    alwaysShowEnglish: { isCookie: true, id: "show_english", dataType: "boolean", val: true },
+    showEnglishOnTop: { isCookie: true, id: "show_english_on_top", dataType: "boolean", val: false },
+    showExampleSentences: { isCookie: true, id: "show_sentences", dataType: "boolean", val: true },
+    showFurigana: { isCookie: true, id: "sentence_furigana", dataType: "boolean", val: true },
+    focusSearchbar: { isCookie: false, id: "focus_searchbar", dataType: "boolean", val: false },
+    selectSearchbarContent: { isCookie: false, id: "select_searchbar_content", dataType: "boolean", val: false },
+    itemsPerPage: { isCookie: true, id: "items_per_page", dataType: "int", val: 10 },
+    kanjiPerPage: { isCookie: true, id: "kanji_page_size", dataType: "int", val: 4 },
+}
+
+// Default "display" settings
+Settings.display = {
+    theme: { isCookie: false, id: "theme", dataType: "string", val: "light" },
+    kanjiAnimationSpeed: { isCookie: false, id: "kanji_speed", dataType: "float", val: 1 },
+    showKanjiOnLoad: { isCookie: false, id: "show_kanji_on_load", dataType: "boolean", val: true },
+    showKanjiNumbers: { isCookie: false, id: "show_kanji_numbers", dataType: "boolean", val: false },
+}
+
+// Default "other" settings
+Settings.other = {
+    enableDoubleClickCopy: { isCookie: false, id: "dbl_click_copy", dataType: "boolean", val: true },
+    cookiesAllowed: { isCookie: false, id: "allow_cookies", dataType: "int", val: 0 },
+    firstVisit: { isCookie: false, id: "first_time", dataType: "boolean", val: true },
+    privacyChosen: { isCookie: false, id: "privacy_chosen", dataType: "boolean", val: false },
+}
+
+// Saves a settings-object into localStorage / Cookies
+Settings.saveSettings = function (object) {
+    for (let [key, entry] of Object.entries(object)) {
+        if (entry.isCookie) {
+            Cookies.set(entry.id, entry.val, { path: '/', expires: 365 });
+        } else {
+            localStorage.setItem(entry.id, entry.val);
+        }
+    }
+}
+
+// Loads a settings-object from localStorage / Cookies
+Settings.loadSettings = function (object) {
+    for (let [key, entry] of Object.entries(object)) {
+        let data = "";
+
+        // Try to get the data
+        if (entry.isCookie) {
+            data = Cookies.get(entry.id, entry.val);
+        } else {
+            data = localStorage.getItem(entry.id);
+        }
+
+        // Not found => ignore
+        if (!data) {
+            continue;
+        }
+
+        // Found => parse and overwrite
+        switch (entry.dataType) {
+            case "boolean":
+                object[key].val = Util.toBoolean(data);
+                break;
+            case "int":
+                object[key].val = parseInt(data);
+                break;
+            case "float":
+                object[key].val = parseFloat(data);
+                break;
+            default:
+                object[key].val = data;
+        }
+    }
+}
+
+// Alters a "language" setting and reloads if needed
+Settings.alterLanguage = function (key, value, reloadPage) {
+    Settings.language[key].val = value;
+    Settings.saveSettings(Settings.language);
+
+    if (reloadPage) {
+        location.reload();
+    }
+}
+
+// Used for the Choices-Hook on function calls
+alterLanguage_search = function (html, value) {
+    let reloadPage = window.location.href.includes("/search");
+    Settings.alterLanguage("searchLang", value, reloadPage);
+}
+
+// Used for the Choices-Hook on function calls
+alterLanguage_page = function (html, value) {
+    Settings.alterLanguage("pageLang", value, true);
+}
+
+// Alters a "search" setting and reloads if needed
+Settings.alterSearch = function (key, value, updateSub) {
+    Settings.search[key].val = value;
+    Settings.saveSettings(Settings.search);
+
+    if (updateSub) {
+        OverlaySettings.updateSubEntries();
+    }
+}
+
+// Alters a "display" setting and reloads if needed
+Settings.alterDisplay = function (key, value) {
+    Settings.display[key].val = value;
+    Settings.saveSettings(Settings.display);
+}
+
+// Alters a "other" setting and reloads if needed
+Settings.alterOther = function (key, value) {
+    Settings.other[key].val = value;
+    Settings.saveSettings(Settings.other);
+}
+
 // Opens the Settings Overlay and accepts cookie usage
-function cookiesAccepted(manuallyCalled) {
-    Cookies.set("allow_cookies", "1", {path: '/', expires: 365});
+Settings.cookiesAccepted = function (manuallyCalled) {
+    Settings.alterOther("cookiesAllowed", "1");
+
     if (manuallyCalled)
         Util.showMessage("success", getText("SETTINGS_COOKIE_ACCEPT"));
 
@@ -16,247 +141,60 @@ function cookiesAccepted(manuallyCalled) {
 
     Util.loadScript(analyticsUrl, true, analyticsAttributes);
     Util.setMdlCheckboxState("cookie_settings", true);
+    Settings.alterOther("privacyChosen", true);
 }
 
 // Revokes the right to store user Cookies
-function revokeCookieAgreement(manuallyCalled) {
+Settings.revokeCookieAgreement = function (manuallyCalled) {
     $('#cookie-footer').addClass("hidden");
 
     if (manuallyCalled)
-        Util.showMessage("success",  getText("SETTINGS_COOKIE_REJECT"));
+        Util.showMessage("success", getText("SETTINGS_COOKIE_REJECT"));
 
-    Cookies.set("allow_cookies", "0", {path: '/', expires: 365});
+    Cookies.set("allow_cookies", "0", { path: '/', expires: 365 });
     Util.setMdlCheckboxState("cookie_settings", false);
-}
-
-/* ------------------------------------------------------------------- */
-
-// On load, get all the cookie's data and prepare settings overlay
-Util.awaitDocumentReady(() => {
-    loadCookieData();
-    Util.mdlScrollFix(); 
-});
-
-// Load the cookie's data into important stuff
-function loadCookieData() {
-
-    // Language Settings
-    let search_lang = JotoTools.toJotobaLanguage(Cookies.get("default_lang") || navigator.language || navigator.userLanguage || "en-US");
-    let page_lang = Cookies.get("page_lang") || "en-US";
-
-    // Search Settings
-    let english_always = Util.toBoolean(Cookies.get("show_english"), true);
-    let english_on_top = Util.toBoolean(Cookies.get("show_english_on_top"));
-    let example_sentences = Util.toBoolean(Cookies.get("show_sentences"), true);
-    let sentence_furigana = Util.toBoolean(Cookies.get("sentence_furigana"), true);
-    let focus_searchbar = Util.toBoolean(Cookies.get("focus_searchbar"));
-    let select_searchbar_content = Util.toBoolean(Cookies.get("select_searchbar_content"));
-    let items_per_page = Cookies.get("items_per_page");
-    let kanji_per_page = Cookies.get("kanji_page_size");
-
-    // Display Settings
-    let theme = localStorage.getItem("theme");
-    let kanji_speed = localStorage.getItem("kanji_speed");
-
-    // Other Settings
-    let dbl_click_copy = Util.toBoolean(localStorage.getItem("dbl_click_copy"), true);
-    let cookies_allowed = Cookies.get("allow_cookies");
-
-    // Set essentials
-    if (Cookies.get("default_lang") === undefined) {
-        Cookies.set("default_lang", search_lang, {path: '/', expires: 365});
-    }
-
-    // Execute 
-    setLanguageSettings(search_lang, page_lang);
-    setSearchSettings(english_always, english_on_top, example_sentences, sentence_furigana, focus_searchbar, select_searchbar_content, items_per_page, kanji_per_page);
-    setDisplaySettings(theme, kanji_speed);
-    setOtherSettings(dbl_click_copy, cookies_allowed);
-
-    // New-User design adjustments
-    if (!localStorage.getItem("first_time")) {
-        $(".infoBtn").addClass("new");
-    }
-}
-
-// Prepare the language tab
-async function setLanguageSettings(search_lang, page_lang) {
-    // Set search_lang
-    document.querySelectorAll("#search-lang-select > .choices__item--choice").forEach((e) => {
-        if (e.dataset.value == search_lang) {
-            let choicesInner = e.parentElement.parentElement.parentElement.children[0].children;
-             
-            choicesInner[0].children[0].innerHTML = e.innerHTML;
-            choicesInner[1].children[0].innerHTML = e.innerHTML;
-        }
-    });
-
-    // Set page_lang
-    document.querySelectorAll("#page-lang-select > .choices__item--choice").forEach((e) => {
-        if (e.dataset.value == page_lang) {
-            let choicesInner = e.parentElement.parentElement.parentElement.children[0].children;
-            
-            choicesInner[0].children[0].innerHTML = e.innerHTML;
-            choicesInner[1].children[0].innerHTML = e.innerHTML;
-        }
-    });
-}
-
-// Prepare the search tab
-async function setSearchSettings(english_always, english_on_top, example_sentences, sentence_furigana, focus_searchbar, select_searchbar_content, items_per_page, kanji_per_page) {
-    // Set checkboxes
-    Util.setMdlCheckboxState("show_eng_settings", english_always);
-    Util.setMdlCheckboxState("show_eng_on_top_settings", english_on_top);
-    Util.setMdlCheckboxState("show_example_sentences_settings", example_sentences);
-    Util.setMdlCheckboxState("show_sentence_furigana_settings", sentence_furigana);
-    Util.setMdlCheckboxState("focus_search_bar_settings", focus_searchbar);
-    Util.setMdlCheckboxState("select_searchbar_content_settings", select_searchbar_content);
-
-    // Hide sub entries if not parent is set to false
-    if (!english_always) {
-        $('#eng_on_top_parent').addClass("hidden");
-    } else {
-        $('#eng_on_top_parent').removeClass("hidden");
-    }
-
-    // Hide sub entries if not parent is set to false
-    if (!focus_searchbar) {
-        $('#select_searchbar_content_parent').addClass("hidden");
-    } else {
-        $('#select_searchbar_content_parent').removeClass("hidden");
-    }
-
-    // Default items val
-    if (!items_per_page) {
-        Cookies.set("items_per_page", 10, {path: '/', expires: 365});
-        items_per_page = 10;
-    }
-
-    // Set items val
-    let itemsInput = $('#items_per_page_input');
-    itemsInput.val(items_per_page);
-    itemsInput.parent().addClass("is-dirty")
-
-    // Default kanji val
-    if (!kanji_per_page) {
-        Cookies.set("kanji_page_size", 4, {path: '/', expires: 365});
-        kanji_per_page = 4;
-    }
-
-    // Set kanji val
-    let kanjiInput =  $('#kanji_per_page_input');
-    kanjiInput.val(kanji_per_page);
-    kanjiInput.parent().addClass("is-dirty")
-}
-
-// Prepare the display tab
-async function setDisplaySettings(theme, kanji_speed) {
-    // Light / Dark Mode toggle
-    Util.setMdlCheckboxState("use_dark_mode_settings", theme === "dark");
-
-    // Make sure kanji_speed is always defined
-    if (!kanji_speed) {
-        localStorage.setItem("kanji_speed", 1);
-        kanji_speed = 1;
-    }
-
-    // Kanji speed
-    $('#show_anim_speed_settings').val(kanji_speed);
-    $('#show_anim_speed_settings_slider').html(kanji_speed);
-}
-
-// Prepare the others tab
-async function setOtherSettings(dbl_click_copy, allow_cookies) {
-    Util.setMdlCheckboxState("dbl_click_copy_settings", dbl_click_copy);
-
-    if (allow_cookies === undefined) {
-        $("#cookie-footer").removeClass("hidden");
-        Util.setMdlCheckboxState("cookie_settings", false);
-    } else {
-        Util.setMdlCheckboxState("cookie_settings", Util.toBoolean(allow_cookies));
-    }
-}
-
-// Handles an event caused by an input field
-function onInputSettingsChange(relatedCookie, event) {
-    let value = event.target.value;
-
-    if (value > 0 && value < 101) {
-        Cookies.set(relatedCookie, event.target.value, {path: '/', expires: 365});
-    } else {
-        event.target.value = Cookies.get(relatedCookie);
-        $(event.target).parent().addClass("is-dirty");
-    }
-}
-
-// Handles an event caused by a settings-btn
-function onBtnSettingsChange(identifier, event, useLocalStorage) {
-    if (useLocalStorage) {
-        localStorage.setItem(identifier, event.target.checked);
-    } else {
-        Cookies.set(identifier, event.target.checked, {path: '/', expires: 365});
-    }
-}
-
-// Special handling for english_always
-function onBtnSettingsChange_englishAlways(event) {
-    // Hide english_on_top if not english_always
-    if (!event.target.checked) {
-        $('#eng_on_top_parent').addClass("hidden");
-    } else {
-        $('#eng_on_top_parent').removeClass("hidden");
-    }
-
-    onBtnSettingsChange("show_english", event);
-}
-
-// Special handling for focus_search_bar
-function onBtnSettingsChange_focusSearchBar(event) {
-    // Hide english_on_top if not english_always
-    if (!event.target.checked) {
-        $('#select_searchbar_content_parent').addClass("hidden");
-    } else {
-        $('#select_searchbar_content_parent').removeClass("hidden");
-    }
-
-    onBtnSettingsChange("focus_searchbar", event);
-}
-
-// Special handling for use_darkmode
-function onBtnSettingsChange_darkTheme(event) {
-    if (event.target.checked) {
-        setTheme("dark");
-    } else {
-        setTheme("light");
-    }
+    Settings.alterOther("privacyChosen", true);
 }
 
 // Special handling for allow_cookies
-function onCookiesAcceptChange(event) {
-    if (event.target.checked) {
-        cookiesAccepted(true);
+Settings.onCookiesAcceptChange = function (allowed) {
+    if (allowed) {
+        Settings.cookiesAccepted(true);
     } else {
-        revokeCookieAgreement(true);
+        Settings.revokeCookieAgreement(true);
     }
 }
 
-// Changes the Default Language to search for
-function onSettingsChange_DefaultLanguage(html, value) {
-    let currentLang = Cookies.get("default_lang");
-    Cookies.set('default_lang', value, {path: '/', expires: 365});
-    if (window.location.href.includes("/search")) {
-        window.location.href = window.location.href.replace("&l="+currentLang, "&l="+value);
+// Prepare the settings overlay's data initially
+async function prepareSettingsOverlay() {
+
+    // Prepare the Settings Overlay
+    OverlaySettings.updateDropdowns();
+    OverlaySettings.updateCheckboxes();
+    OverlaySettings.updateSubEntries();
+    OverlaySettings.updateSliders();
+    OverlaySettings.updateInputs();
+
+    // Show Cookie footer if needed
+    if (!Settings.other.privacyChosen.val) {
+        $("#cookie-footer").removeClass("hidden");
     }
-}
+};
 
-// Changes the Page's UI Language
-function onSettingsChange_PageLanguage(html, value) {
-    Cookies.set('page_lang', value, {path: '/', expires: 365});
-    location.reload();
-}
+// Load Settings on initial load
+Util.awaitDocumentInteractive(() => {
+    Settings.loadSettings(Settings.search);
+    Settings.loadSettings(Settings.display);
+    Settings.loadSettings(Settings.other);
+});
 
-// Sets the default kanji animation speed
-function onSettingsChange_AnimationSpeed(event) {
-    $('#show_anim_speed_settings_slider').html(event.target.value);
-    localStorage.setItem('kanji_speed', event.target.value);
-}
+Util.awaitDocumentReady(() => {
+    Settings.loadSettings(Settings.language);
+    prepareSettingsOverlay();
+
+    // Add the info-icon on initial page load if needed
+    if (Settings.other.firstVisit.val) {
+        console.log(Settings.other.firstVisit)
+        $(".infoBtn").addClass("new");
+    }
+});

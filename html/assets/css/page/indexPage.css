@@ -61,7 +61,7 @@ form {
     right: 30px;
     padding: 0.25rem;
     border-radius: 2rem;
-    z-index: 9999;
+    z-index: 500;
     width: 9px;
     height: 9px;
     background-color: var(--alert);

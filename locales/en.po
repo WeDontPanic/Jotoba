@@ -451,6 +451,12 @@ msgstr ""
 msgid "Use dark mode"
 msgstr ""
 
+msgid "Show kanji on load"
+msgstr ""
+
+msgid "Show kanji numbers"
+msgstr ""
+
 msgid "Default kanji animation speed"
 msgstr ""
 

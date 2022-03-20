@@ -417,8 +417,17 @@ a:hover {
     cursor: pointer;
 }
 
+:root.dark .slider::-webkit-slider-thumb {
+    border-color: #3ace67;
+    background: #3ace67;
+}
+
 .slider::-webkit-slider-thumb:hover {
     background-color: var(--primaryColor);
+}
+
+:root.dark .slider::-webkit-slider-thumb:hover{
+    border-color: #2eeb67;
 }
 
 .slider::-moz-range-thumb {
@@ -429,8 +438,16 @@ a:hover {
     cursor: pointer;
 }
 
+:root.dark .slider::-moz-range-thumb:hover {
+    background: #3ace67;
+}
+
 .slider::-moz-range-thumb:hover {
     background-color: var(--primaryColor);
+}
+
+:root.dark .slider::-moz-range-thumb:hover {
+    border-color: #2eeb67;
 }
 
 .res-separator {

@@ -10,7 +10,7 @@ const setTheme = (theme) => {
 }
 
 // Updates theme when changed by another tab (or console)
-window.addEventListener("storage", ()=> {
+window.addEventListener("storage", () => {
   let targetTheme = localStorage.getItem("theme");
   if (targetTheme) {
     setTheme(targetTheme);
@@ -29,7 +29,7 @@ else {
   });
 }
 
-// On load -> listen for prefers-color-scheme change
+// listen for prefers-color-scheme changes
 window.matchMedia("(prefers-color-scheme: dark)").addEventListener(
   "change",
   e => setTheme(e.matches ? "dark" : "light")
