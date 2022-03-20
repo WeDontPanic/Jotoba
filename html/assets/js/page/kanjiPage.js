@@ -54,8 +54,9 @@ function prepareAutoplay(kanjiLiteral) {
 
     let playBtn = document.getElementById(kanjiLiteral + "_play");
 
-    playBtn.classList.add("hidden");
-    playBtn.nextElementSibling.classList.remove("hidden");
+    playBtn.dataset.state = "pause";
+    playBtn.children[0].classList.add("hidden");
+    playBtn.children[1].classList.remove("hidden");
 
     return startTime;
 }
@@ -64,9 +65,27 @@ function prepareAutoplay(kanjiLiteral) {
 function concludeAutoplay(kanjiLiteral) {
     let playBtn = document.getElementById(kanjiLiteral+ "_play");
 
-    playBtn.classList.remove("hidden");
-    playBtn.nextElementSibling.classList.add("hidden");
+    playBtn.dataset.state = "play";
+    playBtn.children[0].classList.remove("hidden");
+    playBtn.children[1].classList.add("hidden");
 }
+
+// Based on the current state, show or pause the animation
+async function doOrPauseAnimation(kanjiLiteral) {
+    let playBtn = document.getElementById(kanjiLiteral+ "_play");
+
+    if (playBtn.dataset.state === "play") {
+        if (kanjiSettings[kanjiLiteral].index == kanjiSettings[kanjiLiteral].strokeCount) {
+            await undoAnimation(kanjiLiteral);
+        }
+        
+        console.log(kanjiSettings[kanjiLiteral].index);
+        doAnimation(kanjiLiteral);
+        return;
+    }
+
+    pauseAnimation(kanjiLiteral);
+} 
 
 // Automatically draws the whole image
 async function doAnimation(kanjiLiteral) {
@@ -104,7 +123,7 @@ async function undoAnimation(kanjiLiteral) {
             return;
         }
 
-        await doAnimationStep(kanjiLiteral, paths[kanjiSettings[kanjiLiteral].index], false);
+        await doAnimationStep(kanjiLiteral, paths[kanjiSettings[kanjiLiteral].index], false, kanjiSettings[kanjiLiteral].index > 0);
         toggleNumbers(kanjiLiteral);
 
 
@@ -121,18 +140,19 @@ async function undoAnimation(kanjiLiteral) {
 async function pauseAnimation(kanjiLiteral) {
     kanjiSettings[kanjiLiteral].timestamp = Date.now();
 
-    let pauseBtn = document.getElementById(kanjiLiteral+ "_pause");
+    let playBtn = document.getElementById(kanjiLiteral+ "_play");
 
-    pauseBtn.classList.add("hidden");
-    pauseBtn.previousSibling.classList.remove("hidden");
+    playBtn.dataset.state = "play";
+    playBtn.children[0].classList.remove("hidden");
+    playBtn.children[1].classList.add("hidden");
 }
 
 // Draws or removes the given path
-async function doAnimationStep(kanjiLiteral, path, forward) {
+async function doAnimationStep(kanjiLiteral, path, forward, fastReset) {
     path.classList.remove("hidden");
 
     let len = path.getTotalLength();
-    let drawTime = len * 10 * (1 / kanjiSettings[kanjiLiteral].speed);
+    let drawTime = len * 10 * (!fastReset ? (1 / kanjiSettings[kanjiLiteral].speed) : 0.5);
 
     let transition = "transition: " + drawTime + "ms ease 0s, stroke " + (forward ? 0 : drawTime) + "ms ease 0s;";
     let dashArray = "stroke-dasharray: " + len + "," + len + ";";
@@ -140,7 +160,7 @@ async function doAnimationStep(kanjiLiteral, path, forward) {
 
     path.style = transition + dashArray + strokeDashoffset + (forward ? "" : "stroke: var(--danger);");
 
-    return new Promise(resolve => setTimeout(resolve, drawTime));
+    return new Promise(resolve => setTimeout(resolve, !fastReset ? drawTime : 0));
 }
 
 // Draws or removes the given path based on the button clicked

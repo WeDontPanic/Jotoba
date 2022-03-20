@@ -47,9 +47,7 @@
 
 .animation-container {
     padding: 1em 0 1.5em 0 !important;
-    position: relative;
-    left: 50%;
-    transform: translateX(-25%);
+    place-content: center;
 }
 
 .animation-controller {
@@ -71,6 +69,10 @@
     margin-left: 2px;
     margin-right: 2px;
     width: 60%;
+}
+
+.animation-group > .m > span {
+    pointer-events: none;
 }
 
 .animation-group > .r {

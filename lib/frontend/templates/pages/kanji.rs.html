@@ -148,10 +148,14 @@
                 <input data-kanji="@(k_item.kanji.literal)" type="range" min="0.05" max="2" value="1" step="0.05" class="slider speedSlider"/>
               </div>
               <div class="animation-group d-flex">
-                <button class="l" onclick='doAnimationStep_onClick("@(k_item.kanji.literal)", -1)'>l</button>
-                <button id="@(k_item.kanji.literal)_play" onclick='doAnimation("@(k_item.kanji.literal)")' class="m">play</button>
-                <button id="@(k_item.kanji.literal)_pause" onclick='pauseAnimation("@(k_item.kanji.literal)")' class="m hidden">pause</button>
-                <button class="r" onclick='doAnimationStep_onClick("@(k_item.kanji.literal)", 1)'>r</button>
+                <button class="l ripple" onclick='doAnimationStep_onClick("@(k_item.kanji.literal)", -1)'>l</button>
+
+                <button id="@(k_item.kanji.literal)_play" onclick='doOrPauseAnimation("@(k_item.kanji.literal)")' class="m ripple" data-state="play">
+                  <span>play</span>
+                  <span class="hidden">pause</span>
+                </button>
+                
+                <button class="r ripple" onclick='doAnimationStep_onClick("@(k_item.kanji.literal)", 1)'>r</button>
               </div>
               <div id="@(k_item.kanji.literal)_reset" class="clickable" onclick='undoAnimation("@(k_item.kanji.literal)")'>Zurücksetzen</div>
             </div>            
