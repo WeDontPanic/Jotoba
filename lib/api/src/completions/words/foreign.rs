@@ -1,4 +1,7 @@
-use japanese::guessing::could_be_romaji;
+use std::time::Instant;
+
+use autocomplete::{SuggestionTask, TaskQuery};
+use japanese::guessing::{could_be_romaji, is_romaji_repl};
 use resources::models::suggestions::foreign_words::ForeignSuggestion;
 use utils::{binary_search::BinarySearchable, real_string_len};
 
@@ -6,6 +9,38 @@ use super::super::*;
 
 /// Returns suggestions based on non japanese input
 pub async fn suggestions(query: &Query, query_str: &str) -> Option<Vec<WordPair>> {
+    let start = Instant::now();
+    let engine = storage::FOREIGN_WORD_ENGINE.get()?;
+
+    let mut task = SuggestionTask::new(30);
+    let mut query = TaskQuery::new(query_str, 1.0);
+    query.align.allow = false;
+    query.longest_prefix.allow = true;
+    query.longest_prefix.limit = 10000;
+    query.longest_prefix.max_steps = 10;
+    query.longest_prefix.frequency_weight = 0.0001;
+    query.longest_prefix.relevance_multiplier = 1.0;
+    task.add_query(engine.new_query(query));
+
+    if let Some(hira_query) = try_romaji(query_str) {
+        let jp_engine = storage::JP_WORD_ENGINE.get().unwrap();
+        let query = TaskQuery::new(hira_query, 80.0);
+        let query = jp_engine.new_query(query);
+        task.add_query(query);
+    }
+
+    let res = task.search();
+
+    let out = res
+        .into_iter()
+        .map(|i| WordPair {
+            primary: i.primary,
+            secondary: i.secondary,
+        })
+        .collect::<Vec<_>>();
+    println!("suggestions took: {:?}", start.elapsed());
+
+    /*
     let lang = query.settings.user_lang;
 
     // Check if suggestions are available for the given language
@@ -14,8 +49,54 @@ pub async fn suggestions(query: &Query, query_str: &str) -> Option<Vec<WordPair>
     }
 
     let query_str = query_str.trim().to_owned();
+    */
 
-    Some(search(lang, &query_str))
+    //Some(search(lang, &query_str))
+    Some(out)
+}
+
+/// Returns Some(String) if `query_str` could be (part of) romaji search input and None if not
+fn try_romaji(query_str: &str) -> Option<String> {
+    let str_len = real_string_len(query_str);
+    if str_len < 4 || query_str.starts_with('n') || query_str.contains(' ') {
+        return None;
+    }
+
+    if let Some(v) = is_romaji_repl(query_str) {
+        return Some(v.to_hiragana());
+    }
+
+    // 'n' is the only hiragana with with=1 in romaji so allow them
+    // to be treated properly too
+    let min_len = 4 - query_str.chars().filter(|i| *i == 'n').count();
+
+    // Strip one to avoid switching between romaji/normal results
+    if str_len > min_len {
+        let prefix = strip_str_end(query_str, 1);
+        if let Some(v) = is_romaji_repl(prefix) {
+            return Some(v.to_hiragana());
+        }
+    }
+
+    // shi ending needs more stripping but also more existing romaji to not
+    // heavily overlap with other results
+    if str_len >= min_len + 2 && (query_str.ends_with("sh") || query_str.ends_with("ch")) {
+        let prefix = strip_str_end(query_str, 2);
+        if let Some(v) = is_romaji_repl(prefix) {
+            return Some(v.to_hiragana());
+        }
+    }
+
+    None
+}
+
+/// Returns a substring of `inp` with `len` amount of tailing characters being removed.
+/// This works for non UTF-8 as well. If len > |inp| "" gets returned
+pub fn strip_str_end(inp: &str, len: usize) -> &str {
+    match inp.char_indices().rev().nth(len - 1).map(|i| i.0) {
+        Some(end) => &inp[..end],
+        None => "",
+    }
 }
 
 fn search<'a>(main_lang: Language, query_str: &'a str) -> Vec<WordPair> {
@@ -181,5 +262,18 @@ fn foreign_suggestion_to_pair(suggestion: ForeignSuggestion) -> WordPair {
     WordPair {
         primary: suggestion.text,
         secondary: suggestion.secondary,
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use super::*;
+
+    #[test]
+    fn test_strip_end() {
+        let inp = "これはかっこいいテキスト";
+        assert_eq!(strip_str_end(inp, 1), "これはかっこいいテキス");
+        assert_eq!(strip_str_end(inp, 2), "これはかっこいいテキ");
+        assert_eq!(strip_str_end(inp, 3), "これはかっこいいテ");
     }
 }

@@ -1,5 +1,9 @@
 use std::{collections::HashMap, error::Error, fs::File, io::BufReader, path::Path};
 
+use autocomplete::{
+    index::{japanese::JapaneseIndex, BasicIndex},
+    SuggestionEngine,
+};
 use config::Config;
 use log::info;
 use once_cell::sync::OnceCell;
@@ -7,6 +11,9 @@ use search::suggestions::{store_item, TextSearch};
 use serde::{Deserialize, Deserializer};
 
 use super::WordPair;
+
+pub static FOREIGN_WORD_ENGINE: OnceCell<SuggestionEngine<BasicIndex>> = OnceCell::new();
+pub static JP_WORD_ENGINE: OnceCell<SuggestionEngine<JapaneseIndex>> = OnceCell::new();
 
 /// In-memory storage for native name suggestions
 pub(crate) static NAME_NATIVE: OnceCell<TextSearch<Vec<NameNative>>> = OnceCell::new();
@@ -25,6 +32,18 @@ pub(crate) static K_READING_ALIGN: OnceCell<HashMap<String, Vec<u32>>> = OnceCel
 
 /// Load all available suggestions
 pub fn load_suggestions(config: &Config) -> Result<(), Box<dyn Error>> {
+    let foreign_path = Path::new(config.get_suggestion_sources()).join("word_sugg");
+    let foreign_engine: BasicIndex =
+        bincode::deserialize_from(BufReader::new(File::open(foreign_path).unwrap())).unwrap();
+    let foreign_engine = SuggestionEngine::new(foreign_engine);
+    FOREIGN_WORD_ENGINE.set(foreign_engine).ok();
+
+    let jp_path = Path::new(config.get_suggestion_sources()).join("new_jp_index");
+    let jp_engine: JapaneseIndex =
+        bincode::deserialize_from(BufReader::new(File::open(jp_path).unwrap())).unwrap();
+    let jp_engine = SuggestionEngine::new(jp_engine);
+    JP_WORD_ENGINE.set(jp_engine).ok();
+
     rayon::scope(|s| {
         s.spawn(|_| {
             if let Err(err) = load_meaning_suggestions(config) {
