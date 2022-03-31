@@ -82,8 +82,8 @@ Util.awaitDocumentReady(() => {
 // Initialize Pagination Buttons
 Util.awaitDocumentReady(() => {
     $('.pagination-item:not(.disabled) > button').on("click", (e) => {
-        var searchValue = $('#search').val();
-        var searchType = $('#search-type').val();
+        var searchValue = JotoTools.getCurrentSearch();
+        var searchType = JotoTools.getCurrentSearchType();
         var targetPage = $(e.target.parentNode).attr("target-page");
         Util.loadUrl(JotoTools.createUrl(searchValue, searchType, targetPage));
     });

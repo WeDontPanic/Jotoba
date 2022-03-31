@@ -45,9 +45,14 @@ JotoTools.getPageUrl = function(pageName) {
     return url;
 }
 
+// Returns the currently searched string
+JotoTools.getCurrentSearch = function() {
+    document.location.pathname.split("/")[2];
+}
+
 // Returns the value of the current Search [Words, Sentence...]
 JotoTools.getCurrentSearchType = function() {
-    return $("#search-type > option").attr("value");
+    return $('#search-type').val();
 }
 
 // Parses a language code into the Joto needs
