@@ -1,9 +1,10 @@
 /**
- * This JS-File implements the Kanji Animation and compound dropdown feature
+ * This JS-File implements the Kanji Animation and compound dropdown features
  */
 
 // Kanji settings
 var kanjiSettings = [];
+const Animation = {none: 0, forward: 1, backwards: 2};
 
 // Default kanji speed (only used on init)
 let speed = localStorage.getItem("kanji_speed") || 1;
@@ -25,6 +26,8 @@ $(".anim-container").each((i, e) => {
         timestamp: 0,
         index: 0,
         showNumbers: false,
+        animationDirection: Animation.none,
+        isAutomated: false,
     }
 
     // Needs the settings to be loaded first
@@ -49,20 +52,63 @@ $(".anim-container").each((i, e) => {
 
 // Adjust svg's draw speed using the slider
 $('.speedSlider:not(.settings)').on('input', function () {
-    kanjiSettings[this.dataset.kanji].speed = this.value;
+    let kanjiLiteral = this.dataset.kanji;
 
-    let ident = this.dataset.kanji + "_speed";
+    kanjiSettings[kanjiLiteral].speed = this.value;
+
+    let ident = kanjiLiteral + "_speed";
     let speed = Math.round((parseFloat(this.value) * 100));
 
     $("#" + ident).html(speed + "%");
     sessionStorage.setItem(ident, speed);
+
+    if (kanjiSettings[kanjiLiteral].animationDirection !== Animation.none) {
+        refreshAnimations(kanjiLiteral);
+        console.log("index on refresh call: "+kanjiSettings[kanjiLiteral].index);
+    }
 });
+
+// Refresh the currently running animation. Used for changing the current animation speed
+async function refreshAnimations(kanjiLiteral) {
+    let svg = document.getElementById(kanjiLiteral + "_svg").firstElementChild;
+    let paths = svg.querySelectorAll("path:not(.bg)")
+    let startTime = prepareAutoplay(kanjiLiteral);
+
+    // Iterate all strokes that are potentially animating
+    for (let i = 0; i < paths.length; i++) {
+        let len = paths[i].getTotalLength();
+        let currentLen = $(paths[i]).css("stroke-dashoffset");
+
+        // Stroke is currently animating
+        if (len !== currentLen && currentLen !== "0px") {
+            // Reset current animation
+            $(paths[i]).css("stroke-dashoffset", $(paths[i]).css("stroke-dashoffset"));
+
+            // Animate and wait if the animations was automated
+            let animationPromise = doAnimationStep(kanjiLiteral, paths[i], kanjiSettings[kanjiLiteral].animationDirection === Animation.forward, false);
+            if (kanjiSettings[kanjiLiteral].isAutomated) {
+                kanjiSettings[kanjiLiteral].index = i+1;
+                await animationPromise;
+
+                if (startTime < kanjiSettings[kanjiLiteral].timestamp) {
+                    return;
+                }
+            }
+        }
+    }
+
+    // Conclude potential autoplay
+    if (kanjiSettings[kanjiLiteral].isAutomated) {
+        concludeAutoplay(kanjiLiteral);
+    }
+}
 
 // Prepares the required steps to start auto-playing an animation
 function prepareAutoplay(kanjiLiteral) {
     let startTime = Date.now();
 
     kanjiSettings[kanjiLiteral].timestamp = startTime;
+    kanjiSettings[kanjiLiteral].isAutomated = true;
 
     let playBtn = document.getElementById(kanjiLiteral + "_play");
 
@@ -77,6 +123,8 @@ function prepareAutoplay(kanjiLiteral) {
 function concludeAutoplay(kanjiLiteral) {
     let playBtn = document.getElementById(kanjiLiteral+ "_play");
 
+    kanjiSettings[kanjiLiteral].isAutomated = false;
+
     playBtn.dataset.state = "play";
     playBtn.children[0].classList.remove("hidden");
     playBtn.children[1].classList.add("hidden");
@@ -88,10 +136,9 @@ async function doOrPauseAnimation(kanjiLiteral) {
 
     if (playBtn.dataset.state === "play") {
         if (kanjiSettings[kanjiLiteral].index == kanjiSettings[kanjiLiteral].strokeCount) {
-            await undoAnimation(kanjiLiteral);
+            await undoAnimation(kanjiLiteral, true);
         }
         
-        console.log(kanjiSettings[kanjiLiteral].index);
         doAnimation(kanjiLiteral);
         return;
     }
@@ -112,19 +159,23 @@ async function doAnimation(kanjiLiteral) {
         }
 
         kanjiSettings[kanjiLiteral].index++;
+        kanjiSettings[kanjiLiteral].animationDirection = Animation.forward;
+
         await doAnimationStep(kanjiLiteral, paths[index], true);
-        toggleNumbers(kanjiLiteral);
 
         if (startTime < kanjiSettings[kanjiLiteral].timestamp) {
             return;
         }
+
+        toggleNumbers(kanjiLiteral);
+        kanjiSettings[kanjiLiteral].animationDirection = Animation.none;
     }
 
     concludeAutoplay(kanjiLiteral);
 }
 
 // Automatically removes the whole image
-async function undoAnimation(kanjiLiteral) {
+async function undoAnimation(kanjiLiteral, awaitLast) {
     let startTime = prepareAutoplay(kanjiLiteral);
 
     let svg = document.getElementById(kanjiLiteral + "_svg").firstElementChild;
@@ -135,13 +186,17 @@ async function undoAnimation(kanjiLiteral) {
             return;
         }
 
-        await doAnimationStep(kanjiLiteral, paths[kanjiSettings[kanjiLiteral].index], false, kanjiSettings[kanjiLiteral].index > 0);
-        toggleNumbers(kanjiLiteral);
+        kanjiSettings[kanjiLiteral].animationDirection = Animation.backwards;
 
+        let awaitAnimationStep = awaitLast && kanjiSettings[kanjiLiteral].index === 0;
+        await doAnimationStep(kanjiLiteral, paths[kanjiSettings[kanjiLiteral].index], false, !awaitAnimationStep);
 
         if (startTime < kanjiSettings[kanjiLiteral].timestamp) {
             return;
         }
+
+        toggleNumbers(kanjiLiteral);
+        kanjiSettings[kanjiLiteral].animationDirection = Animation.none;
     }
 
     kanjiSettings[kanjiLiteral].index = 0;
@@ -166,7 +221,7 @@ async function doAnimationStep(kanjiLiteral, path, forward, fastReset) {
     let len = path.getTotalLength();
     let drawTime = len * 10 * (!fastReset ? (1 / kanjiSettings[kanjiLiteral].speed) : 0.5);
 
-    let transition = "transition: " + drawTime + "ms ease 0s, stroke " + (forward ? 0 : drawTime) + "ms ease 0s;";
+    let transition = "transition: stroke-dashoffset " + drawTime + "ms ease 0s, stroke " + (forward ? 0 : drawTime) + "ms ease 0s;";
     let dashArray = "stroke-dasharray: " + len + "," + len + ";";
     let strokeDashoffset = "stroke-dashoffset: " + (forward ? "0;" : (len + ";"));
 
@@ -187,10 +242,17 @@ async function doAnimationStep_onClick(kanjiLiteral, direction) {
         return;
     }
 
-    let p = svg.querySelectorAll("path:not(.bg)")[direction > 0 ? kanjiSettings[kanjiLiteral].index : kanjiSettings[kanjiLiteral].index - 1];
-    kanjiSettings[kanjiLiteral].index += direction;
+    let path = svg.querySelectorAll("path:not(.bg)")[direction > 0 ? kanjiSettings[kanjiLiteral].index : kanjiSettings[kanjiLiteral].index - 1];
 
-    await doAnimationStep(kanjiLiteral, p, direction > 0);
+    kanjiSettings[kanjiLiteral].index += direction;
+    kanjiSettings[kanjiLiteral].animationDirection = direction > 0 ? Animation.forward : Animation.backwards;
+
+    await doAnimationStep(kanjiLiteral, path, direction > 0);
+
+    if (startTime <= kanjiSettings[kanjiLiteral].timestamp) {
+        kanjiSettings[kanjiLiteral].animationDirection = Animation.none;
+    }
+
     toggleNumbers(kanjiLiteral);
 }
 
