@@ -19,9 +19,13 @@ $(".anim-container").each((i, e) => {
     // The Kanji
     let kanji = e.id.split("_")[0];
 
+    // Figure out how many paths there are
+    let svg = document.getElementById(kanji + "_svg").firstElementChild;
+    let paths = svg.querySelectorAll("path:not(.bg)");
+
     // Specific settings
     kanjiSettings[kanji] = {
-        strokeCount: parseInt(e.dataset.strokes),
+        strokeCount: paths.length,
         speed: speed,
         timestamp: 0,
         index: 0,
@@ -32,7 +36,7 @@ $(".anim-container").each((i, e) => {
 
     // Needs the settings to be loaded first
     Util.awaitDocumentReady(() => {
-        kanjiSettings[kanji].index = Settings.display.showKanjiOnLoad.val ? parseInt(e.dataset.strokes) : 0;
+        kanjiSettings[kanji].index = Settings.display.showKanjiOnLoad.val ? paths.length : 0;
         kanjiSettings[kanji].showNumbers = Settings.display.showKanjiNumbers.val;
 
         // If the user wants to hide Kanji on load
@@ -191,6 +195,7 @@ async function undoAnimation(kanjiLiteral, awaitLast) {
         kanjiSettings[kanjiLiteral].animationDirection = Animation.backwards;
 
         let awaitAnimationStep = awaitLast && kanjiSettings[kanjiLiteral].index === 0;
+        console.log("do step for index:", kanjiSettings[kanjiLiteral].index, "using", paths[kanjiSettings[kanjiLiteral].index]);
         await doAnimationStep(kanjiLiteral, paths[kanjiSettings[kanjiLiteral].index], false, !awaitAnimationStep);
 
         if (startTime < kanjiSettings[kanjiLiteral].timestamp) {
