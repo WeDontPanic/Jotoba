@@ -94,6 +94,8 @@ async function refreshAnimations(kanjiLiteral) {
                     return;
                 }
             }
+
+            toggleNumbers(kanjiLiteral);
         }
     }
 
