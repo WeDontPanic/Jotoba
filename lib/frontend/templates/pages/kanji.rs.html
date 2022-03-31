@@ -160,7 +160,7 @@
               <div id="@(k_item.kanji.literal)_reset" class="clickable" onclick='undoAnimation("@(k_item.kanji.literal)")'>Zurücksetzen</div>
             </div>            
 
-            <div id="@(k_item.kanji.literal)_svg" class="anim-container" data-strokes="@(k_item.kanji.stroke_count)" onmouseover='toggleNumbers("@(k_item.kanji.literal)", true)' onmouseleave='toggleNumbers("@(k_item.kanji.literal)", false)'>
+            <div id="@(k_item.kanji.literal)_svg" class="anim-container" onmouseover='toggleNumbers("@(k_item.kanji.literal)", true)' onmouseleave='toggleNumbers("@(k_item.kanji.literal)", false)'>
               @unescaped_string(k_item.get_animation().unwrap_or_default())
             </div>
            </div>
