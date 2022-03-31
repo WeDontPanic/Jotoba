@@ -66,7 +66,9 @@ $('.speedSlider:not(.settings)').on('input', function () {
     $("#" + ident).html(speed + "%");
     sessionStorage.setItem(ident, speed);
 
-    if (kanjiSettings[kanjiLiteral].animationDirection !== Animation.none) {
+    let playBtnState = document.getElementById(kanjiLiteral + "_play").dataset.state;
+
+    if (kanjiSettings[kanjiLiteral].animationDirection !== Animation.none && playBtnState === "pause") {
         refreshAnimations(kanjiLiteral);
         console.log("index on refresh call: "+kanjiSettings[kanjiLiteral].index);
     }
