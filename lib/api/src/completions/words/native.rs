@@ -1,6 +1,6 @@
 use std::{cmp::min, collections::BinaryHeap, time::Instant};
 
-use itertools::Itertools;
+use autocomplete::{SuggestionTask, TaskQuery};
 use resources::models::suggestions::native_words::NativeSuggestion;
 use types::jotoba::words::Word;
 use utils::binary_search::BinarySearchable;
@@ -12,6 +12,34 @@ pub fn suggestions(query: &Query, radicals: &[char]) -> Option<Vec<WordPair>> {
     let query_str = query.query.as_str();
     let start = Instant::now();
 
+    let mut task = SuggestionTask::new(30);
+    let jp_engine = storage::JP_WORD_ENGINE.get().unwrap();
+    let mut query = TaskQuery::new(query_str, 1.0);
+    query.frequency_weight = 2.0;
+
+    query.similar_terms.allow = true;
+    query.similar_terms.min_len = 0;
+    query.similar_terms.threshold = 10;
+    query.similar_terms.frequency_weight = 0.01;
+    query.similar_terms.str_dist_weight = 10.0;
+    query.similar_terms.multiplier = 0.2;
+    let query = jp_engine.new_query(query);
+    task.add_query(query);
+
+    let res = task.search();
+
+    let res = res
+        .into_iter()
+        .map(|i| WordPair {
+            primary: i.primary,
+            secondary: i.secondary,
+        })
+        .collect::<Vec<_>>();
+
+    println!("suggesting took: {:?}", start.elapsed());
+
+    Some(res)
+    /*
     // parsing query
     let query_str_aligned = align_query_str(query_str).unwrap_or_else(|| query_str.to_string());
 
@@ -29,9 +57,9 @@ pub fn suggestions(query: &Query, radicals: &[char]) -> Option<Vec<WordPair>> {
         }
     }
 
-    println!("suggesting took: {:?}", start.elapsed());
 
     Some(items.into_iter().map(|i| i.0).unique().take(30).collect())
+    */
 }
 
 /// Transforms inflections to the main lexeme of the given query

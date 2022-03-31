@@ -14,17 +14,19 @@ pub async fn suggestions(query: &Query, query_str: &str) -> Option<Vec<WordPair>
 
     let mut task = SuggestionTask::new(30);
     let mut query = TaskQuery::new(query_str, 1.0);
-    query.align.allow = false;
     query.longest_prefix.allow = true;
     query.longest_prefix.limit = 10000;
     query.longest_prefix.max_steps = 10;
-    query.longest_prefix.frequency_weight = 0.0001;
-    query.longest_prefix.relevance_multiplier = 1.0;
+    query.longest_prefix.frequency_weight = 0.7;
+    query.longest_prefix.relevance_multiplier = 0.0001;
+    query.frequency_weight = 2.0;
+
     task.add_query(engine.new_query(query));
 
     if let Some(hira_query) = try_romaji(query_str) {
         let jp_engine = storage::JP_WORD_ENGINE.get().unwrap();
-        let query = TaskQuery::new(hira_query, 80.0);
+        let mut query = TaskQuery::new(hira_query, 0.1);
+        query.frequency_weight = 13.0;
         let query = jp_engine.new_query(query);
         task.add_query(query);
     }
@@ -58,7 +60,7 @@ pub async fn suggestions(query: &Query, query_str: &str) -> Option<Vec<WordPair>
 /// Returns Some(String) if `query_str` could be (part of) romaji search input and None if not
 fn try_romaji(query_str: &str) -> Option<String> {
     let str_len = real_string_len(query_str);
-    if str_len < 4 || query_str.starts_with('n') || query_str.contains(' ') {
+    if str_len < 4 || query_str.contains(' ') {
         return None;
     }
 
@@ -80,7 +82,15 @@ fn try_romaji(query_str: &str) -> Option<String> {
 
     // shi ending needs more stripping but also more existing romaji to not
     // heavily overlap with other results
-    if str_len >= min_len + 2 && (query_str.ends_with("sh") || query_str.ends_with("ch")) {
+    if str_len >= min_len + 2
+        && (query_str.ends_with("sh")
+            || query_str.ends_with("ch")
+            || query_str.ends_with("ts")
+            || query_str.ends_with("hy")
+            || query_str.ends_with("ky")
+            || query_str.ends_with("ny")
+            || query_str.ends_with("my"))
+    {
         let prefix = strip_str_end(query_str, 2);
         if let Some(v) = is_romaji_repl(prefix) {
             return Some(v.to_hiragana());
