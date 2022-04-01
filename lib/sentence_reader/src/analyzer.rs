@@ -48,7 +48,7 @@ fn get_rules() -> RuleSet {
     rules.push(Rule::new("た", end));
     rules.push(Rule::new("たり", end));
     rules.push(Rule::new("ない", &["て", "た"]));
-    rules.push(Rule::new("たい", &["ない", "た"]));
+    rules.push(Rule::new("たい", &["て", "ない", "た"]));
 
     // じゃない
     rules.push(Rule::new("じゃ", &["ない"]));

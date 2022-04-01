@@ -1,3 +1,4 @@
+/// In Jotoba used resource storage, a combination of all data together
 pub mod storage;
 pub mod suggestions;
 
@@ -20,6 +21,7 @@ use types::jotoba::{
 /// Static git hash of current build
 pub const GIT_HASH: &str = env!("GIT_HASH");
 
+/// DictResources file content structure stored in resources/storage_data
 #[derive(Debug, Serialize, Deserialize)]
 pub struct DictResources {
     // words

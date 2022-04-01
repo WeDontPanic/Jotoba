@@ -146,7 +146,7 @@
 }
 
 :root.dark .anim-container > svg path:not(.bg) {
-    stroke: var(--tagColor);
+    stroke: var(--primaryTextColor);
 }
 
 :root.dark .anim-container text {
