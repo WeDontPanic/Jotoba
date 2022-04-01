@@ -177,7 +177,7 @@
 }
 
 .info-entry:hover {
-    background-color: var(--itemBG_075);
+    background-color: var(--lineColor);
 }
 
 .info-entry > * {
