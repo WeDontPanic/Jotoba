@@ -17,14 +17,13 @@ $(".speed-tag").each((i, e) => {
 // Initially prepare svg-settings
 $(".anim-container").each((i, e) => {
     // The Kanji
-    let kanji = e.id.split("_")[0];
+    let kanjiLiteral = e.id.split("_")[0];
 
     // Figure out how many paths there are
-    let svg = document.getElementById(kanji + "_svg").firstElementChild;
-    let paths = svg.querySelectorAll("path:not(.bg)");
+    let paths = getPaths(kanjiLiteral);
 
     // Specific settings
-    kanjiSettings[kanji] = {
+    kanjiSettings[kanjiLiteral] = {
         strokeCount: paths.length,
         speed: speed,
         timestamp: 0,
@@ -36,12 +35,12 @@ $(".anim-container").each((i, e) => {
 
     // Needs the settings to be loaded first
     Util.awaitDocumentReady(() => {
-        kanjiSettings[kanji].index = Settings.display.showKanjiOnLoad.val ? paths.length : 0;
-        kanjiSettings[kanji].showNumbers = Settings.display.showKanjiNumbers.val;
+        kanjiSettings[kanjiLiteral].index = Settings.display.showKanjiOnLoad.val ? paths.length : 0;
+        kanjiSettings[kanjiLiteral].showNumbers = Settings.display.showKanjiNumbers.val;
 
         // If the user wants to hide Kanji on load
         if (!Settings.display.showKanjiOnLoad.val) {
-            $("#"+kanji+"_svg > svg path:not(.bg)").each((i, e) => {
+            $("#"+kanjiLiteral+"_svg > svg path:not(.bg)").each((i, e) => {
                 e.classList.add("hidden");
                 e.style.strokeDashoffset = e.getTotalLength();
              });
@@ -70,14 +69,18 @@ $('.speedSlider:not(.settings)').on('input', function () {
 
     if (kanjiSettings[kanjiLiteral].animationDirection !== Animation.none && playBtnState === "pause") {
         refreshAnimations(kanjiLiteral);
-        console.log("index on refresh call: "+kanjiSettings[kanjiLiteral].index);
     }
 });
 
+// Returns the paths related to the kanji
+function getPaths(kanjiLiteral) {
+    let svg = document.getElementById(kanjiLiteral + "_svg").firstElementChild;
+    return svg.querySelectorAll("path:not(.bg)");
+}
+
 // Refresh the currently running animation. Used for changing the current animation speed
 async function refreshAnimations(kanjiLiteral) {
-    let svg = document.getElementById(kanjiLiteral + "_svg").firstElementChild;
-    let paths = svg.querySelectorAll("path:not(.bg)")
+    let paths = getPaths(kanjiLiteral);
     let startTime = prepareAutoplay(kanjiLiteral);
 
     // Iterate all strokes that are potentially animating
@@ -158,8 +161,7 @@ async function doOrPauseAnimation(kanjiLiteral) {
 async function doAnimation(kanjiLiteral) {
     let startTime = prepareAutoplay(kanjiLiteral);
 
-    let svg = document.getElementById(kanjiLiteral + "_svg").firstElementChild;
-    let paths = svg.querySelectorAll("path:not(.bg)");
+    let paths = getPaths(kanjiLiteral);
 
     for (let index = kanjiSettings[kanjiLiteral].index; index < paths.length; index++) {
         if (startTime < kanjiSettings[kanjiLiteral].timestamp) {
@@ -186,8 +188,7 @@ async function doAnimation(kanjiLiteral) {
 async function undoAnimation(kanjiLiteral, awaitLast) {
     let startTime = prepareAutoplay(kanjiLiteral);
 
-    let svg = document.getElementById(kanjiLiteral + "_svg").firstElementChild;
-    let paths = svg.querySelectorAll("path:not(.bg)");
+    let paths = getPaths(kanjiLiteral);
 
     for (kanjiSettings[kanjiLiteral].index > -1; kanjiSettings[kanjiLiteral].index--;) {
         if (startTime < kanjiSettings[kanjiLiteral].timestamp) {
@@ -197,7 +198,6 @@ async function undoAnimation(kanjiLiteral, awaitLast) {
         kanjiSettings[kanjiLiteral].animationDirection = Animation.backwards;
 
         let awaitAnimationStep = awaitLast && kanjiSettings[kanjiLiteral].index === 0;
-        console.log("do step for index:", kanjiSettings[kanjiLiteral].index, "using", paths[kanjiSettings[kanjiLiteral].index]);
         await doAnimationStep(kanjiLiteral, paths[kanjiSettings[kanjiLiteral].index], false, !awaitAnimationStep);
 
         if (startTime < kanjiSettings[kanjiLiteral].timestamp) {
@@ -245,13 +245,11 @@ async function doAnimationStep_onClick(kanjiLiteral, direction) {
     kanjiSettings[kanjiLiteral].timestamp = startTime;
     concludeAutoplay(kanjiLiteral);
 
-    let svg = document.getElementById(kanjiLiteral + "_svg").firstElementChild;
-
     if (kanjiSettings[kanjiLiteral].index + direction == -1 || kanjiSettings[kanjiLiteral].index + direction > kanjiSettings[kanjiLiteral].strokeCount) {
         return;
     }
 
-    let path = svg.querySelectorAll("path:not(.bg)")[direction > 0 ? kanjiSettings[kanjiLiteral].index : kanjiSettings[kanjiLiteral].index - 1];
+    let path = getPaths(kanjiLiteral)[direction > 0 ? kanjiSettings[kanjiLiteral].index : kanjiSettings[kanjiLiteral].index - 1];
 
     kanjiSettings[kanjiLiteral].index += direction;
     kanjiSettings[kanjiLiteral].animationDirection = direction > 0 ? Animation.forward : Animation.backwards;
