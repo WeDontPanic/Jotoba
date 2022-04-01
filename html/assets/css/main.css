@@ -714,6 +714,15 @@ a:hover {
     pointer-events: none;
 }
 
+.tooltipSvg {
+    height: 20px;
+    width: 20px;
+    background-color: var(--searchTextColor);
+    mask: url("/assets/svg/ui/3dot.svg") no-repeat center;
+    -webkit-mask: url("/assets/svg/ui/3dot.svg") no-repeat center;
+    cursor: pointer;
+}
+
 .shareSvg {
     height: 20px;
     width: 20px;

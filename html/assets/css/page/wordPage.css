@@ -204,15 +204,9 @@
 
 .word-tooltip {
     position: absolute;
-    top: -5px;
-    right: 10px;
-    width: 20px;
-    height: 30px;
-    color: var(--tagColor);
-    font-weight: bold;
-    text-align: center;
-    text-align: -webkit-center;
     cursor: pointer;
+    top: 0px;
+    right: 10px;
 }
 
 .word-tooltip > span {
