@@ -34,11 +34,11 @@
     padding: .5rem .75rem;
     font-size: .9rem;
     border: 0;
+    border-radius: 50%;
     outline: 0 !important;
 }
 
 .pagination-circle:not(.active):hover {
-    border-radius: 50%;
     -webkit-animation: hoverEffect 0.5s forwards;
             animation: hoverEffect 0.5s forwards;
 }
