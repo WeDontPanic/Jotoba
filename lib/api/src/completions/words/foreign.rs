@@ -1,6 +1,6 @@
 use std::time::Instant;
 
-use autocomplete::{SuggestionTask, TaskQuery};
+use autocomplete::SuggestionTask;
 use japanese::guessing::{could_be_romaji, is_romaji_repl};
 use resources::models::suggestions::foreign_words::ForeignSuggestion;
 use utils::{binary_search::BinarySearchable, real_string_len};

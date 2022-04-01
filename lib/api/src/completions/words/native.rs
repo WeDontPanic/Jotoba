@@ -1,6 +1,6 @@
 use std::{cmp::min, collections::BinaryHeap, time::Instant};
 
-use autocomplete::{SuggestionTask, TaskQuery};
+use autocomplete::SuggestionTask;
 use resources::models::suggestions::native_words::NativeSuggestion;
 use types::jotoba::words::Word;
 use utils::binary_search::BinarySearchable;
