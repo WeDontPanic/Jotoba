@@ -32,7 +32,7 @@
                               <span class="inner-title">@data.gettext("Default search language")</span>
                               <div class="choices noselect" data-type="select-one" tabindex="1">
                                  <div class="choices__inner">
-                                    <select data-trigger="" name="type" data-onchange="onSettingsChange_DefaultLanguage" class="hidden">
+                                    <select data-trigger="" name="type" data-onchange='alterLanguage_search' class="hidden">
                                        <option value="0">@data.gettext("English")</option>
                                     </select>
                                     <div class="choices__list choices__list--single">
@@ -59,7 +59,7 @@
                            <span class="inner-title">@data.gettext("Page language")</span>
                            <div class="choices noselect" data-type="select-one" tabindex="1">
                               <div class="choices__inner">
-                                 <select data-trigger="" name="type" data-onchange="onSettingsChange_PageLanguage" class="hidden">
+                                 <select name="type" data-onchange='alterLanguage_page' class="hidden">
                                     <option value="0">@data.gettext("English")</option>
                                  </select>
                                  <div class="choices__list choices__list--single">
@@ -94,32 +94,32 @@
                            <div class="settings-entry no-gap">
                               <span class="inner-title">@data.gettext("Always show english results"):</span>
                               <label for="show_eng_settings" class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect">
-                                 <input checked id="show_eng_settings" type="checkbox" class="mdl-checkbox__input" onchange="onBtnSettingsChange_englishAlways(event)">
+                                 <input id="show_eng_settings" type="checkbox" class="mdl-checkbox__input" onchange="Settings.alterSearch('alwaysShowEnglish', event.target.checked, true)">
                               </label>
                            </div>
                            <div class="settings-entry sub" id="eng_on_top_parent">
                               <span class="inner-title">@data.gettext("Show english results on top"):</span>
                               <label for="show_eng_on_top_settings" class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect">
-                                 <input id="show_eng_on_top_settings" type="checkbox" class="mdl-checkbox__input" onchange="onBtnSettingsChange('show_english_on_top', event)">
+                                 <input id="show_eng_on_top_settings" type="checkbox" class="mdl-checkbox__input" onchange="Settings.alterSearch('showEnglishOnTop', event.target.checked)"
                               </label>
                            </div>
                            <div class="settings-entry">
                               <span class="inner-title">@data.gettext("Focus search bar on load"):</span>
                               <label for="focus_search_bar_settings" class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect">
-                                 <input id="focus_search_bar_settings" type="checkbox" class="mdl-checkbox__input" onchange="onBtnSettingsChange_focusSearchBar(event)">
+                                 <input id="focus_search_bar_settings" type="checkbox" class="mdl-checkbox__input" onchange="Settings.alterSearch('focusSearchbar', event.target.checked, true)">
                               </label>
                            </div>
                            <div class="settings-entry sub" id="select_searchbar_content_parent">
                               <span class="inner-title">@data.gettext("Select input on load"):</span>
                               <label for="select_searchbar_content_settings" class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect">
-                                 <input id="select_searchbar_content_settings" type="checkbox" class="mdl-checkbox__input" onchange="onBtnSettingsChange('select_searchbar_content', event)">
+                                 <input id="select_searchbar_content_settings" type="checkbox" class="mdl-checkbox__input" onchange="Settings.alterSearch('selectSearchbarContent', event.target.checked)">
                               </label>
                            </div>
                            <div class="settings-entry txt-input">
                               <span id="rpr" class="inner-title txt-input">@data.gettext("Results per page"):</span>
                               <form action="#" onsubmit="return false">
                                  <div class="mdl-textfield mdl-js-textfield">
-                                   <input class="mdl-textfield__input" type="text" pattern="\b(0*(?:[1-9][0-9]?|100))\b" id="items_per_page_input" onblur="onInputSettingsChange('items_per_page', event)">
+                                   <input class="mdl-textfield__input" type="text" pattern="\b(0*(?:[1-9][0-9]?|100))\b" id="items_per_page_input" onblur="Settings.alterSearch('itemsPerPage', event.target.value)">
                                    <label class="mdl-textfield__label" for="items_per_page_input">@data.gettext("Number...")</label>
                                    <span class="mdl-textfield__error">@data.gettext("Input has to be in range of 1 and 100!")</span>
                                  </div>
@@ -133,7 +133,7 @@
                            <div class="settings-entry">
                               <span class="inner-title">@data.gettext("Show Furigana"):</span>
                               <label for="show_sentence_furigana_settings" class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect">
-                                 <input checked id="show_sentence_furigana_settings" type="checkbox" class="mdl-checkbox__input" onchange="onBtnSettingsChange('sentence_furigana', event)">
+                                 <input checked id="show_sentence_furigana_settings" type="checkbox" class="mdl-checkbox__input" onchange="Settings.alterSearch('showFurigana', event.target.checked)">
                               </label>
                            </div>
 
@@ -141,7 +141,7 @@
                            <div class="settings-entry">
                               <span class="inner-title">@data.gettext("Show example sentences"):</span>
                               <label for="show_example_sentences_settings" class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect">
-                                 <input checked id="show_example_sentences_settings" type="checkbox" class="mdl-checkbox__input" onchange="onBtnSettingsChange('show_sentences', event)">
+                                 <input checked id="show_example_sentences_settings" type="checkbox" class="mdl-checkbox__input" onchange="Settings.alterSearch('showExampleSentences', event.target.checked)">
                               </label>
                            </div>
                         
@@ -150,7 +150,7 @@
                               <span id="krp" class="inner-title txt-input">@data.gettext("Items per page"):</span>
                               <form action="#" onsubmit="return false">
                                  <div class="mdl-textfield mdl-js-textfield">
-                                   <input class="mdl-textfield__input" type="text" pattern="\b(0*(?:[1-9][0-9]?|100))\b" id="kanji_per_page_input" onblur="onInputSettingsChange('kanji_page_size', event)">
+                                   <input class="mdl-textfield__input" type="text" pattern="\b(0*(?:[1-9][0-9]?|100))\b" id="kanji_per_page_input" onblur="Settings.alterSearch('kanjiPerPage', event.target.value)">
                                    <label class="mdl-textfield__label" for="kanji_per_page_input">@data.gettext("Number...")</label>
                                    <span class="mdl-textfield__error">@data.gettext("Input has to be in range of 1 and 100!")</span>
                                  </div>
@@ -170,13 +170,25 @@
                            <div class="settings-entry">
                               <span class="inner-title display">@data.gettext("Use dark mode"):</span>
                               <label for="use_dark_mode_settings" class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect">
-                                 <input checked id="use_dark_mode_settings" type="checkbox" class="mdl-checkbox__input umami--click--dark-mode-button" onchange="onBtnSettingsChange_darkTheme(event)">
+                                 <input checked id="use_dark_mode_settings" type="checkbox" class="mdl-checkbox__input umami--click--dark-mode-button" onchange="setTheme(event.target.checked ? 'dark' : 'light')">
+                              </label>
+                           </div>
+                           <div class="settings-entry">
+                              <span class="inner-title display">@data.gettext("Show kanji on load"):</span>
+                              <label for="show_kanji_on_load_settings" class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect">
+                                 <input checked id="show_kanji_on_load_settings" type="checkbox" class="mdl-checkbox__input umami--click--dark-mode-button" onchange="Settings.alterDisplay('showKanjiOnLoad', event.target.checked)">
+                              </label>
+                           </div>
+                           <div class="settings-entry">
+                              <span class="inner-title display">@data.gettext("Show kanji numbers"):</span>
+                              <label for="show_kanji_numbers_settings" class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect">
+                                 <input checked id="show_kanji_numbers_settings" type="checkbox" class="mdl-checkbox__input umami--click--dark-mode-button" onchange="Settings.alterDisplay('showKanjiNumbers', event.target.checked); if(JotoTools.getCurrentSearchType() == 1) location.reload();">
                               </label>
                            </div>
                            <div class="settings-entry">
                               <span class="inner-title">@data.gettext("Default kanji animation speed"):</span>
                               <div class="slidercontainer settings">
-                                 <input id="show_anim_speed_settings" type="range" min="0.05" max="2" value="1" step="0.05" class="slider speedSlider" oninput="onSettingsChange_AnimationSpeed(event)">
+                                 <input id="show_anim_speed_settings" type="range" min="0.05" max="2" value="1" step="0.05" class="slider speedSlider" oninput="Settings.alterDisplay('kanjiAnimationSpeed', event.target.value); OverlaySettings.updateSliders();">
                                  <span id="show_anim_speed_settings_slider">2</span>
                               </div>
                            </div>
@@ -191,13 +203,13 @@
                            <div class="settings-entry">
                               <span class="inner-title">@data.gettext("Enable Quick-Copy"):</span>
                               <label for="dbl_click_copy_settings" class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect">
-                                 <input checked id="dbl_click_copy_settings" type="checkbox" class="mdl-checkbox__input" onchange="onBtnSettingsChange('dbl_click_copy', event, true)">
+                                 <input checked id="dbl_click_copy_settings" type="checkbox" class="mdl-checkbox__input" onchange="Settings.alterOther('enableDoubleClickCopy', event.target.checked)">
                               </label>
                            </div>
                            <div class="settings-entry">
                               <span class="inner-title">@data.gettext("Accept Cookies"):</span>
                               <label for="cookie_settings" class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect">
-                                 <input checked id="cookie_settings" type="checkbox" class="mdl-checkbox__input" onchange="onCookiesAcceptChange(event)">
+                                 <input checked id="cookie_settings" type="checkbox" class="mdl-checkbox__input" onchange="Settings.onCookiesAcceptChange(event.target.checked)">
                               </label>
                            </div>
                         </div>

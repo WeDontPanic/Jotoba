@@ -87,7 +87,7 @@ function closeAllSubSearchbarOverlays(overlayToIgnore) {
 // Opens the Help Page
 function openHelpPage() {
     document.getElementsByClassName("infoBtn")[0].classList.remove("new");
-    if (localStorage != null)
-        localStorage.setItem("first_time", "false");
+    Settings.alterOther("firstVisit", false, );
+
     Util.loadUrl("/help");
 }

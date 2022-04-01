@@ -451,6 +451,12 @@ msgstr "Anzahl der Kanji auf einer Seite"
 msgid "Use dark mode"
 msgstr "Dark Mode"
 
+msgid "Show kanji-animation on load"
+msgstr "Zeige Kanji-Animation vollständig"
+
+msgid "Show kanji-animation numbers"
+msgstr "Nummeriere Zeichenreihenfolge"
+
 msgid "Default kanji animation speed"
 msgstr "Kanji Animationsgeschwindigkeit"
 

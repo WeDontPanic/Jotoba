@@ -1,15 +1,13 @@
-.kanji-entry-parent {
-    max-width: 1000px;
-}
-
 .kanji-entry.left.detail {
     width: 155px;
     padding-left: 25px
 }
 
 .kanji-entry.right.detail {
+    overflow-x: hidden;
     padding-left: 35px;
     width: 100%;
+    max-width: 1000px;
 }
 
 .kanji-preview.x-large {
@@ -42,6 +40,59 @@
     width: 100%;
 }
 
+.speed-tag {
+    gap: 1em;
+    align-items: center;
+}
+
+.animation-container {
+    padding: 1em 0 1.5em 0 !important;
+    place-content: center;
+}
+
+.animation-controller {
+    margin: 0 1em -1em 0;
+    gap: 0.5em;
+    width: 35%;
+}
+
+.animation-controller .slider {
+    width: 100%;
+}
+
+.animation-group > .l {
+    border-top-left-radius: 15px;
+    border-bottom-left-radius: 15px;
+}
+
+.animation-group > .m {
+    margin-left: 2px;
+    margin-right: 2px;
+    width: 60%;
+}
+
+.animation-group > .m > span {
+    pointer-events: none;
+}
+
+.animation-group > .r {
+    border-top-right-radius: 15px;
+    border-bottom-right-radius: 15px;
+}
+
+.animation-group > button {
+    border: 0px;
+    background: var(--bgPrimaryColor);
+    color: white;
+    width: 20%;
+    height: 2em;
+    line-height: 2;
+}
+
+.compounds-dropdown-parent {
+    width: 97%;
+}
+
 .compounds-dropdown:after {
     position: absolute;
     content: "";
@@ -51,9 +102,8 @@
     border-width: 5px;
     border-color: var(--tagColor) transparent transparent transparent;
     pointer-events: none;
-    margin-left: 102%;
     transition: linear 0.2s;
-    right: -25px;
+    right: 0;
     margin-top: -3px;
 }
 
@@ -69,10 +119,41 @@
     margin-top: -25px;
 }
 
-object {
-    display: block;
+.anim-container svg {
+    user-select: none;
 }
 
+.anim-container text {
+    font-size: 8px;
+}
+
+/* Kanji dark mode */
+:root.dark .stroke-container > svg > path.active {
+    stroke: rgb(211, 207, 201) !important;
+}
+
+:root.dark .stroke-container > svg > path.not.active {
+    stroke: rgb(105, 105, 105) !important;
+}
+
+:root.dark .stroke-container > svg > line {
+    stroke: rgb(92, 92, 92) !important;
+}
+
+:root.dark .stroke-container > svg > circle {
+    fill: rgb(95, 241, 96) !important;
+    opacity: 0.75 !important;
+}
+
+:root.dark .anim-container > svg path:not(.bg) {
+    stroke: var(--primaryTextColor);
+}
+
+:root.dark .anim-container text {
+    fill: var(--primaryTextColor);
+}
+
+/* Small screens */
 @media only screen and (max-width: 600px) {
 
     .compounds-parent {
@@ -179,10 +260,6 @@ object {
 		padding-top: 10px;
 	}
 	
-    .animation-container {
-        padding-left: 15vw !important;
-    }
-
     .slider {
         width: 100px;
         height: 10px;

@@ -1,6 +1,7 @@
 @use search::kanji::result::Item;
 @use crate::BaseData;
 @use super::search_help;
+@use crate::templ_utils::*;
 
 @(data: &BaseData, kanji: Vec<Item>)
 
@@ -129,33 +130,44 @@
          @if k_item.kanji.has_stroke_frames() {
            <hr/>
            <div class="stroke-container">
-              <img src="@k_item.kanji.get_stroke_frames_url()" type="image/svg+xml" style="opacity: 0; margin-bottom: -130px;">
-              <object data="@k_item.kanji.get_stroke_frames_url()" type="image/svg+xml"></object>
+              <img src="@k_item.kanji.get_stroke_frames_url()" type="image/svg+xml" style="position: absolute; opacity: 0; margin-bottom: -130px;">
+              @unescaped_string(k_item.get_frames().unwrap_or_default())
            </div>
          }
 
          @if k_item.kanji.has_animation_file() {
          
           <div class="animation-container d-flex flex-row">
-              <div class="d-flex flex-column slider-parent">
-                 <div class="slidecontainer">
-                    <input type="range" min="0.05" max="2" value="1" step="0.05" class="slider speedSlider">
-                 </div>
-                 <span class="slider-output noselect currentAnimationSpeed">@data.gettext_fmt("Animation speed: {}", &[1])</span>
+
+            <div class="animation-controller d-flex flex-column">
+              <div>
+                <div class="d-flex flex-row speed-tag">
+                  <div>Animation Speed:</div>
+                  <div id="@(k_item.kanji.literal)_speed">100%</div>
+                </div>
+                <input data-kanji="@(k_item.kanji.literal)" type="range" min="0.05" max="2" value="1" step="0.05" class="slider speedSlider"/>
               </div>
-              <div class="kanjisvgParent umami--click--kanji-replay">
-                <svg class="kanjisvg" width="109px" height="109px">
-                @for (del, d) in k_item.get_animation_entries() {
-                  <path style="animation-delay: @del;" class="draw2" stroke-linejoin="round" stroke="black" fill="none" stroke-width="5" d="@d">
-                  </path>  
-                }
-                </svg>
+              <div class="animation-group d-flex">
+                <button class="l ripple" onclick='doAnimationStep_onClick("@(k_item.kanji.literal)", -1)'>l</button>
+
+                <button id="@(k_item.kanji.literal)_play" onclick='doOrPauseAnimation("@(k_item.kanji.literal)")' class="m ripple" data-state="play">
+                  <span>play</span>
+                  <span class="hidden">pause</span>
+                </button>
+                
+                <button class="r ripple" onclick='doAnimationStep_onClick("@(k_item.kanji.literal)", 1)'>r</button>
               </div>
+              <div id="@(k_item.kanji.literal)_reset" class="clickable" onclick='undoAnimation("@(k_item.kanji.literal)")'>Zurücksetzen</div>
+            </div>            
+
+            <div id="@(k_item.kanji.literal)_svg" class="anim-container" onmouseover='toggleNumbers("@(k_item.kanji.literal)", true)' onmouseleave='toggleNumbers("@(k_item.kanji.literal)", false)'>
+              @unescaped_string(k_item.get_animation().unwrap_or_default())
+            </div>
            </div>
           }
         
           @if k_item.kanji.has_compounds() {
-            <div>
+            <div class="compounds-dropdown-parent">
               @if data.kanji_copounds_collapsed() {
                 <hr class="compounds-dropdown closed"/>
               }else{

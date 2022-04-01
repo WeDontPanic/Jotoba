@@ -4,6 +4,8 @@ use types::jotoba::{
     words::{filter_languages, sense::Sense, Word},
 };
 
+use crate::unescaped::UnescapedString;
+
 /// Returns a list of all collocations of a word
 pub fn get_collocations(
     word: &Word,
@@ -45,6 +47,11 @@ pub fn get_collocations(
             (reading, senses.join(", "))
         })
         .collect()
+}
+
+#[inline]
+pub fn unescaped_string<T: ToString>(s: T) -> UnescapedString {
+    UnescapedString::new(s)
 }
 
 /// Returns the transive verion of `word`
