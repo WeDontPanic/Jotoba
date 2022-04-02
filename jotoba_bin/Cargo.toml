@@ -12,6 +12,7 @@ japanese = { path = "../lib/japanese" }
 sentence_reader  = { path = "../lib/sentence_reader" }
 search = { path = "../lib/search" }
 error = { path = "../lib/error" }
+types = {path = "../lib/types"}
 utils = { path = "../lib/utils" }
 api = { path = "../lib/api" }
 frontend = { path = "../lib/frontend" }
@@ -33,3 +34,10 @@ sentry_error = [ "sentry", "frontend/sentry_error" ]
 img_scan = [ "api/img_scan" ]
 default = [ "img_scan","news_inotify" ]
 news_inotify = [ "resources/news_inotify"]
+
+[dev-dependencies]
+criterion = "0.3.5"
+
+[[bench]]
+name = "my_benchmark"
+harness = false

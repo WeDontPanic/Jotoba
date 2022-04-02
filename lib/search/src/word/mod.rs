@@ -40,9 +40,9 @@ pub struct Search<'a> {
 /// Search among all data based on the input query
 #[inline]
 pub fn search(query: &Query) -> Result<WordResult, Error> {
-    let start = Instant::now();
+    //let start = Instant::now();
     let res = Search { query }.do_search();
-    println!("Search took {:?}", start.elapsed());
+    //println!("Search took {:?}", start.elapsed());
     res
 }
 
@@ -282,7 +282,7 @@ impl<'a> Search<'a> {
                 .offset(self.query.page_offset)
                 .threshold(0.3f32);
 
-        println!("searching in {}", used_lang);
+        //println!("searching in {}", used_lang);
 
         if self.query.settings.show_english && used_lang != Language::English
         // Don't show english results if user wants to search in a specified language

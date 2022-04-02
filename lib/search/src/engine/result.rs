@@ -1,13 +1,13 @@
+use super::result_item::ResultItem;
 use std::{
     cmp::min,
     collections::{BinaryHeap, HashSet},
     fmt::Debug,
     hash::Hash,
     ops::Index,
+    sync::atomic::Ordering,
     vec::IntoIter,
 };
-
-use super::result_item::ResultItem;
 
 /// A result from a search. Contains information about the actual amount of items returned and the
 /// limited items to display
