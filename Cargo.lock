@@ -593,6 +593,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "cmake"
+version = "0.1.48"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e8ad8cef104ac57b68b89df3208164d228503abbdce70f6880ffa3d970e7443a"
+dependencies = [
+ "cc",
+]
+
+[[package]]
 name = "compressed_vec"
 version = "0.1.1"
 source = "git+https://github.com/JojiiOfficial/CompressedVec#3af38732176e3be924de4397d6df22982572123f"
@@ -1469,6 +1478,7 @@ dependencies = [
  "sentence_reader",
  "sentry",
  "serde",
+ "snmalloc-rs",
  "utils",
 ]
 
@@ -2461,6 +2471,24 @@ name = "smallvec"
 version = "1.8.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "f2dd574626839106c320a323308629dcb1acfc96e32a8cba364ddc61ac23ee83"
+
+[[package]]
+name = "snmalloc-rs"
+version = "0.2.28"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "36acaace2719c972eab3ef6a6b3aee4495f0bf300f59715bb9cff6c5acf4ae20"
+dependencies = [
+ "snmalloc-sys",
+]
+
+[[package]]
+name = "snmalloc-sys"
+version = "0.2.28"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "35a7e6e7d5fe756bee058ddedefc7e0a9f9c8dbaa9401b48ed3c17d6578e40b5"
+dependencies = [
+ "cmake",
+]
 
 [[package]]
 name = "socket2"
