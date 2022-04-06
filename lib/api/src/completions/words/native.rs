@@ -1,6 +1,8 @@
 use std::{cmp::min, collections::BinaryHeap, time::Instant};
 
-use autocomplete::SuggestionTask;
+use autocompletion::suggest::{
+    extension::similar_terms::SimilarTermsExtension, query::SuggestionQuery, task::SuggestionTask,
+};
 use resources::models::suggestions::native_words::NativeSuggestion;
 use types::jotoba::words::Word;
 use utils::binary_search::BinarySearchable;
@@ -13,8 +15,13 @@ pub fn suggestions(query: &Query, radicals: &[char]) -> Option<Vec<WordPair>> {
     let start = Instant::now();
 
     let mut task = SuggestionTask::new(30);
+
     let jp_engine = storage::JP_WORD_ENGINE.get().unwrap();
-    let mut query = TaskQuery::new(query_str, 1.0);
+    let mut query = SuggestionQuery::new(jp_engine, query_str);
+
+    let ste = SimilarTermsExtension::new(jp_engine, 20);
+    query.add_extension(ste);
+    /*
     query.frequency_weight = 2.0;
 
     query.similar_terms.allow = true;
@@ -23,7 +30,7 @@ pub fn suggestions(query: &Query, radicals: &[char]) -> Option<Vec<WordPair>> {
     query.similar_terms.frequency_weight = 0.01;
     query.similar_terms.str_dist_weight = 10.0;
     query.similar_terms.multiplier = 0.2;
-    let query = jp_engine.new_query(query);
+    */
     task.add_query(query);
 
     let res = task.search();

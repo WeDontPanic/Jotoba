@@ -287,11 +287,11 @@ version = "0.1.0"
 dependencies = [
  "actix-multipart",
  "actix-web",
- "autocomplete",
+ "autocompletion",
  "bincode",
  "config",
  "error",
- "eudex",
+ "eudex 0.1.1 (git+https://github.com/JojiiOfficial/eudex)",
  "futures",
  "itertools",
  "japanese",
@@ -346,15 +346,18 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d468802bab17cbc0cc575e9b053f41e72aa36bfa6b7f55e3529ffa43161b97fa"
 
 [[package]]
-name = "autocomplete"
+name = "autocompletion"
 version = "0.1.0"
 dependencies = [
  "bincode",
+ "eudex 0.1.1 (git+https://github.com/WeDontPanic/eudex)",
  "jpeudex",
+ "order_struct",
  "priority_container",
  "qp-trie",
  "rayon",
  "serde",
+ "snmalloc-rs",
  "strsim 0.10.0",
 ]
 
@@ -604,6 +607,15 @@ dependencies = [
  "textwrap",
  "unicode-width",
  "vec_map",
+]
+
+[[package]]
+name = "cmake"
+version = "0.1.48"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e8ad8cef104ac57b68b89df3208164d228503abbdce70f6880ffa3d970e7443a"
+dependencies = [
+ "cc",
 ]
 
 [[package]]
@@ -951,6 +963,14 @@ version = "0.1.1"
 source = "git+https://github.com/JojiiOfficial/eudex#b97f002b10dfe21047d130acf2e4f6d3f77779c4"
 
 [[package]]
+name = "eudex"
+version = "0.1.1"
+source = "git+https://github.com/WeDontPanic/eudex#0a5f383a9540ffbbdf2913966743af1732bbd3d7"
+dependencies = [
+ "serde",
+]
+
+[[package]]
 name = "fake-simd"
 version = "0.1.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -994,6 +1014,12 @@ dependencies = [
  "libc",
  "miniz_oxide",
 ]
+
+[[package]]
+name = "float-ord"
+version = "0.3.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "8ce81f49ae8a0482e4c55ea62ebbd7e5a686af544c00b9d090bba3ff9be97b3d"
 
 [[package]]
 name = "fnv"
@@ -1499,7 +1525,7 @@ source = "git+https://github.com/JojiiOfficial/jp_utils#74145f23f8baaae91dba0ee4
 [[package]]
 name = "jpeudex"
 version = "0.1.1"
-source = "git+https://github.com/JojiiOfficial/jpeudex#8a80e800044c74604ef161a64a49dc0f85d7a262"
+source = "git+https://github.com/JojiiOfficial/jpeudex#037be62d40a46d3923f722ae7248ceaecc6f5cb2"
 dependencies = [
  "jp_utils",
  "serde",
@@ -1864,6 +1890,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "order_struct"
+version = "0.1.0"
+source = "git+https://github.com/JojiiOfficial/OrderStruct#2fcbc2e0cb9bab238b19db09a9da254e258dc098"
+dependencies = [
+ "float-ord",
+]
+
+[[package]]
 name = "parking_lot"
 version = "0.12.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1974,7 +2008,7 @@ checksum = "eb9f9e6e233e5c4a35559a617bf40a4ec447db2e84c20b55a6f83167b7e57872"
 [[package]]
 name = "priority_container"
 version = "0.1.0"
-source = "git+https://github.com/JojiiOfficial/PrioContainer#08b25fb0fb82e6ecc55659dcb6c82650693d1cbf"
+source = "git+https://github.com/JojiiOfficial/PrioContainer#7f996c1254a816d7eb0f9c2e0bc6100d7ffcd461"
 
 [[package]]
 name = "proc-macro2"
@@ -2162,7 +2196,7 @@ version = "0.1.0"
 dependencies = [
  "bincode",
  "comrak",
- "eudex",
+ "eudex 0.1.1 (git+https://github.com/JojiiOfficial/eudex)",
  "indexed_file",
  "inotify",
  "intmap",
@@ -2257,7 +2291,7 @@ dependencies = [
  "byteorder",
  "config",
  "error",
- "eudex",
+ "eudex 0.1.1 (git+https://github.com/JojiiOfficial/eudex)",
  "futures",
  "itertools",
  "japanese",
@@ -2501,15 +2535,33 @@ dependencies = [
 
 [[package]]
 name = "slab"
-version = "0.4.5"
+version = "0.4.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9def91fd1e018fe007022791f865d0ccc9b3a0d5001e01aabb8b40e46000afb5"
+checksum = "eb703cfe953bccee95685111adeedb76fabe4e97549a58d16f03ea7b9367bb32"
 
 [[package]]
 name = "smallvec"
 version = "1.8.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "f2dd574626839106c320a323308629dcb1acfc96e32a8cba364ddc61ac23ee83"
+
+[[package]]
+name = "snmalloc-rs"
+version = "0.2.28"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "36acaace2719c972eab3ef6a6b3aee4495f0bf300f59715bb9cff6c5acf4ae20"
+dependencies = [
+ "snmalloc-sys",
+]
+
+[[package]]
+name = "snmalloc-sys"
+version = "0.2.28"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "35a7e6e7d5fe756bee058ddedefc7e0a9f9c8dbaa9401b48ed3c17d6578e40b5"
+dependencies = [
+ "cmake",
+]
 
 [[package]]
 name = "socket2"
@@ -2797,9 +2849,9 @@ dependencies = [
 
 [[package]]
 name = "tracing-core"
-version = "0.1.23"
+version = "0.1.24"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "aa31669fa42c09c34d94d8165dd2012e8ff3c66aca50f3bb226b68f216f2706c"
+checksum = "90442985ee2f57c9e1b548ee72ae842f4a9a20e3f417cc38dbc5dc684d9bb4ee"
 dependencies = [
  "lazy_static",
 ]

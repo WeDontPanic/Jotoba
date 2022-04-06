@@ -1,6 +1,8 @@
 use std::time::Instant;
 
-use autocomplete::SuggestionTask;
+use autocompletion::suggest::{
+    extension::longest_prefix::LongestPrefixExtension, query::SuggestionQuery, task::SuggestionTask,
+};
 use japanese::guessing::{could_be_romaji, is_romaji_repl};
 use resources::models::suggestions::foreign_words::ForeignSuggestion;
 use utils::{binary_search::BinarySearchable, real_string_len};
@@ -13,21 +15,27 @@ pub async fn suggestions(query: &Query, query_str: &str) -> Option<Vec<WordPair>
     let engine = storage::FOREIGN_WORD_ENGINE.get()?;
 
     let mut task = SuggestionTask::new(30);
-    let mut query = TaskQuery::new(query_str, 1.0);
+    let mut query = SuggestionQuery::new(engine, query_str);
+    /*
     query.longest_prefix.allow = true;
     query.longest_prefix.limit = 10000;
-    query.longest_prefix.max_steps = 10;
+    query.longest_prefix.max
     query.longest_prefix.frequency_weight = 0.7;
     query.longest_prefix.relevance_multiplier = 0.0001;
     query.frequency_weight = 2.0;
+    */
 
-    task.add_query(engine.new_query(query));
+    let mut lpe = LongestPrefixExtension::new(engine, 4, 10);
+    lpe.options.limit = 10000;
+    lpe.options.weights.freq_weight = 0.7;
+    query.add_extension(lpe);
+    task.add_query(query);
 
     if let Some(hira_query) = try_romaji(query_str) {
         let jp_engine = storage::JP_WORD_ENGINE.get().unwrap();
-        let mut query = TaskQuery::new(hira_query, 0.1);
-        query.frequency_weight = 13.0;
-        let query = jp_engine.new_query(query);
+        let mut query = SuggestionQuery::new(jp_engine, hira_query);
+        query.weights.total_weight = 0.1;
+        query.weights.freq_weight = 13.0;
         task.add_query(query);
     }
 
