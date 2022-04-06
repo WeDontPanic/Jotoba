@@ -404,6 +404,16 @@ impl Query {
     }
 }
 
+impl UserSettings {
+    /// Returns `true` if an action has to be done for english too. This
+    /// Is the case if the user wants to see enlgish results as well but
+    /// didn't set english as main language
+    #[inline]
+    pub fn show_english(&self) -> bool {
+        self.show_english && self.user_lang != Language::English
+    }
+}
+
 #[cfg(test)]
 mod test {
     use super::*;

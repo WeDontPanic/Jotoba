@@ -317,9 +317,13 @@ impl<'a> Search<'a> {
 
         let could_be_romaji = japanese::guessing::could_be_romaji(&self.query.query);
 
+        // TODO: fix aligning
+        search_task.set_align(false);
+        /*
         if could_be_romaji {
             search_task.set_align(false);
         }
+        */
 
         // Do the search
         let mut res = search_task.find()?;

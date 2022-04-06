@@ -6,11 +6,12 @@ use log::info;
 use once_cell::sync::OnceCell;
 use search::suggestions::{store_item, TextSearch};
 use serde::{Deserialize, Deserializer};
+use types::jotoba::languages::Language;
 
 use super::WordPair;
 
-pub static FOREIGN_WORD_ENGINE: OnceCell<BasicIndex> = OnceCell::new();
-pub static JP_WORD_ENGINE: OnceCell<JapaneseIndex> = OnceCell::new();
+pub static JP_WORD_INDEX: OnceCell<JapaneseIndex> = OnceCell::new();
+pub static WORD_INDEX: OnceCell<HashMap<Language, BasicIndex>> = OnceCell::new();
 
 /// In-memory storage for native name suggestions
 pub(crate) static NAME_NATIVE: OnceCell<TextSearch<Vec<NameNative>>> = OnceCell::new();
@@ -29,17 +30,12 @@ pub(crate) static K_READING_ALIGN: OnceCell<HashMap<String, Vec<u32>>> = OnceCel
 
 /// Load all available suggestions
 pub fn load_suggestions(config: &Config) -> Result<(), Box<dyn Error>> {
-    let foreign_path = Path::new(config.get_suggestion_sources()).join("word_sugg");
-    let foreign_engine: BasicIndex =
-        bincode::deserialize_from(BufReader::new(File::open(foreign_path).unwrap())).unwrap();
-    FOREIGN_WORD_ENGINE.set(foreign_engine).ok();
-
-    let jp_path = Path::new(config.get_suggestion_sources()).join("new_jp_index");
-    let jp_engine: JapaneseIndex =
-        bincode::deserialize_from(BufReader::new(File::open(jp_path).unwrap())).unwrap();
-    JP_WORD_ENGINE.set(jp_engine).ok();
-
     rayon::scope(|s| {
+        s.spawn(|_| {
+            if let Err(err) = load_words(config) {
+                eprintln!("Error loading word suggestions {}", err);
+            }
+        });
         s.spawn(|_| {
             if let Err(err) = load_meaning_suggestions(config) {
                 eprintln!("Error loading meaning suggestions {}", err);
@@ -61,6 +57,32 @@ pub fn load_suggestions(config: &Config) -> Result<(), Box<dyn Error>> {
             }
         });
     });
+    Ok(())
+}
+
+fn load_words(config: &Config) -> Result<(), Box<dyn Error>> {
+    let mut index_map: HashMap<Language, BasicIndex> = HashMap::with_capacity(9);
+    for language in Language::iter() {
+        let path = Path::new(config.get_suggestion_sources()).join(format!("new_word_{language}"));
+        if !path.exists() {
+            log::warn!("Running without {language} suggestions");
+            continue;
+        }
+        if language != Language::Japanese {
+            let index: BasicIndex = bincode::deserialize_from(BufReader::new(File::open(path)?))?;
+            index_map.insert(language, index);
+        } else {
+            let index: JapaneseIndex =
+                bincode::deserialize_from(BufReader::new(File::open(path)?))?;
+            JP_WORD_INDEX.set(index).ok().expect("JP Index alredy set");
+        }
+    }
+
+    WORD_INDEX
+        .set(index_map)
+        .ok()
+        .expect("WORD_INDEX already set!");
+
     Ok(())
 }
 

@@ -16,7 +16,7 @@ pub fn suggestions(query: &Query, radicals: &[char]) -> Option<Vec<WordPair>> {
 
     let mut task = SuggestionTask::new(30);
 
-    let jp_engine = storage::JP_WORD_ENGINE.get().unwrap();
+    let jp_engine = storage::JP_WORD_INDEX.get().unwrap();
     let mut query = SuggestionQuery::new(jp_engine, query_str);
 
     let ste = SimilarTermsExtension::new(jp_engine, 20);
@@ -33,15 +33,7 @@ pub fn suggestions(query: &Query, radicals: &[char]) -> Option<Vec<WordPair>> {
     */
     task.add_query(query);
 
-    let res = task.search();
-
-    let res = res
-        .into_iter()
-        .map(|i| WordPair {
-            primary: i.primary,
-            secondary: i.secondary,
-        })
-        .collect::<Vec<_>>();
+    let res = convert_results(task.search());
 
     println!("suggesting took: {:?}", start.elapsed());
 
