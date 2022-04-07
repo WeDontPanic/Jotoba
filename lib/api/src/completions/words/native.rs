@@ -1,147 +1,59 @@
-use std::{cmp::min, collections::BinaryHeap, time::Instant};
-
 use autocompletion::suggest::{
-    extension::similar_terms::SimilarTermsExtension, query::SuggestionQuery, task::SuggestionTask,
+    extension::{kanji_align::KanjiAlignExtension, similar_terms::SimilarTermsExtension},
+    query::SuggestionQuery,
+    task::SuggestionTask,
 };
-use resources::models::suggestions::native_words::NativeSuggestion;
-use types::jotoba::words::Word;
-use utils::binary_search::BinarySearchable;
+use romaji::RomajiExt;
 
 use super::super::*;
 
 /// Get suggestions for foreign search input
 pub fn suggestions(query: &Query, radicals: &[char]) -> Option<Vec<WordPair>> {
+    let jp_engine = storage::JP_WORD_INDEX.get()?;
     let query_str = query.query.as_str();
-    let start = Instant::now();
 
-    let mut task = SuggestionTask::new(30);
+    let mut suggestion_task = SuggestionTask::new(30);
 
-    let jp_engine = storage::JP_WORD_INDEX.get().unwrap();
-    let mut query = SuggestionQuery::new(jp_engine, query_str);
+    let mut main_sugg_query = SuggestionQuery::new(jp_engine, query_str);
 
-    let ste = SimilarTermsExtension::new(jp_engine, 20);
-    query.add_extension(ste);
-    /*
-    query.frequency_weight = 2.0;
+    // Kanji reading align (くにうた ー＞ 国歌)
+    let mut k_r_align = KanjiAlignExtension::new(jp_engine);
+    k_r_align.options.weights.freq_weight = 10.0;
+    k_r_align.options.threshold = 5;
+    main_sugg_query.add_extension(k_r_align);
 
-    query.similar_terms.allow = true;
-    query.similar_terms.min_len = 0;
-    query.similar_terms.threshold = 10;
-    query.similar_terms.frequency_weight = 0.01;
-    query.similar_terms.str_dist_weight = 10.0;
-    query.similar_terms.multiplier = 0.2;
-    */
-    task.add_query(query);
+    // Similar terms
+    let mut ste = SimilarTermsExtension::new(jp_engine, 7);
+    ste.options.threshold = 10;
+    main_sugg_query.add_extension(ste);
 
-    let res = convert_results(task.search());
+    suggestion_task.add_query(main_sugg_query);
 
-    println!("suggesting took: {:?}", start.elapsed());
-
-    Some(res)
-    /*
-    // parsing query
-    let query_str_aligned = align_query_str(query_str).unwrap_or_else(|| query_str.to_string());
-
-    let mut items = suggest_words(&[&query_str, &query_str_aligned], &radicals)?;
-    if items.len() <= 4 && !query_str.is_katakana() {
-        if let Some(other) = suggest_words(&[&romaji::RomajiExt::to_katakana(query_str)], &radicals)
-        {
-            items.extend(other);
+    // Add katakana results
+    if query_str.has_kana() {
+        let kanaquery = query_str.to_katakana();
+        if kanaquery != query_str {
+            let mut kana_query = SuggestionQuery::new(jp_engine, kanaquery);
+            kana_query.weights.total_weight = 0.8;
+            suggestion_task.add_query(kana_query);
         }
     }
 
-    if items.len() < 50 {
-        if let Some(aligned) = k_reading_align(query_str) {
-            items.extend(aligned);
+    // radical filter
+    let word_res = resources::get().words();
+    suggestion_task.set_filter(move |item| {
+        if radicals.is_empty() {
+            return true;
         }
-    }
 
+        let word = word_res.by_sequence(item.word_id()).unwrap();
+        word_rad_filter(query_str, word, radicals)
+    });
 
-    Some(items.into_iter().map(|i| i.0).unique().take(30).collect())
-    */
+    Some(convert_results(suggestion_task.search()))
 }
 
-/// Transforms inflections to the main lexeme of the given query
-fn align_query_str(query_str: &str) -> Option<String> {
-    let parse_res = sentence_reader::Parser::new(query_str).parse();
-
-    if let sentence_reader::output::ParseResult::InflectedWord(word) = parse_res {
-        return Some(word.get_normalized());
-    }
-
-    None
-}
-
-/// Finds suggestions for all kanji componunds which can be built of the given query
-fn k_reading_align(query: &str) -> Option<Vec<(WordPair, u32)>> {
-    if !query.is_kana() {
-        return None;
-    }
-
-    let words = resources::get().words();
-    let align = storage::K_READING_ALIGN.get()?;
-
-    let res = align
-        .get(query)?
-        .iter()
-        .filter_map(|i| {
-            let word = words.by_sequence(*i)?;
-            let wp: WordPair = word.into();
-            Some((wp, 0))
-        })
-        .collect::<Vec<_>>();
-
-    Some(res)
-}
-
-#[derive(PartialEq, Eq)]
-struct WordPairOrder((WordPair, u32));
-
-pub(super) fn suggest_words(
-    queries: &[&str],
-    filter_radicals: &[char],
-) -> Option<Vec<(WordPair, u32)>> {
-    let suggestion_provider = resources::get().suggestions();
-    let dict = suggestion_provider.japanese_words()?;
-    let word_storage = resources::get().words();
-
-    let mut heap: BinaryHeap<WordPairOrder> = BinaryHeap::with_capacity(50);
-
-    for query in queries {
-        let query_romaji = query
-            .is_kana()
-            .then(|| romaji::RomajiExt::to_romaji(*query));
-
-        heap.extend(
-            dict.search(|e: &NativeSuggestion| search_cmp(e, query))
-                // Fetch a few more to allow sort-function to give better results
-                .filter_map(|sugg_item| {
-                    let word = word_storage.by_sequence(sugg_item.sequence)?;
-
-                    // Filter out non radical matching words if radicals are given
-                    if !filter_radicals.is_empty()
-                        && !word_rad_filter(&query, &word, filter_radicals)
-                    {
-                        return None;
-                    }
-
-                    let score = score(word, &sugg_item, query, &query_romaji);
-                    Some(WordPairOrder((word.into(), score)))
-                })
-                .take(500),
-        );
-    }
-
-    let res_size = min(heap.len(), 30);
-    let mut items = Vec::with_capacity(res_size);
-    for _ in 0..res_size {
-        items.push(heap.pop()?.0);
-    }
-
-    Some(items)
-}
-
-fn word_rad_filter(query: &str, word: &Word, radicals: &[char]) -> bool {
+fn word_rad_filter(query: &str, word: &types::jotoba::words::Word, radicals: &[char]) -> bool {
     let kanji = match word.reading.kanji.as_ref() {
         Some(k) => &k.reading,
         None => return false,
@@ -175,57 +87,4 @@ pub fn is_subset<T: PartialEq>(subs: &[T], full: &[T]) -> bool {
         }
     }
     true
-}
-
-/// Calculate a score for each word result to give better suggestion results
-fn score(
-    word: &Word,
-    suggestion_item: &NativeSuggestion,
-    query_str: &str,
-    query_romaji: &Option<String>,
-) -> u32 {
-    let word_len = word.get_reading().reading.chars().count();
-    let mut score = 0;
-
-    if let Some(jlpt) = word.get_jlpt_lvl() {
-        score += (jlpt as u32 + 2) * 10u32;
-    }
-
-    if let Some(query_romaji) = query_romaji {
-        score += (strsim::jaro(
-            &romaji::RomajiExt::to_romaji(word.reading.kana.reading.as_str()),
-            &query_romaji,
-        ) * 10f64) as u32;
-    } else {
-        score += (strsim::jaro(&word.reading.get_reading().reading, query_str) * 30f64) as u32;
-    }
-
-    if word_len > 1 {
-        score += suggestion_item.frequency;
-    }
-
-    score
-}
-
-#[inline]
-fn search_cmp(e: &NativeSuggestion, query_str: &str) -> Ordering {
-    if e.text.starts_with(query_str) {
-        Ordering::Equal
-    } else {
-        e.text.as_str().cmp(&query_str)
-    }
-}
-
-impl Ord for WordPairOrder {
-    #[inline]
-    fn cmp(&self, other: &Self) -> Ordering {
-        self.0 .1.cmp(&other.0 .1)
-    }
-}
-
-impl PartialOrd for WordPairOrder {
-    #[inline]
-    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
-        Some(self.0 .1.cmp(&other.0 .1))
-    }
 }

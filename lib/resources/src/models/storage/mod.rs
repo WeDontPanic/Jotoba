@@ -10,11 +10,8 @@ use serde::{Deserialize, Serialize};
 use types::jotoba::languages::Language;
 
 use self::{
-    kanji::KanjiRetrieve,
-    name::NameRetrieve,
-    sentence::SentenceRetrieve,
-    suggestion::{provider::SuggestionProvider, SuggestionDictionary},
-    word::WordRetrieve,
+    kanji::KanjiRetrieve, name::NameRetrieve, sentence::SentenceRetrieve,
+    suggestion::SuggestionDictionary, word::WordRetrieve,
 };
 use super::{
     suggestions::{foreign_words::ForeignSuggestion, native_words::NativeSuggestion},
@@ -228,11 +225,13 @@ impl ResourceStorage {
         KanjiRetrieve::new(self)
     }
 
+    /*
     /// Returns a `SuggestionProvider` which can be used to retrieve suggestions from the `ResourceStorage`
     #[inline]
     pub fn suggestions(&self) -> SuggestionProvider<'_> {
         SuggestionProvider::new(self)
     }
+    */
 
     /// Returns a `SentenceRetrieve` which can be used to retrieve sentences from the `ResourceStorage`
     #[inline]

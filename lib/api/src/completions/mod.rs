@@ -4,10 +4,7 @@ mod request;
 mod storage;
 mod words;
 
-use autocompletion::relevance::item::EngineItem;
 pub use storage::load_suggestions;
-
-use std::cmp::Ordering;
 
 use config::Config;
 use error::api_error::RestError;
@@ -82,6 +79,7 @@ fn as_kanji_reading(query: &Query) -> Option<types::jotoba::kanji::ReadingSearch
 }
 
 /// Converts engine output to a set of `WordPair`
+#[inline]
 pub(crate) fn convert_results(engine_output: Vec<autocompletion::index::Output>) -> Vec<WordPair> {
     engine_output
         .into_iter()
