@@ -6,16 +6,13 @@ mod words;
 
 pub use storage::load_suggestions;
 
-use std::cmp::Ordering;
-
 use config::Config;
 use error::api_error::RestError;
 use japanese::JapaneseExt;
 use search::query::{Form, Query};
-use types::api::completions::{Response, WordPair};
 use types::{
-    api::completions::Request,
-    jotoba::{languages::Language, search::QueryType},
+    api::completions::{Request, Response, WordPair},
+    jotoba::search::QueryType,
 };
 
 use actix_web::{
@@ -79,4 +76,16 @@ fn as_kanji_reading(query: &Query) -> Option<types::jotoba::kanji::ReadingSearch
             }
         }
     }
+}
+
+/// Converts engine output to a set of `WordPair`
+#[inline]
+pub(crate) fn convert_results(engine_output: Vec<autocompletion::index::Output>) -> Vec<WordPair> {
+    engine_output
+        .into_iter()
+        .map(|i| WordPair {
+            primary: i.primary,
+            secondary: i.secondary,
+        })
+        .collect::<Vec<_>>()
 }

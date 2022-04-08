@@ -11,13 +11,6 @@ pub struct SuggestionProvider<'a> {
 }
 
 impl<'a> SuggestionProvider<'a> {
-    /// Create a new SuggestionProvider which can be used to retrieve suggestion dictionaries of
-    /// different types
-    #[inline]
-    pub(crate) fn new(data: &'a ResourceStorage) -> SuggestionProvider {
-        Self { data }
-    }
-
     /// Get the suggestion dictionary for japanese words, if available
     #[inline]
     pub fn japanese_words(&self) -> Option<&SuggestionDictionary<NativeSuggestion>> {

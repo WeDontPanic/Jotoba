@@ -34,8 +34,27 @@ pub enum Language {
 }
 
 impl Language {
+    /// Returns an iterator over all Languages
+    #[inline]
+    pub fn iter() -> impl Iterator<Item = Self> {
+        [
+            Language::English,
+            Language::German,
+            Language::Russian,
+            Language::Spanish,
+            Language::Swedish,
+            Language::French,
+            Language::Dutch,
+            Language::Hungarian,
+            Language::Slovenian,
+            Language::Japanese,
+        ]
+        .into_iter()
+    }
+
     /// Returns an iterator over all Languages which have words with this language
-    pub fn word_iter() -> impl Iterator<Item = Self> {
+    #[inline]
+    pub fn iter_word() -> impl Iterator<Item = Self> {
         [
             Language::English,
             Language::German,
