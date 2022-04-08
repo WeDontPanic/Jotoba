@@ -1,11 +1,16 @@
-use autocompletion::suggest::{
-    extension::{kanji_align::KanjiAlignExtension, similar_terms::SimilarTermsExtension},
-    query::SuggestionQuery,
-    task::SuggestionTask,
+use autocompletion::{
+    index::{str_item::StringItem, IndexItem},
+    suggest::{
+        extension::{kanji_align::KanjiAlignExtension, similar_terms::SimilarTermsExtension},
+        query::SuggestionQuery,
+        task::SuggestionTask,
+    },
 };
 use romaji::RomajiExt;
 
 use super::super::*;
+
+const MAX_SENTENCE_LEN: usize = 10;
 
 /// Get suggestions for foreign search input
 pub fn suggestions(query: &Query, radicals: &[char]) -> Option<Vec<WordPair>> {
@@ -36,8 +41,35 @@ pub fn suggestions(query: &Query, radicals: &[char]) -> Option<Vec<WordPair>> {
         if kanaquery != query_str {
             let mut kana_query = SuggestionQuery::new(jp_engine, kanaquery);
             kana_query.weights.total_weight = 0.8;
-            //suggestion_task.add_query(kana_query);
+            suggestion_task.add_query(kana_query);
         }
+    }
+
+    let (norm_form, sentence) = normalize_inflections(query_str);
+    if let Some(normalized) = norm_form {
+        let mut norm_query = SuggestionQuery::new(jp_engine, normalized);
+        norm_query.threshold = 2;
+        norm_query.weights.total_weight = 0.01;
+        norm_query.weights.freq_weight = 0.0;
+        suggestion_task.add_query(norm_query);
+    }
+
+    let sentence_len = sentence.len();
+    let items: Vec<_> = sentence
+        .into_iter()
+        .map(|w| StringItem::new(w, 0.0))
+        .collect();
+    let items: Vec<_> = items
+        .iter()
+        .enumerate()
+        .map(|(pos, i)| {
+            let mut engine_item = i.into_engine_item();
+            engine_item.set_relevance((sentence_len - pos) as u16);
+            engine_item
+        })
+        .collect();
+    if sentence_len > 0 && sentence_len < MAX_SENTENCE_LEN {
+        suggestion_task.add_custom_entries(items);
     }
 
     // radical filter
@@ -52,6 +84,30 @@ pub fn suggestions(query: &Query, radicals: &[char]) -> Option<Vec<WordPair>> {
     });
 
     Some(convert_results(suggestion_task.search()))
+}
+
+fn normalize_inflections(query_str: &str) -> (Option<String>, Vec<String>) {
+    let parse_res = sentence_reader::Parser::new(query_str).parse();
+
+    if let sentence_reader::output::ParseResult::InflectedWord(word) = parse_res {
+        return (Some(word.get_normalized()), vec![]);
+    }
+
+    if let sentence_reader::output::ParseResult::Sentence(sentence) = parse_res {
+        let items: Vec<_> = sentence
+            .iter()
+            .filter_map(|i| {
+                let wc = i.word_class_raw();
+                if wc.is_space() || wc.is_symbol() || wc.is_particle() {
+                    return None;
+                }
+                Some(i.get_normalized())
+            })
+            .collect();
+        return (None, items);
+    }
+
+    (None, vec![])
 }
 
 fn word_rad_filter(query: &str, word: &types::jotoba::words::Word, radicals: &[char]) -> bool {

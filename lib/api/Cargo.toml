@@ -30,7 +30,7 @@ regex = "1.5.5"
 rayon = "1.5.1"
 types = { path = "../types" , default-features = false}
 autocompletion = { git = "https://github.com/WeDontPanic/AutoCompletionFramework" }
-#autocompletion = { path = "../../../AutosuggestionFramework3"}
+#autocompletion = { path = "../../../AutosuggestionFramework"}
 
 [features]
 default = []

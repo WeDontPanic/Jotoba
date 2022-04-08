@@ -10,6 +10,7 @@ use types::jotoba::languages::Language;
 
 use super::WordPair;
 
+// Words
 pub static JP_WORD_INDEX: OnceCell<JapaneseIndex> = OnceCell::new();
 pub static WORD_INDEX: OnceCell<HashMap<Language, BasicIndex>> = OnceCell::new();
 
@@ -23,10 +24,6 @@ pub(crate) static NAME_TRANSCRIPTIONS: OnceCell<TextSearch<Vec<NameTranscription
 /// In-memory storage for kanji meaning suggestions
 pub(crate) static K_MEANING_SUGGESTIONS: OnceCell<TextSearch<Vec<KanjiMeaningSuggestionItem>>> =
     OnceCell::new();
-
-/// Kanji reading aligner. Allows searches for kanji compounds, even with wrong reading
-/// あかく -> 合格
-pub(crate) static K_READING_ALIGN: OnceCell<HashMap<String, Vec<u32>>> = OnceCell::new();
 
 /// Load all available suggestions
 pub fn load_suggestions(config: &Config) -> Result<(), Box<dyn Error>> {
@@ -49,11 +46,6 @@ pub fn load_suggestions(config: &Config) -> Result<(), Box<dyn Error>> {
         s.spawn(|_| {
             if let Err(err) = load_native_names(config) {
                 eprintln!("Error loading name suggestions {}", err);
-            }
-        });
-        s.spawn(|_| {
-            if let Err(err) = load_k_reading_align(config) {
-                eprintln!("Error loading kanji reading align index {}", err);
             }
         });
     });
@@ -174,25 +166,6 @@ impl Into<WordPair> for &NameNative {
             ..Default::default()
         }
     }
-}
-
-#[derive(Deserialize)]
-pub struct KRAlignIndex {
-    data: HashMap<String, Vec<u32>>,
-}
-
-fn load_k_reading_align(config: &Config) -> Result<(), Box<dyn std::error::Error>> {
-    let file = Path::new(config.get_indexes_source()).join("k_reading_align_index");
-    if !file.exists() {
-        info!("Kanji reading align index does not exists");
-        return Ok(());
-    }
-
-    let data: KRAlignIndex = bincode::deserialize_from(BufReader::new(File::open(file)?))?;
-
-    K_READING_ALIGN.set(data.data).ok();
-
-    Ok(())
 }
 
 /// Load kanji meaning suggestion file into memory

@@ -5,7 +5,6 @@ use std::{
     fmt::Debug,
     hash::Hash,
     ops::Index,
-    sync::atomic::Ordering,
     vec::IntoIter,
 };
 
