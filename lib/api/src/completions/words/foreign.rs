@@ -20,10 +20,11 @@ pub async fn suggestions(query: &Query, query_str: &str) -> Option<Vec<WordPair>
         query.settings.user_lang,
     )?);
 
-    // Add results for englisch
+    // Add results for english
     if query.settings.show_english() {
         let mut en_sugg_query = new_suggestion_query(&query_lower, Language::English)?;
-        en_sugg_query.weights.total_weight = 0.4;
+        en_sugg_query.weights.total_weight = 0.3;
+        en_sugg_query.weights.freq_weight = 0.2;
         task.add_query(en_sugg_query);
     }
 
@@ -42,18 +43,21 @@ fn new_suggestion_query(query: &str, lang: Language) -> Option<SuggestionQuery> 
     let engine = storage::WORD_INDEX.get()?.get(&lang)?;
 
     let mut suggestion_query = SuggestionQuery::new(engine, &query);
+    suggestion_query.weights.str_weight = 1.5;
+    suggestion_query.weights.freq_weight = 0.5;
+
     let mut ste = SimilarTermsExtension::new(engine, 5);
     ste.options.threshold = 20;
-    ste.options.weights.freq_weight = 0.01;
-    ste.options.weights.str_weight = 1.99;
+    ste.options.weights.freq_weight = 0.1;
+    ste.options.weights.str_weight = 1.9;
     ste.options.weights.total_weight = 0.5;
-    suggestion_query.add_extension(ste);
+    //suggestion_query.add_extension(ste);
 
     let mut lpe = LongestPrefixExtension::new(engine, 4, 10);
-    lpe.options.threshold = 20;
+    lpe.options.threshold = 10;
     lpe.options.weights.freq_weight = 0.4;
     lpe.options.weights.total_weight = 0.5;
-    suggestion_query.add_extension(lpe);
+    //suggestion_query.add_extension(lpe);
 
     Some(suggestion_query)
 }

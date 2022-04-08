@@ -18,13 +18,14 @@ pub fn suggestions(query: &Query, radicals: &[char]) -> Option<Vec<WordPair>> {
 
     // Kanji reading align (くにうた ー＞ 国歌)
     let mut k_r_align = KanjiAlignExtension::new(jp_engine);
-    k_r_align.options.weights.freq_weight = 10.0;
+    k_r_align.options.weights.freq_weight = 1.0;
     k_r_align.options.threshold = 5;
     main_sugg_query.add_extension(k_r_align);
 
     // Similar terms
     let mut ste = SimilarTermsExtension::new(jp_engine, 7);
     ste.options.threshold = 10;
+    ste.options.weights.total_weight = 0.01;
     main_sugg_query.add_extension(ste);
 
     suggestion_task.add_query(main_sugg_query);
@@ -35,7 +36,7 @@ pub fn suggestions(query: &Query, radicals: &[char]) -> Option<Vec<WordPair>> {
         if kanaquery != query_str {
             let mut kana_query = SuggestionQuery::new(jp_engine, kanaquery);
             kana_query.weights.total_weight = 0.8;
-            suggestion_task.add_query(kana_query);
+            //suggestion_task.add_query(kana_query);
         }
     }
 

@@ -29,8 +29,8 @@ leptess = { version = "0.13.2", optional = true }
 regex = "1.5.5"
 rayon = "1.5.1"
 types = { path = "../types" , default-features = false}
-#autocomplete = { git = "https://github.com/WeDontPanic/AutoCompletionFramework" }
-autocompletion = { path = "../../../AutosuggestionFramework3"}
+autocompletion = { git = "https://github.com/WeDontPanic/AutoCompletionFramework" }
+#autocompletion = { path = "../../../AutosuggestionFramework3"}
 
 [features]
 default = []
