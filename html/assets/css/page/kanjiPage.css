@@ -89,6 +89,13 @@
     line-height: 2;
 }
 
+.reset-btn {
+    width: 24px;
+    position: relative;
+    left: 95px;
+    top: -25px;
+}
+
 .animation-group > button > img {
     width: 45%
 }
