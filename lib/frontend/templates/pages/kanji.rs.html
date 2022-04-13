@@ -154,15 +154,15 @@
 
                 <button id="@(k_item.kanji.literal)_play" onclick='doOrPauseAnimation("@(k_item.kanji.literal)")' class="m ripple" data-state="play">
                   <span> 
-                    <img src="/assets/svg/ui/play.svg" />
+                    <img draggable="false" src="/assets/svg/ui/play.svg" />
                   </span>
                   <span class="hidden">
-                    <img src="/assets/svg/ui/pause.svg" />
+                    <img draggable="false" src="/assets/svg/ui/pause.svg" />
                   </span>
                 </button>
                 
                 <button class="r ripple" onclick='doAnimationStep_onClick("@(k_item.kanji.literal)", 1)'>
-                  <img src="/assets/svg/ui/forwards.svg" />
+                  <img draggable="false" src="/assets/svg/ui/forwards.svg" />
                 </button>
               </div>
             </div>            
@@ -171,7 +171,7 @@
               @unescaped_string(k_item.get_animation().unwrap_or_default())
 
               <div id="@(k_item.kanji.literal)_reset" class="clickable reset-btn" onclick='undoAnimation("@(k_item.kanji.literal)")'>
-                <img src="/assets/svg/ui/revert.svg" />
+                <img draggable="false" src="/assets/svg/ui/revert.svg" />
               </div>
             </div>
            </div>
