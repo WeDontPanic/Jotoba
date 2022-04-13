@@ -13,7 +13,7 @@ let speed = localStorage.getItem("kanji_speed") || 1;
 Util.awaitDocumentReady(() => {
     $(".speed-tag").each((i, e) => {
         e.children[1].innerHTML = (Math.round(Settings.display.kanjiAnimationSpeed.val * 100) + "%");
-        $(".speed-tag")[0].nextElementSibling.value = Settings.display.kanjiAnimationSpeed.val;
+        e.nextElementSibling.value = Settings.display.kanjiAnimationSpeed.val;
     });
 });
 
