@@ -10,8 +10,11 @@ const Animation = {none: 0, forward: 1, backwards: 2};
 let speed = localStorage.getItem("kanji_speed") || 1;
 
 // Initially set the speed tags according to the settings
-$(".speed-tag").each((i, e) => {
-    e.children[1].innerHTML = (Math.round(Settings.display.kanjiAnimationSpeed.val * 100) + "%");
+Util.awaitDocumentReady(() => {
+    $(".speed-tag").each((i, e) => {
+        e.children[1].innerHTML = (Math.round(Settings.display.kanjiAnimationSpeed.val * 100) + "%");
+        $(".speed-tag")[0].nextElementSibling.value = Settings.display.kanjiAnimationSpeed.val;
+    });
 });
 
 // Initially prepare svg-settings
