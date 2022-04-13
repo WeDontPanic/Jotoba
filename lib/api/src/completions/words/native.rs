@@ -68,7 +68,7 @@ pub fn suggestions(query: &Query, radicals: &[char]) -> Option<Vec<WordPair>> {
             engine_item
         })
         .collect();
-    if sentence_len > 0 && sentence_len < MAX_SENTENCE_LEN {
+    if sentence_len > 0 && sentence_len <= MAX_SENTENCE_LEN {
         suggestion_task.add_custom_entries(items);
     }
 

@@ -30,10 +30,16 @@ pub async fn suggestions(query: &Query, query_str: &str) -> Option<Vec<WordPair>
 
     // Romaji result
     if let Some(hira_query) = try_romaji(query_str) {
-        let jp_engine = storage::JP_WORD_INDEX.get().unwrap();
-        let mut query = SuggestionQuery::new(jp_engine, hira_query);
-        query.weights.total_weight = 0.5;
-        task.add_query(query);
+        if let Some(jp_engine) = storage::JP_WORD_INDEX.get() {
+            let mut query = SuggestionQuery::new(jp_engine, hira_query);
+            query.weights.total_weight = 0.5;
+
+            let mut similar_terms = SimilarTermsExtension::new(jp_engine, 5);
+            similar_terms.options.weights.total_weight = 0.4;
+            query.add_extension(similar_terms);
+
+            task.add_query(query);
+        }
     }
 
     Some(convert_results(task.search()))
