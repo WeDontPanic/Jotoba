@@ -1,4 +1,4 @@
-# Jotoba <img class="titleImg" width="30" src="/html/assets/jotokun/JotoBook.svg">
+# Jotoba <img width="30" align="center" src="/html/assets/jotokun/JotoBook.svg">
 Jotoba is a free online, selfhostable, multi-language japanese dictionary based on lots of various free resources.<br>
 Public instance: [jotoba.de](https://jotoba.de)<br>
 
