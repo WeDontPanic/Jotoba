@@ -194,7 +194,6 @@ Util.awaitDocumentReady(() => {
 
     // Add the info-icon on initial page load if needed
     if (Settings.other.firstVisit.val) {
-        console.log(Settings.other.firstVisit)
         $(".infoBtn").addClass("new");
     }
 });

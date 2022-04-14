@@ -182,13 +182,13 @@ function shouldCopyFurigana(event) {
     }
 
     // Prevent if user has removed the feature
-    return Settings.other.enableDoubleClickCopy;
+    return Settings.other.enableDoubleClickCopy.val;
 }
 
 // Check conditions for copying Kanji 
 function shouldCopyKanji() {
     // Prevent if user has removed the feature
-    return Settings.other.enableDoubleClickCopy;
+    return Settings.other.enableDoubleClickCopy.val;
 }
 
 // Prevents the default User highlighting
