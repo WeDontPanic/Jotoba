@@ -3,7 +3,6 @@
     position: relative;
     margin-top: -320px;
     margin-left: 530px;
-    transform: rotate(-3deg);
 }
 
 div > .fat:not(:first-child) {
