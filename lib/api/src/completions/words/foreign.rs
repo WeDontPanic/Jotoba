@@ -69,7 +69,7 @@ fn new_suggestion_query(query: &str, lang: Language) -> Option<SuggestionQuery> 
 }
 
 /// Returns Some(String) if `query_str` could be (part of) romaji search input and None if not
-fn try_romaji(query_str: &str) -> Option<String> {
+pub(crate) fn try_romaji(query_str: &str) -> Option<String> {
     let str_len = real_string_len(query_str);
     if str_len < 3 || query_str.contains(' ') {
         return None;

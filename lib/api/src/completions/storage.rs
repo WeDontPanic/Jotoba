@@ -14,15 +14,14 @@ use super::WordPair;
 pub static JP_WORD_INDEX: OnceCell<JapaneseIndex> = OnceCell::new();
 pub static WORD_INDEX: OnceCell<HashMap<Language, BasicIndex>> = OnceCell::new();
 
+/// Kanji meanings
+pub(crate) static K_MEANING_SUGGESTIONS: OnceCell<JapaneseIndex> = OnceCell::new();
+
 /// In-memory storage for native name suggestions
 pub(crate) static NAME_NATIVE: OnceCell<TextSearch<Vec<NameNative>>> = OnceCell::new();
 
 /// In-memory storage for name transcriptions suggestions
 pub(crate) static NAME_TRANSCRIPTIONS: OnceCell<TextSearch<Vec<NameTranscription>>> =
-    OnceCell::new();
-
-/// In-memory storage for kanji meaning suggestions
-pub(crate) static K_MEANING_SUGGESTIONS: OnceCell<TextSearch<Vec<KanjiMeaningSuggestionItem>>> =
     OnceCell::new();
 
 /// Load all available suggestions
@@ -34,7 +33,7 @@ pub fn load_suggestions(config: &Config) -> Result<(), Box<dyn Error>> {
             }
         });
         s.spawn(|_| {
-            if let Err(err) = load_meaning_suggestions(config) {
+            if let Err(err) = load_meanings(config) {
                 eprintln!("Error loading meaning suggestions {}", err);
             }
         });
@@ -52,6 +51,7 @@ pub fn load_suggestions(config: &Config) -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
+// Load word suggestion index
 fn load_words(config: &Config) -> Result<(), Box<dyn Error>> {
     let mut index_map: HashMap<Language, BasicIndex> = HashMap::with_capacity(9);
     for language in Language::iter() {
@@ -78,14 +78,21 @@ fn load_words(config: &Config) -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
-/// A single suggestion item for kanji meanings
-#[derive(Deserialize)]
-pub struct KanjiMeaningSuggestionItem {
-    pub meaning: String,
-    pub literal: char,
-    #[serde(deserialize_with = "eudex_deser")]
-    pub hash: eudex::Hash,
-    pub score: i32,
+/// Load kanji meaning suggestion file into memory
+fn load_meanings(config: &Config) -> Result<(), Box<dyn std::error::Error>> {
+    let file = Path::new(config.get_suggestion_sources()).join("kanji_meanings");
+    if !file.exists() {
+        info!("Kanji-meaning suggestion file does not exists");
+        return Ok(());
+    }
+
+    let index: JapaneseIndex = bincode::deserialize_from(BufReader::new(File::open(file)?))?;
+    K_MEANING_SUGGESTIONS
+        .set(index)
+        .ok()
+        .expect("won't happen lol");
+
+    Ok(())
 }
 
 /// A suggestion Item for transcribed a name
@@ -100,33 +107,6 @@ pub struct NameTranscription {
 #[derive(Deserialize)]
 pub struct NameNative {
     pub name: String,
-}
-
-impl store_item::Item for KanjiMeaningSuggestionItem {
-    #[inline]
-    fn get_text(&self) -> &str {
-        &self.meaning
-    }
-
-    #[inline]
-    fn get_hash(&self) -> eudex::Hash {
-        self.hash
-    }
-
-    #[inline]
-    fn ord(&self) -> usize {
-        self.score as usize
-    }
-}
-
-impl Into<WordPair> for &KanjiMeaningSuggestionItem {
-    #[inline]
-    fn into(self) -> WordPair {
-        WordPair {
-            primary: self.meaning.clone(),
-            secondary: Some(self.literal.to_string()),
-        }
-    }
 }
 
 impl store_item::Item for NameTranscription {
@@ -166,24 +146,6 @@ impl Into<WordPair> for &NameNative {
             ..Default::default()
         }
     }
-}
-
-/// Load kanji meaning suggestion file into memory
-fn load_meaning_suggestions(config: &Config) -> Result<(), Box<dyn std::error::Error>> {
-    let file = Path::new(config.get_suggestion_sources()).join("kanji_meanings");
-    if !file.exists() {
-        info!("Kanji-meaning suggestion file does not exists");
-        return Ok(());
-    }
-
-    let kanji_items: Vec<KanjiMeaningSuggestionItem> =
-        bincode::deserialize_from(BufReader::new(File::open(file)?))?;
-
-    K_MEANING_SUGGESTIONS.set(TextSearch::new(kanji_items)).ok();
-
-    info!("Loaded kanji meaning suggestion file");
-
-    Ok(())
 }
 
 /// Load native name suggestions

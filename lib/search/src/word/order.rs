@@ -93,7 +93,7 @@ pub fn japanese_search_order(
         .iter()
         .any(|i| i.reading == *query_str)
     {
-        score += 20;
+        score += 60;
     }
 
     score
