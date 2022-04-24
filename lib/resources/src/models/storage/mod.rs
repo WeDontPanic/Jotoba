@@ -1,22 +1,16 @@
 pub mod kanji;
 pub mod name;
 pub mod sentence;
-pub mod suggestion;
 pub mod word;
 
 use intmap::IntMap;
 
 use serde::{Deserialize, Serialize};
-use types::jotoba::languages::Language;
 
 use self::{
-    kanji::KanjiRetrieve, name::NameRetrieve, sentence::SentenceRetrieve,
-    suggestion::SuggestionDictionary, word::WordRetrieve,
+    kanji::KanjiRetrieve, name::NameRetrieve, sentence::SentenceRetrieve, word::WordRetrieve,
 };
-use super::{
-    suggestions::{foreign_words::ForeignSuggestion, native_words::NativeSuggestion},
-    DictResources,
-};
+use super::DictResources;
 use std::collections::HashMap;
 use types::jotoba::{
     kanji::{DetailedRadical, Kanji},
@@ -35,7 +29,6 @@ pub type RadicalStorage = HashMap<char, Vec<char>>;
 #[derive(Default)]
 pub struct ResourceStorage {
     pub dict_data: DictionaryData,
-    suggestions: Option<SuggestionData>,
 }
 
 /// Contains all core data for the dictionary. This is the data structure for the dictionary functionality to work properly.
@@ -72,13 +65,6 @@ pub struct SentenceStorage {
     pub jlpt_map: HashMap<u8, Vec<u32>>,
 }
 
-/// Contains all data for the dictionary suggestions.
-#[derive(Default)]
-pub(crate) struct SuggestionData {
-    foregin: HashMap<Language, SuggestionDictionary<ForeignSuggestion>>,
-    japanese: Option<SuggestionDictionary<NativeSuggestion>>,
-}
-
 impl DictionaryData {
     #[inline]
     fn new(
@@ -105,37 +91,11 @@ impl DictionaryData {
     }
 }
 
-impl SuggestionData {
-    #[inline]
-    pub(super) fn new() -> Self {
-        Self::default()
-    }
-
-    /// Returns false if there aren't suggestionts at all
-    #[inline]
-    pub(super) fn is_empty(&self) -> bool {
-        self.japanese.is_none() && self.foregin.is_empty()
-    }
-
-    pub(super) fn add_foreign(
-        &mut self,
-        lang: Language,
-        dict: SuggestionDictionary<ForeignSuggestion>,
-    ) {
-        self.foregin.insert(lang, dict);
-    }
-
-    pub(super) fn add_jp(&mut self, dict: SuggestionDictionary<NativeSuggestion>) {
-        self.japanese = Some(dict);
-    }
-}
-
 impl ResourceStorage {
     /// Create a new `ResourceStorage` by `Resources`
     #[inline]
     pub(super) fn new(
         resources: DictResources,
-        suggestions: Option<SuggestionData>,
         rad_kanji_map: RadicalStorage,
         sentences: SentenceStorage,
     ) -> Self {
@@ -165,10 +125,7 @@ impl ResourceStorage {
             radicals,
         );
 
-        Self {
-            dict_data,
-            suggestions,
-        }
+        Self { dict_data }
     }
 
     /// Returns a `WordRetrieve` which can be used to retrieve words from the `ResourceStorage`
@@ -224,14 +181,6 @@ impl ResourceStorage {
     pub fn kanji(&self) -> KanjiRetrieve<'_> {
         KanjiRetrieve::new(self)
     }
-
-    /*
-    /// Returns a `SuggestionProvider` which can be used to retrieve suggestions from the `ResourceStorage`
-    #[inline]
-    pub fn suggestions(&self) -> SuggestionProvider<'_> {
-        SuggestionProvider::new(self)
-    }
-    */
 
     /// Returns a `SentenceRetrieve` which can be used to retrieve sentences from the `ResourceStorage`
     #[inline]

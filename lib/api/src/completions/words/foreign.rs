@@ -10,7 +10,7 @@ use utils::real_string_len;
 use super::super::*;
 
 /// Returns suggestions based on non japanese input
-pub async fn suggestions(query: &Query, query_str: &str) -> Option<Vec<WordPair>> {
+pub fn suggestions(query: &Query, query_str: &str) -> Option<Vec<WordPair>> {
     let query_lower = query_str.to_lowercase();
     let mut task = SuggestionTask::new(30);
 

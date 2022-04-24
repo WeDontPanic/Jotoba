@@ -31,7 +31,7 @@ bitflags = {git = "https://github.com/JojiiOfficial/BitFlags"}
 bktree = { git = "https://github.com/JojiiOfficial/bktree"}
 bincode = "1.3.3"
 percent-encoding = "2.1.0"
-rayon = "1.5.1"
+rayon = "1.5.2"
 types = { path = "../types" , default-features = false, features = ["jotoba_intern"]}
 
 [features]

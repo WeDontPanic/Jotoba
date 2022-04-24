@@ -124,9 +124,8 @@ pub fn foreign_search_order(
         return foreign_search_fall_back(word, relevance, query_str, query_lang, user_lang);
     }
 
-    let mut divisor = match (found.mode, found.case_ignored) {
-        (SearchMode::Exact, false) => 130,
-        (SearchMode::Exact, true) => 130,
+    let mut multiplicator = match (found.mode, found.case_ignored) {
+        (SearchMode::Exact, _) => 100,
         (_, false) => 10,
         (_, true) => 8,
     };
@@ -134,18 +133,18 @@ pub fn foreign_search_order(
     // Result found within users specified language
     if query_lang != user_lang {
         //score += 1000.0;
-        divisor /= 20
+        multiplicator -= 8;
     } else {
-        divisor *= 2;
+        multiplicator *= 2;
     }
 
-    score *= divisor as f64;
+    score *= multiplicator as f64;
 
     if word.is_common() {
         score += 10.0;
     }
 
-    if found.in_parentheses {
+    if !found.in_parentheses {
         score -= 10f64.min(score);
         //score = score.saturating_sub(10.0);
     } else {

@@ -9,7 +9,7 @@ use crate::completions::{convert_results, storage};
 use super::super::{storage::K_MEANING_SUGGESTIONS, Response};
 
 /// Returns kanji meaning suggestions
-pub async fn suggestions(query: &Query) -> Result<Response, RestError> {
+pub fn suggestions(query: &Query) -> Result<Response, RestError> {
     let index = K_MEANING_SUGGESTIONS
         .get()
         .ok_or(RestError::Missing(Origin::Suggestions))?;

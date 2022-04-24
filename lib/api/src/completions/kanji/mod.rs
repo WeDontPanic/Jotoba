@@ -6,9 +6,9 @@ use search::query::{Query, QueryLang};
 use types::api::completions::Response;
 
 /// Returns kanji suggestions
-pub(crate) async fn suggestions(query: Query) -> Result<Response, RestError> {
+pub(crate) fn suggestions(query: Query) -> Result<Response, RestError> {
     Ok(match query.language {
-        QueryLang::Foreign => meaning::suggestions(&query).await?,
+        QueryLang::Foreign => meaning::suggestions(&query)?,
         QueryLang::Japanese => japanese_suggestions(&query)?,
         /*
         QueryLang::Korean => todo!(),

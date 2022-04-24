@@ -27,7 +27,7 @@ actix-multipart = "0.4.0"
 futures = "0.3.21"
 leptess = { version = "0.13.2", optional = true }
 regex = "1.5.5"
-rayon = "1.5.1"
+rayon = "1.5.2"
 types = { path = "../types" , default-features = false}
 autocompletion = { git = "https://github.com/WeDontPanic/AutoCompletionFramework" }
 #autocompletion = { path = "../../../AutosuggestionFramework"}

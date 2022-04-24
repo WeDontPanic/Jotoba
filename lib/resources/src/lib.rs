@@ -13,16 +13,10 @@ static RESOURCES: OnceCell<ResourceStorage> = OnceCell::new();
 /// Initializes the memory storage
 pub fn initialize_resources<P: AsRef<Path>>(
     dict_data_path: P,
-    suggestions_path: P,
     rad_map_path: P,
     sentences_path: P,
 ) -> Result<(), Box<dyn Error>> {
-    let storage = models::load_storage(
-        dict_data_path,
-        suggestions_path,
-        rad_map_path,
-        sentences_path,
-    )?;
+    let storage = models::load_storage(dict_data_path, rad_map_path, sentences_path)?;
 
     RESOURCES
         .set(storage)

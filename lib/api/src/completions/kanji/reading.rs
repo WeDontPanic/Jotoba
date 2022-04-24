@@ -6,7 +6,7 @@ use types::{api::completions::SuggestionType, jotoba::kanji};
 use types::api::completions::{Response, WordPair};
 
 /// Gets suggestions for kanji reading search eg: "痛 いた.い"
-pub async fn suggestions(kanji_reading: kanji::ReadingSearch) -> Result<Response, RestError> {
+pub fn suggestions(kanji_reading: kanji::ReadingSearch) -> Result<Response, RestError> {
     let kanji_storage = resources::get().kanji();
 
     let literal = kanji_reading.literal;
