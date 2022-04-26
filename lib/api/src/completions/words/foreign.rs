@@ -33,8 +33,6 @@ pub fn suggestions(query: &Query, query_str: &str) -> Option<Vec<WordPair>> {
         if let Some(jp_engine) = storage::JP_WORD_INDEX.get() {
             let mut query = SuggestionQuery::new(jp_engine, hira_query);
             query.weights.total_weight = 0.5;
-            query.weights.freq_weight = 0.1;
-            query.weights.str_weight = 1.9;
 
             let mut similar_terms = SimilarTermsExtension::new(jp_engine, 5);
             similar_terms.options.weights.total_weight = 0.4;
