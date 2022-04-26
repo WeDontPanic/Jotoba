@@ -45,6 +45,13 @@
     align-items: center;
 }
 
+.kanji-img {
+    position: absolute;
+    pointer-events: none;
+    margin-bottom: -130px;
+    opacity: 0;
+}
+
 .animation-container {
     padding: 1em 0 1.5em 0 !important;
     place-content: center;
