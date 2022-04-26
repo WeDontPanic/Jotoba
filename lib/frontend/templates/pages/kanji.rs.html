@@ -130,7 +130,7 @@
          @if k_item.kanji.has_stroke_frames() {
            <hr/>
            <div class="stroke-container">
-              <img src="@k_item.kanji.get_stroke_frames_url()" type="image/svg+xml" style="position: absolute; opacity: 0; margin-bottom: -130px;">
+              <img src="@k_item.kanji.get_stroke_frames_url()" type="image/svg+xml" class="kanji-img">
               @unescaped_string(k_item.get_frames().unwrap_or_default())
            </div>
          }
