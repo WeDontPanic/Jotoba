@@ -102,7 +102,7 @@ function handleKanjiSelect(event) {
     $('#search').val($('#search').val() + event.target.innerHTML);
 
     // Update search bar
-    Suggestions.updateSuggestions(getSelectedRadicalArray());
+    Suggestions.updateSuggestions();
     toggleSearchIcon(200);
 
     // Focus the last search bar
