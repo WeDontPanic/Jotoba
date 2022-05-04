@@ -9,6 +9,6 @@ edition = "2021"
 [dependencies]
 dyn-fmt = "0.3.0"
 gettext = "0.4.0"
-log = "0.4.16"
+log = "0.4.17"
 strum = "0.24.0"
 strum_macros = "0.24.0"

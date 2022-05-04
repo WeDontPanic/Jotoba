@@ -21,7 +21,7 @@ pub fn suggestions(query: &Query) -> Result<Response, RestError> {
     if let Some(hira_query) = super::super::words::foreign::try_romaji(&query.query) {
         if let Some(jp_engine) = storage::JP_WORD_INDEX.get() {
             let mut rom_sug_query = SuggestionQuery::new(jp_engine, hira_query);
-            rom_sug_query.weights.total_weight = 0.3;
+            rom_sug_query.weights.total_weight = 0.5;
 
             let mut similar_terms = SimilarTermsExtension::new(jp_engine, 4);
             similar_terms.options.weights.total_weight = 0.2;

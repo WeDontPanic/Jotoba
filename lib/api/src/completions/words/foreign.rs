@@ -11,8 +11,12 @@ use super::super::*;
 
 /// Returns suggestions based on non japanese input
 pub fn suggestions(query: &Query, query_str: &str) -> Option<Vec<WordPair>> {
-    let query_lower = query_str.to_lowercase();
+    let query_lower = autocompletion::index::basic::basic_format(query_str.trim());
     let mut task = SuggestionTask::new(30);
+
+    //println!("raw: {:?}", query_lower.trim());
+
+    // Raw
 
     // Default search query
     task.add_query(new_suggestion_query(
@@ -29,13 +33,14 @@ pub fn suggestions(query: &Query, query_str: &str) -> Option<Vec<WordPair>> {
     }
 
     // Romaji result
-    if let Some(hira_query) = try_romaji(query_str) {
+    if let Some(hira_query) = try_romaji(query_str.trim()) {
         if let Some(jp_engine) = storage::JP_WORD_INDEX.get() {
             let mut query = SuggestionQuery::new(jp_engine, hira_query);
             query.weights.total_weight = 0.5;
 
             let mut similar_terms = SimilarTermsExtension::new(jp_engine, 5);
             similar_terms.options.weights.total_weight = 0.4;
+            similar_terms.options.threshold = 0;
             query.add_extension(similar_terms);
 
             task.add_query(query);
@@ -53,17 +58,17 @@ fn new_suggestion_query(query: &str, lang: Language) -> Option<SuggestionQuery> 
     suggestion_query.weights.freq_weight = 0.5;
 
     let mut ste = SimilarTermsExtension::new(engine, 5);
-    ste.options.threshold = 20;
-    ste.options.weights.freq_weight = 0.1;
-    ste.options.weights.str_weight = 1.9;
-    ste.options.weights.total_weight = 0.5;
+    ste.options.threshold = 10;
+    ste.options.weights.freq_weight = 1.0;
+    ste.options.weights.str_weight = 1.0;
+    ste.options.weights.total_weight = 0.05;
     //suggestion_query.add_extension(ste);
 
-    let mut lpe = LongestPrefixExtension::new(engine, 4, 10);
+    let mut lpe = LongestPrefixExtension::new(engine, 3, 10);
     lpe.options.threshold = 10;
-    lpe.options.weights.freq_weight = 0.4;
-    lpe.options.weights.total_weight = 0.5;
-    //suggestion_query.add_extension(lpe);
+    lpe.options.weights.freq_weight = 1.0;
+    lpe.options.weights.total_weight = 0.3;
+    suggestion_query.add_extension(lpe);
 
     Some(suggestion_query)
 }

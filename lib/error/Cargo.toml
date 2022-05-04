@@ -8,9 +8,9 @@ edition = "2021"
 
 [dependencies]
 actix-web = { version = "4.0.1", optional = true }
-serde = "1.0.136"
+serde = "1.0.137"
 strum = "0.24.0"
-thiserror = "1.0.30"
+thiserror = "1.0.31"
 
 [features]
 default = []

@@ -106,7 +106,7 @@ pub fn foreign_search_order(
     query_lang: Language,
     user_lang: Language,
 ) -> usize {
-    let mut score = relevance as f64 * 10.0;
+    let mut score = 0f64; //relevance as f64 * 10.0;
 
     let found = match find_reading(word, query_str, user_lang, query_lang) {
         Some(v) => v,
@@ -141,7 +141,7 @@ pub fn foreign_search_order(
     score *= multiplicator as f64;
 
     if word.is_common() {
-        score += 10.0;
+        //score += 10.0;
     }
 
     if !found.in_parentheses {

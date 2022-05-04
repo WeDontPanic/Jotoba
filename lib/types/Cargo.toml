@@ -8,7 +8,7 @@ edition = "2021"
 [dependencies]
 strum = { version = "0.24.0", features = ["derive"] }
 strum_macros = "0.24.0"
-serde = { version = "1.0.136", features = ["derive"] }
+serde = { version = "1.0.137", features = ["derive"] }
 jp_inflections = { git = "https://github.com/JojiiOfficial/Japanese_Inflections"}
 bitflags = {git = "https://github.com/JojiiOfficial/BitFlags"}
 localization = { path = "../localization", optional = true}

@@ -79,7 +79,10 @@ pub fn suggestions(query: &Query, radicals: &[char]) -> Option<Vec<WordPair>> {
             return true;
         }
 
-        let word = word_res.by_sequence(item.word_id()).unwrap();
+        let word = match word_res.by_sequence(item.word_id()) {
+            Some(word) => word,
+            None => return true,
+        };
         word_rad_filter(query_str, word, radicals)
     });
 
