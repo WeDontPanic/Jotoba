@@ -7,6 +7,7 @@ use super::{
     gtype::GType,
     misc::Misc,
     part_of_speech::{PartOfSpeech, PosSimple},
+    Word,
 };
 use serde::{Deserialize, Serialize};
 
@@ -158,6 +159,100 @@ impl Sense {
             Some(format!("{}.", res.iter().join(", ")))
         } else {
             Some(res.iter().join(", "))
+        }
+    }
+}
+
+/// Iterator over all Senses and its glosses
+pub struct SenseGlossIter<'a> {
+    word: &'a Word,
+    sense_pos: usize,
+    gloss_pos: usize,
+}
+
+impl<'a> SenseGlossIter<'a> {
+    #[inline]
+    pub(super) fn new(word: &'a Word) -> Self {
+        SenseGlossIter {
+            word,
+            sense_pos: 0,
+            gloss_pos: 0,
+        }
+    }
+}
+
+impl<'a> Iterator for SenseGlossIter<'a> {
+    type Item = (&'a Sense, &'a Gloss);
+
+    fn next(&mut self) -> Option<Self::Item> {
+        let senses = &self.word.senses;
+        if senses.len() <= self.sense_pos {
+            return None;
+        }
+
+        let sense = &senses[self.sense_pos];
+        assert!(!sense.glosses.is_empty());
+        let gloss = &sense.glosses[self.gloss_pos];
+
+        self.gloss_pos += 1;
+        if self.gloss_pos >= sense.glosses.len() {
+            self.gloss_pos = 0;
+            self.sense_pos += 1;
+        }
+
+        Some((sense, gloss))
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use super::*;
+
+    fn make_gloss(word: &str) -> Gloss {
+        Gloss {
+            gloss: word.to_string(),
+            ..Default::default()
+        }
+    }
+
+    fn make_word(senses: &[&[&str]]) -> Word {
+        let built_senses = senses
+            .iter()
+            .map(|sense| Sense {
+                glosses: sense.iter().map(|i| make_gloss(i)).collect(),
+                ..Default::default()
+            })
+            .collect::<Vec<_>>();
+
+        Word {
+            senses: built_senses,
+            ..Default::default()
+        }
+    }
+
+    #[test]
+    fn test_sense_gloss_iter() {
+        let word_empty = make_word(&[]);
+        assert_eq!(word_empty.sense_gloss_iter().next(), None);
+
+        let test_word = |data: &[&[&str]]| {
+            let word1 = make_word(data);
+            let mut iter1 = word1.sense_gloss_iter();
+
+            for i in data.into_iter().map(|i| i.iter()).flatten() {
+                assert_eq!(iter1.next().unwrap().1.gloss.as_str(), *i);
+            }
+            assert_eq!(iter1.next(), None);
+        };
+
+        let words = vec![
+            vec![&["gloss0_0"][..]],
+            vec![&["gloss0_0"][..], &["gloss1_0"][..]],
+            vec![&["gloss0_0", "gloss0_1"][..], &["gloss1_0", "gloss1_1"][..]],
+        ];
+
+        for word in words {
+            test_word(&word);
         }
     }
 }

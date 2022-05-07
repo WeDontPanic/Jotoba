@@ -57,7 +57,11 @@ fn words_with_kanji_reading(
 
     let literal = kanji.literal.to_string();
     let reading = reading.to_string();
-    let literal_reading = kanji.get_literal_reading(&reading);
+    //let literal_reading = kanji.get_literal_reading(&reading);
+    let literal_reading = kanji
+        .find_reading(&reading)
+        .map(|i| i.get_raw().to_string());
+
     search_task.set_result_filter(move |word| {
         if word.reading.kanji.is_none() {
             return false;

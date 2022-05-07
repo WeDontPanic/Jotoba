@@ -27,7 +27,7 @@ use self::{
     misc::Misc,
     part_of_speech::{PartOfSpeech, PosSimple},
     priority::Priority,
-    sense::Sense,
+    sense::{Sense, SenseGlossIter},
 };
 
 use super::languages::Language;
@@ -87,6 +87,12 @@ impl Word {
     #[inline]
     pub fn get_reading(&self) -> &Dict {
         self.reading.get_reading()
+    }
+
+    /// Returns an iterator over all sense and its glosses
+    #[inline]
+    pub fn sense_gloss_iter(&self) -> SenseGlossIter {
+        SenseGlossIter::new(&self)
     }
 
     /// Return all senses of a language

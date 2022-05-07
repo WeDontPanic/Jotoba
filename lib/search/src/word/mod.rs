@@ -4,7 +4,7 @@ mod regex;
 pub mod result;
 pub mod tag_only;
 
-use std::time::Instant;
+//use std::time::Instant;
 
 use crate::{
     engine::{
@@ -518,5 +518,7 @@ fn guess_native(search: Search) -> Option<Guess> {
 }
 
 fn guess_foreign(search: Search) -> Option<Guess> {
-    search.gloss_search_task().estimate_result_count().ok()
+    let mut task = search.gloss_search_task();
+    task.set_align(false);
+    task.estimate_result_count().ok()
 }

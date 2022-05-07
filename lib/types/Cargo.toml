@@ -12,13 +12,13 @@ serde = { version = "1.0.137", features = ["derive"] }
 jp_inflections = { git = "https://github.com/JojiiOfficial/Japanese_Inflections"}
 bitflags = {git = "https://github.com/JojiiOfficial/BitFlags"}
 localization = { path = "../localization", optional = true}
-japanese = { path = "../japanese", optional = true}
+japanese = { path = "../japanese"}
 itertools = "0.10.3"
 ### Note: This sub-crate is not allowed to have dependencies to other Jotoba crates, unless its only used if `jotoba_intern` is enabled.
 
 [features]
 # This feature adds stuff required for Jotoba to work but not necessarily for extern crates, so its made optional
-jotoba_intern = ["localization", "japanese", "api" ]
+jotoba_intern = ["localization","api" ]
 
 # Contains raw types of JMdict, KanjiDict, ... which are only required to parse but not directly used by Jotoba
 raw_types = []
