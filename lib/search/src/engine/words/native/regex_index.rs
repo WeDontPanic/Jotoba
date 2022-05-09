@@ -2,7 +2,7 @@ use log::info;
 use once_cell::sync::OnceCell;
 use serde::{Deserialize, Serialize};
 use std::{
-    collections::{HashMap, HashSet},
+    collections::{BTreeSet, HashMap},
     fs::File,
     io::BufReader,
     path::Path,
@@ -22,28 +22,7 @@ pub fn load<P: AsRef<Path>>(path: P) {
 /// Special index to allow fast and efficient regex search queries.
 #[derive(Serialize, Deserialize)]
 pub struct RegexSearchIndex {
-    data: HashMap<char, HashSet<IndexedWord>>,
-}
-
-/// A single `RegexSearchIndex` item
-#[derive(Serialize, Deserialize, Eq, Debug)]
-pub struct IndexedWord {
-    pub text: String,
-    pub seq_id: u32,
-}
-
-impl PartialEq for IndexedWord {
-    #[inline]
-    fn eq(&self, other: &Self) -> bool {
-        self.seq_id == other.seq_id
-    }
-}
-
-impl std::hash::Hash for IndexedWord {
-    #[inline]
-    fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
-        self.seq_id.hash(state);
-    }
+    data: HashMap<char, Vec<u32>>,
 }
 
 impl RegexSearchIndex {
@@ -56,22 +35,27 @@ impl RegexSearchIndex {
     }
 
     /// Adds a new term to the index. The `id` is supposed to be used to resolve `term`
+    #[inline]
     pub fn add_term(&mut self, term: &str, seq_id: u32) {
         for c in term.chars() {
-            self.data.entry(c).or_default().insert(IndexedWord {
-                text: term.to_string(),
-                seq_id,
-            });
+            self.data.entry(c).or_default().push(seq_id);
+        }
+    }
+
+    pub fn finish(&mut self) {
+        for (_, v) in self.data.iter_mut() {
+            v.sort_unstable();
+            v.dedup();
         }
     }
 
     /// Get all indexed words using characters in `chars`
-    pub fn find<'a>(&'a self, chars: &[char]) -> Vec<&'a IndexedWord> {
+    pub fn find<'a>(&'a self, chars: &[char]) -> Vec<u32> {
         if chars.is_empty() {
             return vec![];
         }
 
-        let mut out: HashSet<&IndexedWord> = HashSet::new();
+        let mut out: BTreeSet<u32> = BTreeSet::new();
 
         // Add words of first character to `out`
         let mut chars_iter = chars.iter();
@@ -84,7 +68,6 @@ impl RegexSearchIndex {
             };
 
             if let Some(v) = self.data.get(first) {
-                out.reserve(v.len());
                 out.extend(v.iter());
                 // exit first found character
                 break;
@@ -96,7 +79,7 @@ impl RegexSearchIndex {
                 if out.is_empty() {
                     return vec![];
                 }
-                out.retain(|i| v.contains(*i));
+                out.retain(|i| v.contains(i));
             }
         }
 

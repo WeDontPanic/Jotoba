@@ -1,3 +1,5 @@
+use std::time::Instant;
+
 use error::Error;
 use types::jotoba::words::Word;
 
@@ -12,22 +14,24 @@ pub fn search(
     limit: u32,
     offset: usize,
 ) -> Result<SearchResult<&'static Word>, Error> {
-    let mut words = regex_engine::search(&query)?
-        .into_iter()
-        .map(|(word, src)| (word, regex_order(word, src, &query)))
-        .collect::<Vec<_>>();
+    let start = Instant::now();
 
-    let len = words.len();
-
-    // Already sort them here so we can take only those to display
-    words.sort_by(|a, b| a.1.cmp(&b.1).reverse());
+    let res = regex_engine::search(
+        &query,
+        |word, reading| regex_order(word, reading, &query),
+        limit as usize + offset,
+    )?;
 
     // Select words to display
-    let words = words
+    let words = res
+        .items
         .into_iter()
+        .rev()
         .skip(offset)
         .take(limit as usize)
         .collect::<Vec<_>>();
 
-    Ok(SearchResult::from_items_ordered(words, len))
+    let res = SearchResult::from_items_ordered(words, res.item_len);
+    println!("Regex search took: {:?}", start.elapsed());
+    Ok(res)
 }

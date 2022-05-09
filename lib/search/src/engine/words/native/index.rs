@@ -26,7 +26,11 @@ pub fn load<P: AsRef<Path>>(path: P) {
 pub fn load_index<P: AsRef<Path>>(path: P) {
     let file = path.as_ref().join("jp_index");
     let index = Index::open(file).expect("Could not load japanese index");
-    info!("Loaded japanese index");
+
+    let vecs = index.get_vector_store().len();
+    let terms = index.get_indexer().size();
+    info!("Loaded japanese index ({} terms, {} vectors)", terms, vecs);
+
     INDEX.set(index).ok();
 }
 

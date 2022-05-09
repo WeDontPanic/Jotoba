@@ -34,4 +34,9 @@ impl<'a> WordRetrieve<'a> {
     pub fn irregular_ichidan_len(&self) -> usize {
         self.storage.dict_data.word_data.irregular_ichidan.len()
     }
+
+    #[inline]
+    pub fn iter(&self) -> impl Iterator<Item = &Word> {
+        self.storage.dict_data.word_data.words.iter().map(|i| i.1)
+    }
 }

@@ -23,8 +23,8 @@ levenshtein = "1.0.5"
 strsim = "0.10.0"
 eudex = { git = "https://github.com/JojiiOfficial/eudex"}
 regex = "1.5.5"
-#vector_space_model = { path = "../../../vector_space_model"}
-vector_space_model = { git = "https://github.com/JojiiOfficial/VectorSpaceModel" }
+vector_space_model = { path = "../../../VectorSpaceModel"}
+#vector_space_model = { git = "https://github.com/JojiiOfficial/VectorSpaceModel" }
 byteorder = "1.4.3"
 tinysegmenter = "0.1.1"
 bitflags = {git = "https://github.com/JojiiOfficial/BitFlags"}
@@ -33,6 +33,8 @@ bincode = "1.3.3"
 percent-encoding = "2.1.0"
 rayon = "1.5.2"
 types = { path = "../types" , default-features = false, features = ["jotoba_intern"]}
+priority_container = { git = "https://github.com/JojiiOfficial/PrioContainer"}
+order_struct = {git = "https://github.com/JojiiOfficial/OrderStruct"}
 
 [features]
 default = []
