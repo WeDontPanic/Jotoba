@@ -24,7 +24,9 @@ strsim = "0.10.0"
 eudex = { git = "https://github.com/JojiiOfficial/eudex"}
 regex = "1.5.5"
 #vector_space_model = { path = "../../../VectorSpaceModel"}
+#vector_space_model2 = { path = "../../../VectorSpaceModel2"}
 vector_space_model = { git = "https://github.com/JojiiOfficial/VectorSpaceModel" }
+#vector_space_model = { path = "/home/jojii/tmp/VectorSpaceModel" }
 byteorder = "1.4.3"
 tinysegmenter = "0.1.1"
 bitflags = {git = "https://github.com/JojiiOfficial/BitFlags"}

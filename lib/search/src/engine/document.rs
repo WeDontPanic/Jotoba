@@ -1,7 +1,7 @@
 use std::io::Read;
 
 use bitflags::BitFlag;
-use byteorder::{ByteOrder, ReadBytesExt};
+use byteorder::{ByteOrder, ReadBytesExt, WriteBytesExt};
 use types::jotoba::languages::Language;
 use vector_space_model::traits::Decodable;
 
@@ -66,3 +66,24 @@ impl SentenceDocument {
         BitFlag::new_with_value(self.mask).get_unchecked(lang_id as u16)
     }
 }
+
+/*
+impl vector_space_model2::traits::Decodable for SentenceDocument {
+    #[inline(always)]
+    fn decode<T: ByteOrder, R: Read>(mut data: R) -> Result<Self, vector_space_model2::Error> {
+        let seq_id = data.read_u32::<T>()?;
+        let mask = data.read_u16::<T>()?;
+        Ok(Self { seq_id, mask })
+    }
+}
+
+impl vector_space_model2::traits::Encodable for SentenceDocument {
+    #[inline]
+    fn encode<T: ByteOrder>(&self) -> Result<Vec<u8>, vector_space_model2::Error> {
+        let mut encoded = Vec::with_capacity(6);
+        encoded.write_u32::<T>(self.seq_id)?;
+        encoded.write_u16::<T>(self.mask)?;
+        Ok(encoded)
+    }
+}
+*/

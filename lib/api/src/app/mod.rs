@@ -22,8 +22,18 @@ pub(crate) fn new_page<V: Serialize + Clone>(
     items: u32,
     items_per_page: u32,
 ) -> Page<V> {
-    let page = (pl.page.unwrap_or(FIRST_PAGE)).max(FIRST_PAGE);
-    Pagination::new_page(v, page, items, items_per_page, LAST_PAGE)
+    let page = if items > 0 {
+        (pl.page.unwrap_or(FIRST_PAGE)).max(FIRST_PAGE)
+    } else {
+        0
+    };
+    let mut pagination = Pagination::new_page(v, page, items, items_per_page, LAST_PAGE);
+
+    if items == 0 {
+        pagination.set_pages(0);
+    }
+
+    pagination
 }
 
 pub(crate) fn convert_payload(pl: &SearchPayload) -> QueryParser {
