@@ -11,16 +11,29 @@ use config::Config;
 use log::{debug, warn};
 use std::{path::Path, sync::Arc, time::Instant};
 
+use crate::cli::Options;
+
 /// How long frontend assets are going to be cached by the clients. Currently 1 week
 const ASSET_CACHE_MAX_AGE: u64 = 604800;
 
 /// Start the webserver
-pub(super) async fn start() -> std::io::Result<()> {
+pub(super) async fn start(options: Options) -> std::io::Result<()> {
+    if options.debug {
+        println!("DEBUG MODE ENABLED");
+        rayon::ThreadPoolBuilder::new()
+            .num_threads(1)
+            .build_global()
+            .unwrap();
+    }
+
     setup_logger();
 
     let start = Instant::now();
 
     let config = Config::new(None).expect("config failed");
+    if options.debug {
+        println!("{config:#?}");
+    }
 
     prepare_data(&config);
 
@@ -209,26 +222,33 @@ fn prepare_data(ccf: &Config) {
     rayon::scope(move |s| {
         let cf = ccf.clone();
         s.spawn(move |_| {
+            log::debug!("Loading Resources");
             load_resources(&cf);
         });
 
         let cf = ccf.clone();
         s.spawn(move |_| {
+            log::debug!("Loading Suggestions");
             load_suggestions(&cf);
         });
 
         let cf = ccf.clone();
         s.spawn(move |_| {
+            log::debug!("Loading Indexes");
             load_indexes(&cf);
         });
 
-        s.spawn(|_| load_tokenizer());
+        s.spawn(|_| {
+            log::debug!("Loading tokenizer");
+            load_tokenizer()
+        });
 
         let cf = ccf.clone();
         s.spawn(move |_| clean_img_scan_dir(&cf));
 
         let cf = ccf.clone();
         s.spawn(move |_| {
+            log::debug!("Loading News");
             if let Err(err) = resources::news::News::init(cf.server.get_news_folder()) {
                 warn!("Failed to load news: {}", err);
             }

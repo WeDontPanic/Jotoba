@@ -11,7 +11,7 @@ use std::{
     path::{Path, PathBuf},
 };
 
-#[derive(Serialize, Deserialize, Default, Clone)]
+#[derive(Serialize, Deserialize, Default, Clone, Debug)]
 pub struct Config {
     pub server: ServerConfig,
     pub sentry: Option<SentryConfig>,
@@ -21,7 +21,7 @@ pub struct Config {
     pub asset_hash: String,
 }
 
-#[derive(Serialize, Deserialize, Clone)]
+#[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct ServerConfig {
     pub html_files: Option<String>,
     pub audio_files: Option<String>,
@@ -35,12 +35,12 @@ pub struct ServerConfig {
     pub debug_mode: Option<bool>,
 }
 
-#[derive(Serialize, Deserialize, Clone)]
+#[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct SentryConfig {
     pub dsn: String,
 }
 
-#[derive(Serialize, Deserialize, Clone)]
+#[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct SearchConfig {
     pub suggestion_timeout: Option<u64>,
     pub suggestion_sources: Option<String>,

@@ -3,7 +3,6 @@
 #[global_allocator]
 static ALLOC: snmalloc_rs::SnMalloc = snmalloc_rs::SnMalloc;
 
-
 mod cli;
 mod webserver;
 
@@ -13,7 +12,7 @@ pub async fn main() {
 
     // Start the werbserver on --stat/-s
     if options.start {
-        webserver::start().await.expect("webserver failed");
+        webserver::start(options).await.expect("webserver failed");
         return;
     }
 
