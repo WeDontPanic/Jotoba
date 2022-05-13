@@ -201,8 +201,20 @@ where
         }
 
         let total_count = pqueue.total_pushed();
-        let mut o: Vec<_> = pqueue.into_iter().take(self.limit).map(|i| i.0).collect();
+
+        let to_skip = total_count
+            .saturating_sub(self.limit + self.offset)
+            .min(self.limit);
+
+        let mut o: Vec<_> = pqueue
+            .into_iter()
+            .skip(to_skip)
+            .take(self.limit)
+            .map(|i| i.0)
+            .collect();
+
         o.reverse();
+
         Ok(SearchResult::from_raw(o, total_count))
     }
 
