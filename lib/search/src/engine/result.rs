@@ -1,12 +1,5 @@
 use super::result_item::ResultItem;
-use std::{
-    cmp::min,
-    collections::{BinaryHeap, HashSet},
-    fmt::Debug,
-    hash::Hash,
-    ops::Index,
-    vec::IntoIter,
-};
+use std::{collections::HashSet, fmt::Debug, hash::Hash, ops::Index, vec::IntoIter};
 
 /// A result from a search. Contains information about the actual amount of items returned and the
 /// limited items to display
@@ -15,26 +8,13 @@ pub struct SearchResult<T: PartialEq> {
     pub items: Vec<ResultItem<T>>,
 }
 
-impl<T: PartialEq> Default for SearchResult<T> {
-    #[inline]
-    fn default() -> Self {
-        Self {
-            total_items: 0,
-            items: vec![],
-        }
-    }
-}
-
-impl<T: PartialEq + Debug> Debug for SearchResult<T> {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        f.debug_struct("SearchResult")
-            .field("total_items", &self.total_items)
-            .field("items", &self.items)
-            .finish()
-    }
-}
-
 impl<T: PartialEq> SearchResult<T> {
+    /// New SearchResult from a list of items. Requires `items` to be sorted
+    #[inline]
+    pub fn from_raw(items: Vec<ResultItem<T>>, total_items: usize) -> Self {
+        Self { items, total_items }
+    }
+
     /// New SearchResult from a list of items
     pub fn from_items<U: Into<ResultItem<T>>>(items: Vec<U>, total_len: usize) -> Self {
         Self::from_items_order(items, total_len, true)
@@ -43,53 +23,6 @@ impl<T: PartialEq> SearchResult<T> {
     /// New SearchResult from a list of items. Requires `items` to be sorted
     pub fn from_items_ordered<U: Into<ResultItem<T>>>(items: Vec<U>, total_len: usize) -> Self {
         Self::from_items_order(items, total_len, false)
-    }
-
-    fn from_items_order<U: Into<ResultItem<T>>>(
-        items: Vec<U>,
-        total_len: usize,
-        order: bool,
-    ) -> Self {
-        let mut items = items
-            .into_iter()
-            .map(|item| item.into())
-            .collect::<Vec<_>>();
-
-        if order {
-            items.sort_by(|a, b| a.cmp(&b).reverse());
-        }
-
-        Self {
-            total_items: total_len,
-            items,
-        }
-    }
-}
-
-impl<T: PartialEq + Hash + Clone + Eq> SearchResult<T> {
-    /// Returns a `SearchResult` from a BinaryHeap
-    pub(crate) fn from_binary_heap(
-        mut heap: BinaryHeap<ResultItem<T>>,
-        offset: usize,
-        limit: usize,
-    ) -> Self {
-        let total_items = heap.len();
-
-        if offset >= heap.len() {
-            return Self::default();
-        }
-        let item_count = min(heap.len() - offset, limit);
-        let mut items = Vec::with_capacity(item_count);
-
-        for _ in 0..offset {
-            heap.pop();
-        }
-
-        for _ in 0..item_count {
-            items.push(heap.pop().unwrap());
-        }
-
-        Self { total_items, items }
     }
 
     /// Get the amount of items in the result
@@ -116,6 +49,28 @@ impl<T: PartialEq + Hash + Clone + Eq> SearchResult<T> {
         self.items.into_iter().map(|i| i.item)
     }
 
+    fn from_items_order<U: Into<ResultItem<T>>>(
+        items: Vec<U>,
+        total_len: usize,
+        order: bool,
+    ) -> Self {
+        let mut items = items
+            .into_iter()
+            .map(|item| item.into())
+            .collect::<Vec<_>>();
+
+        if order {
+            items.sort_by(|a, b| a.cmp(&b).reverse());
+        }
+
+        Self {
+            total_items: total_len,
+            items,
+        }
+    }
+}
+
+impl<T: PartialEq + Hash + Clone + Eq> SearchResult<T> {
     pub fn merge(&mut self, other: Self) {
         self.total_items += merge_sorted_list(&mut self.items, other.items);
     }
@@ -160,5 +115,24 @@ impl<T: PartialEq> Index<usize> for SearchResult<T> {
     #[inline]
     fn index(&self, index: usize) -> &Self::Output {
         &self.items[index]
+    }
+}
+
+impl<T: PartialEq> Default for SearchResult<T> {
+    #[inline]
+    fn default() -> Self {
+        Self {
+            total_items: 0,
+            items: vec![],
+        }
+    }
+}
+
+impl<T: PartialEq + Debug> Debug for SearchResult<T> {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("SearchResult")
+            .field("total_items", &self.total_items)
+            .field("items", &self.items)
+            .finish()
     }
 }

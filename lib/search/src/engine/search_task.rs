@@ -194,21 +194,15 @@ where
     /// Runs the search task and returns the result.
     pub fn find(&self) -> Result<SearchResult<&'static T::Output>, Error> {
         let mut pqueue = UniquePrioContainerMax::new(self.limit + self.offset);
-        let mut total_count = 0;
-        pqueue.extend(
-            self.get_queries()
-                .map(|(q_str, vec, lang)| self.find_by_vec(vec, &q_str, lang))
-                .collect::<Result<Vec<_>, Error>>()?
-                .into_iter()
-                .flatten()
-                .take(self.vector_limit)
-                .inspect(|_| total_count += 1),
-        );
 
+        for (q_str, vec, lang) in self.get_queries() {
+            self.find_by_vec2(vec, &q_str, lang, &mut pqueue)?;
+        }
+
+        let total_count = pqueue.total_pushed();
         let mut o: Vec<_> = pqueue.into_iter().take(self.limit).map(|i| i.0).collect();
         o.reverse();
-        //let o = o.into_iter().skip(self.offset).take(self.limit).collect::<Vec<_>>();
-        Ok(SearchResult::from_items_ordered(o, total_count))
+        Ok(SearchResult::from_raw(o, total_count))
     }
 
     /// Returns an iterator over all queries in form of document vectors and its assigned language
@@ -221,13 +215,13 @@ where
         })
     }
 
-    fn find_by_vec(
+    fn find_by_vec2(
         &self,
         q_vec: Vector,
         q_str: &str,
         language: Option<Language>,
-    ) -> Result<Vec<ResultItem<&'static T::Output>>, Error> {
-        let start = std::time::Instant::now();
+        out: &mut UniquePrioContainerMax<ResultItem<&T::Output>>,
+    ) -> Result<(), Error> {
         let index = T::get_index(language);
         if index.is_none() {
             log::error!("Failed to retrieve {:?} index with language", language);
@@ -243,7 +237,72 @@ where
             .get_all_iter(&query_dimensions)
             .take(self.vector_limit);
 
-        println!("find by vec took: {:?}", start.elapsed());
+        self.result_from_doc_vectors2(document_vectors, &q_vec, q_str, language, out)
+    }
+
+    fn result_from_doc_vectors2(
+        &self,
+        document_vectors: impl Iterator<Item = DocumentVector<T::Document>>,
+        q_vec: &Vector,
+        q_str: &str,
+        language: Option<Language>,
+        out: &mut UniquePrioContainerMax<ResultItem<&T::Output>>,
+    ) -> Result<(), Error> {
+        let storage: &'static ResourceStorage = resources::get();
+
+        let res = document_vectors
+            .filter_map(|i| {
+                if !self.filter_vector(&i.document) {
+                    return None;
+                }
+
+                let similarity = i.vector().similarity(&q_vec);
+                if similarity <= self.threshold {
+                    return None;
+                }
+
+                // Retrieve `Output` values for given documents
+                let res = T::doc_to_output(storage, &i.document)?
+                    .into_iter()
+                    .map(move |i| (similarity, i));
+
+                Some(res)
+            })
+            .flatten()
+            .filter(|i| self.filter_result(&i.1))
+            .map(|(rel, item)| {
+                let relevance = self.calculate_score(item, rel, q_str, language);
+
+                language
+                    .map(|i| ResultItem::with_language(item, relevance, i))
+                    .unwrap_or(ResultItem::new(item, relevance))
+            });
+
+        out.extend(res);
+        Ok(())
+    }
+
+    fn find_by_vec(
+        &self,
+        q_vec: Vector,
+        q_str: &str,
+        language: Option<Language>,
+    ) -> Result<Vec<ResultItem<&'static T::Output>>, Error> {
+        let index = T::get_index(language);
+        if index.is_none() {
+            log::error!("Failed to retrieve {:?} index with language", language);
+            return Err(Error::Unexpected);
+        }
+        let index = index.unwrap();
+
+        let mut vec_store = index.get_vector_store().clone();
+        let query_dimensions: Vec<_> = q_vec.vec_indices().collect();
+
+        // Retrieve all document vectors that share at least one dimension with the query vector
+        let document_vectors = vec_store
+            .get_all_iter(&query_dimensions)
+            .take(self.vector_limit);
+
         self.result_from_doc_vectors(document_vectors, &q_vec, q_str, language)
     }
 
@@ -254,7 +313,6 @@ where
         q_str: &str,
         language: Option<Language>,
     ) -> Result<Vec<ResultItem<&'static T::Output>>, Error> {
-        let start = std::time::Instant::now();
         let storage: &'static ResourceStorage = resources::get();
 
         let res = document_vectors
@@ -285,7 +343,6 @@ where
                     .unwrap_or(ResultItem::new(item, relevance))
             })
             .collect::<Vec<_>>();
-        println!("res from vecs: {:?}", start.elapsed());
         Ok(res)
     }
 
