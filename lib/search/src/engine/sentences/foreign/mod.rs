@@ -1,11 +1,9 @@
 pub mod index;
 
-use crate::engine::{
-    document::SentenceDocument, metadata::Metadata, simple_gen_doc::GenDoc, Indexable, SearchEngine,
-};
+use crate::engine::{document::SentenceDocument, metadata::Metadata, Indexable, SearchEngine};
 use resources::models::storage::ResourceStorage;
 use types::jotoba::{languages::Language, sentences::Sentence};
-use vector_space_model::DocumentVector;
+use vector_space_model2::Vector;
 
 pub struct Engine {}
 
@@ -16,13 +14,12 @@ impl Indexable for Engine {
     #[inline]
     fn get_index(
         language: Option<Language>,
-    ) -> Option<&'static vector_space_model::Index<Self::Document, Self::Metadata>> {
+    ) -> Option<&'static vector_space_model2::Index<Self::Document, Self::Metadata>> {
         index::get(language.expect("Language not provided"))
     }
 }
 
 impl SearchEngine for Engine {
-    type GenDoc = GenDoc;
     type Output = Sentence;
 
     #[inline]
@@ -34,16 +31,17 @@ impl SearchEngine for Engine {
     }
 
     fn gen_query_vector(
-        index: &vector_space_model::Index<Self::Document, Self::Metadata>,
+        index: &vector_space_model2::Index<Self::Document, Self::Metadata>,
         query: &str,
         _allow_align: bool,
         _language: Option<Language>,
-    ) -> Option<(DocumentVector<Self::GenDoc>, String)> {
+    ) -> Option<(Vector, String)> {
         let mut terms = all_terms(&query.to_lowercase());
         terms.push(query.to_string().to_lowercase());
-        let query_document = GenDoc::new(terms);
-        let doc = DocumentVector::new(index.get_indexer(), query_document.clone())?;
-        Some((doc, query.to_string()))
+        //let doc = DocumentVector::new(index.get_indexer(), query_document.clone())?;
+        //Some((doc, query.to_string()))
+        let vec = index.build_vector(&terms, None)?;
+        Some((vec, query.to_string()))
     }
 }
 

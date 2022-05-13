@@ -3,12 +3,10 @@ use std::path::Path;
 use bktree::BkTree;
 use log::info;
 use once_cell::sync::OnceCell;
-use vector_space_model::DefaultMetadata;
-
-use crate::engine::document::SingleDocument;
+use vector_space_model2::DefaultMetadata;
 
 // Shortcut for type of index
-pub(super) type Index = vector_space_model::Index<SingleDocument, DefaultMetadata>;
+pub(super) type Index = vector_space_model2::Index<u32, DefaultMetadata>;
 
 // In-memory storage for japanese index
 pub(super) static INDEX: OnceCell<Index> = OnceCell::new();
@@ -28,7 +26,7 @@ pub fn load_index<P: AsRef<Path>>(path: P) {
     let index = Index::open(file).expect("Could not load japanese index");
 
     let vecs = index.get_vector_store().len();
-    let terms = index.get_indexer().size();
+    let terms = index.get_indexer().len();
     info!("Loaded japanese index ({} terms, {} vectors)", terms, vecs);
 
     INDEX.set(index).ok();

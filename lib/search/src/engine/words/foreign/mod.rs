@@ -1,32 +1,27 @@
+//pub mod gen;
+pub mod index;
+
+use crate::engine::{metadata::Metadata, Indexable, SearchEngine, SearchTask};
 use resources::models::storage::ResourceStorage;
 use types::jotoba::{languages::Language, words::Word};
 use utils::to_option;
-use vector_space_model::{document_vector, DocumentVector};
-
-use crate::engine::{
-    document::MultiDocument, metadata::Metadata, Indexable, SearchEngine, SearchTask,
-};
-use gen::GenDoc;
-
-pub mod gen;
-pub mod index;
+use vector_space_model2::Vector;
 
 pub struct Engine {}
 
 impl Indexable for Engine {
     type Metadata = Metadata;
-    type Document = MultiDocument;
+    type Document = Vec<u32>;
 
     #[inline]
     fn get_index(
         language: Option<Language>,
-    ) -> Option<&'static vector_space_model::Index<Self::Document, Self::Metadata>> {
+    ) -> Option<&'static vector_space_model2::Index<Self::Document, Self::Metadata>> {
         index::get(language.expect("Language required"))
     }
 }
 
 impl SearchEngine for Engine {
-    type GenDoc = GenDoc;
     type Output = Word;
 
     #[inline]
@@ -35,30 +30,27 @@ impl SearchEngine for Engine {
         inp: &Self::Document,
     ) -> Option<Vec<&'static Self::Output>> {
         to_option(
-            inp.seq_ids
-                .iter()
+            inp.iter()
                 .map(|i| storage.words().by_sequence(*i).unwrap())
                 .collect(),
         )
     }
 
     fn gen_query_vector(
-        index: &vector_space_model::Index<Self::Document, Self::Metadata>,
+        index: &vector_space_model2::Index<Self::Document, Self::Metadata>,
         query: &str,
         allow_align: bool,
         language: Option<Language>,
-    ) -> Option<(DocumentVector<Self::GenDoc>, String)> {
+    ) -> Option<(Vector, String)> {
         //let query_str = self.fixed_term(index).unwrap_or(self.get_query_str());
         let query_str = query;
 
-        let term_indexer = index.get_indexer();
-
         // search query to document vector
-        let mut query_document = GenDoc::new(query_str, vec![]);
+        let mut terms = split_to_words(query_str);
 
         // align query to index
         if allow_align {
-            for term in query_document.get_terms_mut() {
+            for term in terms.iter_mut() {
                 if let Some(aligned) = Self::align_query(term, index, language) {
                     *term = aligned.to_string();
                     println!("Aligned: {} to {}", &query, term);
@@ -66,9 +58,19 @@ impl SearchEngine for Engine {
             }
         }
 
+        /*
+        let doc_store = index.get_vector_store();
+        let result_count = index
+            .build_vector(&terms, None)
+            .map(|i| {
+                i.vec_indices()
+                    .map(|dim| doc_store.dimension_size(dim))
+                    .sum::<usize>()
+            })
+            .unwrap_or(0);
+
         let mut query = document_vector::DocumentVector::new(term_indexer, query_document.clone())?;
 
-        let doc_store = index.get_vector_store();
 
         let result_count = query
             .vector()
@@ -88,11 +90,15 @@ impl SearchEngine for Engine {
         }
 
         Some((query, query_document.as_query()))
+        */
+
+        let vec = index.build_vector(&terms, None)?;
+        Some((vec, query.to_string()))
     }
 
     fn align_query<'b>(
         original: &'b str,
-        index: &vector_space_model::Index<Self::Document, Self::Metadata>,
+        index: &vector_space_model2::Index<Self::Document, Self::Metadata>,
         language: Option<Language>,
     ) -> Option<&'b str> {
         let query_str = original;
@@ -203,4 +209,28 @@ mod test {
 
         index::load("../../indexes").unwrap();
     }
+}
+
+/// Splits a gloss value into its words. Eg.: "make some coffee" => vec!["make","some coffee"];
+pub(crate) fn split_to_words(i: &str) -> Vec<String> {
+    i.split(' ')
+        .map(|i| {
+            format_word(i)
+                .split(' ')
+                .map(|i| i.to_lowercase())
+                .filter(|i| !i.is_empty())
+                .collect::<Vec<_>>()
+        })
+        .flatten()
+        .collect()
+}
+
+/// Replaces all special characters into spaces so we can split it down into words
+#[inline]
+fn format_word(inp: &str) -> String {
+    let mut out = String::from(inp);
+    for i in ".,[]() \t\"'\\/-;:".chars() {
+        out = out.replace(i, " ");
+    }
+    out
 }

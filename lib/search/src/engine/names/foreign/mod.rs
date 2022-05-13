@@ -1,27 +1,26 @@
 pub mod index;
 
-use crate::engine::{document::MultiDocument, simple_gen_doc::GenDoc, Indexable, SearchEngine};
+use crate::engine::{Indexable, SearchEngine};
 use resources::models::storage::ResourceStorage;
 use types::jotoba::{languages::Language, names::Name};
 use utils::to_option;
-use vector_space_model::{DefaultMetadata, DocumentVector};
+use vector_space_model2::{DefaultMetadata, Vector};
 
 pub struct Engine {}
 
 impl Indexable for Engine {
     type Metadata = DefaultMetadata;
-    type Document = MultiDocument;
+    type Document = Vec<u32>;
 
     #[inline]
     fn get_index(
         _language: Option<Language>,
-    ) -> Option<&'static vector_space_model::Index<Self::Document, Self::Metadata>> {
+    ) -> Option<&'static vector_space_model2::Index<Self::Document, Self::Metadata>> {
         Some(index::get())
     }
 }
 
 impl SearchEngine for Engine {
-    type GenDoc = GenDoc;
     type Output = Name;
 
     #[inline]
@@ -30,27 +29,28 @@ impl SearchEngine for Engine {
         inp: &Self::Document,
     ) -> Option<Vec<&'static Self::Output>> {
         to_option(
-            inp.seq_ids
-                .iter()
+            inp.iter()
                 .map(|i| storage.names().by_sequence(*i).unwrap())
                 .collect(),
         )
     }
 
     fn gen_query_vector(
-        index: &vector_space_model::Index<Self::Document, Self::Metadata>,
+        index: &vector_space_model2::Index<Self::Document, Self::Metadata>,
         query: &str,
         _allow_align: bool,
         _language: Option<Language>,
-    ) -> Option<(DocumentVector<Self::GenDoc>, String)> {
-        let query_document = GenDoc::new(format_word(query));
-        let vec = DocumentVector::new(index.get_indexer(), query_document.clone())?;
+    ) -> Option<(Vector, String)> {
+        //let query_document = GenDoc::new(format_word(query));
+        //let vec = DocumentVector::new(index.get_indexer(), query_document.clone())?;
+        //Some((vec, query.to_string()))
+        let vec = index.build_vector(&format_word(query), None)?;
         Some((vec, query.to_string()))
     }
 
     fn align_query<'b>(
         original: &'b str,
-        index: &vector_space_model::Index<Self::Document, Self::Metadata>,
+        index: &vector_space_model2::Index<Self::Document, Self::Metadata>,
         _language: Option<Language>,
     ) -> Option<&'b str> {
         let query_str = original;

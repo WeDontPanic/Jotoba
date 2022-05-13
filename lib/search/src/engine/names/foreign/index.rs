@@ -4,12 +4,10 @@ use bktree::BkTree;
 use config::Config;
 use log::info;
 use once_cell::sync::OnceCell;
-use vector_space_model::DefaultMetadata;
-
-use crate::engine::document::MultiDocument;
+use vector_space_model2::DefaultMetadata;
 
 // Shortcut for type of index
-pub(super) type Index = vector_space_model::Index<MultiDocument, DefaultMetadata>;
+pub(super) type Index = vector_space_model2::Index<Vec<u32>, DefaultMetadata>;
 
 // In-memory storage for foreign name index
 pub(super) static INDEX: OnceCell<Index> = OnceCell::new();

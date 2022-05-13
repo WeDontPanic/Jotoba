@@ -8,7 +8,7 @@ use types::jotoba::languages::Language;
 use crate::engine::{document::SentenceDocument, metadata::Metadata};
 
 // Shortcut for type of index
-pub(super) type Index = vector_space_model::Index<SentenceDocument, Metadata>;
+pub(super) type Index = vector_space_model2::Index<SentenceDocument, Metadata>;
 
 // In-memory storage for foreign name index
 pub(super) static INDEXES: OnceCell<HashMap<Language, Index>> = OnceCell::new();

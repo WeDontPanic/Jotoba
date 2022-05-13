@@ -2136,7 +2136,7 @@ checksum = "eb9f9e6e233e5c4a35559a617bf40a4ec447db2e84c20b55a6f83167b7e57872"
 [[package]]
 name = "priority_container"
 version = "0.1.0"
-source = "git+https://github.com/JojiiOfficial/PrioContainer#7f996c1254a816d7eb0f9c2e0bc6100d7ffcd461"
+source = "git+https://github.com/JojiiOfficial/PrioContainer#f2662c8ca5fbec9db98042c2bb01bbb165e0ecf1"
 
 [[package]]
 name = "proc-macro2"
@@ -2453,7 +2453,6 @@ dependencies = [
  "tinysegmenter",
  "types",
  "utils",
- "vector_space_model",
  "vector_space_model2",
 ]
 
@@ -2776,9 +2775,9 @@ dependencies = [
 
 [[package]]
 name = "syn"
-version = "1.0.93"
+version = "1.0.94"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "04066589568b72ec65f42d65a1a52436e954b168773148893c020269563decf2"
+checksum = "a07e33e919ebcd69113d5be0e4d70c5707004ff45188910106854f38b960df4a"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -3182,20 +3181,6 @@ name = "vec_map"
 version = "0.8.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "f1bddf1187be692e79c5ffeab891132dfb0f236ed36a43c7ed39f1165ee20191"
-
-[[package]]
-name = "vector_space_model"
-version = "0.1.1"
-source = "git+https://github.com/JojiiOfficial/VectorSpaceModel#d144c859dd87d04ae45d03f268248c13a44bfd8a"
-dependencies = [
- "bktree",
- "byteorder",
- "compressed_vec",
- "flate2",
- "indexed_file",
- "serde",
- "tar",
-]
 
 [[package]]
 name = "vector_space_model2"

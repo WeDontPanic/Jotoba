@@ -3,43 +3,7 @@ use std::io::Read;
 use bitflags::BitFlag;
 use byteorder::{ByteOrder, ReadBytesExt, WriteBytesExt};
 use types::jotoba::languages::Language;
-use vector_space_model::traits::Decodable;
-
-/// A document belongs to a document-vector and contains the seq_ids of all items who represent
-/// this document
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct MultiDocument {
-    pub seq_ids: Vec<u32>,
-}
-
-impl Decodable for MultiDocument {
-    #[inline(always)]
-    fn decode<T: ByteOrder, R: Read>(mut data: R) -> Result<Self, vector_space_model::Error> {
-        let seq_id_count = data.read_u16::<T>()?;
-
-        let seq_ids = (0..seq_id_count)
-            .map(|_| data.read_u32::<T>())
-            .collect::<Result<_, _>>()?;
-
-        Ok(Self { seq_ids })
-    }
-}
-
-/// A document belongs to a document-vector and contains a single seq_id which means this
-/// document represents a single resource item.
-#[derive(Clone, Copy, PartialEq, Eq, Debug, Hash)]
-pub struct SingleDocument {
-    pub seq_id: u32,
-}
-
-impl Decodable for SingleDocument {
-    #[inline(always)]
-    fn decode<T: ByteOrder, R: Read>(mut data: R) -> Result<Self, vector_space_model::Error> {
-        Ok(Self {
-            seq_id: data.read_u32::<T>()?,
-        })
-    }
-}
+use vector_space_model2::traits::{Decodable, Encodable};
 
 /// A sentence document represents a single sentence, referenced by its ID, and a bitmask of
 /// supported languages for more efficient searching
@@ -47,15 +11,6 @@ impl Decodable for SingleDocument {
 pub struct SentenceDocument {
     pub seq_id: u32,
     pub mask: u16,
-}
-
-impl Decodable for SentenceDocument {
-    #[inline(always)]
-    fn decode<T: ByteOrder, R: Read>(mut data: R) -> Result<Self, vector_space_model::Error> {
-        let seq_id = data.read_u32::<T>()?;
-        let mask = data.read_u16::<T>()?;
-        Ok(Self { seq_id, mask })
-    }
 }
 
 impl SentenceDocument {
@@ -67,8 +22,7 @@ impl SentenceDocument {
     }
 }
 
-/*
-impl vector_space_model2::traits::Decodable for SentenceDocument {
+impl Decodable for SentenceDocument {
     #[inline(always)]
     fn decode<T: ByteOrder, R: Read>(mut data: R) -> Result<Self, vector_space_model2::Error> {
         let seq_id = data.read_u32::<T>()?;
@@ -77,7 +31,7 @@ impl vector_space_model2::traits::Decodable for SentenceDocument {
     }
 }
 
-impl vector_space_model2::traits::Encodable for SentenceDocument {
+impl Encodable for SentenceDocument {
     #[inline]
     fn encode<T: ByteOrder>(&self) -> Result<Vec<u8>, vector_space_model2::Error> {
         let mut encoded = Vec::with_capacity(6);
@@ -86,4 +40,3 @@ impl vector_space_model2::traits::Encodable for SentenceDocument {
         Ok(encoded)
     }
 }
-*/

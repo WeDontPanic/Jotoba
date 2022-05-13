@@ -8,7 +8,7 @@ pub mod result;
 pub mod result_item;
 pub mod search_task;
 pub mod sentences;
-pub mod simple_gen_doc;
+//pub mod simple_gen_doc;
 pub mod words;
 
 use std::hash::Hash;
@@ -18,9 +18,7 @@ use config::Config;
 use resources::models::storage::ResourceStorage;
 pub use search_task::SearchTask;
 use types::jotoba::languages::Language;
-use vector_space_model::{
-    document_vector, metadata::Metadata, traits::Decodable, DocumentVector, Index,
-};
+use vector_space_model2::{metadata::Metadata, traits::Decodable, Index, Vector};
 
 /// Load all indexes for word search engine
 pub fn load_indexes(config: &Config) -> Result<(), Box<dyn std::error::Error>> {
@@ -70,7 +68,6 @@ pub trait DocumentGenerateable {
 }
 
 pub trait SearchEngine: Indexable {
-    type GenDoc: document_vector::Document + DocumentGenerateable + Send;
     type Output: PartialEq + Eq + Hash + 'static + Send + Sync;
 
     /// Loads the corresponding Output type from a document
@@ -85,7 +82,7 @@ pub trait SearchEngine: Indexable {
         query: &str,
         align: bool,
         language: Option<Language>,
-    ) -> Option<(DocumentVector<Self::GenDoc>, String)>;
+    ) -> Option<(Vector, String)>;
 
     fn align_query<'b>(
         _original: &'b str,

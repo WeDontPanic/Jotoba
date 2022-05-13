@@ -3,12 +3,12 @@ use std::path::Path;
 use config::Config;
 use log::info;
 use once_cell::sync::OnceCell;
-use vector_space_model::DefaultMetadata;
+use vector_space_model2::DefaultMetadata;
 
 use crate::engine::document::SentenceDocument;
 
 // Shortcut for type of index
-pub(super) type Index = vector_space_model::Index<SentenceDocument, DefaultMetadata>;
+pub(super) type Index = vector_space_model2::Index<SentenceDocument, DefaultMetadata>;
 
 // In-memory storage for japanese sentence index
 pub(super) static INDEX: OnceCell<Index> = OnceCell::new();

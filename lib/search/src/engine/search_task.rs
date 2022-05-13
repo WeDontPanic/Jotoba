@@ -4,13 +4,13 @@ use super::{
     result_item::ResultItem,
     SearchEngine,
 };
-use crate::engine::DocumentGenerateable;
 use error::Error;
 use itertools::Itertools;
+use priority_container::unique::UniquePrioContainerMax;
 use resources::models::storage::ResourceStorage;
-use std::{collections::BinaryHeap, marker::PhantomData};
+use std::marker::PhantomData;
 use types::jotoba::languages::Language;
-use vector_space_model::DocumentVector;
+use vector_space_model2::{DocumentVector, Vector};
 
 pub struct SearchTask<'a, T>
 where
@@ -26,8 +26,8 @@ where
     order: Option<Box<dyn Fn(&T::Output, f32, &str, Option<Language>) -> usize>>,
     /// Min relevance returned from vector space algo
     threshold: f32,
-    limit: usize,
     vector_limit: usize,
+    limit: usize,
     offset: usize,
     allow_align: bool,
     phantom: PhantomData<T>,
@@ -132,11 +132,18 @@ where
         let (query, lang) = self.queries.get(0).unwrap();
         let index = T::get_index(*lang).expect("Lang not loaded");
 
+        /*
         let extact_query = T::GenDoc::new(vec![query]);
         let document =
             DocumentVector::new(index.get_indexer(), extact_query).ok_or(Error::Unexpected)?;
+        */
 
-        let res = self.find_by_vec(document, query, *lang)?;
+        let query_vec = match index.build_vector(&vec![query], None) {
+            Some(qv) => qv,
+            None => return Ok(vec![]),
+        };
+
+        let res = self.find_by_vec(query_vec, query, *lang)?;
 
         Ok(res)
     }
@@ -186,27 +193,26 @@ where
 
     /// Runs the search task and returns the result.
     pub fn find(&self) -> Result<SearchResult<&'static T::Output>, Error> {
-        let items = self
-            .get_queries()
-            .map(|(q_str, vec, lang)| self.find_by_vec(vec, &q_str, lang))
-            .collect::<Result<Vec<_>, Error>>()?
-            .into_iter()
-            .flatten()
-            .unique_by(|a| a.item)
-            .take(self.vector_limit)
-            .collect::<Vec<_>>();
+        let mut pqueue = UniquePrioContainerMax::new(self.limit + self.offset);
+        let mut total_count = 0;
+        pqueue.extend(
+            self.get_queries()
+                .map(|(q_str, vec, lang)| self.find_by_vec(vec, &q_str, lang))
+                .collect::<Result<Vec<_>, Error>>()?
+                .into_iter()
+                .flatten()
+                .take(self.vector_limit)
+                .inspect(|_| total_count += 1),
+        );
 
-        Ok(SearchResult::from_binary_heap(
-            BinaryHeap::from(items),
-            self.offset,
-            self.limit,
-        ))
+        let mut o: Vec<_> = pqueue.into_iter().take(self.limit).map(|i| i.0).collect();
+        o.reverse();
+        //let o = o.into_iter().skip(self.offset).take(self.limit).collect::<Vec<_>>();
+        Ok(SearchResult::from_items_ordered(o, total_count))
     }
 
     /// Returns an iterator over all queries in form of document vectors and its assigned language
-    fn get_queries<'b>(
-        &'b self,
-    ) -> impl Iterator<Item = (String, DocumentVector<T::GenDoc>, Option<Language>)> + 'b {
+    fn get_queries<'b>(&'b self) -> impl Iterator<Item = (String, Vector, Option<Language>)> + 'b {
         self.queries.iter().filter_map(move |(q_str, lang)| {
             let index = T::get_index(*lang).expect("Lang not loaded");
             let allow_align = self.allow_align && !self.has_term();
@@ -217,10 +223,11 @@ where
 
     fn find_by_vec(
         &self,
-        q_vec: DocumentVector<T::GenDoc>,
+        q_vec: Vector,
         q_str: &str,
         language: Option<Language>,
     ) -> Result<Vec<ResultItem<&'static T::Output>>, Error> {
+        let start = std::time::Instant::now();
         let index = T::get_index(language);
         if index.is_none() {
             log::error!("Failed to retrieve {:?} index with language", language);
@@ -229,23 +236,25 @@ where
         let index = index.unwrap();
 
         let mut vec_store = index.get_vector_store().clone();
-        let query_dimensions: Vec<_> = q_vec.vector().vec_indices().collect();
+        let query_dimensions: Vec<_> = q_vec.vec_indices().collect();
 
         // Retrieve all document vectors that share at least one dimension with the query vector
         let document_vectors = vec_store
             .get_all_iter(&query_dimensions)
             .take(self.vector_limit);
 
+        println!("find by vec took: {:?}", start.elapsed());
         self.result_from_doc_vectors(document_vectors, &q_vec, q_str, language)
     }
 
     fn result_from_doc_vectors(
         &self,
         document_vectors: impl Iterator<Item = DocumentVector<T::Document>>,
-        q_vec: &DocumentVector<T::GenDoc>,
+        q_vec: &Vector,
         q_str: &str,
         language: Option<Language>,
     ) -> Result<Vec<ResultItem<&'static T::Output>>, Error> {
+        let start = std::time::Instant::now();
         let storage: &'static ResourceStorage = resources::get();
 
         let res = document_vectors
@@ -254,7 +263,7 @@ where
                     return None;
                 }
 
-                let similarity = i.similarity(&q_vec);
+                let similarity = i.vector().similarity(&q_vec);
                 if similarity <= self.threshold {
                     return None;
                 }
@@ -276,12 +285,13 @@ where
                     .unwrap_or(ResultItem::new(item, relevance))
             })
             .collect::<Vec<_>>();
+        println!("res from vecs: {:?}", start.elapsed());
         Ok(res)
     }
 
     fn estimate_by_vec(
         &self,
-        q_vec: DocumentVector<T::GenDoc>,
+        q_vec: Vector,
         language: Option<Language>,
         est_limit: usize,
     ) -> Result<usize, Error> {
@@ -293,7 +303,7 @@ where
         let index = index.unwrap();
 
         let mut vec_store = index.get_vector_store().clone();
-        let query_dimensions: Vec<_> = q_vec.vector().vec_indices().collect();
+        let query_dimensions: Vec<_> = q_vec.vec_indices().collect();
 
         // Retrieve all document vectors that share at least one dimension with the query vector
         let document_vectors = vec_store
@@ -308,7 +318,7 @@ where
                     return None;
                 }
 
-                let similarity = i.similarity(&q_vec);
+                let similarity = i.vector().similarity(&q_vec);
                 if similarity <= self.threshold {
                     return None;
                 }
