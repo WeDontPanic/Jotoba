@@ -39,7 +39,7 @@ fn kana_search(query: &str) -> Result<Vec<char>, Error> {
     let kanji_retr = resources::get().kanji();
     let res = search_task
         .find()?
-        .item_iter()
+        .into_iter()
         .map(|i| {
             i.get_reading()
                 .reading

@@ -39,13 +39,19 @@ impl<T: PartialEq> SearchResult<T> {
 
     /// Returns an iterator over the raw result items
     #[inline]
-    pub fn iter<'a>(&'a self) -> impl Iterator<Item = &'a T> + 'a {
+    pub fn iter<'a>(&'a self) -> impl Iterator<Item = &'a ResultItem<T>> + 'a {
+        self.items.iter()
+    }
+
+    /// Returns an iterator over the raw result items
+    #[inline]
+    pub fn item_iter<'a>(&'a self) -> impl Iterator<Item = &'a T> + 'a {
         self.items.iter().map(|i| &i.item)
     }
 
     /// Returns an iterator over the raw result items
     #[inline]
-    pub fn item_iter(self) -> impl Iterator<Item = T> {
+    pub fn into_iter(self) -> impl Iterator<Item = T> {
         self.items.into_iter().map(|i| i.item)
     }
 

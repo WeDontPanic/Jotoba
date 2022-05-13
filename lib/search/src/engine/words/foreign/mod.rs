@@ -1,4 +1,3 @@
-//pub mod gen;
 pub mod index;
 
 use crate::engine::{metadata::Metadata, Indexable, SearchEngine, SearchTask};

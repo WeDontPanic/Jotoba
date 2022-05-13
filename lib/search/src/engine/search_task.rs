@@ -138,7 +138,7 @@ where
             DocumentVector::new(index.get_indexer(), extact_query).ok_or(Error::Unexpected)?;
         */
 
-        let query_vec = match index.build_vector(&vec![query], None) {
+        let query_vec = match index.build_vector(&[query], None) {
             Some(qv) => qv,
             None => return Ok(vec![]),
         };
@@ -193,7 +193,8 @@ where
 
     /// Runs the search task and returns the result.
     pub fn find(&self) -> Result<SearchResult<&'static T::Output>, Error> {
-        let mut pqueue = UniquePrioContainerMax::new(self.limit + self.offset);
+        // Load some more (limit * 2) in case there are items with the same relevance
+        let mut pqueue = UniquePrioContainerMax::new((self.limit * 2) + self.offset);
 
         for (q_str, vec, lang) in self.get_queries() {
             self.find_by_vec2(vec, &q_str, lang, &mut pqueue)?;

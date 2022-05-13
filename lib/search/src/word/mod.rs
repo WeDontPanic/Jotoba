@@ -252,7 +252,7 @@ impl<'a> Search<'a> {
 
         let count = res.len();
 
-        let mut wordresults = res.item_iter().cloned().collect::<Vec<_>>();
+        let mut wordresults = res.into_iter().cloned().collect::<Vec<_>>();
 
         filter_languages(
             wordresults.iter_mut(),
@@ -356,7 +356,7 @@ impl<'a> Search<'a> {
             return self.check_other_lang();
         }
 
-        let mut wordresults = res.item_iter().cloned().collect::<Vec<_>>();
+        let mut wordresults = res.into_iter().cloned().collect::<Vec<_>>();
 
         filter_languages(
             wordresults.iter_mut(),

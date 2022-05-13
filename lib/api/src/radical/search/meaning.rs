@@ -38,7 +38,7 @@ fn word_search(query: &str, language: Language) -> Result<Vec<char>, Error> {
     let kanji_retr = resources::get().kanji();
     let res = search_task
         .find()?
-        .item_iter()
+        .into_iter()
         .filter(|word| word.get_reading().reading == query)
         .map(|i| {
             println!("{}", i.get_reading().reading);

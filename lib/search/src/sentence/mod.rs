@@ -133,7 +133,7 @@ fn get_result<T: SearchEngine<Output = Sentence> + Send>(
     let found = search.find()?;
     let len = found.len();
     let items = found
-        .item_iter()
+        .into_iter()
         .filter_map(|i| map_sentence_to_item(i, lang, query))
         .collect::<Vec<_>>();
 

@@ -48,7 +48,7 @@ impl SearchEngine for Engine {
 
         Some((doc, query.to_owned()))
         */
-        let vec = index.build_vector(&vec![query], None)?;
+        let vec = index.build_vector(&[query], None)?;
         Some((vec, query.to_owned()))
     }
 }

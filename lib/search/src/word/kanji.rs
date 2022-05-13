@@ -115,7 +115,7 @@ fn words_with_kanji_reading(
 
     let res = search_task.find()?;
     let len = res.len();
-    let mut words = res.item_iter().cloned().collect::<Vec<_>>();
+    let mut words = res.into_iter().cloned().collect::<Vec<_>>();
 
     super::filter_languages(
         words.iter_mut(),

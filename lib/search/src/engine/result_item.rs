@@ -12,7 +12,7 @@ pub struct ResultItem<T: PartialEq> {
 impl<T: PartialEq> PartialEq for ResultItem<T> {
     #[inline]
     fn eq(&self, other: &Self) -> bool {
-        self.item == other.item && self.language == other.language
+        self.item == other.item //&& self.language == other.language
     }
 }
 
