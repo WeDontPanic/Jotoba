@@ -46,7 +46,7 @@ fn foreign_search(query: &Query) -> SearchTask<foreign::Engine> {
         SearchTask::<foreign::Engine>::with_language(query_str, query.settings.user_lang)
             .limit(query.settings.page_size as usize)
             .offset(query.page_offset)
-            .threshold(0.0);
+            .threshold(0.2);
 
     if query.settings.show_english && query.settings.user_lang != Language::English {
         search_task.add_language_query(&query.query, Language::English)
@@ -64,7 +64,7 @@ fn jp_search<'a>(query: &Query, query_str: &'a str) -> SearchTask<'a, native::En
     let mut search_task = SearchTask::<native::Engine>::new(&query_str)
         .limit(query.settings.page_size as usize)
         .offset(query.page_offset)
-        .threshold(0.0);
+        .threshold(0.10);
 
     lang_filter(query, &mut search_task);
     sort_fn(query, query_str.to_string(), &mut search_task, true);
