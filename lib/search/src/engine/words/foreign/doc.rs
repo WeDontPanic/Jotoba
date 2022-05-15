@@ -1,7 +1,4 @@
-use std::{
-    io::{Cursor, Read},
-    usize,
-};
+use std::io::Read;
 
 use byteorder::{ReadBytesExt, WriteBytesExt};
 use vector_space_model2::traits::{Decodable, Encodable};
@@ -38,24 +35,6 @@ impl Encodable for FWordDocItem {
     }
 }
 
-impl Decodable for FWordDocItem {
-    #[inline]
-    fn decode<T: byteorder::ByteOrder, R: Read>(
-        mut data: R,
-    ) -> Result<Self, vector_space_model2::Error> {
-        let seq_id = data.read_u32::<T>()?;
-        let pos_len = data.read_u8()?;
-
-        let mut pos = Vec::with_capacity(pos_len as usize);
-
-        for _ in 0..pos_len {
-            pos.push(data.read_u16::<T>()?);
-        }
-
-        Ok(FWordDocItem::new(seq_id, pos))
-    }
-}
-
 impl FWordDocItem {
     #[inline]
     pub fn new(seq_id: u32, positions: Vec<u16>) -> Self {
@@ -85,11 +64,17 @@ impl Decodable for FWordDoc {
 
         let mut items = Vec::with_capacity(len);
 
-        let mut buf = vec![0u8; len];
         for _ in 0..len {
-            data.read_exact(&mut buf)?;
-            let item = FWordDocItem::decode::<T, _>(Cursor::new(&buf))?;
-            items.push(item);
+            let seq_id = data.read_u32::<T>()?;
+            let pos_len = data.read_u8()?;
+
+            let mut pos = Vec::with_capacity(pos_len as usize);
+
+            for _ in 0..pos_len {
+                pos.push(data.read_u16::<T>()?);
+            }
+
+            items.push(FWordDocItem::new(seq_id, pos));
         }
 
         Ok(FWordDoc { items })

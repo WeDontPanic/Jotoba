@@ -1,13 +1,21 @@
-use crate::{engine::words::foreign::output::WordOutput, regex_query::RegexSQuery, SearchMode};
+use crate::{
+    engine::{self, words::foreign::output::WordOutput},
+    regex_query::RegexSQuery,
+    SearchMode,
+};
 use japanese::JapaneseExt;
 use levenshtein::levenshtein;
 use once_cell::sync::Lazy;
 use regex::Regex;
 use types::jotoba::{
     languages::Language,
-    words::{sense::Gloss, Word},
+    words::{
+        sense::{to_unique_id, Gloss, Sense},
+        Word,
+    },
 };
 use utils::real_string_len;
+use vector_space_model2::{term_store::TermIndexer, Vector};
 
 /// A Regex matching parentheses and its contents
 pub(crate) static REMOVE_PARENTHESES: Lazy<Regex> =
@@ -99,63 +107,72 @@ pub fn japanese_search_order(
     score
 }
 
+fn make_search_vec(indexer: &TermIndexer, query: &str) -> Option<Vector> {
+    let terms: Vec<_> = query
+        .split(' ')
+        .filter_map(|s_term| Some((s_term, indexer.get_term(s_term)?)))
+        .map(|(_, dim)| (dim as u32, 1.0))
+        .collect();
+
+    if terms.is_empty() {
+        return None;
+    }
+
+    Some(Vector::create_new_raw(terms))
+}
+
+fn overlapping_vals(src_vec: &Vector, query: &Vector) -> f32 {
+    let overlapping = src_vec.overlapping(query).map(|i| i.1).collect::<Vec<_>>();
+    let sum: f32 = overlapping.iter().sum();
+    let div = src_vec.sparse_vec().len().max(query.sparse_vec().len());
+    let overlapping_relevance = (overlapping.len() as f32 / div as f32) * 5.0;
+    overlapping_relevance + sum * 2.0
+}
+
+fn gloss_relevance(query_str: &str, seq_id: u32, sense: &Sense, gloss: &Gloss) -> Option<usize> {
+    let index = engine::words::foreign::index::get(sense.language)?;
+    let rel_index = engine::words::foreign::index::RELEVANCE_INDEXES
+        .get()?
+        .get(&sense.language)?;
+
+    let indexer = index.get_indexer().clone();
+    let query_vec = make_search_vec(&indexer, query_str)?;
+
+    let sg_id = to_unique_id(sense.id, gloss.id);
+    let rel_vec = rel_index.get(&(seq_id, sg_id))?;
+    let val = (overlapping_vals(rel_vec, &query_vec)) as usize;
+    Some(val)
+}
+
 pub fn foreign_search_order(
-    word: &WordOutput,
+    word_output: &WordOutput,
     relevance: f32,
     query_str: &str,
     query_lang: Language,
     user_lang: Language,
 ) -> usize {
-    let mut score = 0f64; //relevance as f64 * 10.0;
+    let text_score = (relevance as f64 * 10000.0) as usize;
 
-    let found = match find_reading(word.word, query_str, user_lang, query_lang) {
-        Some(v) => v,
-        None => {
-            return score as usize;
-        }
-    };
+    let word = word_output.word;
 
-    /*
-    // Each gloss considered in a frequency analysis has been normalized to 1. Thus we require it
-    // to be 1 or more. Otherwise run the fall-back scoring method
-    if found.gloss_full.occurrence >= 1 {
-        // found.sense.language == language &&
-        score += found.gloss_full.occurrence as f64;
-    } else {
-        return foreign_search_fall_back(word, relevance, query_str, query_lang, user_lang);
-    }
+    let query_str = query_str.trim().to_lowercase();
 
-    let mut multiplicator = match (found.mode, found.case_ignored) {
-        (SearchMode::Exact, _) => 100,
-        (_, false) => 10,
-        (_, true) => 8,
-    };
-    */
+    let gloss_relevance = word_output
+        .position_iter()
+        .filter_map(|(s_id, g_id)| {
+            let sense = word.sense_by_id(s_id).expect("Failed to get sense");
+            let gloss = sense.gloss_by_id(g_id).expect("Failed to get gloss");
+            Some((sense, gloss))
+        })
+        .filter_map(|(sense, gloss)| gloss_relevance(&query_str, word.sequence, sense, gloss))
+        .map(|i| i + 1000)
+        //   .inspect(|i| println!("{:?}: {}", word.get_reading().reading, i))
+        .max()
+        .unwrap_or_else(|| {
+            foreign_search_fall_back(word, relevance, &query_str, query_lang, user_lang)
+        });
 
-    let mut multiplicator = 100;
-
-    // Result found within users specified language
-    if query_lang != user_lang {
-        //score += 1000.0;
-        multiplicator -= 8;
-    } else {
-        multiplicator *= 2;
-    }
-
-    score *= multiplicator as f64;
-
-    if word.word.is_common() {
-        //score += 10.0;
-    }
-
-    if !found.in_parentheses {
-        score -= 10f64.min(score);
-        //score = score.saturating_sub(10.0);
-    } else {
-        score += 30.0;
-    }
-
-    score as usize
+    gloss_relevance + text_score
 }
 
 pub fn foreign_search_fall_back(
@@ -363,11 +380,10 @@ fn find_in_senses(
             gloss_full: gloss,
         });
 
-        if let Some(ref curr_res) = res {
+        if let Some(ref _curr_res) = res {
             if 1/*curr_res.gloss_full.occurrence*/ < curr_occurrence {
                 res = this_res;
             }
-            todo!();
         } else {
             res = this_res;
         }

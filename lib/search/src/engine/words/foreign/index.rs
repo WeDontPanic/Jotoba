@@ -1,10 +1,11 @@
-use std::{collections::HashMap, error::Error, io::BufReader, path::Path};
+use std::{collections::HashMap, error::Error, fs::File, io::BufReader, path::Path, str::FromStr};
 
 use bktree::BkTree;
 use log::{error, info};
 use once_cell::sync::OnceCell;
 use serde::{Deserialize, Serialize};
 use types::jotoba::languages::Language;
+use vector_space_model2::Vector;
 
 use crate::engine::metadata::Metadata;
 
@@ -15,6 +16,9 @@ pub(super) type Index = vector_space_model2::Index<FWordDoc, Metadata>;
 
 // In-memory storage for all loaded indexes
 pub(super) static INDEXES: OnceCell<HashMap<Language, Index>> = OnceCell::new();
+
+pub type RelevanceIndex = HashMap<(u32, u16), Vector>;
+pub(crate) static RELEVANCE_INDEXES: OnceCell<HashMap<Language, RelevanceIndex>> = OnceCell::new();
 
 // In-memory storage for all loaded term trees
 pub(super) static TERM_TREE: OnceCell<HashMap<Language, BkTree<String>>> = OnceCell::new();
@@ -28,7 +32,49 @@ pub struct TermTree {
 /// Load all available foreign-word indexes into memory
 pub(crate) fn load<P: AsRef<Path>>(path: P) -> Result<(), Box<dyn Error>> {
     load_index(path.as_ref())?;
-    load_term_trees(path)?;
+    load_term_trees(path.as_ref())?;
+    load_relevance_index(path.as_ref())?;
+    Ok(())
+}
+
+fn load_relevance_index<P: AsRef<Path>>(path: P) -> Result<(), Box<dyn Error>> {
+    // All index files in index source folder
+    let tree_files = std::fs::read_dir(path).and_then(|i| {
+        i.map(|res| res.map(|e| e.path()))
+            .collect::<Result<Vec<_>, std::io::Error>>()
+    })?;
+
+    let mut map = HashMap::new();
+
+    for rel_index_file in tree_files {
+        let file_name = rel_index_file.file_name().and_then(|i| i.to_str()).unwrap();
+        if !file_name.starts_with("relevance_index_") {
+            continue;
+        }
+
+        let tt: RelevanceIndex =
+            bincode::deserialize_from(BufReader::new(File::open(&rel_index_file)?))?;
+
+        let lang_str = file_name.strip_prefix("relevance_index_").unwrap();
+        let lang = match Language::from_str(lang_str) {
+            Ok(l) => l,
+            Err(_) => {
+                log::error!("Invalid relevance index file name: {:?}", file_name);
+                continue;
+            }
+        };
+
+        map.insert(lang, tt);
+
+        info!("Loaded relevance index file: {:?}", lang);
+    }
+
+    if map.is_empty() {
+        println!("No relevance index file loaded");
+    }
+
+    RELEVANCE_INDEXES.set(map).ok();
+
     Ok(())
 }
 
@@ -47,7 +93,7 @@ fn load_term_trees<P: AsRef<Path>>(path: P) -> Result<(), Box<dyn Error>> {
             continue;
         }
 
-        let file = std::fs::File::open(tree_file)?;
+        let file = File::open(tree_file)?;
         let tt: TermTree = bincode::deserialize_from(BufReader::new(file))?;
 
         map.insert(tt.language, tt.tree);
@@ -105,7 +151,7 @@ fn load_index<P: AsRef<Path>>(path: P) -> Result<(), Box<dyn Error>> {
 
 /// Retrieve an index of the given language. Returns `None` if there is no index loaded
 #[inline]
-pub(super) fn get(lang: Language) -> Option<&'static Index> {
+pub(crate) fn get(lang: Language) -> Option<&'static Index> {
     // Safety:
     // We don't write to `INDEX` after loading it one time at the startup. Jotoba panics if it
     // can't load this index, so until a `get()` call gets reached, `INDEX` is always set to a

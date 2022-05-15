@@ -134,6 +134,19 @@ impl Word {
         vec![other, english]
     }
 
+    #[inline]
+    pub fn sense_by_id(&self, id: u8) -> Option<&Sense> {
+        self.senses.iter().find(|i| i.id == id)
+    }
+
+    #[inline]
+    pub fn get_sense_gloss(&self, id: u16) -> Option<(&Sense, &sense::Gloss)> {
+        let (sense_id, gloss_id) = sense::from_unique_id(id);
+        let sense = self.sense_by_id(sense_id)?;
+        let gloss = sense.gloss_by_id(gloss_id)?;
+        Some((sense, gloss))
+    }
+
     /// Get amount of tags which will be displayed below the reading
     #[inline]
     pub fn get_word_tag_count(&self) -> u8 {

@@ -285,10 +285,7 @@ where
             .filter(|i| self.filter_result(&i.1))
             .map(|(rel, item)| {
                 let relevance = self.calculate_score(&item, rel, q_str, language);
-                match language {
-                    Some(lang) => ResultItem::with_language(item, relevance, lang),
-                    None => ResultItem::new(item, relevance),
-                }
+                ResultItem::new_raw(item, relevance, language)
             });
 
         out.extend(res);
@@ -350,10 +347,7 @@ where
             .filter(|i| self.filter_result(&i.1))
             .map(|(rel, item)| {
                 let relevance = self.calculate_score(&item, rel, q_str, language);
-                match language {
-                    Some(lang) => ResultItem::with_language(item, relevance, lang),
-                    None => ResultItem::new(item, relevance),
-                }
+                ResultItem::new_raw(item, relevance, language)
             })
             .collect::<Vec<_>>();
         Ok(res)
