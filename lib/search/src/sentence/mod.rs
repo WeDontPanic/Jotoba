@@ -72,7 +72,7 @@ fn jp_search<'a>(query: &Query, query_str: &'a str) -> SearchTask<'a, native::En
     search_task
 }
 
-fn sort_fn<T: SearchEngine<Output = Sentence> + Send>(
+fn sort_fn<T: SearchEngine<Output = &'static Sentence> + Send>(
     query: &Query,
     query_str: String,
     search_task: &mut SearchTask<T>,
@@ -96,7 +96,7 @@ fn sort_fn<T: SearchEngine<Output = Sentence> + Send>(
 }
 
 /// Sets a SearchTasks language filter
-fn lang_filter<T: SearchEngine<Output = Sentence> + Send>(
+fn lang_filter<T: SearchEngine<Output = &'static Sentence> + Send>(
     query: &Query,
     search_task: &mut SearchTask<T>,
 ) {
@@ -125,7 +125,7 @@ fn lang_filter<T: SearchEngine<Output = Sentence> + Send>(
     })
 }
 
-fn get_result<T: SearchEngine<Output = Sentence> + Send>(
+fn get_result<T: SearchEngine<Output = &'static Sentence> + Send>(
     search: SearchTask<T>,
     query: &Query,
 ) -> Result<SentenceResult, Error> {

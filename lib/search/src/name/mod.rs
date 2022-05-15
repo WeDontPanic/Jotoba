@@ -47,7 +47,7 @@ fn foreign_search(query: &Query) -> SearchTask<foreign::Engine> {
         .limit(query.settings.page_size as usize)
 }
 
-fn handle_search<T: SearchEngine<Output = Name> + Send>(
+fn handle_search<T: SearchEngine<Output = &'static Name> + Send>(
     task: SearchTask<T>,
 ) -> Result<NameResult, Error> {
     Ok(NameResult::from(task.find()?))

@@ -45,9 +45,23 @@ impl Eq for Sense {}
 /// translated language.
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize, Hash)]
 pub struct Gloss {
+    pub id: u8,
     pub gloss: String,
     pub g_type: Option<GType>,
-    pub occurrence: u32,
+}
+
+/// Converts sense and gloss id to a single u16
+#[inline]
+pub fn to_unique_id(sense_id: u8, gloss_id: u8) -> u16 {
+    (sense_id as u16) << 8 | gloss_id as u16
+}
+
+/// Converts u16 to seq and gloss id
+#[inline]
+pub fn from_unique_id(id: u16) -> (u8, u8) {
+    let gloss_id = id as u8;
+    let sense_id = (id >> 8) as u8;
+    (sense_id, gloss_id)
 }
 
 impl Sense {
@@ -253,6 +267,18 @@ mod test {
 
         for word in words {
             test_word(&word);
+        }
+    }
+
+    #[test]
+    fn test_unique_id() {
+        let pairs = &[(1, 70), (10, 6), (0, 0), (255, 255), (1, 2)];
+
+        for (seq, gloss) in pairs {
+            let enc = to_unique_id(*seq, *gloss);
+            let (seq_res, gloss_res) = from_unique_id(enc);
+            assert_eq!(*seq, seq_res);
+            assert_eq!(*gloss, gloss_res);
         }
     }
 }

@@ -21,13 +21,13 @@ impl Indexable for Engine {
 }
 
 impl SearchEngine for Engine {
-    type Output = Name;
+    type Output = &'static Name;
 
     #[inline]
     fn doc_to_output(
         storage: &'static ResourceStorage,
         inp: &Self::Document,
-    ) -> Option<Vec<&'static Self::Output>> {
+    ) -> Option<Vec<Self::Output>> {
         to_option(
             inp.iter()
                 .map(|i| storage.names().by_sequence(*i).unwrap())

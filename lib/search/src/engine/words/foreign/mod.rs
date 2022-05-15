@@ -1,16 +1,20 @@
+pub mod doc;
 pub mod index;
+pub mod output;
 
 use crate::engine::{metadata::Metadata, Indexable, SearchEngine, SearchTask};
 use resources::models::storage::ResourceStorage;
-use types::jotoba::{languages::Language, words::Word};
+use types::jotoba::languages::Language;
 use utils::to_option;
 use vector_space_model2::Vector;
+
+use self::{doc::FWordDoc, output::WordOutput};
 
 pub struct Engine {}
 
 impl Indexable for Engine {
     type Metadata = Metadata;
-    type Document = Vec<u32>;
+    type Document = FWordDoc;
 
     #[inline]
     fn get_index(
@@ -21,18 +25,22 @@ impl Indexable for Engine {
 }
 
 impl SearchEngine for Engine {
-    type Output = Word;
+    type Output = WordOutput;
 
     #[inline]
     fn doc_to_output(
         storage: &'static ResourceStorage,
         inp: &Self::Document,
-    ) -> Option<Vec<&'static Self::Output>> {
-        to_option(
-            inp.iter()
-                .map(|i| storage.words().by_sequence(*i).unwrap())
-                .collect(),
-        )
+    ) -> Option<Vec<Self::Output>> {
+        let out_items = inp
+            .items
+            .iter()
+            .map(|i| {
+                let word = storage.words().by_sequence(i.seq_id).unwrap();
+                WordOutput::new(word, i.positions.clone())
+            })
+            .collect::<Vec<_>>();
+        to_option(out_items)
     }
 
     fn gen_query_vector(

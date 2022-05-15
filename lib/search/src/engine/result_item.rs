@@ -67,6 +67,15 @@ impl<T: PartialEq> ResultItem<T> {
             language: Some(language),
         }
     }
+
+    #[inline]
+    pub fn new_raw(item: T, relevance: usize, language: Option<Language>) -> Self {
+        Self {
+            item,
+            relevance,
+            language,
+        }
+    }
 }
 
 impl<T: PartialEq> From<T> for ResultItem<T> {

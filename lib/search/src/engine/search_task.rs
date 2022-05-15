@@ -128,7 +128,7 @@ where
         })
     }
 
-    pub fn find_exact(&self) -> Result<Vec<ResultItem<&'static T::Output>>, Error> {
+    pub fn find_exact(&self) -> Result<Vec<ResultItem<T::Output>>, Error> {
         let (query, lang) = self.queries.get(0).unwrap();
         let index = T::get_index(*lang).expect("Lang not loaded");
 
@@ -192,7 +192,7 @@ where
     }
 
     /// Runs the search task and returns the result.
-    pub fn find(&self) -> Result<SearchResult<&'static T::Output>, Error> {
+    pub fn find(&self) -> Result<SearchResult<T::Output>, Error> {
         // Load some more (limit * 2) in case there are items with the same relevance
         let mut pqueue = UniquePrioContainerMax::new((self.limit * 2) + self.offset);
 
@@ -233,7 +233,7 @@ where
         q_vec: Vector,
         q_str: &str,
         language: Option<Language>,
-        out: &mut UniquePrioContainerMax<ResultItem<&T::Output>>,
+        out: &mut UniquePrioContainerMax<ResultItem<T::Output>>,
     ) -> Result<(), Error> {
         let index = T::get_index(language);
         if index.is_none() {
@@ -259,7 +259,7 @@ where
         q_vec: &Vector,
         q_str: &str,
         language: Option<Language>,
-        out: &mut UniquePrioContainerMax<ResultItem<&T::Output>>,
+        out: &mut UniquePrioContainerMax<ResultItem<T::Output>>,
     ) -> Result<(), Error> {
         let storage: &'static ResourceStorage = resources::get();
 
@@ -284,11 +284,11 @@ where
             .flatten()
             .filter(|i| self.filter_result(&i.1))
             .map(|(rel, item)| {
-                let relevance = self.calculate_score(item, rel, q_str, language);
-
-                language
-                    .map(|i| ResultItem::with_language(item, relevance, i))
-                    .unwrap_or(ResultItem::new(item, relevance))
+                let relevance = self.calculate_score(&item, rel, q_str, language);
+                match language {
+                    Some(lang) => ResultItem::with_language(item, relevance, lang),
+                    None => ResultItem::new(item, relevance),
+                }
             });
 
         out.extend(res);
@@ -300,7 +300,7 @@ where
         q_vec: Vector,
         q_str: &str,
         language: Option<Language>,
-    ) -> Result<Vec<ResultItem<&'static T::Output>>, Error> {
+    ) -> Result<Vec<ResultItem<T::Output>>, Error> {
         let index = T::get_index(language);
         if index.is_none() {
             log::error!("Failed to retrieve {:?} index with language", language);
@@ -325,7 +325,7 @@ where
         q_vec: &Vector,
         q_str: &str,
         language: Option<Language>,
-    ) -> Result<Vec<ResultItem<&'static T::Output>>, Error> {
+    ) -> Result<Vec<ResultItem<T::Output>>, Error> {
         let storage: &'static ResourceStorage = resources::get();
 
         let res = document_vectors
@@ -349,11 +349,11 @@ where
             .flatten()
             .filter(|i| self.filter_result(&i.1))
             .map(|(rel, item)| {
-                let relevance = self.calculate_score(item, rel, q_str, language);
-
-                language
-                    .map(|i| ResultItem::with_language(item, relevance, i))
-                    .unwrap_or(ResultItem::new(item, relevance))
+                let relevance = self.calculate_score(&item, rel, q_str, language);
+                match language {
+                    Some(lang) => ResultItem::with_language(item, relevance, lang),
+                    None => ResultItem::new(item, relevance),
+                }
             })
             .collect::<Vec<_>>();
         Ok(res)

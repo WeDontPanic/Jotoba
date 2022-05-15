@@ -68,13 +68,13 @@ pub trait DocumentGenerateable {
 }
 
 pub trait SearchEngine: Indexable {
-    type Output: PartialEq + Eq + Hash + 'static + Send + Sync;
+    type Output: PartialEq + Eq + Hash + 'static + Send + Sync + Clone;
 
     /// Loads the corresponding Output type from a document
     fn doc_to_output(
         storage: &'static ResourceStorage,
         input: &Self::Document,
-    ) -> Option<Vec<&'static Self::Output>>;
+    ) -> Option<Vec<Self::Output>>;
 
     /// Generates a vector for a query, in order to be able to compare results with a vector
     fn gen_query_vector(

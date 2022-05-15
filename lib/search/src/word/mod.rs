@@ -11,7 +11,11 @@ use crate::{
         self,
         guess::Guess,
         result::SearchResult,
-        words::{foreign, native},
+        result_item::ResultItem,
+        words::{
+            foreign::{self, output::WordOutput},
+            native,
+        },
         SearchTask,
     },
     query::Form,
@@ -294,7 +298,8 @@ impl<'a> Search<'a> {
         // Set user defined filter
         let pos_filter = to_option(self.query.get_part_of_speech_tags().copied().collect());
         let q_cloned = self.query.clone();
-        search_task.set_result_filter(move |word| Self::word_filter(&q_cloned, word, &pos_filter));
+        search_task
+            .set_result_filter(move |word| Self::word_filter(&q_cloned, &word.word, &pos_filter));
 
         // Set order function
         search_task.set_order_fn(move |word, relevance, query, language| {
@@ -347,7 +352,14 @@ impl<'a> Search<'a> {
                 infl_info = inflection_info;
                 sentence = sent;
                 searched_query = sq;
-                res.merge(native_res);
+                // hacky but works (I guess)
+                let other = native_res.into_inner().into_iter().map(|i| {
+                    let word = i.item;
+                    let relevance = i.relevance;
+                    let language = i.language;
+                    ResultItem::new_raw(WordOutput::new(word, vec![]), relevance, language)
+                });
+                res.merge(other);
             }
         }
 
@@ -356,7 +368,7 @@ impl<'a> Search<'a> {
             return self.check_other_lang();
         }
 
-        let mut wordresults = res.into_iter().cloned().collect::<Vec<_>>();
+        let mut wordresults = res.into_iter().map(|i| i.word.clone()).collect::<Vec<_>>();
 
         filter_languages(
             wordresults.iter_mut(),

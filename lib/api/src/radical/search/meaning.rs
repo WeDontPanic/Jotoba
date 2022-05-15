@@ -39,10 +39,11 @@ fn word_search(query: &str, language: Language) -> Result<Vec<char>, Error> {
     let res = search_task
         .find()?
         .into_iter()
-        .filter(|word| word.get_reading().reading == query)
+        .filter(|word| word.word.get_reading().reading == query)
         .map(|i| {
-            println!("{}", i.get_reading().reading);
-            i.get_reading()
+            println!("{}", i.word.get_reading().reading);
+            i.word
+                .get_reading()
                 .reading
                 .chars()
                 .filter(|i| i.is_kanji())

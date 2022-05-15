@@ -1,4 +1,4 @@
-use crate::{regex_query::RegexSQuery, SearchMode};
+use crate::{engine::words::foreign::output::WordOutput, regex_query::RegexSQuery, SearchMode};
 use japanese::JapaneseExt;
 use levenshtein::levenshtein;
 use once_cell::sync::Lazy;
@@ -100,7 +100,7 @@ pub fn japanese_search_order(
 }
 
 pub fn foreign_search_order(
-    word: &Word,
+    word: &WordOutput,
     relevance: f32,
     query_str: &str,
     query_lang: Language,
@@ -108,13 +108,14 @@ pub fn foreign_search_order(
 ) -> usize {
     let mut score = 0f64; //relevance as f64 * 10.0;
 
-    let found = match find_reading(word, query_str, user_lang, query_lang) {
+    let found = match find_reading(word.word, query_str, user_lang, query_lang) {
         Some(v) => v,
         None => {
             return score as usize;
         }
     };
 
+    /*
     // Each gloss considered in a frequency analysis has been normalized to 1. Thus we require it
     // to be 1 or more. Otherwise run the fall-back scoring method
     if found.gloss_full.occurrence >= 1 {
@@ -129,6 +130,9 @@ pub fn foreign_search_order(
         (_, false) => 10,
         (_, true) => 8,
     };
+    */
+
+    let mut multiplicator = 100;
 
     // Result found within users specified language
     if query_lang != user_lang {
@@ -140,7 +144,7 @@ pub fn foreign_search_order(
 
     score *= multiplicator as f64;
 
-    if word.is_common() {
+    if word.word.is_common() {
         //score += 10.0;
     }
 
@@ -344,7 +348,8 @@ fn find_in_senses(
         }
 
         let (sense_pos, gloss_str, gloss) = found.unwrap();
-        let curr_occurrence = gloss.occurrence;
+        //let curr_occurrence = gloss.occurrence;
+        let curr_occurrence = 0;
 
         let this_res = Some(FindResult {
             mode,
@@ -359,9 +364,10 @@ fn find_in_senses(
         });
 
         if let Some(ref curr_res) = res {
-            if curr_res.gloss_full.occurrence < curr_occurrence {
+            if 1/*curr_res.gloss_full.occurrence*/ < curr_occurrence {
                 res = this_res;
             }
+            todo!();
         } else {
             res = this_res;
         }

@@ -8,8 +8,10 @@ use types::jotoba::languages::Language;
 
 use crate::engine::metadata::Metadata;
 
+use super::doc::FWordDoc;
+
 // Shortcut for type of index
-pub(super) type Index = vector_space_model2::Index<Vec<u32>, Metadata>;
+pub(super) type Index = vector_space_model2::Index<FWordDoc, Metadata>;
 
 // In-memory storage for all loaded indexes
 pub(super) static INDEXES: OnceCell<HashMap<Language, Index>> = OnceCell::new();

@@ -49,6 +49,11 @@ impl<T: PartialEq> SearchResult<T> {
         self.items.iter().map(|i| &i.item)
     }
 
+    #[inline]
+    pub fn into_inner(self) -> Vec<ResultItem<T>> {
+        self.items
+    }
+
     /// Returns an iterator over the raw result items
     #[inline]
     pub fn into_iter(self) -> impl Iterator<Item = T> {
@@ -77,16 +82,22 @@ impl<T: PartialEq> SearchResult<T> {
 }
 
 impl<T: PartialEq + Hash + Clone + Eq> SearchResult<T> {
-    pub fn merge(&mut self, other: Self) {
-        self.total_items += merge_sorted_list(&mut self.items, other.items);
+    pub fn merge<O>(&mut self, other: O)
+    where
+        O: Iterator<Item = ResultItem<T>>,
+    {
+        self.total_items += merge_sorted_list(&mut self.items, other);
     }
 }
 
 /// Merges two sorted sequences `other` and `src` and stores result into `src`. Ignores duplicates.
-fn merge_sorted_list<T: PartialEq + Clone + Hash + Eq>(
+fn merge_sorted_list<O, T: PartialEq + Clone + Hash + Eq>(
     src: &mut Vec<ResultItem<T>>,
-    other: Vec<ResultItem<T>>,
-) -> usize {
+    other: O,
+) -> usize
+where
+    O: Iterator<Item = ResultItem<T>>,
+{
     let mut add_cnt = 0;
 
     // Use a hashset to be able to look up whether an element from `other` is already in `src` the
