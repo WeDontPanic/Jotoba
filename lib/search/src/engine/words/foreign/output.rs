@@ -1,15 +1,23 @@
+use std::hash::Hash;
 use types::jotoba::words::Word;
 
-#[derive(Hash, Eq, Clone)]
+#[derive(Eq, Clone)]
 pub struct WordOutput {
     pub word: &'static Word,
     pub positions: Vec<u16>,
 }
 
+impl Hash for WordOutput {
+    #[inline]
+    fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
+        self.word.sequence.hash(state);
+    }
+}
+
 impl PartialEq for WordOutput {
     #[inline]
     fn eq(&self, other: &Self) -> bool {
-        self.word == other.word
+        self.word.sequence == other.word.sequence
     }
 }
 
