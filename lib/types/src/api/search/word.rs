@@ -97,8 +97,8 @@ impl From<&crate::jotoba::words::Word> for Word {
 
         let senses = word.senses.iter().map(|i| Sense::from(i)).collect();
 
-        let pitch = word.accents.as_ref().and_then(|accents| {
-            japanese::accent::calc_pitch(&word.reading.kana.reading, accents[0] as i32)
+        let pitch = word.accents.get(0).and_then(|accents| {
+            japanese::accent::calc_pitch(&word.reading.kana.reading, accents as i32)
                 .map(|i| i.into_iter().map(|j| j.into()).collect::<Vec<PitchItem>>())
         });
 

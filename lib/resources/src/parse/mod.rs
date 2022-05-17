@@ -1,4 +1,3 @@
-pub mod accents;
 pub mod error;
 pub mod jmdict;
 pub mod jmnedict;

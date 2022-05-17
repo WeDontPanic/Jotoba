@@ -20,10 +20,11 @@ impl WordOutput {
     }
 
     #[inline]
-    pub fn position_iter(&self) -> impl Iterator<Item = (u8, u8)> + '_ {
-        self.positions
-            .iter()
-            .map(|i| types::jotoba::words::sense::from_unique_id(*i))
+    pub fn position_iter(&self) -> impl Iterator<Item = (u8, u8, u16)> + '_ {
+        self.positions.iter().map(|i| {
+            let (sense, gloss) = types::jotoba::words::sense::from_unique_id(*i);
+            (sense, gloss, *i)
+        })
     }
 }
 

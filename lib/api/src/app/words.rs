@@ -10,6 +10,7 @@ use types::{
     },
     jotoba::{self, languages::Language, pagination::page::Page},
 };
+use utils::to_option;
 
 /// API response type
 pub type Resp = Page<words::Response>;
@@ -85,13 +86,15 @@ pub fn conv_word(word: jotoba::words::Word, lang: Language) -> words::Word {
         .map(|i| conv_ex_sentence(i, lang))
         .collect::<Vec<_>>();
 
+    let accents = to_option(word.accents.iter().collect::<Vec<_>>());
+
     words::Word {
         sequence: word.sequence,
         is_common,
         reading,
         alt_readings,
         senses,
-        accents: word.accents,
+        accents,
         furigana: word.furigana,
         jlpt_lvl: word.jlpt_lvl,
         transive_verion: word.transive_verion,

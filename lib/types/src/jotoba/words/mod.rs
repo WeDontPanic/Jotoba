@@ -30,7 +30,7 @@ use self::{
     sense::{Sense, SenseGlossIter},
 };
 
-use super::languages::Language;
+use super::{accents::PitchValues, languages::Language};
 
 /// A single word item
 #[derive(Debug, Clone, Default, Serialize, Deserialize, Eq)]
@@ -39,13 +39,13 @@ pub struct Word {
     pub priorities: Option<Vec<Priority>>,
     pub reading: Reading,
     pub senses: Vec<Sense>,
-    pub accents: Option<Vec<u8>>,
     pub furigana: Option<String>,
     pub jlpt_lvl: Option<u8>,
     pub collocations: Option<Vec<u32>>,
     pub transive_verion: Option<u32>,
     pub intransive_verion: Option<u32>,
     pub sentences_available: u16,
+    pub accents: PitchValues,
 }
 
 impl std::hash::Hash for Word {
@@ -136,7 +136,7 @@ impl Word {
 
     #[inline]
     pub fn sense_by_id(&self, id: u8) -> Option<&Sense> {
-        self.senses.iter().find(|i| i.id == id)
+        self.senses.get(id as usize)
     }
 
     #[inline]
@@ -248,9 +248,9 @@ impl Word {
 
     /// Returns a renderable vec of accents with kana characters
     pub fn get_accents(&self) -> Option<Vec<AccentChar>> {
-        let accents_raw = self.accents.as_ref()?;
+        let accents_raw = self.accents.get(0)?;
         let kana = &self.reading.kana;
-        let accents = japanese::accent::calc_pitch(&kana.reading, accents_raw[0] as i32)?;
+        let accents = japanese::accent::calc_pitch(&kana.reading, accents_raw as i32)?;
         let accent_iter = accents.iter().peekable().enumerate();
 
         let res = accent_iter

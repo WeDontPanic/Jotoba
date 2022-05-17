@@ -62,7 +62,6 @@ pub fn load_storage<P: AsRef<Path>>(
     let dict_data = load_dict_data(dict_data_path)?;
     let radical_map = load_rad_map(rad_mapc_path)?;
     let sentences = load_sentences(sentences_path)?;
-
     Ok(ResourceStorage::new(dict_data, radical_map, sentences))
 }
 

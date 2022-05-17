@@ -42,9 +42,9 @@ pub struct Search<'a> {
 /// Search among all data based on the input query
 #[inline]
 pub fn search(query: &Query) -> Result<WordResult, Error> {
-    //let start = std::time::Instant::now();
+    let start = std::time::Instant::now();
     let res = Search { query }.do_search();
-    //println!("Search took {:?}", start.elapsed());
+    println!("Search took {:?}", start.elapsed());
     res
 }
 
@@ -282,7 +282,7 @@ impl<'a> Search<'a> {
             SearchTask::with_language(&self.query.query, used_lang)
                 .limit(self.query.settings.page_size as usize)
                 .offset(self.query.page_offset)
-                .threshold(0.3f32);
+                .threshold(0.4f32);
 
         //println!("searching in {}", used_lang);
 
@@ -300,8 +300,10 @@ impl<'a> Search<'a> {
             .set_result_filter(move |word| Self::word_filter(&q_cloned, &word.word, &pos_filter));
 
         // Set order function
+        let orderer = order::foreign::ForeignOrder::new();
         search_task.set_order_fn(move |word, relevance, query, language| {
-            order::foreign_search_order(word, relevance, query, language.unwrap(), used_lang)
+            //order::foreign_search_order(word, relevance, query, language.unwrap(), used_lang)
+            orderer.score(word, relevance, query, language.unwrap(), used_lang)
         });
 
         search_task

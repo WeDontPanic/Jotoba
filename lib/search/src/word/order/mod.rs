@@ -1,3 +1,5 @@
+pub mod foreign;
+
 use crate::{
     engine::{self, words::foreign::output::WordOutput},
     regex_query::RegexSQuery,
@@ -122,6 +124,10 @@ fn make_search_vec(indexer: &TermIndexer, query: &str) -> Option<Vector> {
 }
 
 fn overlapping_vals(src_vec: &Vector, query: &Vector) -> f32 {
+    if !src_vec.could_overlap(query) {
+        return 0.0;
+    }
+
     let overlapping = src_vec.overlapping(query).map(|i| i.1).collect::<Vec<_>>();
     let sum: f32 = overlapping.iter().sum();
     let div = src_vec.sparse_vec().len().max(query.sparse_vec().len());
@@ -159,7 +165,7 @@ pub fn foreign_search_order(
 
     let gloss_relevance = word_output
         .position_iter()
-        .filter_map(|(s_id, g_id)| {
+        .filter_map(|(s_id, g_id, _)| {
             let sense = word.sense_by_id(s_id).expect("Failed to get sense");
             let gloss = sense.gloss_by_id(g_id).expect("Failed to get gloss");
             Some((sense, gloss))

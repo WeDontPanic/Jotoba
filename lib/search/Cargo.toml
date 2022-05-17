@@ -24,6 +24,7 @@ strsim = "0.10.0"
 eudex = { git = "https://github.com/JojiiOfficial/eudex"}
 regex = "1.5.5"
 #vector_space_model = { path = "../../../VectorSpaceModel"}
+#vector_space_model2 = { path = "../../../VectorSpaceModel" }
 vector_space_model2 = { git = "https://github.com/JojiiOfficial/VectorSpaceModel" }
 #vector_space_model = { path = "/home/jojii/tmp/VectorSpaceModel" }
 byteorder = "1.4.3"
@@ -37,6 +38,7 @@ types = { path = "../types" , default-features = false, features = ["jotoba_inte
 #priority_container = {path = "../../../priority_container"}
 priority_container = { git = "https://github.com/JojiiOfficial/PrioContainer"}
 order_struct = {git = "https://github.com/JojiiOfficial/OrderStruct"}
+spin = { version = "0.9.3", default-features = false, features = ["spin_mutex"] }
 
 [features]
 default = []

@@ -6,7 +6,7 @@ use crate::engine::{metadata::Metadata, Indexable, SearchEngine, SearchTask};
 use resources::models::storage::ResourceStorage;
 use types::jotoba::languages::Language;
 use utils::to_option;
-use vector_space_model2::Vector;
+use vector_space_model2::{build::weights::TFIDF, Vector};
 
 use self::{doc::FWordDoc, output::WordOutput};
 
@@ -99,7 +99,7 @@ impl SearchEngine for Engine {
         Some((query, query_document.as_query()))
         */
 
-        let vec = index.build_vector(&terms, None)?;
+        let vec = index.build_vector(&terms, Some(&TFIDF))?;
         Some((vec, query.to_string()))
     }
 

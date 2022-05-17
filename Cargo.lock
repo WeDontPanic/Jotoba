@@ -2449,6 +2449,7 @@ dependencies = [
  "resources",
  "sentence_reader",
  "serde",
+ "spin",
  "strsim 0.10.0",
  "tinysegmenter",
  "types",
@@ -2732,6 +2733,12 @@ name = "sorted_intersection"
 version = "1.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "43448dcec88f2dc525e8c5b1f5e5a116d3b250879fff04f90c6691dd6865a28b"
+
+[[package]]
+name = "spin"
+version = "0.9.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "c530c2b0d0bf8b69304b39fe2001993e267461948b890cd037d8ad4293fa1a0d"
 
 [[package]]
 name = "static_assertions"
@@ -3185,7 +3192,7 @@ checksum = "f1bddf1187be692e79c5ffeab891132dfb0f236ed36a43c7ed39f1165ee20191"
 [[package]]
 name = "vector_space_model2"
 version = "0.1.1"
-source = "git+https://github.com/JojiiOfficial/VectorSpaceModel#210defa33d311f0e29feeb9b3e3e9e1206caa423"
+source = "git+https://github.com/JojiiOfficial/VectorSpaceModel#a6b169595976c159b08a8aa665b9f7e77430d8d5"
 dependencies = [
  "byteorder",
  "compressed_vec",
