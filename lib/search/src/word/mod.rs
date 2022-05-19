@@ -42,9 +42,9 @@ pub struct Search<'a> {
 /// Search among all data based on the input query
 #[inline]
 pub fn search(query: &Query) -> Result<WordResult, Error> {
-    let start = std::time::Instant::now();
+    //let start = std::time::Instant::now();
     let res = Search { query }.do_search();
-    println!("Search took {:?}", start.elapsed());
+    //println!("Search took {:?}", start.elapsed());
     res
 }
 
@@ -201,6 +201,7 @@ impl<'a> Search<'a> {
         }
 
         let (query, mut sentence, word_info) = self.parse_sentence(query_str);
+        println!("{sentence:#?}");
 
         let original_query = if sentence.is_some() {
             word_info.as_ref().unwrap().get_inflected().clone()
@@ -341,7 +342,7 @@ impl<'a> Search<'a> {
             && count < 50
             && could_be_romaji
             && !SearchTask::<foreign::Engine>::with_language(
-                &self.query.query,
+                &self.query.query.to_lowercase(),
                 self.query.get_lang_with_override(),
             )
             .has_term()

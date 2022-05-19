@@ -8,7 +8,6 @@ pub mod result;
 pub mod result_item;
 pub mod search_task;
 pub mod sentences;
-//pub mod simple_gen_doc;
 pub mod words;
 
 use std::hash::Hash;
@@ -90,5 +89,10 @@ pub trait SearchEngine: Indexable {
         _language: Option<Language>,
     ) -> Option<&'b str> {
         None
+    }
+
+    #[inline]
+    fn similarity(a: &Vector, b: &Vector) -> f32 {
+        a.similarity(b)
     }
 }

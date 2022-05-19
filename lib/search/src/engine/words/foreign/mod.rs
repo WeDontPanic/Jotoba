@@ -50,10 +50,10 @@ impl SearchEngine for Engine {
         language: Option<Language>,
     ) -> Option<(Vector, String)> {
         //let query_str = self.fixed_term(index).unwrap_or(self.get_query_str());
-        let query_str = query;
+        let query_str = query.to_lowercase();
 
         // search query to document vector
-        let mut terms = split_to_words(query_str);
+        let mut terms = split_to_words(&query_str);
 
         // align query to index
         if allow_align {

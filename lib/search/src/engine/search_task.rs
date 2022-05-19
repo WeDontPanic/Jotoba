@@ -269,7 +269,8 @@ where
                     return None;
                 }
 
-                let similarity = i.vector().similarity(&q_vec);
+                //let similarity = i.vector().similarity(&q_vec);
+                let similarity = T::similarity(i.vector(), &q_vec);
                 if similarity <= self.threshold {
                     return None;
                 }
@@ -331,7 +332,8 @@ where
                     return None;
                 }
 
-                let similarity = i.vector().similarity(&q_vec);
+                //let similarity = i.vector().similarity(&q_vec);
+                let similarity = T::similarity(i.vector(), &q_vec);
                 if similarity <= self.threshold {
                     return None;
                 }
@@ -382,7 +384,8 @@ where
                     return None;
                 }
 
-                let similarity = i.vector().similarity(&q_vec);
+                let similarity = T::similarity(i.vector(), &q_vec);
+                //let similarity = i.vector().similarity(&q_vec);
                 if similarity <= self.threshold {
                     return None;
                 }

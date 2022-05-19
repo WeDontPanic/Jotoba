@@ -64,6 +64,8 @@ impl ForeignOrder {
 
         let query_str = query_str.trim().to_lowercase();
 
+        //return super::foreign_search_fall_back(word, relevance, &query_str, query_lang, user_lang);
+
         let gloss_relevance = word_output
             .position_iter()
             .filter_map(|(s_id, _, sg_id)| {
