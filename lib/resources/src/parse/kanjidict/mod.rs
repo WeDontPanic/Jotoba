@@ -179,6 +179,7 @@ fn character_apply_tag(element: &mut Character, tag: &Tag, value: String) -> Res
             ReadingType::KoreanRomanized => element.korean_romanized.push(value),
             ReadingType::KoreanHangul => element.korean_hangul.push(value),
             ReadingType::Chinese => element.chinese_readings.push(value),
+            ReadingType::Vietnamese => element.vietnamese.push(value),
             _ => (),
         },
         _ => (),
@@ -219,6 +220,7 @@ enum ReadingType {
     JapaneseKun,
     KoreanRomanized,
     KoreanHangul,
+    Vietnamese,
     Chinese,
     Other,
     None,
@@ -240,6 +242,7 @@ impl ReadingType {
             "ja_kun" => Self::JapaneseKun,
             "korean_r" => Self::KoreanRomanized,
             "korean_h" => Self::KoreanHangul,
+            "vietnam" => Self::Vietnamese,
             "pinyin" => Self::Chinese,
             _ => Self::Other,
         })

@@ -765,6 +765,9 @@ msgstr "Chinesische Lesungen"
 msgid "Korean reading"
 msgstr "Koreanische Lesungen"
 
+msgid "Vietnamese reading"
+msgstr "Vietnamesische Lesungen"
+
 msgid "Japanese names"
 msgstr "Japanische Namen"
 

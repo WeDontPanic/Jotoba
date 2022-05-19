@@ -7,6 +7,7 @@ pub struct Character {
     pub chinese_readings: Vec<String>,
     pub korean_romanized: Vec<String>,
     pub korean_hangul: Vec<String>,
+    pub vietnamese: Vec<String>,
     pub meaning: Vec<String>,
     pub grade: Option<u8>,
     pub stroke_count: u8,

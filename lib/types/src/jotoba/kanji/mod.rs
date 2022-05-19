@@ -18,6 +18,7 @@ pub struct Kanji {
     pub chinese: Option<Vec<String>>,
     pub korean_r: Option<Vec<String>>,
     pub korean_h: Option<Vec<String>>,
+    pub vietnamese: Option<Vec<String>>,
     pub natori: Option<Vec<String>>,
     pub kun_dicts: Option<Vec<u32>>,
     pub on_dicts: Option<Vec<u32>>,

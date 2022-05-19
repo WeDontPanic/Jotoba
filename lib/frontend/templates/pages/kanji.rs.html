@@ -124,6 +124,9 @@
           @if let Some(ref korean) = k_item.get_korean() {
             <div class="notes"><b>@data.gettext("Korean reading"):</b>&nbsp;&nbsp; @korean.join(", ")</div>
           }
+          @if let Some(ref vietnamese) = k_item.kanji.vietnamese {
+            <div class="notes"><b>@data.gettext("Vietnamese reading"):</b>&nbsp;&nbsp; @vietnamese.join(", ")</div>
+          }
         </div>
 
          <!-- Second Part -->

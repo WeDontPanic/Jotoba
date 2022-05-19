@@ -760,6 +760,9 @@ msgstr "Kínai olvasat"
 msgid "Korean reading"
 msgstr "Koreai olvasat"
 
+msgid "Vietnamese reading"
+msgstr ""
+
 msgid "Japanese names"
 msgstr "Japán nevek"
 
