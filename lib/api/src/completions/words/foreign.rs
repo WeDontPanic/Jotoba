@@ -37,10 +37,14 @@ pub fn suggestions(query: &Query, query_str: &str) -> Option<Vec<WordPair>> {
         if let Some(jp_engine) = storage::JP_WORD_INDEX.get() {
             let mut query = SuggestionQuery::new(jp_engine, hira_query);
             query.weights.total_weight = 0.5;
+            /*
+            query.weights.freq_weight = 0.1;
+            query.weights.str_weight = 1.9;
+            */
 
             let mut similar_terms = SimilarTermsExtension::new(jp_engine, 5);
             similar_terms.options.weights.total_weight = 0.4;
-            similar_terms.options.threshold = 0;
+            similar_terms.options.threshold = 5;
             query.add_extension(similar_terms);
 
             task.add_query(query);
@@ -68,13 +72,15 @@ fn new_suggestion_query(query: &str, lang: Language) -> Option<SuggestionQuery> 
     lpe.options.threshold = 10;
     lpe.options.weights.freq_weight = 1.0;
     lpe.options.weights.total_weight = 0.3;
-    suggestion_query.add_extension(lpe);
+    //suggestion_query.add_extension(lpe);
 
     Some(suggestion_query)
 }
 
 /// Returns Some(String) if `query_str` could be (part of) romaji search input and None if not
 pub(crate) fn try_romaji(query_str: &str) -> Option<String> {
+    let query_str = query_str.replace("-", "ー");
+    let query_str = &query_str;
     let str_len = real_string_len(query_str);
     if str_len < 3 || query_str.contains(' ') {
         return None;
