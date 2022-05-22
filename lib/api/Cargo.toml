@@ -21,6 +21,7 @@ serde = "1.0.137"
 romaji = "0.1.1"
 log = "0.4.17"
 eudex = { git = "https://github.com/JojiiOfficial/eudex"}
+jpeudex = { git = "https://github.com/JojiiOfficial/jpeudex"}
 strsim = "0.10.0"
 bincode = "1.3.3"
 actix-multipart = "0.4.0"
@@ -29,8 +30,9 @@ leptess = { version = "0.13.2", optional = true }
 regex = "1.5.5"
 rayon = "1.5.3"
 types = { path = "../types" , default-features = false}
-autocompletion = { git = "https://github.com/WeDontPanic/AutoCompletionFramework" }
-#autocompletion = { path = "../../../AutosuggestionFramework"}
+#autocompletion = { git = "https://github.com/WeDontPanic/AutoCompletionFramework" }
+autocompletion = { path = "../../../AutosuggestionFramework"}
+priority_container = { git = "https://github.com/JojiiOfficial/PrioContainer"}
 
 [features]
 default = []

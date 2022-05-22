@@ -295,9 +295,11 @@ dependencies = [
  "futures",
  "itertools",
  "japanese",
+ "jpeudex",
  "leptess",
  "log",
  "once_cell",
+ "priority_container",
  "rayon",
  "regex",
  "resources",
@@ -348,7 +350,6 @@ checksum = "d468802bab17cbc0cc575e9b053f41e72aa36bfa6b7f55e3529ffa43161b97fa"
 [[package]]
 name = "autocompletion"
 version = "0.1.0"
-source = "git+https://github.com/WeDontPanic/AutoCompletionFramework#8161182caf01ce4ec9151b42a78a8c82b95629a3"
 dependencies = [
  "bincode",
  "eudex 0.1.1 (git+https://github.com/WeDontPanic/eudex)",

@@ -1,4 +1,5 @@
 pub mod foreign;
+pub mod kana_end_ext;
 pub mod native;
 
 use std::cmp::Ordering;

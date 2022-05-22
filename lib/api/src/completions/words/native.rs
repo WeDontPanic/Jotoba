@@ -8,7 +8,7 @@ use autocompletion::{
 };
 use romaji::RomajiExt;
 
-use super::super::*;
+use super::{super::*, kana_end_ext::KanaEndExtension};
 
 const MAX_SENTENCE_LEN: usize = 10;
 
@@ -26,6 +26,12 @@ pub fn suggestions(query: &Query, radicals: &[char]) -> Option<Vec<WordPair>> {
     k_r_align.options.weights.freq_weight = 1.0;
     k_r_align.options.threshold = 5;
     main_sugg_query.add_extension(k_r_align);
+
+    // Find 天気予報 even if 天気よほう was written
+    let mut kana_end_ext = KanaEndExtension::new(jp_engine, 10);
+    kana_end_ext.options.weights.freq_weight = 0.3;
+    kana_end_ext.options.weights.total_weight = 0.1;
+    main_sugg_query.add_extension(kana_end_ext);
 
     // Similar terms
     let mut ste = SimilarTermsExtension::new(jp_engine, 7);
