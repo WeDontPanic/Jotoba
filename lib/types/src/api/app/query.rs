@@ -30,7 +30,6 @@ pub struct UserSettings {
     #[serde(deserialize_with = "deserialize_lang")]
     pub user_lang: Language,
     pub show_english: bool,
-    pub english_on_top: bool,
     pub page_size: u32,
     pub kanji_page_size: u32,
     pub show_example_sentences: bool,

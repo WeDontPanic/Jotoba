@@ -57,7 +57,7 @@ pub(crate) fn convert_user_settings(
     UserSettings {
         user_lang: settings.user_lang,
         show_english: settings.show_english,
-        english_on_top: settings.english_on_top,
+        english_on_top: true,
         page_size: settings.page_size,
         kanji_page_size: settings.kanji_page_size,
         show_example_sentences: settings.show_example_sentences,
