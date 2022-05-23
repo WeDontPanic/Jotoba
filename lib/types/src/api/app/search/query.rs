@@ -38,7 +38,7 @@ pub struct UserSettings {
 
 /// Deserializes a field into a Option<Language>. None if invalid lang-str, empty or Deserializing str
 /// failed
-fn deserialize_lang_option<'de, D>(s: D) -> Result<Option<Language>, D::Error>
+pub fn deserialize_lang_option<'de, D>(s: D) -> Result<Option<Language>, D::Error>
 where
     D: Deserializer<'de>,
 {

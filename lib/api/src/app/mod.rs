@@ -7,7 +7,7 @@ use error::api_error::RestError;
 use search::{query::UserSettings, query_parser::QueryParser};
 use serde::Serialize;
 use types::{
-    api::app::query::SearchPayload,
+    api::app::search::query::SearchPayload,
     jotoba::pagination::{page::Page, Pagination},
 };
 
@@ -52,7 +52,7 @@ pub(crate) fn convert_payload(pl: &SearchPayload) -> QueryParser {
 }
 
 pub(crate) fn convert_user_settings(
-    settings: &types::api::app::query::UserSettings,
+    settings: &types::api::app::search::query::UserSettings,
 ) -> UserSettings {
     UserSettings {
         user_lang: settings.user_lang,

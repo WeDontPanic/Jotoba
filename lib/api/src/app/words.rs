@@ -4,9 +4,9 @@ use super::{convert_payload, Result};
 use actix_web::web::{self, Json};
 use error::api_error::RestError;
 use types::{
-    api::app::{
+    api::app::search::{
         query::SearchPayload,
-        responses::search::words::{self, Sentence},
+        responses::words::{self, Sentence},
     },
     jotoba::{self, languages::Language, pagination::page::Page},
 };
@@ -47,7 +47,7 @@ pub async fn search(payload: Json<SearchPayload>) -> Result<Json<Resp>> {
 
 fn conv_kanji(
     kanji: &[&types::jotoba::kanji::Kanji],
-) -> Vec<types::api::app::responses::search::kanji::Kanji> {
+) -> Vec<types::api::app::search::responses::kanji::Kanji> {
     kanji.iter().map(|i| (*i).clone().into()).collect()
 }
 

@@ -1,2 +1,2 @@
-pub mod query;
-pub mod responses;
+pub mod details;
+pub mod search;

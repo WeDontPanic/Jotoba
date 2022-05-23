@@ -4,9 +4,9 @@ use super::{convert_payload, Result};
 use actix_web::web::{self, Json};
 use error::api_error::RestError;
 use types::{
-    api::app::{
+    api::app::search::{
         query::SearchPayload,
-        responses::search::kanji::{self, CompoundWord},
+        responses::kanji::{self, CompoundWord},
     },
     jotoba::{pagination::page::Page, words::Word},
 };

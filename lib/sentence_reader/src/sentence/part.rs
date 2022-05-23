@@ -174,14 +174,14 @@ fn merge_furigana(src: &str, furi: &str) -> String {
     furi_out
 }
 
-impl Into<types::api::app::responses::search::words::SentencePart> for Part {
+impl Into<types::api::app::search::responses::words::SentencePart> for Part {
     #[inline]
-    fn into(self) -> types::api::app::responses::search::words::SentencePart {
+    fn into(self) -> types::api::app::search::responses::words::SentencePart {
         let furigana = self.furigana().map(|i| i.to_string());
         let position = self.pos();
         let inflected = self.get_inflected();
         let word_class = self.word_class();
-        types::api::app::responses::search::words::SentencePart::new(
+        types::api::app::search::responses::words::SentencePart::new(
             furigana, position, inflected, word_class,
         )
     }
