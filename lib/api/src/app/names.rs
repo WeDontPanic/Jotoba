@@ -4,7 +4,7 @@ use super::{convert_payload, Result};
 use actix_web::web::{self, Json};
 use error::api_error::RestError;
 use types::{
-    api::app::{query::SearchPayload, responses::names},
+    api::app::{query::SearchPayload, responses::search::names},
     jotoba::pagination::page::Page,
 };
 

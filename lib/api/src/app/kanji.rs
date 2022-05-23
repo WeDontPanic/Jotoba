@@ -6,7 +6,7 @@ use error::api_error::RestError;
 use types::{
     api::app::{
         query::SearchPayload,
-        responses::kanji::{self, CompoundWord},
+        responses::search::kanji::{self, CompoundWord},
     },
     jotoba::{pagination::page::Page, words::Word},
 };
