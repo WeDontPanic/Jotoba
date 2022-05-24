@@ -1,6 +1,7 @@
-use crate::app::new_page;
+use super::new_page;
 
-use super::{convert_payload, Result};
+use super::convert_payload;
+use crate::app::Result;
 use actix_web::web::{self, Json};
 use error::api_error::RestError;
 use types::{

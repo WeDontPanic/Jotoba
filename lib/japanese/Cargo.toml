@@ -10,3 +10,4 @@ edition = "2021"
 utils = { path = "../utils" }
 itertools = "0.10.3"
 romaji = "0.1.1"
+serde = {version = "*", features = ["derive"] }

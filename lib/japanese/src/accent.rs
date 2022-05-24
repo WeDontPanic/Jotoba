@@ -1,43 +1,11 @@
-use itertools::Itertools;
-
+/*
 use super::JapaneseExt;
-
-#[derive(Clone, Debug, PartialEq)]
-pub struct AccentChar<'a> {
-    pub c: &'a str,
-    pub borders: Vec<Border>,
-}
-
-#[derive(Clone, Copy, Debug, PartialEq)]
-pub enum Border {
-    Left,
-    Right,
-    Top,
-    Bottom,
-}
-
-impl Border {
-    pub fn get_class(&self) -> &'static str {
-        match self {
-            Border::Left => "l",
-            Border::Right => "r",
-            Border::Top => "t",
-            Border::Bottom => "b",
-        }
-    }
-}
-
-impl<'a> AccentChar<'a> {
-    pub fn get_classes(&self) -> String {
-        self.borders.iter().map(|i| i.get_class()).join(" ")
-    }
-}
 
 /// Returns a vec of all compounds with the same pitch assigned to the accent (true = pitch up) in
 /// the order they appeared in the word text. Note that if the pitch changes from the last mora to
 /// the particle, there will be an entry at the end of the vec with an empty string with the pitch
 /// for the particle. This allows us to distinguish between odaka and heiban patterns.
-pub fn calc_pitch(kana_word: &str, drop: i32) -> Option<Vec<(&str, bool)>> {
+pub fn calc_pitch(kana_word: &str, drop: i32) -> Option<Vec<PitchPart>> {
     let mut kana_items = split_kana(kana_word).collect::<Vec<_>>();
     kana_items.push("");
     let syllable_count = kana_items.len();
@@ -51,12 +19,12 @@ pub fn calc_pitch(kana_word: &str, drop: i32) -> Option<Vec<(&str, bool)>> {
 
     if drop == 0 || drop == 1 {
         if syllable_count == 1 {
-            return Some(vec![(first_kana, drop == 1)]);
+            let part = PitchPartRef::new(first_kana, drop == 1);
+            return Some(vec![part]);
         } else {
-            return Some(vec![
-                (first_kana, drop == 1),
-                (&kana_word[first_kana.bytes().len()..], drop == 0),
-            ]);
+            let part1 = PitchPartRef::new(first_kana, drop == 1);
+            let part2 = PitchPartRef::new(&kana_word[first_kana.bytes().len()..], drop == 0);
+            return Some(vec![part1, part2]);
         }
     }
 
@@ -65,14 +33,16 @@ pub fn calc_pitch(kana_word: &str, drop: i32) -> Option<Vec<(&str, bool)>> {
         .take((drop - 1) as usize)
         .map(|i| i.bytes().len())
         .sum();
-    return Some(vec![
-        (first_kana, false),
-        (
+
+    let parts = vec![
+        PitchPartRef::new(first_kana, false),
+        PitchPartRef::new(
             &kana_word[first_kana.bytes().len()..first_kana.bytes().len() + up],
             true,
         ),
-        (&kana_word[first_kana.bytes().len() + up..], false),
-    ]);
+        PitchPartRef::new(&kana_word[first_kana.bytes().len() + up..], false),
+    ];
+    return Some(parts);
 }
 
 /// Returns an iterator over all kana characters. The reason for Item to be &str is that 'きゅう'
@@ -132,3 +102,4 @@ mod test {
         assert_eq!(out, empty);
     }
 }
+*/

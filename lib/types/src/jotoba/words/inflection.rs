@@ -91,7 +91,9 @@ pub struct Inflections {
 
 #[derive(Serialize, Deserialize)]
 pub struct InflectionPair {
+    #[serde(rename = "p")]
     pub positive: String,
+    #[serde(rename = "n")]
     pub negative: String,
 }
 

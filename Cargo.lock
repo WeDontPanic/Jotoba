@@ -1568,6 +1568,7 @@ version = "0.1.0"
 dependencies = [
  "itertools",
  "romaji",
+ "serde",
  "utils",
 ]
 

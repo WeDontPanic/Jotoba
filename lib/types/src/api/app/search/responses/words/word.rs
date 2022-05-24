@@ -1,3 +1,4 @@
+use japanese::accent::PitchPart;
 use serde::Serialize;
 
 use crate::jotoba::{
@@ -13,10 +14,11 @@ pub struct Word {
     pub sequence: u32,
     pub is_common: bool,
     pub reading: String,
+    #[serde(skip_serializing_if = "Vec::is_empty")]
     pub alt_readings: Vec<String>,
     pub senses: Vec<Sense>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub accents: Option<Vec<u8>>,
+    #[serde(skip_serializing_if = "Vec::is_empty")]
+    pub accents: Vec<Pitch>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub furigana: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -49,4 +51,9 @@ pub struct Sense {
     pub example_sentence: Option<(String, String)>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub gairaigo: Option<Gairaigo>,
+}
+
+#[derive(Clone, Serialize)]
+pub struct Pitch {
+    items: Vec<PitchPart>,
 }

@@ -1,67 +1,87 @@
-pub mod kanji;
-pub mod names;
-pub mod sentences;
-pub mod words;
-
 use error::api_error::RestError;
-use search::{query::UserSettings, query_parser::QueryParser};
-use serde::Serialize;
 use types::{
-    api::app::search::query::SearchPayload,
-    jotoba::pagination::{page::Page, Pagination},
+    api::app::search::responses::words,
+    jotoba::{self, languages::Language},
 };
+
+pub mod details;
+pub mod search;
 
 pub type Result<T> = std::result::Result<T, RestError>;
 
-const FIRST_PAGE: u32 = 1;
-const LAST_PAGE: u32 = 100;
+pub(crate) fn conv_word(word: jotoba::words::Word, lang: Language) -> words::Word {
+    let is_common = word.is_common();
 
-pub(crate) fn new_page<V: Serialize + Clone>(
-    pl: &SearchPayload,
-    v: V,
-    items: u32,
-    items_per_page: u32,
-) -> Page<V> {
-    let current_page = if items > 0 {
-        (pl.page.unwrap_or(FIRST_PAGE)).max(FIRST_PAGE)
-    } else {
-        0
-    };
+    let reading = word
+        .furigana
+        .as_ref()
+        .map(|i| i.clone())
+        .unwrap_or(word.get_reading().reading.clone());
 
-    let mut pagination = Pagination::new_page(v, current_page, items, items_per_page, LAST_PAGE);
+    let alt_readings = word
+        .reading
+        .alternative
+        .into_iter()
+        .map(|i| i.reading)
+        .collect();
 
-    if items == 0 {
-        pagination.set_pages(0);
+    let senses = word
+        .senses
+        .into_iter()
+        .map(|i| conv_ex_sentence(i, lang))
+        .collect::<Vec<_>>();
+
+    //let accents = to_option(word.accents.iter().collect::<Vec<_>>());
+    let accents = vec![];
+
+    words::Word {
+        sequence: word.sequence,
+        is_common,
+        reading,
+        alt_readings,
+        senses,
+        accents,
+        furigana: word.furigana,
+        jlpt_lvl: word.jlpt_lvl,
+        transive_verion: word.transive_verion,
+        intransive_verion: word.intransive_verion,
+        sentences_available: word.sentences_available,
     }
-
-    pagination
 }
 
-pub(crate) fn convert_payload(pl: &SearchPayload) -> QueryParser {
-    let user_settings = convert_user_settings(&pl.settings);
+#[inline]
+pub fn conv_ex_sentence(sense: jotoba::words::sense::Sense, lang: Language) -> words::Sense {
+    let glosses = sense
+        .glosses
+        .into_iter()
+        .map(|i| i.gloss)
+        .collect::<Vec<_>>();
 
-    QueryParser::new(
-        pl.query_str.clone(),
-        types::jotoba::search::QueryType::Kanji,
-        user_settings,
-        pl.page.unwrap_or_default() as usize,
-        pl.word_index.unwrap_or_default(),
-        false,
-        pl.lang_overwrite,
-    )
+    let example_sentence = sense
+        .example_sentence
+        .and_then(|i| get_example_sentence(i, lang));
+
+    words::Sense {
+        misc: sense.misc,
+        field: sense.field,
+        dialect: sense.dialect,
+        glosses,
+        xref: sense.xref,
+        antonym: sense.antonym,
+        information: sense.information,
+        part_of_speech: sense.part_of_speech,
+        language: sense.language,
+        example_sentence,
+        gairaigo: sense.gairaigo,
+    }
 }
 
-pub(crate) fn convert_user_settings(
-    settings: &types::api::app::search::query::UserSettings,
-) -> UserSettings {
-    UserSettings {
-        user_lang: settings.user_lang,
-        show_english: settings.show_english,
-        english_on_top: true,
-        page_size: settings.page_size,
-        kanji_page_size: settings.kanji_page_size,
-        show_example_sentences: settings.show_example_sentences,
-        sentence_furigana: settings.sentence_furigana,
-        ..Default::default()
-    }
+fn get_example_sentence(id: u32, language: Language) -> Option<(String, String)> {
+    let sentence = resources::get().sentences().by_id(id)?;
+
+    let translation = sentence
+        .get_translations(language)
+        .or_else(|| sentence.get_translations(Language::English))?;
+
+    Some((sentence.furigana.clone(), translation.to_string()))
 }

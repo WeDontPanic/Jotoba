@@ -1,7 +1,7 @@
 use serde::Serialize;
 
 use crate::{
-    api::{app::search::responses::words::Word, search::kanji::Kanji},
+    api::{app::search::responses::kanji::Kanji, app::search::responses::words::Word},
     jotoba::words::inflection::Inflections,
 };
 
@@ -23,4 +23,25 @@ pub struct Details {
 pub enum TransitivityPair {
     Transitive(Word),
     Intransitive(Word),
+}
+
+impl Details {
+    #[inline]
+    pub fn new(
+        word: Word,
+        kanji: Vec<Kanji>,
+        conjugations: Option<Inflections>,
+        collocations: Vec<Word>,
+        has_sentence: bool,
+        transitiviti_pair: Option<TransitivityPair>,
+    ) -> Self {
+        Self {
+            word,
+            kanji,
+            conjugations,
+            collocations,
+            has_sentence,
+            transitiviti_pair,
+        }
+    }
 }

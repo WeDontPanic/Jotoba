@@ -6,6 +6,7 @@ use crate::{
     },
 };
 
+use japanese::accent::PitchPart;
 use serde::{Deserialize, Serialize};
 
 /// The API response struct for a word search
@@ -26,13 +27,7 @@ pub struct Word {
     #[serde(skip_serializing_if = "Option::is_none")]
     audio: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pitch: Option<Vec<PitchItem>>,
-}
-
-#[derive(Serialize, Deserialize)]
-pub struct PitchItem {
-    part: String,
-    high: bool,
+    pitch: Option<Vec<PitchPart>>,
 }
 
 #[derive(Serialize, Deserialize)]
@@ -98,8 +93,14 @@ impl From<&crate::jotoba::words::Word> for Word {
         let senses = word.senses.iter().map(|i| Sense::from(i)).collect();
 
         let pitch = word.accents.get(0).and_then(|accents| {
-            japanese::accent::calc_pitch(&word.reading.kana.reading, accents as i32)
-                .map(|i| i.into_iter().map(|j| j.into()).collect::<Vec<PitchItem>>())
+            let out = japanese::accent::calc_pitch(&word.reading.kana.reading, accents as i32)?
+                .into_iter()
+                .map(|i| {
+                    let s: PitchPart = i.into();
+                    s
+                })
+                .collect();
+            Some(out)
         });
 
         Self {
@@ -151,15 +152,4 @@ fn convert_kanji(wres: Vec<&crate::jotoba::kanji::Kanji>) -> Vec<Kanji> {
 #[inline]
 fn convert_words(wres: Vec<&crate::jotoba::words::Word>) -> Vec<Word> {
     wres.into_iter().map(|i| i.into()).collect()
-}
-
-#[cfg(feature = "jotoba_intern")]
-impl From<(&str, bool)> for PitchItem {
-    #[inline]
-    fn from((part, high): (&str, bool)) -> Self {
-        Self {
-            part: part.to_owned(),
-            high,
-        }
-    }
 }

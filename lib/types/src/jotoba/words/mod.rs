@@ -7,6 +7,7 @@ pub mod inflection;
 pub mod information;
 pub mod misc;
 pub mod part_of_speech;
+pub mod pitch;
 pub mod priority;
 pub mod sense;
 
@@ -16,7 +17,6 @@ use bitflags::BitFlag;
 
 #[cfg(feature = "jotoba_intern")]
 use japanese::{
-    accent::{AccentChar, Border},
     furigana::{self, SentencePartRef},
     JapaneseExt,
 };
@@ -26,11 +26,12 @@ use self::{
     inflection::Inflections,
     misc::Misc,
     part_of_speech::{PartOfSpeech, PosSimple},
+    pitch::{raw_data::PitchValues, Pitch},
     priority::Priority,
     sense::{Sense, SenseGlossIter},
 };
 
-use super::{accents::PitchValues, languages::Language};
+use super::languages::Language;
 
 /// A single word item
 #[derive(Debug, Clone, Default, Serialize, Deserialize, Eq)]
@@ -246,21 +247,40 @@ impl Word {
         })
     }
 
+    #[inline]
+    pub fn get_kana(&self) -> &str {
+        &self.reading.kana.reading
+    }
+
     /// Returns a renderable vec of accents with kana characters
-    pub fn get_accents(&self) -> Option<Vec<AccentChar>> {
-        let accents_raw = self.accents.get(0)?;
-        let kana = &self.reading.kana;
-        let accents = japanese::accent::calc_pitch(&kana.reading, accents_raw as i32)?;
+    #[inline]
+    pub fn get_pitches(&self) -> Vec<Pitch> {
+        self.accents
+            .iter()
+            .filter_map(|drop| Pitch::new(self.get_kana(), drop))
+            .collect()
+    }
+
+    /// Returns a renderable vec of accents with kana characters
+    #[inline]
+    pub fn get_first_pitch(&self) -> Option<Pitch> {
+        let drop = self.accents.get(0)?;
+        Pitch::new(self.get_kana(), drop)
+    }
+
+    /*
+    pub fn render_pitch(&self, pitch: u8) -> Option<Vec<AccentChar>> {
+        let accents = pitch::calc_pitch(&self.reading.kana.reading, pitch as i32)?;
         let accent_iter = accents.iter().peekable().enumerate();
 
         let res = accent_iter
-            .map(|(pos, (part, is_high))| {
-                if part.is_empty() {
+            .map(|(pos, pitch_part)| {
+                if pitch_part.part.is_empty() {
                     // Don't render under/overline for empty character -- handles the case where the
                     // pitch changes from the end of the word to the particle
                     return vec![];
                 }
-                let borders = vec![if *is_high {
+                let borders = vec![if pitch_part.high {
                     Border::Top
                 } else {
                     Border::Bottom
@@ -270,14 +290,17 @@ impl Word {
                 } else {
                     borders
                 };
-                vec![AccentChar { borders, c: part }]
+                vec![AccentChar {
+                    borders,
+                    c: pitch_part.part,
+                }]
             })
             .flatten()
             .into_iter()
             .collect();
-
         Some(res)
     }
+    */
 
     /// Returns furigana reading-pairs of an Item
     #[inline]
@@ -384,6 +407,13 @@ impl<'a> Iterator for ReadingIter<'a> {
     }
 }
 
+#[cfg(feature = "jotoba_intern")]
+#[inline]
+pub fn adjust_language(word: &mut Word, language: Language, show_english: bool) {
+    word.senses
+        .retain(|j| j.language == language || (j.language == Language::English && show_english));
+}
+
 /// Removes all senses which ain't in the provided language or english in case `show_english` is
 /// `true`
 #[cfg(feature = "jotoba_intern")]
@@ -393,9 +423,7 @@ pub fn filter_languages<'a, I: 'a + Iterator<Item = &'a mut Word>>(
     show_english: bool,
 ) {
     for word in iter {
-        word.senses.retain(|j| {
-            j.language == language || (j.language == Language::English && show_english)
-        });
+        adjust_language(word, language, show_english);
     }
 }
 

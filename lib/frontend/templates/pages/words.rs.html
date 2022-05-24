@@ -312,7 +312,7 @@
                   }
                 }
               
-                @if let Some(accents) = word.get_accents() {
+                @if let Some(accents) = word.get_pitch() {
                   <div class="tags">@data.gettext("Pitch accent")</div>
                   <div class="pitch">
                     @for accent in accents {
