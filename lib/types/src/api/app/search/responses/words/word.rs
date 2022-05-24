@@ -1,10 +1,10 @@
-use japanese::accent::PitchPart;
 use serde::Serialize;
 
 use crate::jotoba::{
     languages::Language,
     words::{
-        dialect::Dialect, field::Field, misc::Misc, part_of_speech::PartOfSpeech, sense::Gairaigo,
+        dialect::Dialect, field::Field, misc::Misc, part_of_speech::PartOfSpeech, pitch::Pitch,
+        sense::Gairaigo,
     },
 };
 
@@ -51,9 +51,4 @@ pub struct Sense {
     pub example_sentence: Option<(String, String)>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub gairaigo: Option<Gairaigo>,
-}
-
-#[derive(Clone, Serialize)]
-pub struct Pitch {
-    items: Vec<PitchPart>,
 }

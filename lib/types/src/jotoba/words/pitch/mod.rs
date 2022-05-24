@@ -1,13 +1,16 @@
 pub mod border;
 pub mod raw_data;
 
+use itertools::Itertools;
 use japanese::JapaneseExt;
 use serde::{Deserialize, Serialize};
+
+use self::border::Border;
 
 /// Owned pitch entry of a word
 #[derive(Clone, Serialize, Deserialize)]
 pub struct Pitch {
-    parts: Vec<PitchPart>,
+    pub parts: Vec<PitchPart>,
 }
 
 impl Pitch {
@@ -16,7 +19,7 @@ impl Pitch {
         kana_items.push("");
         let syllable_count = kana_items.len();
 
-        if syllable_count == 0 || drop < 0 || drop > 6 {
+        if syllable_count == 0 || drop > 6 {
             return None;
         }
         let mut kana_items = kana_items.into_iter();
@@ -55,6 +58,41 @@ impl Pitch {
     #[inline]
     fn new_raw(parts: Vec<PitchPart>) -> Self {
         Self { parts }
+    }
+
+    #[cfg(feature = "jotoba_intern")]
+    pub fn render(&self) -> impl Iterator<Item = (&str, String)> {
+        let accent_iter = self.parts.iter().peekable().enumerate();
+
+        accent_iter.map(|(pos, pitch_part)| {
+            if pitch_part.part.is_empty() {
+                // Don't render under/overline for empty character -- handles the case where the
+                // pitch changes from the end of the word to the particle
+                return ("", String::new());
+            }
+            let borders = vec![if pitch_part.high {
+                Border::Top.get_class()
+            } else {
+                Border::Bottom.get_class()
+            }];
+            let borders = if pos != self.parts.len() - 1 {
+                borders
+                    .into_iter()
+                    .chain(vec![Border::Right.get_class()])
+                    .collect()
+            } else {
+                borders
+            };
+
+            let borders = borders.into_iter().join(" ");
+
+            (pitch_part.part.as_str(), borders)
+        })
+    }
+
+    /// Get a reference to the pitch's parts.
+    pub fn parts(&self) -> &[PitchPart] {
+        self.parts.as_ref()
     }
 }
 

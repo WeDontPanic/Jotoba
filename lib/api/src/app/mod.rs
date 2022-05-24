@@ -11,6 +11,7 @@ pub type Result<T> = std::result::Result<T, RestError>;
 
 pub(crate) fn conv_word(word: jotoba::words::Word, lang: Language) -> words::Word {
     let is_common = word.is_common();
+    let accents = word.get_pitches();
 
     let reading = word
         .furigana
@@ -30,9 +31,6 @@ pub(crate) fn conv_word(word: jotoba::words::Word, lang: Language) -> words::Wor
         .into_iter()
         .map(|i| conv_ex_sentence(i, lang))
         .collect::<Vec<_>>();
-
-    //let accents = to_option(word.accents.iter().collect::<Vec<_>>());
-    let accents = vec![];
 
     words::Word {
         sequence: word.sequence,

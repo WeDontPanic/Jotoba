@@ -268,40 +268,6 @@ impl Word {
         Pitch::new(self.get_kana(), drop)
     }
 
-    /*
-    pub fn render_pitch(&self, pitch: u8) -> Option<Vec<AccentChar>> {
-        let accents = pitch::calc_pitch(&self.reading.kana.reading, pitch as i32)?;
-        let accent_iter = accents.iter().peekable().enumerate();
-
-        let res = accent_iter
-            .map(|(pos, pitch_part)| {
-                if pitch_part.part.is_empty() {
-                    // Don't render under/overline for empty character -- handles the case where the
-                    // pitch changes from the end of the word to the particle
-                    return vec![];
-                }
-                let borders = vec![if pitch_part.high {
-                    Border::Top
-                } else {
-                    Border::Bottom
-                }];
-                let borders = if pos != accents.len() - 1 {
-                    borders.into_iter().chain(vec![Border::Right]).collect()
-                } else {
-                    borders
-                };
-                vec![AccentChar {
-                    borders,
-                    c: pitch_part.part,
-                }]
-            })
-            .flatten()
-            .into_iter()
-            .collect();
-        Some(res)
-    }
-    */
-
     /// Returns furigana reading-pairs of an Item
     #[inline]
     pub fn get_furigana(&self) -> Option<Vec<SentencePartRef<'_>>> {

@@ -2,11 +2,13 @@ use crate::{
     api::search::kanji::Kanji,
     jotoba::{
         languages::Language,
-        words::{dialect::Dialect, field::Field, misc::Misc, part_of_speech::PartOfSpeech},
+        words::{
+            dialect::Dialect, field::Field, misc::Misc, part_of_speech::PartOfSpeech,
+            pitch::PitchPart,
+        },
     },
 };
 
-use japanese::accent::PitchPart;
 use serde::{Deserialize, Serialize};
 
 /// The API response struct for a word search
@@ -92,16 +94,7 @@ impl From<&crate::jotoba::words::Word> for Word {
 
         let senses = word.senses.iter().map(|i| Sense::from(i)).collect();
 
-        let pitch = word.accents.get(0).and_then(|accents| {
-            let out = japanese::accent::calc_pitch(&word.reading.kana.reading, accents as i32)?
-                .into_iter()
-                .map(|i| {
-                    let s: PitchPart = i.into();
-                    s
-                })
-                .collect();
-            Some(out)
-        });
+        let pitch = word.get_first_pitch().map(|i| i.parts.clone());
 
         Self {
             common: word.is_common(),

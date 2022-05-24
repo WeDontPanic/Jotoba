@@ -312,11 +312,11 @@
                   }
                 }
               
-                @if let Some(accents) = word.get_pitch() {
+                @if let Some(pitch) = word.get_first_pitch() {
                   <div class="tags">@data.gettext("Pitch accent")</div>
                   <div class="pitch">
-                    @for accent in accents {
-                      <span class="pitch @accent.get_classes()">@accent.c</span>
+                    @for (kana, classes) in pitch.render() {
+                      <span class="pitch @classes">@kana</span>
                     }
                   </div>
                 }
