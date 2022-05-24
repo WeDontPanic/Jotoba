@@ -315,7 +315,7 @@
                 @if let Some(pitch) = word.get_first_pitch() {
                   <div class="tags">@data.gettext("Pitch accent")</div>
                   <div class="pitch">
-                    @for (kana, classes) in pitch.render() {
+                    @for (classes, kana) in pitch.render() {
                       <span class="pitch @classes">@kana</span>
                     }
                   </div>

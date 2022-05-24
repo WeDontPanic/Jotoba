@@ -1,11 +1,10 @@
-pub mod border;
 pub mod raw_data;
 
-use itertools::Itertools;
+#[cfg(feature = "jotoba_intern")]
+pub mod border;
+
 use japanese::JapaneseExt;
 use serde::{Deserialize, Serialize};
-
-use self::border::Border;
 
 /// Owned pitch entry of a word
 #[derive(Clone, Serialize, Deserialize)]
@@ -60,39 +59,38 @@ impl Pitch {
         Self { parts }
     }
 
-    #[cfg(feature = "jotoba_intern")]
-    pub fn render(&self) -> impl Iterator<Item = (&str, String)> {
-        let accent_iter = self.parts.iter().peekable().enumerate();
+    /// Get a reference to the pitch's parts.
+    #[inline]
+    pub fn parts(&self) -> &[PitchPart] {
+        self.parts.as_ref()
+    }
 
-        accent_iter.map(|(pos, pitch_part)| {
+    /// Render helper for the template
+    #[cfg(feature = "jotoba_intern")]
+    pub fn render(&self) -> impl Iterator<Item = (String, &str)> {
+        use self::border::{Border, BorderBuilder};
+        let mut iter = self.parts.iter().enumerate();
+
+        std::iter::from_fn(move || {
+            let (pos, pitch_part) = iter.next()?;
+
             if pitch_part.part.is_empty() {
                 // Don't render under/overline for empty character -- handles the case where the
                 // pitch changes from the end of the word to the particle
-                return ("", String::new());
+                return Some((String::new(), ""));
             }
-            let borders = vec![if pitch_part.high {
-                Border::Top.get_class()
-            } else {
-                Border::Bottom.get_class()
-            }];
-            let borders = if pos != self.parts.len() - 1 {
-                borders
-                    .into_iter()
-                    .chain(vec![Border::Right.get_class()])
-                    .collect()
-            } else {
-                borders
-            };
 
-            let borders = borders.into_iter().join(" ");
+            let h_bord = Border::horizontal(pitch_part.high);
+            let mut b_builder = BorderBuilder::new(h_bord);
 
-            (pitch_part.part.as_str(), borders)
+            if pos != self.parts.len() - 1 {
+                b_builder.add(Border::Right);
+            }
+
+            let classes = b_builder.build();
+            let part_str = pitch_part.part.as_str();
+            Some((classes, part_str))
         })
-    }
-
-    /// Get a reference to the pitch's parts.
-    pub fn parts(&self) -> &[PitchPart] {
-        self.parts.as_ref()
     }
 }
 
