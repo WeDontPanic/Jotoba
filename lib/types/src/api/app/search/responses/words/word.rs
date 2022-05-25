@@ -17,6 +17,8 @@ pub struct Word {
     #[serde(skip_serializing_if = "Vec::is_empty")]
     pub alt_readings: Vec<String>,
     pub senses: Vec<Sense>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub audio: Option<String>,
     #[serde(skip_serializing_if = "Vec::is_empty")]
     pub accents: Vec<Pitch>,
     #[serde(skip_serializing_if = "Option::is_none")]

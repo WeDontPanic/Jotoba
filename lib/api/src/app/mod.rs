@@ -12,6 +12,7 @@ pub type Result<T> = std::result::Result<T, RestError>;
 pub(crate) fn conv_word(word: jotoba::words::Word, lang: Language) -> words::Word {
     let is_common = word.is_common();
     let accents = word.get_pitches();
+    let audio = word.audio_file("ogg");
 
     let reading = word
         .furigana
@@ -32,6 +33,7 @@ pub(crate) fn conv_word(word: jotoba::words::Word, lang: Language) -> words::Wor
         .map(|i| conv_ex_sentence(i, lang))
         .collect::<Vec<_>>();
 
+
     words::Word {
         sequence: word.sequence,
         is_common,
@@ -44,6 +46,7 @@ pub(crate) fn conv_word(word: jotoba::words::Word, lang: Language) -> words::Wor
         transive_verion: word.transive_verion,
         intransive_verion: word.intransive_verion,
         sentences_available: word.sentences_available,
+        audio,
     }
 }
 
