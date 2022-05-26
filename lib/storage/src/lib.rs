@@ -4,7 +4,12 @@ pub mod storage;
 pub use storage::ResourceStorage;
 
 use once_cell::sync::OnceCell;
-use std::{error::Error, fs::File, io::BufReader, path::Path};
+use std::{
+    error::Error,
+    fs::File,
+    io::{BufReader, Write},
+    path::Path,
+};
 
 /// InMemory storage for all data
 static STORAGE: OnceCell<ResourceStorage> = OnceCell::new();
@@ -29,6 +34,12 @@ pub fn load<P: AsRef<Path>>(path: P) -> Result<bool, Box<dyn Error>> {
     let mut reader = BufReader::new(File::open(path)?);
     let storage: ResourceStorage = bincode::deserialize_from(&mut reader)?;
     Ok(STORAGE.set(storage).is_ok())
+}
+
+/// Serializes a ResourceStorage into `output`
+pub fn store<W: Write>(output: W, storage: &ResourceStorage) -> Result<(), Box<dyn Error>> {
+    bincode::serialize_into(output, storage)?;
+    Ok(())
 }
 
 /*
