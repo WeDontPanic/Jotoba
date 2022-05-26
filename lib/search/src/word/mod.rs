@@ -201,7 +201,6 @@ impl<'a> Search<'a> {
         }
 
         let (query, mut sentence, word_info) = self.parse_sentence(query_str);
-        println!("{sentence:#?}");
 
         let original_query = if sentence.is_some() {
             word_info.as_ref().unwrap().get_inflected().clone()
@@ -217,7 +216,7 @@ impl<'a> Search<'a> {
         }
 
         // If query was modified (ie. through reflection), search for original too
-        if query != query_str {
+        if query != query_str && sentence.is_none() {
             search_task.add_query(&self.query.query);
         }
 
