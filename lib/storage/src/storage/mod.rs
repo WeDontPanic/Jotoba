@@ -1,3 +1,4 @@
+pub mod feature;
 pub mod kanji;
 pub mod name;
 pub mod sentence;
@@ -7,16 +8,19 @@ use crate::retrieve::{
     kanji::KanjiRetrieve, name::NameRetrieve, sentence::SentenceRetrieve, word::WordRetrieve,
 };
 
-use self::{kanji::KanjiStorage, name::NameStorage, sentence::SentenceStorage, word::WordStorage};
+use self::{
+    feature::Feature, kanji::KanjiStorage, name::NameStorage, sentence::SentenceStorage,
+    word::WordStorage,
+};
 use serde::{Deserialize, Serialize};
 
 /// Storage holding all data of Jotoba
-#[derive(Serialize, Deserialize, Default)]
+#[derive(Serialize, Deserialize, Default, Clone)]
 pub struct ResourceStorage {
-    pub words: Option<WordStorage>,
-    pub kanji: Option<KanjiStorage>,
-    pub names: Option<NameStorage>,
-    pub sentences: Option<SentenceStorage>,
+    pub words: WordStorage,
+    pub kanji: KanjiStorage,
+    pub names: NameStorage,
+    pub sentences: SentenceStorage,
 }
 
 impl ResourceStorage {
@@ -25,13 +29,40 @@ impl ResourceStorage {
         Self::default()
     }
 
-    /// Returns `true` if all necessary data is present
-    #[inline(always)]
+    /// Returns `true` if all necessary features are present
     pub fn check(&self) -> bool {
-        self.words.is_some()
-            && self.kanji.is_some()
-            && self.names.is_some()
-            && self.sentences.is_some()
+        self.missing_features().is_empty()
+    }
+
+    /// Returns a list of features that are missing but required
+    pub fn missing_features(&self) -> Vec<Feature> {
+        let features = self.get_features();
+
+        let mut missing = vec![];
+
+        for req_feature in crate::REQUIRED_FEATURES {
+            if !features.contains(req_feature) {
+                missing.push(*req_feature);
+            }
+        }
+
+        missing
+    }
+
+    /// Returns `true` if ResourceStorage has the given feature
+    #[inline]
+    pub fn has_feature(&self, feature: Feature) -> bool {
+        self.get_features().contains(&feature)
+    }
+
+    /// Returns a list of all features of the ResourceStorage's data
+    pub fn get_features(&self) -> Vec<Feature> {
+        let mut out = vec![];
+        out.extend(self.words.get_features());
+        out.extend(self.kanji.get_features());
+        out.extend(self.names.get_features());
+        out.extend(self.sentences.get_features());
+        out
     }
 }
 
@@ -41,29 +72,25 @@ impl ResourceStorage {
 impl ResourceStorage {
     /// Get a reference to the resource storage's words.
     #[inline(always)]
-    pub fn words(&self) -> WordRetrieve {
-        let word_store = unsafe { self.words.as_ref().unwrap_unchecked() };
-        WordRetrieve::new(word_store)
+    pub fn words<'a>(&'a self) -> WordRetrieve<'a> {
+        WordRetrieve::new(&self.words)
     }
 
     /// Get a reference to the resource storage's kanji.
     #[inline(always)]
     pub fn kanji(&self) -> KanjiRetrieve {
-        let kanji_store = unsafe { self.kanji.as_ref().unwrap_unchecked() };
-        KanjiRetrieve::new(kanji_store)
+        KanjiRetrieve::new(&self.kanji)
     }
 
     /// Get a reference to the resource storage's names.
     #[inline(always)]
     pub fn names(&self) -> NameRetrieve {
-        let name_store = unsafe { self.names.as_ref().unwrap_unchecked() };
-        NameRetrieve::new(name_store)
+        NameRetrieve::new(&self.names)
     }
 
     /// Get a reference to the resource storage's sentences.
     #[inline(always)]
     pub fn sentences(&self) -> SentenceRetrieve {
-        let sentence_store = unsafe { self.sentences.as_ref().unwrap_unchecked() };
-        SentenceRetrieve::new(sentence_store)
+        SentenceRetrieve::new(&self.sentences)
     }
 }

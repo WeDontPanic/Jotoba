@@ -34,7 +34,7 @@ impl<'a> WordRetrieve<'a> {
     }
 
     #[inline]
-    pub fn iter(&self) -> impl Iterator<Item = &Word> {
+    pub fn iter(&self) -> impl Iterator<Item = &'a Word> {
         self.storage.words.iter().map(|i| i.1)
     }
 }

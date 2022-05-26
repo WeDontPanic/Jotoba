@@ -10,6 +10,17 @@ use std::{
     io::{BufReader, Write},
     path::Path,
 };
+use storage::feature::Feature;
+
+/// List of features that are required for Jotoba to run properly
+pub const REQUIRED_FEATURES: &[Feature] = &[
+    Feature::Words,
+    Feature::Sentences,
+    Feature::Names,
+    Feature::Kanji,
+    Feature::RadicalKanjiMap,
+    Feature::RadicalData,
+];
 
 /// InMemory storage for all data
 static STORAGE: OnceCell<ResourceStorage> = OnceCell::new();
@@ -29,6 +40,12 @@ pub fn is_loaded() -> bool {
     STORAGE.get().is_some()
 }
 
+/// Load the resource storage and returns it
+pub fn load_raw<P: AsRef<Path>>(path: P) -> Result<ResourceStorage, Box<dyn Error>> {
+    let mut reader = BufReader::new(File::open(path)?);
+    Ok(bincode::deserialize_from(&mut reader)?)
+}
+
 /// Load the resource storage from a file. Returns `true` if it wasn't loaded before
 pub fn load<P: AsRef<Path>>(path: P) -> Result<bool, Box<dyn Error>> {
     let mut reader = BufReader::new(File::open(path)?);
@@ -42,8 +59,6 @@ pub fn store<W: Write>(output: W, storage: &ResourceStorage) -> Result<(), Box<d
     Ok(())
 }
 
-/*
 pub fn set(res_storage: ResourceStorage) {
     STORAGE.set(res_storage).ok();
 }
-*/
