@@ -2161,15 +2161,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "quick-xml"
-version = "0.23.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9279fbdacaad3baf559d8cabe0acc3d06e30ea14931af31af79578ac0946decc"
-dependencies = [
- "memchr",
-]
-
-[[package]]
 name = "quote"
 version = "1.0.18"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2332,19 +2323,13 @@ version = "0.1.0"
 dependencies = [
  "bincode",
  "comrak",
- "eudex 0.1.1 (git+https://github.com/JojiiOfficial/eudex)",
- "indexed_file",
  "inotify",
  "intmap",
  "itertools",
  "japanese",
  "once_cell",
- "quick-xml",
- "regex",
  "serde",
  "sorted_intersection",
- "strum",
- "strum_macros",
  "types",
  "utils",
 ]
