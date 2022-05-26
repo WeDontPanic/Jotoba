@@ -2162,9 +2162,9 @@ dependencies = [
 
 [[package]]
 name = "quick-xml"
-version = "0.23.0-alpha3"
+version = "0.23.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e6c002cfafa1de674ef8557e3dbf2ad8c03ac8eb3d162672411b1b7fb4d272ef"
+checksum = "9279fbdacaad3baf559d8cabe0acc3d06e30ea14931af31af79578ac0946decc"
 dependencies = [
  "memchr",
 ]
@@ -3172,9 +3172,9 @@ source = "git+https://github.com/JojiiOfficial/utilsrs#b0b019f328216bae7ad55faba
 
 [[package]]
 name = "uuid"
-version = "1.0.0"
+version = "1.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8cfcd319456c4d6ea10087ed423473267e1a071f3bc0aa89f80d60997843c6f0"
+checksum = "93bbc61e655a4833cf400d0d15bf3649313422fa7572886ad6dab16d79886365"
 dependencies = [
  "getrandom",
  "serde",
@@ -3195,7 +3195,7 @@ checksum = "f1bddf1187be692e79c5ffeab891132dfb0f236ed36a43c7ed39f1165ee20191"
 [[package]]
 name = "vector_space_model2"
 version = "0.1.1"
-source = "git+https://github.com/JojiiOfficial/VectorSpaceModel#a6b169595976c159b08a8aa665b9f7e77430d8d5"
+source = "git+https://github.com/JojiiOfficial/VectorSpaceModel#50a24bcc6a26e3df87d683cca5f2aadfbc76cf26"
 dependencies = [
  "byteorder",
  "compressed_vec",

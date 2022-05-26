@@ -15,8 +15,10 @@ pub fn initialize_resources<P: AsRef<Path>>(
     dict_data_path: P,
     rad_map_path: P,
     sentences_path: P,
+    kreading_freq: P,
 ) -> Result<(), Box<dyn Error>> {
-    let storage = models::load_storage(dict_data_path, rad_map_path, sentences_path)?;
+    let storage =
+        models::load_storage(dict_data_path, rad_map_path, sentences_path, kreading_freq)?;
 
     RESOURCES
         .set(storage)

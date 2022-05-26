@@ -108,7 +108,7 @@ fn overlapping_vals(src_vec: &Vector, query: &Vector) -> f32 {
     let sum: f32 = overlapping.iter().sum();
 
     let div = src_vec.sparse_vec().len().max(query.sparse_vec().len());
-    let overlapping_relevance = (overlapping.len() as f32 / div as f32) * 10.0;
+    let overlapping_relevance = overlapping.len() as f32 / div as f32;
 
-    overlapping_relevance + sum
+    overlapping_relevance * 20.0 * sum
 }

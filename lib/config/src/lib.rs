@@ -116,6 +116,14 @@ impl Config {
             .unwrap_or_else(|| ServerConfig::default().sentences.unwrap())
     }
 
+    pub fn get_kreading_freq_path(&self) -> String {
+        Path::new(self.get_indexes_source())
+            .join("kreading_freq_index")
+            .to_str()
+            .unwrap()
+            .to_string()
+    }
+
     /// Returns the configured (or default) path for the radical map
     pub fn get_radical_map_path(&self) -> String {
         self.server

@@ -10,7 +10,7 @@ use serde::{Deserialize, Serialize};
 use self::{
     kanji::KanjiRetrieve, name::NameRetrieve, sentence::SentenceRetrieve, word::WordRetrieve,
 };
-use super::DictResources;
+use super::{kreading_freq, DictResources};
 use std::collections::HashMap;
 use types::jotoba::{
     kanji::{DetailedRadical, Kanji},
@@ -29,6 +29,7 @@ pub type RadicalStorage = HashMap<char, Vec<char>>;
 #[derive(Default)]
 pub struct ResourceStorage {
     pub dict_data: DictionaryData,
+    pub kreading_freq: Option<kreading_freq::FrequencyIndex>,
 }
 
 /// Contains all core data for the dictionary. This is the data structure for the dictionary functionality to work properly.
@@ -98,6 +99,7 @@ impl ResourceStorage {
         resources: DictResources,
         rad_kanji_map: RadicalStorage,
         sentences: SentenceStorage,
+        kreading_freq: Option<kreading_freq::FrequencyIndex>,
     ) -> Self {
         let words = build_words(resources.words);
         let names = build_names(resources.names);
@@ -125,7 +127,10 @@ impl ResourceStorage {
             radicals,
         );
 
-        Self { dict_data }
+        Self {
+            dict_data,
+            kreading_freq,
+        }
     }
 
     /// Returns a `WordRetrieve` which can be used to retrieve words from the `ResourceStorage`

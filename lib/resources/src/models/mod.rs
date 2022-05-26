@@ -1,3 +1,4 @@
+pub mod kreading_freq;
 /// In Jotoba used resource storage, a combination of all data together
 pub mod storage;
 //pub mod suggestions;
@@ -58,11 +59,31 @@ pub fn load_storage<P: AsRef<Path>>(
     dict_data_path: P,
     rad_mapc_path: P,
     sentences_path: P,
+    kfreq_index: P,
 ) -> Result<ResourceStorage, Box<dyn Error>> {
     let dict_data = load_dict_data(dict_data_path)?;
     let radical_map = load_rad_map(rad_mapc_path)?;
     let sentences = load_sentences(sentences_path)?;
-    Ok(ResourceStorage::new(dict_data, radical_map, sentences))
+    let kreading_freq = load_kreading_freq_index(kfreq_index)?;
+
+    Ok(ResourceStorage::new(
+        dict_data,
+        radical_map,
+        sentences,
+        kreading_freq,
+    ))
+}
+
+pub fn load_kreading_freq_index<P: AsRef<Path>>(
+    kfreq_index: P,
+) -> Result<Option<kreading_freq::FrequencyIndex>, Box<dyn Error>> {
+    let file = kfreq_index.as_ref();
+    if !file.exists() {
+        return Ok(None);
+    }
+
+    let index = bincode::deserialize_from(BufReader::new(File::open(file)?))?;
+    Ok(Some(index))
 }
 
 #[inline]
