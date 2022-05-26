@@ -8,10 +8,10 @@ use types::jotoba::sentences::Sentence;
 #[derive(Serialize, Deserialize, Default)]
 pub struct SentenceStorage {
     /// Mapping sentence by its ID
-    sentences: IntMap<Sentence>,
+    pub sentences: IntMap<Sentence>,
 
     // Search tags
-    jlpt_map: HashMap<u8, Vec<u32>>,
+    pub jlpt_map: HashMap<u8, Vec<u32>>,
 }
 
 impl SentenceStorage {

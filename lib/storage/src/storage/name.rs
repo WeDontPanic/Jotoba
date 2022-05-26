@@ -6,7 +6,7 @@ use types::jotoba::names::Name;
 #[derive(Serialize, Deserialize, Default)]
 pub struct NameStorage {
     /// Index mapping name id to its `Name` value
-    names: IntMap<Name>,
+    pub names: IntMap<Name>,
 }
 
 impl NameStorage {

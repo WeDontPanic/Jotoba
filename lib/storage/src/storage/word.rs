@@ -7,11 +7,11 @@ use types::jotoba::words::Word;
 #[derive(Serialize, Deserialize, Default)]
 pub struct WordStorage {
     /// Word index
-    words: IntMap<Word>,
+    pub words: IntMap<Word>,
 
     // Search tags
-    jlpt_word_map: HashMap<u8, Vec<u32>>,
-    irregular_ichidan: Vec<u32>,
+    pub jlpt_word_map: HashMap<u8, Vec<u32>>,
+    pub irregular_ichidan: Vec<u32>,
 }
 
 impl WordStorage {
