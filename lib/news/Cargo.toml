@@ -6,14 +6,9 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-serde = { version = "1.0.137", features = ["derive"] }
-bincode = "1.3.3"
-itertools = "0.10.3"
-types = { path = "../types" , features = ["raw_types", "jotoba_intern"]}
 utils = { path = "../utils"}
+itertools = "0.10.3"
 once_cell = "1.12.0"
-sorted_intersection = "1.2.0"
-intmap = { git = "https://github.com/JojiiOfficial/rust-intmap"}
 comrak = { version = "0.12.1", default-features = false }
 
 [target.'cfg(unix)'.dependencies]

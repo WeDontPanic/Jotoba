@@ -1875,15 +1875,10 @@ checksum = "e4a24736216ec316047a1fc4252e27dabb04218aa4a3f37c6e7ddbf1f9782b54"
 name = "news"
 version = "0.1.0"
 dependencies = [
- "bincode",
  "comrak",
  "inotify",
- "intmap",
  "itertools",
  "once_cell",
- "serde",
- "sorted_intersection",
- "types",
  "utils",
 ]
 
@@ -2340,15 +2335,11 @@ name = "resources"
 version = "0.1.0"
 dependencies = [
  "bincode",
- "comrak",
- "inotify",
  "intmap",
- "itertools",
  "once_cell",
  "serde",
  "sorted_intersection",
  "types",
- "utils",
 ]
 
 [[package]]
