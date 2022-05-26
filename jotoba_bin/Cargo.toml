@@ -9,6 +9,7 @@ license = "GPLv3"
 
 [dependencies]
 japanese = { path = "../lib/japanese" }
+news = { path = "../lib/news" }
 sentence_reader  = { path = "../lib/sentence_reader" }
 search = { path = "../lib/search" }
 error = { path = "../lib/error" }

@@ -96,7 +96,7 @@ pub(super) async fn start(options: Options) -> std::io::Result<()> {
             .service(
                 actixweb::resource("/news")
                     .wrap(Compat::new(middleware::Compress::default()))
-                    .route(actixweb::get().to(frontend::news::news)),
+                    .route(actixweb::get().to(frontend::news_ep::news)),
             )
             .service(
                 actixweb::resource("/help")
@@ -262,7 +262,7 @@ fn prepare_data(ccf: &Config) {
         let cf = ccf.clone();
         s.spawn(move |_| {
             log::debug!("Loading News");
-            if let Err(err) = resources::news::News::init(cf.server.get_news_folder()) {
+            if let Err(err) = news::News::init(cf.server.get_news_folder()) {
                 warn!("Failed to load news: {}", err);
             }
         })

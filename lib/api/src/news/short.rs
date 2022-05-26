@@ -1,5 +1,4 @@
 use actix_web::web::Json;
-use resources::news;
 use types::api::news::short::{Request, Response};
 
 /// Get short news endpoint

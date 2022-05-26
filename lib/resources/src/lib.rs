@@ -1,8 +1,7 @@
 pub mod models;
 
-#[cfg(feature = "news")]
-pub mod news;
-
+//#[cfg(feature = "news")]
+//pub mod news;
 use models::storage::ResourceStorage;
 use once_cell::sync::OnceCell;
 use std::{error::Error, path::Path};

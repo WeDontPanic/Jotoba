@@ -211,6 +211,7 @@ mod test {
             config.get_storage_data_path().as_str(),
             config.get_radical_map_path().as_str(),
             config.get_sentences_path().as_str(),
+            config.get_kreading_freq_path().as_str(),
         )
         .expect("Failed to load resources");
 

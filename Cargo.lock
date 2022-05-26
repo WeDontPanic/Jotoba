@@ -298,6 +298,7 @@ dependencies = [
  "jpeudex",
  "leptess",
  "log",
+ "news",
  "once_cell",
  "priority_container",
  "rayon",
@@ -1144,6 +1145,7 @@ dependencies = [
  "japanese",
  "localization",
  "log",
+ "news",
  "percent-encoding",
  "resources",
  "ructe",
@@ -1568,7 +1570,6 @@ version = "0.1.0"
 dependencies = [
  "itertools",
  "romaji",
- "serde",
  "utils",
 ]
 
@@ -1598,6 +1599,7 @@ dependencies = [
  "japanese",
  "localization",
  "log",
+ "news",
  "rayon",
  "resources",
  "search",
@@ -1868,6 +1870,22 @@ name = "new_debug_unreachable"
 version = "1.0.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e4a24736216ec316047a1fc4252e27dabb04218aa4a3f37c6e7ddbf1f9782b54"
+
+[[package]]
+name = "news"
+version = "0.1.0"
+dependencies = [
+ "bincode",
+ "comrak",
+ "inotify",
+ "intmap",
+ "itertools",
+ "once_cell",
+ "serde",
+ "sorted_intersection",
+ "types",
+ "utils",
+]
 
 [[package]]
 name = "nom"
@@ -2326,7 +2344,6 @@ dependencies = [
  "inotify",
  "intmap",
  "itertools",
- "japanese",
  "once_cell",
  "serde",
  "sorted_intersection",

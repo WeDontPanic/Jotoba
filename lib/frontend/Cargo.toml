@@ -9,6 +9,7 @@ build = "src/build.rs"
 
 [dependencies]
 japanese = { path = "../japanese" }
+news = { path = "../news"}
 search = { path = "../search" }
 error = { path = "../error" }
 utils = { path = "../utils" }

@@ -19,10 +19,7 @@ pub async fn news(
 
     //session::init(&session, &settings);
 
-    let news = resources::news::get()
-        .last_entries(5)
-        .cloned()
-        .collect::<Vec<_>>();
+    let news = news::get().last_entries(5).cloned().collect::<Vec<_>>();
 
     Ok(HttpResponse::Ok().body(
         render!(

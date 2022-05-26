@@ -1,6 +1,5 @@
 use actix_web::web::Json;
 use error::api_error;
-use resources::news;
 use types::api::news::long::{Request, Response};
 
 /// Get detailed news endpoint
