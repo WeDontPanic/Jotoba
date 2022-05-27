@@ -1,7 +1,7 @@
 use japanese::JapaneseExt;
 use sentence_reader::JA_NL_PARSER;
 use types::jotoba::{
-    kanji::{Reading, ReadingSearch},
+    kanji::reading::{Reading, ReadingSearch},
     sentences::Sentence,
 };
 

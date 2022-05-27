@@ -44,7 +44,7 @@ fn get_suggestions(query: Query, radicals: Vec<char>) -> Result<Response, RestEr
 }
 
 /// Returns Some(KanjiReading) if query is or 'could be' a kanji reading query
-fn as_kanji_reading(query: &Query) -> Option<types::jotoba::kanji::ReadingSearch> {
+fn as_kanji_reading(query: &Query) -> Option<types::jotoba::kanji::reading::ReadingSearch> {
     match &query.form {
         Form::KanjiReading(r) => Some(r.clone()),
         _ => {
@@ -53,7 +53,7 @@ fn as_kanji_reading(query: &Query) -> Option<types::jotoba::kanji::ReadingSearch
             let second = query_str.next()?;
 
             if first.is_kanji() && second == ' ' {
-                Some(types::jotoba::kanji::ReadingSearch {
+                Some(types::jotoba::kanji::reading::ReadingSearch {
                     reading: String::new(),
                     literal: first,
                 })

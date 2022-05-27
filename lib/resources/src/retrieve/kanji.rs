@@ -1,5 +1,5 @@
 use sorted_intersection::SortedIntersection;
-use types::jotoba::kanji::{DetailedRadical, Kanji};
+use types::jotoba::kanji::{radical::DetailedRadical, Kanji};
 
 use super::super::storage::kanji::KanjiStorage;
 

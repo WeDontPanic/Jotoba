@@ -119,7 +119,7 @@ pub enum Form {
     /// Multiple words were provided
     MultiWords,
     /// Kanji reading based search eg. '気 ケ'
-    KanjiReading(kanji::ReadingSearch),
+    KanjiReading(kanji::reading::ReadingSearch),
     /// Tag only. Implies query string to be empty
     TagOnly,
     /// Form was not recognized
@@ -128,7 +128,7 @@ pub enum Form {
 
 impl Form {
     #[inline]
-    pub fn as_kanji_reading(&self) -> Option<&kanji::ReadingSearch> {
+    pub fn as_kanji_reading(&self) -> Option<&kanji::reading::ReadingSearch> {
         if let Self::KanjiReading(v) = self {
             Some(v)
         } else {

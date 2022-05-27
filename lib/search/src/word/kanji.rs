@@ -8,7 +8,7 @@ use error::Error;
 use itertools::Itertools;
 use japanese::{CharType, JapaneseExt};
 use types::jotoba::{
-    kanji::{self, Kanji, ReadingType},
+    kanji::{self, reading::ReadingType, Kanji},
     words::Word,
 };
 
@@ -76,11 +76,14 @@ fn words_with_kanji_reading(
                 &mut |i: String| {
                     let retrieve = resources::get().kanji();
                     let kanji = retrieve.by_literal(i.chars().next()?)?;
-                    if kanji.onyomi.is_none() && kanji.kunyomi.is_none() {
+                    if kanji.onyomi.is_empty() && kanji.kunyomi.is_empty() {
                         return None;
                     }
 
-                    Some((kanji.kunyomi.clone(), kanji.onyomi.clone()))
+                    let kun = (!kanji.kunyomi.is_empty()).then(|| kanji.kunyomi.clone());
+                    let on = (!kanji.onyomi.is_empty()).then(|| kanji.onyomi.clone());
+
+                    Some((kun, on))
                 },
                 &kanji_reading,
                 kana,

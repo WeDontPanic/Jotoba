@@ -82,11 +82,11 @@ impl<'a> ByNative<'a> {
 /// result based on native search-input
 pub(crate) struct ByKanji<'a> {
     query: &'a str,
-    kanji: &'a kanji::ReadingSearch,
+    kanji: &'a kanji::reading::ReadingSearch,
 }
 
 impl<'a> ByKanji<'a> {
-    pub(crate) fn new(query: &'a str, kanji: &'a kanji::ReadingSearch) -> Self {
+    pub(crate) fn new(query: &'a str, kanji: &'a kanji::reading::ReadingSearch) -> Self {
         Self { query, kanji }
     }
 

@@ -378,10 +378,10 @@
             </div>
 
             <!-- Kun readings -->
-            @if let Some(ref kun) = kanji.kunyomi {
+            @if !kanji.kunyomi.is_empty() {
               <div class="tags no-margin">@data.gettext("Kun")</div>
               <div class="d-flex flex-row wrap noselect">
-                @for (pos, reading) in kun.iter().enumerate() {
+                @for (pos, reading) in kanji.kunyomi.iter().enumerate() {
                   @if pos > 0 {
                     <span class="tags no-margin fat right-padding-10">,</span>
                   }
@@ -391,10 +391,10 @@
             }
 
             <!-- On readings -->
-            @if let Some(ref on) = kanji.onyomi {
+            @if !kanji.onyomi.is_empty() {
               <div class="tags no-margin">@data.gettext("On")</div>
               <div class="d-flex flex-row wrap noselect">
-                @for (pos, reading) in on.iter().enumerate() {
+                @for (pos, reading) in kanji.onyomi.iter().enumerate() {
                   @if pos > 0 {
                     <span class="tags no-margin fat right-padding-10">,</span>
                   }

@@ -15,8 +15,8 @@ pub async fn kanji_by_radicals(payload: Json<Request>) -> Result<Json<Response>,
             .or_default()
             .push(kanji.literal);
 
-        if let Some(parts) = &kanji.parts {
-            possible_radicals.extend(parts);
+        if !kanji.parts.is_empty() {
+            possible_radicals.extend(kanji.parts.iter());
         }
     }
 

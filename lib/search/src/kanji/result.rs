@@ -26,26 +26,24 @@ impl Item {
     }
 }
 
-fn load_dicts(dicts: &Option<Vec<u32>>, lang: Language, show_english: bool) -> Option<Vec<Word>> {
+fn load_dicts(dicts: &Vec<u32>, lang: Language, show_english: bool) -> Option<Vec<Word>> {
     let word_storage = resources::get().words();
+    let mut words: Vec<_> = dicts
+        .iter()
+        .filter_map(|j| word_storage.by_sequence(*j))
+        .cloned()
+        .collect();
 
-    let loaded_dicts = dicts.as_ref().map(|i| {
-        let mut words: Vec<_> = i
-            .iter()
-            .filter_map(|j| word_storage.by_sequence(*j))
-            .cloned()
-            .collect();
+    filter_languages(words.iter_mut(), lang, show_english);
 
-        filter_languages(words.iter_mut(), lang, show_english);
+    if words.is_empty() {
+        return None;
+    }
 
-        words
-    });
-
-    loaded_dicts
+    Some(words)
 }
 
 impl Item {
-
     /// Returns the entries' frames (svg)
     pub fn get_frames(&self) -> Option<String> {
         read_to_string(self.kanji.get_stroke_frames_path()).ok()
@@ -58,9 +56,9 @@ impl Item {
 
     /// Get a list of korean readings, formatted as: "<Hangul> (<romanized>)"
     pub fn get_korean(&self) -> Option<Vec<String>> {
-        if self.kanji.korean_r.is_some() && self.kanji.korean_h.is_some() {
-            let korean_h = self.kanji.korean_h.as_ref().unwrap();
-            let korean_r = self.kanji.korean_r.as_ref().unwrap();
+        if !self.kanji.korean_r.is_empty() && !self.kanji.korean_h.is_empty() {
+            let korean_h = &self.kanji.korean_h;
+            let korean_r = &self.kanji.korean_r;
 
             Some(
                 korean_h
@@ -77,11 +75,7 @@ impl Item {
     /// Returns the amount of parts a kanji is bulit with
     #[inline]
     pub fn get_parts_count(&self) -> usize {
-        self.kanji
-            .parts
-            .as_ref()
-            .map(|i| i.len())
-            .unwrap_or_default()
+        self.kanji.parts.len()
     }
 
     #[inline]

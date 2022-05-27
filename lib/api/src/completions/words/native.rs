@@ -135,8 +135,8 @@ fn word_rad_filter(query: &str, word: &types::jotoba::words::Word, radicals: &[c
         .filter(|i| !query_kanji.contains(&i))
         .filter_map(|k| k.is_kanji().then(|| retrieve.by_literal(k)).flatten())
         .any(|k| {
-            if let Some(k_parts) = &k.parts {
-                return is_subset(radicals, &k_parts);
+            if !k.parts.is_empty() {
+                return is_subset(radicals, &k.parts);
             }
             false
         })

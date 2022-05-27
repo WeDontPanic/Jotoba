@@ -51,7 +51,7 @@ fn word_search(query: &str, language: Language) -> Result<Vec<char>, Error> {
         })
         .flatten()
         .unique()
-        .filter_map(|kanji| kanji_retr.by_literal(kanji).and_then(|i| i.parts.as_ref()))
+        .filter_map(|kanji| kanji_retr.by_literal(kanji).map(|i| &i.parts))
         .flatten()
         .unique()
         .copied()

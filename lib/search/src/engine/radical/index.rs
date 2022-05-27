@@ -5,7 +5,7 @@ use config::Config;
 use log::info;
 use once_cell::sync::OnceCell;
 use serde::{Deserialize, Serialize};
-use types::jotoba::kanji::SearchRadicalInfo;
+use types::jotoba::kanji::radical::SearchRadicalInfo;
 
 /// Radicals indexed by its meanings
 #[derive(Serialize, Deserialize)]

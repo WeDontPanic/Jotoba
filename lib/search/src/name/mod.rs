@@ -74,20 +74,21 @@ fn search_kanji(query: &Query) -> Result<NameResult, Error> {
             &mut |i: String| {
                 let retrieve = resources::get().kanji();
                 let kanji = retrieve.by_literal(i.chars().next()?)?;
-                if kanji.onyomi.is_none() && kanji.kunyomi.is_none() {
+                if kanji.onyomi.is_empty() && kanji.kunyomi.is_empty() {
                     return None;
                 }
 
                 let kun = kanji
                     .clone()
                     .kunyomi
-                    .unwrap_or_default()
                     .into_iter()
-                    .chain(kanji.natori.clone().unwrap_or_default().into_iter())
+                    .chain(kanji.natori.clone().into_iter())
                     .collect::<Vec<_>>();
-                let kun = to_option(kun);
 
-                Some((kun, kanji.onyomi.clone()))
+                let kun = to_option(kun);
+                let on = to_option(kanji.onyomi.clone());
+
+                Some((kun, on))
             },
             kanji,
             kana,

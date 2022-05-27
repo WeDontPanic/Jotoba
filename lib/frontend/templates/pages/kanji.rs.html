@@ -37,10 +37,10 @@
                   (@translations.join(", "))
                 }
             </div>
-            @if let Some(ref parts) = k_item.kanji.parts {
+            @if !k_item.kanji.parts.is_empty() {
               <div class="notes parts"><b>@data.ngettext("Part", k_item.get_parts_count() as u64):</b>
                 <br>
-                @for (pos, part) in parts.iter().enumerate() {
+                @for (pos, part) in k_item.kanji.parts.iter().enumerate() {
                   @if pos > 0 {
                     <span class="tags no-margin fat">,</span>
                   }
@@ -60,10 +60,10 @@
                <div class="translation big">
                    @k_item.kanji.meanings.join(", ")
                </div>
-                @if let Some(ref kun_readings) = k_item.kanji.kunyomi {
+                @if !k_item.kanji.kunyomi.is_empty() {
                  <div class="d-flex flex-row wrap">
                     <div class="tags no-margin fat right-padding-10 noselect">@data.gettext("Kun"):</div>
-                      @for (pos, kun) in kun_readings.iter().enumerate() {
+                      @for (pos, kun) in k_item.kanji.kunyomi.iter().enumerate() {
                         @if pos > 0 {
                           <div class="tags no-margin fat right-padding-10">,</div>
                         }
@@ -71,10 +71,10 @@
                       }
                  </div>
                 }
-                @if let Some(ref on_readings) = k_item.kanji.onyomi {
+                @if !k_item.kanji.onyomi.is_empty() {
                  <div class="d-flex flex-row wrap">
                     <div class="tags no-margin fat right-padding-20 noselect">@data.gettext("On"):</div>
-                      @for (pos, on) in on_readings.iter().enumerate() {
+                      @for (pos, on) in k_item.kanji.onyomi.iter().enumerate() {
                         @if pos > 0 {
                           <div class="tags no-margin fat right-padding-10">,</div>
                         }
@@ -98,9 +98,9 @@
         </div>
         <!-- Alternative Readings Part -->
         <div>
-          @if let Some(ref natori) = k_item.kanji.natori {
+          @if !k_item.kanji.natori.is_empty() {
             <div class="notes d-flex flex-row wrap"><b class="right-padding-10">@data.gettext("Japanese names"):</b> 
-              @for (pos, n) in natori.iter().enumerate() {
+              @for (pos, n) in k_item.kanji.natori.iter().enumerate() {
                 @if pos > 0 {
                   <div class="tags no-margin slim right-padding-10">,</div>
                 }
@@ -108,9 +108,9 @@
               }
             </div>
           }
-          @if let Some(ref similar_kanji) = k_item.kanji.similar_kanji {
+          @if !k_item.kanji.similar_kanji.is_empty() {
             <div class="notes d-flex flex-row wrap"><b class="right-padding-10">@data.gettext("Similar Kanji"):</b> 
-              @for (pos, n) in similar_kanji.iter().enumerate() {
+              @for (pos, n) in k_item.kanji.similar_kanji.iter().enumerate() {
                 @if pos > 0 {
                   <div class="tags no-margin slim right-padding-10">,</div>
                 }
@@ -118,14 +118,14 @@
               }
             </div>
           }
-          @if let Some(ref chinese) = k_item.kanji.chinese {
-            <div class="notes"><b>@data.gettext("Chinese reading"):</b> @chinese.join(", ")</div>
+          @if !k_item.kanji.chinese.is_empty() {
+            <div class="notes"><b>@data.gettext("Chinese reading"):</b> @k_item.kanji.chinese.join(", ")</div>
           }
           @if let Some(ref korean) = k_item.get_korean() {
             <div class="notes"><b>@data.gettext("Korean reading"):</b>&nbsp;&nbsp; @korean.join(", ")</div>
           }
-          @if let Some(ref vietnamese) = k_item.kanji.vietnamese {
-            <div class="notes"><b>@data.gettext("Vietnamese reading"):</b>&nbsp;&nbsp; @vietnamese.join(", ")</div>
+          @if !k_item.kanji.vietnamese.is_empty() {
+            <div class="notes"><b>@data.gettext("Vietnamese reading"):</b>&nbsp;&nbsp; @k_item.kanji.vietnamese.join(", ")</div>
           }
         </div>
 

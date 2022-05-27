@@ -1,6 +1,6 @@
 use serde::Serialize;
 
-use crate::jotoba::kanji::DetailedRadical;
+use crate::jotoba::kanji::radical::DetailedRadical;
 
 /// Kanji API response. Contains all kanji
 #[derive(Clone, Debug, Serialize)]
@@ -107,16 +107,16 @@ impl From<crate::jotoba::kanji::Kanji> for Kanji {
             grade: k.grade,
             frequency: k.frequency,
             jlpt: k.jlpt,
-            onyomi: k.onyomi.unwrap_or_default(),
-            kunyomi: k.kunyomi.unwrap_or_default(),
-            variant: k.variant.unwrap_or_default(),
-            chinese: k.chinese.unwrap_or_default(),
-            korean_romaji: k.korean_r.unwrap_or_default(),
-            korean_hangul: k.korean_h.unwrap_or_default(),
-            natori: k.natori.unwrap_or_default(),
-            similar_kanji: k.similar_kanji.unwrap_or_default(),
+            onyomi: k.onyomi,
+            kunyomi: k.kunyomi,
+            variant: k.variant,
+            chinese: k.chinese,
+            korean_romaji: k.korean_r,
+            korean_hangul: k.korean_h,
+            natori: k.natori,
+            similar_kanji: k.similar_kanji,
             meanings: k.meanings,
-            parts: k.parts.unwrap_or_default(),
+            parts: k.parts,
             radical: k.radical,
             kun_compounds: vec![],
             on_compounds: vec![],

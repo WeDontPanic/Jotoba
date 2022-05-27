@@ -16,20 +16,20 @@ pub struct Kanji {
     frequency: Option<u16>,
     #[serde(skip_serializing_if = "Option::is_none")]
     jlpt: Option<u8>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    variant: Option<Vec<String>>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    onyomi: Option<Vec<String>>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    kunyomi: Option<Vec<String>>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    chinese: Option<Vec<String>>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    korean_r: Option<Vec<String>>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    korean_h: Option<Vec<String>>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    parts: Option<Vec<String>>,
+    #[serde(skip_serializing_if = "Vec::is_empty")]
+    variant: Vec<String>,
+    #[serde(skip_serializing_if = "Vec::is_empty")]
+    onyomi: Vec<String>,
+    #[serde(skip_serializing_if = "Vec::is_empty")]
+    kunyomi: Vec<String>,
+    #[serde(skip_serializing_if = "Vec::is_empty")]
+    chinese: Vec<String>,
+    #[serde(skip_serializing_if = "Vec::is_empty")]
+    korean_r: Vec<String>,
+    #[serde(skip_serializing_if = "Vec::is_empty")]
+    korean_h: Vec<String>,
+    #[serde(skip_serializing_if = "Vec::is_empty")]
+    parts: Vec<String>,
     radical: String,
     #[serde(skip_serializing_if = "Option::is_none")]
     stroke_frames: Option<String>,
@@ -55,10 +55,7 @@ impl From<&crate::jotoba::kanji::Kanji> for Kanji {
             chinese: kanji.chinese.clone(),
             korean_r: kanji.korean_r.clone(),
             korean_h: kanji.korean_h.clone(),
-            parts: kanji
-                .parts
-                .as_ref()
-                .map(|i| i.iter().map(|i| i.to_string()).collect()),
+            parts: kanji.parts.iter().map(|i| i.to_string()).collect(),
             radical: kanji.radical.literal.to_string(),
             stroke_frames: frames,
         }

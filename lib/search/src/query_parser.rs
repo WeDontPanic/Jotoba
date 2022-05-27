@@ -196,7 +196,7 @@ impl QueryParser {
     }
 
     /// Returns Some(KanjiReading) if the query is a kanji reading query
-    fn parse_kanji_reading(&self) -> Option<kanji::ReadingSearch> {
+    fn parse_kanji_reading(&self) -> Option<kanji::reading::ReadingSearch> {
         // Format of kanji query: '<Kanji> <reading>'
         if utils::real_string_len(&self.query) >= 3 && self.query.contains(' ') {
             let split: Vec<_> = self.query.split(' ').collect();
@@ -209,7 +209,7 @@ impl QueryParser {
                 && utils::real_string_len(kanji_literal) == 1
             {
                 // Kanji detected
-                return Some(kanji::ReadingSearch {
+                return Some(kanji::reading::ReadingSearch {
                     literal: split[0].chars().next().unwrap(),
                     reading: split[1].to_string(),
                 });
