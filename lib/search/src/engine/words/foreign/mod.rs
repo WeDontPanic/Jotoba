@@ -3,7 +3,7 @@ pub mod index;
 pub mod output;
 
 use crate::engine::{metadata::Metadata, Indexable, SearchEngine, SearchTask};
-use resources::models::storage::ResourceStorage;
+use resources::storage::ResourceStorage;
 use types::jotoba::languages::Language;
 use utils::to_option;
 use vector_space_model2::{build::weights::TFIDF, Vector};

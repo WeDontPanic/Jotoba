@@ -7,7 +7,8 @@ use super::{
 use error::Error;
 use itertools::Itertools;
 use priority_container::unique::UniquePrioContainerMax;
-use resources::models::storage::ResourceStorage;
+//use resources::models::storage::ResourceStorage;
+use resources::storage::ResourceStorage;
 use std::marker::PhantomData;
 use types::jotoba::languages::Language;
 use vector_space_model2::{DocumentVector, Vector};

@@ -1,13 +1,15 @@
 pub mod models;
+pub mod storage;
 
 //#[cfg(feature = "news")]
 //pub mod news;
-use models::storage::ResourceStorage;
+//use models::storage::ResourceStorage;
 use once_cell::sync::OnceCell;
 use std::{error::Error, path::Path};
+use storage::ResourceStorage;
 
 /// Public storage of all resourcen in memory/swap
-static RESOURCES: OnceCell<ResourceStorage> = OnceCell::new();
+//static RESOURCES: OnceCell<ResourceStorage> = OnceCell::new();
 
 /// Initializes the memory storage
 pub fn initialize_resources<P: AsRef<Path>>(
@@ -16,6 +18,7 @@ pub fn initialize_resources<P: AsRef<Path>>(
     sentences_path: P,
     kreading_freq: P,
 ) -> Result<(), Box<dyn Error>> {
+    /*
     let storage =
         models::load_storage(dict_data_path, rad_map_path, sentences_path, kreading_freq)?;
 
@@ -23,6 +26,9 @@ pub fn initialize_resources<P: AsRef<Path>>(
         .set(storage)
         .ok()
         .expect("Storage already initialized");
+    */
+
+    storage::load("/home/jojii/programming/rust/joto_tool/update/output/resources").unwrap();
 
     Ok(())
 }
@@ -33,9 +39,10 @@ pub fn get() -> &'static ResourceStorage {
     // Safety:
     // The RESOURCE cell gets initialized once at the beginning which is absolutely necessary for
     // the program to work. It can't and won't get changed later on since its private.
-    unsafe { RESOURCES.get_unchecked() }
+    //unsafe { RESOURCES.get_unchecked() }
+    storage::get()
 }
 
 pub fn set(res_storage: ResourceStorage) {
-    RESOURCES.set(res_storage).ok();
+    //RESOURCES.set(res_storage).ok();
 }

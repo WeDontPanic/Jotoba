@@ -3,7 +3,7 @@ pub mod regex;
 pub mod regex_index;
 
 use crate::engine::{Indexable, SearchEngine};
-use resources::models::storage::ResourceStorage;
+use resources::storage::ResourceStorage;
 use types::jotoba::languages::Language;
 use types::jotoba::words::Word;
 use vector_space_model2::{DefaultMetadata, Vector};

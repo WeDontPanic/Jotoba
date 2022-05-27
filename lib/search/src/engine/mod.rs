@@ -14,7 +14,7 @@ use std::hash::Hash;
 
 use config::Config;
 
-use resources::models::storage::ResourceStorage;
+use resources::storage::ResourceStorage;
 pub use search_task::SearchTask;
 use types::jotoba::languages::Language;
 use vector_space_model2::{metadata::Metadata, traits::Decodable, Index, Vector};

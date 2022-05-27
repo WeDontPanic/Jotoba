@@ -1,7 +1,7 @@
 pub mod index;
 
 use crate::engine::{document::SentenceDocument, metadata::Metadata, Indexable, SearchEngine};
-use resources::models::storage::ResourceStorage;
+use resources::storage::ResourceStorage;
 use types::jotoba::{languages::Language, sentences::Sentence};
 use vector_space_model2::Vector;
 

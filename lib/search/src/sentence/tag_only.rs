@@ -23,10 +23,10 @@ pub(super) fn search(query: &Query) -> Result<SentenceResult, Error> {
 fn jlpt_search(query: &Query, jlpt: u8) -> Result<SentenceResult, Error> {
     assert!(jlpt > 0 && jlpt < 6);
 
-    let resources = resources::get();
+    let resources = resources::get().sentences();
 
     let senences = resources
-        .sentence_jlpt(jlpt)
+        .by_jlpt(jlpt)
         .filter(|sentence| {
             sentence.has_translation(query.settings.user_lang)
                 && (sentence.has_translation(Language::English) && query.settings.show_english)
