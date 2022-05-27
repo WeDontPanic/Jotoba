@@ -15,8 +15,10 @@ pub struct WordStorage {
     pub jlpt_word_map: HashMap<u8, Vec<u32>>,
     pub irregular_ichidan: Vec<u32>,
 
+    // Feature information
     has_accents: bool,
     has_sentence_mapping: bool,
+    has_jlpt: bool,
 }
 
 impl WordStorage {
@@ -40,6 +42,7 @@ impl WordStorage {
                     .entry(jlpt)
                     .or_default()
                     .push(word.sequence);
+                self.has_jlpt = true;
             }
 
             if !self.has_accents && word.accents.count() > 0 {
@@ -75,6 +78,10 @@ impl WordStorage {
 
         if self.has_accents {
             out.push(Feature::WordPitch);
+        }
+
+        if self.has_jlpt {
+            out.push(Feature::WordJlpt);
         }
 
         out

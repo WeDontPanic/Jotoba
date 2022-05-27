@@ -23,6 +23,7 @@ pub enum Feature {
     WordIrregularIchidan,
     WordPitch,
     SentenceAvailable,
+    WordJlpt,
 
     // Kanji
     GenkiTags,

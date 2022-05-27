@@ -27,8 +27,6 @@ pub struct ServerConfig {
     pub audio_files: Option<String>,
     pub listen_address: String,
     pub storage_data: Option<String>,
-    pub radical_map: Option<String>,
-    pub sentences: Option<String>,
     pub img_upload_dir: Option<String>,
     pub tess_data: Option<String>,
     pub news_folder: Option<String>,
@@ -40,7 +38,7 @@ pub struct SentryConfig {
     pub dsn: String,
 }
 
-#[derive(Serialize, Deserialize, Clone, Debug)]
+#[derive(Serialize, Deserialize, Clone, Debug, Default)]
 pub struct SearchConfig {
     pub suggestion_timeout: Option<u64>,
     pub suggestion_sources: Option<String>,
@@ -107,30 +105,12 @@ impl Config {
             .unwrap_or_else(|| ServerConfig::default().storage_data.unwrap())
     }
 
-    /// Returns the configured (or default) path for the sentences resource file
-    pub fn get_sentences_path(&self) -> String {
-        self.server
-            .sentences
-            .as_ref()
-            .cloned()
-            .unwrap_or_else(|| ServerConfig::default().sentences.unwrap())
-    }
-
     pub fn get_kreading_freq_path(&self) -> String {
         Path::new(self.get_indexes_source())
             .join("kreading_freq_index")
             .to_str()
             .unwrap()
             .to_string()
-    }
-
-    /// Returns the configured (or default) path for the radical map
-    pub fn get_radical_map_path(&self) -> String {
-        self.server
-            .radical_map
-            .as_ref()
-            .cloned()
-            .unwrap_or_else(|| ServerConfig::default().radical_map.unwrap())
     }
 
     /// Returns the configured (or default) path for the radical map
@@ -155,9 +135,7 @@ impl Default for ServerConfig {
             html_files: Some(String::from("html/assets")),
             audio_files: Some(String::from("html/audio")),
             listen_address: String::from("127.0.0.1:8080"),
-            sentences: Some(String::from("./resources/sentences.bin")),
             storage_data: Some(String::from("./resources/storage_data")),
-            radical_map: Some(String::from("./resources/radical_map")),
             img_upload_dir: Some(String::from("./img_scan_tmp")),
             tess_data: None,
             news_folder: Some(String::from("./news")),
