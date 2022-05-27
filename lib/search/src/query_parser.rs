@@ -47,7 +47,7 @@ impl QueryParser {
         let mut parsed_query: String = Self::format_query(parsed_query, trim)
             .chars()
             .into_iter()
-            .take(200)
+            .take(400)
             .collect();
 
         // Pages start at 1. First offset has to be 0

@@ -288,9 +288,9 @@ impl Tag {
     }
 
     #[inline]
-    pub fn as_jlpt(&self) -> Option<&u8> {
+    pub fn as_jlpt(&self) -> Option<u8> {
         if let Self::Jlpt(v) = self {
-            Some(v)
+            Some(*v)
         } else {
             None
         }
@@ -303,9 +303,9 @@ impl Tag {
         matches!(self, Self::GenkiLesson(..))
     }
 
-    pub fn as_genki_lesson(&self) -> Option<&u8> {
+    pub fn as_genki_lesson(&self) -> Option<u8> {
         if let Self::GenkiLesson(v) = self {
-            Some(v)
+            Some(*v)
         } else {
             None
         }
@@ -359,6 +359,12 @@ impl Query {
     #[inline]
     pub fn has_tag(&self, tag: Tag) -> bool {
         self.tags.iter().any(|i| *i == tag)
+    }
+
+    /// Adds `n` pages to the query
+    pub fn add_page(&mut self, n: usize) {
+        self.page = (self.page + n).min(100);
+        self.page_offset += (self.settings.page_size as usize) * n;
     }
 
     /// Returns the original_query with search type tags omitted

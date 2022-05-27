@@ -17,6 +17,7 @@ pub struct Pagination {
 }
 
 impl Pagination {
+    #[inline]
     pub fn new(curr_page: u32, items: u32, items_per_page: u32, max_pages: u32) -> Self {
         Self {
             curr_page,
@@ -26,6 +27,7 @@ impl Pagination {
         }
     }
 
+    #[inline]
     pub fn new_page<T: Serialize + Clone>(
         v: T,
         curr_page: u32,
