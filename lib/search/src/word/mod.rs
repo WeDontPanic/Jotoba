@@ -113,12 +113,13 @@ impl<'a> Search<'a> {
     fn parse_sentence<'b>(
         &'b self,
         query_str: &'a str,
+        allow_sentence: bool,
     ) -> (
         String,
         Option<sentence_reader::Sentence>,
         Option<sentence_reader::Part>,
     ) {
-        if !self.query.parse_japanese {
+        if !self.query.parse_japanese || !allow_sentence {
             return (query_str.to_owned(), None, None);
         }
 
@@ -174,6 +175,7 @@ impl<'a> Search<'a> {
     fn native_search(
         &self,
         query_str: &str,
+        allow_sentence: bool,
     ) -> Result<
         (
             SearchResult<&'static Word>,
@@ -200,7 +202,7 @@ impl<'a> Search<'a> {
             }
         }
 
-        let (query, mut sentence, word_info) = self.parse_sentence(query_str);
+        let (query, mut sentence, word_info) = self.parse_sentence(query_str, allow_sentence);
 
         let original_query = if sentence.is_some() {
             word_info.as_ref().unwrap().get_inflected().clone()
@@ -244,7 +246,7 @@ impl<'a> Search<'a> {
 
     /// Perform a native word search
     fn native_results(&self, query_str: &str) -> Result<ResultData, Error> {
-        let (res, infl_info, sentence, searched_query) = match self.native_search(query_str) {
+        let (res, infl_info, sentence, searched_query) = match self.native_search(query_str, true) {
             Ok(v) => v,
             Err(err) => match err {
                 Error::NotFound => return Ok(ResultData::default()),
@@ -347,7 +349,7 @@ impl<'a> Search<'a> {
             .has_term()
         {
             let hg_query = utils::format_romaji_nn(&self.query.query).to_hiragana();
-            let hg_search = self.native_search(&hg_query);
+            let hg_search = self.native_search(&hg_query, false);
             if let Ok((native_res, inflection_info, sent, sq)) = hg_search {
                 infl_info = inflection_info;
                 sentence = sent;
@@ -522,7 +524,7 @@ pub fn guess_result(query: &Query) -> Option<Guess> {
 }
 
 fn guess_native(search: Search) -> Option<Guess> {
-    let (query, sentence, _) = search.parse_sentence(&search.query.query);
+    let (query, sentence, _) = search.parse_sentence(&search.query.query, false);
     search
         .native_search_task(&query, &search.query.query, sentence.is_some())
         .estimate_result_count()
