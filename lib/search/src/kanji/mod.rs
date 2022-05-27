@@ -109,7 +109,7 @@ fn all_kanji_from_text(text: &str) -> Vec<Kanji> {
 fn by_korean_reading(query: &str) -> Vec<Kanji> {
     let kanji = resources::get().kanji();
     let res = kanji
-        .all()
+        .iter()
         .filter(|k| {
             let korean = &k.korean_h;
             if korean.is_none() {

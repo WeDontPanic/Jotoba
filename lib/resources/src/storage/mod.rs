@@ -1,64 +1,110 @@
-pub mod retrieve;
-pub mod storage;
+pub mod feature;
+pub mod kanji;
+pub mod name;
+pub mod sentence;
+pub mod word;
 
-pub use storage::ResourceStorage;
-
-use once_cell::sync::OnceCell;
-use std::{
-    error::Error,
-    fs::File,
-    io::{BufReader, Write},
-    path::Path,
+use super::retrieve::{
+    kanji::KanjiRetrieve, name::NameRetrieve, sentence::SentenceRetrieve, word::WordRetrieve,
 };
-use storage::feature::Feature;
 
-/// List of features that are required for Jotoba to run properly
-pub const REQUIRED_FEATURES: &[Feature] = &[
-    Feature::Words,
-    Feature::Sentences,
-    Feature::Names,
-    Feature::Kanji,
-    Feature::RadicalKanjiMap,
-    Feature::RadicalData,
-];
+use self::{
+    feature::Feature, kanji::KanjiStorage, name::NameStorage, sentence::SentenceStorage,
+    word::WordStorage,
+};
+use serde::{Deserialize, Serialize};
+use strum::IntoEnumIterator;
 
-/// InMemory storage for all data
-static STORAGE: OnceCell<ResourceStorage> = OnceCell::new();
-
-/// Get loaded storage data
-#[inline(always)]
-pub fn get() -> &'static ResourceStorage {
-    // Safety:
-    // The STORAGE cell gets initialized once at the beginning which is absolutely necessary for
-    // the program to work. It won't be unset so its always safe
-    unsafe { STORAGE.get_unchecked() }
+/// Storage holding all data of Jotoba
+#[derive(Serialize, Deserialize, Default, Clone)]
+pub struct ResourceStorage {
+    pub words: WordStorage,
+    pub kanji: KanjiStorage,
+    pub names: NameStorage,
+    pub sentences: SentenceStorage,
 }
 
-/// Returns `true` if the storage is loaded
-#[inline(always)]
-pub fn is_loaded() -> bool {
-    STORAGE.get().is_some()
+impl ResourceStorage {
+    /// Create a new empty `ResourceStorage`
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Returns `true` if all necessary features are present
+    pub fn check(&self) -> bool {
+        self.missing_but_required().is_empty()
+    }
+
+    pub fn missing_but_required(&self) -> Vec<Feature> {
+        let missing = self.missing_features();
+        let mut out = vec![];
+
+        for req_feature in super::REQUIRED_FEATURES {
+            if missing.contains(req_feature) {
+                out.push(*req_feature);
+            }
+        }
+
+        out
+    }
+
+    /// Returns a list of features that are missing but required
+    pub fn missing_features(&self) -> Vec<Feature> {
+        let features = self.get_features();
+
+        let mut missing = vec![];
+
+        for feature in Feature::iter() {
+            if !features.contains(&feature) {
+                missing.push(feature);
+            }
+        }
+
+        missing
+    }
+
+    /// Returns `true` if ResourceStorage has the given feature
+    #[inline]
+    pub fn has_feature(&self, feature: Feature) -> bool {
+        self.get_features().contains(&feature)
+    }
+
+    /// Returns a list of all features of the ResourceStorage's data
+    pub fn get_features(&self) -> Vec<Feature> {
+        let mut out = vec![];
+        out.extend(self.words.get_features());
+        out.extend(self.kanji.get_features());
+        out.extend(self.names.get_features());
+        out.extend(self.sentences.get_features());
+        out
+    }
 }
 
-/// Load the resource storage and returns it
-pub fn load_raw<P: AsRef<Path>>(path: P) -> Result<ResourceStorage, Box<dyn Error>> {
-    let mut reader = BufReader::new(File::open(path)?);
-    Ok(bincode::deserialize_from(&mut reader)?)
-}
+// Retrieve functions
+// `ResourceStorage::check` is supposed to be called at the begininng to ensure
+// those fields are not unset
+impl ResourceStorage {
+    /// Get a reference to the resource storage's words.
+    #[inline(always)]
+    pub fn words<'a>(&'a self) -> WordRetrieve<'a> {
+        WordRetrieve::new(&self.words)
+    }
 
-/// Load the resource storage from a file. Returns `true` if it wasn't loaded before
-pub fn load<P: AsRef<Path>>(path: P) -> Result<bool, Box<dyn Error>> {
-    let mut reader = BufReader::new(File::open(path)?);
-    let storage: ResourceStorage = bincode::deserialize_from(&mut reader)?;
-    Ok(STORAGE.set(storage).is_ok())
-}
+    /// Get a reference to the resource storage's kanji.
+    #[inline(always)]
+    pub fn kanji(&self) -> KanjiRetrieve {
+        KanjiRetrieve::new(&self.kanji)
+    }
 
-/// Serializes a ResourceStorage into `output`
-pub fn store<W: Write>(output: W, storage: &ResourceStorage) -> Result<(), Box<dyn Error>> {
-    bincode::serialize_into(output, storage)?;
-    Ok(())
-}
+    /// Get a reference to the resource storage's names.
+    #[inline(always)]
+    pub fn names(&self) -> NameRetrieve {
+        NameRetrieve::new(&self.names)
+    }
 
-pub fn set(res_storage: ResourceStorage) {
-    STORAGE.set(res_storage).ok();
+    /// Get a reference to the resource storage's sentences.
+    #[inline(always)]
+    pub fn sentences(&self) -> SentenceRetrieve {
+        SentenceRetrieve::new(&self.sentences)
+    }
 }

@@ -1,4 +1,6 @@
-#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+use strum::{EnumIter, IntoEnumIterator};
+
+#[derive(Clone, Copy, PartialEq, Eq, Debug, EnumIter)]
 pub enum Feature {
     // ----- Basic ones -----
     Words,
@@ -20,7 +22,14 @@ pub enum Feature {
     // Words
     WordIrregularIchidan,
     WordPitch,
+    SentenceAvailable,
 
     // Kanji
     GenkiTags,
+}
+
+impl Feature {
+    pub fn all() -> Vec<Feature> {
+        Feature::iter().collect()
+    }
 }

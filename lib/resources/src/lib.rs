@@ -1,48 +1,66 @@
-pub mod models;
+pub mod retrieve;
 pub mod storage;
 
-//#[cfg(feature = "news")]
-//pub mod news;
-//use models::storage::ResourceStorage;
+pub use storage::{feature::Feature, ResourceStorage};
+
 use once_cell::sync::OnceCell;
-use std::{error::Error, path::Path};
-use storage::ResourceStorage;
+use std::{
+    error::Error,
+    fs::File,
+    io::{BufReader, Write},
+    path::Path,
+};
 
-/// Public storage of all resourcen in memory/swap
-//static RESOURCES: OnceCell<ResourceStorage> = OnceCell::new();
+/// Static git hash of current build
+pub const GIT_HASH: &str = env!("GIT_HASH");
 
-/// Initializes the memory storage
-pub fn initialize_resources<P: AsRef<Path>>(
-    dict_data_path: P,
-    rad_map_path: P,
-    sentences_path: P,
-    kreading_freq: P,
-) -> Result<(), Box<dyn Error>> {
-    /*
-    let storage =
-        models::load_storage(dict_data_path, rad_map_path, sentences_path, kreading_freq)?;
+/// List of features that are required for Jotoba to run properly
+pub const REQUIRED_FEATURES: &[Feature] = &[
+    Feature::Words,
+    Feature::Sentences,
+    Feature::Names,
+    Feature::Kanji,
+    Feature::RadicalKanjiMap,
+    Feature::RadicalData,
+];
 
-    RESOURCES
-        .set(storage)
-        .ok()
-        .expect("Storage already initialized");
-    */
+/// InMemory storage for all data
+static STORAGE: OnceCell<ResourceStorage> = OnceCell::new();
 
-    storage::load("/home/jojii/programming/rust/joto_tool/update/output/resources").unwrap();
+/// Get loaded storage data
+#[inline(always)]
+pub fn get() -> &'static ResourceStorage {
+    // Safety:
+    // The STORAGE cell gets initialized once at the beginning which is absolutely necessary for
+    // the program to work. It won't be unset so its always safe
+    unsafe { STORAGE.get_unchecked() }
+}
 
+/// Returns `true` if the storage is loaded
+#[inline(always)]
+pub fn is_loaded() -> bool {
+    STORAGE.get().is_some()
+}
+
+/// Load the resource storage and returns it
+pub fn load_raw<P: AsRef<Path>>(path: P) -> Result<ResourceStorage, Box<dyn Error>> {
+    let mut reader = BufReader::new(File::open(path)?);
+    Ok(bincode::deserialize_from(&mut reader)?)
+}
+
+/// Load the resource storage from a file. Returns `true` if it wasn't loaded before
+pub fn load<P: AsRef<Path>>(path: P) -> Result<bool, Box<dyn Error>> {
+    let mut reader = BufReader::new(File::open(path)?);
+    let storage: ResourceStorage = bincode::deserialize_from(&mut reader)?;
+    Ok(STORAGE.set(storage).is_ok())
+}
+
+/// Serializes a ResourceStorage into `output`
+pub fn store<W: Write>(output: W, storage: &ResourceStorage) -> Result<(), Box<dyn Error>> {
+    bincode::serialize_into(output, storage)?;
     Ok(())
 }
 
-/// Returns the `ResourceStorage`
-#[inline]
-pub fn get() -> &'static ResourceStorage {
-    // Safety:
-    // The RESOURCE cell gets initialized once at the beginning which is absolutely necessary for
-    // the program to work. It can't and won't get changed later on since its private.
-    //unsafe { RESOURCES.get_unchecked() }
-    storage::get()
-}
-
 pub fn set(res_storage: ResourceStorage) {
-    //RESOURCES.set(res_storage).ok();
+    STORAGE.set(res_storage).ok();
 }

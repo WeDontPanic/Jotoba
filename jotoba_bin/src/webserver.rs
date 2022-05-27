@@ -44,7 +44,13 @@ pub(super) async fn start(options: Options) -> std::io::Result<()> {
 
     let address = config.server.listen_address.clone();
 
+    if !check_resources() {
+        log::error!("Not all required data found! Exiting");
+        return Ok(());
+    }
+
     debug!("Resource loading took {:?}", start.elapsed());
+    debug_info();
 
     HttpServer::new(move || {
         let app = App::new()
@@ -236,7 +242,7 @@ fn prepare_data(ccf: &Config) {
         let cf = ccf.clone();
         s.spawn(move |_| {
             log::debug!("Loading Resources");
-            load_resources(&cf);
+            load_resources(&cf.get_storage_data_path());
         });
 
         let cf = ccf.clone();
@@ -295,14 +301,28 @@ fn clean_img_scan_dir(config: &Config) {
     std::fs::remove_dir_all(&path).expect("Failed to clear img scan director");
 }
 
-pub fn load_resources(config: &Config) {
-    resources::initialize_resources(
-        config.get_storage_data_path().as_str(),
-        config.get_radical_map_path().as_str(),
-        config.get_sentences_path().as_str(),
-        config.get_kreading_freq_path().as_str(),
-    )
-    .expect("Failed to load resources");
+fn check_resources() -> bool {
+    let res = resources::get();
+    if res.check() {
+        return true;
+    }
+
+    log::error!(
+        "Missing required features: {:?}",
+        res.missing_but_required()
+    );
+
+    false
+}
+
+fn debug_info() {
+    log::debug!("All features: {:?}", resources::Feature::all());
+    log::debug!("Supported: {:?}", resources::get().get_features());
+    log::debug!("Not supported: {:?}", resources::get().missing_features());
+}
+
+pub fn load_resources(src: &str) {
+    resources::load(src).expect("Failed to load resource storage");
 }
 
 fn load_suggestions(config: &Config) {

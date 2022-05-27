@@ -14,6 +14,9 @@ pub struct WordStorage {
     // Search tags
     pub jlpt_word_map: HashMap<u8, Vec<u32>>,
     pub irregular_ichidan: Vec<u32>,
+
+    has_accents: bool,
+    has_sentence_mapping: bool,
 }
 
 impl WordStorage {
@@ -29,8 +32,7 @@ impl WordStorage {
 
     /// Inserts words into the WordStorage
     pub fn insert_words(&mut self, words: Vec<Word>) {
-        self.words.clear();
-        self.jlpt_word_map.clear();
+        self.clear();
 
         for word in words {
             if let Some(jlpt) = word.jlpt_lvl {
@@ -38,6 +40,14 @@ impl WordStorage {
                     .entry(jlpt)
                     .or_default()
                     .push(word.sequence);
+            }
+
+            if !self.has_accents && word.accents.count() > 0 {
+                self.has_accents = true;
+            }
+
+            if !self.has_sentence_mapping && word.sentences_available > 0 {
+                self.has_sentence_mapping = true;
             }
 
             self.words.insert(word.sequence as u64, word);
@@ -59,10 +69,21 @@ impl WordStorage {
             out.push(Feature::WordIrregularIchidan);
         }
 
-        if self.words.iter().any(|i| i.1.accents.count() > 0) {
+        if self.has_sentence_mapping {
+            out.push(Feature::SentenceAvailable);
+        }
+
+        if self.has_accents {
             out.push(Feature::WordPitch);
         }
 
         out
+    }
+
+    fn clear(&mut self) {
+        self.words.clear();
+        self.jlpt_word_map.clear();
+        self.has_accents = false;
+        self.has_sentence_mapping = false;
     }
 }

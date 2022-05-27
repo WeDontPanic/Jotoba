@@ -207,6 +207,7 @@ mod test {
             ..ServerConfig::default()
         };
 
+        /*
         resources::initialize_resources(
             config.get_storage_data_path().as_str(),
             config.get_radical_map_path().as_str(),
@@ -214,6 +215,7 @@ mod test {
             config.get_kreading_freq_path().as_str(),
         )
         .expect("Failed to load resources");
+        */
 
         index::load("../../indexes").unwrap();
     }

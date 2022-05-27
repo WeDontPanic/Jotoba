@@ -1,6 +1,6 @@
 use types::jotoba::words::Word;
 
-use crate::storage::word::WordStorage;
+use super::super::storage::word::WordStorage;
 
 #[derive(Clone, Copy)]
 pub struct WordRetrieve<'a> {
@@ -36,5 +36,21 @@ impl<'a> WordRetrieve<'a> {
     #[inline]
     pub fn iter(&self) -> impl Iterator<Item = &'a Word> {
         self.storage.words.iter().map(|i| i.1)
+    }
+
+    /// Returns an iterator over all words with given `jlpt` level
+    #[inline]
+    pub fn by_jlpt(&self, jlpt: u8) -> impl Iterator<Item = &'_ Word> {
+        self.storage
+            .jlpt_word_map
+            .get(&jlpt)
+            .into_iter()
+            .flatten()
+            .filter_map(move |i| self.by_sequence(*i))
+    }
+
+    #[inline]
+    pub fn word_count(&self) -> usize {
+        self.storage.word_count()
     }
 }
