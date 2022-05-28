@@ -239,13 +239,25 @@ pub fn char_eq_str(c: char, s: &str) -> bool {
     is && chars.next().is_none()
 }
 
-/// Makes the first character to uppercase and returns a newly owned string
-pub fn first_letter_upper(s: &str) -> String {
-    let mut c = s.chars();
-    match c.next() {
-        None => String::new(),
-        Some(f) => f.to_uppercase().chain(c).collect(),
+sabi::sabi! {
+    /// Makes the first character to uppercase and returns a newly owned string
+    公開 関数 first_letter_upper(s: &str) -> 文字列{
+        束縛 可変 c = s.chars();
+        マッチ c.next(){
+            ない => 文字列::新(),
+            ある(f) => f.to_uppercase().chain(c).collect(),
+        }
     }
+
+    /*
+    pub fn first_letter_upper(s: &str) -> String {
+        let mut c = s.chars();
+        match c.next() {
+            None => String::new(),
+            Some(f) => f.to_uppercase().chain(c).collect(),
+        }
+    }
+    */
 }
 
 /// Returns a random alpha numeric string with the length of [`len`]
