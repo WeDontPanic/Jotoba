@@ -7,6 +7,8 @@ use itertools::Itertools;
 use std::iter;
 use utils;
 
+pub use romaji;
+
 const RADICALS: &[char] = &[
     '｜', 'ノ', '⺅', 'ハ', '⺉', 'マ', 'ユ', '⻌', '⺌', 'ヨ', '⺖', '⺘', '⺡', '⺨', '⺾', '⻏',
     '⻖', '⺹', '⺣', '⺭', '⻂', '⺲',
@@ -342,6 +344,14 @@ impl JapaneseExt for str {
             None => false,
         }
     }
+}
+
+/// Returns `true` if `romaji` is a prefix of `hira` where romaji is romaji text and `hira` is text written in hiragana
+#[inline]
+pub fn romaji_prefix(romaji: &str, hira: &str) -> bool {
+    romaji::RomajiExt::to_romaji(hira)
+        .to_lowercase()
+        .starts_with(&romaji.to_lowercase())
 }
 
 #[derive(Clone, Copy, PartialEq, Eq)]

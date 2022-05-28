@@ -34,6 +34,8 @@ pub fn suggestions(query: &Query, query_str: &str) -> Option<Vec<WordPair>> {
 
     // Romaji result
     if let Some(hira_query) = try_romaji(query_str.trim()) {
+        println!("found hiragana: {hira_query}");
+
         if let Some(jp_engine) = storage::JP_WORD_INDEX.get() {
             let mut query = SuggestionQuery::new(jp_engine, hira_query);
             query.weights.total_weight = 0.5;
@@ -46,6 +48,15 @@ pub fn suggestions(query: &Query, query_str: &str) -> Option<Vec<WordPair>> {
             similar_terms.options.weights.total_weight = 0.4;
             similar_terms.options.threshold = 5;
             query.add_extension(similar_terms);
+
+            task.set_rel_mod(|i, rel| {
+                let out = i.to_output();
+                let kana = &out.primary;
+                if japanese::romaji_prefix(query_str.trim(), &kana) {
+                    return rel + 1000;
+                }
+                rel
+            });
 
             task.add_query(query);
         }
@@ -79,8 +90,12 @@ fn new_suggestion_query(query: &str, lang: Language) -> Option<SuggestionQuery> 
 
 /// Returns Some(String) if `query_str` could be (part of) romaji search input and None if not
 pub(crate) fn try_romaji(query_str: &str) -> Option<String> {
-    let query_str = query_str.replace("-", "ー");
+    let mut query_str = query_str.replace("-", "ー");
+    if query_str.ends_with("m") {
+        query_str.pop();
+    }
     let query_str = &query_str;
+
     let str_len = real_string_len(query_str);
     if str_len < 3 || query_str.contains(' ') {
         return None;
@@ -90,13 +105,13 @@ pub(crate) fn try_romaji(query_str: &str) -> Option<String> {
         return Some(v.to_hiragana());
     }
 
-    if str_len < 4 {
+    if str_len < 3 {
         return None;
     }
 
     // 'n' is the only hiragana with with=1 in romaji so allow them
     // to be treated properly too
-    let min_len = 4 - query_str.chars().filter(|i| *i == 'n').count();
+    let min_len = 3 - query_str.chars().filter(|i| *i == 'n').count();
 
     // Strip one to avoid switching between romaji/normal results
     if str_len > min_len {

@@ -351,7 +351,7 @@ checksum = "d468802bab17cbc0cc575e9b053f41e72aa36bfa6b7f55e3529ffa43161b97fa"
 [[package]]
 name = "autocompletion"
 version = "0.1.0"
-source = "git+https://github.com/WeDontPanic/AutoCompletionFramework#e6f520da71349e92560edc3745862a02b8e77aed"
+source = "git+https://github.com/WeDontPanic/AutoCompletionFramework#36df6f1828f39786d4afd8000ea6fd1d196f93d7"
 dependencies = [
  "bincode",
  "eudex 0.1.1 (git+https://github.com/WeDontPanic/eudex)",
