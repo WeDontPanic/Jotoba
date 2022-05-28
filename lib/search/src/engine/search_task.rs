@@ -194,23 +194,21 @@ where
 
     /// Runs the search task and returns the result.
     pub fn find(&self) -> Result<SearchResult<T::Output>, Error> {
-        // Load some more (limit * 2) in case there are items with the same relevance
-        let mut pqueue = UniquePrioContainerMax::new((self.limit * 2) + self.offset);
+        let mut pqueue = UniquePrioContainerMax::new(10000);
 
         for (q_str, vec, lang) in self.get_queries() {
             self.find_by_vec2(vec, &q_str, lang, &mut pqueue)?;
         }
 
-        let total_count = pqueue.total_pushed();
+        let total_count = pqueue.len();
 
-        let to_skip = total_count
-            .saturating_sub(self.limit + self.offset)
-            .min(self.limit);
+        let take = (total_count.saturating_sub(self.offset)).min(self.limit);
+        let to_skip = total_count.saturating_sub(self.offset + take);
 
         let mut o: Vec<_> = pqueue
             .into_iter()
             .skip(to_skip)
-            .take(self.limit)
+            .take(take)
             .map(|i| i.0)
             .collect();
 
