@@ -338,6 +338,7 @@ fn find_reading(
                 user_lang,
                 expected_lang,
             );
+
             if res.is_some() {
                 return res;
             }

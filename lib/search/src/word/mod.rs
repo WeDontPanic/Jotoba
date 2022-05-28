@@ -42,10 +42,7 @@ pub struct Search<'a> {
 /// Search among all data based on the input query
 #[inline]
 pub fn search(query: &Query) -> Result<WordResult, Error> {
-    //let start = std::time::Instant::now();
-    let res = Search { query }.do_search();
-    //println!("Search took {:?}", start.elapsed());
-    res
+    Search { query }.do_search()
 }
 
 #[derive(Default)]
@@ -369,12 +366,6 @@ impl<'a> Search<'a> {
         if res.len() == 0 {
             return self.check_other_lang();
         }
-
-        /*
-        for i in res.iter() {
-            println!("{:?}: {}", i.item.word.get_reading().reading, i.relevance);
-        }
-            */
 
         let mut wordresults = res.into_iter().map(|i| i.word.clone()).collect::<Vec<_>>();
 

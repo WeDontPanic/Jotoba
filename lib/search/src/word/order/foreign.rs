@@ -58,26 +58,21 @@ impl ForeignOrder {
         query_lang: Language,
         user_lang: Language,
     ) -> usize {
-        let text_score = (relevance as f64 * 1000.0) as usize;
-
-        let word = word_output.word;
-
         let query_str = query_str.trim().to_lowercase();
 
-        //return super::foreign_search_fall_back(word, relevance, &query_str, query_lang, user_lang);
+        let text_score = (relevance as f64 * 1000.0) as usize;
+        let word = word_output.word;
 
         let gloss_relevance = word_output
             .position_iter()
             .filter_map(|(s_id, _, sg_id)| {
                 let sense = word.sense_by_id(s_id).expect("Failed to get sense");
-                //let gloss = sense.gloss_by_id(g_id).expect("Failed to get gloss");
                 Some((sense, sg_id))
             })
             .filter_map(|(sense, sg_id)| {
                 self.gloss_relevance(&query_str, word.sequence, sense, sg_id)
             })
             .map(|i| i + 1000)
-            //.inspect(|i| println!("{:?}: {}", word.get_reading().reading, i))
             .max()
             .unwrap_or_else(|| {
                 super::foreign_search_fall_back(word, relevance, &query_str, query_lang, user_lang)
@@ -103,12 +98,13 @@ fn make_search_vec(indexer: &TermIndexer, query: &str) -> Option<Vector> {
 
 #[inline]
 fn overlapping_vals(src_vec: &Vector, query: &Vector) -> f32 {
-    let overlapping = src_vec.overlapping(query).map(|i| i.1).collect::<Vec<_>>();
+    let mut sum = 0.0;
+    let mut overlapping_count = 0;
 
-    let sum: f32 = overlapping.iter().sum();
+    for i in src_vec.overlapping(query) {
+        sum += i.1;
+        overlapping_count += 1;
+    }
 
-    let div = src_vec.sparse_vec().len().max(query.sparse_vec().len());
-    let overlapping_relevance = overlapping.len() as f32 / div as f32;
-
-    overlapping_relevance * 20.0 * sum
+    (overlapping_count as f32 * 40.0) + sum
 }

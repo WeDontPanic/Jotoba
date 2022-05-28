@@ -188,7 +188,6 @@ impl<'a> BaseData<'a> {
             _ => None,
         }
         .unwrap_or_default();
-        println!("query_str: {}", query);
         query
     }
 

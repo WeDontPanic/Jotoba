@@ -1,27 +1,20 @@
-use std::{
-    sync::Arc,
-    time::{Duration, SystemTime},
-};
-
 use super::user_settings;
-
-use actix_web::{rt::time::timeout, web, HttpRequest, HttpResponse};
-use localization::TranslationDict;
-use percent_encoding::percent_decode;
-use types::jotoba::search::QueryType;
-
+use super::web_error;
 use crate::{
     templates,
     url_query::{NoJSQueryStruct, QueryStruct},
     BaseData, ResultData, SearchHelp,
 };
+use actix_web::{web, HttpRequest, HttpResponse};
 use config::Config;
+use localization::TranslationDict;
+use percent_encoding::percent_decode;
 use search::{
     self,
     query::{Query, UserSettings},
 };
-
-use super::web_error;
+use std::{sync::Arc, time::Instant};
+use types::jotoba::search::QueryType;
 
 /// Endpoint to perform a search
 pub async fn search_ep_no_js(
@@ -65,29 +58,17 @@ async fn search(
         None => return Ok(redirect_home()),
     };
 
-    let start = SystemTime::now();
-
-    // Perform the requested type of search and return base-data to display
-    let search_duration = start.elapsed();
-
-    let search_timeout = config.get_search_timeout();
+    let start = Instant::now();
 
     // Log search duration if too long and available
-    let search_result = timeout(
-        search_timeout,
-        do_search(query.type_, &locale_dict, settings, &query, &config),
-    )
-    .await
-    .map_err(|_| {
-        report_timeout(&request, &query);
-        web_error::Error::SearchTimeout
-    })??;
+    let search_result = do_search(query.type_, &locale_dict, settings, &query, &config).await?;
 
-    if let Ok(search_duration) = search_duration {
-        if search_duration > config.get_query_report_timeout() {
-            log_duration(query.type_, search_duration);
-        }
-    }
+    log::debug!(
+        "{:?} search for {:?} took {:?}",
+        query.type_,
+        query.query,
+        start.elapsed()
+    );
 
     Ok(HttpResponse::Ok().body(render!(templates::base, search_result).render()))
 }
@@ -180,11 +161,10 @@ fn build_search_help(querytype: QueryType, query: &Query) -> Option<SearchHelp> 
     (!help.is_empty()).then(|| help)
 }
 
-/// Reports a search timeout to sentry
-#[cfg(not(feature = "sentry_error"))]
-fn report_timeout(_request: &HttpRequest, query: &Query) {
-    let msg = format!("{:?}-search \"{}\" timed out", query.type_, query.query);
-    log::error!("{}", msg);
+pub(crate) fn redirect_home() -> HttpResponse {
+    HttpResponse::MovedPermanently()
+        .append_header(("Location", "/"))
+        .finish()
 }
 
 /// Reports a search timeout to sentry
@@ -224,18 +204,6 @@ fn sentry_request_from_http(request: &HttpRequest) -> sentry::protocol::Request 
     };
 
     sentry_req
-}
-
-pub(crate) fn redirect_home() -> HttpResponse {
-    HttpResponse::MovedPermanently()
-        .append_header(("Location", "/"))
-        .finish()
-}
-
-#[cfg(not(feature = "sentry_error"))]
-fn log_duration(search_type: QueryType, duration: Duration) {
-    use log::warn;
-    warn!("{:?}-search took: {:?}", search_type, duration);
 }
 
 #[cfg(feature = "sentry_error")]
