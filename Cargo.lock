@@ -1087,13 +1087,12 @@ checksum = "2c5f6c2c942da57e2aaaa84b8a521489486f14e75e7fa91dab70aba913975f98"
 
 [[package]]
 name = "flate2"
-version = "1.0.23"
+version = "1.0.24"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b39522e96686d38f4bc984b9198e3a0613264abaebaff2c5c918bfa6b6da09af"
+checksum = "f82b0f4c27ad9f8bfd1f3208d882da2b09c301bc1c828fd3a00d0216d2fbbff6"
 dependencies = [
- "cfg-if",
  "crc32fast",
- "libc",
+ "libz-ng-sys",
  "miniz_oxide",
 ]
 
@@ -1587,16 +1586,13 @@ name = "jotoba"
 version = "0.1.0"
 dependencies = [
  "actix-files",
- "actix-multipart",
  "actix-web",
  "api",
  "argparse",
  "config",
  "criterion",
  "env_logger 0.9.0",
- "error",
  "frontend",
- "japanese",
  "localization",
  "log",
  "news",
@@ -1606,9 +1602,6 @@ dependencies = [
  "sentence_reader",
  "sentry",
  "serde",
- "snmalloc-rs",
- "types",
- "utils",
 ]
 
 [[package]]
@@ -1721,6 +1714,16 @@ checksum = "efbc0f03f9a775e9f6aed295c6a1ba2253c5757a9e03d55c6caa46a681abcddd"
 dependencies = [
  "cfg-if",
  "winapi",
+]
+
+[[package]]
+name = "libz-ng-sys"
+version = "1.1.8"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "4399ae96a9966bf581e726de86969f803a81b7ce795fcd5480e640589457e0f2"
+dependencies = [
+ "cmake",
+ "libc",
 ]
 
 [[package]]
@@ -2704,24 +2707,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "f2dd574626839106c320a323308629dcb1acfc96e32a8cba364ddc61ac23ee83"
 
 [[package]]
-name = "snmalloc-rs"
-version = "0.2.28"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "36acaace2719c972eab3ef6a6b3aee4495f0bf300f59715bb9cff6c5acf4ae20"
-dependencies = [
- "snmalloc-sys",
-]
-
-[[package]]
-name = "snmalloc-sys"
-version = "0.2.28"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "35a7e6e7d5fe756bee058ddedefc7e0a9f9c8dbaa9401b48ed3c17d6578e40b5"
-dependencies = [
- "cmake",
-]
-
-[[package]]
 name = "socket2"
 version = "0.4.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3196,7 +3181,7 @@ checksum = "f1bddf1187be692e79c5ffeab891132dfb0f236ed36a43c7ed39f1165ee20191"
 [[package]]
 name = "vector_space_model2"
 version = "0.1.1"
-source = "git+https://github.com/JojiiOfficial/VectorSpaceModel#50a24bcc6a26e3df87d683cca5f2aadfbc76cf26"
+source = "git+https://github.com/JojiiOfficial/VectorSpaceModel#2f1742eb6c50d14129bc068b8115d258ed69e98f"
 dependencies = [
  "byteorder",
  "compressed_vec",

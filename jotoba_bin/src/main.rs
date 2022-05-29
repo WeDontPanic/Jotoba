@@ -1,7 +1,7 @@
 #![allow(irrefutable_let_patterns)]
 
-#[global_allocator]
-static ALLOC: snmalloc_rs::SnMalloc = snmalloc_rs::SnMalloc;
+//#[global_allocator]
+//static ALLOC: snmalloc_rs::SnMalloc = snmalloc_rs::SnMalloc;
 
 mod cli;
 mod webserver;
