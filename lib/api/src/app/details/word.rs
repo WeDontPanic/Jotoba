@@ -72,13 +72,11 @@ impl<'a> Details<'a> {
 
     fn transitivity_pair(&self) -> Option<TransitivityPair> {
         if let Some(trans) = self.word.transive_verion {
-            let word = resources::get().words().by_sequence(trans)?;
-            return Some(TransitivityPair::Transitive(self.format_word(word)));
+            return Some(TransitivityPair::Transitive(trans));
         }
 
         if let Some(intrans) = self.word.intransive_verion {
-            let word = resources::get().words().by_sequence(intrans)?;
-            return Some(TransitivityPair::Intransitive(self.format_word(word)));
+            return Some(TransitivityPair::Intransitive(intrans));
         }
 
         None

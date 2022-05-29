@@ -20,9 +20,10 @@ pub struct Details {
 }
 
 #[derive(Serialize)]
+#[serde(tag = "t", content = "w")]
 pub enum TransitivityPair {
-    Transitive(Word),
-    Intransitive(Word),
+    Transitive(u32),
+    Intransitive(u32),
 }
 
 impl Details {
