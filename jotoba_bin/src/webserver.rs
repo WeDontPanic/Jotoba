@@ -11,7 +11,7 @@ use config::Config;
 use log::{debug, warn};
 use std::{path::Path, sync::Arc, time::Instant};
 
-use crate::cli::Options;
+use crate::{check, cli::Options};
 
 /// How long frontend assets are going to be cached by the clients. Currently 1 week
 const ASSET_CACHE_MAX_AGE: u64 = 604800;
@@ -44,7 +44,7 @@ pub(super) async fn start(options: Options) -> std::io::Result<()> {
 
     let address = config.server.listen_address.clone();
 
-    if !check_resources() {
+    if !check::resources() {
         log::error!("Not all required data found! Exiting");
         return Ok(());
     }
@@ -237,7 +237,7 @@ async fn docs(_req: HttpRequest) -> actix_web::Result<NamedFile> {
     Ok(NamedFile::open("html/docs.html")?)
 }
 
-fn prepare_data(ccf: &Config) {
+pub(crate) fn prepare_data(ccf: &Config) {
     rayon::scope(move |s| {
         let cf = ccf.clone();
         s.spawn(move |_| {
@@ -271,7 +271,7 @@ fn prepare_data(ccf: &Config) {
             if let Err(err) = news::News::init(cf.server.get_news_folder()) {
                 warn!("Failed to load news: {}", err);
             }
-        })
+        });
     });
 }
 
@@ -299,20 +299,6 @@ fn clean_img_scan_dir(config: &Config) {
         return;
     }
     std::fs::remove_dir_all(&path).expect("Failed to clear img scan director");
-}
-
-fn check_resources() -> bool {
-    let res = resources::get();
-    if res.check() {
-        return true;
-    }
-
-    log::error!(
-        "Missing required features: {:?}",
-        res.missing_but_required()
-    );
-
-    false
 }
 
 fn debug_info() {

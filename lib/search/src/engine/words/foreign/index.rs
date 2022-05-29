@@ -151,7 +151,7 @@ fn load_index<P: AsRef<Path>>(path: P) -> Result<(), Box<dyn Error>> {
 
 /// Retrieve an index of the given language. Returns `None` if there is no index loaded
 #[inline]
-pub(crate) fn get(lang: Language) -> Option<&'static Index> {
+pub fn get(lang: Language) -> Option<&'static Index> {
     // Safety:
     // We don't write to `INDEX` after loading it one time at the startup. Jotoba panics if it
     // can't load this index, so until a `get()` call gets reached, `INDEX` is always set to a

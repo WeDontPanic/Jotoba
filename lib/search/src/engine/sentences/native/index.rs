@@ -23,7 +23,7 @@ pub fn load(config: &Config) {
 
 /// Returns the loaded japanese sentence index
 #[inline]
-pub(crate) fn get() -> &'static Index {
+pub fn get() -> &'static Index {
     // Safety:
     // We don't write to `INDEX` after loading it one time at the startup. Jotoba panics if it
     // can't load this index, so until a `get()` call gets reached, `INDEX` is always set to a

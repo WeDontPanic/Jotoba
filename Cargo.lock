@@ -1601,7 +1601,7 @@ dependencies = [
  "search",
  "sentence_reader",
  "sentry",
- "serde",
+ "types",
 ]
 
 [[package]]

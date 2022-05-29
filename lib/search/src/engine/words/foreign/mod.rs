@@ -202,8 +202,6 @@ mod test {
 
         config.server = ServerConfig {
             storage_data: Some(String::from("../../resources/storage_data")),
-            sentences: Some(String::from("../../resources/sentences.bin")),
-            radical_map: Some(String::from("../../resources/radical_map")),
             ..ServerConfig::default()
         };
 

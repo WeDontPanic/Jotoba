@@ -1,3 +1,5 @@
+use std::process::exit;
+
 use argparse::{ArgumentParser, Print, StoreTrue};
 
 /// Command line arguments
@@ -6,6 +8,7 @@ pub struct Options {
     /// Start the server
     pub start: bool,
     pub debug: bool,
+    pub check_resources: bool,
 }
 
 // Parse CLI args
@@ -27,7 +30,18 @@ pub fn parse() -> Options {
         ap.refer(&mut options.debug)
             .add_option(&["--debug", "-d"], StoreTrue, "Run in debug mode");
 
+        ap.refer(&mut options.check_resources).add_option(
+            &["--check", "-c"],
+            StoreTrue,
+            "Check resources",
+        );
+
         ap.parse_args_or_exit();
+    }
+
+    if options.check_resources && options.start {
+        println!("Can't use start and check_resources at once");
+        exit(1);
     }
 
     options
