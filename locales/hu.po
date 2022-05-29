@@ -1081,14 +1081,17 @@ msgid "Word tokenization is done using a project from Hideki Yamane and used for
 msgstr "A szavak elemekre bontását egy, Hideki Yamane által létrehozott projekt biztosítja, amit a japán szóelemzésnél használunk."
 
 #Source
-msgid "Pitch Accents and Radicals"
-msgstr "Zenei Hangsúly és Gyökök"
+msgid "Pitch accents"
+msgstr ""
 
-msgid "Data about Pitch Accents and Radicals used in specific Kanji are provided by Kanjium"
-msgstr "A zenei hangsúlyokról és gyökökről szóló adatot a Kanjium biztosította"
+msgid "Data about Radicals used in specific Kanji are provided by Kanjium."
+msgstr ""
 
 msgid "On the project's Github Page you can find lots of data about Kanji."
 msgstr "A projekt weboldalán rengeteg, kanjikról szóló adatot találhatsz."
+
+msgid "Pitch accent data has been extracted from UniDic."
+msgstr ""
 
 ## Jmdict
 

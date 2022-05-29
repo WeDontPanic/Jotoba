@@ -1086,14 +1086,17 @@ msgid "Word tokenization is done using a project from Hideki Yamane and used for
 msgstr "Die Wort-Tokenisierung wurde durch ein Projekt von Hideki Yamane ermöglicht, welches der Implementierung von Japanisch-Morphologischen Analysen dient."
 
 #Source
-msgid "Pitch Accents and Radicals"
-msgstr "Pitch-Akzente und Radikale"
+msgid "Pitch accents"
+msgstr "Pitch-Akzente"
 
-msgid "Data about Pitch Accents and Radicals used in specific Kanji are provided by Kanjium."
+msgid "Data about Radicals used in specific Kanji are provided by Kanjium."
 msgstr "Diese Daten wurden vom Kanjium Projekt zur Verfügung gestellt."
 
 msgid "On the project's Github Page you can find lots of data about Kanji."
 msgstr "Auf ihrer Github Seite findet man viele verschiedene Infos über Kanji."
+
+msgid "Pitch accent data has been extracted from UniDic."
+msgstr "Pitch-Akzent Daten wurden aus dem UniDic extrahiert."
 
 ## Jmdict
 
