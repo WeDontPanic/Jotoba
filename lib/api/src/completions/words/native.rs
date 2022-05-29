@@ -18,7 +18,6 @@ pub fn suggestions(query: &Query, radicals: &[char]) -> Option<Vec<WordPair>> {
     let query_str = query.query.as_str();
 
     let mut suggestion_task = SuggestionTask::new(30);
-
     let mut main_sugg_query = SuggestionQuery::new(jp_engine, query_str);
 
     // Kanji reading align (くにうた ー＞ 国歌)

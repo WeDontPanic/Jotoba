@@ -1,5 +1,8 @@
 use autocompletion::suggest::{
-    extension::{longest_prefix::LongestPrefixExtension, similar_terms::SimilarTermsExtension},
+    extension::{
+        kanji_align::KanjiAlignExtension, longest_prefix::LongestPrefixExtension,
+        similar_terms::SimilarTermsExtension,
+    },
     query::SuggestionQuery,
     task::SuggestionTask,
 };
@@ -44,9 +47,14 @@ pub fn suggestions(query: &Query, query_str: &str) -> Option<Vec<WordPair>> {
             query.weights.str_weight = 1.9;
             */
 
+            let mut k_r_align = KanjiAlignExtension::new(jp_engine);
+            k_r_align.options.weights.freq_weight = 1.0;
+            k_r_align.options.threshold = 5;
+            query.add_extension(k_r_align);
+
             let mut similar_terms = SimilarTermsExtension::new(jp_engine, 5);
-            similar_terms.options.weights.total_weight = 0.4;
-            similar_terms.options.threshold = 5;
+            similar_terms.options.weights.total_weight = 0.005;
+            similar_terms.options.threshold = 10;
             query.add_extension(similar_terms);
 
             task.set_rel_mod(|i, rel| {
