@@ -29,4 +29,14 @@ impl<'a> SentenceRetrieve<'a> {
             .flatten()
             .filter_map(move |i| self.by_id(*i))
     }
+
+    #[inline]
+    pub fn count(&self) -> usize {
+        self.storage.sentences.len()
+    }
+
+    #[inline]
+    pub fn iter(&self) -> impl Iterator<Item = &'a Sentence> {
+        self.storage.sentences.iter().map(|i| i.1)
+    }
 }
