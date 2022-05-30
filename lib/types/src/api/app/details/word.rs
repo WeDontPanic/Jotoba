@@ -16,7 +16,7 @@ pub struct Details {
     collocations: Vec<Word>,
     has_sentence: bool,
     #[serde(skip_serializing_if = "Option::is_none")]
-    transitiviti_pair: Option<TransitivityPair>,
+    transitivity_pair: Option<TransitivityPair>,
 }
 
 #[derive(Serialize)]
@@ -34,7 +34,7 @@ impl Details {
         conjugations: Option<Inflections>,
         collocations: Vec<Word>,
         has_sentence: bool,
-        transitiviti_pair: Option<TransitivityPair>,
+        transitivity_pair: Option<TransitivityPair>,
     ) -> Self {
         Self {
             word,
@@ -42,7 +42,7 @@ impl Details {
             conjugations,
             collocations,
             has_sentence,
-            transitiviti_pair,
+            transitivity_pair,
         }
     }
 }
