@@ -1482,7 +1482,7 @@ dependencies = [
 [[package]]
 name = "indexed_file"
 version = "0.1.3"
-source = "git+https://github.com/JojiiOfficial/IndexedFile#242d8a8fe94ca0e265c44f598f39674710cf0d3a"
+source = "git+https://github.com/JojiiOfficial/IndexedFile#1c101523064d26bdb320fc1b28c6fa70ffcce652"
 dependencies = [
  "compressed_vec",
 ]
@@ -1531,7 +1531,7 @@ dependencies = [
 [[package]]
 name = "intmap"
 version = "0.7.1"
-source = "git+https://github.com/JojiiOfficial/rust-intmap#441d238fd74fbb7c4f6407a16ab4b54c9aef4330"
+source = "git+https://github.com/JojiiOfficial/rust-intmap#04785c710f5d88ecb85093d50b4bb93244e1e32e"
 dependencies = [
  "serde",
 ]

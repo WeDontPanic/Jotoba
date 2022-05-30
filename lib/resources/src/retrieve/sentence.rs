@@ -16,7 +16,7 @@ impl<'a> SentenceRetrieve<'a> {
     /// Returns a sentence by its id or `None` if no sentence for the given ID exists
     #[inline]
     pub fn by_id(&self, id: u32) -> Option<&'a Sentence> {
-        self.storage.sentences.get(id as u64)
+        self.storage.sentences.get(id)
     }
 
     /// Returns an iterator over all sentences with given `jlpt` level

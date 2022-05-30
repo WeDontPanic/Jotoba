@@ -16,7 +16,7 @@ impl<'a> WordRetrieve<'a> {
     /// Get a word by its sequence id
     #[inline]
     pub fn by_sequence(&self, seq_id: u32) -> Option<&'a Word> {
-        self.storage.words.get(seq_id as u64)
+        self.storage.words.get(seq_id)
     }
 
     /// returns an iterator over all irregular ichidan words

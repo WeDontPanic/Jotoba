@@ -21,7 +21,7 @@ impl NameStorage {
         self.names.clear();
 
         for name in names {
-            self.names.insert(name.sequence as u64, name);
+            self.names.insert(name.sequence, name);
         }
     }
 

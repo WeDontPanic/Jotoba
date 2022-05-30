@@ -53,7 +53,7 @@ impl WordStorage {
                 self.has_sentence_mapping = true;
             }
 
-            self.words.insert(word.sequence as u64, word);
+            self.words.insert(word.sequence, word);
         }
 
         for (_, v) in self.jlpt_word_map.iter_mut() {
