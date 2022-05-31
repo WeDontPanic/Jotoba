@@ -1,9 +1,8 @@
-@use super::page::{cookie_html, image_crop_html, loading_html, settings_html};
+@use super::page::{image_crop_html, loading_html, settings_html};
 
 @use crate::BaseData;
 @(data: &BaseData)
 
-@:cookie_html(data)
 @:image_crop_html(data)
 @:loading_html(data)
 @:settings_html(data)

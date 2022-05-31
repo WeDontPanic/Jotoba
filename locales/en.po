@@ -463,7 +463,7 @@ msgstr ""
 msgid "Enable Quick-Copy"
 msgstr ""
 
-msgid "Accept Cookies"
+msgid "Share usage statistics"
 msgstr ""
 
 # Cookie text

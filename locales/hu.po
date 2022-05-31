@@ -457,7 +457,7 @@ msgstr "Alapértelmezett kanji animáció sebessége"
 msgid "Enable Quick-Copy"
 msgstr ""
 
-msgid "Accept Cookies"
+msgid "Share usage statistics"
 msgstr "Sütik Elfogadása"
 
 # Cookie text

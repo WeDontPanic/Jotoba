@@ -37,9 +37,9 @@ Settings.display = {
 // Default "other" settings
 Settings.other = {
     enableDoubleClickCopy: { isCookie: false, id: "dbl_click_copy", dataType: "boolean", val: true },
-    cookiesAllowed: { isCookie: false, id: "allow_cookies", dataType: "int", val: 0 },
+    cookiesAllowed: { isCookie: false, id: "allow_cookies", dataType: "int", val: 1 },
     firstVisit: { isCookie: false, id: "first_time", dataType: "boolean", val: true },
-    privacyChosen: { isCookie: false, id: "privacy_chosen", dataType: "boolean", val: false },
+    privacyChosen: { isCookie: false, id: "privacy_chosen", dataType: "boolean", val: true },
 }
 
 // Saves a settings-object into localStorage / Cookies

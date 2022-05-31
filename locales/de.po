@@ -463,8 +463,8 @@ msgstr "Kanji Animationsgeschwindigkeit"
 msgid "Enable Quick-Copy"
 msgstr "\"Quick-Copy\" aktivieren"
 
-msgid "Accept Cookies"
-msgstr "Cookies akzeptieren"
+msgid "Share usage statistics"
+msgstr "Nutzungsstatistiken teilen"
 
 # Cookie text
 msgid "To use this feature you have to accept to the use of cookies."
