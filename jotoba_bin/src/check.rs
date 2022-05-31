@@ -51,7 +51,7 @@ fn indexes() -> bool {
 fn sentences() -> bool {
     let sentence_retrieve = resources::get().sentences();
 
-    for language in Language::iter().filter(|i| *i != Language::Japanese) {
+    for language in Language::iter_word() {
         let foreign = match engine::sentences::foreign::index::get(language) {
             Some(f) => f,
             None => return false,
@@ -115,7 +115,7 @@ fn names() -> bool {
 fn words() -> bool {
     let word_retrieve = resources::get().words();
 
-    for language in Language::iter().filter(|i| *i != Language::Japanese) {
+    for language in Language::iter_word() {
         let w_index = engine::words::foreign::index::get(language)
             .expect(&format!("Missing index {:?}", language));
 

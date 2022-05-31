@@ -49,16 +49,16 @@ impl WordStorage {
                 self.has_accents = true;
             }
 
-            if !self.has_sentence_mapping && word.sentences_available > 0 {
-                self.has_sentence_mapping = true;
-            }
-
             self.words.insert(word.sequence, word);
         }
 
         for (_, v) in self.jlpt_word_map.iter_mut() {
             v.sort();
         }
+    }
+
+    pub fn update_sentence_mapping(&mut self) {
+        self.has_sentence_mapping = self.words.iter().any(|i| i.1.sentences_available > 0);
     }
 
     pub fn get_features(&self) -> Vec<Feature> {

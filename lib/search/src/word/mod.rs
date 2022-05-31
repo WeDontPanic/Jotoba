@@ -331,7 +331,7 @@ impl<'a> Search<'a> {
 
         // Do the search
         let mut res = search_task.find()?;
-        let count = res.len();
+        let mut count = res.len();
 
         let mut infl_info = None;
         let mut sentence = None;
@@ -352,6 +352,8 @@ impl<'a> Search<'a> {
                 sentence = sent;
                 searched_query = sq;
                 // hacky but works (I guess)
+                res.total_items += native_res.total_items;
+                count = res.len();
                 let other = native_res.into_inner().into_iter().map(|i| {
                     let word = i.item;
                     let relevance = i.relevance;
@@ -363,7 +365,7 @@ impl<'a> Search<'a> {
         }
 
         // If there aren't any results, check if there is another language
-        if res.len() == 0 {
+        if count == 0 {
             return self.check_other_lang();
         }
 
