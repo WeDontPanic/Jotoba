@@ -12,6 +12,7 @@ config = { path = "../config" }
 sentence_reader  = { path = "../sentence_reader", features = ["jotoba_intern"] }
 error = { path = "../error" }
 utils = { path = "../utils" }
+indexes = { path = "../indexes"}
 localization = { path = "../localization" }
 resources = { path = "../resources"}
 serde = "1.0.137"
@@ -23,10 +24,8 @@ levenshtein = "1.0.5"
 strsim = "0.10.0"
 eudex = { git = "https://github.com/JojiiOfficial/eudex"}
 regex = "1.5.6"
-#vector_space_model = { path = "../../../VectorSpaceModel"}
 #vector_space_model2 = { path = "../../../VectorSpaceModel" }
 vector_space_model2 = { git = "https://github.com/JojiiOfficial/VectorSpaceModel" }
-#vector_space_model = { path = "/home/jojii/tmp/VectorSpaceModel" }
 byteorder = "1.4.3"
 tinysegmenter = "0.1.1"
 bitflags = {git = "https://github.com/JojiiOfficial/BitFlags"}

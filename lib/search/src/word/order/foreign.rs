@@ -45,9 +45,10 @@ impl ForeignOrder {
         let rel_index = engine::words::foreign::index::RELEVANCE_INDEXES
             .get()?
             .get(&sense.language)?;
-        let rel_vec = rel_index.get(&(seq_id, sg_id))?;
+        let rel_vec = rel_index.get(seq_id, sg_id)?;
         let query_vec = self.new_vec_cached(query_str, sense.language)?;
-        Some((overlapping_vals(rel_vec, &query_vec) * 1000.0) as usize)
+        let res = overlapping_vals(rel_vec, &query_vec) * 1000.0;
+        Some(res as usize)
     }
 
     pub fn score(
@@ -63,6 +64,13 @@ impl ForeignOrder {
         let text_score = (relevance as f64 * 10.0) as usize;
         let word = word_output.word;
 
+        /*
+        println!(
+            "------------\n{:?} ({})",
+            word.get_reading().reading,
+            word.sequence
+        );
+        */
         let gloss_relevance = word_output
             .position_iter()
             .filter_map(|(s_id, _, sg_id)| {
@@ -74,7 +82,6 @@ impl ForeignOrder {
                 Some((sense, sg_id, multiplier))
             })
             .filter_map(|(sense, sg_id, multilpier)| {
-                //println!("------------\n{:?}", word.get_reading().reading);
                 self.gloss_relevance(&query_str, word.sequence, sense, sg_id)
                     .map(|i| (i as f32 * multilpier) as usize)
             })
@@ -84,8 +91,10 @@ impl ForeignOrder {
                 super::foreign_search_fall_back(word, relevance, &query_str, query_lang, user_lang)
             });
 
-        //println!("gloss relevance: {gloss_relevance}");
-        //println!("text_score relevance: {text_score}");
+        /*
+        println!("gloss relevance: {gloss_relevance}");
+        println!("text_score relevance: {text_score}");
+        */
         gloss_relevance + text_score
     }
 }
@@ -114,7 +123,7 @@ fn overlapping_vals(src_vec: &Vector, query: &Vector) -> f32 {
         overlapping_count += 1;
     }
 
-    //println!("overlapping_count: {overlapping_count}");
-    //println!("sum: {sum}");
-    (overlapping_count as f32 * 100.0) + sum
+    let mult = src_vec.sparse_vec().len().min(query.sparse_vec().len()) as f32
+        / query.sparse_vec().len().max(src_vec.sparse_vec().len()) as f32;
+    (overlapping_count as f32 * mult * 10.0) + sum
 }

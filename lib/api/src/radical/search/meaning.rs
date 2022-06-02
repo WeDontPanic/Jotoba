@@ -31,8 +31,10 @@ fn word_search(query: &str, language: Language) -> Result<Vec<char>, Error> {
             .limit(3)
             .threshold(0.8f32);
 
+    let foreign_order = search::word::order::foreign::ForeignOrder::new();
     search_task.set_order_fn(move |word, rel, q_str, lang| {
-        search::word::order::foreign_search_order(word, rel, q_str, lang.unwrap(), language)
+        //search::word::order::foreign::(word, rel, q_str, lang.unwrap(), language)
+        foreign_order.score(word, rel, q_str, lang.unwrap(), language)
     });
 
     let kanji_retr = resources::get().kanji();

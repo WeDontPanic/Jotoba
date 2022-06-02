@@ -1,23 +1,15 @@
 pub mod foreign;
 
-use crate::{
-    engine::{self, words::foreign::output::WordOutput},
-    regex_query::RegexSQuery,
-    SearchMode,
-};
+use crate::{regex_query::RegexSQuery, SearchMode};
 use japanese::JapaneseExt;
 use levenshtein::levenshtein;
 use once_cell::sync::Lazy;
 use regex::Regex;
 use types::jotoba::{
     languages::Language,
-    words::{
-        sense::{to_unique_id, Gloss, Sense},
-        Word,
-    },
+    words::{sense::Gloss, Word},
 };
 use utils::real_string_len;
-use vector_space_model2::{term_store::TermIndexer, Vector};
 
 /// A Regex matching parentheses and its contents
 pub(crate) static REMOVE_PARENTHESES: Lazy<Regex> =
@@ -109,6 +101,7 @@ pub fn japanese_search_order(
     score
 }
 
+/*
 fn make_search_vec(indexer: &TermIndexer, query: &str) -> Option<Vector> {
     let terms: Vec<_> = query
         .split(' ')
@@ -145,12 +138,12 @@ fn gloss_relevance(query_str: &str, seq_id: u32, sense: &Sense, gloss: &Gloss) -
     let query_vec = make_search_vec(&indexer, query_str)?;
 
     let sg_id = to_unique_id(sense.id, gloss.id);
-    let rel_vec = rel_index.get(&(seq_id, sg_id))?;
+    let rel_vec = rel_index.get(seq_id, sg_id)?;
     let val = (overlapping_vals(rel_vec, &query_vec)) as usize;
     Some(val)
 }
 
-pub fn foreign_search_order(
+fn foreign_search_order(
     word_output: &WordOutput,
     relevance: f32,
     query_str: &str,
@@ -180,6 +173,7 @@ pub fn foreign_search_order(
 
     gloss_relevance + text_score
 }
+*/
 
 pub fn foreign_search_fall_back(
     word: &Word,

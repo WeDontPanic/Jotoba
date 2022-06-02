@@ -1,11 +1,11 @@
 use std::{collections::HashMap, error::Error, fs::File, io::BufReader, path::Path, str::FromStr};
 
 use bktree::BkTree;
+use indexes::relevance::RelevanceIndex;
 use log::{error, info};
 use once_cell::sync::OnceCell;
 use serde::{Deserialize, Serialize};
 use types::jotoba::languages::Language;
-use vector_space_model2::Vector;
 
 use crate::engine::metadata::Metadata;
 
@@ -17,7 +17,6 @@ pub(super) type Index = vector_space_model2::Index<FWordDoc, Metadata>;
 // In-memory storage for all loaded indexes
 pub(super) static INDEXES: OnceCell<HashMap<Language, Index>> = OnceCell::new();
 
-pub type RelevanceIndex = HashMap<(u32, u16), Vector>;
 pub(crate) static RELEVANCE_INDEXES: OnceCell<HashMap<Language, RelevanceIndex>> = OnceCell::new();
 
 // In-memory storage for all loaded term trees
