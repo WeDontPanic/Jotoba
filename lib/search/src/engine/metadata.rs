@@ -9,7 +9,7 @@ use vector_space_model2::{
 };
 
 /// Various metadata for the given Index
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Metadata {
     pub version: IndexVersion,
     pub document_count: usize,

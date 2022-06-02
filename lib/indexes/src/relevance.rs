@@ -9,6 +9,7 @@ pub struct RelevanceIndex {
     pub language: Language,
     pub inner: HashMap<(u32, u16), Vector>,
     pub important_terms: HashSet<u32>,
+    pub frequency_map: HashMap<u32, f32>,
 }
 
 impl RelevanceIndex {
@@ -16,11 +17,13 @@ impl RelevanceIndex {
         language: Language,
         inner: HashMap<(u32, u16), Vector>,
         important_terms: HashSet<u32>,
+        frequency_map: HashMap<u32, f32>,
     ) -> Self {
         Self {
             language,
             inner,
             important_terms,
+            frequency_map,
         }
     }
 

@@ -37,8 +37,6 @@ pub fn suggestions(query: &Query, query_str: &str) -> Option<Vec<WordPair>> {
 
     // Romaji result
     if let Some(hira_query) = try_romaji(query_str.trim()) {
-        println!("found hiragana: {hira_query}");
-
         if let Some(jp_engine) = storage::JP_WORD_INDEX.get() {
             let mut query = SuggestionQuery::new(jp_engine, hira_query);
             query.weights.total_weight = 0.5;
