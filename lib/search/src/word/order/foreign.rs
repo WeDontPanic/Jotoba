@@ -1,4 +1,5 @@
 use crate::engine::{self, words::foreign::output::WordOutput};
+use indexes::relevance::RelevanceIndex;
 use spin::Mutex;
 use std::collections::HashMap;
 use types::jotoba::{languages::Language, words::sense::Sense};
@@ -47,7 +48,7 @@ impl ForeignOrder {
             .get(&sense.language)?;
         let rel_vec = rel_index.get(seq_id, sg_id)?;
         let query_vec = self.new_vec_cached(query_str, sense.language)?;
-        let res = overlapping_vals(rel_vec, &query_vec) * 1000.0;
+        let res = vec_similarity(rel_vec, &query_vec, &rel_index) * 1000.0;
         Some(res as usize)
     }
 
@@ -114,7 +115,7 @@ fn make_search_vec(indexer: &TermIndexer, query: &str) -> Option<Vector> {
 }
 
 #[inline]
-fn overlapping_vals(src_vec: &Vector, query: &Vector) -> f32 {
+fn vec_similarity(src_vec: &Vector, query: &Vector, r_index: &RelevanceIndex) -> f32 {
     let mut sum = 0.0;
     let mut overlapping_count = 0;
 
@@ -123,7 +124,23 @@ fn overlapping_vals(src_vec: &Vector, query: &Vector) -> f32 {
         overlapping_count += 1;
     }
 
-    let mult = src_vec.sparse_vec().len().min(query.sparse_vec().len()) as f32
-        / query.sparse_vec().len().max(src_vec.sparse_vec().len()) as f32;
-    (overlapping_count as f32 * mult * 10.0) + sum
+    let query_imp = important_count(&query, r_index);
+    let src_imp = important_count(&src_vec, r_index);
+
+    let diff = (query_imp.abs_diff(src_imp) + 1) as f32;
+    let important_mult = (1.0 / diff) * 100.0;
+
+    let src_len = src_vec.sparse_vec().len();
+    let query_len = query.sparse_vec().len();
+    let vec_len_mult = src_len.min(query_len) as f32 / query_len as f32 * 10.0;
+
+    (overlapping_count as f32 * important_mult * vec_len_mult) + sum * 50.0
+}
+
+#[inline]
+fn important_count(vec: &Vector, r_index: &RelevanceIndex) -> usize {
+    vec.sparse_vec()
+        .iter()
+        .filter(|(dim, _)| r_index.is_important(*dim))
+        .count()
 }
