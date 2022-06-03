@@ -206,9 +206,9 @@ pub fn foreign_search_fall_back(
 
     let divisor = match (found.mode, found.case_ignored) {
         (SearchMode::Exact, false) => 10,
-        (SearchMode::Exact, true) => 10,
-        (_, false) => 50,
-        (_, true) => 80,
+        (SearchMode::Exact, true) => 7,
+        (_, false) => 4,
+        (_, true) => 3,
     };
 
     score += (calc_likeliness(word, &found) / divisor) as usize;

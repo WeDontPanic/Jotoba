@@ -77,8 +77,8 @@ impl ForeignOrder {
             .filter_map(|(s_id, _, sg_id)| {
                 let sense = word.sense_by_id(s_id).expect("Failed to get sense");
                 let mut multiplier = 1.0;
-                if sense.language == user_lang {
-                    multiplier = 2.0;
+                if sense.language != user_lang {
+                    multiplier = 0.1;
                 }
                 Some((sense, sg_id, multiplier))
             })
@@ -86,17 +86,18 @@ impl ForeignOrder {
                 self.gloss_relevance(&query_str, word.sequence, sense, sg_id)
                     .map(|i| (i as f32 * multilpier) as usize)
             })
-            .map(|i| i + 1000)
             .max()
             .unwrap_or_else(|| {
                 super::foreign_search_fall_back(word, relevance, &query_str, query_lang, user_lang)
+                    * text_score
             });
 
         /*
         println!("gloss relevance: {gloss_relevance}");
         println!("text_score relevance: {text_score}");
         */
-        gloss_relevance + text_score
+
+        gloss_relevance // + text_score
     }
 }
 
@@ -128,13 +129,16 @@ fn vec_similarity(src_vec: &Vector, query: &Vector, r_index: &RelevanceIndex) ->
     let src_imp = important_count(&src_vec, r_index);
 
     let diff = (query_imp.abs_diff(src_imp) + 1) as f32;
-    let important_mult = (1.0 / diff) * 100.0;
+    let important_mult = 1.0 / diff;
 
     let src_len = src_vec.sparse_vec().len();
     let query_len = query.sparse_vec().len();
-    let vec_len_mult = src_len.min(query_len) as f32 / query_len as f32 * 10.0;
+    let mut vec_len_mult = 1.0; //src_len.min(query_len) as f32 / query_len as f32;
+    if src_len < query_len {
+        vec_len_mult = src_len as f32 / query_len as f32;
+    }
 
-    (overlapping_count as f32 * important_mult * vec_len_mult) + sum * 50.0
+    (overlapping_count as f32 * important_mult * vec_len_mult * 100.0) + sum * vec_len_mult * 10.0
 }
 
 #[inline]
