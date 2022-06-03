@@ -351,7 +351,7 @@ checksum = "d468802bab17cbc0cc575e9b053f41e72aa36bfa6b7f55e3529ffa43161b97fa"
 [[package]]
 name = "autocompletion"
 version = "0.1.0"
-source = "git+https://github.com/WeDontPanic/AutoCompletionFramework#36df6f1828f39786d4afd8000ea6fd1d196f93d7"
+source = "git+https://github.com/WeDontPanic/AutoCompletionFramework#faf26d11a76d26460ee9a756b555d681a095451f"
 dependencies = [
  "bincode",
  "eudex 0.1.1 (git+https://github.com/WeDontPanic/eudex)",
@@ -2164,7 +2164,7 @@ checksum = "eb9f9e6e233e5c4a35559a617bf40a4ec447db2e84c20b55a6f83167b7e57872"
 [[package]]
 name = "priority_container"
 version = "0.1.0"
-source = "git+https://github.com/JojiiOfficial/PrioContainer#92ba5cad363cdf299161ff7f32fec7ec00398e92"
+source = "git+https://github.com/JojiiOfficial/PrioContainer#cdc87d3c5e56b4a1a02663e2403fb15e761b337a"
 
 [[package]]
 name = "proc-macro2"
