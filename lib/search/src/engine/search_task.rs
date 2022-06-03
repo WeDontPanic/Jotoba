@@ -194,7 +194,7 @@ where
 
     /// Runs the search task and returns the result.
     pub fn find(&self) -> Result<SearchResult<T::Output>, Error> {
-        let mut pqueue = UniquePrioContainerMax::new_allocated(1000);
+        let mut pqueue = UniquePrioContainerMax::new_allocated(1_000);
 
         for (q_str, vec, lang) in self.get_queries() {
             self.find_by_vec2(vec, &q_str, lang, &mut pqueue)?;

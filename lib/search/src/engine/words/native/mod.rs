@@ -42,39 +42,16 @@ impl SearchEngine for Engine {
         let mut terms = vec![(query.to_string(), 1.0)];
 
         let mut indexer = index.get_indexer().clone();
-        let add_terms = tinysegmenter::tokenize(query)
-            .into_iter()
-            .filter_map(|term| {
-                let indexed = indexer.find_term(&term)?;
-                (indexed.doc_frequency() <= 5_000).then(|| (term, 0.03))
-            })
-            .collect::<Vec<_>>();
+        for term in tinysegmenter::tokenize(query) {
+            let indexed = indexer.find_term(&term)?;
+            if indexed.doc_frequency() >= 5_000 || terms.iter().any(|i| i.0 == term) {
+                continue;
+            }
 
-        terms.extend(add_terms);
+            terms.push((term, 0.03));
+        }
 
         let vec = index.build_vector_weights(&terms)?;
         Some((vec, query.to_owned()))
-
-        /*
-        let query_document = GenDoc::new(vec![query]);
-        let mut doc = DocumentVector::new(index.get_indexer(), query_document)?;
-
-        // TODO: look if this makes the results really better. If not, remove
-        let terms = tinysegmenter::tokenize(query);
-
-        let mut indexer = index.get_indexer().clone();
-
-        let terms = terms
-            .into_iter()
-            .filter_map(|term| {
-                let indexed = indexer.find_term(&term)?;
-                (indexed.get_frequency() <= 5_000).then(|| term)
-            })
-            .collect::<Vec<_>>();
-
-        doc.add_terms(index.get_indexer(), &terms, true, Some(0.03));
-
-        Some((doc, query.to_owned()))
-        */
     }
 }

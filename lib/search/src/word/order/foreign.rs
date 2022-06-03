@@ -76,7 +76,7 @@ impl ForeignOrder {
             .position_iter()
             .filter_map(|(s_id, _, sg_id)| {
                 let sense = word.sense_by_id(s_id).expect("Failed to get sense");
-                let mut multiplier = 1.0;
+                let mut multiplier = 2.0;
                 if sense.language != user_lang {
                     multiplier = 0.1;
                 }
@@ -92,10 +92,8 @@ impl ForeignOrder {
                     * text_score
             });
 
-        /*
-        println!("gloss relevance: {gloss_relevance}");
-        println!("text_score relevance: {text_score}");
-        */
+        //println!("gloss relevance: {gloss_relevance}");
+        //println!("text_score relevance: {text_score}");
 
         gloss_relevance // + text_score
     }
@@ -138,7 +136,7 @@ fn vec_similarity(src_vec: &Vector, query: &Vector, r_index: &RelevanceIndex) ->
         vec_len_mult = src_len as f32 / query_len as f32;
     }
 
-    (overlapping_count as f32 * important_mult * vec_len_mult * 100.0) + sum * vec_len_mult * 10.0
+    (overlapping_count as f32 * important_mult * vec_len_mult * 500.0) + sum * vec_len_mult * 40.0
 }
 
 #[inline]
