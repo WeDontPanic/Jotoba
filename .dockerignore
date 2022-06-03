@@ -25,3 +25,4 @@ massiv.out
 tmp/
 img_scan_tmp/
 /news
+.gitignore
