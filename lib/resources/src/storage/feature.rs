@@ -27,6 +27,7 @@ pub enum Feature {
 
     // Kanji
     GenkiTags,
+    SimilarKanji,
 }
 
 impl Feature {

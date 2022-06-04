@@ -214,6 +214,18 @@ impl Word {
         self.reading_iter(true).any(|j| j.reading == reading)
     }
 
+    /// Returns `true` if `word` has `reading` as main (main kanji or kana reading)
+    #[inline]
+    pub fn has_main_reading(&self, reading: &str) -> bool {
+        self.reading.kana.reading == reading
+            || self
+                .reading
+                .kanji
+                .as_ref()
+                .map(|i| i.reading == reading)
+                .unwrap_or(false)
+    }
+
     /// Returns an iterator over all parts of speech of a word
     #[inline]
     fn get_pos(&self) -> impl Iterator<Item = &PartOfSpeech> {

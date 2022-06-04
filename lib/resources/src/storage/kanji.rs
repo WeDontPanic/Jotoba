@@ -21,6 +21,8 @@ pub struct KanjiStorage {
 
     // Search tags
     pub genki_levels: HashMap<u8, Vec<char>>,
+
+    has_similar_kanji: bool,
 }
 
 impl KanjiStorage {
@@ -38,6 +40,9 @@ impl KanjiStorage {
                 self.jlpt_data.entry(jlpt).or_default().push(kanji.literal);
             }
 
+            if !self.has_similar_kanji && !kanji.similar_kanji.is_empty() {
+                self.has_similar_kanji = true;
+            }
             self.literal_index.insert(kanji.literal, kanji);
         }
     }
@@ -67,6 +72,10 @@ impl KanjiStorage {
 
         if !self.radical_map.is_empty() {
             out.push(Feature::RadicalKanjiMap);
+        }
+
+        if self.has_similar_kanji {
+            out.push(Feature::SimilarKanji);
         }
 
         out
