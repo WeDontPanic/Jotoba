@@ -1,5 +1,3 @@
-#![allow(dead_code)]
-
 pub mod engine;
 pub mod kanji;
 pub mod name;
@@ -9,7 +7,6 @@ pub mod radical;
 pub mod regex_query;
 //pub mod search_order;
 pub mod sentence;
-pub mod suggestions;
 pub mod word;
 
 /// How string items should be matched with each other

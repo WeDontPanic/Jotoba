@@ -1,4 +1,3 @@
-mod order;
 pub mod result;
 
 use crate::{

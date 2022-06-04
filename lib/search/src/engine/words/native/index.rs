@@ -1,6 +1,5 @@
 use std::path::Path;
 
-use bktree::BkTree;
 use log::info;
 use once_cell::sync::OnceCell;
 use vector_space_model2::DefaultMetadata;
@@ -12,7 +11,7 @@ pub(super) type Index = vector_space_model2::Index<u32, DefaultMetadata>;
 pub(super) static INDEX: OnceCell<Index> = OnceCell::new();
 
 // In-memory storage for all loaded term trees
-pub(super) static TERM_TREE: OnceCell<BkTree<String>> = OnceCell::new();
+//pub(super) static TERM_TREE: OnceCell<BkTree<String>> = OnceCell::new();
 
 /// Load japanese index
 pub fn load<P: AsRef<Path>>(path: P) {

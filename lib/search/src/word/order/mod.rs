@@ -309,11 +309,8 @@ struct FindResult {
     case_ignored: bool,
     language: types::jotoba::languages::Language,
     pos: usize,
-    gloss: String,
     in_parentheses: bool,
-    sense: types::jotoba::words::sense::Sense,
     sense_pos: usize,
-    gloss_full: Gloss,
 }
 
 fn find_reading(
@@ -365,7 +362,7 @@ fn find_in_senses(
             }
         }
 
-        let (sense_pos, gloss_str, gloss) = found.unwrap();
+        let (sense_pos, _, _) = found.unwrap();
         //let curr_occurrence = gloss.occurrence;
         let curr_occurrence = 0;
 
@@ -374,11 +371,8 @@ fn find_in_senses(
             pos,
             language: sense.language,
             case_ignored: ign_case,
-            gloss: gloss_str,
             in_parentheses,
-            sense: sense.clone(),
             sense_pos,
-            gloss_full: gloss,
         });
 
         if let Some(ref _curr_res) = res {
