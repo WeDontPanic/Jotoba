@@ -50,7 +50,7 @@ impl<'a> WordRetrieve<'a> {
     }
 
     #[inline]
-    pub fn word_count(&self) -> usize {
-        self.storage.word_count()
+    pub fn count(&self) -> usize {
+        self.storage.count()
     }
 }

@@ -28,7 +28,7 @@ impl WordStorage {
 
     /// Returns the amounot of words in the WordStorage
     #[inline]
-    pub fn word_count(&self) -> usize {
+    pub fn count(&self) -> usize {
         self.words.len()
     }
 

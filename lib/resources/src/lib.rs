@@ -50,9 +50,7 @@ pub fn load_raw<P: AsRef<Path>>(path: P) -> Result<ResourceStorage, Box<dyn Erro
 
 /// Load the resource storage from a file. Returns `true` if it wasn't loaded before
 pub fn load<P: AsRef<Path>>(path: P) -> Result<bool, Box<dyn Error>> {
-    let mut reader = BufReader::new(File::open(path)?);
-    let storage: ResourceStorage = bincode::deserialize_from(&mut reader)?;
-    Ok(STORAGE.set(storage).is_ok())
+    Ok(STORAGE.set(load_raw(path)?).is_ok())
 }
 
 /// Serializes a ResourceStorage into `output`

@@ -67,4 +67,10 @@ impl<'a> KanjiRetrieve<'a> {
     pub fn all(&self) -> Vec<Kanji> {
         self.iter().cloned().collect()
     }
+
+    /// Returns the count of kanji
+    #[inline]
+    pub fn count(&self) -> usize {
+        self.storage.literal_index.len()
+    }
 }

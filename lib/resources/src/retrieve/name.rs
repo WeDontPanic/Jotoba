@@ -18,4 +18,10 @@ impl<'a> NameRetrieve<'a> {
     pub fn by_sequence(&self, seq_id: u32) -> Option<&'a Name> {
         self.storage.names.get(seq_id)
     }
+
+    /// Returns the amount of names
+    #[inline]
+    pub fn count(&self) -> usize {
+        self.storage.names.len()
+    }
 }
