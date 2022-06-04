@@ -1,9 +1,11 @@
+pub mod parser;
+
 use std::{
     hash::{Hash, Hasher},
     str::FromStr,
 };
 
-use crate::{query_parser, regex_query::RegexSQuery};
+use crate::regex_query::RegexSQuery;
 
 use itertools::Itertools;
 use percent_encoding::{utf8_percent_encode, AsciiSet, NON_ALPHANUMERIC};
@@ -352,7 +354,7 @@ impl Query {
     /// Returns the result offset by a given page
     #[inline]
     pub fn page_offset(&self, page_size: usize) -> usize {
-        query_parser::calc_page_offset(self.page, page_size)
+        parser::calc_page_offset(self.page, page_size)
     }
 
     /// Returns `true` if query has `tag`

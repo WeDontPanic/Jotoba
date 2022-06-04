@@ -10,7 +10,7 @@ use types::jotoba::{
 
 use crate::regex_query;
 
-use super::query::{Form, Query, QueryLang, SearchTypeTag, Tag, UserSettings};
+use super::{Form, Query, QueryLang, SearchTypeTag, Tag, UserSettings};
 
 /// Represents a query
 pub struct QueryParser {

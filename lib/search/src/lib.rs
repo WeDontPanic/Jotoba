@@ -2,7 +2,6 @@ pub mod engine;
 pub mod kanji;
 pub mod name;
 pub mod query;
-pub mod query_parser;
 pub mod radical;
 pub mod regex_query;
 pub mod sentence;

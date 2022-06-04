@@ -1,6 +1,9 @@
 use std::str::FromStr;
 
-use search::{self, query::UserSettings, query_parser::QueryParser};
+use search::{
+    self,
+    query::{parser::QueryParser, UserSettings},
+};
 use serde::{Deserialize, Deserializer};
 use types::jotoba::{languages::Language, search::QueryType};
 

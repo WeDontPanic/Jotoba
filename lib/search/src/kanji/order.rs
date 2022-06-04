@@ -1,10 +1,9 @@
+use super::result::Item;
+use std::cmp::Ordering;
 use utils::option_order;
 
-use super::result::Item;
-
-use std::cmp::Ordering;
-
 /// Order kanji results which were found by the kanjis meaning appropriately
+#[inline]
 pub(crate) fn by_meaning(a: &Item, b: &Item) -> Ordering {
     let a = &a.kanji;
     let b = &b.kanji;

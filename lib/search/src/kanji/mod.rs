@@ -2,13 +2,7 @@ mod order;
 pub mod result;
 mod tag_only;
 
-use itertools::Itertools;
-use result::Item;
-
-use error::Error;
-use japanese::JapaneseExt;
-use types::jotoba::kanji::Kanji;
-
+use super::query::Query;
 use crate::{
     engine::{
         guess::{Guess, GuessType},
@@ -17,8 +11,11 @@ use crate::{
     },
     query::QueryLang,
 };
-
-use super::query::Query;
+use error::Error;
+use itertools::Itertools;
+use japanese::JapaneseExt;
+use result::Item;
+use types::jotoba::kanji::Kanji;
 
 // Defines the result of a kanji search
 #[derive(Default)]

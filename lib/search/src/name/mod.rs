@@ -1,5 +1,7 @@
+mod kanji_reading;
 pub mod result;
 
+use super::query::Query;
 use crate::{
     engine::{
         guess::Guess,
@@ -8,21 +10,16 @@ use crate::{
     },
     query::QueryLang,
 };
-
-use self::result::NameResult;
-
-use super::query::Query;
 use error::Error;
-
 use japanese::JapaneseExt;
+use result::NameResult;
 use types::jotoba::names::Name;
-use utils::to_option;
 
 /// Search for names
 #[inline]
 pub fn search(query: &Query) -> Result<NameResult, Error> {
     if query.form.is_kanji_reading() {
-        search_kanji(&query)
+        kanji_reading::search(&query)
     } else {
         if query.language == QueryLang::Japanese {
             handle_search(japanese_search(&query))
@@ -49,60 +46,6 @@ fn foreign_search(query: &Query) -> SearchTask<foreign::Engine> {
 fn handle_search<T: SearchEngine<Output = &'static Name> + Send>(
     task: SearchTask<T>,
 ) -> Result<NameResult, Error> {
-    Ok(NameResult::from(task.find()?))
-}
-
-/// Search by kanji reading
-fn search_kanji(query: &Query) -> Result<NameResult, Error> {
-    let kanji_reading = query.form.as_kanji_reading().ok_or(Error::Unexpected)?;
-
-    let query_str = kanji_reading.literal.to_string();
-    let mut task = SearchTask::<native::Engine>::new(&query_str)
-        .limit(query.settings.page_size as usize)
-        .offset(query.page_offset);
-
-    let literal = kanji_reading.literal;
-    let reading = kanji_reading.reading.clone();
-    task.set_result_filter(move |name| {
-        if name.kanji.is_none() {
-            return false;
-        }
-        let kanji = name.kanji.as_ref().unwrap();
-        let kana = &name.kana;
-        let readings = japanese::furigana::generate::retrieve_readings(
-            &mut |i: String| {
-                let retrieve = resources::get().kanji();
-                let kanji = retrieve.by_literal(i.chars().next()?)?;
-                if kanji.onyomi.is_empty() && kanji.kunyomi.is_empty() {
-                    return None;
-                }
-
-                let kun = kanji
-                    .clone()
-                    .kunyomi
-                    .into_iter()
-                    .chain(kanji.natori.clone().into_iter())
-                    .collect::<Vec<_>>();
-
-                let kun = to_option(kun);
-                let on = to_option(kanji.onyomi.clone());
-
-                Some((kun, on))
-            },
-            kanji,
-            kana,
-        );
-
-        if readings.is_none() {
-            return false;
-        }
-
-        readings
-            .unwrap()
-            .iter()
-            .any(|i| i.0.contains(&literal.to_string()) && i.1.contains(&reading))
-    });
-
     Ok(NameResult::from(task.find()?))
 }
 

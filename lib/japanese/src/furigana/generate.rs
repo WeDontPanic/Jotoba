@@ -5,11 +5,8 @@ use super::{
 use crate::utils::real_string_len;
 use itertools::Itertools;
 
-pub trait RetrieveKanji:
-    FnMut(String) -> Option<(Option<Vec<String>>, Option<Vec<String>>)>
-{
-}
-impl<T: FnMut(String) -> Option<(Option<Vec<String>>, Option<Vec<String>>)> + ?Sized> RetrieveKanji
+pub trait RetrieveKanji: Fn(String) -> Option<(Option<Vec<String>>, Option<Vec<String>>)> {}
+impl<T: Fn(String) -> Option<(Option<Vec<String>>, Option<Vec<String>>)> + ?Sized> RetrieveKanji
     for T
 {
 }
@@ -26,11 +23,11 @@ pub fn checked<R: RetrieveKanji>(retrieve: R, kanji: &str, kana: &str) -> String
 }
 
 /// Generate a furigana string. Returns None on error
-pub fn unchecked<R: RetrieveKanji>(mut retrieve: R, kanji: &str, kana: &str) -> Option<String> {
+pub fn unchecked<R: RetrieveKanji>(retrieve: R, kanji: &str, kana: &str) -> Option<String> {
     let furis = calc_kanji_readings(kanji, kana)?;
     Some(
         furigana_to_str(
-            |ji, na| retrieve_readings(&mut retrieve, ji, na),
+            |ji, na| retrieve_readings(&retrieve, ji, na),
             kanji,
             furis.into_iter(),
         )
@@ -41,7 +38,7 @@ pub fn unchecked<R: RetrieveKanji>(mut retrieve: R, kanji: &str, kana: &str) -> 
 /// Takes a kanji(compound) and the assigned kana reading and returns (hopefully) a list of the
 /// provided kanji with the
 pub fn retrieve_readings<R: RetrieveKanji>(
-    retrieve: &mut R,
+    retrieve: R,
     kanji: &str,
     kana: &str,
 ) -> Option<Vec<(String, String)>> {

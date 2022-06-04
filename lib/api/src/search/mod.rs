@@ -5,10 +5,7 @@ pub mod word;
 
 use actix_web::web::Json;
 use error::api_error::RestError;
-use search::{
-    query::{Query, UserSettings},
-    query_parser::QueryParser,
-};
+use search::query::{parser::QueryParser, Query, UserSettings};
 use types::{api::search::SearchRequest, jotoba::search::QueryType};
 
 pub type Result<T> = std::result::Result<T, RestError>;
@@ -21,6 +18,7 @@ pub(crate) fn parse_query(payload: Json<SearchRequest>, q_type: QueryType) -> Re
     };
 
     let q_str = payload.query_str.clone();
+
     let query = QueryParser::new(q_str, q_type, settings, 0, 0, true, None)
         .parse()
         .ok_or(RestError::BadRequest)?;

@@ -3,7 +3,7 @@ pub mod names;
 pub mod sentences;
 pub mod words;
 
-use search::{query::UserSettings, query_parser::QueryParser};
+use search::{query::parser::QueryParser, query::UserSettings};
 use serde::Serialize;
 use types::{
     api::app::search::query::SearchPayload,

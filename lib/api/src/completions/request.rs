@@ -2,10 +2,7 @@ use std::str::FromStr;
 
 use error::api_error::RestError;
 use japanese::JapaneseExt;
-use search::{
-    query::{Query, QueryLang, UserSettings},
-    query_parser::{self, QueryParser},
-};
+use search::query::{self, parser::QueryParser, Query, QueryLang, UserSettings};
 use types::api::completions::Request;
 use types::jotoba::languages::Language;
 use utils::real_string_len;
@@ -18,7 +15,7 @@ pub(crate) fn adjust(request: Request) -> Request {
     // Some inputs place the roman letter of the japanese text while typing with romanized input.
     // If input is japanese but last character is a romanized letter, strip it off
 
-    let lang = query_parser::parse_language(&query_str);
+    let lang = query::parser::parse_language(&query_str);
 
     if lang == QueryLang::Japanese && query_str.ends_with("ｎ") {
         query_str = query_str.replace("ｎ", "ん");

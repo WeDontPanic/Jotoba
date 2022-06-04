@@ -73,7 +73,7 @@ fn words_with_kanji_reading(
             let kanji_reading = kanji_reading.reading.clone();
 
             let readings = japanese::furigana::generate::retrieve_readings(
-                &mut |i: String| {
+                |i: String| {
                     let retrieve = resources::get().kanji();
                     let kanji = retrieve.by_literal(i.chars().next()?)?;
                     if kanji.onyomi.is_empty() && kanji.kunyomi.is_empty() {
