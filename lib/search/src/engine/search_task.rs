@@ -7,7 +7,6 @@ use super::{
 use error::Error;
 use itertools::Itertools;
 use priority_container::unique::UniquePrioContainerMax;
-//use resources::models::storage::ResourceStorage;
 use resources::storage::ResourceStorage;
 use std::marker::PhantomData;
 use types::jotoba::languages::Language;
@@ -132,12 +131,6 @@ where
     pub fn find_exact(&self) -> Result<Vec<ResultItem<T::Output>>, Error> {
         let (query, lang) = self.queries.get(0).unwrap();
         let index = T::get_index(*lang).expect("Lang not loaded");
-
-        /*
-        let extact_query = T::GenDoc::new(vec![query]);
-        let document =
-            DocumentVector::new(index.get_indexer(), extact_query).ok_or(Error::Unexpected)?;
-        */
 
         let query_vec = match index.build_vector(&[query], None) {
             Some(qv) => qv,

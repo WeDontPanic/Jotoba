@@ -3,7 +3,6 @@ pub mod kanji;
 pub mod name;
 pub mod query;
 pub mod radical;
-pub mod regex_query;
 pub mod sentence;
 pub mod word;
 

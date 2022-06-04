@@ -1,6 +1,6 @@
 pub mod foreign;
 
-use crate::{regex_query::RegexSQuery, SearchMode};
+use crate::{query::regex::RegexSQuery, SearchMode};
 use japanese::JapaneseExt;
 use levenshtein::levenshtein;
 use once_cell::sync::Lazy;

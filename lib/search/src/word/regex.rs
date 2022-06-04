@@ -3,8 +3,10 @@ use std::time::Instant;
 use error::Error;
 use types::jotoba::words::Word;
 
-use crate::engine::words::native::regex as regex_engine;
-use crate::{engine::result::SearchResult, regex_query::RegexSQuery};
+use crate::{
+    engine::{result::SearchResult, words::native::regex as regex_engine},
+    query::regex::RegexSQuery,
+};
 
 use super::order::regex_order;
 

@@ -3,7 +3,7 @@ use order_struct::OrderVal;
 use priority_container::PrioContainerMax;
 use types::jotoba::words::Word;
 
-use crate::regex_query::RegexSQuery;
+use crate::query::regex::RegexSQuery;
 
 use super::regex_index;
 

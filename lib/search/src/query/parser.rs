@@ -8,9 +8,7 @@ use types::jotoba::{
     words::part_of_speech::PosSimple,
 };
 
-use crate::regex_query;
-
-use super::{Form, Query, QueryLang, SearchTypeTag, Tag, UserSettings};
+use super::{regex::RegexSQuery, Form, Query, QueryLang, SearchTypeTag, Tag, UserSettings};
 
 /// Represents a query
 pub struct QueryParser {
@@ -288,7 +286,7 @@ pub fn calc_page_offset(page: usize, page_size: usize) -> usize {
 
 /// Removes regex parts from a query. Returns `None` if `query` does not contain regex symbols
 fn strip_regex(query: &str) -> Option<String> {
-    let rg_query = regex_query::RegexSQuery::new(query)?;
+    let rg_query = RegexSQuery::new(query)?;
     Some(rg_query.get_chars().into_iter().collect())
 }
 

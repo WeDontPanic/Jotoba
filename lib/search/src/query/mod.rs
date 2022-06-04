@@ -1,11 +1,10 @@
 pub mod parser;
+pub mod regex;
 
 use std::{
     hash::{Hash, Hasher},
     str::FromStr,
 };
-
-use crate::regex_query::RegexSQuery;
 
 use itertools::Itertools;
 use percent_encoding::{utf8_percent_encode, AsciiSet, NON_ALPHANUMERIC};
@@ -15,6 +14,8 @@ use types::jotoba::{
     search::QueryType,
     words::{misc::Misc, part_of_speech::PosSimple},
 };
+
+use self::regex::RegexSQuery;
 
 const QUERY_ENCODE_SET: &AsciiSet = &NON_ALPHANUMERIC.add(b'/');
 
