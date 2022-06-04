@@ -15,14 +15,12 @@ utils = { path = "../utils" }
 indexes = { path = "../indexes"}
 localization = { path = "../localization" }
 resources = { path = "../resources"}
+types = { path = "../types" , default-features = false, features = ["jotoba_intern"]}
 serde = "1.0.137"
 log = "0.4.17"
 itertools = "0.10.3"
-futures = "0.3.21"
 once_cell = "1.12.0"
 levenshtein = "1.0.5"
-strsim = "0.10.0"
-eudex = { git = "https://github.com/JojiiOfficial/eudex"}
 regex = "1.5.6"
 #vector_space_model2 = { path = "../../../VectorSpaceModel" }
 vector_space_model2 = { git = "https://github.com/JojiiOfficial/VectorSpaceModel" }
@@ -33,11 +31,7 @@ bktree = { git = "https://github.com/JojiiOfficial/bktree"}
 bincode = "1.3.3"
 percent-encoding = "2.1.0"
 rayon = "1.5.3"
-types = { path = "../types" , default-features = false, features = ["jotoba_intern"]}
-#priority_container = {path = "../../../priority_container"}
 priority_container = { git = "https://github.com/JojiiOfficial/PrioContainer"}
+#priority_container = {path = "../../../priority_container"}
 order_struct = {git = "https://github.com/JojiiOfficial/OrderStruct"}
 spin = { version = "0.9.3", default-features = false, features = ["spin_mutex"] }
-
-[features]
-default = []
