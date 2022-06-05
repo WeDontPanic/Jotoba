@@ -351,7 +351,7 @@ checksum = "d468802bab17cbc0cc575e9b053f41e72aa36bfa6b7f55e3529ffa43161b97fa"
 [[package]]
 name = "autocompletion"
 version = "0.1.0"
-source = "git+https://github.com/WeDontPanic/AutoCompletionFramework#0119d4a46271105671cb1f44d64b75ccbb0ef22b"
+source = "git+https://github.com/WeDontPanic/AutoCompletionFramework#5ad77404770c14dd322e96ce2aaa422c5b95827c"
 dependencies = [
  "bincode",
  "eudex 0.1.1 (git+https://github.com/WeDontPanic/eudex)",
@@ -2164,14 +2164,11 @@ checksum = "eb9f9e6e233e5c4a35559a617bf40a4ec447db2e84c20b55a6f83167b7e57872"
 [[package]]
 name = "priority_container"
 version = "0.1.0"
-dependencies = [
- "stable_binary_heap",
-]
 
 [[package]]
 name = "priority_container"
 version = "0.1.0"
-source = "git+https://github.com/JojiiOfficial/PrioContainer#cdc87d3c5e56b4a1a02663e2403fb15e761b337a"
+source = "git+https://github.com/JojiiOfficial/PrioContainer#f68f0cd57edba3fcbc025bb108f0648adf73111d"
 
 [[package]]
 name = "proc-macro2"
@@ -2742,10 +2739,6 @@ name = "spin"
 version = "0.9.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c530c2b0d0bf8b69304b39fe2001993e267461948b890cd037d8ad4293fa1a0d"
-
-[[package]]
-name = "stable_binary_heap"
-version = "0.1.0"
 
 [[package]]
 name = "static_assertions"
