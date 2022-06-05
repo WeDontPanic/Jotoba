@@ -1540,7 +1540,7 @@ dependencies = [
 [[package]]
 name = "intmap"
 version = "0.7.1"
-source = "git+https://github.com/JojiiOfficial/rust-intmap#d3e760dfd4ce9baab19d06fd6348e77af82d5499"
+source = "git+https://github.com/JojiiOfficial/rust-intmap#45ca8ef1d7aa53962e176a6629b0a6fc1d3116a0"
 dependencies = [
  "serde",
 ]
