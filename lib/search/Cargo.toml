@@ -31,8 +31,8 @@ bktree = { git = "https://github.com/JojiiOfficial/bktree"}
 bincode = "1.3.3"
 percent-encoding = "2.1.0"
 rayon = "1.5.3"
-#priority_container = { git = "https://github.com/JojiiOfficial/PrioContainer"}
-priority_container = {path = "../../../priority_container"}
+priority_container = { git = "https://github.com/JojiiOfficial/PrioContainer"}
+#priority_container = {path = "../../../priority_container"}
 order_struct = {git = "https://github.com/JojiiOfficial/OrderStruct"}
 spin = { version = "0.9.3", default-features = false, features = ["spin_mutex"] }
 intmap = { git = "https://github.com/JojiiOfficial/rust-intmap"}
