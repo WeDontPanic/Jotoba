@@ -32,7 +32,6 @@ regex = "1.5.6"
 rayon = "1.5.3"
 types = { path = "../types" , default-features = false}
 autocompletion = { git = "https://github.com/WeDontPanic/AutoCompletionFramework" }
-#autocompletion = { path = "../../../AutosuggestionFramework"}
 priority_container = { git = "https://github.com/JojiiOfficial/PrioContainer"}
 
 [features]

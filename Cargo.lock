@@ -351,7 +351,7 @@ checksum = "d468802bab17cbc0cc575e9b053f41e72aa36bfa6b7f55e3529ffa43161b97fa"
 [[package]]
 name = "autocompletion"
 version = "0.1.0"
-source = "git+https://github.com/WeDontPanic/AutoCompletionFramework#faf26d11a76d26460ee9a756b555d681a095451f"
+source = "git+https://github.com/WeDontPanic/AutoCompletionFramework#0119d4a46271105671cb1f44d64b75ccbb0ef22b"
 dependencies = [
  "bincode",
  "eudex 0.1.1 (git+https://github.com/WeDontPanic/eudex)",
@@ -2020,7 +2020,7 @@ dependencies = [
 [[package]]
 name = "order_struct"
 version = "0.1.0"
-source = "git+https://github.com/JojiiOfficial/OrderStruct#a75c160c547b97bdb318540806836d99ae19afd7"
+source = "git+https://github.com/JojiiOfficial/OrderStruct#db28b225bd444e9fd7f5138b346e0dbb6f531540"
 dependencies = [
  "float-ord",
 ]
@@ -2933,9 +2933,9 @@ checksum = "cda74da7e1a664f795bb1f8a87ec406fb89a02522cf6e50620d016add6dbbf5c"
 
 [[package]]
 name = "tokio"
-version = "1.18.2"
+version = "1.19.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4903bf0427cf68dddd5aa6a93220756f8be0c34fcfa9f5e6191e103e15a31395"
+checksum = "0f392c8f16bda3456c0b00c6de39cb100449b98de55ac41c6cdd2bfcf53a1245"
 dependencies = [
  "bytes",
  "libc",
@@ -2962,9 +2962,9 @@ dependencies = [
 
 [[package]]
 name = "tokio-util"
-version = "0.7.2"
+version = "0.7.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f988a1a1adc2fb21f9c12aa96441da33a1728193ae0b95d2be22dbd17fcb4e5c"
+checksum = "cc463cd8deddc3770d20f9852143d50bf6094e640b485cb2e189a2099085ff45"
 dependencies = [
  "bytes",
  "futures-core",
@@ -2998,19 +2998,7 @@ dependencies = [
  "cfg-if",
  "log",
  "pin-project-lite",
- "tracing-attributes",
  "tracing-core",
-]
-
-[[package]]
-name = "tracing-attributes"
-version = "0.1.21"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "cc6b8ad3567499f98a1db7a752b07a7c8c7c7c34c332ec00effb2b0027974b7c"
-dependencies = [
- "proc-macro2",
- "quote",
- "syn",
 ]
 
 [[package]]
