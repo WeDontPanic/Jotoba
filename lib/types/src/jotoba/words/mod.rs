@@ -60,7 +60,8 @@ impl Word {
     /// Returns true if a word is common
     #[inline]
     pub fn is_common(&self) -> bool {
-        self.reading.get_reading().priorities.is_some()
+        //self.reading.get_reading().priorities.is_some()
+        self.reading_iter(true).any(|i| i.priorities.is_some())
     }
 
     /// Returns the jlpt level of a word. `None` if a word doesn't have a JLPT lvl assigned
