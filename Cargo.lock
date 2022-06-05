@@ -300,7 +300,7 @@ dependencies = [
  "log",
  "news",
  "once_cell",
- "priority_container",
+ "priority_container 0.1.0 (git+https://github.com/JojiiOfficial/PrioContainer)",
  "rayon",
  "regex",
  "resources",
@@ -357,7 +357,7 @@ dependencies = [
  "eudex 0.1.1 (git+https://github.com/WeDontPanic/eudex)",
  "jpeudex",
  "order_struct",
- "priority_container",
+ "priority_container 0.1.0 (git+https://github.com/JojiiOfficial/PrioContainer)",
  "qp-trie",
  "rayon",
  "serde",
@@ -2164,6 +2164,13 @@ checksum = "eb9f9e6e233e5c4a35559a617bf40a4ec447db2e84c20b55a6f83167b7e57872"
 [[package]]
 name = "priority_container"
 version = "0.1.0"
+dependencies = [
+ "stable_binary_heap",
+]
+
+[[package]]
+name = "priority_container"
+version = "0.1.0"
 source = "git+https://github.com/JojiiOfficial/PrioContainer#cdc87d3c5e56b4a1a02663e2403fb15e761b337a"
 
 [[package]]
@@ -2457,7 +2464,7 @@ dependencies = [
  "once_cell",
  "order_struct",
  "percent-encoding",
- "priority_container",
+ "priority_container 0.1.0",
  "rayon",
  "regex",
  "resources",
@@ -2734,6 +2741,10 @@ name = "spin"
 version = "0.9.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c530c2b0d0bf8b69304b39fe2001993e267461948b890cd037d8ad4293fa1a0d"
+
+[[package]]
+name = "stable_binary_heap"
+version = "0.1.0"
 
 [[package]]
 name = "static_assertions"

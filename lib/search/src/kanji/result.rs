@@ -1,10 +1,16 @@
 use std::fs::read_to_string;
-
 use types::jotoba::{
     kanji::Kanji,
     languages::Language,
     words::{filter_languages, Word},
 };
+
+// The final result of a Kanji search
+#[derive(Default)]
+pub struct KanjiResult {
+    pub items: Vec<Item>,
+    pub total_len: usize,
+}
 
 #[derive(Debug, PartialEq, Clone)]
 pub struct Item {

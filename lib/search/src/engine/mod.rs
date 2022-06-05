@@ -1,4 +1,5 @@
 pub mod document;
+pub mod utils;
 pub mod guess;
 pub mod kanji;
 pub mod metadata;

@@ -369,12 +369,10 @@ impl<'a> Search<'a> {
             return self.check_other_lang();
         }
 
-        /*
         println!("----------\n+++++++++++++++++++++++\n==============");
         for i in res.iter() {
             println!("{:?}: {}", i.item.word.get_reading().reading, i.relevance);
         }
-        */
 
         let mut wordresults = res.into_iter().map(|i| i.word.clone()).collect::<Vec<_>>();
 

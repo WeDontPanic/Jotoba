@@ -4,7 +4,7 @@ use utils::option_order;
 
 /// Order kanji results which were found by the kanjis meaning appropriately
 #[inline]
-pub(crate) fn by_meaning(a: &Item, b: &Item) -> Ordering {
+pub(crate) fn default(a: &Item, b: &Item) -> Ordering {
     let a = &a.kanji;
     let b = &b.kanji;
 

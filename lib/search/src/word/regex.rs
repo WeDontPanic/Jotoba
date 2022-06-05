@@ -1,12 +1,11 @@
-use std::time::Instant;
-
-use error::Error;
-use types::jotoba::words::Word;
-
 use crate::{
-    engine::{result::SearchResult, words::native::regex as regex_engine},
+    engine::{result::SearchResult, result_item::ResultItem, words::native::regex as regex_engine},
     query::regex::RegexSQuery,
 };
+use error::Error;
+use log::debug;
+use std::time::Instant;
+use types::jotoba::words::Word;
 
 use super::order::regex_order;
 
@@ -25,15 +24,16 @@ pub fn search(
     )?;
 
     // Select words to display
-    let words = res
+    let words: Vec<ResultItem<_>> = res
         .items
         .into_iter()
+        .map(|i| i.into())
         .rev()
         .skip(offset)
         .take(limit as usize)
         .collect::<Vec<_>>();
 
-    let res = SearchResult::from_items_ordered(words, res.item_len);
-    println!("Regex search took: {:?}", start.elapsed());
+    let res = SearchResult::new(words, res.item_len);
+    debug!("Regex search took: {:?}", start.elapsed());
     Ok(res)
 }

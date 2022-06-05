@@ -1,31 +1,25 @@
 use super::result_item::ResultItem;
-use std::{collections::HashSet, fmt::Debug, hash::Hash, ops::Index, vec::IntoIter};
+use std::{collections::HashSet, fmt::Debug, hash::Hash, ops::Index, slice::Iter, vec::IntoIter};
 
-/// A result from a search. Contains information about the actual amount of items returned and the
-/// limited items to display
-pub struct SearchResult<T: PartialEq> {
+/// A result from a search. Contains information about the actual
+/// amount of items returned and the items to display on the current page.
+/// The items are always ordered
+pub struct SearchResult<T> {
     pub total_items: usize,
     pub items: Vec<ResultItem<T>>,
 }
 
 impl<T: PartialEq> SearchResult<T> {
-    /// New SearchResult from a list of items. Requires `items` to be sorted
+    /// Create a new `SearchResult` from a list of items. Requires `items` to be sorted
     #[inline]
-    pub fn from_raw(items: Vec<ResultItem<T>>, total_items: usize) -> Self {
+    pub fn new(items: Vec<ResultItem<T>>, total_items: usize) -> Self {
         Self { items, total_items }
     }
+}
 
-    /// New SearchResult from a list of items
-    pub fn from_items<U: Into<ResultItem<T>>>(items: Vec<U>, total_len: usize) -> Self {
-        Self::from_items_order(items, total_len, true)
-    }
-
-    /// New SearchResult from a list of items. Requires `items` to be sorted
-    pub fn from_items_ordered<U: Into<ResultItem<T>>>(items: Vec<U>, total_len: usize) -> Self {
-        Self::from_items_order(items, total_len, false)
-    }
-
-    /// Get the amount of items in the result
+impl<T> SearchResult<T> {
+    /// Get the total amount of items in the result. This value is
+    /// always bigger or equal to the length of the items in the resultset
     #[inline]
     pub fn len(&self) -> usize {
         self.total_items
@@ -39,14 +33,8 @@ impl<T: PartialEq> SearchResult<T> {
 
     /// Returns an iterator over the raw result items
     #[inline]
-    pub fn iter<'a>(&'a self) -> impl Iterator<Item = &'a ResultItem<T>> + 'a {
+    pub fn iter(&self) -> Iter<'_, ResultItem<T>> {
         self.items.iter()
-    }
-
-    /// Returns an iterator over the raw result items
-    #[inline]
-    pub fn item_iter<'a>(&'a self) -> impl Iterator<Item = &'a T> + 'a {
-        self.items.iter().map(|i| &i.item)
     }
 
     #[inline]
@@ -58,26 +46,6 @@ impl<T: PartialEq> SearchResult<T> {
     #[inline]
     pub fn into_iter(self) -> impl Iterator<Item = T> {
         self.items.into_iter().map(|i| i.item)
-    }
-
-    fn from_items_order<U: Into<ResultItem<T>>>(
-        items: Vec<U>,
-        total_len: usize,
-        order: bool,
-    ) -> Self {
-        let mut items = items
-            .into_iter()
-            .map(|item| item.into())
-            .collect::<Vec<_>>();
-
-        if order {
-            items.sort_by(|a, b| a.cmp(&b).reverse());
-        }
-
-        Self {
-            total_items: total_len,
-            items,
-        }
     }
 }
 

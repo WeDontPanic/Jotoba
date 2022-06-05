@@ -2,6 +2,8 @@ mod order;
 pub mod result;
 mod tag_only;
 
+use self::result::KanjiResult;
+
 use super::query::Query;
 use crate::{
     engine::{
@@ -12,17 +14,9 @@ use crate::{
     query::QueryLang,
 };
 use error::Error;
-use itertools::Itertools;
 use japanese::JapaneseExt;
 use result::Item;
 use types::jotoba::kanji::Kanji;
-
-// Defines the result of a kanji search
-#[derive(Default)]
-pub struct KanjiResult {
-    pub items: Vec<Item>,
-    pub total_items: usize,
-}
 
 /// The entry of a kanji search
 pub fn search(query: &Query) -> Result<KanjiResult, Error> {
@@ -32,73 +26,58 @@ pub fn search(query: &Query) -> Result<KanjiResult, Error> {
 
     let query_str = format_query(&query.query);
 
-    let res;
-
-    match query.language {
-        QueryLang::Japanese => {
-            res = by_literals(&query.query);
-        }
-        QueryLang::Foreign | QueryLang::Undetected => {
-            res = by_meaning(&query.query);
-        }
-        QueryLang::Korean => {
-            res = by_korean_reading(&query.query);
-        }
-    }
+    let res = match query.language {
+        QueryLang::Japanese => by_japanese_query(&query.query),
+        QueryLang::Korean => by_korean_reading(&query.query),
+        QueryLang::Foreign | QueryLang::Undetected => by_meaning(&query.query),
+    };
 
     let mut items = to_item(res, &query);
+
     if !query_str.is_japanese() {
-        items.sort_by(order::by_meaning);
+        items.sort_by(order::default);
     }
 
-    let len = items.len();
+    let total_len = items.len();
+
     let items = items
         .into_iter()
         .skip(query.page_offset(query.settings.kanji_page_size as usize))
         .take(query.settings.kanji_page_size as usize)
         .collect::<Vec<_>>();
 
-    Ok(KanjiResult {
-        items,
-        total_items: len,
-    })
+    Ok(KanjiResult { items, total_len })
 }
 
 /// Find a kanji by its literal
-fn by_literals(query: &str) -> Vec<Kanji> {
-    let kanji = all_kanji_from_text(query);
+fn by_japanese_query(query: &str) -> Vec<Kanji> {
+    // Use kanji from query
+    let kanji = kanji_from_str(query);
     if !kanji.is_empty() || query.is_kanji() {
         return kanji;
     }
 
-    // kana search
-
-    let search = SearchTask::<native::Engine>::new(query).threshold(0.89);
-    let res = search.find_exact().unwrap_or_default();
-    if res.is_empty() {
-        return vec![];
-    }
-
-    let text = res
-        .into_iter()
-        .filter(|i| i.item.reading.kana.reading == query)
-        .map(|i| i.item.get_reading().reading.chars().collect::<Vec<_>>())
-        .flatten()
-        .take(100)
-        .unique()
-        .join("");
-
-    all_kanji_from_text(&text)
+    // Do word searc with kana instead
+    kana_search(query)
 }
 
-fn all_kanji_from_text(text: &str) -> Vec<Kanji> {
-    let kanji_storage = resources::get().kanji();
+/// Search for kanji using kana query
+fn kana_search(query: &str) -> Vec<Kanji> {
+    let mut search_task = SearchTask::<native::Engine>::new(query).threshold(0.7);
 
-    text.chars()
+    let q = query.to_string();
+    search_task.set_result_filter(move |i| i.has_reading(&q));
+
+    let q = query.to_string();
+    search_task.set_order_fn(move |word, rel, q_str, _| {
+        crate::word::order::japanese_search_order(word, rel, q_str, Some(&q))
+    });
+
+    search_task
+        .find_exact()
         .into_iter()
-        .filter(|i| i.is_kanji())
-        .filter_map(|literal| kanji_storage.by_literal(literal))
-        .cloned()
+        .map(|i| kanji_from_str(&i.get_reading().reading))
+        .flatten()
         .take(100)
         .collect()
 }
@@ -109,7 +88,20 @@ fn by_korean_reading(query: &str) -> Vec<Kanji> {
         .iter()
         .filter(|k| k.korean_h.iter().any(|kw| kw == query))
         .cloned()
-        .collect::<Vec<_>>()
+        .collect()
+}
+
+#[inline]
+fn from_char(c: char) -> Option<Kanji> {
+    resources::get().kanji().by_literal(c).cloned()
+}
+
+fn kanji_from_str(text: &str) -> Vec<Kanji> {
+    text.chars()
+        .into_iter()
+        .filter_map(|i| i.is_kanji().then(|| from_char(i)).flatten())
+        .take(100)
+        .collect()
 }
 
 /// Guesses the amount of results a search would return with given `query`

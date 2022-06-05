@@ -115,7 +115,7 @@ async fn kanji_search<'a>(base_data: &mut BaseData<'a>, query: &'a Query) -> SRe
     let q = query.to_owned();
     let result = web::block(move || search::kanji::search(&q)).await??;
     base_data.with_cust_pages(
-        result.total_items as u32,
+        result.total_len as u32,
         query.page as u32,
         query.settings.kanji_page_size,
         400,

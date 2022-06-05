@@ -34,7 +34,7 @@ pub async fn search(payload: Json<SearchPayload>) -> Result<Json<Resp>> {
         })
         .collect::<Vec<_>>();
 
-    let len = result.total_items as u32;
+    let len = result.total_len as u32;
     let kanji = kanji::Response::new(items);
     let page = new_page(&payload, kanji, len, payload.settings.kanji_page_size);
 

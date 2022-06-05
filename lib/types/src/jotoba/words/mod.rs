@@ -13,15 +13,6 @@ pub mod sense;
 
 pub use dict::Dict;
 
-use bitflags::BitFlag;
-
-#[cfg(feature = "jotoba_intern")]
-use japanese::{
-    furigana::{self, SentencePartRef},
-    JapaneseExt,
-};
-use serde::{Deserialize, Serialize};
-
 use self::{
     inflection::Inflections,
     misc::Misc,
@@ -30,11 +21,19 @@ use self::{
     priority::Priority,
     sense::{Sense, SenseGlossIter},
 };
-
 use super::languages::Language;
+use bitflags::BitFlag;
+use itertools::Itertools;
+use serde::{Deserialize, Serialize};
+
+#[cfg(feature = "jotoba_intern")]
+use japanese::{
+    furigana::{self, SentencePartRef},
+    JapaneseExt,
+};
 
 /// A single word item
-#[derive(Debug, Clone, Default, Serialize, Deserialize, Eq)]
+#[derive(Clone, Default, Serialize, Deserialize, Eq)]
 pub struct Word {
     pub sequence: u32,
     pub priorities: Option<Vec<Priority>>,
@@ -47,20 +46,6 @@ pub struct Word {
     pub intransive_verion: Option<u32>,
     pub sentences_available: u16,
     pub accents: PitchValues,
-}
-
-impl std::hash::Hash for Word {
-    #[inline]
-    fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
-        self.sequence.hash(state);
-    }
-}
-
-impl PartialEq for Word {
-    #[inline]
-    fn eq(&self, other: &Self) -> bool {
-        self.sequence == other.sequence
-    }
 }
 
 /// Various readings of a word
@@ -98,15 +83,11 @@ impl Word {
 
     /// Return all senses of a language
     #[inline]
-    pub fn senses_by_lang(&self, language: Language) -> Option<Vec<Sense>> {
-        let senses = self
-            .senses
+    pub fn senses_by_lang(&self, language: Language) -> Vec<&Sense> {
+        self.senses
             .iter()
             .filter(|i| i.language == language)
-            .cloned()
-            .collect();
-
-        to_option(senses)
+            .collect()
     }
 
     /// Get senses ordered by language (non-english first)
@@ -290,7 +271,6 @@ impl Word {
     /// Get alternative readings in a beautified, print-ready format
     #[inline]
     pub fn alt_readings_beautified(&self) -> String {
-        use itertools::Itertools;
         self.reading
             .alternative
             .iter()
@@ -311,7 +291,6 @@ impl Word {
     }
 
     fn pretty_print_senses(senses: &[Sense]) -> String {
-        use itertools::Itertools;
         senses
             .iter()
             .map(|i| i.glosses.clone())
@@ -405,8 +384,35 @@ pub fn filter_languages<'a, I: 'a + Iterator<Item = &'a mut Word>>(
     }
 }
 
-/// Returns `None` if the vec is empty or Some(Vec<T>) if not
-#[inline]
-fn to_option<T>(vec: Vec<T>) -> Option<Vec<T>> {
-    (!vec.is_empty()).then(|| vec)
+impl std::hash::Hash for Word {
+    #[inline]
+    fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
+        self.sequence.hash(state);
+    }
+}
+
+impl PartialEq for Word {
+    #[inline]
+    fn eq(&self, other: &Self) -> bool {
+        self.sequence == other.sequence
+    }
+}
+
+impl std::fmt::Debug for Word {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let senses = self
+            .senses_by_lang(Language::English)
+            .into_iter()
+            .map(|i| i.glosses.iter().map(|i| &i.gloss).join("|"))
+            .join("\n");
+
+        f.debug_struct("Word")
+            .field("Seq", &self.sequence)
+            .field("Kana", &self.reading.kana.reading)
+            .field("Reading", &self.get_reading().reading)
+            .field("Common", &self.is_common())
+            .field("JLPT", &self.jlpt_lvl)
+            .field("Translations", &senses)
+            .finish()
+    }
 }
