@@ -45,7 +45,7 @@ fn check_all() -> bool {
 }
 
 fn indexes() -> bool {
-    words() && names() && sentences()
+    words() && names() && sentences() && regex()
 }
 
 fn sentences() -> bool {
@@ -133,6 +133,20 @@ fn words() -> bool {
     for vec in jp_index.get_vector_store().iter() {
         if word_retrieve.by_sequence(vec.document).is_none() {
             println!("Word and (Japanese) Index don't match");
+            return false;
+        }
+    }
+
+    true
+}
+
+fn regex() -> bool {
+    let w_retrieve = resources::get().words();
+
+    let regex_index = engine::words::native::regex_index::get();
+    for (_, words) in regex_index.iter() {
+        if words.iter().any(|i| w_retrieve.by_sequence(*i).is_none()) {
+            println!("Regex index invalid");
             return false;
         }
     }

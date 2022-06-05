@@ -18,18 +18,16 @@ pub fn search<F>(query: &RegexSQuery, sort: F, limit: usize) -> Result<RegexSear
 where
     F: Fn(&Word, &str) -> usize,
 {
-    let possible_results = regex_index::get().find(&query.get_chars());
+    let word_resources = resources::get().words();
 
     let mut out_queue = PrioContainerMax::new(limit);
 
-    let word_resources = resources::get().words();
+    let possible_results = regex_index::get().find(&query.get_chars());
 
     let mut len: usize = 0;
+
     for seq_id in possible_results {
-        let word = match word_resources.by_sequence(seq_id) {
-            Some(w) => w,
-            None => continue,
-        };
+        let word = word_resources.by_sequence(seq_id).unwrap();
 
         let item_iter = word
             .reading_iter(true)
@@ -39,10 +37,12 @@ where
                 OrderVal::new(word, order)
             })
             .inspect(|_| len += 1);
+
         out_queue.extend(item_iter);
     }
 
     let items: Vec<_> = out_queue.into_iter().map(|i| i.0.into_inner()).collect();
+
     Ok(RegexSearchResult {
         items,
         item_len: len,
