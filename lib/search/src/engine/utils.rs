@@ -1,10 +1,10 @@
-use priority_container::unique::UniquePrioContainerMax;
+use priority_container::StableUniquePrioContainerMax;
 
 /// Takes the correct "limit" elements form a from a UniquePrioContainerMax at "offset"
 pub fn page_from_pqueue<U: Ord>(
     limit: usize,
     offset: usize,
-    pqueue: UniquePrioContainerMax<U>,
+    pqueue: StableUniquePrioContainerMax<U>,
 ) -> Vec<U> {
     let len = pqueue.len();
 

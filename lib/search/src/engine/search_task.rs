@@ -6,7 +6,7 @@ use super::{
 };
 use error::Error;
 use itertools::Itertools;
-use priority_container::unique::UniquePrioContainerMax;
+use priority_container::StableUniquePrioContainerMax;
 use std::marker::PhantomData;
 use types::jotoba::languages::Language;
 use vector_space_model2::{DocumentVector, Vector};
@@ -137,7 +137,7 @@ where
             None => return SearchResult::default(),
         };
 
-        let mut out = UniquePrioContainerMax::new(self.offset + self.limit);
+        let mut out = StableUniquePrioContainerMax::new(self.offset + self.limit);
         self.find_by_vec(query_vec, query, *lang, &mut out);
 
         let total_count = out.total_pushed();
@@ -148,7 +148,8 @@ where
 
     /// Runs the search task and returns the result.
     pub fn find(&self) -> Result<SearchResult<T::Output>, Error> {
-        let mut pqueue = UniquePrioContainerMax::new_allocated(self.limit + self.offset);
+        let cap = self.limit + self.offset;
+        let mut pqueue = StableUniquePrioContainerMax::new_allocated(cap, cap);
 
         for (q_str, vec, lang) in self.get_queries() {
             self.find_by_vec(vec, &q_str, lang, &mut pqueue);
@@ -163,7 +164,7 @@ where
 
     /// Takes the correct page from a UniquePrioContainerMax based on the given offset and limit
     #[inline]
-    fn take_page<U: Ord>(&self, pqueue: UniquePrioContainerMax<U>) -> Vec<U> {
+    fn take_page<U: Ord>(&self, pqueue: StableUniquePrioContainerMax<U>) -> Vec<U> {
         super::utils::page_from_pqueue(self.limit, self.offset, pqueue)
     }
 
@@ -182,7 +183,7 @@ where
         q_vec: Vector,
         q_str: &str,
         language: Option<Language>,
-        out: &mut UniquePrioContainerMax<ResultItem<T::Output>>,
+        out: &mut StableUniquePrioContainerMax<ResultItem<T::Output>>,
     ) {
         let index = match T::get_index(language) {
             Some(index) => index,
@@ -209,7 +210,7 @@ where
         q_vec: &Vector,
         q_str: &str,
         language: Option<Language>,
-        out: &mut UniquePrioContainerMax<ResultItem<T::Output>>,
+        out: &mut StableUniquePrioContainerMax<ResultItem<T::Output>>,
     ) {
         let storage = resources::get();
 
