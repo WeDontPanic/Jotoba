@@ -300,7 +300,7 @@ dependencies = [
  "log",
  "news",
  "once_cell",
- "priority_container 0.1.0 (git+https://github.com/JojiiOfficial/PrioContainer)",
+ "priority_container",
  "rayon",
  "regex",
  "resources",
@@ -351,13 +351,13 @@ checksum = "d468802bab17cbc0cc575e9b053f41e72aa36bfa6b7f55e3529ffa43161b97fa"
 [[package]]
 name = "autocompletion"
 version = "0.1.0"
-source = "git+https://github.com/WeDontPanic/AutoCompletionFramework#5ad77404770c14dd322e96ce2aaa422c5b95827c"
+source = "git+https://github.com/WeDontPanic/AutoCompletionFramework#ecd6c4728b463fb838b3b2846e9ad5fcc0bcda8f"
 dependencies = [
  "bincode",
  "eudex 0.1.1 (git+https://github.com/WeDontPanic/eudex)",
  "jpeudex",
  "order_struct",
- "priority_container 0.1.0 (git+https://github.com/JojiiOfficial/PrioContainer)",
+ "priority_container",
  "qp-trie",
  "rayon",
  "serde",
@@ -2168,11 +2168,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d5490c886ebeb0eb225aa739259736aac3f9bb1a64082219527d203c304d1161"
 
 [[package]]
-name = "priority_container"
-version = "0.1.0"
-source = "git+https://github.com/JojiiOfficial/PrioContainer#f68f0cd57edba3fcbc025bb108f0648adf73111d"
-
-[[package]]
 name = "proc-macro2"
 version = "1.0.39"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2464,7 +2459,7 @@ dependencies = [
  "once_cell",
  "order_struct",
  "percent-encoding",
- "priority_container 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "priority_container",
  "rayon",
  "regex",
  "resources",
@@ -2940,9 +2935,9 @@ checksum = "cda74da7e1a664f795bb1f8a87ec406fb89a02522cf6e50620d016add6dbbf5c"
 
 [[package]]
 name = "tokio"
-version = "1.19.1"
+version = "1.19.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "95eec79ea28c00a365f539f1961e9278fbcaf81c0ff6aaf0e93c181352446948"
+checksum = "c51a52ed6686dd62c320f9b89299e9dfb46f730c7a48e635c19f21d116cb1439"
 dependencies = [
  "bytes",
  "libc",
