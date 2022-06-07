@@ -3,7 +3,6 @@ pub mod result;
 mod tag_only;
 
 use self::result::KanjiResult;
-
 use super::query::Query;
 use crate::{
     engine::{

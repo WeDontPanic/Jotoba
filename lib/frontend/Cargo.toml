@@ -24,6 +24,9 @@ percent-encoding = "2.1.0"
 types = { path = "../types" , features = ["jotoba_intern"]}
 itertools = "0.10.3"
 
+[dev-dependencies]
+ructe = "0.13.4"
+
 [build-dependencies]
 ructe = "0.13.4"
 

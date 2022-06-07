@@ -19,9 +19,8 @@ impl Indexable for Engine {
     fn get_index(
         language: Option<Language>,
     ) -> Option<&'static vector_space_model2::Index<Self::Document, Self::Metadata>> {
-        indexes::get()
-            .word()
-            .foreign(language.expect("Language required"))
+        let language = language.expect("Language required");
+        indexes::get().word().foreign(language)
     }
 }
 
@@ -133,8 +132,7 @@ pub fn guess_language(query: &str) -> Vec<Language> {
 #[cfg(test)]
 mod test {
     use super::*;
-    use config::{Config, SearchConfig, ServerConfig};
-    use std::{path::PathBuf, time::Instant};
+    use std::time::Instant;
 
     #[test]
     fn test_guess_lang() {
@@ -158,33 +156,8 @@ mod test {
     }
 
     fn load_data() {
-        // never do this in production!
-        let mut config = Config::new(Some(PathBuf::from("../../data/config.toml"))).unwrap();
-        config.search = Some(SearchConfig {
-            indexes_source: Some(String::from("../../indexes")),
-            search_timeout: None,
-            suggestion_timeout: None,
-            suggestion_sources: Some(String::from("../../suggestions")),
-            report_queries_after: None,
-        });
-
-        config.server = ServerConfig {
-            storage_data: Some(String::from("../../resources/storage_data")),
-            ..ServerConfig::default()
-        };
-
-        /*
-        resources::initialize_resources(
-            config.get_storage_data_path().as_str(),
-            config.get_radical_map_path().as_str(),
-            config.get_sentences_path().as_str(),
-            config.get_kreading_freq_path().as_str(),
-        )
-        .expect("Failed to load resources");
-        */
-
-        // TODO: load indexes
-        //index::load("../../indexes").unwrap();
+        indexes::storage::load("../../indexes").expect("Failed to load indexes");
+        resources::load("../../resources/storage_data").expect("Failed to load resources");
     }
 }
 

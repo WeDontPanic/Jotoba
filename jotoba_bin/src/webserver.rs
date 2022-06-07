@@ -44,8 +44,7 @@ pub(super) async fn start(options: Options) -> std::io::Result<()> {
 
     let address = config.server.listen_address.clone();
 
-    if !check::resources() {
-        log::error!("Not all required data found! Exiting");
+    if !check() {
         return Ok(());
     }
 
@@ -328,8 +327,21 @@ fn load_translations(config: &Config) -> Arc<TranslationDict> {
 }
 
 pub fn load_indexes(config: &Config) {
-    //search::engine::load_indexes(config).expect("Failed to load v2 index files");
     indexes::storage::load(config.get_indexes_source()).expect("Failed to load index files");
+}
+
+fn check() -> bool {
+    if !check::resources() {
+        log::error!("Not all required data found! Exiting");
+        return false;
+    }
+
+    if !indexes::get().check() {
+        log::error!("Not all indexes are available!");
+        return false;
+    }
+
+    true
 }
 
 #[cfg(feature = "sentry_error")]

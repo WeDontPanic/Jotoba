@@ -1,9 +1,9 @@
+use crate::engine::result::SearchResult;
 use itertools::Itertools;
 use localization::{language::Language, traits::Translatable, TranslationDict};
 use types::jotoba::names::Name;
 
-use crate::engine::result::SearchResult;
-
+/// Result of a name search
 pub struct NameResult {
     pub items: Vec<&'static Name>,
     pub total_count: u32,

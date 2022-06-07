@@ -37,8 +37,6 @@ impl SearchEngine for Engine {
     ) -> Option<(Vector, String)> {
         let mut terms = vec![query.to_string()];
         terms.extend(tinysegmenter::tokenize(query));
-        //let vec = DocumentVector::new(index.get_indexer(), query_document.clone())?;
-        //Some((vec, query.to_string()))
         let vec = index.build_vector(&terms, None)?;
         Some((vec, query.to_string()))
     }

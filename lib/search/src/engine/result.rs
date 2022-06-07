@@ -49,7 +49,7 @@ impl<T> SearchResult<T> {
     }
 }
 
-impl<T: PartialEq + Hash + Clone + Eq> SearchResult<T> {
+impl<T: Clone + Hash + Eq> SearchResult<T> {
     pub fn merge<O>(&mut self, other: O)
     where
         O: Iterator<Item = ResultItem<T>>,
@@ -59,10 +59,7 @@ impl<T: PartialEq + Hash + Clone + Eq> SearchResult<T> {
 }
 
 /// Merges two sorted sequences `other` and `src` and stores result into `src`. Ignores duplicates.
-fn merge_sorted_list<O, T: PartialEq + Clone + Hash + Eq>(
-    src: &mut Vec<ResultItem<T>>,
-    other: O,
-) -> usize
+fn merge_sorted_list<O, T: Clone + Hash + Eq>(src: &mut Vec<ResultItem<T>>, other: O) -> usize
 where
     O: Iterator<Item = ResultItem<T>>,
 {

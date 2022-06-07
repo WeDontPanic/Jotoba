@@ -6,6 +6,7 @@ use order_struct::order_nh::OrderVal;
 use priority_container::StableUniquePrioContainerMax;
 use types::jotoba::words::Word;
 
+/// Result of a regex search
 pub struct RegexSearchResult {
     pub items: Vec<&'static Word>,
     // the total amount of items the search would return.

@@ -39,20 +39,6 @@ impl<T: PartialEq> ResultItem<T> {
     }
 }
 
-impl<T: PartialEq> From<T> for ResultItem<T> {
-    #[inline]
-    fn from(item: T) -> Self {
-        ResultItem::new(item, 0)
-    }
-}
-
-impl<T: PartialEq> From<(T, usize)> for ResultItem<T> {
-    #[inline]
-    fn from((item, relevance): (T, usize)) -> Self {
-        ResultItem::new(item, relevance)
-    }
-}
-
 impl<T: PartialEq> PartialEq for ResultItem<T> {
     #[inline(always)]
     fn eq(&self, other: &Self) -> bool {
@@ -82,3 +68,18 @@ impl<T: PartialEq> Ord for ResultItem<T> {
         self.relevance.cmp(&other.relevance)
     }
 }
+
+impl<T: PartialEq> From<T> for ResultItem<T> {
+    #[inline]
+    fn from(item: T) -> Self {
+        ResultItem::new(item, 0)
+    }
+}
+
+impl<T: PartialEq> From<(T, usize)> for ResultItem<T> {
+    #[inline]
+    fn from((item, relevance): (T, usize)) -> Self {
+        ResultItem::new(item, relevance)
+    }
+}
+

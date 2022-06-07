@@ -38,8 +38,6 @@ impl SearchEngine for Engine {
     ) -> Option<(Vector, String)> {
         let mut terms = all_terms(&query.to_lowercase());
         terms.push(query.to_string().to_lowercase());
-        //let doc = DocumentVector::new(index.get_indexer(), query_document.clone())?;
-        //Some((doc, query.to_string()))
         let vec = index.build_vector(&terms, None)?;
         Some((vec, query.to_string()))
     }

@@ -39,9 +39,6 @@ impl SearchEngine for Engine {
         _allow_align: bool,
         _language: Option<Language>,
     ) -> Option<(Vector, String)> {
-        //let query_document = GenDoc::new(format_word(query));
-        //let vec = DocumentVector::new(index.get_indexer(), query_document.clone())?;
-        //Some((vec, query.to_string()))
         let vec = index.build_vector(&format_word(query), None)?;
         Some((vec, query.to_string()))
     }
