@@ -250,10 +250,10 @@ pub(crate) fn prepare_data(ccf: &Config) {
             load_indexes(&cf);
         });
 
-        //let cf = ccf.clone();
+        let cf = ccf.clone();
         s.spawn(move |_| {
             log::debug!("Loading suggestions");
-            indexes::storage::suggestions::load("./resources/suggestions")
+            indexes::storage::suggestions::load(cf.get_suggestion_sources())
                 .expect("Failed to load suggestions");
         });
 

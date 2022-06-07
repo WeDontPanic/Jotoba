@@ -1,7 +1,6 @@
 mod kanji;
 mod names;
 mod request;
-//mod storage;
 mod words;
 
 use actix_web::web::Json;

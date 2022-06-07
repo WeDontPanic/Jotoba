@@ -5,7 +5,6 @@ use std::{
 };
 
 use serde::{Deserialize, Serialize};
-
 use std::{
     fs::{self, File},
     path::{Path, PathBuf},
@@ -40,35 +39,12 @@ pub struct SentryConfig {
 
 #[derive(Serialize, Deserialize, Clone, Debug, Default)]
 pub struct SearchConfig {
-    pub suggestion_timeout: Option<u64>,
     pub suggestion_sources: Option<String>,
     pub indexes_source: Option<String>,
     pub report_queries_after: Option<u64>,
-    pub search_timeout: Option<u64>,
 }
 
 impl Config {
-    /// Returns the configured search timeout or the default value `10s`
-    pub fn get_search_timeout(&self) -> Duration {
-        let sec = self
-            .search
-            .as_ref()
-            .and_then(|i| i.search_timeout)
-            .unwrap_or(10);
-        Duration::from_secs(sec)
-    }
-
-    /// Returns the configured suggestion timeout or its default value if not set
-    pub fn get_suggestion_timeout(&self) -> Duration {
-        let amount = self
-            .search
-            .as_ref()
-            .and_then(|i| i.suggestion_timeout)
-            .unwrap_or(100);
-
-        Duration::from_millis(amount)
-    }
-
     /// Returns the configured index source files or its default value if not set
     pub fn get_indexes_source(&self) -> &str {
         self.search
@@ -82,7 +58,7 @@ impl Config {
         self.search
             .as_ref()
             .and_then(|i| i.suggestion_sources.as_deref())
-            .unwrap_or("./suggestions")
+            .unwrap_or("./resources/suggestions")
     }
 
     /// Returns the configured query report timeout

@@ -13,7 +13,7 @@ search = { path = "../search" }
 utils = { path = "../utils" }
 config = { path = "../config" }
 resources = { path = "../resources" }
-indexes = { path = "../indexes"}
+indexes = { path = "../indexes" }
 types = { path = "../types", default-features = false }
 actix-web = "4.0.1"
 actix-multipart = { version = "0.4.0" }
@@ -27,7 +27,7 @@ bincode = "1.3.3"
 regex = "1.5.6"
 rayon = "1.5.3"
 autocompletion = { git = "https://github.com/WeDontPanic/AutoCompletionFramework" }
-intmap = {git = "https://github.com/JojiiOfficial/rust-intmap"}
+intmap = { git = "https://github.com/JojiiOfficial/rust-intmap" }
 priority_container = "0.1.0"
 futures = { version = "0.3.21", optional = true }
 leptess = { version = "0.13.2", optional = true }
