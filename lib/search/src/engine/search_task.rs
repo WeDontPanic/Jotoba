@@ -146,6 +146,13 @@ where
         SearchResult::new(res, total_count)
     }
 
+    /// Runs the search task and writes all items into the priority queue
+    pub fn find_to(&self, out: &mut StableUniquePrioContainerMax<ResultItem<T::Output>>) {
+        for (q_str, vec, lang) in self.get_queries() {
+            self.find_by_vec(vec, &q_str, lang, out);
+        }
+    }
+
     /// Runs the search task and returns the result.
     pub fn find(&self) -> Result<SearchResult<T::Output>, Error> {
         let cap = self.limit + self.offset;
