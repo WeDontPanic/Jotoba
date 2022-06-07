@@ -8,3 +8,4 @@ pub mod storage;
 pub mod words;
 
 pub use storage::get;
+pub use storage::suggestions::get_suggestions;

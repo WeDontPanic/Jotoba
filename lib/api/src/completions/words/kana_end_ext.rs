@@ -1,5 +1,3 @@
-//use priority_container::PrioContainerMax;
-
 use autocompletion::{
     index::{
         japanese::{Item, JapaneseIndex},

@@ -17,10 +17,6 @@ pub fn suggestions(query: &Query, query_str: &str) -> Option<Vec<WordPair>> {
     let query_lower = autocompletion::index::basic::basic_format(query_str.trim());
     let mut task = SuggestionTask::new(30);
 
-    //println!("raw: {:?}", query_lower.trim());
-
-    // Raw
-
     // Default search query
     task.add_query(new_suggestion_query(
         &query_lower,
@@ -37,42 +33,41 @@ pub fn suggestions(query: &Query, query_str: &str) -> Option<Vec<WordPair>> {
 
     // Romaji result
     if let Some(hira_query) = try_romaji(query_str.trim()) {
-        if let Some(jp_engine) = storage::JP_WORD_INDEX.get() {
-            let mut query = SuggestionQuery::new(jp_engine, hira_query);
-            query.weights.total_weight = 0.5;
-            /*
-            query.weights.freq_weight = 0.1;
-            query.weights.str_weight = 1.9;
-            */
+        let jp_engine = indexes::get_suggestions().jp_words();
+        let mut query = SuggestionQuery::new(jp_engine, hira_query);
+        query.weights.total_weight = 0.5;
+        /*
+        query.weights.freq_weight = 0.1;
+        query.weights.str_weight = 1.9;
+        */
 
-            let mut k_r_align = KanjiAlignExtension::new(jp_engine);
-            k_r_align.options.weights.freq_weight = 1.0;
-            k_r_align.options.threshold = 5;
-            query.add_extension(k_r_align);
+        let mut k_r_align = KanjiAlignExtension::new(jp_engine);
+        k_r_align.options.weights.freq_weight = 1.0;
+        k_r_align.options.threshold = 5;
+        query.add_extension(k_r_align);
 
-            let mut similar_terms = SimilarTermsExtension::new(jp_engine, 5);
-            similar_terms.options.weights.total_weight = 0.005;
-            similar_terms.options.threshold = 10;
-            query.add_extension(similar_terms);
+        let mut similar_terms = SimilarTermsExtension::new(jp_engine, 5);
+        similar_terms.options.weights.total_weight = 0.005;
+        similar_terms.options.threshold = 10;
+        query.add_extension(similar_terms);
 
-            task.set_rel_mod(|i, rel| {
-                let out = i.to_output();
-                let kana = &out.primary;
-                if japanese::romaji_prefix(query_str.trim(), &kana) {
-                    return rel + 1000;
-                }
-                rel
-            });
+        task.set_rel_mod(|i, rel| {
+            let out = i.to_output();
+            let kana = &out.primary;
+            if japanese::romaji_prefix(query_str.trim(), &kana) {
+                return rel + 1000;
+            }
+            rel
+        });
 
-            task.add_query(query);
-        }
+        task.add_query(query);
     }
 
     Some(convert_results(task.search()))
 }
 
 fn new_suggestion_query(query: &str, lang: Language) -> Option<SuggestionQuery> {
-    let engine = storage::WORD_INDEX.get()?.get(&lang)?;
+    let engine = indexes::get_suggestions().foreign_words(lang)?;
 
     let mut suggestion_query = SuggestionQuery::new(engine, &query);
     suggestion_query.weights.str_weight = 1.5;

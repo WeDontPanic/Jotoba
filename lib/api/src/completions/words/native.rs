@@ -1,3 +1,4 @@
+use super::{super::*, kana_end_ext::KanaEndExtension};
 use autocompletion::{
     index::{str_item::StringItem, IndexItem},
     suggest::{
@@ -8,13 +9,11 @@ use autocompletion::{
 };
 use romaji::RomajiExt;
 
-use super::{super::*, kana_end_ext::KanaEndExtension};
-
 const MAX_SENTENCE_LEN: usize = 10;
 
 /// Get suggestions for foreign search input
 pub fn suggestions(query: &Query, radicals: &[char]) -> Option<Vec<WordPair>> {
-    let jp_engine = storage::JP_WORD_INDEX.get()?;
+    let jp_engine = indexes::get_suggestions().jp_words();
     let query_str = query.query.as_str();
 
     let mut suggestion_task = SuggestionTask::new(30);

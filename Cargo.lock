@@ -291,8 +291,9 @@ dependencies = [
  "bincode",
  "config",
  "error",
- "eudex 0.1.1 (git+https://github.com/JojiiOfficial/eudex)",
  "futures",
+ "indexes",
+ "intmap",
  "itertools",
  "japanese",
  "jpeudex",
@@ -308,7 +309,6 @@ dependencies = [
  "search",
  "sentence_reader",
  "serde",
- "strsim 0.10.0",
  "types",
  "utils",
 ]
@@ -354,7 +354,7 @@ version = "0.1.0"
 source = "git+https://github.com/WeDontPanic/AutoCompletionFramework#ecd6c4728b463fb838b3b2846e9ad5fcc0bcda8f"
 dependencies = [
  "bincode",
- "eudex 0.1.1 (git+https://github.com/WeDontPanic/eudex)",
+ "eudex",
  "jpeudex",
  "order_struct",
  "priority_container",
@@ -1041,11 +1041,6 @@ dependencies = [
 [[package]]
 name = "eudex"
 version = "0.1.1"
-source = "git+https://github.com/JojiiOfficial/eudex#b97f002b10dfe21047d130acf2e4f6d3f77779c4"
-
-[[package]]
-name = "eudex"
-version = "0.1.1"
 source = "git+https://github.com/WeDontPanic/eudex#0a5f383a9540ffbbdf2913966743af1732bbd3d7"
 dependencies = [
  "serde",
@@ -1490,6 +1485,7 @@ dependencies = [
 name = "indexes"
 version = "0.1.0"
 dependencies = [
+ "autocompletion",
  "bincode",
  "bitflags 0.1.0",
  "bktree",

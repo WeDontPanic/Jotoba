@@ -4,8 +4,6 @@ version = "0.1.0"
 authors = ["jojii <jojii@gmx.net>"]
 edition = "2021"
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
-
 [dependencies]
 japanese = { path = "../japanese" }
 news = { path = "../news" }
@@ -15,25 +13,25 @@ search = { path = "../search" }
 utils = { path = "../utils" }
 config = { path = "../config" }
 resources = { path = "../resources" }
+indexes = { path = "../indexes"}
+types = { path = "../types", default-features = false }
 actix-web = "4.0.1"
+actix-multipart = { version = "0.4.0" }
 itertools = "0.10.3"
 once_cell = "1.12.0"
 serde = "1.0.137"
 romaji = "0.1.1"
 log = "0.4.17"
-eudex = { git = "https://github.com/JojiiOfficial/eudex" }
 jpeudex = { git = "https://github.com/JojiiOfficial/jpeudex" }
-strsim = "0.10.0"
 bincode = "1.3.3"
-actix-multipart = "0.4.0"
-futures = "0.3.21"
-leptess = { version = "0.13.2", optional = true }
 regex = "1.5.6"
 rayon = "1.5.3"
-types = { path = "../types", default-features = false }
 autocompletion = { git = "https://github.com/WeDontPanic/AutoCompletionFramework" }
+intmap = {git = "https://github.com/JojiiOfficial/rust-intmap"}
 priority_container = "0.1.0"
+futures = { version = "0.3.21", optional = true }
+leptess = { version = "0.13.2", optional = true }
 
 [features]
 default = []
-img_scan = ["leptess"]
+img_scan = ["leptess", "futures"]

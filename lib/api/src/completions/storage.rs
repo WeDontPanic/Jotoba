@@ -1,9 +1,8 @@
-use std::{collections::HashMap, error::Error, fs::File, io::BufReader, path::Path};
-
 use autocompletion::index::{basic::BasicIndex, japanese::JapaneseIndex};
 use config::Config;
 use log::info;
 use once_cell::sync::OnceCell;
+use std::{collections::HashMap, error::Error, fs::File, io::BufReader, path::Path};
 use types::jotoba::languages::Language;
 
 // Words

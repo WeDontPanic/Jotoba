@@ -9,6 +9,7 @@ edition = "2021"
 types = { path = "../types" }
 #vector_space_model2 = { path = "../../../VectorSpaceModel" }
 vector_space_model2 = { git = "https://github.com/JojiiOfficial/VectorSpaceModel" }
+autocompletion = { git = "https://github.com/WeDontPanic/AutoCompletionFramework" }
 bktree = { git = "https://github.com/JojiiOfficial/bktree" }
 serde = { version = "1.0.137", features = ["derive"] }
 byteorder = "1.4.3"

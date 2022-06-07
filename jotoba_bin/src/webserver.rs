@@ -246,14 +246,15 @@ pub(crate) fn prepare_data(ccf: &Config) {
 
         let cf = ccf.clone();
         s.spawn(move |_| {
-            log::debug!("Loading Suggestions");
-            load_suggestions(&cf);
-        });
-
-        let cf = ccf.clone();
-        s.spawn(move |_| {
             log::debug!("Loading Indexes");
             load_indexes(&cf);
+        });
+
+        //let cf = ccf.clone();
+        s.spawn(move |_| {
+            log::debug!("Loading suggestions");
+            indexes::storage::suggestions::load("./resources/suggestions")
+                .expect("Failed to load suggestions");
         });
 
         s.spawn(|_| {
@@ -310,12 +311,6 @@ pub fn load_resources(src: &str) {
     resources::load(src).expect("Failed to load resource storage");
 }
 
-fn load_suggestions(config: &Config) {
-    if let Err(err) = api::completions::load_suggestions(config) {
-        warn!("Failed to load suggestions: {}", err);
-    }
-}
-
 fn load_translations(config: &Config) -> Arc<TranslationDict> {
     let locale_dict = TranslationDict::new(
         config.server.get_locale_path(),
@@ -338,6 +333,11 @@ fn check() -> bool {
 
     if !indexes::get().check() {
         log::error!("Not all indexes are available!");
+        return false;
+    }
+
+    if !indexes::get_suggestions().check() {
+        log::error!("Not all suggestion indexes are available!");
         return false;
     }
 

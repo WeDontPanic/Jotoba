@@ -33,7 +33,6 @@ fn word_search(query: &str, language: Language) -> Result<Vec<char>, Error> {
 
     let foreign_order = search::word::order::foreign::ForeignOrder::new();
     search_task.set_order_fn(move |word, rel, q_str, lang| {
-        //search::word::order::foreign::(word, rel, q_str, lang.unwrap(), language)
         foreign_order.score(word, rel, q_str, lang.unwrap(), language)
     });
 

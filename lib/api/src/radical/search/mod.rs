@@ -43,7 +43,7 @@ pub async fn search_radical(
 
 /// Maps radicals by its literals to ResRadical with its stroke count
 fn map_radicals(inp: &[char]) -> HashMap<u8, BTreeSet<ResRadical>> {
-    let mut radicals = HashMap::with_capacity(inp.len());
+    let mut radicals: HashMap<u8, BTreeSet<ResRadical>> = HashMap::with_capacity(inp.len());
 
     for (lit, strokes) in inp
         .iter()
@@ -51,7 +51,7 @@ fn map_radicals(inp: &[char]) -> HashMap<u8, BTreeSet<ResRadical>> {
     {
         radicals
             .entry(strokes as u8)
-            .or_insert_with(|| BTreeSet::new())
+            .or_default()
             .insert(ResRadical { literal: lit });
     }
 

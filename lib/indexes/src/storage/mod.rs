@@ -1,6 +1,7 @@
 pub mod name;
 pub mod radical;
 pub mod sentence;
+pub mod suggestions;
 pub(crate) mod utils;
 pub mod word;
 

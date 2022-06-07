@@ -1,7 +1,6 @@
-#![allow(dead_code)]
+#![allow(unused)]
+#[cfg(feature = "img_scan")]
 pub mod request;
-
-use std::path::Path;
 
 use actix_multipart::Multipart;
 use actix_web::web::{self, Json};
@@ -10,6 +9,7 @@ use error::api_error::RestError;
 use itertools::Itertools;
 use once_cell::sync::Lazy;
 use regex::Regex;
+use std::path::Path;
 use types::api::image::{Request, Response};
 
 // MAX 2MB
@@ -81,6 +81,18 @@ fn format_text(text: String) -> Option<String> {
         .join("");
 
     (!modded_text.is_empty()).then(|| modded_text)
+}
+
+#[cfg(not(feature = "img_scan"))]
+mod request {
+    use super::*;
+    use std::path::PathBuf;
+    pub(crate) async fn read_payload(
+        config: &Config,
+        mut payload: Multipart,
+    ) -> Result<PathBuf, RestError> {
+        todo!()
+    }
 }
 
 /// Scans an image and returns a `Response` with the recognized text or an error

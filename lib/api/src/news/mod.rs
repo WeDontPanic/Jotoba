@@ -1,9 +1,8 @@
-use types::api::news::NewsEntry;
-
 pub mod detailed;
 pub mod short;
 
-#[inline]
+use types::api::news::NewsEntry;
+
 fn ne_from_resource(src: &news::NewsEntry, short: bool) -> NewsEntry {
     let html = if short {
         src.short.clone()
