@@ -328,7 +328,8 @@ fn load_translations(config: &Config) -> Arc<TranslationDict> {
 }
 
 pub fn load_indexes(config: &Config) {
-    search::engine::load_indexes(config).expect("Failed to load v2 index files");
+    //search::engine::load_indexes(config).expect("Failed to load v2 index files");
+    indexes::storage::load(config.get_indexes_source()).expect("Failed to load index files");
 }
 
 #[cfg(feature = "sentry_error")]

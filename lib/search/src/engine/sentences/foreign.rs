@@ -1,5 +1,3 @@
-pub mod index;
-
 use crate::engine::{Indexable, SearchEngine};
 use indexes::{metadata::Metadata, sentences::document::SentenceDocument};
 use resources::storage::ResourceStorage;
@@ -16,7 +14,8 @@ impl Indexable for Engine {
     fn get_index(
         language: Option<Language>,
     ) -> Option<&'static vector_space_model2::Index<Self::Document, Self::Metadata>> {
-        index::get(language.expect("Language not provided"))
+        let lang = language.expect("Language not provided");
+        indexes::get().sentence().foreign(lang)
     }
 }
 

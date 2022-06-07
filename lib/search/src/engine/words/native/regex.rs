@@ -1,13 +1,10 @@
+use crate::{engine::utils::page_from_pqueue, query::regex::RegexSQuery};
 use indexes::regex::RegexSearchIndex;
 use intmap::int_set::IntSet;
 use itertools::Itertools;
 use order_struct::order_nh::OrderVal;
 use priority_container::StableUniquePrioContainerMax;
 use types::jotoba::words::Word;
-
-use crate::{engine::utils::page_from_pqueue, query::regex::RegexSQuery};
-
-use super::regex_index;
 
 pub struct RegexSearchResult {
     pub items: Vec<&'static Word>,
@@ -25,7 +22,8 @@ where
     let queue_size = limit + offset;
     let mut out_queue = StableUniquePrioContainerMax::new_allocated(queue_size, queue_size);
 
-    let possible_results = find_words(regex_index::get(), &query.get_chars());
+    let index = indexes::get().word().regex();
+    let possible_results = find_words(index, &query.get_chars());
 
     for seq_id in possible_results.into_iter().sorted() {
         let word = word_resources.by_sequence(seq_id).unwrap();

@@ -1,5 +1,3 @@
-pub mod index;
-
 use crate::engine::{Indexable, SearchEngine};
 use resources::storage::ResourceStorage;
 use types::jotoba::{languages::Language, names::Name};
@@ -16,7 +14,7 @@ impl Indexable for Engine {
     fn get_index(
         _language: Option<Language>,
     ) -> Option<&'static vector_space_model2::Index<Self::Document, Self::Metadata>> {
-        Some(index::get())
+        Some(indexes::get().name().native())
     }
 }
 

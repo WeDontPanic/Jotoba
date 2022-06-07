@@ -1,6 +1,5 @@
 use crate::webserver::prepare_data;
 use config::Config;
-use search::engine;
 use types::jotoba::languages::Language;
 
 /// Checks resources and returns `true` if required features are available
@@ -52,7 +51,7 @@ fn sentences() -> bool {
     let sentence_retrieve = resources::get().sentences();
 
     for language in Language::iter_word() {
-        let foreign = match engine::sentences::foreign::index::get(language) {
+        let foreign = match indexes::get().sentence().foreign(language) {
             Some(f) => f,
             None => return false,
         };
@@ -65,7 +64,7 @@ fn sentences() -> bool {
         }
     }
 
-    let jp_index = engine::sentences::native::index::get();
+    let jp_index = indexes::get().sentence().native();
     for id in jp_index
         .get_vector_store()
         .iter()
@@ -83,7 +82,7 @@ fn sentences() -> bool {
 fn names() -> bool {
     let name_retrieve = resources::get().names();
 
-    let transcr_index = engine::names::foreign::index::get();
+    let transcr_index = indexes::get().name().foreign();
     for i in transcr_index
         .get_vector_store()
         .iter()
@@ -96,7 +95,7 @@ fn names() -> bool {
         }
     }
 
-    let jp_index = engine::names::foreign::index::get();
+    let jp_index = indexes::get().name().native();
     for i in jp_index
         .get_vector_store()
         .iter()
@@ -116,7 +115,9 @@ fn words() -> bool {
     let word_retrieve = resources::get().words();
 
     for language in Language::iter_word() {
-        let w_index = engine::words::foreign::index::get(language)
+        let w_index = indexes::get()
+            .word()
+            .foreign(language)
             .expect(&format!("Missing index {:?}", language));
 
         for vec in w_index.get_vector_store().iter() {
@@ -129,7 +130,7 @@ fn words() -> bool {
         }
     }
 
-    let jp_index = engine::words::native::index::get();
+    let jp_index = indexes::get().word().native();
     for vec in jp_index.get_vector_store().iter() {
         if word_retrieve.by_sequence(vec.document).is_none() {
             println!("Word and (Japanese) Index don't match");
@@ -143,7 +144,7 @@ fn words() -> bool {
 fn regex() -> bool {
     let w_retrieve = resources::get().words();
 
-    let regex_index = engine::words::native::regex_index::get();
+    let regex_index = indexes::get().word().regex();
     for (_, words) in regex_index.iter() {
         if words.iter().any(|i| w_retrieve.by_sequence(*i).is_none()) {
             println!("Regex index invalid");

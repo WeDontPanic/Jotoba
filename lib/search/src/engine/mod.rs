@@ -1,5 +1,4 @@
 pub mod guess;
-pub mod kanji;
 pub mod names;
 pub mod radical;
 pub mod result;
@@ -11,45 +10,10 @@ pub mod words;
 
 pub use search_task::SearchTask;
 
-use config::Config;
 use resources::storage::ResourceStorage;
 use std::hash::Hash;
 use types::jotoba::languages::Language;
 use vector_space_model2::{metadata::Metadata, traits::Decodable, Index, Vector};
-
-/// Load all indexes for word search engine
-pub fn load_indexes(config: &Config) -> Result<(), Box<dyn std::error::Error>> {
-    let index_path = config.get_indexes_source().to_owned();
-
-    rayon::scope(|s| {
-        s.spawn(|_| {
-            words::native::index::load(config.get_indexes_source());
-        });
-        s.spawn(|_| {
-            words::native::regex_index::load(config.get_indexes_source());
-        });
-        s.spawn(|_| {
-            words::foreign::index::load(index_path).expect("failed to load index");
-        });
-        s.spawn(|_| {
-            names::foreign::index::load(&config);
-        });
-        s.spawn(|_| {
-            names::native::index::load(&config);
-        });
-        s.spawn(|_| {
-            sentences::native::index::load(&config);
-        });
-        s.spawn(|_| {
-            radical::index::load(&config).expect("Failed to load radical index");
-        });
-        s.spawn(|_| {
-            sentences::foreign::index::load(&config).expect("Failed to load index");
-        });
-    });
-
-    Ok(())
-}
 
 pub trait Indexable {
     type Metadata: Metadata + 'static;

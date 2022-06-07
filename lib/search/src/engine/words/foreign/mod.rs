@@ -1,5 +1,3 @@
-//pub mod doc;
-pub mod index;
 pub mod output;
 
 use crate::engine::{Indexable, SearchEngine, SearchTask};
@@ -21,7 +19,9 @@ impl Indexable for Engine {
     fn get_index(
         language: Option<Language>,
     ) -> Option<&'static vector_space_model2::Index<Self::Document, Self::Metadata>> {
-        index::get(language.expect("Language required"))
+        indexes::get()
+            .word()
+            .foreign(language.expect("Language required"))
     }
 }
 
@@ -73,7 +73,7 @@ impl SearchEngine for Engine {
     fn align_query<'b>(
         original: &'b str,
         index: &vector_space_model2::Index<Self::Document, Self::Metadata>,
-        language: Option<Language>,
+        _language: Option<Language>,
     ) -> Option<&'b str> {
         let query_str = original;
         let mut indexer = index.get_indexer().clone();
@@ -85,13 +85,15 @@ impl SearchEngine for Engine {
             return None;
         }
 
-        let tree = index::get_term_tree(language?)?;
+        /*
         let mut res = tree.find(&query_str.to_string(), 1);
         if res.is_empty() {
             res = tree.find(&query_str.to_string(), 2);
         }
         res.sort_by(|a, b| a.1.cmp(&b.1));
         res.get(0).map(|i| i.0.as_str())
+        */
+        None
     }
 }
 
@@ -101,7 +103,8 @@ pub fn guess_language(query: &str) -> Vec<Language> {
     let possible_langs = Language::iter_word()
         .filter(|language| {
             // Filter languages that can theoretically build valid document vectors
-            Engine::gen_query_vector(index::get(*language).unwrap(), query, false, None).is_some()
+            let index = indexes::get().word().foreign(*language).unwrap();
+            Engine::gen_query_vector(index, query, false, None).is_some()
         })
         .collect::<Vec<_>>();
 
@@ -180,7 +183,8 @@ mod test {
         .expect("Failed to load resources");
         */
 
-        index::load("../../indexes").unwrap();
+        // TODO: load indexes
+        //index::load("../../indexes").unwrap();
     }
 }
 

@@ -1,6 +1,5 @@
-pub mod index;
 pub mod regex;
-pub mod regex_index;
+//pub mod regex_index;
 
 use crate::engine::{Indexable, SearchEngine};
 use resources::storage::ResourceStorage;
@@ -18,7 +17,7 @@ impl Indexable for Engine {
     fn get_index(
         _language: Option<Language>,
     ) -> Option<&'static vector_space_model2::Index<Self::Document, Self::Metadata>> {
-        Some(index::get())
+        Some(indexes::get().word().native())
     }
 }
 

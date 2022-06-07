@@ -17,6 +17,7 @@ frontend = { path = "../lib/frontend" }
 config = { path = "../lib/config" }
 localization = { path = "../lib/localization" }
 resources = { path = "../lib/resources" }
+indexes = { path = "../lib/indexes" }
 actix-files = "0.6.0"
 actix-web = "4.0.1"
 argparse = "0.2.2"

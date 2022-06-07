@@ -4,4 +4,7 @@ pub mod radical;
 pub mod regex;
 pub mod relevance;
 pub mod sentences;
+pub mod storage;
 pub mod words;
+
+pub use storage::get;

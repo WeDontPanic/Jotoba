@@ -1,4 +1,4 @@
-use crate::engine::{self, words::foreign::output::WordOutput};
+use crate::engine::{words::foreign::output::WordOutput};
 use indexes::relevance::RelevanceIndex;
 use spin::Mutex;
 use std::collections::HashMap;
@@ -27,7 +27,7 @@ impl ForeignOrder {
         if let Some(vec) = self.vec_cached(query, language) {
             return vec;
         }
-        let index = engine::words::foreign::index::get(language)?;
+        let index = indexes::get().word().foreign(language)?;
         let indexer = index.get_indexer().clone();
         let vec = make_search_vec(&indexer, query);
         let mut lock = self.query_vecs.lock();
@@ -43,9 +43,7 @@ impl ForeignOrder {
         sense: &Sense,
         sg_id: u16,
     ) -> Option<usize> {
-        let rel_index = engine::words::foreign::index::RELEVANCE_INDEXES
-            .get()?
-            .get(&sense.language)?;
+        let rel_index = indexes::get().word().relevance(sense.language)?;
         let rel_vec = rel_index.get(seq_id, sg_id)?;
         let query_vec = self.new_vec_cached(query_str, sense.language)?;
         let res = vec_similarity(rel_vec, &query_vec, &rel_index) * 1000.0;

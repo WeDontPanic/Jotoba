@@ -1,5 +1,3 @@
-pub mod index;
-
 use crate::engine::{Indexable, SearchEngine};
 use resources::storage::ResourceStorage;
 use types::jotoba::{languages::Language, names::Name};
@@ -16,7 +14,7 @@ impl Indexable for Engine {
     fn get_index(
         _language: Option<Language>,
     ) -> Option<&'static vector_space_model2::Index<Self::Document, Self::Metadata>> {
-        Some(index::get())
+        Some(indexes::get().name().foreign())
     }
 }
 
@@ -64,9 +62,11 @@ impl SearchEngine for Engine {
             return None;
         }
 
-        let mut res = index::get_term_tree().find(&query_str.to_string(), 1);
+        let tree = indexes::get().name().term_tree();
+        let mut res = tree.find(&query_str.to_string(), 1);
+
         if res.is_empty() {
-            res = index::get_term_tree().find(&query_str.to_string(), 2);
+            res = tree.find(&query_str.to_string(), 2);
         }
         res.sort_by(|a, b| a.1.cmp(&b.1));
         res.get(0).map(|i| i.0.as_str())

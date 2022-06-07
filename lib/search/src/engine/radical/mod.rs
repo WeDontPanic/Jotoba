@@ -1,11 +1,9 @@
-pub mod index;
-
 use types::jotoba::kanji::radical::SearchRadicalInfo;
 
 /// Finds Radicals by its meaning(s)
 pub fn find(inp_query: &str) -> Vec<&'static SearchRadicalInfo> {
     let mut queries = vec![inp_query];
-    let index = index::get_index();
+    let index = indexes::get().radical().rad_index();
 
     if !index.has_term(inp_query) {
         let mut found = index.term_tree.find(&inp_query.to_string(), 2);
