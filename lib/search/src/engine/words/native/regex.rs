@@ -1,9 +1,9 @@
-use error::Error;
-use order_struct::OrderVal;
-use priority_container::PrioContainerMax;
+use itertools::Itertools;
+use order_struct::order_nh::OrderVal;
+use priority_container::StableUniquePrioContainerMax;
 use types::jotoba::words::Word;
 
-use crate::query::regex::RegexSQuery;
+use crate::{engine::utils::page_from_pqueue, query::regex::RegexSQuery};
 
 use super::regex_index;
 
@@ -14,19 +14,17 @@ pub struct RegexSearchResult {
     pub item_len: usize,
 }
 
-pub fn search<F>(query: &RegexSQuery, sort: F, limit: usize) -> Result<RegexSearchResult, Error>
+pub fn search<F>(query: &RegexSQuery, sort: F, limit: usize, offset: usize) -> RegexSearchResult
 where
     F: Fn(&Word, &str) -> usize,
 {
     let word_resources = resources::get().words();
 
-    let mut out_queue = PrioContainerMax::new(limit);
+    let queue_size = limit + offset;
+    let mut out_queue = StableUniquePrioContainerMax::new_allocated(queue_size, queue_size);
 
     let possible_results = regex_index::get().find(&query.get_chars());
-
-    let mut len: usize = 0;
-
-    for seq_id in possible_results {
+    for seq_id in possible_results.into_iter().sorted() {
         let word = word_resources.by_sequence(seq_id).unwrap();
 
         let item_iter = word
@@ -35,16 +33,17 @@ where
             .map(|(word, reading)| {
                 let order = sort(word, reading);
                 OrderVal::new(word, order)
-            })
-            .inspect(|_| len += 1);
+            });
 
         out_queue.extend(item_iter);
     }
 
-    let items: Vec<_> = out_queue.into_iter().map(|i| i.0.into_inner()).collect();
+    let item_len = out_queue.total_pushed();
 
-    Ok(RegexSearchResult {
-        items,
-        item_len: len,
-    })
+    let items: Vec<_> = page_from_pqueue(limit, offset, out_queue)
+        .into_iter()
+        .map(|i| i.into_inner())
+        .collect();
+
+    RegexSearchResult { items, item_len }
 }
