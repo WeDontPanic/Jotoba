@@ -45,7 +45,7 @@ fn load_foreign<P: AsRef<Path>>(
 ) -> Result<HashMap<Language, ForeignIndex>, Box<dyn Error>> {
     utils::load_by_language(path, FOREIGN_PREFIX, |p| {
         let file_name = p.file_name().and_then(|i| i.to_str()).unwrap();
-        if file_name == "sentences_jp_index" {
+        if file_name == NATIVE_FILE {
             return Ok(None);
         }
 

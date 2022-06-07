@@ -4,11 +4,11 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+types = { path = "../types" , features = ["jotoba_intern"]}
+intmap = { git = "https://github.com/JojiiOfficial/rust-intmap"}
 serde = { version = "1.0.137", features = ["derive"] }
 bincode = "1.3.3"
-types = { path = "../types" , features = ["jotoba_intern"]}
 once_cell = "1.12.0"
 sorted_intersection = "1.2.0"
-intmap = { git = "https://github.com/JojiiOfficial/rust-intmap"}
 strum = "0.24.0"
 strum_macros = "0.24.0"

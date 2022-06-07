@@ -8,7 +8,6 @@ edition = "2021"
 
 [dependencies]
 japanese = { path = "../japanese" }
-config = { path = "../config" }
 sentence_reader = { path = "../sentence_reader", features = ["jotoba_intern"] }
 error = { path = "../error" }
 utils = { path = "../utils" }
@@ -18,7 +17,6 @@ resources = { path = "../resources" }
 types = { path = "../types", default-features = false, features = [
   "jotoba_intern",
 ] }
-serde = "1.0.137"
 log = "0.4.17"
 itertools = "0.10.3"
 once_cell = "1.12.0"
@@ -26,11 +24,7 @@ levenshtein = "1.0.5"
 regex = "1.5.6"
 #vector_space_model2 = { path = "../../../VectorSpaceModel" }
 vector_space_model2 = { git = "https://github.com/JojiiOfficial/VectorSpaceModel" }
-byteorder = "1.4.3"
 tinysegmenter = "0.1.1"
-bitflags = { git = "https://github.com/JojiiOfficial/BitFlags" }
-bktree = { git = "https://github.com/JojiiOfficial/bktree" }
-bincode = "1.3.3"
 percent-encoding = "2.1.0"
 rayon = "1.5.3"
 priority_container = "0.1.0"

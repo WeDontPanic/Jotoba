@@ -7,17 +7,17 @@ use crate::{
 use std::{collections::HashMap, error::Error, path::Path};
 use types::jotoba::languages::Language;
 
-const REGEX_FILE: &str = "regex_index";
 const FOREIGN_PREFIX: &str = "word_index";
 const NATIVE_FILE: &str = "jp_index";
+const REGEX_FILE: &str = "regex_index";
 const RELEVANCE_PREFIX: &str = "relevance_index_";
 
 /// Store for names
 pub struct WordStore {
     foreign: HashMap<Language, ForeignIndex>,
     native: NativeIndex,
-    regex: RegexSearchIndex,
 
+    regex: RegexSearchIndex,
     relevance: HashMap<Language, RelevanceIndex>,
 }
 

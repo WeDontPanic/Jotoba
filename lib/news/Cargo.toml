@@ -6,7 +6,7 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-utils = { path = "../utils"}
+utils = { path = "../utils" }
 itertools = "0.10.3"
 once_cell = "1.12.0"
 comrak = { version = "0.13.0", default-features = false }
