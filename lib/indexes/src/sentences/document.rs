@@ -1,13 +1,12 @@
-use std::io::Read;
-
 use bitflags::BitFlag;
 use byteorder::{ByteOrder, ReadBytesExt, WriteBytesExt};
+use std::io::Read;
 use types::jotoba::languages::Language;
 use vector_space_model2::traits::{Decodable, Encodable};
 
 /// A sentence document represents a single sentence, referenced by its ID, and a bitmask of
 /// supported languages for more efficient searching
-#[derive(Clone, Copy, PartialEq, Eq, Debug, Hash)]
+#[derive(Clone, Copy, PartialEq, Eq, Hash)]
 pub struct SentenceDocument {
     pub seq_id: u32,
     pub mask: u16,

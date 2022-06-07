@@ -1,17 +1,13 @@
 use std::collections::HashMap;
 
 use config::Config;
+use indexes::sentences::ForeignIndex;
 use log::{error, info};
 use once_cell::sync::OnceCell;
 use types::jotoba::languages::Language;
 
-use crate::engine::{document::SentenceDocument, metadata::Metadata};
-
-// Shortcut for type of index
-pub(super) type Index = vector_space_model2::Index<SentenceDocument, Metadata>;
-
 // In-memory storage for foreign name index
-pub(super) static INDEXES: OnceCell<HashMap<Language, Index>> = OnceCell::new();
+pub(super) static INDEXES: OnceCell<HashMap<Language, ForeignIndex>> = OnceCell::new();
 
 /// Load all available foreign-word indexes into memory
 pub(crate) fn load(config: &Config) -> Result<(), Box<dyn std::error::Error>> {
@@ -29,7 +25,7 @@ pub(crate) fn load(config: &Config) -> Result<(), Box<dyn std::error::Error>> {
             continue;
         }
 
-        let index = match Index::open(&index_file) {
+        let index = match ForeignIndex::open(&index_file) {
             Ok(index) => index,
             Err(err) => {
                 let file = index_file.display();
@@ -55,7 +51,7 @@ pub(crate) fn load(config: &Config) -> Result<(), Box<dyn std::error::Error>> {
 
 /// Returns the loaded foreign name index
 #[inline]
-pub fn get(lang: Language) -> Option<&'static Index> {
+pub fn get(lang: Language) -> Option<&'static ForeignIndex> {
     // Safety:
     // We don't write to `INDEX` after loading it one time at the startup. Jotoba panics if it
     // can't load this index, so until a `get()` call gets reached, `INDEX` is always set to a

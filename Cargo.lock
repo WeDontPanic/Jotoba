@@ -1491,6 +1491,9 @@ dependencies = [
 name = "indexes"
 version = "0.1.0"
 dependencies = [
+ "bitflags 0.1.0",
+ "bktree",
+ "byteorder",
  "serde",
  "types",
  "vector_space_model2",

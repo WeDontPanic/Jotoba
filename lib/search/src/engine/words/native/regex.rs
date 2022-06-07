@@ -1,3 +1,5 @@
+use indexes::regex::RegexSearchIndex;
+use intmap::int_set::IntSet;
 use itertools::Itertools;
 use order_struct::order_nh::OrderVal;
 use priority_container::StableUniquePrioContainerMax;
@@ -23,7 +25,8 @@ where
     let queue_size = limit + offset;
     let mut out_queue = StableUniquePrioContainerMax::new_allocated(queue_size, queue_size);
 
-    let possible_results = regex_index::get().find(&query.get_chars());
+    let possible_results = find_words(regex_index::get(), &query.get_chars());
+
     for seq_id in possible_results.into_iter().sorted() {
         let word = word_resources.by_sequence(seq_id).unwrap();
 
@@ -46,4 +49,40 @@ where
         .collect();
 
     RegexSearchResult { items, item_len }
+}
+
+/// Get all indexed words using characters in `chars`
+fn find_words(index: &RegexSearchIndex, chars: &[char]) -> IntSet {
+    if chars.is_empty() {
+        return IntSet::new();
+    }
+
+    let mut out = IntSet::new();
+
+    // Add words of first character to `out`
+    let mut chars_iter = chars.iter();
+
+    // We want to fill `out` with some values.
+    loop {
+        let first = match chars_iter.next() {
+            Some(f) => f,
+            None => break,
+        };
+
+        if let Some(v) = index.get_words_with(*first) {
+            out.reserve(v.len());
+            out.extend(v.iter().copied());
+            // exit first found character
+            break;
+        }
+    }
+
+    for v in chars_iter.filter_map(|c| index.get_words_with(*c)) {
+        out.retain(|i| v.contains(&i));
+        if out.is_empty() {
+            return IntSet::new();
+        }
+    }
+
+    out
 }

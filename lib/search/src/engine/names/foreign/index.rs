@@ -2,15 +2,12 @@ use std::{fs::File, io::BufReader, path::Path};
 
 use bktree::BkTree;
 use config::Config;
+use indexes::names::ForeignIndex;
 use log::info;
 use once_cell::sync::OnceCell;
-use vector_space_model2::DefaultMetadata;
-
-// Shortcut for type of index
-pub(super) type Index = vector_space_model2::Index<Vec<u32>, DefaultMetadata>;
 
 // In-memory storage for foreign name index
-pub(super) static INDEX: OnceCell<Index> = OnceCell::new();
+pub(super) static INDEX: OnceCell<ForeignIndex> = OnceCell::new();
 
 // In-memory storage for foreign name index
 pub(super) static TERM_TREE: OnceCell<BkTree<String>> = OnceCell::new();
@@ -20,7 +17,7 @@ pub(crate) fn load(config: &Config) {
     load_term_treepath(config);
 
     let file = Path::new(config.get_indexes_source()).join("name_foreign_index");
-    let index = Index::open(file).expect("Could not load foreign name index");
+    let index = ForeignIndex::open(file).expect("Could not load foreign name index");
     info!("Loaded foreign name index");
     INDEX.set(index).ok();
 }
@@ -38,7 +35,7 @@ pub fn load_term_treepath(config: &Config) {
 
 /// Returns the loaded foreign name index
 #[inline]
-pub fn get() -> &'static Index {
+pub fn get() -> &'static ForeignIndex {
     // Safety:
     // We don't write to `INDEX` after loading it one time at the startup. Jotoba panics if it
     // can't load this index, so until a `get()` call gets reached, `INDEX` is always set to a

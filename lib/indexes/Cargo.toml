@@ -6,7 +6,10 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-types = {path = "../types"}
+types = { path = "../types" }
 #vector_space_model2 = { path = "../../../VectorSpaceModel" }
-vector_space_model2 = { git = "https://github.com/JojiiOfficial/VectorSpaceModel"}
+vector_space_model2 = { git = "https://github.com/JojiiOfficial/VectorSpaceModel" }
+bktree = { git = "https://github.com/JojiiOfficial/bktree" }
 serde = { version = "1.0.137", features = ["derive"] }
+byteorder = "1.4.3"
+bitflags = { git = "https://github.com/JojiiOfficial/BitFlags" }

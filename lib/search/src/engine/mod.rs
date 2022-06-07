@@ -1,22 +1,19 @@
-pub mod document;
-pub mod utils;
 pub mod guess;
 pub mod kanji;
-pub mod metadata;
 pub mod names;
 pub mod radical;
 pub mod result;
 pub mod result_item;
 pub mod search_task;
 pub mod sentences;
+pub mod utils;
 pub mod words;
 
-use std::hash::Hash;
+pub use search_task::SearchTask;
 
 use config::Config;
-
 use resources::storage::ResourceStorage;
-pub use search_task::SearchTask;
+use std::hash::Hash;
 use types::jotoba::languages::Language;
 use vector_space_model2::{metadata::Metadata, traits::Decodable, Index, Vector};
 

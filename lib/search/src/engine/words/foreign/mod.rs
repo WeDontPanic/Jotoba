@@ -1,14 +1,15 @@
-pub mod doc;
+//pub mod doc;
 pub mod index;
 pub mod output;
 
-use crate::engine::{metadata::Metadata, Indexable, SearchEngine, SearchTask};
+use crate::engine::{Indexable, SearchEngine, SearchTask};
+use indexes::{metadata::Metadata, words::document::FWordDoc};
 use resources::storage::ResourceStorage;
 use types::jotoba::languages::Language;
 use utils::to_option;
 use vector_space_model2::{build::weights::TFIDF, Vector};
 
-use self::{doc::FWordDoc, output::WordOutput};
+use self::output::WordOutput;
 
 pub struct Engine {}
 
@@ -64,40 +65,6 @@ impl SearchEngine for Engine {
                 }
             }
         }
-
-        /*
-        let doc_store = index.get_vector_store();
-        let result_count = index
-            .build_vector(&terms, None)
-            .map(|i| {
-                i.vec_indices()
-                    .map(|dim| doc_store.dimension_size(dim))
-                    .sum::<usize>()
-            })
-            .unwrap_or(0);
-
-        let mut query = document_vector::DocumentVector::new(term_indexer, query_document.clone())?;
-
-
-        let result_count = query
-            .vector()
-            .vec_indices()
-            .map(|dim| doc_store.dimension_size(dim))
-            .sum::<usize>();
-
-        if result_count < 15 {
-            // Add substrings of query to query document vector
-            let sub_terms: Vec<_> = GenDoc::sub_documents(&query_document)
-                .into_iter()
-                .map(|i| document_vector::Document::get_terms(&i))
-                .flatten()
-                .collect();
-
-            query.add_terms(term_indexer, &sub_terms, true, Some(0.3));
-        }
-
-        Some((query, query_document.as_query()))
-        */
 
         let vec = index.build_vector(&terms, Some(&TFIDF))?;
         Some((vec, query.to_string()))
@@ -162,11 +129,9 @@ pub fn guess_language(query: &str) -> Vec<Language> {
 
 #[cfg(test)]
 mod test {
-    use std::{path::PathBuf, time::Instant};
-
-    use config::{Config, SearchConfig, ServerConfig};
-
     use super::*;
+    use config::{Config, SearchConfig, ServerConfig};
+    use std::{path::PathBuf, time::Instant};
 
     #[test]
     fn test_guess_lang() {

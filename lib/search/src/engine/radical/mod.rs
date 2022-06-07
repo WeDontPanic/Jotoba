@@ -1,6 +1,6 @@
-use types::jotoba::kanji::radical::SearchRadicalInfo;
-
 pub mod index;
+
+use types::jotoba::kanji::radical::SearchRadicalInfo;
 
 /// Finds Radicals by its meaning(s)
 pub fn find(inp_query: &str) -> Vec<&'static SearchRadicalInfo> {
