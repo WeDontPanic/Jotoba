@@ -463,27 +463,7 @@ fn furigana_by_reading(morpheme: &str, part: &sentence_reader::Part) -> Option<S
 
     let pos = wc_to_simple_pos(&part.word_class_raw());
     let morph = morpheme.to_string();
-    st.set_order_fn(move |i, _rel, _, _| {
-        let mut score: usize = 100;
-        if i.get_reading().reading != morph {
-            score = 0;
-        }
-        if let Some(pos) = pos {
-            if i.has_pos(&[pos]) {
-                score += 20;
-            } else {
-                score = score.saturating_sub(30);
-            }
-        }
-        if i.is_common() {
-            score += 2;
-        }
-
-        if i.get_jlpt_lvl().is_some() {
-            score += 2;
-        }
-        score
-    });
+    st.set_order_fn(move |i, _rel, _, _| furi_order(i, &pos, &morph));
 
     let found = st.find().ok()?;
     if found.is_empty() {
@@ -491,6 +471,28 @@ fn furigana_by_reading(morpheme: &str, part: &sentence_reader::Part) -> Option<S
     }
     let word = word_storage.by_sequence(found[0].item.sequence as u32)?;
     word.furigana.as_ref().cloned()
+}
+
+fn furi_order(i: &Word, pos: &Option<PosSimple>, morph: &str) -> usize {
+    let mut score: usize = 100;
+    if i.get_reading().reading != morph {
+        score = 0;
+    }
+    if let Some(pos) = pos {
+        if i.has_pos(&[*pos]) {
+            score += 20;
+        } else {
+            score = score.saturating_sub(30);
+        }
+    }
+    if i.is_common() {
+        score += 2;
+    }
+
+    if i.get_jlpt_lvl().is_some() {
+        score += 2;
+    }
+    score
 }
 
 pub fn wc_to_simple_pos(wc: &WordClass) -> Option<PosSimple> {
@@ -539,4 +541,15 @@ fn guess_foreign(search: Search) -> Option<Guess> {
     let mut task = search.gloss_search_task();
     task.set_align(false);
     task.estimate_result_count().ok()
+}
+
+impl ResultData {
+    #[inline]
+    pub fn new(words: Vec<Word>, count: usize) -> Self {
+        Self {
+            words,
+            count,
+            ..Default::default()
+        }
+    }
 }

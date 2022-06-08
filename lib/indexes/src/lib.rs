@@ -1,3 +1,4 @@
+pub mod kanji_reading;
 pub mod metadata;
 pub mod names;
 pub mod radical;

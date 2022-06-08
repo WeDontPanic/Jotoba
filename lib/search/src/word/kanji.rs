@@ -1,14 +1,13 @@
 use super::{super::query::Query, ResultData, Search};
 use crate::{
-    engine::{words::native, SearchTask},
+    engine::{words::native::k_reading, SearchTask},
     word::order,
 };
-
 use error::Error;
 use itertools::Itertools;
-use japanese::{CharType, JapaneseExt};
+use japanese::CharType;
 use types::jotoba::{
-    kanji::{self, reading::ReadingType, Kanji},
+    kanji::{self, Kanji},
     words::Word,
 };
 
@@ -26,107 +25,33 @@ pub(super) fn by_reading(search: &Search<'_>) -> Result<ResultData, Error> {
         .by_literal(reading.literal)
         .ok_or(Error::Undefined)?;
 
-    let reading_type = kanji.get_reading_type(&reading.reading);
-    if !kanji.has_reading(&reading.reading) || reading_type.is_none() {
+    if !kanji.has_reading(&reading.reading) {
         return alternative_reading_search(search);
     }
-    let reading_type = reading_type.unwrap();
 
-    let (words, count) =
-        words_with_kanji_reading(kanji, reading_type, &reading.reading, search.query)?;
-
-    Ok(ResultData {
-        count,
-        words,
-        ..Default::default()
-    })
+    let engine_query = format!("{}{}", kanji.literal, reading.reading);
+    Ok(reading_search(search.query, &engine_query))
 }
 
-fn words_with_kanji_reading(
-    kanji: &Kanji,
-    _rt: ReadingType,
-    reading: &str,
-    query: &Query,
-) -> Result<(Vec<Word>, usize), Error> {
-    let query_str = kanji.literal.to_string();
+fn reading_search(query: &Query, engine_query: &str) -> ResultData {
+    let limit = query.settings.page_size as usize;
+    let offset = query.page_offset;
 
-    let mut search_task = SearchTask::<native::Engine>::new(&query_str)
-        .threshold(0.1)
-        .limit(query.settings.page_size as usize)
-        .offset(query.page_offset);
+    let mut search_task = SearchTask::<k_reading::Engine>::new(&engine_query)
+        .limit(limit)
+        .offset(offset);
 
-    let literal = kanji.literal.to_string();
-    let reading = reading.to_string();
-    //let literal_reading = kanji.get_literal_reading(&reading);
-    let literal_reading = kanji
-        .find_reading(&reading)
-        .map(|i| i.get_raw().to_string());
+    search_task.set_order_fn(move |word, rel, _, _| order::kanji_reading_search(word, rel));
 
-    search_task.set_result_filter(move |word| {
-        if word.reading.kanji.is_none() {
-            return false;
-        }
-
-        let kana = &word.reading.kana.reading;
-
-        for kanji_reading in word.reading_iter(false) {
-            let kanji_reading = kanji_reading.reading.clone();
-
-            let readings = japanese::furigana::generate::retrieve_readings(
-                |i: String| {
-                    let retrieve = resources::get().kanji();
-                    let kanji = retrieve.by_literal(i.chars().next()?)?;
-                    if kanji.onyomi.is_empty() && kanji.kunyomi.is_empty() {
-                        return None;
-                    }
-
-                    let kun = (!kanji.kunyomi.is_empty()).then(|| kanji.kunyomi.clone());
-                    let on = (!kanji.onyomi.is_empty()).then(|| kanji.onyomi.clone());
-
-                    Some((kun, on))
-                },
-                &kanji_reading,
-                kana,
-            );
-
-            if readings.is_none() {
-                return false;
-            }
-
-            let e = readings.unwrap().iter().any(|i| {
-                i.0.contains(&literal)
-                    && i.1
-                        .to_hiragana()
-                        .contains(&literal_reading.as_ref().unwrap().to_hiragana())
-                    && kana
-                        .to_hiragana()
-                        .contains(&kanji::format_reading(&reading.to_hiragana()))
-            });
-
-            if e {
-                return true;
-            }
-        }
-
-        false
-    });
-
-    let kanji_reading = query.form.as_kanji_reading().unwrap().clone();
-    search_task.set_order_fn(move |word, rel, _, _| {
-        order::kanji_reading_search(word, &kanji_reading, rel)
-    });
-
-    let res = search_task.find()?;
+    let res = search_task.find().unwrap();
     let len = res.len();
     let mut words = res.into_iter().cloned().collect::<Vec<_>>();
 
-    super::filter_languages(
-        words.iter_mut(),
-        query.settings.user_lang,
-        query.settings.show_english,
-    );
+    let lang = query.settings.user_lang;
+    let show_english = query.settings.show_english;
+    super::filter_languages(words.iter_mut(), lang, show_english);
 
-    Ok((words, len))
+    ResultData::new(words, len)
 }
 
 /// Do a search without the kanji literal or reading

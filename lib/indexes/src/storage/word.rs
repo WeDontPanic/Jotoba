@@ -1,5 +1,6 @@
 use super::utils;
 use crate::{
+    kanji_reading,
     regex::RegexSearchIndex,
     relevance::RelevanceIndex,
     words::{ForeignIndex, NativeIndex},
@@ -11,6 +12,7 @@ const FOREIGN_PREFIX: &str = "word_index";
 const NATIVE_FILE: &str = "jp_index";
 const REGEX_FILE: &str = "regex_index";
 const RELEVANCE_PREFIX: &str = "relevance_index_";
+const KANJI_READING_INDEX: &str = "word_kr_index";
 
 /// Store for words
 pub struct WordStore {
@@ -19,6 +21,8 @@ pub struct WordStore {
 
     regex: RegexSearchIndex,
     relevance: HashMap<Language, RelevanceIndex>,
+
+    k_reading: kanji_reading::Index,
 }
 
 impl WordStore {
@@ -27,12 +31,14 @@ impl WordStore {
         native: NativeIndex,
         regex: RegexSearchIndex,
         relevance: HashMap<Language, RelevanceIndex>,
+        k_reading: kanji_reading::Index,
     ) -> Self {
         Self {
             foreign,
             native,
             regex,
             relevance,
+            k_reading,
         }
     }
 
@@ -60,6 +66,10 @@ impl WordStore {
     pub(crate) fn check(&self) -> bool {
         utils::check_lang_map(&self.foreign)
     }
+
+    pub fn k_reading(&self) -> &kanji_reading::Index {
+        &self.k_reading
+    }
 }
 
 pub(crate) fn load<P: AsRef<Path>>(path: P) -> Result<WordStore, Box<dyn Error>> {
@@ -67,7 +77,8 @@ pub(crate) fn load<P: AsRef<Path>>(path: P) -> Result<WordStore, Box<dyn Error>>
     let native = NativeIndex::open(path.as_ref().join(NATIVE_FILE))?;
     let regex = utils::deser_file(path.as_ref(), REGEX_FILE)?;
     let relevance = load_rel_index(path.as_ref())?;
-    Ok(WordStore::new(foreign, native, regex, relevance))
+    let k_reading = kanji_reading::Index::open(path.as_ref().join(KANJI_READING_INDEX))?;
+    Ok(WordStore::new(foreign, native, regex, relevance, k_reading))
 }
 
 fn load_foreign<P: AsRef<Path>>(

@@ -1,7 +1,3 @@
-pub mod k_reading;
-pub mod regex;
-//pub mod regex_index;
-
 use crate::engine::{Indexable, SearchEngine};
 use resources::storage::ResourceStorage;
 use types::jotoba::languages::Language;
@@ -18,7 +14,7 @@ impl Indexable for Engine {
     fn get_index(
         _language: Option<Language>,
     ) -> Option<&'static vector_space_model2::Index<Self::Document, Self::Metadata>> {
-        Some(indexes::get().word().native())
+        Some(indexes::get().word().k_reading())
     }
 }
 
@@ -39,19 +35,8 @@ impl SearchEngine for Engine {
         _allow_align: bool,
         _language: Option<Language>,
     ) -> Option<(Vector, String)> {
-        let mut terms = vec![(query.to_string(), 1.0)];
-
-        let mut indexer = index.get_indexer().clone();
-        for term in tinysegmenter::tokenize(query) {
-            let indexed = indexer.find_term(&term)?;
-            if indexed.doc_frequency() >= 5_000 || terms.iter().any(|i| i.0 == term) {
-                continue;
-            }
-
-            terms.push((term, 0.03));
-        }
-
-        let vec = index.build_vector_weights(&terms)?;
+        let terms = vec![query.to_string()];
+        let vec = index.build_vector(&terms, None)?;
         Some((vec, query.to_owned()))
     }
 }
