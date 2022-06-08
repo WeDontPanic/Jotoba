@@ -33,7 +33,6 @@ pub(crate) fn conv_word(word: jotoba::words::Word, lang: Language) -> words::Wor
         .map(|i| conv_ex_sentence(i, lang))
         .collect::<Vec<_>>();
 
-
     words::Word {
         sequence: word.sequence,
         is_common,

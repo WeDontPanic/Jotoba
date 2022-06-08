@@ -6,7 +6,6 @@ pub mod tag_only;
 
 use crate::{
     engine::{
-        self,
         guess::Guess,
         result::SearchResult,
         result_item::ResultItem,
@@ -25,7 +24,6 @@ use error::Error;
 use itertools::Itertools;
 use japanese::JapaneseExt;
 use result::Item;
-
 use sentence_reader::igo_unidic::WordClass;
 use sentence_reader::output::ParseResult;
 use types::jotoba::{
@@ -396,7 +394,7 @@ impl<'a> Search<'a> {
     }
 
     fn check_other_lang(&self) -> Result<ResultData, Error> {
-        let guessed_langs = engine::words::foreign::guess_language(&self.query.query)
+        let guessed_langs = foreign::guess_language(&self.query.query)
             .into_iter()
             .filter(|i| *i != self.query.get_lang_with_override())
             .collect::<Vec<_>>();
@@ -512,7 +510,7 @@ pub fn wc_to_simple_pos(wc: &WordClass) -> Option<PosSimple> {
 }
 
 pub fn guess_inp_language(query: &Query) -> Vec<Language> {
-    engine::words::foreign::guess_language(&query.query)
+    foreign::guess_language(&query.query)
         .into_iter()
         .filter(|i| *i != query.get_lang_with_override())
         .collect()

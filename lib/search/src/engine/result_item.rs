@@ -82,4 +82,3 @@ impl<T: PartialEq> From<(T, usize)> for ResultItem<T> {
         ResultItem::new(item, relevance)
     }
 }
-

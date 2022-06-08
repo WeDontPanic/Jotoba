@@ -1,4 +1,4 @@
-use crate::engine::{words::foreign::output::WordOutput};
+use crate::engine::words::foreign::output::WordOutput;
 use indexes::relevance::RelevanceIndex;
 use spin::Mutex;
 use std::collections::HashMap;

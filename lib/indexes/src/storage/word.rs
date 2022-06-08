@@ -12,7 +12,7 @@ const NATIVE_FILE: &str = "jp_index";
 const REGEX_FILE: &str = "regex_index";
 const RELEVANCE_PREFIX: &str = "relevance_index_";
 
-/// Store for names
+/// Store for words
 pub struct WordStore {
     foreign: HashMap<Language, ForeignIndex>,
     native: NativeIndex,

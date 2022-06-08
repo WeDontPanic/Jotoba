@@ -171,4 +171,3 @@ fn fs_changed_update<F: Fn(&str) + Send + 'static>(news_folder: String, update: 
         }
     });
 }
-

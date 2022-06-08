@@ -17,7 +17,7 @@ pub async fn main() {
         return;
     }
 
-    // Start the werbserver on --stat/-s
+    // Start the webserver on --stat/-s
     if options.start {
         webserver::start(options).await.expect("webserver failed");
         return;

@@ -50,6 +50,9 @@ pub fn load_raw<P: AsRef<Path>>(path: P) -> Result<ResourceStorage, Box<dyn Erro
 
 /// Load the resource storage from a file. Returns `true` if it wasn't loaded before
 pub fn load<P: AsRef<Path>>(path: P) -> Result<bool, Box<dyn Error>> {
+    if is_loaded() {
+        return Ok(true);
+    }
     Ok(STORAGE.set(load_raw(path)?).is_ok())
 }
 

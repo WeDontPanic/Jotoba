@@ -47,7 +47,7 @@ impl IndexStore {
     }
 }
 
-/// Returns an IndexStore which can be used to retrieve all indexs
+/// Returns an IndexStore which can be used to retrieve all indexes
 #[inline(always)]
 pub fn get() -> &'static IndexStore {
     unsafe { INDEX_STORE.get_unchecked() }
@@ -55,6 +55,10 @@ pub fn get() -> &'static IndexStore {
 
 /// Loads all indexes
 pub fn load<P: AsRef<Path>>(index_folder: P) -> Result<bool, Box<dyn Error>> {
+    if is_loaded() {
+        return Ok(true);
+    }
+
     let store = load_raw(index_folder)?;
 
     if !store.check() {
@@ -67,6 +71,10 @@ pub fn load<P: AsRef<Path>>(index_folder: P) -> Result<bool, Box<dyn Error>> {
         .expect("Index has already been set");
 
     Ok(true)
+}
+
+pub fn is_loaded() -> bool {
+    INDEX_STORE.get().is_some()
 }
 
 pub fn load_raw<P: AsRef<Path>>(index_folder: P) -> Result<IndexStore, Box<dyn Error>> {
