@@ -33,3 +33,6 @@ spin = { version = "0.9.3", default-features = false, features = [
   "spin_mutex",
 ] }
 intmap = { git = "https://github.com/JojiiOfficial/rust-intmap" }
+
+[dev-dependencies]
+test-case = "2.1.0"

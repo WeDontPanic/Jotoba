@@ -3,7 +3,7 @@ pub mod korean;
 
 use itertools::Itertools;
 use rand::{distributions::Alphanumeric, thread_rng, Rng};
-use std::{cmp::Ordering, ops::Sub};
+use std::cmp::Ordering;
 
 /// Return true if both slices have the same elments without being stored to be in the same order
 pub fn same_elements<T>(v1: &[T], v2: &[T]) -> bool
@@ -23,7 +23,7 @@ where
     true
 }
 
-/// Return true if [`v1`] is a subset of [`v2`]
+/// Return true if `v1` ⊆ `v2`
 pub fn part_of<T>(v1: &[T], v2: &[T]) -> bool
 where
     T: PartialEq,
@@ -39,14 +39,6 @@ where
     }
 
     true
-}
-
-/// Returns the cutset of both slices as newly allocated vector
-pub fn union_elements<'a, T>(v1: &'a [T], v2: &'a [T]) -> Vec<&'a T>
-where
-    T: PartialEq,
-{
-    v1.iter().filter(|i| v2.contains(i)).collect::<Vec<_>>()
 }
 
 /// Get the relative order of two elements within a vector requires that a, b being element of vec
@@ -150,7 +142,7 @@ pub fn remove_dups<T>(inp: Vec<T>) -> Vec<T>
 where
     T: PartialEq,
 {
-    let mut new: Vec<T> = Vec::new();
+    let mut new = vec![];
 
     for item in inp {
         if !new.contains(&item) {
@@ -248,16 +240,6 @@ sabi::sabi! {
             ある(f) => f.to_uppercase().chain(c).collect(),
         }
     }
-
-    /*
-    pub fn first_letter_upper(s: &str) -> String {
-        let mut c = s.chars();
-        match c.next() {
-            None => String::new(),
-            Some(f) => f.to_uppercase().chain(c).collect(),
-        }
-    }
-    */
 }
 
 /// Returns a random alpha numeric string with the length of [`len`]
@@ -268,16 +250,6 @@ pub fn rand_alpha_numeric(len: usize) -> String {
         .take(len)
         .map(char::from)
         .collect()
-}
-
-/// Calculates the difference between `a` and `b`. This method never fails
-#[inline]
-pub fn diff<T: Sub<Output = T> + Ord>(a: T, b: T) -> T {
-    if a > b {
-        a - b
-    } else {
-        b - a
-    }
 }
 
 /// Formats romaji text by removing all 'n' occurences of n+ for 1 < |n| <= 4

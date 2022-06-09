@@ -6,15 +6,15 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-japanese = { path = "../japanese"}
+japanese = { path = "../japanese" }
 strum = { version = "0.24.0", features = ["derive"] }
 strum_macros = "0.24.0"
 serde = { version = "1.0.137", features = ["derive"] }
-jp_inflections = { git = "https://github.com/JojiiOfficial/Japanese_Inflections"}
-bitflags = {git = "https://github.com/JojiiOfficial/BitFlags"}
+jp_inflections = { git = "https://github.com/JojiiOfficial/Japanese_Inflections" }
+bitflags = { git = "https://github.com/JojiiOfficial/BitFlags" }
 itertools = "0.10.3"
 
-localization = { path = "../localization", optional = true}
+localization = { path = "../localization", optional = true }
 ### Note: This sub-crate is not allowed to have dependencies to other Jotoba crates, unless its only used if `jotoba_intern` is enabled.
 
 [features]
@@ -27,3 +27,6 @@ jotoba_intern = ["localization", "api"]
 api = []
 
 raw_types = []
+
+[dev-dependencies]
+test-case = "*"

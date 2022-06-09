@@ -1,16 +1,15 @@
 [package]
-name = "japanese"
+name = "tests"
 version = "0.1.0"
-authors = ["jojii <jojii@gmx.net>"]
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
-[dependencies]
-utils = { path = "../utils" }
-itertools = "0.10.3"
-romaji = "0.1.1"
-
-
 [dev-dependencies]
+search = { path = "../lib/search" }
+japanese = { path = "../lib/japanese" }
 test-case = "2.1.0"
+
+[[test]]
+name = "test_search"
+path = "test_search.rs"

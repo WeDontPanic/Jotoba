@@ -3,4 +3,5 @@
 members = [
   "jotoba_bin",
   "lib/*",
+  "tests",
 ]
