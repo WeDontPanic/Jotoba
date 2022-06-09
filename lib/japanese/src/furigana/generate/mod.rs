@@ -33,25 +33,22 @@ pub fn unchecked<R: ReadingRetrieve>(retrieve: R, kanji: &str, kana: &str) -> Op
 }
 
 /// Returns an iterator over all encoded furigana parts
-pub fn gen_iter<R>(
+pub fn gen_iter<'a, R>(
     retrieve: R,
-    kanji_text: &str,
+    kanji_text: &'a str,
     readings: Vec<(String, String)>,
-) -> impl Iterator<Item = String>
+) -> impl Iterator<Item = String> + 'a
 where
-    R: ReadingRetrieve,
+    R: ReadingRetrieve + 'a,
 {
-    let mut text_parts = text_parts(kanji_text)
-        .map(|i| i.to_owned())
-        .collect::<Vec<_>>()
-        .into_iter();
+    let mut text_parts = text_parts(kanji_text);
 
     let mut furi = readings.into_iter();
 
     std::iter::from_fn(move || {
         let curr_part = text_parts.next()?;
 
-        if curr_part.is_kanji() || (curr_part.has_kanji() && curr_part.has_symbol()) {
+        if curr_part.is_kanji() {
             let (kanji, reading) = furi.next()?;
 
             if let Some(readings) = assign_readings(&retrieve, &kanji, &reading) {
@@ -65,7 +62,7 @@ where
                 Some(furigana_block(kanji, reading))
             }
         } else {
-            Some(curr_part)
+            Some(curr_part.to_string())
         }
     })
 }

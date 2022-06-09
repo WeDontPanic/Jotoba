@@ -109,9 +109,9 @@ pub fn check_pairs(pars: &[SentencePart], kana: &str) -> bool {
 
 /// Generates all kanji readins from a kanji and kana string an returns them (kanji, kana)
 fn map_readings(kanji: &str, kana: &str) -> Option<Vec<(String, String)>> {
-    let kana = kana.chars().collect::<Vec<_>>();
+    let kana = kana.chars().filter(|s| !s.is_symbol()).collect::<Vec<_>>();
     let mut kana_pos = strip_until_kanji(kanji.chars());
-    let mut kanji_iter = kanji.chars().skip(kana_pos);
+    let mut kanji_iter = kanji.chars().filter(|i| !i.is_symbol()).skip(kana_pos);
 
     let mut result: Vec<(String, String)> = Vec::new();
 

@@ -9,6 +9,10 @@ mod tests {
     #[test_case("音楽は好き", "おんがくはすき", &[("音楽","おんがく"),("好","す")]; "Simple 1")]
     #[test_case("お金を払いたくない", "おかねをはらいたくない", &[("金","かね"),("払","はら")]; "Simple 2")]
     #[test_case("おかねをはらいたくない", "おかねをはらいたくない", &[]; "Kana only")]
+    #[test_case("漢字", "かんじ", &[("漢字","かんじ")]; "Kanji only")]
+    #[test_case("いつも眠い感じがします", "いつもねむいかんじがします", &[("眠","ねむ"),("感","かん")]; "Simple 3")]
+    #[test_case("今日もとても眠い", "きょうもとてもねむい", &[("今日","きょう"),("眠","ねむ")]; "Simple 4")]
+    #[test_case("かば、夕べに","かばゆうべに",&[("夕","ゆう")]; "Special char")]
     fn test_map_readings(kanji: &str, kana: &str, expected: &[(&str, &str)]) {
         let parsed = map_readings(kanji, kana).unwrap();
         let parsed = parsed
