@@ -9,7 +9,7 @@ pub(crate) fn sentence_matches(sentence: &Sentence, reading: &Reading) -> bool {
     let lit = reading.get_lit_str();
 
     if reading.is_full_reading() {
-        let parsed_furi = japanese::furigana::from_str(&sentence.furigana);
+        let parsed_furi = japanese::furigana::parse::from_str(&sentence.furigana);
         let reading_hira = reading.get_raw().to_hiragana();
 
         for i in parsed_furi {

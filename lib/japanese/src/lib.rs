@@ -1,4 +1,4 @@
-pub mod accent;
+//pub mod accent;
 pub mod furigana;
 pub mod guessing;
 pub mod radicals;
@@ -407,7 +407,7 @@ pub fn has_reading<'a>(
     kanji_literal: char,
     reading: &'a str,
 ) -> impl Iterator<Item = bool> + 'a {
-    furigana::from_str(furigana)
+    furigana::parse::from_str(furigana)
         .filter_map(move |i| i.kanji.and_then(|k| k.contains(kanji_literal).then(|| i)))
         .map(move |i| match_reading(i.kanji.unwrap(), i.kana, kanji_literal, reading))
 }
@@ -438,4 +438,25 @@ fn match_reading(comp: &str, comp_reading: &str, k_literal: char, reading: &str)
 
     // Impossible to check against other cases
     false
+}
+
+#[cfg(test)]
+mod tests {
+    use test_case::test_case;
+
+    use crate::JapaneseExt;
+
+    #[test_case("音",true; "音")]
+    #[test_case("あ",false; "Kana 'a'")]
+    #[test_case("、",false; "Special japanese char")]
+    fn is_kanji(inp: &str, expcected: bool) {
+        assert_eq!(inp.is_kanji(), expcected);
+    }
+
+    #[test_case("、",true; "Symbol")]
+    #[test_case("音",false; "Kanji")]
+    #[test_case("あ",false; "Kana")]
+    fn is_symbol(inp: &str, expcected: bool) {
+        assert_eq!(inp.is_symbol(), expcected);
+    }
 }

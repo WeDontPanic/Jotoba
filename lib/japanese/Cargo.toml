@@ -14,3 +14,5 @@ romaji = "0.1.1"
 
 [dev-dependencies]
 test-case = "2.1.0"
+resources = { path = "../resources" }
+japanese = { path = "../japanese" }

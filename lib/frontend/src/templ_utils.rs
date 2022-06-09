@@ -1,4 +1,4 @@
-use japanese::furigana::SentencePartRef;
+use japanese::furigana::{self, SentencePartRef};
 use types::jotoba::{
     languages::Language,
     words::{filter_languages, sense::Sense, Word},
@@ -82,7 +82,6 @@ pub fn ext_sentence(
         .get_translations(*language)
         .or_else(|| sentence.get_translations(Language::English))?;
 
-    let furigana = japanese::furigana::from_str(&sentence.furigana).collect::<Vec<_>>();
-
+    let furigana: Vec<_> = furigana::parse::from_str(&sentence.furigana).collect();
     Some((furigana, translation))
 }

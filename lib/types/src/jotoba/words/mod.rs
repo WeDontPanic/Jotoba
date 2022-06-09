@@ -258,7 +258,7 @@ impl Word {
     #[inline]
     pub fn get_furigana(&self) -> Option<Vec<SentencePartRef<'_>>> {
         let furi = self.furigana.as_ref()?;
-        Some(furigana::from_str(furi).collect::<Vec<_>>())
+        Some(furigana::parse::from_str(furi).collect::<Vec<_>>())
     }
 
     /// Get alternative readings in a beautified, print-ready format

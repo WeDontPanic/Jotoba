@@ -64,9 +64,9 @@ where
 
 /// Returns the real amount of characters in a string
 #[inline]
-pub fn real_string_len(s: &str) -> usize {
+pub fn real_string_len<S: AsRef<str>>(s: S) -> usize {
     // We should probably use grapheme clusters here
-    s.chars().count()
+    s.as_ref().chars().count()
 }
 
 /// Returns an antisymmetric ordering of [`a`] and [`b`] where `a == true` < `b == true`

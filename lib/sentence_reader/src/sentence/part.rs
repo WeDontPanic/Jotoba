@@ -1,6 +1,6 @@
 use super::{inflection, owned_morpheme::OwnedMorpheme, FromMorphemes};
 use igo_unidic::{Morpheme, WordClass};
-use japanese::{CharType, JapaneseExt};
+use japanese::{furigana, CharType, JapaneseExt};
 use types::jotoba::words::inflection::Inflection;
 
 /// A single word within a sentence. This already contains all inflection parts
@@ -160,7 +160,7 @@ fn merge_furigana(src: &str, furi: &str) -> String {
     let mut furi_out = String::with_capacity(furi.len());
     let mut kana_paths = japanese::all_words_with_ct(src, CharType::Kana).into_iter();
 
-    for furi_part in japanese::furigana::from_str(furi) {
+    for furi_part in furigana::parse::from_str(furi) {
         if furi_part.kanji.is_none() {
             if let Some(next) = kana_paths.next() {
                 furi_out.push_str(&next);
@@ -168,7 +168,7 @@ fn merge_furigana(src: &str, furi: &str) -> String {
             continue;
         }
 
-        furi_out.push_str(&furi_part.encoded());
+        furi_out.push_str(&furi_part.encode());
     }
 
     furi_out

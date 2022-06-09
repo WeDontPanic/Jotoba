@@ -33,7 +33,7 @@ mod test {
     }
 
     #[test]
-    fn test_fale() {
+    fn test_false() {
         test("kind", false);
         test("jinjc", false);
         test("gx", false);

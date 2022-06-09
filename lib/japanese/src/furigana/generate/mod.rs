@@ -3,7 +3,8 @@ pub mod traits;
 pub use traits::ReadingRetrieve;
 
 use super::super::{text_parts, JapaneseExt};
-use super::{from_str, map_readings};
+use super::map_readings;
+use super::parse;
 use crate::utils::real_string_len;
 use itertools::Itertools;
 
@@ -16,9 +17,11 @@ pub fn checked<R: ReadingRetrieve>(retrieve: R, kanji: &str, kana: &str) -> Stri
         None => return furigana_block(kanji, kana),
     };
 
-    let furi_parsed = from_str(&unchecked_furi).map(|i| i.kana).join("");
+    let furi_parsed = parse::from_str(&unchecked_furi).map(|i| i.kana).join("");
+    // check if built correctly
     (furi_parsed.to_hiragana() == kana.to_hiragana())
         .then(|| unchecked_furi)
+        // if not correct use one block for all
         .unwrap_or_else(|| furigana_block(kanji, kana))
 }
 

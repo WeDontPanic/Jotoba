@@ -1578,6 +1578,8 @@ name = "japanese"
 version = "0.1.0"
 dependencies = [
  "itertools",
+ "japanese",
+ "resources",
  "romaji",
  "test-case",
  "utils",
@@ -2894,6 +2896,7 @@ name = "tests"
 version = "0.1.0"
 dependencies = [
  "japanese",
+ "resources",
  "search",
  "test-case",
 ]

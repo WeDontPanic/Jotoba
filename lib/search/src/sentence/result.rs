@@ -26,7 +26,7 @@ pub struct Sentence {
 impl Sentence {
     #[inline]
     pub fn furigana_pairs<'a>(&'a self) -> impl Iterator<Item = SentencePartRef<'a>> {
-        furigana::from_str(&self.furigana)
+        furigana::parse::from_str(&self.furigana)
     }
 
     #[inline]
@@ -44,6 +44,7 @@ impl Sentence {
         if translation.is_none() && allow_english {
             translation = s.get_translations(Language::English);
         }
+
         Some(Self {
             id: s.id,
             translation: translation?.to_string(),

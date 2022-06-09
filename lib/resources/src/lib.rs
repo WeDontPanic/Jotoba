@@ -3,7 +3,7 @@ pub mod storage;
 
 pub use storage::{feature::Feature, ResourceStorage};
 
-use once_cell::sync::OnceCell;
+use once_cell::sync::{Lazy, OnceCell};
 use std::{
     error::Error,
     fs::File,
@@ -26,6 +26,12 @@ pub const REQUIRED_FEATURES: &[Feature] = &[
 
 /// InMemory storage for all data
 static STORAGE: OnceCell<ResourceStorage> = OnceCell::new();
+
+/// Lazy resource storage for tests
+pub static LAZY_STORAGE: Lazy<ResourceStorage> = Lazy::new(|| {
+    let path = std::env::var("STORAGE_DATA").expect("missing STORAGE_DATA");
+    load_raw(&path).expect("Failed to load test resources")
+});
 
 /// Get loaded storage data
 #[inline(always)]

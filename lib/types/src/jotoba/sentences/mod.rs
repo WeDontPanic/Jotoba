@@ -48,9 +48,9 @@ impl Sentence {
     #[inline]
     #[cfg(feature = "jotoba_intern")]
     pub fn get_kana(&self) -> String {
-        japanese::furigana::from_str(&self.furigana)
+        japanese::furigana::parse::from_str(&self.furigana)
             .map(|i| i.kana)
-            .collect::<String>()
+            .collect()
     }
 
     /// Returns `true` if the sentence contains a translation for `language`
