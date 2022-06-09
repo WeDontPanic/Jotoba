@@ -2,11 +2,11 @@ use search::query::{Query, UserSettings};
 use types::jotoba::languages::Language;
 
 fn load_data() {
-    rayon::scope(move |s| {
-        s.spawn(move |_| {
+    rayon::scope(|s| {
+        s.spawn(|_| {
             resources::load("../../resources/storage_data").unwrap();
         });
-        s.spawn(move |_| {
+        s.spawn(|_| {
             indexes::storage::load("../../indexes").unwrap();
         });
     });

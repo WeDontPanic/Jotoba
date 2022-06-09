@@ -1,5 +1,5 @@
 use super::KanjiResult;
-use crate::query::{Query, Tag};
+use crate::query::{tags::Tag, Query};
 use error::Error;
 
 pub fn search(query: &Query) -> Result<KanjiResult, Error> {

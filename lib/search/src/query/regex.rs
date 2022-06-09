@@ -44,8 +44,7 @@ impl RegexSQuery {
         self.regex.is_match(word)
     }
 
-    /// Returns the query-information holding characters from the query. In other words those, who
-    /// don't represent regex syntax
+    /// Returns all characters that don't represent regex syntax
     pub fn get_chars(&self) -> Vec<char> {
         let mut out = Vec::with_capacity(self.query.len());
         for c in self.query.chars() {

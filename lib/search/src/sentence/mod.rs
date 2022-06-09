@@ -5,7 +5,7 @@ mod tag_only;
 use super::query::Query;
 use crate::{
     engine::{guess::Guess, sentences::foreign, sentences::native, SearchEngine, SearchTask},
-    query::{Form, QueryLang, Tag},
+    query::{tags::Tag, Form, QueryLang},
 };
 use error::Error;
 use result::{Item, SentenceResult};

@@ -1,14 +1,14 @@
-use std::{cmp::Ordering, str::FromStr};
-
+use super::{regex::RegexSQuery, Form, Query, QueryLang, SearchTypeTag, Tag, UserSettings};
 use itertools::Itertools;
-
 use japanese::JapaneseExt;
+use std::{cmp::Ordering, str::FromStr};
 use types::jotoba::{
     kanji, languages::Language as ContentLanguage, search::QueryType,
     words::part_of_speech::PosSimple,
 };
 
-use super::{regex::RegexSQuery, Form, Query, QueryLang, SearchTypeTag, Tag, UserSettings};
+/// Max amount of characters a query is allowed to have
+pub const MAX_QUERY_LEN: usize = 400;
 
 /// Represents a query
 pub struct QueryParser {
@@ -45,7 +45,7 @@ impl QueryParser {
         let mut parsed_query: String = Self::format_query(parsed_query, trim)
             .chars()
             .into_iter()
-            .take(400)
+            .take(MAX_QUERY_LEN)
             .collect();
 
         // Pages start at 1. First offset has to be 0
@@ -286,8 +286,7 @@ pub fn calc_page_offset(page: usize, page_size: usize) -> usize {
 
 /// Removes regex parts from a query. Returns `None` if `query` does not contain regex symbols
 fn strip_regex(query: &str) -> Option<String> {
-    let rg_query = RegexSQuery::new(query)?;
-    Some(rg_query.get_chars().into_iter().collect())
+    Some(RegexSQuery::new(query)?.get_chars().into_iter().collect())
 }
 
 #[cfg(test)]

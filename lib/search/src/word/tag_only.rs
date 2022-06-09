@@ -1,10 +1,8 @@
+use super::{ResultData, Search};
+use crate::query::tags::Tag;
 use error::Error;
 use types::jotoba::words::filter_languages;
 use utils::to_option;
-
-use crate::query::Tag;
-
-use super::{ResultData, Search};
 
 pub(super) fn search(search: &Search<'_>) -> Result<ResultData, Error> {
     let filter_tag = search.query.tags.iter().find(|i| i.is_empty_allowed());

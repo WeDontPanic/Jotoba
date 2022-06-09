@@ -42,28 +42,25 @@ where
     R: ReadingRetrieve + 'a,
 {
     let mut text_parts = text_parts(kanji_text);
-
     let mut furi = readings.into_iter();
-
     std::iter::from_fn(move || {
         let curr_part = text_parts.next()?;
 
-        if curr_part.is_kanji() {
-            let (kanji, reading) = furi.next()?;
-
-            if let Some(readings) = assign_readings(&retrieve, &kanji, &reading) {
-                if readings.len() != kanji.chars().count() {
-                    Some(furigana_block(kanji, reading))
-                } else {
-                    let reading = readings.into_iter().map(|i| i.1).join("|");
-                    Some(furigana_block(kanji, reading))
-                }
-            } else {
-                Some(furigana_block(kanji, reading))
-            }
-        } else {
-            Some(curr_part.to_string())
+        if !curr_part.is_kanji() {
+            return Some(curr_part.to_string());
         }
+
+        let (kanji, reading) = furi.next()?;
+        if let Some(readings) = assign_readings(&retrieve, &kanji, &reading) {
+            if readings.len() != kanji.chars().count() {
+                return Some(furigana_block(kanji, reading));
+            }
+
+            let reading = readings.into_iter().map(|i| i.1).join("|");
+            return Some(furigana_block(kanji, reading));
+        }
+
+        Some(furigana_block(kanji, reading))
     })
 }
 

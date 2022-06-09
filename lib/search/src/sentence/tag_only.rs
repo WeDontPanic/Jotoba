@@ -1,7 +1,8 @@
 use error::Error;
 use types::jotoba::languages::Language;
 
-use crate::query::{Query, Tag};
+use crate::query::tags::Tag;
+use crate::query::Query;
 
 use super::result::SentenceResult;
 
