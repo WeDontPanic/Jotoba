@@ -7,8 +7,7 @@ pub mod sentence;
 pub mod word;
 
 /// How string items should be matched with each other
-#[derive(Clone, Copy, PartialEq, Debug)]
-#[repr(u8)]
+#[derive(Clone, Copy, Debug)]
 pub enum SearchMode {
     Exact,
     Variable,

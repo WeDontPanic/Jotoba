@@ -38,7 +38,7 @@ pub struct Kanji {
     #[serde(skip_serializing_if = "Vec::is_empty")]
     pub korean_hangul: Vec<String>,
     #[serde(skip_serializing_if = "Vec::is_empty")]
-    pub natori: Vec<String>,
+    pub nanori: Vec<String>,
     #[serde(skip_serializing_if = "Vec::is_empty")]
     pub similar_kanji: Vec<char>,
     #[serde(skip_serializing_if = "Vec::is_empty")]
@@ -113,7 +113,7 @@ impl From<crate::jotoba::kanji::Kanji> for Kanji {
             chinese: k.chinese,
             korean_romaji: k.korean_r,
             korean_hangul: k.korean_h,
-            natori: k.natori,
+            nanori: k.nanori,
             similar_kanji: k.similar_kanji,
             meanings: k.meanings,
             parts: k.parts,

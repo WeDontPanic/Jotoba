@@ -98,9 +98,9 @@
         </div>
         <!-- Alternative Readings Part -->
         <div>
-          @if !k_item.kanji.natori.is_empty() {
+          @if !k_item.kanji.nanori.is_empty() {
             <div class="notes d-flex flex-row wrap"><b class="right-padding-10">@data.gettext("Japanese names"):</b> 
-              @for (pos, n) in k_item.kanji.natori.iter().enumerate() {
+              @for (pos, n) in k_item.kanji.nanori.iter().enumerate() {
                 @if pos > 0 {
                   <div class="tags no-margin slim right-padding-10">,</div>
                 }

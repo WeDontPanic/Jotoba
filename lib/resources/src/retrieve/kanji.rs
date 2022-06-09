@@ -74,3 +74,19 @@ impl<'a> KanjiRetrieve<'a> {
         self.storage.literal_index.len()
     }
 }
+
+impl japanese::furigana::generate::ReadingRetrieve for KanjiRetrieve<'_> {
+    #[inline]
+    fn onyomi(&self, lit: char) -> Vec<String> {
+        self.by_literal(lit)
+            .map(|i| i.onyomi.clone())
+            .unwrap_or_default()
+    }
+
+    #[inline]
+    fn kunyomi(&self, lit: char) -> Vec<String> {
+        self.by_literal(lit)
+            .map(|i| i.kunyomi.clone())
+            .unwrap_or_default()
+    }
+}

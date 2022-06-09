@@ -2345,6 +2345,7 @@ version = "0.1.0"
 dependencies = [
  "bincode",
  "intmap",
+ "japanese",
  "once_cell",
  "serde",
  "sorted_intersection",

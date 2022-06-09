@@ -1,10 +1,8 @@
 pub mod generate;
 
-use std::str::CharIndices;
-
-use itertools::{Itertools, MultiPeek};
-
 use super::JapaneseExt;
+use itertools::{Itertools, MultiPeek};
+use std::str::CharIndices;
 
 /// Represents a single sentence part which either consisting of kana only or kanji and a kana reading
 /// assigned
@@ -112,7 +110,7 @@ pub fn pairs_checked(kanji: &str, kana: &str) -> Option<Vec<SentencePart>> {
     let kana = kana.replace("・", "").replace("、", "");
     let kanji = kanji.replace("・", "").replace("、", "");
 
-    let mut furis = calc_kanji_readings(&kanji, &kana)?.into_iter();
+    let mut furis = map_readings(&kanji, &kana)?.into_iter();
 
     let parts = super::text_parts(&kanji)
         .map(|part| {
@@ -324,7 +322,7 @@ fn furi_count(start: char, char_iter: &mut MultiPeek<CharIndices>) -> i32 {
 }
 
 /// Generates all kanji readins from a kanji and kana string an returns them (kanji, kana)
-fn calc_kanji_readings(kanji: &str, kana: &str) -> Option<Vec<(String, String)>> {
+fn map_readings(kanji: &str, kana: &str) -> Option<Vec<(String, String)>> {
     let kana = kana.chars().collect::<Vec<_>>();
     let mut kana_pos = strip_until_kanji(kanji.chars());
     let mut kanji_iter = kanji.chars().skip(kana_pos);

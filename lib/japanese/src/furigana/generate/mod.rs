@@ -1,49 +1,84 @@
-use super::{
-    super::{text_parts, JapaneseExt},
-    calc_kanji_readings, from_str,
-};
+pub mod traits;
+
+pub use traits::ReadingRetrieve;
+
+use super::super::{text_parts, JapaneseExt};
+use super::{from_str, map_readings};
 use crate::utils::real_string_len;
 use itertools::Itertools;
 
-pub trait RetrieveKanji: Fn(String) -> Option<(Option<Vec<String>>, Option<Vec<String>>)> {}
-impl<T: Fn(String) -> Option<(Option<Vec<String>>, Option<Vec<String>>)> + ?Sized> RetrieveKanji
-    for T
-{
-}
+/// Generates furigana readings for the given `kanji` input based on the provided `kana` reading and
+/// kanji readings which are being passed using `retrieve`. In case a reading can't be correctly
+/// identified, the full kanji<->kana furigana block is getting returned instead of an error.
+pub fn checked<R: ReadingRetrieve>(retrieve: R, kanji: &str, kana: &str) -> String {
+    let unchecked_furi = match unchecked(retrieve, kanji, kana) {
+        Some(u) => u,
+        None => return furigana_block(kanji, kana),
+    };
 
-/// Encodes furigana readings of a japanese word/sentence and returns it in form of a string which
-/// can be parsed later on
-pub fn checked<R: RetrieveKanji>(retrieve: R, kanji: &str, kana: &str) -> String {
-    unchecked(retrieve, kanji, kana)
-        .and_then(|furi| {
-            let furi_parsed = from_str(&furi).map(|i| i.kana).join("");
-            (furi_parsed.to_hiragana() == kana.to_hiragana()).then(|| furi)
-        })
+    let furi_parsed = from_str(&unchecked_furi).map(|i| i.kana).join("");
+    (furi_parsed.to_hiragana() == kana.to_hiragana())
+        .then(|| unchecked_furi)
         .unwrap_or_else(|| furigana_block(kanji, kana))
 }
 
-/// Generate a furigana string. Returns None on error
-pub fn unchecked<R: RetrieveKanji>(retrieve: R, kanji: &str, kana: &str) -> Option<String> {
-    let furis = calc_kanji_readings(kanji, kana)?;
-    Some(
-        furigana_to_str(
-            |ji, na| retrieve_readings(&retrieve, ji, na),
-            kanji,
-            furis.into_iter(),
-        )
-        .join(""),
-    )
+/// Generates furigana readings for the given `kanji` input based on the provided `kana` reading and
+/// kanji readings which are being passed using `retrieve`
+pub fn unchecked<R: ReadingRetrieve>(retrieve: R, kanji: &str, kana: &str) -> Option<String> {
+    let kanji_mappings = map_readings(kanji, kana)?;
+    Some(gen_iter(retrieve, kanji, kanji_mappings).join(""))
+}
+
+/// Returns an iterator over all encoded furigana parts
+pub fn gen_iter<R>(
+    retrieve: R,
+    kanji_text: &str,
+    readings: Vec<(String, String)>,
+) -> impl Iterator<Item = String>
+where
+    R: ReadingRetrieve,
+{
+    let mut text_parts = text_parts(kanji_text)
+        .map(|i| i.to_owned())
+        .collect::<Vec<_>>()
+        .into_iter();
+
+    let mut furi = readings.into_iter();
+
+    std::iter::from_fn(move || {
+        let curr_part = text_parts.next()?;
+
+        if curr_part.is_kanji() || (curr_part.has_kanji() && curr_part.has_symbol()) {
+            let (kanji, reading) = furi.next()?;
+
+            if let Some(readings) = assign_readings(&retrieve, &kanji, &reading) {
+                if readings.len() != kanji.chars().count() {
+                    Some(furigana_block(kanji, reading))
+                } else {
+                    let reading = readings.into_iter().map(|i| i.1).join("|");
+                    Some(furigana_block(kanji, reading))
+                }
+            } else {
+                Some(furigana_block(kanji, reading))
+            }
+        } else {
+            Some(curr_part)
+        }
+    })
 }
 
 /// Takes a kanji(compound) and the assigned kana reading and returns (hopefully) a list of the
 /// provided kanji with the
-pub fn retrieve_readings<R: RetrieveKanji>(
+pub fn assign_readings<R: ReadingRetrieve>(
     retrieve: R,
     kanji: &str,
     kana: &str,
 ) -> Option<Vec<(String, String)>> {
+    let kanji_len = real_string_len(kanji);
+    let kana_len = real_string_len(kana);
+
     // If both have len of 2 the readings are obv
-    if real_string_len(kanji) == real_string_len(kana) {
+    if kanji_len == kana_len {
         return Some(
             kanji
                 .chars()
@@ -53,33 +88,21 @@ pub fn retrieve_readings<R: RetrieveKanji>(
         );
     }
 
-    let kanji_items = kanji.chars().filter(|i| i.is_kanji()).collect_vec();
-    if kanji_items.len() == 1 {
+    let kanji_lits = get_kanji_literals(kanji);
+    if kanji_lits.len() == 1 {
         return Some(vec![(kanji.to_owned(), kana.to_owned())]);
     }
-    if kanji_items.is_empty() {
+
+    let kanji_readings = kanji_lits
+        .iter()
+        .map(|i| (*i, format_readings(retrieve.all(*i))))
+        .collect::<Vec<_>>();
+
+    if kanji_readings.is_empty() {
         return None;
     }
 
-    let kanji_readings = kanji_items
-        .iter()
-        .map(|i| {
-            let (kun, on) = retrieve(i.to_string())?;
-            let kun = kun.map(format_readings).unwrap_or_default();
-            let on = on.map(format_readings).unwrap_or_default();
-            let mut readings = kun.into_iter().chain(on).collect_vec();
-            readings.sort_unstable();
-            readings.dedup();
-            Some(readings)
-        })
-        .collect::<Option<Vec<_>>>()?;
-
-    let readings_list: Vec<(char, Vec<String>)> = kanji_items
-        .into_iter()
-        .zip(kanji_readings.into_iter())
-        .collect();
-
-    find_kanji_combo(readings_list, kana)
+    find_kanji_combo(kanji_readings, kana)
 }
 
 /// Find the exact readings of a kanji literal within a kanji compound
@@ -129,6 +152,7 @@ fn find_kanji_combo(
             .iter()
             .filter(|i| i.0 + 1 == readings_map.len())
             .count();
+
         // If only one last kanji reading is missing, just apply the kana char
         if last.1.len() + 1 == readings_map.len() && last_count == 1 {
             last.1.push(lasti);
@@ -161,43 +185,12 @@ fn find_kanji_combo(
     )
 }
 
-fn furigana_to_str<F>(
-    mut kanji_lookup: F,
-    kanji_text: &str,
-    mut furi: impl Iterator<Item = (String, String)>,
-) -> impl Iterator<Item = String>
-where
-    F: FnMut(&str, &str) -> Option<Vec<(String, String)>>,
-{
-    let mut text_parts = text_parts(kanji_text)
-        .map(|i| i.to_owned())
-        .collect::<Vec<_>>()
-        .into_iter();
-
-    std::iter::from_fn(move || {
-        let curr_part = text_parts.next()?;
-
-        if curr_part.is_kanji() || (curr_part.has_kanji() && curr_part.has_symbol()) {
-            let (kanji, reading) = furi.next()?;
-
-            if let Some(readings) = kanji_lookup(&kanji, &reading) {
-                if readings.len() != kanji.chars().count() {
-                    Some(furigana_block(kanji, reading))
-                } else {
-                    let reading = readings.into_iter().map(|i| i.1).join("|");
-                    Some(furigana_block(kanji, reading))
-                }
-            } else {
-                Some(furigana_block(kanji, reading))
-            }
-        } else {
-            Some(curr_part)
-        }
-    })
-}
-
 pub(crate) fn furigana_block<S: AsRef<str>>(kanji: S, kana: S) -> String {
     format!("[{}|{}]", kanji.as_ref(), kana.as_ref())
+}
+
+fn get_kanji_literals(inp: &str) -> Vec<char> {
+    inp.chars().filter(|i| i.is_kanji()).collect()
 }
 
 fn find_prefix(prefixe: &[String], text: &str) -> Vec<String> {

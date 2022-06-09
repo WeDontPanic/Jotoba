@@ -35,8 +35,7 @@ impl SearchEngine for Engine {
         _allow_align: bool,
         _language: Option<Language>,
     ) -> Option<(Vector, String)> {
-        let terms = vec![query.to_string()];
-        let vec = index.build_vector(&terms, None)?;
+        let vec = index.build_vector(&[query], None)?;
         Some((vec, query.to_owned()))
     }
 }

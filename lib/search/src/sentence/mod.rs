@@ -2,29 +2,21 @@ pub mod kanji;
 pub mod result;
 mod tag_only;
 
-use std::time::Instant;
-
-use self::result::{Item, SentenceResult};
-
 use super::query::Query;
 use crate::{
     engine::{guess::Guess, sentences::foreign, sentences::native, SearchEngine, SearchTask},
     query::{Form, QueryLang, Tag},
 };
 use error::Error;
+use result::{Item, SentenceResult};
 use types::jotoba::{languages::Language, sentences::Sentence};
 
 /// Searches for sentences
 pub fn search(query: &Query) -> Result<SentenceResult, Error> {
-    let start = Instant::now();
-
     let res = match query.form {
         Form::TagOnly => tag_only::search(query)?,
         _ => normal_search(query)?,
     };
-
-    println!("Sentence search took: {:?}", start.elapsed());
-
     Ok(res)
 }
 
@@ -59,8 +51,6 @@ fn foreign_search(query: &Query) -> SearchTask<foreign::Engine> {
 }
 
 fn jp_search<'a>(query: &Query, query_str: &'a str) -> SearchTask<'a, native::Engine> {
-    println!("query: {}", query_str);
-
     let mut search_task = SearchTask::<native::Engine>::new(&query_str)
         .limit(query.settings.page_size as usize)
         .offset(query.page_offset)
@@ -78,7 +68,6 @@ fn sort_fn<T: SearchEngine<Output = &'static Sentence> + Send>(
     search_task: &mut SearchTask<T>,
     japanese: bool,
 ) {
-    println!("{:#?}", query_str);
     let query = query.clone();
     search_task.set_order_fn(move |sentence, relevance, _, _| {
         let mut rel = (relevance * 1000f32) as usize;
