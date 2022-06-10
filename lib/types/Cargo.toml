@@ -29,4 +29,4 @@ api = []
 raw_types = []
 
 [dev-dependencies]
-test-case = "*"
+test-case = "2.1.0"
