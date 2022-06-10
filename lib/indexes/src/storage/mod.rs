@@ -77,6 +77,11 @@ pub fn is_loaded() -> bool {
     INDEX_STORE.get().is_some()
 }
 
+/// Needed for tests only
+pub fn wait() {
+    INDEX_STORE.wait();
+}
+
 pub fn load_raw<P: AsRef<Path>>(index_folder: P) -> Result<IndexStore, Box<dyn Error>> {
     log::debug!("Loading word index");
     let word = word::load(index_folder.as_ref())?;

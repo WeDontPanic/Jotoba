@@ -71,3 +71,7 @@ pub fn store<W: Write>(output: W, storage: &ResourceStorage) -> Result<(), Box<d
 pub fn set(res_storage: ResourceStorage) {
     STORAGE.set(res_storage).ok();
 }
+
+pub fn wait() {
+    STORAGE.wait();
+}

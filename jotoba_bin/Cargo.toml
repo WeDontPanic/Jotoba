@@ -10,7 +10,7 @@ license = "GPLv3"
 [dependencies]
 news = { path = "../lib/news" }
 types = { path = "../lib/types" }
-sentence_reader  = { path = "../lib/sentence_reader" }
+sentence_reader = { path = "../lib/sentence_reader" }
 search = { path = "../lib/search" }
 api = { path = "../lib/api" }
 frontend = { path = "../lib/frontend" }
@@ -28,11 +28,11 @@ rayon = "1.5.3"
 #snmalloc-rs = "0.2.28"
 
 [features]
-default = [ "img_scan" ]
+default = ["img_scan"]
 
-sentry_error = [ "sentry", "frontend/sentry_error" ]
-img_scan = [ "api/img_scan" ]
-news_inotify = [ "news/news_inotify"]
+sentry_error = ["sentry", "frontend/sentry_error"]
+img_scan = ["api/img_scan"]
+news_inotify = ["news/news_inotify"]
 
 [dev-dependencies]
 criterion = "0.3.5"
