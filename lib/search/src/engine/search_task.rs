@@ -229,7 +229,7 @@ where
 
                 //let similarity = i.vector().similarity(&q_vec);
                 let similarity = T::similarity(i.vector(), &q_vec);
-                if similarity <= self.threshold {
+                if similarity < self.threshold {
                     return None;
                 }
 
@@ -319,7 +319,7 @@ where
                 }
 
                 let similarity = T::similarity(i.vector(), &q_vec);
-                if similarity <= self.threshold {
+                if similarity < self.threshold {
                     return None;
                 }
 

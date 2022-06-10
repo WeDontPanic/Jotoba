@@ -18,7 +18,7 @@ impl<'a> KanjiRetrieve<'a> {
     #[inline]
     pub fn by_literal(&self, literal: char) -> Option<&Kanji> {
         //self.storage.dict_data.kanji.kanji.get(&literal)
-        self.storage.literal_index.get(&literal)
+        self.storage.literal_index.get(literal as u32)
     }
 
     /// Returns all kanji with the given radicals

@@ -8,7 +8,7 @@ use super::feature::Feature;
 #[derive(Serialize, Deserialize, Default, Clone)]
 pub struct KanjiStorage {
     /// Index mapping kanji literals to `Kanji` data
-    pub literal_index: HashMap<char, Kanji>,
+    pub literal_index: intmap::IntMap<Kanji>,
 
     /// Mapping from a radical to a list of kanji using this radical
     pub radical_map: HashMap<char, Vec<char>>,
@@ -43,7 +43,7 @@ impl KanjiStorage {
             if !self.has_similar_kanji && !kanji.similar_kanji.is_empty() {
                 self.has_similar_kanji = true;
             }
-            self.literal_index.insert(kanji.literal, kanji);
+            self.literal_index.insert(kanji.literal as u32, kanji);
         }
     }
 
