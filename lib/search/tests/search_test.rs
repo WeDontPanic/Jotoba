@@ -31,7 +31,13 @@ fn load_search() {
 // TODO
 //
 
-/// ----------- Simple search ------------- ///
+//
+/// ----------- Regex --------------- ///
+
+// TODO
+//
+
+/// ----------- Simple word search ------------- ///
 
 #[test_case("musik", Language::German, "音楽")]
 #[test_case("音楽", Language::German, "音楽")]
