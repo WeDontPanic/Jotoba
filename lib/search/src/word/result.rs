@@ -42,6 +42,14 @@ impl WordResult {
             Item::Kanji(_) => None,
         })
     }
+
+    #[inline]
+    pub fn kanji(&self) -> impl Iterator<Item = &Kanji> {
+        self.items.iter().filter_map(|i| match i {
+            Item::Word(_) => None,
+            Item::Kanji(k) => Some(k),
+        })
+    }
 }
 
 #[derive(Debug, Clone, PartialEq)]

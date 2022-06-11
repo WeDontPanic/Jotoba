@@ -1,4 +1,7 @@
-use search::query::{parser::QueryParser, Query, UserSettings};
+use search::{
+    query::{parser::QueryParser, Query, UserSettings},
+    word::search,
+};
 use test_case::test_case;
 use types::jotoba::{languages::Language, search::QueryType, words::part_of_speech::PosSimple};
 
@@ -22,8 +25,13 @@ fn load_search() {
 ///
 /// ----------- Kanji (right) --------------- ///
 
-// TODO
-//
+#[test_case("音楽",&['音','楽'])]
+fn correct_kanji_shown(query_str: &str, exp_res: &[char]) {
+    wait();
+    let query = make_query(query_str, Language::English);
+    let res = search(&query).expect("Failed to do search");
+    assert!(res.kanji().count() >= exp_res.len());
+}
 
 //
 /// ----------- Direkt on top --------------- ///
@@ -51,7 +59,7 @@ fn word_search(query_str: &str, language: Language, first_res: &str) {
     wait();
 
     let query = make_query(query_str, language);
-    let res = search::word::search(&query).unwrap();
+    let res = search(&query).unwrap();
     let word = match res.words().next() {
         Some(n) => n,
         None => return,
@@ -71,7 +79,7 @@ fn pos_tag_test(query_str: &str, exp_pos: &[PosSimple], exp_res: &[&str]) {
     wait();
 
     let query = parse_query(query_str, Language::English, QueryType::Words);
-    let res = search::word::search(&query).expect("Search crashed");
+    let res = search(&query).expect("Search crashed");
     let have_tag = res
         .words()
         .all(|i| exp_pos.iter().all(|j| i.has_pos(&[*j])));
@@ -110,8 +118,7 @@ fn test_jp_search() {
 fn test_romaji(query_str: &str, expected: &[&str]) {
     wait();
 
-    let res =
-        search::word::search(&make_query(query_str, Language::English)).expect("Engine failed");
+    let res = search(&make_query(query_str, Language::English)).expect("Engine failed");
     for exp in expected.iter() {
         if !res.words().take(3).any(|i| i.has_reading(exp)) {
             panic!("Expected {:?} to find {exp:?} (Romaji search)", query_str);
