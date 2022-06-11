@@ -14,22 +14,11 @@ pub use igo_unidic;
 pub use output::Sentence;
 pub use sentence::part::Part;
 
-/// The path of the unidict-mecab dictionary
-pub const NL_PARSER_PATH: &str = "./unidic-mecab";
-
-/// A global natural language parser
-//pub static JA_NL_PARSER: Lazy<igo_unidic::Parser> =
-//    Lazy::new(|| igo_unidic::Parser::new(NL_PARSER_PATH).unwrap());
-
 pub static JA_NL_PARSER: Lazy<OnceCell<igo_unidic::Parser>> = Lazy::new(|| OnceCell::new());
-
-/// A global natural language parser
-pub static JA_NL_PARSER2: OnceCell<igo_unidic::Parser> = OnceCell::new();
 
 pub fn load_parser<P: AsRef<Path>>(path: P) {
     let parser = igo_unidic::Parser::new(path.as_ref().to_str().unwrap()).unwrap();
     JA_NL_PARSER.set(parser).ok();
-    //JA_NL_PARSER2.set(parser).ok();
 }
 
 pub fn wait() {

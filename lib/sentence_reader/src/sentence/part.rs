@@ -107,7 +107,14 @@ impl Part {
 
     /// returns msgid for the current word_class or None if no word_class is set
     pub fn word_class(&self) -> Option<&'static str> {
-        Some(match self.get_main_morpheme().word_class {
+        let main_morph = self.get_main_morpheme();
+        let main_morph_wc = main_morph.word_class;
+
+        if main_morph_wc.is_symbol() && !self.main_lexeme().is_symbol() {
+            return Some("Undetected");
+        }
+
+        Some(match main_morph_wc {
             WordClass::Particle(_) => "Particle",
             WordClass::Verb(_) => "Verb",
             WordClass::Adjective(_) => "Adjective",

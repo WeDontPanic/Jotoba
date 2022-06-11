@@ -10,12 +10,6 @@ use types::jotoba::{
     words::{inflection::Inflection, part_of_speech::PosSimple},
 };
 
-/// Loads the data. Always has to be called
-#[test]
-fn load_search() {
-    load_data();
-}
-
 /// ----------- Inflections --------------- ///
 
 #[test_case("知らなかった",&[Inflection::Past, Inflection::Negative])]
