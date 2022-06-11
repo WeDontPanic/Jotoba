@@ -1,5 +1,7 @@
 pub mod traits;
 
+use std::collections::HashSet;
+
 pub use traits::ReadingRetrieve;
 
 use super::super::{text_parts, JapaneseExt};
@@ -46,6 +48,7 @@ where
     std::iter::from_fn(move || {
         let curr_part = text_parts.next()?;
 
+        // No need to encode kana parts
         if !curr_part.is_kanji() {
             return Some(curr_part.to_string());
         }
@@ -104,7 +107,7 @@ pub fn assign_readings<R: ReadingRetrieve>(
 
 /// Find the exact readings of a kanji literal within a kanji compound
 fn find_kanji_combo(
-    readings_map: Vec<(char, Vec<String>)>,
+    readings_map: Vec<(char, HashSet<String>)>,
     kana: &str,
 ) -> Option<Vec<(String, String)>> {
     let mut routes: Vec<(usize, Vec<String>, &str)> = vec![(0, vec![], kana)];
@@ -190,7 +193,7 @@ fn get_kanji_literals(inp: &str) -> Vec<char> {
     inp.chars().filter(|i| i.is_kanji()).collect()
 }
 
-fn find_prefix(prefixe: &[String], text: &str) -> Vec<String> {
+fn find_prefix(prefixe: &HashSet<String>, text: &str) -> Vec<String> {
     prefixe
         .iter()
         .filter(|i| text.to_hiragana().starts_with(&i.to_hiragana()))
@@ -198,16 +201,19 @@ fn find_prefix(prefixe: &[String], text: &str) -> Vec<String> {
         .collect_vec()
 }
 
-fn format_readings(r: Vec<String>) -> Vec<String> {
+fn format_readings(r: Vec<String>) -> HashSet<String> {
     r.into_iter()
         .map(|i| i.replace("-", ""))
         .map(|i| {
             if i.contains('.') {
                 // On kun readigs, replace everything after the '.'
-                i.split('.').next().unwrap().to_owned().to_hiragana()
+                let fmt1 = i.split('.').next().unwrap().to_owned().to_hiragana();
+                let fmt2 = i.replace('.', "").to_hiragana();
+                vec![fmt1, fmt2]
             } else {
-                i.to_hiragana()
+                vec![i.to_hiragana()]
             }
         })
-        .collect_vec()
+        .flatten()
+        .collect()
 }

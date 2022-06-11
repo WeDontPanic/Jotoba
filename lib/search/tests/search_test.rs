@@ -196,10 +196,10 @@ fn load_data() {
             resources::load("../../resources/storage_data").unwrap();
         });
         s.spawn(|_| {
-            indexes::storage::load("../../indexes").unwrap();
+            indexes::storage::load("../../resources/indexes").unwrap();
         });
         s.spawn(|_| {
-            sentence_reader::load_parser("../../unidic-mecab");
+            sentence_reader::load_parser("../../resources/unidic-mecab");
         })
     });
 }

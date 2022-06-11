@@ -156,7 +156,7 @@ mod test {
     }
 
     fn load_data() {
-        indexes::storage::load("../../indexes").expect("Failed to load indexes");
+        indexes::storage::load("../../resources/indexes").expect("Failed to load indexes");
         resources::load("../../resources/storage_data").expect("Failed to load resources");
     }
 }
