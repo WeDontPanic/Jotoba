@@ -301,6 +301,7 @@ dependencies = [
  "log",
  "news",
  "once_cell",
+ "order_struct",
  "priority_container",
  "rayon",
  "regex",

@@ -31,6 +31,7 @@ intmap = { git = "https://github.com/JojiiOfficial/rust-intmap" }
 priority_container = "0.1.0"
 futures = { version = "0.3.21", optional = true }
 leptess = { version = "0.13.2", optional = true }
+order_struct = { git = "https://github.com/JojiiOfficial/OrderStruct" }
 
 [features]
 default = []

@@ -71,6 +71,22 @@ pub struct WordPair {
 
 #[cfg(feature = "jotoba_intern")]
 impl WordPair {
+    #[inline]
+    pub fn new(primary: String) -> Self {
+        Self {
+            primary,
+            secondary: None,
+        }
+    }
+
+    #[inline]
+    pub fn with_secondary(primary: String, secondary: String) -> Self {
+        Self {
+            primary,
+            secondary: Some(secondary),
+        }
+    }
+
     /// Returns true if [`self`] contains [`reading`]
     pub fn has_reading(&self, reading: &str) -> bool {
         self.primary == reading
