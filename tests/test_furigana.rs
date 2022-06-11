@@ -27,7 +27,9 @@ fn test_gen_furigana(kanji: &str, kana: &str, expected: &str) {
 #[test_case("会話","かいわ",&[("会","かい"),("話","わ")])]
 #[test_case("方向音痴","ほうこうおんち", &[("方","ほう"),("向","こう"),("音","おん"),("痴","ち")])]
 #[test_case("水気","みずけ",&[("水","みず"), ("気","け")])]
-fn test_assing_reading(kanji: &str, kana: &str, expected: &[(&str, &str)]) {
+// TODO: fix this
+//#[test_case("今日の一針明日の十針","きょうのひとはりあすのとはり",&[("今日","きょう"), ("一","ひと"),("針","はり"),("明日","あす"),("十","と"),("針","はり")])]
+fn test_assign_reading(kanji: &str, kana: &str, expected: &[(&str, &str)]) {
     let retrieve: resources::retrieve::kanji::KanjiRetrieve<'_> = LAZY_STORAGE.kanji();
     let built = generate::assign_readings(retrieve, kanji, kana);
 
