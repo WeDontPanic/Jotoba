@@ -20,8 +20,8 @@ use test_case::test_case;
 #[test_case("水気","みずけ","[水気|みず|け]"; "Weird reading 1")]
 fn test_gen_furigana(kanji: &str, kana: &str, expected: &str) {
     let retrieve: resources::retrieve::kanji::KanjiRetrieve<'_> = LAZY_STORAGE.kanji();
-    let built = generate::unchecked(retrieve, kanji, kana);
-    assert_eq!(built.as_ref().map(|i| i.as_str()), Some(expected));
+    let built = generate::checked(retrieve, kanji, kana);
+    assert_eq!(built.as_str(), expected);
 }
 
 #[test_case("会話","かいわ",&[("会","かい"),("話","わ")])]

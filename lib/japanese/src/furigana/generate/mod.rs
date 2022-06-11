@@ -20,11 +20,26 @@ pub fn checked<R: ReadingRetrieve>(retrieve: R, kanji: &str, kana: &str) -> Stri
     };
 
     let furi_parsed = parse::from_str(&unchecked_furi).map(|i| i.kana).join("");
+
     // check if built correctly
-    (furi_parsed.to_hiragana() == kana.to_hiragana())
+    check(&furi_parsed, kana)
         .then(|| unchecked_furi)
         // if not correct use one block for all
         .unwrap_or_else(|| furigana_block(kanji, kana))
+}
+
+fn check(gen: &str, kana: &str) -> bool {
+    let gen = gen
+        .chars()
+        .filter(|c| !c.is_symbol())
+        .collect::<String>()
+        .to_hiragana();
+    let kana = kana
+        .chars()
+        .filter(|c| !c.is_symbol())
+        .collect::<String>()
+        .to_hiragana();
+    gen == kana
 }
 
 /// Generates furigana readings for the given `kanji` input based on the provided `kana` reading and
