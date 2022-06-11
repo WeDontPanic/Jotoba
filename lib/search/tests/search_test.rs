@@ -1,9 +1,14 @@
+use japanese::JapaneseExt;
 use search::{
     query::{parser::QueryParser, Query, UserSettings},
     word::search,
 };
 use test_case::test_case;
-use types::jotoba::{languages::Language, search::QueryType, words::part_of_speech::PosSimple};
+use types::jotoba::{
+    languages::Language,
+    search::QueryType,
+    words::{inflection::Inflection, part_of_speech::PosSimple},
+};
 
 /// Loads the data. Always has to be called
 #[test]
@@ -13,37 +18,75 @@ fn load_search() {
 
 /// ----------- Inflections --------------- ///
 
-// TODO
-//
+#[test_case("知らなかった",&[Inflection::Past, Inflection::Negative])]
+#[test_case("わかりたい",&[Inflection::Tai])]
+#[test_case("わかりたくない",&[Inflection::Tai, Inflection::Negative])]
+#[test_case("わかりたくなかった",&[Inflection::Tai, Inflection::Negative, Inflection::Past])]
+#[test_case("覚えてる",&[Inflection::TeIru])]
+#[test_case("覚えてない",&[Inflection::TeIru, Inflection::Negative])]
+#[test_case("覚えてなかった",&[Inflection::TeIru, Inflection::Negative, Inflection::Past])]
+#[test_case("書いておく",&[Inflection::TeOku])]
+fn inflections(query_str: &str, exp_infl: &[Inflection]) {
+    wait();
+    let query = parse_query(query_str, Language::English, QueryType::Words);
+    let res = search(&query).expect("Failed to do search");
+    assert!(res.inflection_info.is_some());
+    let infl_info = res.inflection_info.unwrap();
+    assert!(utils::same_elements(&infl_info.inflections, exp_infl));
+}
 
 ///
 /// ----------- Sentence reader --------------- ///
 
-// TODO
-//
+#[test_case("日本語勉強したい", &["日本語","勉強","したい"])]
+#[test_case("音楽が聞きたい", &["音楽","が","聞きたい"])]
+fn sentence_reader_test(query_str: &str, exp_parts: &[&str]) {
+    wait();
+    //
+    let query = parse_query(query_str, Language::English, QueryType::Words);
+    let res = search(&query).unwrap();
+    let sentence = res.sentence_parts;
+    assert!(sentence.is_some());
+    let sentence = sentence.unwrap();
+    let mut exp_iter = exp_parts.iter();
+    for part in sentence.iter() {
+        let exp = exp_iter.next().expect("Expected parts to short");
+        assert_eq!(&part.get_inflected(), exp);
+    }
+}
 
 ///
 /// ----------- Kanji (right) --------------- ///
 
-#[test_case("音楽",&['音','楽'])]
-fn correct_kanji_shown(query_str: &str, exp_res: &[char]) {
+// called in 'word_search'
+#[test_case("音楽")]
+#[test_case("買う")]
+#[test_case("宇宙")]
+#[test_case("宇宙人")]
+#[test_case("覚える")]
+fn correct_kanji_shown(query_str: &str) {
     wait();
     let query = make_query(query_str, Language::English);
     let res = search(&query).expect("Failed to do search");
-    assert!(res.kanji().count() >= exp_res.len());
+
+    let mut exp_kanji: Vec<char> = Vec::new();
+    for word in res.words() {
+        for kanji in word
+            .get_reading()
+            .reading
+            .chars()
+            .filter(|i| i.is_kanji() && !i.is_roman_letter())
+        {
+            if !exp_kanji.contains(&kanji) {
+                exp_kanji.push(kanji);
+            }
+        }
+    }
+
+    for (pos, kanji) in res.kanji().enumerate() {
+        assert_eq!(exp_kanji[pos], kanji.literal);
+    }
 }
-
-//
-/// ----------- Direkt on top --------------- ///
-
-// TODO
-//
-
-//
-/// ----------- Regex --------------- ///
-
-// TODO
-//
 
 /// ----------- Simple word search ------------- ///
 
@@ -55,10 +98,15 @@ fn correct_kanji_shown(query_str: &str, exp_res: &[char]) {
 #[test_case("remember", Language::German, "覚える"; "Find in english too 2")]
 #[test_case("think", Language::German, "思う"; "Find in english too 3")]
 #[test_case("especially", Language::German, "特に"; "Find in english too 4")]
+// Regex
+#[test_case("宇宙*行士", Language::German, "宇宙飛行士"; "Regex 1")]
+#[test_case("宇*", Language::German, "宇宙"; "Regex 2")]
+#[test_case("宇宙*行士", Language::English, "宇宙飛行士"; "Regex 3")]
+#[test_case("宇*", Language::English, "宇宙"; "Regex 4")]
 fn word_search(query_str: &str, language: Language, first_res: &str) {
     wait();
 
-    let query = make_query(query_str, language);
+    let query = parse_query(query_str, language, QueryType::Words);
     let res = search(&query).unwrap();
     let word = match res.words().next() {
         Some(n) => n,
@@ -156,10 +204,18 @@ fn load_data() {
         s.spawn(|_| {
             indexes::storage::load("../../indexes").unwrap();
         });
+        s.spawn(|_| {
+            sentence_reader::load_parser("../../unidic-mecab");
+        })
     });
 }
 
 fn wait() {
+    if !resources::is_loaded() && !indexes::storage::is_loaded() && !sentence_reader::is_loaded() {
+        load_data();
+        return;
+    }
     indexes::storage::wait();
     resources::wait();
+    sentence_reader::wait();
 }

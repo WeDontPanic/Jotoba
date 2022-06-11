@@ -67,8 +67,7 @@ pub fn load<P: AsRef<Path>>(index_folder: P) -> Result<bool, Box<dyn Error>> {
 
     INDEX_STORE
         .set(store)
-        .ok()
-        .expect("Index has already been set");
+        .ok();
 
     Ok(true)
 }

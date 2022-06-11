@@ -33,7 +33,7 @@ pub(crate) fn sentence_matches(sentence: &Sentence, reading: &Reading) -> bool {
     // Kunyomi
 
     let formatted = reading.format_reading_with_literal();
-    for morph in JA_NL_PARSER.parse(&sentence.japanese) {
+    for morph in JA_NL_PARSER.get().unwrap().parse(&sentence.japanese) {
         let reading = morph.lexeme;
         if reading == formatted {
             return true;

@@ -257,9 +257,10 @@ pub(crate) fn prepare_data(ccf: &Config) {
                 .expect("Failed to load suggestions");
         });
 
-        s.spawn(|_| {
+        let cf = ccf.clone();
+        s.spawn(move |_| {
             log::debug!("Loading tokenizer");
-            load_tokenizer()
+            load_tokenizer(&cf);
         });
 
         let cf = ccf.clone();
@@ -279,16 +280,14 @@ fn setup_logger() {
     env_logger::init_from_env(env_logger::Env::new().default_filter_or("debug"));
 }
 
-pub fn load_tokenizer() {
-    use sentence_reader::{JA_NL_PARSER, NL_PARSER_PATH};
-
-    if !Path::new(NL_PARSER_PATH).exists() {
-        panic!("No NL dict was found! Place the following folder in he binaries root dir: ./unidic-mecab");
-    }
+pub fn load_tokenizer(_config: &Config) {
+    use sentence_reader::JA_NL_PARSER;
+    // TODO: use config
+    sentence_reader::load_parser("./unidic-mecab");
 
     // Force parser to parse something to
     // prevent 1. search after launch taking up several seconds
-    JA_NL_PARSER.parse("");
+    JA_NL_PARSER.get().unwrap().parse("");
 }
 
 /// Clears uploaded images which haven't been cleared yet
