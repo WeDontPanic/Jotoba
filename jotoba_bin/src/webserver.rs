@@ -280,14 +280,8 @@ fn setup_logger() {
     env_logger::init_from_env(env_logger::Env::new().default_filter_or("debug"));
 }
 
-pub fn load_tokenizer(_config: &Config) {
-    use sentence_reader::JA_NL_PARSER;
-    // TODO: use config
-    sentence_reader::load_parser("./unidic-mecab");
-
-    // Force parser to parse something to
-    // prevent 1. search after launch taking up several seconds
-    JA_NL_PARSER.get().unwrap().parse("");
+pub fn load_tokenizer(config: &Config) {
+    sentence_reader::load_parser(&config.get_unidic_dict());
 }
 
 /// Clears uploaded images which haven't been cleared yet

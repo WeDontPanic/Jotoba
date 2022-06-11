@@ -29,6 +29,7 @@ pub struct ServerConfig {
     pub img_upload_dir: Option<String>,
     pub tess_data: Option<String>,
     pub news_folder: Option<String>,
+    pub unidic_dict: Option<String>,
     pub debug_mode: Option<bool>,
 }
 
@@ -50,7 +51,7 @@ impl Config {
         self.search
             .as_ref()
             .and_then(|i| i.indexes_source.as_deref())
-            .unwrap_or("./indexes")
+            .unwrap_or("./resources/indexes")
     }
 
     /// Returns the configured suggestion source files or its default value if not set
@@ -90,6 +91,15 @@ impl Config {
     }
 
     /// Returns the configured (or default) path for the radical map
+    pub fn get_unidic_dict(&self) -> String {
+        self.server
+            .unidic_dict
+            .as_ref()
+            .cloned()
+            .unwrap_or_else(|| ServerConfig::default().unidic_dict.unwrap())
+    }
+
+    /// Returns the configured (or default) path for the radical map
     pub fn get_img_scan_upload_path(&self) -> String {
         self.server
             .img_upload_dir
@@ -113,8 +123,9 @@ impl Default for ServerConfig {
             listen_address: String::from("127.0.0.1:8080"),
             storage_data: Some(String::from("./resources/storage_data")),
             img_upload_dir: Some(String::from("./img_scan_tmp")),
+            unidic_dict: Some(String::from("./resources/unidic-mecab")),
             tess_data: None,
-            news_folder: Some(String::from("./news")),
+            news_folder: Some(String::from("./resources/news")),
             debug_mode: Some(false),
         }
     }
@@ -134,7 +145,7 @@ impl ServerConfig {
     }
 
     pub fn get_news_folder(&self) -> &str {
-        self.news_folder.as_deref().unwrap_or("./news")
+        self.news_folder.as_deref().unwrap_or("./resources/news")
     }
 }
 
