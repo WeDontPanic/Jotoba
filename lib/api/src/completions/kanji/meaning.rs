@@ -1,4 +1,4 @@
-use super::super::Response;
+use super::super::{words::foreign::try_romaji, Response};
 use crate::completions::convert_results;
 use autocompletion::suggest::{
     extension::similar_terms::SimilarTermsExtension, query::SuggestionQuery, task::SuggestionTask,
@@ -13,7 +13,7 @@ pub fn suggestions(query: &Query) -> Option<Response> {
 
     suggestion_task.add_query(SuggestionQuery::new(index, &query.query));
 
-    if let Some(hira_query) = super::super::words::foreign::try_romaji(&query.query) {
+    if let Some(hira_query) = try_romaji(&query.query) {
         let jp_index = indexes::get_suggestions().jp_words();
         let mut rom_sug_query = SuggestionQuery::new(jp_index, hira_query);
         rom_sug_query.weights.total_weight = 0.5;

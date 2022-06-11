@@ -227,7 +227,7 @@
                     @if data.config.is_debug() {
                       <li disabled class="mdl-menu__item"><hr></li>
                       <li class="info-entry noselect" class="mdl-menu__item">
-                        <span class="text">Seq: @word.sequence</span> 
+                        <span class="text" onclick='JotoTools.copyTextAndEcho(@word.sequence, "Copied sequence");'>Seq: @word.sequence</span> 
                       </li>
                     }
 
