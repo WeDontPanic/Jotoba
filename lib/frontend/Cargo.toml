@@ -16,7 +16,7 @@ utils = { path = "../utils" }
 config = { path = "../config" }
 localization = { path = "../localization" }
 resources = { path = "../resources"}
-actix-web = "4.0.1"
+actix-web = "4.1.0"
 serde = "1.0.137"
 sentry = { version = "0.26.0", optional = true }
 log = "0.4.17"

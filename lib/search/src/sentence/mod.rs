@@ -54,7 +54,7 @@ fn jp_search<'a>(query: &Query, query_str: &'a str) -> SearchTask<'a, native::En
     let mut search_task = SearchTask::<native::Engine>::new(&query_str)
         .limit(query.settings.page_size as usize)
         .offset(query.page_offset)
-        .threshold(0.10);
+        .threshold(0.2);
 
     lang_filter(query, &mut search_task);
     sort_fn(query, query_str.to_string(), &mut search_task, true);
@@ -70,7 +70,7 @@ fn sort_fn<T: SearchEngine<Output = &'static Sentence> + Send>(
 ) {
     let query = query.clone();
     search_task.set_order_fn(move |sentence, relevance, _, _| {
-        let mut rel = (relevance * 1000f32) as usize;
+        let mut rel = (relevance * 100000f32) as usize;
 
         if sentence.has_translation(query.settings.user_lang) {
             rel += 550;

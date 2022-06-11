@@ -1,8 +1,11 @@
+use std::collections::HashSet;
+
 use crate::engine::{Indexable, SearchEngine};
 use indexes::sentences::document::SentenceDocument;
 use resources::storage::ResourceStorage;
+use sentence_reader::output::ParseResult;
 use types::jotoba::{languages::Language, sentences::Sentence};
-use vector_space_model2::{DefaultMetadata, Vector};
+use vector_space_model2::{build::weights::TFIDF, DefaultMetadata, Vector};
 
 pub struct Engine {}
 
@@ -35,9 +38,29 @@ impl SearchEngine for Engine {
         _allow_align: bool,
         _language: Option<Language>,
     ) -> Option<(Vector, String)> {
-        let mut terms = vec![query.to_string()];
-        terms.extend(tinysegmenter::tokenize(query));
-        let vec = index.build_vector(&terms, None)?;
+        let mut terms: HashSet<String> = HashSet::with_capacity(1);
+
+        let indexer = index.get_indexer();
+
+        if indexer.get_term(query).is_some() {
+            terms.insert(query.to_string());
+        } else {
+            match sentence_reader::Parser::new(query).parse() {
+                ParseResult::Sentence(s) => {
+                    terms.extend(s.iter().map(|i| i.get_inflected()));
+                    terms.extend(s.iter().map(|i| i.get_normalized()));
+                }
+                ParseResult::InflectedWord(w) => {
+                    terms.insert(w.get_normalized());
+                }
+                ParseResult::None => (),
+            };
+        }
+
+        terms.retain(|w| !index.is_stopword_cust(&w, 20.0).unwrap_or(true));
+
+        let terms: Vec<_> = terms.into_iter().collect();
+        let vec = index.build_vector(&terms, Some(&TFIDF))?;
         Some((vec, query.to_string()))
     }
 }
