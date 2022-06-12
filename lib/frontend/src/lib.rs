@@ -10,7 +10,7 @@ pub mod index;
 pub mod news_ep;
 pub mod og_tags;
 pub mod search_ep;
-pub mod search_help;
+//pub mod search_help;
 mod session;
 pub mod templ_utils;
 pub mod unescaped;
@@ -31,8 +31,11 @@ use og_tags::TagKeyName;
 use search::{query::Query, sentence::result::SentenceResult};
 
 use search::{kanji::result::Item as KanjiItem, query::UserSettings, word::result::WordResult};
-use search_help::SearchHelp;
-use types::jotoba::{names::Name, pagination::Pagination, search::QueryType};
+use types::jotoba::{
+    names::Name,
+    pagination::Pagination,
+    search::{help::SearchHelp, QueryType},
+};
 use unescaped::{UnescapedStr, UnescapedString};
 
 /// Data for the base template

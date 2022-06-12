@@ -3,15 +3,34 @@ pub mod names;
 pub mod sentences;
 pub mod words;
 
-use search::{query::parser::QueryParser, query::UserSettings};
+use search::{
+    query::UserSettings,
+    query::{parser::QueryParser, Query},
+};
 use serde::Serialize;
 use types::{
-    api::app::search::query::SearchPayload,
-    jotoba::pagination::{page::Page, Pagination},
+    api::app::search::{query::SearchPayload, responses::Response},
+    jotoba::{
+        pagination::{page::Page, Pagination},
+        search::QueryType,
+    },
 };
 
 const FIRST_PAGE: u32 = 1;
 const LAST_PAGE: u32 = 100;
+
+pub(crate) fn new_response<T: Serialize>(
+    page: Page<T>,
+    q_type: QueryType,
+    query: &Query,
+) -> Response<T> {
+    Response::with_help_fn(page, |p| {
+        if !p.is_empty() {
+            return None;
+        }
+        search::build_help(q_type, &query)
+    })
+}
 
 pub(crate) fn new_page<V: Serialize + Clone>(
     pl: &SearchPayload,

@@ -1,4 +1,4 @@
-pub mod guess;
+//pub mod guess;
 pub mod names;
 pub mod radical;
 pub mod result;

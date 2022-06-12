@@ -114,7 +114,7 @@ fn make_search_vec(indexer: &TermIndexer, query: &str) -> Option<Vector> {
 #[inline]
 fn vec_similarity(src_vec: &Vector, query: &Vector, r_index: &RelevanceIndex) -> f32 {
     let mut sum = 0.0;
-    let mut overlapping_count = 0;
+    let mut overlapping_count: usize = 0;
 
     for i in src_vec.overlapping(query) {
         sum += i.1;
@@ -125,7 +125,7 @@ fn vec_similarity(src_vec: &Vector, query: &Vector, r_index: &RelevanceIndex) ->
     let src_imp = important_count(&src_vec, r_index);
 
     let diff = (query_imp.abs_diff(src_imp) + 1) as f32;
-    let important_mult = 1.0 / diff;
+    let important_mult = (1.0 / diff) + 1.0;
 
     let src_len = src_vec.sparse_vec().len();
     let query_len = query.sparse_vec().len();
@@ -134,7 +134,10 @@ fn vec_similarity(src_vec: &Vector, query: &Vector, r_index: &RelevanceIndex) ->
         vec_len_mult = src_len as f32 / query_len as f32;
     }
 
-    (overlapping_count as f32 * important_mult * vec_len_mult * 500.0) + sum * vec_len_mult * 40.0
+    let v = query.sparse_vec().len() as f32 / overlapping_count as f32;
+
+    (overlapping_count as f32 * important_mult * vec_len_mult * 500.0)
+        + sum * vec_len_mult * 10.0 * v
 }
 
 #[inline]

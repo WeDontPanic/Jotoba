@@ -1,14 +1,12 @@
-use super::{
-    guess::{Guess, GuessType},
-    result::SearchResult,
-    result_item::ResultItem,
-    SearchEngine,
-};
+use super::{result::SearchResult, result_item::ResultItem, SearchEngine};
 use error::Error;
 use itertools::Itertools;
 use priority_container::StableUniquePrioContainerMax;
 use std::marker::PhantomData;
-use types::jotoba::languages::Language;
+use types::jotoba::{
+    languages::Language,
+    search::guess::{Guess, GuessType},
+};
 use vector_space_model2::{DocumentVector, Vector};
 
 pub struct SearchTask<'a, T>
@@ -282,7 +280,7 @@ where
             // Were counting 1 more than `est_limit`. Thus `estimated` being bigger than limit
             // means there are more elements than the given limit. However since were returning a
             // number <= est_limit, relatively to the estimation the guess type is `Opentop`
-            guess_type = GuessType::OpenTop;
+            guess_type = GuessType::MoreThan;
         }
 
         let est_result = (estimated).min(self.est_limit) as u32;

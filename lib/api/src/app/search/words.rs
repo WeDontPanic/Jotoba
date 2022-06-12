@@ -7,13 +7,16 @@ use error::api_error::RestError;
 use types::{
     api::app::search::{
         query::SearchPayload,
-        responses::words::{self, Sentence},
+        responses::{
+            words::{self, Sentence},
+            Response,
+        },
     },
-    jotoba::pagination::page::Page,
+    jotoba::search::QueryType,
 };
 
 /// API response type
-pub type Resp = Page<words::Response>;
+pub type Resp = Response<words::Response>;
 
 /// Do an app word search via API
 pub async fn search(payload: Json<SearchPayload>) -> Result<Json<Resp>> {
@@ -22,7 +25,8 @@ pub async fn search(payload: Json<SearchPayload>) -> Result<Json<Resp>> {
         .ok_or(RestError::BadRequest)?;
     let user_lang = query.settings.user_lang;
 
-    let result = web::block(move || search::word::search(&query)).await??;
+    let query_c = query.clone();
+    let result = web::block(move || search::word::search(&query_c)).await??;
 
     let words = result
         .words()
@@ -40,7 +44,8 @@ pub async fn search(payload: Json<SearchPayload>) -> Result<Json<Resp>> {
     let len = result.count as u32;
 
     let page = new_page(&payload, res, len, payload.settings.page_size);
-    Ok(Json(page))
+    let res = super::new_response(page, QueryType::Words, &query);
+    Ok(Json(res))
 }
 
 fn conv_sentence(sentence: sentence_reader::Sentence, index: usize) -> Sentence {

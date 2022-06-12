@@ -4,12 +4,12 @@ mod tag_only;
 
 use super::query::Query;
 use crate::{
-    engine::{guess::Guess, sentences::foreign, sentences::native, SearchEngine, SearchTask},
+    engine::{sentences::foreign, sentences::native, SearchEngine, SearchTask},
     query::{tags::Tag, Form, QueryLang},
 };
 use error::Error;
 use result::{Item, SentenceResult};
-use types::jotoba::{languages::Language, sentences::Sentence};
+use types::jotoba::{languages::Language, search::guess::Guess, sentences::Sentence};
 
 /// Searches for sentences
 pub fn search(query: &Query) -> Result<SentenceResult, Error> {

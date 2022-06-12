@@ -17,11 +17,11 @@ fn load() {
             resources::load("../resources/storage_data").unwrap();
         });
         s.spawn(move |_| {
-            indexes::storage::load("../indexes").unwrap();
+            indexes::storage::load("../resources/indexes").unwrap();
         });
         s.spawn(|_| {
             // load ja nl parser since its lazy
-            sentence_reader::JA_NL_PARSER.parse("");
+            sentence_reader::load_parser("../resources/unidic-mecab")
         });
     });
 }

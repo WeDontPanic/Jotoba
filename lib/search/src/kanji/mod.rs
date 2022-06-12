@@ -5,17 +5,16 @@ mod tag_only;
 use self::result::KanjiResult;
 use super::query::Query;
 use crate::{
-    engine::{
-        guess::{Guess, GuessType},
-        words::native,
-        SearchTask,
-    },
+    engine::{words::native, SearchTask},
     query::QueryLang,
 };
 use error::Error;
 use japanese::JapaneseExt;
 use result::Item;
-use types::jotoba::kanji::Kanji;
+use types::jotoba::{
+    kanji::Kanji,
+    search::guess::{Guess, GuessType},
+};
 
 /// The entry of a kanji search
 pub fn search(query: &Query) -> Result<KanjiResult, Error> {

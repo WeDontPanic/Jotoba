@@ -6,7 +6,6 @@ pub mod tag_only;
 
 use crate::{
     engine::{
-        guess::Guess,
         result::SearchResult,
         result_item::ResultItem,
         words::{
@@ -29,6 +28,7 @@ use sentence_reader::output::ParseResult;
 use types::jotoba::{
     kanji::Kanji,
     languages::Language,
+    search::guess::Guess,
     words::{filter_languages, part_of_speech::PosSimple, Word},
 };
 use utils::{real_string_len, to_option};

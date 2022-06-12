@@ -4,7 +4,6 @@ pub mod result;
 use super::query::Query;
 use crate::{
     engine::{
-        guess::Guess,
         names::{foreign, native},
         SearchEngine, SearchTask,
     },
@@ -13,7 +12,7 @@ use crate::{
 use error::Error;
 use japanese::JapaneseExt;
 use result::NameResult;
-use types::jotoba::names::Name;
+use types::jotoba::{names::Name, search::guess::Guess};
 
 /// Search for names
 #[inline]

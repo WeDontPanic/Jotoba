@@ -4,16 +4,18 @@ use super::convert_payload;
 use crate::app::Result;
 use actix_web::web::{self, Json};
 use error::api_error::RestError;
+use types::api::app::search::responses::Response;
+use types::jotoba::search::QueryType;
 use types::{
     api::app::search::{
         query::SearchPayload,
         responses::kanji::{self, CompoundWord},
     },
-    jotoba::{pagination::page::Page, words::Word},
+    jotoba::words::Word,
 };
 
 /// API response type
-pub type Resp = Page<kanji::Response>;
+pub type Resp = Response<kanji::Response>;
 
 /// Do an app kanji search via API
 pub async fn search(payload: Json<SearchPayload>) -> Result<Json<Resp>> {
@@ -21,7 +23,8 @@ pub async fn search(payload: Json<SearchPayload>) -> Result<Json<Resp>> {
         .parse()
         .ok_or(RestError::BadRequest)?;
 
-    let result = web::block(move || search::kanji::search(&query)).await??;
+    let query_c = query.clone();
+    let result = web::block(move || search::kanji::search(&query_c)).await??;
 
     let items = result
         .items
@@ -37,8 +40,9 @@ pub async fn search(payload: Json<SearchPayload>) -> Result<Json<Resp>> {
     let len = result.total_len as u32;
     let kanji = kanji::Response::new(items);
     let page = new_page(&payload, kanji, len, payload.settings.kanji_page_size);
+    let res = super::new_response(page, QueryType::Kanji, &query);
 
-    Ok(Json(page))
+    Ok(Json(res))
 }
 
 #[inline]

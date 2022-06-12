@@ -1,20 +1,42 @@
-use types::jotoba::{
-    languages::Language as ResLanguage,
-    search::{guess::Guess, QueryType},
-};
+use serde::{Deserialize, Serialize};
+
+use crate::jotoba::languages::Language;
+
+use super::{guess::Guess, QueryType};
 
 /// Structure containing information for better search help in case no item was
 /// found in a search
-#[derive(Clone, Default, Debug)]
+#[derive(Clone, Default, Debug, Serialize, Deserialize)]
 pub struct SearchHelp {
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub words: Option<Guess>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub names: Option<Guess>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub sentences: Option<Guess>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub kanji: Option<Guess>,
-    pub other_langs: Vec<ResLanguage>,
+    #[serde(skip_serializing_if = "Vec::is_empty")]
+    pub other_langs: Vec<Language>,
 }
 
 impl SearchHelp {
+    pub fn new(
+        words: Option<Guess>,
+        names: Option<Guess>,
+        sentences: Option<Guess>,
+        kanji: Option<Guess>,
+        other_langs: Vec<Language>,
+    ) -> Self {
+        Self {
+            words,
+            names,
+            sentences,
+            kanji,
+            other_langs,
+        }
+    }
+
     /// Returns `true` if `SearchHelp` is not helpful at all (empty)
     pub fn is_empty(&self) -> bool {
         self.iter_items().next().is_none()
@@ -37,7 +59,7 @@ impl SearchHelp {
             .into_iter()
     }
 
-    pub fn iter_langs(&self) -> impl Iterator<Item = (ResLanguage, &'static str)> + '_ {
+    pub fn iter_langs(&self) -> impl Iterator<Item = (Language, &'static str)> + '_ {
         self.other_langs
             .iter()
             .map(|lang| (*lang, lang.to_query_format()))

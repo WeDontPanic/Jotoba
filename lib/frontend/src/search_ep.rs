@@ -3,7 +3,7 @@ use super::web_error;
 use crate::{
     templates,
     url_query::{NoJSQueryStruct, QueryStruct},
-    BaseData, ResultData, SearchHelp,
+    BaseData, ResultData,
 };
 use actix_web::{web, HttpRequest, HttpResponse};
 use config::Config;
@@ -14,6 +14,7 @@ use search::{
     query::{Query, UserSettings},
 };
 use std::{sync::Arc, time::Instant};
+use types::jotoba::search::help::SearchHelp;
 use types::jotoba::search::QueryType;
 
 /// Endpoint to perform a search
@@ -93,7 +94,7 @@ async fn do_search<'a>(
     let mut search_help: Option<SearchHelp> = None;
     if result_data.is_empty() {
         let query = query.to_owned();
-        search_help = web::block(move || build_search_help(querytype, &query)).await?;
+        search_help = web::block(move || search::build_help(querytype, &query)).await?;
     }
 
     Ok(base_data.with_search_result(query, result_data, search_help))
@@ -139,26 +140,6 @@ async fn word_search<'a>(base_data: &mut BaseData<'a>, query: &'a Query) -> SRes
 
     base_data.with_pages(result.count as u32, query.page as u32);
     Ok(ResultData::Word(result))
-}
-
-/// Build a [`SearchHelp`] in for cases without any search results
-fn build_search_help(querytype: QueryType, query: &Query) -> Option<SearchHelp> {
-    let mut help = SearchHelp::default();
-
-    for qt in QueryType::iterate().filter(|i| *i != querytype) {
-        match qt {
-            QueryType::Kanji => help.kanji = search::kanji::guess_result(query),
-            QueryType::Sentences => help.sentences = search::sentence::guess_result(query),
-            QueryType::Names => help.names = search::name::guess_result(query),
-            QueryType::Words => help.words = search::word::guess_result(query),
-        }
-    }
-
-    if querytype == QueryType::Words {
-        help.other_langs = search::word::guess_inp_language(query);
-    }
-
-    (!help.is_empty()).then(|| help)
 }
 
 pub(crate) fn redirect_home() -> HttpResponse {
