@@ -1,6 +1,6 @@
 pub mod foreign;
 
-use crate::{query::regex::RegexSQuery, SearchMode};
+use crate::{engine::search_task::sort_item::SortItem, query::regex::RegexSQuery, SearchMode};
 use japanese::JapaneseExt;
 use once_cell::sync::Lazy;
 use regex::Regex;
@@ -42,13 +42,11 @@ pub fn regex_order(word: &Word, found_in: &str, _query: &RegexSQuery) -> usize {
 }
 
 /// Search order for words searched by japanese meaning/kanji/reading
-pub fn japanese_search_order(
-    word: &Word,
-    relevance: f32,
-    query_str: &str,
-    original_query: Option<&str>,
-) -> usize {
-    let mut score: usize = (relevance * 10f32) as usize;
+pub fn japanese_search_order(item: SortItem<&'static Word>, original_query: Option<&str>) -> usize {
+    let mut score: usize = (item.vec_simiarity() * 10f32) as usize;
+
+    let word = item.item();
+    let query_str = item.query();
 
     let reading = word.get_reading();
     let kana = &word.reading.kana.reading;
@@ -147,7 +145,8 @@ pub fn foreign_search_fall_back(
     score
 }
 
-pub(super) fn kanji_reading_search(word: &Word, _relevance: f32) -> usize {
+pub(super) fn kanji_reading_search(item: SortItem<&'static Word>) -> usize {
+    let word = item.item();
     let mut score: usize = 0;
 
     if word.is_common() {

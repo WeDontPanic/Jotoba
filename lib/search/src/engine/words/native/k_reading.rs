@@ -38,12 +38,4 @@ impl SearchEngine for Engine {
         let vec = index.build_vector(&[query], None)?;
         Some((vec, query.to_owned()))
     }
-
-    #[inline]
-    fn similarity(_a: &Vector, _b: &Vector) -> f32 {
-        // we don't use similarity so to make it faster
-        // just skip this part. We need 1 to pass the default
-        // threshold
-        1f32
-    }
 }

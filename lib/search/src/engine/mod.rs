@@ -1,4 +1,3 @@
-//pub mod guess;
 pub mod names;
 pub mod radical;
 pub mod result;
@@ -14,6 +13,8 @@ use resources::storage::ResourceStorage;
 use std::hash::Hash;
 use types::jotoba::languages::Language;
 use vector_space_model2::{metadata::Metadata, traits::Decodable, Index, Vector};
+
+use self::search_task::sort_item::SortItem;
 
 pub trait Indexable {
     type Metadata: Metadata + 'static;
@@ -54,7 +55,7 @@ pub trait SearchEngine: Indexable {
     }
 
     #[inline]
-    fn similarity(a: &Vector, b: &Vector) -> f32 {
-        a.similarity(b)
+    fn score(item: SortItem<Self::Output>) -> usize {
+        (item.vec_simiarity() * 100.0) as usize
     }
 }

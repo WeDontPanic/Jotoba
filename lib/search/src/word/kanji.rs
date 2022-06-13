@@ -41,9 +41,9 @@ fn reading_search(query: &Query, engine_query: &str) -> ResultData {
         .limit(limit)
         .offset(offset);
 
-    search_task.set_order_fn(move |word, rel, _, _| order::kanji_reading_search(word, rel));
+    search_task.with_custom_order(move |item| order::kanji_reading_search(item));
 
-    let res = search_task.find().unwrap();
+    let res = search_task.find();
     let len = res.len();
     let mut words = res.into_iter().cloned().collect::<Vec<_>>();
 

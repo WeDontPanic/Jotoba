@@ -23,7 +23,7 @@ pub fn search(query: &Query) -> Result<NameResult, Error> {
 
     task.set_result_filter(move |name| filter(name, &reading, literal).unwrap_or(false));
 
-    Ok(NameResult::from(task.find()?))
+    Ok(NameResult::from(task.find()))
 }
 
 /// Search result filter function

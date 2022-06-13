@@ -15,20 +15,18 @@ use types::jotoba::{languages::Language, search::guess::Guess, sentences::Senten
 pub fn search(query: &Query) -> Result<SentenceResult, Error> {
     let res = match query.form {
         Form::TagOnly => tag_only::search(query)?,
-        _ => normal_search(query)?,
+        _ => normal_search(query),
     };
     Ok(res)
 }
 
-fn normal_search(query: &Query) -> Result<SentenceResult, Error> {
-    let res = if query.language == QueryLang::Japanese {
+fn normal_search(query: &Query) -> SentenceResult {
+    if query.language == QueryLang::Japanese {
         let query_str = jp_reading(query);
         get_result(jp_search(query, &query_str), query)
     } else {
         get_result(foreign_search(query), query)
-    }?;
-
-    Ok(res)
+    }
 }
 
 fn foreign_search(query: &Query) -> SearchTask<foreign::Engine> {
@@ -69,8 +67,10 @@ fn sort_fn<T: SearchEngine<Output = &'static Sentence> + Send>(
     japanese: bool,
 ) {
     let query = query.clone();
-    search_task.set_order_fn(move |sentence, relevance, _, _| {
-        let mut rel = (relevance * 100000f32) as usize;
+    search_task.with_custom_order(move |item| {
+        let mut rel = (item.vec_simiarity() * 100000f32) as usize;
+
+        let sentence = item.item();
 
         if sentence.has_translation(query.settings.user_lang) {
             rel += 550;
@@ -81,7 +81,7 @@ fn sort_fn<T: SearchEngine<Output = &'static Sentence> + Send>(
         }
 
         rel
-    });
+    })
 }
 
 /// Sets a SearchTasks language filter
@@ -117,17 +117,16 @@ fn lang_filter<T: SearchEngine<Output = &'static Sentence> + Send>(
 fn get_result<T: SearchEngine<Output = &'static Sentence> + Send>(
     search: SearchTask<T>,
     query: &Query,
-) -> Result<SentenceResult, Error> {
+) -> SentenceResult {
     let lang = query.settings.user_lang;
-    let found = search.find()?;
+    let found = search.find();
     let len = found.len();
     let items = found
         .into_iter()
         .filter_map(|i| map_sentence_to_item(i, lang, query))
         .collect::<Vec<_>>();
-
     let hidden = query.has_tag(Tag::Hidden);
-    Ok(SentenceResult { len, items, hidden })
+    SentenceResult { len, items, hidden }
 }
 
 fn map_sentence_to_item(sentence: &Sentence, lang: Language, query: &Query) -> Option<Item> {

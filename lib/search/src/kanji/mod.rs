@@ -67,9 +67,8 @@ fn kana_search(query: &str) -> Vec<Kanji> {
     search_task.set_result_filter(move |i| i.has_reading(&q));
 
     let q = query.to_string();
-    search_task.set_order_fn(move |word, rel, q_str, _| {
-        crate::word::order::japanese_search_order(word, rel, q_str, Some(&q))
-    });
+    search_task
+        .with_custom_order(move |item| crate::word::order::japanese_search_order(item, Some(&q)));
 
     search_task
         .find_exact()

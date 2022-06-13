@@ -159,8 +159,8 @@ impl<'a> Search<'a> {
 
         // Set order function;
         let original_query = original_query.to_string();
-        search_task.set_order_fn(move |word, rel, q_str, _| {
-            order::japanese_search_order(word, rel, q_str, Some(&original_query))
+        search_task.with_custom_order(move |item| {
+            order::japanese_search_order(item, Some(&original_query))
         });
 
         search_task
@@ -216,7 +216,7 @@ impl<'a> Search<'a> {
             search_task.add_query(&self.query.query);
         }
 
-        let res = search_task.find()?;
+        let res = search_task.find();
 
         // Put furigana to sentence
         if let Some(sentence) = &mut sentence {
@@ -297,10 +297,7 @@ impl<'a> Search<'a> {
 
         // Set order function
         let orderer = order::foreign::ForeignOrder::new();
-        search_task.set_order_fn(move |word, relevance, query, language| {
-            //order::foreign_search_order(word, relevance, query, language.unwrap(), used_lang)
-            orderer.score(word, relevance, query, language.unwrap(), used_lang)
-        });
+        search_task.with_custom_order(move |item| orderer.score(item, used_lang));
 
         search_task
     }
@@ -327,7 +324,7 @@ impl<'a> Search<'a> {
         */
 
         // Do the search
-        let mut res = search_task.find()?;
+        let mut res = search_task.find();
         let mut count = res.len();
 
         let mut infl_info = None;
@@ -462,9 +459,9 @@ fn furigana_by_reading(morpheme: &str, part: &sentence_reader::Part) -> Option<S
 
     let pos = wc_to_simple_pos(&part.word_class_raw());
     let morph = morpheme.to_string();
-    st.set_order_fn(move |i, _rel, _, _| furi_order(i, &pos, &morph));
+    st.with_custom_order(move |item| furi_order(item.item(), &pos, &morph));
 
-    let found = st.find().ok()?;
+    let found = st.find();
     if found.is_empty() {
         return None;
     }

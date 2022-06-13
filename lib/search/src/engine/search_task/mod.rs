@@ -1,7 +1,10 @@
+pub mod sort_item;
+
 use super::{result::SearchResult, result_item::ResultItem, SearchEngine};
 use error::Error;
 use itertools::Itertools;
 use priority_container::StableUniquePrioContainerMax;
+use sort_item::SortItem;
 use std::marker::PhantomData;
 use types::jotoba::{
     languages::Language,
@@ -20,7 +23,7 @@ where
     /// Filter out results
     res_filter: Option<Box<dyn Fn(&T::Output) -> bool>>,
     /// Custom result order function
-    order: Option<Box<dyn Fn(&T::Output, f32, &str, Option<Language>) -> usize>>,
+    cust_order: Option<Box<dyn Fn(SortItem<T::Output>) -> usize>>,
     /// Min relevance returned from vector space algo
     threshold: f32,
     vector_limit: usize,
@@ -31,10 +34,7 @@ where
     phantom: PhantomData<T>,
 }
 
-impl<'a, T> SearchTask<'a, T>
-where
-    T: SearchEngine,
-{
+impl<'a, T: SearchEngine> SearchTask<'a, T> {
     /// Creates a new Search task
     #[inline]
     pub fn new(query: &'a str) -> Self {
@@ -103,11 +103,11 @@ where
     }
 
     /// Set the search task's custom order function
-    pub fn set_order_fn<F: 'static>(&mut self, res_filter: F)
+    pub fn with_custom_order<F: 'static>(&mut self, res_filter: F)
     where
-        F: Fn(&T::Output, f32, &str, Option<Language>) -> usize,
+        F: Fn(SortItem<T::Output>) -> usize,
     {
-        self.order = Some(Box::new(res_filter));
+        self.cust_order = Some(Box::new(res_filter));
     }
 
     /// Returns the amount of queries, this search task is going to look out for
@@ -137,11 +137,7 @@ where
 
         let mut out = StableUniquePrioContainerMax::new(self.offset + self.limit);
         self.find_by_vec(query_vec, query, *lang, &mut out);
-
-        let total_count = out.total_pushed();
-        let res = self.take_page(out);
-
-        SearchResult::new(res, total_count)
+        self.make_result(out)
     }
 
     /// Runs the search task and writes all items into the priority queue
@@ -152,19 +148,21 @@ where
     }
 
     /// Runs the search task and returns the result.
-    pub fn find(&self) -> Result<SearchResult<T::Output>, Error> {
+    pub fn find(&self) -> SearchResult<T::Output> {
         let cap = self.limit + self.offset;
         let mut pqueue = StableUniquePrioContainerMax::new_allocated(cap, cap);
+        self.find_to(&mut pqueue);
+        self.make_result(pqueue)
+    }
 
-        for (q_str, vec, lang) in self.get_queries() {
-            self.find_by_vec(vec, &q_str, lang, &mut pqueue);
-        }
-
-        let total_count = pqueue.total_pushed();
-
-        let p_items = self.take_page(pqueue);
-
-        Ok(SearchResult::new(p_items, total_count))
+    /// Builds output from the given Prio Queue
+    fn make_result(
+        &self,
+        data: StableUniquePrioContainerMax<ResultItem<T::Output>>,
+    ) -> SearchResult<T::Output> {
+        let total_count = data.total_pushed();
+        let p_items = self.take_page(data);
+        SearchResult::new(p_items, total_count)
     }
 
     /// Takes the correct page from a UniquePrioContainerMax based on the given offset and limit
@@ -219,33 +217,25 @@ where
     ) {
         let storage = resources::get();
 
-        let res = document_vectors
-            .filter_map(|i| {
-                if !self.filter_vector(&i.document) {
-                    return None;
+        for dvec in document_vectors {
+            if !self.filter_vector(&dvec.document) {
+                continue;
+            }
+
+            for res_doc in T::doc_to_output(storage, &dvec.document).unwrap_or_default() {
+                if !self.filter_result(&res_doc) {
+                    continue;
                 }
 
-                //let similarity = i.vector().similarity(&q_vec);
-                let similarity = T::similarity(i.vector(), &q_vec);
-                if similarity < self.threshold {
-                    return None;
+                let sort_item = SortItem::new(&res_doc, 0.0, q_str, language, q_vec, dvec.vector());
+                let score = self.calc_score(sort_item);
+                if score < self.threshold as usize {
+                    continue;
                 }
 
-                // Retrieve `Output` values for given documents
-                let res = T::doc_to_output(storage, &i.document)?
-                    .into_iter()
-                    .map(move |i| (similarity, i));
-
-                Some(res)
-            })
-            .flatten()
-            .filter(|i| self.filter_result(&i.1))
-            .map(|(rel, item)| {
-                let relevance = self.calculate_score(&item, rel, q_str, language);
-                ResultItem::new_raw(item, relevance, language)
-            });
-
-        out.extend(res);
+                out.insert(ResultItem::new_raw(res_doc, score, language));
+            }
+        }
     }
 
     /// Estimates the amount of results efficiently. This 'guess' is defined as follows:
@@ -316,10 +306,14 @@ where
                     return None;
                 }
 
+                /*
                 let similarity = T::similarity(i.vector(), &q_vec);
                 if similarity < self.threshold {
                     return None;
                 }
+                */
+                // TODO: handle new score func here and filter using threshold
+                let similarity = 0;
 
                 // Retrieve `Output` values for given documents
                 let res = T::doc_to_output(storage, &i.document)?
@@ -341,18 +335,11 @@ where
 
     /// Calculates the score using a custom function if provided or just `rel` otherwise
     #[inline]
-    fn calculate_score(
-        &self,
-        item: &T::Output,
-        rel: f32,
-        query: &str,
-        language: Option<Language>,
-    ) -> usize {
-        // TODO use a struct to store this information instead of using lots of arguments
-        self.order
-            .as_ref()
-            .map(|i| i(item, rel, query, language))
-            .unwrap_or((rel * 100f32) as usize)
+    fn calc_score(&self, si: SortItem<T::Output>) -> usize {
+        match self.cust_order.as_ref() {
+            Some(cust_sort) => cust_sort(si),
+            None => T::score(si),
+        }
     }
 
     #[inline]
@@ -373,7 +360,6 @@ impl<'a, T: SearchEngine> Default for SearchTask<'a, T> {
             queries: vec![],
             vec_filter: None,
             res_filter: None,
-            order: None,
             threshold: 0.2,
             limit: 1000,
             est_limit: 100,
@@ -381,6 +367,7 @@ impl<'a, T: SearchEngine> Default for SearchTask<'a, T> {
             offset: 0,
             allow_align: true,
             phantom: PhantomData,
+            cust_order: None,
         }
     }
 }

@@ -20,11 +20,13 @@ pub fn search(query: &Query) -> Result<NameResult, Error> {
     if query.form.is_kanji_reading() {
         kanji_reading::search(&query)
     } else {
+        let res;
         if query.language == QueryLang::Japanese {
-            handle_search(japanese_search(&query))
+            res = handle_search(japanese_search(&query));
         } else {
-            handle_search(foreign_search(&query))
+            res = handle_search(foreign_search(&query));
         }
+        Ok(res)
     }
 }
 
@@ -44,8 +46,8 @@ fn foreign_search(query: &Query) -> SearchTask<foreign::Engine> {
 
 fn handle_search<T: SearchEngine<Output = &'static Name> + Send>(
     task: SearchTask<T>,
-) -> Result<NameResult, Error> {
-    Ok(NameResult::from(task.find()?))
+) -> NameResult {
+    NameResult::from(task.find())
 }
 
 /// Guesses the amount of results a search would return with given `query`
