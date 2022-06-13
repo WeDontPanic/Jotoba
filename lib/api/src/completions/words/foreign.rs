@@ -46,7 +46,7 @@ pub fn suggestions(query: &Query, query_str: &str) -> Option<Vec<WordPair>> {
         k_r_align.options.threshold = 5;
         query.add_extension(k_r_align);
 
-        let mut similar_terms = SimilarTermsExtension::new(jp_engine, 5);
+        let mut similar_terms = SimilarTermsExtension::new(jp_engine, 7);
         similar_terms.options.weights.total_weight = 0.005;
         similar_terms.options.threshold = 10;
         query.add_extension(similar_terms);

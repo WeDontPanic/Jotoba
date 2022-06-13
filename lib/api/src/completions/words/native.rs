@@ -27,14 +27,16 @@ pub fn suggestions(query: &Query, radicals: &[char]) -> Option<Vec<WordPair>> {
 
     // Find 天気予報 even if 天気よほう was written
     let mut kana_end_ext = KanaEndExtension::new(jp_engine, 10);
-    kana_end_ext.options.weights.freq_weight = 0.3;
+    kana_end_ext.options.weights.freq_weight = 0.4;
     kana_end_ext.options.weights.total_weight = 0.1;
     main_sugg_query.add_extension(kana_end_ext);
 
     // Similar terms
     let mut ste = SimilarTermsExtension::new(jp_engine, 7);
     ste.options.threshold = 10;
-    ste.options.weights.total_weight = 0.01;
+    ste.options.weights.total_weight = 0.2;
+    ste.options.weights.freq_weight = 0.4;
+    ste.options.weights.str_weight = 1.0;
     main_sugg_query.add_extension(ste);
 
     suggestion_task.add_query(main_sugg_query);

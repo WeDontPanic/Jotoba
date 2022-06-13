@@ -352,7 +352,7 @@ checksum = "d468802bab17cbc0cc575e9b053f41e72aa36bfa6b7f55e3529ffa43161b97fa"
 [[package]]
 name = "autocompletion"
 version = "0.1.0"
-source = "git+https://github.com/WeDontPanic/AutoCompletionFramework#ecd6c4728b463fb838b3b2846e9ad5fcc0bcda8f"
+source = "git+https://github.com/WeDontPanic/AutoCompletionFramework#c5d1caa9dcf378c7c352958ba7702b43412d05a1"
 dependencies = [
  "bincode",
  "eudex",
@@ -1632,7 +1632,7 @@ source = "git+https://github.com/JojiiOfficial/jp_utils#74145f23f8baaae91dba0ee4
 [[package]]
 name = "jpeudex"
 version = "0.1.1"
-source = "git+https://github.com/JojiiOfficial/jpeudex#037be62d40a46d3923f722ae7248ceaecc6f5cb2"
+source = "git+https://github.com/JojiiOfficial/jpeudex#688fa2c169fc61dbeb3f978bcfd90b2099596bcb"
 dependencies = [
  "jp_utils",
  "serde",
@@ -2163,9 +2163,9 @@ checksum = "eb9f9e6e233e5c4a35559a617bf40a4ec447db2e84c20b55a6f83167b7e57872"
 
 [[package]]
 name = "priority_container"
-version = "0.1.0"
+version = "0.1.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d5490c886ebeb0eb225aa739259736aac3f9bb1a64082219527d203c304d1161"
+checksum = "c4886bb938a91e70d3a84efa590f753cf52076149f5963de5727085435f5cbcb"
 
 [[package]]
 name = "proc-macro-error"
@@ -2776,18 +2776,18 @@ checksum = "73473c0e59e6d5812c5dfe2a064a6444949f089e20eec9a2e5506596494e4623"
 
 [[package]]
 name = "strum"
-version = "0.24.0"
+version = "0.24.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e96acfc1b70604b8b2f1ffa4c57e59176c7dbb05d556c71ecd2f5498a1dee7f8"
+checksum = "063e6045c0e62079840579a7e47a355ae92f60eb74daaf156fb1e84ba164e63f"
 dependencies = [
  "strum_macros",
 ]
 
 [[package]]
 name = "strum_macros"
-version = "0.24.0"
+version = "0.24.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6878079b17446e4d3eba6192bb0a2950d5b14f0ed8424b852310e5a94345d0ef"
+checksum = "9550962e7cf70d9980392878dfaf1dcc3ece024f4cf3bf3c46b978d0bad61d6c"
 dependencies = [
  "heck",
  "proc-macro2",
