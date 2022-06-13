@@ -1,20 +1,21 @@
 /* ----------------- Color Themes ----------------- */
 
-:root, :root.light {
+:root,
+:root.light {
     --background: #f2f1f0;
     --overlay: #f3f3f3;
 
     --primaryColor: #34a83c;
     --bgPrimaryColor: #50c058;
-    --secondaryColor: #909DC0;
-    
-    --primaryTextColor: #222222;    
+    --secondaryColor: #909dc0;
+
+    --primaryTextColor: #222222;
     --secondaryTextColor: #ffffff;
 
     --searchBackground: #ffffff;
     --searchTextColor: #555555;
     --shadowColor: #222222;
-    
+
     --tagColor: #808080;
     --itemBG: #d3d3d3;
 
@@ -24,13 +25,13 @@
 
     /* Special */
     --itemBG_075: rgb(211, 211, 211, 0.75);
-    --langSep: rgba(50,103,51,.1);
-    --lineColor: rgba(0,0,0,.1);
-    --backgroundShadow: rgba(34,34,34,0.1);
+    --langSep: rgba(50, 103, 51, 0.1);
+    --lineColor: rgba(0, 0, 0, 0.1);
+    --backgroundShadow: rgba(34, 34, 34, 0.1);
 
     /* Used by Radical Picker */
     --borderColor: var(--searchTextColor);
-    --disabledColor: #BDBDBD;
+    --disabledColor: #bdbdbd;
 
     /* Used by overlays */
     --headerColor: var(--borderColor);
@@ -40,32 +41,39 @@
     --buttonText: #1f1f1f;
     --buttonBg: #dedede;
     --buttonBgActive: #e6e6e6;
+
+    /* Overlay Graph */
+    --graphLink: #d1d1d1;
+    --graphCircle: #51c559;
+    --graphStroke: rgb(116 116 116 / 6%);
+    --graphPath: white;
+    --graphText: white;
 }
 
 :root.dark {
     --background: #202324;
-    --overlay: #1F2123;
+    --overlay: #1f2123;
 
-    --primaryColor: #2D9034;
-    --bgPrimaryColor: #338F4F;
+    --primaryColor: #2d9034;
+    --bgPrimaryColor: #338f4f;
     --secondaryColor: #435993;
 
-    --primaryTextColor: #D3CFC9;
-    --secondaryTextColor: #E8E6E3;
+    --primaryTextColor: #d3cfc9;
+    --secondaryTextColor: #e8e6e3;
 
-    --searchBackground: #181A1B;
-    --searchTextColor: #B2ACA2;
-    --shadowColor: #9D9488;
+    --searchBackground: #181a1b;
+    --searchTextColor: #b2aca2;
+    --shadowColor: #9d9488;
 
     --tagColor: #787878;
-    --itemBG: #7A7A7A;
+    --itemBG: #7a7a7a;
 
-    --itemBG_075: rgba(122,122,122,0.75);
-    --lineColor: rgba(211,207,201,0.1);
-    --backgroundShadow: rgba(157,148,136,0.1);
+    --itemBG_075: rgba(122, 122, 122, 0.75);
+    --lineColor: rgba(211, 207, 201, 0.1);
+    --backgroundShadow: rgba(34, 34, 34, 0.2);
 
     --borderColor: var(--itemBG_075);
-    --disabledColor: #3C3C3C;
+    --disabledColor: #3c3c3c;
 
     --headerColor: var(--lineColor);
     --headerScrollBar: #434344;
@@ -94,18 +102,18 @@
 ::-webkit-scrollbar {
     width: 20px;
 }
-  
+
 ::-webkit-scrollbar-track {
     background-color: transparent;
 }
-  
+
 ::-webkit-scrollbar-thumb {
     background-color: #c1c1c1;
     border-radius: 20px;
     border: 6px solid transparent;
     background-clip: content-box;
 }
-  
+
 ::-webkit-scrollbar-thumb:hover {
     background-color: #a8a8a8;
 }
@@ -116,7 +124,8 @@
 
 /* ----------------- Overall Page Adjustments ----------------- */
 
-html, body {
+html,
+body {
     font-size: 100%;
     background: var(--background) !important;
 }
@@ -124,7 +133,12 @@ html, body {
 body {
     color: var(--primaryTextColor);
     cursor: auto;
-    font-family: "Helvetica Neue", Helvetica, Arial, "Source Han Sans", "源ノ角ゴシック", "Hiragino Sans", "HiraKakuProN-W3", "Hiragino Kaku Gothic ProN W3", "Hiragino Kaku Gothic ProN", "ヒラギノ角ゴ ProN W3", "Noto Sans", "Noto Sans JP", "Noto Sans CJK JP", "メイリオ", Meiryo, "游ゴシック", YuGothic, "ＭＳ Ｐゴシック", "MS PGothic", "ＭＳ ゴシック", "MS Gothic", sans-serif;
+    font-family: "Helvetica Neue", Helvetica, Arial, "Source Han Sans",
+        "源ノ角ゴシック", "Hiragino Sans", "HiraKakuProN-W3",
+        "Hiragino Kaku Gothic ProN W3", "Hiragino Kaku Gothic ProN",
+        "ヒラギノ角ゴ ProN W3", "Noto Sans", "Noto Sans JP", "Noto Sans CJK JP",
+        "メイリオ", Meiryo, "游ゴシック", YuGothic, "ＭＳ Ｐゴシック",
+        "MS PGothic", "ＭＳ ゴシック", "MS Gothic", sans-serif;
     font-style: normal;
     font-weight: normal;
     line-height: 1.5;
@@ -134,8 +148,9 @@ body {
     -webkit-font-smoothing: auto;
 }
 
-h3, h4 {
-    font-family: "Helvetica","Arial",sans-serif;
+h3,
+h4 {
+    font-family: "Helvetica", "Arial", sans-serif;
 }
 
 body {
@@ -148,13 +163,31 @@ body.index {
     grid-template-rows: 1fr auto;
 }
 
-.noselect, .tags, .clickable, .entry-count, .no-drag {
+.noselect,
+.tags,
+.clickable,
+.entry-count,
+.no-drag {
     -webkit-touch-callout: none; /* iOS Safari */
     -webkit-user-select: none; /* Safari */ /* Konqueror HTML */
     -moz-user-select: none; /* Old versions of Firefox */
     -ms-user-select: none; /* Internet Explorer/Edge */
-    -o-user-select:none; /* Opera */
-    user-select: none; /* Non-prefixed version, currently supported by Chrome, Edge, Opera and Firefox */;
+    -o-user-select: none; /* Opera */
+    user-select: none; /* Non-prefixed version, currently supported by Chrome, Edge, Opera and Firefox */
+}
+
+#backdrop {
+    position: fixed;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 999999;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: var(--backgroundShadow);
 }
 
 button {
@@ -169,7 +202,8 @@ button {
     border-color: var(--danger) !important;
 }
 
-.btn-danger:not(:disabled):not(.disabled).active:focus, .btn-danger:not(:disabled):not(.disabled):active:focus {
+.btn-danger:not(:disabled):not(.disabled).active:focus,
+.btn-danger:not(:disabled):not(.disabled):active:focus {
     box-shadow: unset;
 }
 
@@ -189,12 +223,16 @@ object {
     border-left: 1px solid var(--searchTextColor);
 }
 
+:root.dark hr {
+    border-top: 1px solid rgba(255,255,255,.1);
+}
+
 h3 {
     font-size: 22px;
     text-align: center;
     text-align: -webkit-center;
     font-weight: bold;
-} 
+}
 
 h4 {
     font-size: 11px;
@@ -230,9 +268,9 @@ h4 {
     font-size: 20px;
 }
 
-.clickable:hover{
-   text-decoration: underline;
-   color: var(--primaryColor);
+.clickable:hover {
+    text-decoration: underline;
+    color: var(--primaryColor);
 }
 
 .no-margin {
@@ -248,7 +286,7 @@ h4 {
 }
 
 .top-padding-05-rem {
-    padding-top: 0.5rem
+    padding-top: 0.5rem;
 }
 
 .right-padding-10 {
@@ -295,7 +333,10 @@ a:hover {
     color: inherit;
 }
 
-.search-suggestion:focus, .search-suggestion:link, .search-suggestion:visited, .search-suggestion:hover {
+.search-suggestion:focus,
+.search-suggestion:link,
+.search-suggestion:visited,
+.search-suggestion:hover {
     text-decoration: none;
 }
 
@@ -363,7 +404,7 @@ a:hover {
     padding-left: 10px;
 }
 
-.entry-count  {
+.entry-count {
     color: var(--tagColor);
     line-height: 30px;
     margin-right: 5px;
@@ -384,19 +425,19 @@ a:hover {
     padding-top: 10px;
     color: var(--primaryColor);
 }
-  
+
 /* The slider itself */
 .slider {
     -webkit-appearance: none;
     width: 130px;
     height: 15px;
-    border-radius: 10px;  
+    border-radius: 10px;
     background: var(--itemBG);
     outline: none;
     opacity: 0.7;
-    transition: opacity .2s;
+    transition: opacity 0.2s;
 }
-  
+
 /* Mouse-over effects */
 .slider:hover {
     opacity: 1;
@@ -404,14 +445,14 @@ a:hover {
 :root.dark .slider:hover {
     opacity: 0.8;
 }
-  
+
 /* The slider handle for webkit and mozilla with its extra shit */
 .slider::-webkit-slider-thumb {
     -webkit-appearance: none;
     appearance: none;
     width: 25px;
     height: 25px;
-    border-radius: 50%; 
+    border-radius: 50%;
     border-color: var(--bgPrimaryColor);
     background: var(--bgPrimaryColor);
     cursor: pointer;
@@ -426,7 +467,7 @@ a:hover {
     background-color: var(--primaryColor);
 }
 
-:root.dark .slider::-webkit-slider-thumb:hover{
+:root.dark .slider::-webkit-slider-thumb:hover {
     border-color: #2eeb67;
 }
 
@@ -451,8 +492,8 @@ a:hover {
 }
 
 .res-separator {
-  border-top: 2px solid var(--lineColor);
-  margin-right: 5px;
+    border-top: 2px solid var(--lineColor);
+    margin-right: 5px;
 }
 
 .res-separator.sentence {
@@ -463,7 +504,7 @@ a:hover {
 
 .flex-center {
     display: flex;
-    place-content: center;    
+    place-content: center;
 }
 
 #loading-screen {
@@ -499,18 +540,27 @@ a:hover {
 
 /* Safari */
 @-webkit-keyframes spin {
-    0% { -webkit-transform: rotate(0deg); }
-    100% { -webkit-transform: rotate(360deg); }
+    0% {
+        -webkit-transform: rotate(0deg);
+    }
+    100% {
+        -webkit-transform: rotate(360deg);
+    }
 }
-  
+
 @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
 }
 
 /* SVG Colors */
 
-:root.dark .mobile-nav-btn > div, :root.dark .mobile-nav-inner-btn > div:not(.jumpSvg) {
+:root.dark .mobile-nav-btn > div,
+:root.dark .mobile-nav-inner-btn > div:not(.jumpSvg) {
     background-color: var(--searchTextColor) !important;
     color: var(--searchTextColor) !important;
 }
@@ -519,9 +569,12 @@ a:hover {
     color: var(--searchTextColor) !important;
 }
 
-.searchSvg, .settingsSvg, .clearSvg, .voiceSvg {
+.searchSvg,
+.settingsSvg,
+.clearSvg,
+.voiceSvg {
     mask-size: cover !important;
-    -webkit-mask-size: cover !important; 
+    -webkit-mask-size: cover !important;
 }
 
 .searchSvg {

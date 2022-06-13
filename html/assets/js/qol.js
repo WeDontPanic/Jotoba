@@ -253,6 +253,14 @@ function changeSearchType(html, newType) {
     }
 }
 
+// Hides the backdrop if clicked directly on it
+function onBackdropClick(event) {
+    console.log(event.target.id);
+    if (event.target.id === "backdrop") {
+        event.target.classList.add("hidden");
+    }
+}
+
 // Focus Search Bar on load if the user wants it to (or on index page)
 Util.awaitDocumentReady(() => {
     let focus_searchbar = Util.toBoolean(Cookies.get("focus_searchbar"));

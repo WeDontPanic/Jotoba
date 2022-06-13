@@ -730,6 +730,9 @@ msgid_plural "{} strokes"
 msgstr[0] "{} stroke"
 msgstr[1] "{} strokes"
 
+msgid "Decomposition"
+msgstr "Fogalmazás"
+
 msgid "Radical"
 msgstr "Gyök"
 

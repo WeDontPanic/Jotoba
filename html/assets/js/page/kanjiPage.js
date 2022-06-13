@@ -4,7 +4,7 @@
 
 // Kanji settings
 var kanjiSettings = [];
-const Animation = {none: 0, forward: 1, backwards: 2};
+const Animation = { none: 0, forward: 1, backwards: 2 };
 
 // Default kanji speed (only used on init)
 let speed = localStorage.getItem("kanji_speed") || 1;
@@ -43,10 +43,10 @@ $(".anim-container").each((i, e) => {
 
         // If the user wants to hide Kanji on load
         if (!Settings.display.showKanjiOnLoad.val) {
-            $("#"+kanjiLiteral+"_svg > svg path:not(.bg)").each((i, e) => {
+            $("#" + kanjiLiteral + "_svg > svg path:not(.bg)").each((i, e) => {
                 e.classList.add("hidden");
                 e.style.strokeDashoffset = e.getTotalLength();
-             });
+            });
         }
 
         // If user wants to hide numbers: hide them
@@ -79,7 +79,7 @@ $('.speedSlider:not(.settings)').on('input', function () {
 function getPaths(kanjiLiteral) {
     let svg = document.getElementById(kanjiLiteral + "_svg").firstElementChild;
     return svg.querySelectorAll("path:not(.bg)");
-} 
+}
 
 // Refresh the currently running animation. Used for changing the current animation speed
 async function refreshAnimations(kanjiLiteral) {
@@ -99,7 +99,7 @@ async function refreshAnimations(kanjiLiteral) {
             // Animate and wait if the animations was automated
             let animationPromise = doAnimationStep(kanjiLiteral, paths[i], kanjiSettings[kanjiLiteral].animationDirection === Animation.forward, false);
             if (kanjiSettings[kanjiLiteral].isAutomated) {
-                kanjiSettings[kanjiLiteral].index = i+1;
+                kanjiSettings[kanjiLiteral].index = i + 1;
                 await animationPromise;
 
                 if (startTime < kanjiSettings[kanjiLiteral].timestamp) {
@@ -135,7 +135,7 @@ function prepareAutoplay(kanjiLiteral) {
 
 // Prepares the last steps to end auto-playing an animation
 function concludeAutoplay(kanjiLiteral) {
-    let playBtn = document.getElementById(kanjiLiteral+ "_play");
+    let playBtn = document.getElementById(kanjiLiteral + "_play");
 
     kanjiSettings[kanjiLiteral].isAutomated = false;
 
@@ -146,19 +146,19 @@ function concludeAutoplay(kanjiLiteral) {
 
 // Based on the current state, show or pause the animation
 async function doOrPauseAnimation(kanjiLiteral) {
-    let playBtn = document.getElementById(kanjiLiteral+ "_play");
+    let playBtn = document.getElementById(kanjiLiteral + "_play");
 
     if (playBtn.dataset.state === "play") {
         if (kanjiSettings[kanjiLiteral].index == kanjiSettings[kanjiLiteral].strokeCount) {
             await undoAnimation(kanjiLiteral, true);
         }
-        
+
         doAnimation(kanjiLiteral);
         return;
     }
 
     pauseAnimation(kanjiLiteral);
-} 
+}
 
 // Automatically draws the whole image
 async function doAnimation(kanjiLiteral) {
@@ -219,7 +219,7 @@ async function undoAnimation(kanjiLiteral, awaitLast) {
 async function pauseAnimation(kanjiLiteral) {
     kanjiSettings[kanjiLiteral].timestamp = Date.now();
 
-    let playBtn = document.getElementById(kanjiLiteral+ "_play");
+    let playBtn = document.getElementById(kanjiLiteral + "_play");
 
     playBtn.dataset.state = "play";
     playBtn.children[0].classList.remove("hidden");
@@ -306,3 +306,224 @@ $(document).on("keypress", (event) => {
         $(".compounds-parent").toggleClass("hidden");
     }
 });
+
+/* -- Kanji decomposition tree -- */
+
+// Generates the tree diagram
+var pendingRequests = 0;
+function generateTreeDiagram() {
+    var width = 1000,
+        height = 1000;
+
+    var i = 0;
+
+    var tree = d3.layout.tree()
+        .size([height, width]);
+
+    // set visible
+    document.getElementById("tree-target").innerHTML = "";
+    document.getElementById("backdrop").classList.remove("hidden");
+
+    // Add the SVG to the body
+    var svg = d3.select("#tree-target").append("svg")
+        .classed("svg-content-responsive", true)
+        .classed("svg-container", true)
+        .attr("preserveAspectRatio", "xMinYMin meet")
+        .attr("viewBox", "0 0 " + width + " " + height)
+        .append("g");
+
+    // Build the tree
+    root = treeData[0];
+
+    // Compute the new tree layout
+    var nodes = tree.nodes(root).reverse(),
+        links = tree.links(nodes);
+
+    // Normalize for fixed-depth
+    nodes.forEach(function (d) { d.y = d.depth * 100; });
+
+    // Declare the nodes
+    var node = svg.selectAll("g.node")
+        .data(nodes, function (d) { return d.id || (d.id = ++i); });
+
+    // Declare the links
+    var link = svg.selectAll("path.link")
+        .data(links, function (d) { return d.target.id; });
+
+    // Enter the nodes
+    var nodeEnter = node.enter().append("g")
+        .attr("class", "node")
+        .attr("transform", function (d) {
+            return "translate(" + d.x + "," + d.y + ")";
+        });
+
+    // Circle style, color, fill
+    nodeEnter.append("circle")
+        .attr("r", 25)
+        .style("fill", "rgba(222,227,231,255)");
+
+    // Text
+    nodeEnter.append("text")
+        .attr("y", function (d) { // Text offset
+            return d.children || d._children ? 5 : 5;
+        })
+        .attr("text-anchor", "middle")
+        .text(function (d) { return d.name; })
+        .style("fill-opacity", 1);
+
+    // Straight lines
+    link.enter().insert("line")
+        .attr("class", "link")
+        .attr("x1", function (d) { return d.source.x; })
+        .attr("y1", function (d) { return d.source.y; })
+        .attr("x2", function (d) { return d.target.x; })
+        .attr("y2", function (d) { return d.target.y; });
+
+    // Move lines in front of circle to hide the lines (only needed for straight lines)
+    document.querySelectorAll(".link").forEach(e => {
+        var node = e;
+        var parent = e.parentNode;
+        parent.removeChild(node);
+        parent.prepend(e);
+    });
+
+    const srcUrl = "/assets/svg/glyphes/";
+
+    // Figure out how many requests are required
+    document.querySelectorAll("text").forEach((e) => {
+        getSvgContent(e, srcUrl + e.innerHTML + ".svg");
+        pendingRequests++;
+    });
+
+    svg = document.querySelector('svg');
+
+    const { xMin, xMax, yMin, yMax } = [...svg.children].reduce((acc, el) => {
+        const { x, y, width, height } = el.getBBox();
+        if (!acc.xMin || x < acc.xMin) acc.xMin = x;
+        if (!acc.xMax || x + width > acc.xMax) acc.xMax = x + width;
+        if (!acc.yMin || y < acc.yMin) acc.yMin = y;
+        if (!acc.yMax || y + height > acc.yMax) acc.yMax = y + height;
+        return acc;
+    }, {});
+
+    const viewbox = `${xMin} ${yMin} ${xMax - xMin} ${yMax - yMin}`;
+
+    svg.setAttribute('viewBox', viewbox);
+}
+
+function getSvgContent(target, url) {
+    var text = "";
+
+    console.log(url);
+    fetch(url).then(r => {
+        pendingRequests--;
+
+        r.text().then(t => {
+            if (text.length < 5) {
+                console.log("couldn't find " + target.innerHTML);
+                return;
+            }
+
+            console.log(t);
+            storedText = text;
+            replaceTextWithPath(target, text);
+        });
+
+    }).catch(e => console.log(e));
+}
+
+function replaceTextWithPath(target, svg) {
+    let g = svg.split("\n");
+
+    //target.replaceWith(g[3]);
+
+    let getNodes = str => {
+        console.log(target, str);
+        let x = new DOMParser().parseFromString(str, 'image/svg+xml');
+        return x.children[0];
+    }
+
+    let node = getNodes(g[3]);
+    target.replaceWith(node);
+
+    if (pendingRequests == 0)
+        document.querySelectorAll("svg").forEach(s => s.innerHTML += "");
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+const treeData = [
+    {
+        "name": "観",
+        "children": [
+            {
+                "name": "𮥶",
+                "children": [
+                    {
+                        "name": "𠂉",
+                        "children": [
+                            {
+                                "name": "一"
+                            }
+                        ]
+                    },
+                    {
+                        "name": "一"
+                    },
+                    {
+                        "name": "隹"
+                    }
+                ]
+            },
+            {
+                "name": "見",
+                "children": [
+                    {
+                        "name": "目",
+                        "children": [
+                            {
+                                "name": "囗"
+                            }
+                        ]
+                    },
+                    {
+                        "name": "儿",
+                        "children": [
+                            {
+                                "name": "丿"
+                            },
+                            {
+                                "name": "乚"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    }
+
+];

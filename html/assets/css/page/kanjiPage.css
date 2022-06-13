@@ -1,6 +1,6 @@
 .kanji-entry.left.detail {
     width: 155px;
-    padding-left: 25px
+    padding-left: 25px;
 }
 
 .kanji-entry.right.detail {
@@ -36,7 +36,8 @@
     padding-left: 10px;
 }
 
-.kun-reading, .on-reading {
+.kun-reading,
+.on-reading {
     width: 100%;
 }
 
@@ -104,7 +105,7 @@
 }
 
 .animation-group > button > img {
-    width: 45%
+    width: 45%;
 }
 
 .compounds-dropdown-parent {
@@ -145,6 +146,48 @@
     font-size: 8px;
 }
 
+.tree-parent {
+    cursor: initial;
+    width: 90%;
+}
+
+#tree-target {
+    align-items: center;
+    padding: 5%;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    background-color: var(--overlay);
+}
+
+#tree-target > svg {
+    max-width: 100%;
+    max-height: 100%;
+}
+
+#tree-target .link {
+    fill: none;
+    stroke: var(--graphLink);
+    stroke-width: 3px;
+}
+
+#tree-target circle {
+    fill: var(--graphCircle) !important;
+    stroke: var(--graphStroke);
+    stroke-width: 2px;
+}
+
+#tree-target text {
+    fill: var(--graphText);
+    font: 20px sans-serif;
+}
+
+#tree-target path {
+    stroke: none;
+    fill-rule: nonzero;
+    fill: var(--graphPath);
+    fill-opacity: 1;
+    transform: translateX(-15px) translateY(-15px) scale(0.03);
+}
+
 /* Kanji dark mode */
 :root.dark .stroke-container > svg > path.active {
     stroke: rgb(211, 207, 201) !important;
@@ -174,7 +217,7 @@
 /* Everything lower than max size */
 @media only screen and (max-width: 1150px) {
     .animation-group > button > img {
-        width: 1.5em
+        width: 1.5em;
     }
 
     .animation-controller {
@@ -184,9 +227,8 @@
 
 /* Small screens */
 @media only screen and (max-width: 600px) {
-
     .compounds-parent {
-        flex-direction: column!important;
+        flex-direction: column !important;
     }
 
     .compounds-dropdown:after {
@@ -199,44 +241,44 @@
     }
 
     .main-container > .d-flex {
-		flex-direction: column;
-	}
+        flex-direction: column;
+    }
 
-	.kanji-entry.left.detail {
+    .kanji-entry.left.detail {
         width: 100%;
-		align-self: center;
-		padding-left: 0px;
-	}
-	
-	.kanji-preview.x-large {
-		align-self: center;
-	}
+        align-self: center;
+        padding-left: 0px;
+    }
+
+    .kanji-preview.x-large {
+        align-self: center;
+    }
 
     .translation.big {
         font-size: 20px;
         padding-bottom: 10px;
     }
-	
-	.kanji-preview-info {
-		padding-left: 0px;
+
+    .kanji-preview-info {
+        padding-left: 0px;
         text-align: left;
-	}
-	
-	.kanji-entry.right.detail {
-		width: unset;
-		padding-left: 0px;
-	}
-	
-	.kanji-entry.right.detail > .kanji-entry {
-		flex-direction: column !important;
-	}
-	
-	.kanji-preview-left {
-		padding: 0;
-		width: 100%;
-		text-align: center;
+    }
+
+    .kanji-entry.right.detail {
+        width: unset;
+        padding-left: 0px;
+    }
+
+    .kanji-entry.right.detail > .kanji-entry {
+        flex-direction: column !important;
+    }
+
+    .kanji-preview-left {
+        padding: 0;
+        width: 100%;
+        text-align: center;
         text-align: -webkit-center;
-	}	
+    }
 
     .rad-parts-parent {
         display: flex !important;
@@ -257,16 +299,16 @@
         padding-right: 20px;
         text-align: right;
     }
-	
-	.kanji-preview-left > .d-flex {
-		padding-left: 10px;
-	}
-	
-	.kanji-preview-right {
+
+    .kanji-preview-left > .d-flex {
+        padding-left: 10px;
+    }
+
+    .kanji-preview-right {
         max-width: unset;
-		padding-top: 10px;
+        padding-top: 10px;
         text-align: left;
-	}
+    }
 
     .notes {
         padding-left: 10px;
@@ -279,16 +321,16 @@
     .clickable.fat {
         font-size: 15px;
     }
-	
-	.stroke-container {
+
+    .stroke-container {
         max-width: 99vw;
         padding-left: 1vw;
-	}
-	
-	.on-reading {
-		padding-top: 10px;
-	}
-	
+    }
+
+    .on-reading {
+        padding-top: 10px;
+    }
+
     .slider {
         width: 100px;
         height: 10px;
@@ -297,19 +339,18 @@
     .slider::-webkit-slider-thumb {
         width: 20px;
         height: 20px;
-        border-radius: 50%; 
+        border-radius: 50%;
     }
 
     .slider::-moz-range-thumb {
         width: 20px;
         height: 20px;
-        border-radius: 50%; 
+        border-radius: 50%;
     }
 
     .slider-output {
         margin-left: -10px;
     }
-
 }
 
 /* Very small screens */

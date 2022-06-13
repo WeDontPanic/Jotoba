@@ -2,6 +2,7 @@
 @use crate::BaseData;
 @use super::search_help;
 @use crate::templ_utils::*;
+@use crate::templates::overlays::page::{decomposition_graph_html};
 
 @(data: &BaseData, kanji: Vec<Item>)
 
@@ -9,16 +10,22 @@
   @:search_help(&data, data.gettext("kanji").as_str())
 }
 
+<script defer src="/variable_assets/@data.asset_hash/assets/js/lib/d3.js"></script>
 <script defer src="/variable_assets/@data.asset_hash/assets/js/page/kanjiPage.js"></script>
 <link rel="stylesheet" type="text/css" href="/variable_assets/@data.asset_hash/assets/css/page/multiPage/kanji.css">
 <link rel="stylesheet" type="text/css" href="/variable_assets/@data.asset_hash/assets/css/page/kanjiPage.css">
+
+<!-- Decomposition graph -->
+@:decomposition_graph_html(data)
 
 <!-- Inner Main Body -->
 @for (kpos, k_item) in kanji.iter().enumerate() {
   @if kpos > 0 {
     <br>
   }
+  
   <div class="d-flex kanji-entry-parent">
+    
       <!-- Left side: Kanji -->
       <div class="kanji-entry left detail d-flex flex-column">
          <span class="kanji-preview x-large">
@@ -27,27 +34,33 @@
          <div class="kanji-preview-info">
            <div class="notes stroke"><b>@data.ngettext_fmt("{} stroke", k_item.kanji.stroke_count as u64, &[k_item.kanji.stroke_count])</b> </div>
             <div class="rad-parts-parent">
-              <div class="notes rad"><b>@data.gettext("Radical"):</b>
-                <br>
-                <a class="clickable no-align" href="/search/@k_item.kanji.radical.literal?t=1">@k_item.get_radical()</a>
-                @if k_item.get_rad_len() > 7 {
-                 <br>
+                <div class="notes rad"><b>@data.gettext("Radical"):</b>
+                    <br>
+                    <a class="clickable no-align" href="/search/@k_item.kanji.radical.literal?t=1">@k_item.get_radical()</a>
+                    @if k_item.get_rad_len() > 7 {
+                    <br>
+                    }
+                    @if let Some(ref translations) = k_item.kanji.radical.translations {
+                        (@translations.join(", "))
+                    }
+                </div>
+                @if !k_item.kanji.parts.is_empty() {
+                <div class="notes parts"><b>@data.ngettext("Part", k_item.get_parts_count() as u64):</b>
+                    <br>
+                    @for (pos, part) in k_item.kanji.parts.iter().enumerate() {
+                        @if pos > 0 {
+                            <span class="tags no-margin fat">,</span>
+                        }
+                    <a class="clickable no-align" href="/search/@part?t=1">@part</a>
+                    }
+                </div>
                 }
-                @if let Some(ref translations) = k_item.kanji.radical.translations {
-                  (@translations.join(", "))
-                }
-            </div>
-            @if !k_item.kanji.parts.is_empty() {
-              <div class="notes parts"><b>@data.ngettext("Part", k_item.get_parts_count() as u64):</b>
-                <br>
-                @for (pos, part) in k_item.kanji.parts.iter().enumerate() {
-                  @if pos > 0 {
-                    <span class="tags no-margin fat">,</span>
-                  }
-                  <a class="clickable no-align" href="/search/@part?t=1">@part</a>
-                }
-              </div>
-            }
+                <!-- TODO Implement [if] for this part -->
+                <div class="notes graph">
+                    <b>@data.gettext("Decomposition:")</b>
+                    <br>
+                    <div class="clickable no-align" onclick="generateTreeDiagram()">show graph</div>
+                </div>
             </div>
          </div>
       </div>

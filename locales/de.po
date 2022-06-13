@@ -723,7 +723,6 @@ msgstr "Namensherkunft"
 
 ## Kanji results
 
-
 msgid "Part"
 msgid_plural "Parts"
 msgstr[0] "Bestandteil"
@@ -734,6 +733,9 @@ msgid "{} stroke"
 msgid_plural "{} strokes"
 msgstr[0] "{} Strich"
 msgstr[1] "{} Striche"
+
+msgid "Decomposition"
+msgstr "Zusammensetzung"
 
 msgid "Radical"
 msgstr "Radikal"
