@@ -25,10 +25,10 @@ types = { path = "../types" , features = ["jotoba_intern"]}
 itertools = "0.10.3"
 
 [dev-dependencies]
-ructe = "0.13.4"
+ructe = "0.14.0"
 
 [build-dependencies]
-ructe = "0.13.4"
+ructe = "0.14.0"
 
 [features]
 sentry_error = ["sentry"]

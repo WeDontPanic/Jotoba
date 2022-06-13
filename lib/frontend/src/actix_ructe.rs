@@ -1,5 +1,3 @@
-use std::io::Write;
-
 macro_rules! render {
     ($template:path) => (super::actix_ructe::Render(|o| $template(o)));
     ($template:path, $($arg:expr),*) => {{
@@ -12,9 +10,9 @@ macro_rules! render {
     }};
 }
 
-pub struct Render<T: FnOnce(&mut dyn Write) -> std::io::Result<()>>(pub T);
+pub struct Render<T: FnOnce(&mut Vec<u8>) -> std::io::Result<()>>(pub T);
 
-impl<T: FnOnce(&mut dyn Write) -> std::io::Result<()>> Render<T> {
+impl<T: FnOnce(&mut Vec<u8>) -> std::io::Result<()>> Render<T> {
     pub fn render(self) -> Vec<u8> {
         let mut bytes = Vec::new();
         self.0(&mut bytes).unwrap();

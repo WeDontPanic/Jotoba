@@ -85,8 +85,7 @@ impl<'a> Search<'a> {
 
         let sentence_parts = native_word_res
             .sentence_parts
-            .map(|i| Some(i))
-            .unwrap_or(gloss_word_res.sentence_parts);
+            .or(gloss_word_res.sentence_parts);
 
         let infl_info = native_word_res.infl_info.or(gloss_word_res.infl_info);
 
