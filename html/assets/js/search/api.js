@@ -98,7 +98,7 @@ API.getGraphData = async function(targetLiteral) {
     // Generate input
     let inputJSON = {
         "literal": targetLiteral,
-        "full": true // TODO create a setting for this
+        "full": Settings.search.showFullGraph.val
     };
 
     // Get the data result from the server
