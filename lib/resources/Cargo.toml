@@ -14,4 +14,4 @@ sorted_intersection = "1.2.0"
 strum = "0.24.1"
 strum_macros = "0.24.1"
 ids_parser = { git = "https://github.com/JojiiOfficial/IDS-Parser" }
-#ids_parser = { path = "../../../ids_parser"}
+#ids_parser = { path = "../../../ids_parser" }

@@ -1434,7 +1434,7 @@ dependencies = [
 [[package]]
 name = "ids_parser"
 version = "0.1.0"
-source = "git+https://github.com/JojiiOfficial/IDS-Parser#3525ff92fcab095659406bccee76fc2df47ab636"
+source = "git+https://github.com/JojiiOfficial/IDS-Parser#380f283153a95bf663db1c5843385df2a7f72a6a"
 dependencies = [
  "serde",
 ]

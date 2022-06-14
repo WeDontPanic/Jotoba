@@ -17,6 +17,7 @@ pub struct Item {
     pub kanji: Kanji,
     pub kun_dicts: Option<Vec<Word>>,
     pub on_dicts: Option<Vec<Word>>,
+    pub has_compositions: bool,
 }
 
 impl Item {
@@ -24,10 +25,13 @@ impl Item {
         let kun_dicts = load_dicts(&k.kun_dicts, lang, show_english);
         let on_dicts = load_dicts(&k.on_dicts, lang, show_english);
 
+        let has_compositions = resources::get().kanji().ids(k.literal).is_some();
+
         Self {
             kun_dicts,
             on_dicts,
             kanji: k,
+            has_compositions,
         }
     }
 }

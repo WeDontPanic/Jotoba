@@ -15,6 +15,7 @@ static STOP_RADICALS: Lazy<HashSet<char>> = Lazy::new(|| {
 pub struct KanjiTreeBuilder;
 
 impl KanjiTreeBuilder {
+    /// Recursive method to build the OutObjects
     pub fn build(&self, c: char) -> Option<OutObject> {
         let retrieve = resources::get().kanji();
         let ids_kanji = retrieve.ids(c)?;

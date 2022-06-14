@@ -55,12 +55,14 @@
                     }
                 </div>
                 }
-                <!-- TODO Implement [if] for this part -->
-                <div class="notes graph">
-                    <b>@data.gettext("Decomposition:")</b>
-                    <br>
-                    <div class="clickable no-align" onclick="generateTreeDiagram()">show graph</div>
-                </div>
+
+                @if k_item.has_compositions {
+                  <div class="notes graph">
+                      <b>@data.gettext("Decomposition:")</b>
+                      <br>
+                      <div class="clickable no-align" onclick="generateTreeDiagram()">show graph</div>
+                  </div>
+                }
             </div>
          </div>
       </div>

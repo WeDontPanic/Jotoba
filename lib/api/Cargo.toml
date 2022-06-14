@@ -34,7 +34,7 @@ priority_container = "0.1.1"
 futures = { version = "0.3.21", optional = true }
 leptess = { version = "0.13.2", optional = true }
 order_struct = { git = "https://github.com/JojiiOfficial/OrderStruct" }
-#ids_parser = { path = "../../../ids_parser"}
+#ids_parser = { path = "../../../ids_parser" }
 ids_parser = { git = "https://github.com/JojiiOfficial/IDS-Parser" }
 
 [features]
