@@ -9,6 +9,7 @@ pub struct Request {
 #[derive(Serialize, Deserialize, Debug)]
 pub struct OutObject {
     name: char,
+    clickable: bool,
     #[serde(skip_serializing_if = "Vec::is_empty")]
     children: Vec<OutObject>,
 }
@@ -19,16 +20,25 @@ impl OutObject {
         Self {
             name,
             children: vec![],
+            clickable: false,
         }
     }
 
     #[inline]
     pub fn with_children(name: char, children: Vec<OutObject>) -> Self {
-        Self { name, children }
+        Self {
+            name,
+            children,
+            clickable: false,
+        }
     }
 
     #[inline]
     pub fn add_child(&mut self, child: Self) {
         self.children.push(child)
+    }
+
+    pub fn set_clickable(&mut self, clickable: bool) {
+        self.clickable = clickable;
     }
 }
