@@ -7,7 +7,8 @@ use types::api::kanji::ids_tree::{OutObject, Request};
 
 /// Get a decomposition graph
 pub async fn decomp_graph(payload: Json<Request>) -> Result<Json<OutObject>, RestError> {
-    let literal = payload.0.literal;
-    let tree = KanjiTreeBuilder.build(literal).ok_or(RestError::NotFound)?;
+    let tree = KanjiTreeBuilder::new(payload.full)
+        .build(payload.literal)
+        .ok_or(RestError::NotFound)?;
     Ok(Json(tree))
 }

@@ -3,17 +3,19 @@ use serde::{Deserialize, Serialize};
 #[derive(Deserialize, Serialize)]
 pub struct Request {
     pub literal: char,
+    pub full: bool,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct OutObject {
-    name: String,
+    name: char,
     #[serde(skip_serializing_if = "Vec::is_empty")]
     children: Vec<OutObject>,
 }
 
 impl OutObject {
-    pub fn new(name: String) -> Self {
+    #[inline]
+    pub fn new(name: char) -> Self {
         Self {
             name,
             children: vec![],
@@ -21,13 +23,8 @@ impl OutObject {
     }
 
     #[inline]
-    pub fn with_children(name: String, children: Vec<OutObject>) -> Self {
+    pub fn with_children(name: char, children: Vec<OutObject>) -> Self {
         Self { name, children }
-    }
-
-    #[inline]
-    pub fn add_children<I: IntoIterator<Item = OutObject>>(&mut self, children: I) {
-        self.children.extend(children);
     }
 
     #[inline]

@@ -12,27 +12,35 @@ static STOP_RADICALS: Lazy<HashSet<char>> = Lazy::new(|| {
         .collect()
 });
 
-pub struct KanjiTreeBuilder;
+pub struct KanjiTreeBuilder {
+    build_full: bool,
+}
 
 impl KanjiTreeBuilder {
+    /// Creates a new TreeBuilder. The parameter specifies whether a full tree should be bulit or
+    /// Only one which is restricted to the Radicals used in the radical picker
+    pub fn new(build_full: bool) -> Self {
+        Self { build_full }
+    }
+
     /// Recursive method to build the OutObjects
     pub fn build(&self, c: char) -> Option<OutObject> {
         let retrieve = resources::get().kanji();
         let ids_kanji = retrieve.ids(c)?;
 
-        let mut out = OutObject::new(c.to_string());
+        let mut out = OutObject::new(c);
 
         let radicals = ids_kanji.comp_by_lang(Origin::Japan)?.get_radicals();
 
-        // exit condition
+        // recursive exit condition
         if (radicals.len() == 1 && radicals[0] == c)
             || radicals.is_empty()
-            || STOP_RADICALS.contains(&c)
+            || (STOP_RADICALS.contains(&c) && !self.build_full)
         {
             return Some(out);
         }
 
-        let mut visited_items = HashSet::new();
+        let mut visited_items = HashSet::with_capacity(radicals.len());
 
         for radical in radicals {
             if visited_items.contains(&radical) {
