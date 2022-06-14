@@ -2,6 +2,9 @@ use criterion::{criterion_group, criterion_main, Criterion};
 use search::query::{parser::QueryParser, Query, UserSettings};
 use types::jotoba::{languages::Language, search::QueryType};
 
+#[global_allocator]
+static ALLOC: snmalloc_rs::SnMalloc = snmalloc_rs::SnMalloc;
+
 fn get_query(inp: &str, query_type: QueryType) -> Query {
     let mut settings = UserSettings::default();
     settings.user_lang = Language::German;
