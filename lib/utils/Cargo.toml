@@ -9,4 +9,4 @@ edition = "2021"
 [dependencies]
 itertools = "0.10.3"
 rand = "0.8.5"
-sabi = { git = "https://github.com/yuk1ty/sabi"}
+sabi = { git = "https://github.com/yuk1ty/sabi" }

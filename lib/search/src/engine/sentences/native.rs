@@ -59,8 +59,12 @@ impl SearchEngine for Engine {
 
         terms.retain(|w| !index.is_stopword_cust(&w, 20.0).unwrap_or(true));
 
-        let terms: Vec<_> = terms.into_iter().collect();
+        let terms: Vec<_> = terms.into_iter().map(|i| format_query(&i)).collect();
         let vec = index.build_vector(&terms, Some(&TFIDF))?;
         Some((vec, query.to_string()))
     }
+}
+
+fn format_query(inp: &str) -> String {
+    japanese::to_halfwidth(inp)
 }

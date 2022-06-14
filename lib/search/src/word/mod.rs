@@ -196,6 +196,7 @@ impl<'a> Search<'a> {
             }
         }
 
+        //let fmt_query = japanese::to_halfwidth(&self.query.query);
         let (query, mut sentence, word_info) = self.parse_sentence(query_str, allow_sentence);
 
         let original_query = if sentence.is_some() {
@@ -217,6 +218,10 @@ impl<'a> Search<'a> {
         }
 
         let res = search_task.find();
+        /*
+        println!("{:#?}", res.iter().next().unwrap());
+        println!("{:#?}", res.iter().next().unwrap().item.get_furigana());
+        */
 
         // Put furigana to sentence
         if let Some(sentence) = &mut sentence {
@@ -330,6 +335,7 @@ impl<'a> Search<'a> {
         let mut infl_info = None;
         let mut sentence = None;
         let mut searched_query = self.query.query.clone();
+
         if !self.query.use_original
             && count < 50
             && could_be_romaji

@@ -1594,6 +1594,7 @@ dependencies = [
  "env_logger 0.9.0",
  "frontend",
  "indexes",
+ "japanese",
  "localization",
  "log",
  "news",

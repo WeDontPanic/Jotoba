@@ -49,6 +49,7 @@ impl KanjiTreeBuilder {
             if let Some(child) = self.build(radical) {
                 out.add_child(child);
             }
+
             visited_items.insert(radical);
         }
 

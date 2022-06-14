@@ -5,7 +5,7 @@ pub mod radicals;
 pub use romaji;
 
 use itertools::Itertools;
-use std::iter;
+use std::{iter, ops::Range};
 use utils;
 
 const RADICALS: &[char] = &[
@@ -214,6 +214,42 @@ impl JapaneseExt for char {
     #[inline]
     fn starts_with_ct(&self, ct: CharType) -> bool {
         self.is_of_type(ct)
+    }
+}
+
+/// Convert Wide-alphanumeric into normal ASCII  [Ａ -> A]
+#[inline]
+pub fn to_halfwidth(s: &str) -> String {
+    shift_unicode(s, 0xff01..0xff5f, |x| x - 0xfee0)
+}
+
+/// Convert Wide-alphanumeric into normal ASCII  [Ａ -> A]
+#[inline]
+pub fn to_fullwidth(s: &str) -> String {
+    shift_unicode(s, 0x0021..0x007f, |x| x + 0xfee0)
+}
+
+#[inline]
+fn shift_unicode<D, S: AsRef<str>>(s: S, range: Range<u32>, conv: D) -> String
+where
+    D: Fn(u32) -> u32,
+{
+    s.as_ref()
+        .chars()
+        .map(|c| map_char(c, range.clone(), &conv))
+        .collect()
+}
+
+#[inline]
+fn map_char<D>(c: char, range: Range<u32>, conv: D) -> char
+where
+    D: FnOnce(u32) -> u32,
+{
+    let n = c as u32;
+    if range.contains(&n) {
+        char::from_u32(conv(n)).unwrap()
+    } else {
+        c
     }
 }
 
@@ -446,7 +482,7 @@ fn match_reading(comp: &str, comp_reading: &str, k_literal: char, reading: &str)
 mod tests {
     use test_case::test_case;
 
-    use crate::{text_parts, JapaneseExt};
+    use crate::{text_parts, to_fullwidth, to_halfwidth, JapaneseExt};
 
     #[test_case("音",true; "音")]
     #[test_case("あ",false; "Kana 'a'")]
@@ -469,5 +505,16 @@ mod tests {
         let pairs: Vec<_> = text_parts(inp).collect();
         let exp: Vec<_> = exp.iter().map(|i| i.to_string()).collect();
         assert_eq!(pairs, exp);
+    }
+
+    #[test_case("1234","１２３４"; "To fullwidth")]
+    fn test_to_fullwidth(inp: &str, exp: &str) {
+        assert_eq!(to_fullwidth(inp).as_str(), exp);
+    }
+
+    #[test_case("１２３４","1234"; "To halfwidth")]
+    #[test_case("５日","5日"; "With kanji")]
+    fn test_to_halfwidth(inp: &str, exp: &str) {
+        assert_eq!(to_halfwidth(inp).as_str(), exp);
     }
 }

@@ -1,6 +1,5 @@
 pub mod k_reading;
 pub mod regex;
-//pub mod regex_index;
 
 use crate::engine::{Indexable, SearchEngine};
 use resources::storage::ResourceStorage;
@@ -39,10 +38,11 @@ impl SearchEngine for Engine {
         _allow_align: bool,
         _language: Option<Language>,
     ) -> Option<(Vector, String)> {
-        let mut terms = vec![(query.to_string(), 1.0)];
+        let fmt_query = format_query(query);
+        let mut terms = vec![(fmt_query.clone(), 1.0)];
 
         let mut indexer = index.get_indexer().clone();
-        for term in tinysegmenter::tokenize(query) {
+        for term in tinysegmenter::tokenize(&fmt_query) {
             let indexed = indexer.find_term(&term)?;
             if indexed.doc_frequency() >= 5_000 || terms.iter().any(|i| i.0 == term) {
                 continue;
@@ -52,6 +52,12 @@ impl SearchEngine for Engine {
         }
 
         let vec = index.build_vector_weights(&terms)?;
-        Some((vec, query.to_owned()))
+        Some((vec, fmt_query))
     }
+}
+
+fn format_query(inp: &str) -> String {
+    inp.to_string()
+    //japanese::to_fullwidth(inp)
+    //japanese::to_halfwidth(inp)
 }

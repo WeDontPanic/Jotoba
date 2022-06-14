@@ -36,6 +36,7 @@ news_inotify = ["news/news_inotify"]
 
 [dev-dependencies]
 criterion = "0.3.5"
+japanese = { path = "../lib/japanese" }
 
 [[bench]]
 name = "my_benchmark"
@@ -43,4 +44,8 @@ harness = false
 
 [[bench]]
 name = "resources"
+harness = false
+
+[[bench]]
+name = "japanese"
 harness = false
