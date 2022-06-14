@@ -301,7 +301,9 @@ fn debug_info() {
 }
 
 pub fn load_resources(src: &str) {
+    let start = Instant::now();
     resources::load(src).expect("Failed to load resource storage");
+    debug!("Resources took: {:?}", start.elapsed());
 }
 
 fn load_translations(config: &Config) -> Arc<TranslationDict> {

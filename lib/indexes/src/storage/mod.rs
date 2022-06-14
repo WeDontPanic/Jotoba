@@ -54,7 +54,7 @@ pub fn get() -> &'static IndexStore {
 }
 
 /// Loads all indexes
-pub fn load<P: AsRef<Path>>(index_folder: P) -> Result<bool, Box<dyn Error>> {
+pub fn load<P: AsRef<Path>>(index_folder: P) -> Result<bool, Box<dyn Error + Send + Sync>> {
     if is_loaded() {
         return Ok(true);
     }
@@ -65,9 +65,7 @@ pub fn load<P: AsRef<Path>>(index_folder: P) -> Result<bool, Box<dyn Error>> {
         return Ok(false);
     }
 
-    INDEX_STORE
-        .set(store)
-        .ok();
+    INDEX_STORE.set(store).ok();
 
     Ok(true)
 }
@@ -81,7 +79,9 @@ pub fn wait() {
     INDEX_STORE.wait();
 }
 
-pub fn load_raw<P: AsRef<Path>>(index_folder: P) -> Result<IndexStore, Box<dyn Error>> {
+pub fn load_raw<P: AsRef<Path>>(
+    index_folder: P,
+) -> Result<IndexStore, Box<dyn Error + Send + Sync>> {
     log::debug!("Loading word index");
     let word = word::load(index_folder.as_ref())?;
 

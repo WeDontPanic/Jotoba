@@ -67,11 +67,13 @@ impl SuggestionStorage {
     }
 }
 
-pub fn load_raw<P: AsRef<Path>>(file: P) -> Result<SuggestionStorage, Box<dyn Error>> {
+pub fn load_raw<P: AsRef<Path>>(
+    file: P,
+) -> Result<SuggestionStorage, Box<dyn Error + Send + Sync>> {
     utils::deser_file(file, "")
 }
 
-pub fn load<P: AsRef<Path>>(file: P) -> Result<bool, Box<dyn Error>> {
+pub fn load<P: AsRef<Path>>(file: P) -> Result<bool, Box<dyn Error + Sync + Send>> {
     let store = load_raw(file)?;
     Ok(SUGGESTION_STORE.set(store).is_ok())
 }

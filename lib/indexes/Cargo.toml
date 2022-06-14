@@ -18,3 +18,8 @@ bitflags = { git = "https://github.com/JojiiOfficial/BitFlags" }
 once_cell = "1.12.0"
 bincode = "1.3.3"
 log = "0.4.17"
+rayon = { version = "*", optional = true }
+
+[features]
+default = []
+parallel = ["rayon"]

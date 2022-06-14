@@ -25,7 +25,7 @@ impl RadicalStore {
     }
 }
 
-pub(crate) fn load<P: AsRef<Path>>(path: P) -> Result<RadicalStore, Box<dyn Error>> {
+pub(crate) fn load<P: AsRef<Path>>(path: P) -> Result<RadicalStore, Box<dyn Error + Send + Sync>> {
     let index = utils::deser_file(path, RAD_INDEX_FILE)?;
     let store = RadicalStore::new(index);
     Ok(store)

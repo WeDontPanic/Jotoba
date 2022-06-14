@@ -1469,6 +1469,7 @@ dependencies = [
  "byteorder",
  "log",
  "once_cell",
+ "rayon",
  "serde",
  "types",
  "vector_space_model2",

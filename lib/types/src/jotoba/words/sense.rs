@@ -78,16 +78,16 @@ impl Sense {
         pos_simple.dedup();
         pos_simple
     }
+
+    #[inline]
+    pub fn gloss_by_id(&self, id: u8) -> Option<&Gloss> {
+        self.glosses.iter().find(|i| i.id == id)
+    }
 }
 
 // Jotoba intern only features
 #[cfg(feature = "jotoba_intern")]
 impl Sense {
-    #[inline]
-    pub fn gloss_by_id(&self, id: u8) -> Option<&Gloss> {
-        self.glosses.iter().find(|i| i.id == id)
-    }
-
     /// Get a senses tags prettified
     #[inline]
     pub fn get_glosses(&self) -> String {
