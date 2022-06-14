@@ -153,7 +153,10 @@ impl JapaneseExt for char {
         ((*self) >= '\u{3000}' && (*self) <= '\u{303F}')
             || ((*self) >= '\u{0370}' && (*self) <= '\u{03FF}')
             || ((*self) >= '\u{25A0}' && (*self) <= '\u{25FF}')
-            || ((*self) >= '\u{FF00}' && (*self) <= '\u{FFEF}')
+            || ((*self) >= '\u{FF01}' && (*self) <= '\u{FF0F}')
+            || ((*self) >= '\u{FF1A}' && (*self) <= '\u{FF20}')
+            || ((*self) >= '\u{FF3B}' && (*self) <= '\u{FF40}')
+            || ((*self) >= '\u{FF5B}' && (*self) <= '\u{FF5E}')
             || (*self) == '\u{002D}'
             || (*self) == '\u{3005}'
             || (*self) == '\u{00D7}'

@@ -13,6 +13,7 @@ mod tests {
     #[test_case("水気","みずけ",&[("水気","みずけ")]; "Kanji only 2")]
     #[test_case("いつも眠い感じがします", "いつもねむいかんじがします", &[("眠","ねむ"),("感","かん")]; "Simple 3")]
     #[test_case("今日もとても眠い", "きょうもとてもねむい", &[("今日","きょう"),("眠","ねむ")]; "Simple 4")]
+    #[test_case("５日", "いつか", &[("５日","いつか")]; "With roman letter")]
     #[test_case("かば、夕べに","かばゆうべに",&[("夕","ゆう")]; "Special char")]
     fn test_map_readings(kanji: &str, kana: &str, expected: &[(&str, &str)]) {
         let parsed = map_readings(kanji, kana).unwrap();
