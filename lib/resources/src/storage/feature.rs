@@ -28,6 +28,7 @@ pub enum Feature {
     // Kanji
     GenkiTags,
     SimilarKanji,
+    KanjiDecompositions,
 }
 
 impl Feature {

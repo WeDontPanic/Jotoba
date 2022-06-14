@@ -1,3 +1,4 @@
+use ids_parser::IDS;
 use sorted_intersection::SortedIntersection;
 use types::jotoba::kanji::{radical::DetailedRadical, Kanji};
 
@@ -66,6 +67,11 @@ impl<'a> KanjiRetrieve<'a> {
     #[inline]
     pub fn all(&self) -> Vec<Kanji> {
         self.iter().cloned().collect()
+    }
+
+    #[inline]
+    pub fn ids(&self, kanji_lit: char) -> Option<&IDS> {
+        self.storage.ids_index.get(&kanji_lit)
     }
 
     /// Returns the count of kanji

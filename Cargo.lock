@@ -292,6 +292,7 @@ dependencies = [
  "config",
  "error",
  "futures",
+ "ids_parser",
  "indexes",
  "intmap",
  "itertools",
@@ -1431,6 +1432,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "ids_parser"
+version = "0.1.0"
+source = "git+https://github.com/JojiiOfficial/IDS-Parser#3525ff92fcab095659406bccee76fc2df47ab636"
+dependencies = [
+ "serde",
+]
+
+[[package]]
 name = "igo-rs-fork"
 version = "0.3.0"
 source = "git+https://github.com/JojiiOfficial/igo-rs-fork#8866db9e0cf8c0b539f4d17f6471587de51c0c19"
@@ -2335,6 +2344,7 @@ name = "resources"
 version = "0.1.0"
 dependencies = [
  "bincode",
+ "ids_parser",
  "intmap",
  "japanese",
  "once_cell",

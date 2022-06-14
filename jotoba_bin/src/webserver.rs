@@ -156,9 +156,16 @@ pub(super) async fn start(options: Options) -> std::io::Result<()> {
                                 actixweb::post().to(api::search::sentence::sentence_search),
                             ),
                     )
-                    .route(
-                        "/kanji/by_radical",
-                        actixweb::post().to(api::radical::kanji_by_radicals),
+                    .service(
+                        actixweb::scope("kanji")
+                            .route(
+                                "by_radical",
+                                actixweb::post().to(api::radical::kanji_by_radicals),
+                            )
+                            .route(
+                                "decompgraph",
+                                actixweb::post().to(api::kanji::ids_tree::decomp_graph),
+                            ),
                     )
                     .route(
                         "/radical/search",
