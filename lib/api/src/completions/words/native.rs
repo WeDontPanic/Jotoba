@@ -27,18 +27,19 @@ pub fn suggestions(query: &Query, radicals: &[char]) -> Option<Vec<WordPair>> {
 
     // Find 天気予報 even if 天気よほう was written
     let mut kana_end_ext = KanaEndExtension::new(jp_engine, 10);
+    kana_end_ext.options.weights.total_weight = 0.45;
     kana_end_ext.options.weights.freq_weight = 0.4;
-    kana_end_ext.options.weights.total_weight = 0.1;
     main_sugg_query.add_extension(kana_end_ext);
 
     // Similar terms
-    let mut ste = SimilarTermsExtension::new(jp_engine, 7);
+    let mut ste = SimilarTermsExtension::new(jp_engine, 16);
     ste.options.threshold = 10;
-    ste.options.weights.total_weight = 0.2;
-    ste.options.weights.freq_weight = 0.4;
-    ste.options.weights.str_weight = 1.0;
+    ste.options.weights.total_weight = 0.3;
+    ste.options.weights.freq_weight = 0.6;
+    //ste.options.weights.str_weight = 1.4;
     main_sugg_query.add_extension(ste);
 
+    main_sugg_query.weights.str_weight = 1.2;
     suggestion_task.add_query(main_sugg_query);
 
     // Add katakana results
@@ -136,21 +137,8 @@ fn word_rad_filter(query: &str, word: &types::jotoba::words::Word, radicals: &[c
         .filter_map(|k| k.is_kanji().then(|| retrieve.by_literal(k)).flatten())
         .any(|k| {
             if !k.parts.is_empty() {
-                return is_subset(radicals, &k.parts);
+                return utils::part_of(radicals, &k.parts);
             }
             false
         })
-}
-
-/// Returns `true` if `subs` is a subset of `full`
-pub fn is_subset<T: PartialEq>(subs: &[T], full: &[T]) -> bool {
-    if subs.is_empty() || full.is_empty() || subs.len() > full.len() {
-        return false;
-    }
-    for i in subs {
-        if !full.contains(i) {
-            return false;
-        }
-    }
-    true
 }

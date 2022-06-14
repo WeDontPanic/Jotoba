@@ -33,6 +33,7 @@ pub fn suggestions(query: &Query, query_str: &str) -> Option<Vec<WordPair>> {
 
     // Romaji result
     if let Some(hira_query) = try_romaji(query_str.trim()) {
+        println!("hira query: {hira_query}");
         let jp_engine = indexes::get_suggestions().jp_words();
         let mut query = SuggestionQuery::new(jp_engine, hira_query);
         query.weights.total_weight = 0.5;
@@ -46,9 +47,11 @@ pub fn suggestions(query: &Query, query_str: &str) -> Option<Vec<WordPair>> {
         k_r_align.options.threshold = 5;
         query.add_extension(k_r_align);
 
-        let mut similar_terms = SimilarTermsExtension::new(jp_engine, 7);
-        similar_terms.options.weights.total_weight = 0.005;
+        let mut similar_terms = SimilarTermsExtension::new(jp_engine, 16);
         similar_terms.options.threshold = 10;
+        similar_terms.options.weights.total_weight = 0.4;
+        similar_terms.options.weights.freq_weight = 0.2;
+        similar_terms.options.weights.str_weight = 1.8;
         query.add_extension(similar_terms);
 
         task.set_rel_mod(|i, rel| {

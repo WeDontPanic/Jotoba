@@ -346,7 +346,7 @@ checksum = "d468802bab17cbc0cc575e9b053f41e72aa36bfa6b7f55e3529ffa43161b97fa"
 [[package]]
 name = "autocompletion"
 version = "0.1.0"
-source = "git+https://github.com/WeDontPanic/AutoCompletionFramework#c5d1caa9dcf378c7c352958ba7702b43412d05a1"
+source = "git+https://github.com/WeDontPanic/AutoCompletionFramework#0dc9f330273c213a144fa4fcaa33111969145b6c"
 dependencies = [
  "bincode",
  "eudex",
@@ -1242,13 +1242,13 @@ dependencies = [
 
 [[package]]
 name = "getrandom"
-version = "0.2.6"
+version = "0.2.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9be70c98951c83b8d2f8f60d7065fa6d5146873094452a1008da8c2f1e4205ad"
+checksum = "4eb1a864a501629691edf6c15a593b7a51eebaa1e8468e9ddc623de7c9b58ec6"
 dependencies = [
  "cfg-if",
  "libc",
- "wasi 0.10.2+wasi-snapshot-preview1",
+ "wasi",
 ]
 
 [[package]]
@@ -1469,6 +1469,7 @@ dependencies = [
  "byteorder",
  "log",
  "once_cell",
+ "rayon",
  "serde",
  "types",
  "vector_space_model2",
@@ -1592,6 +1593,7 @@ dependencies = [
  "search",
  "sentence_reader",
  "sentry",
+ "snmalloc-rs",
  "types",
 ]
 
@@ -1824,7 +1826,7 @@ checksum = "713d550d9b44d89174e066b7a6217ae06234c10cb47819a88290d2b353c31799"
 dependencies = [
  "libc",
  "log",
- "wasi 0.11.0+wasi-snapshot-preview1",
+ "wasi",
  "windows-sys",
 ]
 
@@ -2293,9 +2295,9 @@ dependencies = [
 
 [[package]]
 name = "reqwest"
-version = "0.11.10"
+version = "0.11.11"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "46a1f7aa4f35e5e8b4160449f51afc758f0ce6454315a9fa7d0d113e958c41eb"
+checksum = "b75aa69a3f06bbcc66ede33af2af253c6f7a86b1ca0033f60c580a27074fbf92"
 dependencies = [
  "base64",
  "bytes",
@@ -2320,6 +2322,7 @@ dependencies = [
  "serde_urlencoded",
  "tokio",
  "tokio-native-tls",
+ "tower-service",
  "url",
  "wasm-bindgen",
  "wasm-bindgen-futures",
@@ -2693,6 +2696,24 @@ name = "smallvec"
 version = "1.8.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "f2dd574626839106c320a323308629dcb1acfc96e32a8cba364ddc61ac23ee83"
+
+[[package]]
+name = "snmalloc-rs"
+version = "0.3.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "0ad716cba37744e3db2c63486b77f1fbeeed268767ff47156b10b17677636e9c"
+dependencies = [
+ "snmalloc-sys",
+]
+
+[[package]]
+name = "snmalloc-sys"
+version = "0.3.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "c0d99830c399002567038c5566f70ecee0e335aeff3fd20f89901ac6170d6917"
+dependencies = [
+ "cmake",
+]
 
 [[package]]
 name = "socket2"
@@ -3092,9 +3113,9 @@ checksum = "099b7128301d285f79ddd55b9a83d5e6b9e97c92e0ea0daebee7263e932de992"
 
 [[package]]
 name = "unicode-ident"
-version = "1.0.0"
+version = "1.0.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d22af068fba1eb5edcb4aea19d382b2a3deb4c8f9d475c589b6ada9e0fd493ee"
+checksum = "5bd2fe26506023ed7b5e1e315add59d6f584c621d037f9368fea9cfb988f368c"
 
 [[package]]
 name = "unicode-normalization"
@@ -3220,12 +3241,6 @@ dependencies = [
  "log",
  "try-lock",
 ]
-
-[[package]]
-name = "wasi"
-version = "0.10.2+wasi-snapshot-preview1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "fd6fbd9a79829dd1ad0cc20627bf1ed606756a7f77edff7b66b7064f9cb327c6"
 
 [[package]]
 name = "wasi"

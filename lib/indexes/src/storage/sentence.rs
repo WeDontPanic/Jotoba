@@ -34,7 +34,7 @@ impl SentenceStore {
     }
 }
 
-pub(crate) fn load<P: AsRef<Path>>(path: P) -> Result<SentenceStore, Box<dyn Error>> {
+pub(crate) fn load<P: AsRef<Path>>(path: P) -> Result<SentenceStore, Box<dyn Error + Send + Sync>> {
     let native = NativeIndex::open(path.as_ref().join(NATIVE_FILE))?;
     let foreign = load_foreign(path)?;
     Ok(SentenceStore::new(foreign, native))
@@ -42,7 +42,7 @@ pub(crate) fn load<P: AsRef<Path>>(path: P) -> Result<SentenceStore, Box<dyn Err
 
 fn load_foreign<P: AsRef<Path>>(
     path: P,
-) -> Result<HashMap<Language, ForeignIndex>, Box<dyn Error>> {
+) -> Result<HashMap<Language, ForeignIndex>, Box<dyn Error + Send + Sync>> {
     utils::load_by_language(path, FOREIGN_PREFIX, |p| {
         let file_name = p.file_name().and_then(|i| i.to_str()).unwrap();
         if file_name == NATIVE_FILE || !file_name.ends_with("_index") {

@@ -9,7 +9,7 @@ use actix_web::{
 };
 use config::Config;
 use log::{debug, warn};
-use std::{path::Path, sync::Arc, time::Instant};
+use std::{path::Path, sync::Arc, thread, time::Instant};
 
 use crate::{check, cli::Options};
 
@@ -237,6 +237,13 @@ async fn docs(_req: HttpRequest) -> actix_web::Result<NamedFile> {
 }
 
 pub(crate) fn prepare_data(ccf: &Config) {
+    let cf = ccf.clone();
+    thread::spawn(move || {
+        indexes::storage::suggestions::load(cf.get_suggestion_sources())
+            .expect("Failed to load suggestions");
+        log::debug!("Suggestions loaded");
+    });
+
     rayon::scope(move |s| {
         let cf = ccf.clone();
         s.spawn(move |_| {
@@ -248,13 +255,6 @@ pub(crate) fn prepare_data(ccf: &Config) {
         s.spawn(move |_| {
             log::debug!("Loading Indexes");
             load_indexes(&cf);
-        });
-
-        let cf = ccf.clone();
-        s.spawn(move |_| {
-            log::debug!("Loading suggestions");
-            indexes::storage::suggestions::load(cf.get_suggestion_sources())
-                .expect("Failed to load suggestions");
         });
 
         let cf = ccf.clone();
@@ -301,7 +301,9 @@ fn debug_info() {
 }
 
 pub fn load_resources(src: &str) {
+    let start = Instant::now();
     resources::load(src).expect("Failed to load resource storage");
+    debug!("Resources took: {:?}", start.elapsed());
 }
 
 fn load_translations(config: &Config) -> Arc<TranslationDict> {
@@ -331,7 +333,7 @@ fn check() -> bool {
 
     if !indexes::get_suggestions().check() {
         log::error!("Not all suggestion indexes are available!");
-        return false;
+        //return false;
     }
 
     true

@@ -48,7 +48,7 @@ impl NameStore {
     }
 }
 
-pub(crate) fn load<P: AsRef<Path>>(path: P) -> Result<NameStore, Box<dyn Error>> {
+pub(crate) fn load<P: AsRef<Path>>(path: P) -> Result<NameStore, Box<dyn Error + Send + Sync>> {
     let foreign = ForeignIndex::open(path.as_ref().join(FOREIGN_FILE))?;
     let native = NativeIndex::open(path.as_ref().join(NATIVE_FILE))?;
     let term_tree = utils::deser_file(path, FOREIGN_TREE_FILE)?;
