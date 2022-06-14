@@ -150,6 +150,7 @@ impl JapaneseExt for char {
 
     #[inline]
     fn is_symbol(&self) -> bool {
+        // https://www.htmlsymbols.xyz/ascii-symbols/fullwidth-ascii-variants
         ((*self) >= '\u{3000}' && (*self) <= '\u{303F}')
             || ((*self) >= '\u{0370}' && (*self) <= '\u{03FF}')
             || ((*self) >= '\u{25A0}' && (*self) <= '\u{25FF}')

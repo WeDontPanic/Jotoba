@@ -196,8 +196,8 @@ impl<'a> Search<'a> {
             }
         }
 
-        //let fmt_query = japanese::to_halfwidth(&self.query.query);
-        let (query, mut sentence, word_info) = self.parse_sentence(query_str, allow_sentence);
+        let fmt_query = japanese::to_halfwidth(&self.query.query);
+        let (query, mut sentence, word_info) = self.parse_sentence(&fmt_query, allow_sentence);
 
         let original_query = if sentence.is_some() {
             word_info.as_ref().unwrap().get_inflected().clone()

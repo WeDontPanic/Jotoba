@@ -57,7 +57,5 @@ impl SearchEngine for Engine {
 }
 
 fn format_query(inp: &str) -> String {
-    inp.to_string()
-    //japanese::to_fullwidth(inp)
-    //japanese::to_halfwidth(inp)
+    japanese::to_halfwidth(inp)
 }

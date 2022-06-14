@@ -46,24 +46,24 @@ pub fn japanese_search_order(item: SortItem<&'static Word>, original_query: Opti
     let mut score: usize = (item.vec_simiarity() * 10f32) as usize;
 
     let word = item.item();
-    let query_str = item.query();
+    let query_str = japanese::to_halfwidth(item.query());
 
-    let reading = word.get_reading();
-    let kana = &word.reading.kana.reading;
+    let reading = japanese::to_halfwidth(&word.get_reading().reading);
+    let kana = japanese::to_halfwidth(&word.reading.kana.reading);
 
-    if reading.reading == *query_str || word.reading.kana.reading == *query_str {
+    if reading == *query_str || kana == *query_str {
         score += 80;
 
         // Show kana only readings on top if they match with query
         if word.reading.kanji.is_none() {
             score += 10;
         }
-    } else if reading.reading.starts_with(query_str) {
+    } else if reading.starts_with(&query_str) {
         score += 4;
     }
 
     if let Some(original_query) = original_query {
-        if original_query == reading.reading || original_query == kana
+        if original_query == reading || original_query == kana
         //&& query_str != reading.reading
         {
             score += 500;
@@ -79,9 +79,7 @@ pub fn japanese_search_order(item: SortItem<&'static Word>, original_query: Opti
         score += 20;
     }
 
-    if word.get_reading().reading.starts_with(query_str)
-        || (query_str.is_kana() && word.reading.kana.reading.starts_with(query_str))
-    {
+    if reading.starts_with(&query_str) || (query_str.is_kana() && reading.starts_with(&query_str)) {
         score += 20;
     }
 
@@ -90,7 +88,8 @@ pub fn japanese_search_order(item: SortItem<&'static Word>, original_query: Opti
         .reading
         .alternative
         .iter()
-        .any(|i| i.reading == *query_str)
+        .map(|i| japanese::to_halfwidth(&i.reading))
+        .any(|i| i == *query_str)
     {
         score += 60;
     }

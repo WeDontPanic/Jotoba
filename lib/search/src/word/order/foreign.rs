@@ -130,7 +130,7 @@ fn vec_similarity(src_vec: &Vector, query: &Vector, r_index: &RelevanceIndex) ->
         vec_len_mult = src_len as f32 / query_len as f32;
     }
 
-    let v = query.sparse_vec().len() as f32 / overlapping_count as f32;
+    //let v = query.sparse_vec().len() as f32 / overlapping_count as f32;
 
     (overlapping_count as f32 * important_mult * vec_len_mult * 100.0) + sum * vec_len_mult * 100.0
 }
