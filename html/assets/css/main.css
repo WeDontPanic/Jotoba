@@ -44,7 +44,7 @@
 
     /* Overlay Graph */
     --graphLink: #d1d1d1;
-    --graphCircle: #51c559;
+    --graphCircle: var(--bgPrimaryColor);
     --graphStroke: rgb(116 116 116 / 6%);
     --graphPath: white;
     --graphText: white;

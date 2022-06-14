@@ -255,7 +255,6 @@ function changeSearchType(html, newType) {
 
 // Hides the backdrop if clicked directly on it
 function onBackdropClick(event) {
-    console.log(event.target.id);
     if (event.target.id === "backdrop") {
         event.target.classList.add("hidden");
     }
