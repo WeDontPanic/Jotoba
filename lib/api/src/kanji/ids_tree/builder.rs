@@ -30,7 +30,7 @@ impl KanjiTreeBuilder {
 
         let mut out = OutObject::new(c);
 
-        out.set_clickable(retrieve.has_literal(c));
+        out.set_literal_available(retrieve.has_literal(c));
 
         let radicals = ids_kanji.comp_by_lang(Origin::Japan)?.get_radicals();
 
