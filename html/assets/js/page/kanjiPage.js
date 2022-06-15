@@ -308,14 +308,15 @@ $(document).on("keypress", (event) => {
 });
 
 /* -- Kanji decomposition tree -- */
+var pendingRequests = 0;
+var lastTreeLiteral = "";
 
 // Generates the tree diagram
-var pendingRequests = 0;
 async function generateTreeDiagram(kanjiLiteral) {
     var width = 1000,
-        height = 1000;
-
-    var i = 0;
+        height = 1000,
+        i = 0;
+    lastTreeLiteral = kanjiLiteral;
 
     var tree = d3.layout.tree()
         .size([height, width]);
@@ -335,7 +336,6 @@ async function generateTreeDiagram(kanjiLiteral) {
     // Build the tree
     let treeData = await API.getGraphData(kanjiLiteral);
     root = treeData;
-    console.log("root:", root);
 
     // Compute the new tree layout
     var nodes = tree.nodes(root).reverse(),
@@ -412,6 +412,10 @@ async function generateTreeDiagram(kanjiLiteral) {
     // Update viewbox
     const viewbox = `${xMin} ${yMin} ${xMax - xMin} ${yMax - yMin}`;
     svg.setAttribute('viewBox', viewbox);
+
+    // Set toggler content
+    let toggler = document.getElementById("tree-toggle"); 
+    toggler.innerHTML = getText(Settings.search.showFullGraph.val ? "GRAPH_SHOW_SIMPLE" : "GRAPH_SHOW_DETAIL");
 }
 
 // Tries to replace the given target with an SVG using the given URL
@@ -445,4 +449,10 @@ function getSvgContent(target, url) {
             console.log("caught error on decomposition tree:", result);
         } 
     }); 
+}
+
+// Called upon clicking on the toggle checkbox for a decomposition graph: rerenders the graph in the toggled complexity
+function onGraphToggleCheckboxClick(event) {
+    Settings.alterSearch('showFullGraph', !Settings.search.showFullGraph.val);
+    generateTreeDiagram(lastTreeLiteral);
 }

@@ -26,7 +26,9 @@ const locales = {
         "QOL_KANA_COPIED": "kana copied to clipboard.",
         "QOL_SENTENCE_COPIED": "copied to clipboard.",
         "QOL_AUDIO_COPIED": "Audio URL copied to clipboard",
-        "QOL_LINK_COPIED": "Link URL copied to clipboard"
+        "QOL_LINK_COPIED": "Link URL copied to clipboard",
+        "GRAPH_SHOW_DETAIL": "Show detailed graph",
+        "GRAPH_SHOW_SIMPLE": "Show simplified graph",
     },
     "de-DE": {
         "LANG_JAP": "Japanisch",
@@ -55,7 +57,9 @@ const locales = {
         "QOL_KANA_COPIED": "Kana in Zwischenablage kopiert",
         "QOL_SENTENCE_COPIED": "Text in Zwischenablage kopiert",
         "QOL_AUDIO_COPIED": "Audio URL in Zwischenablage kopiert",
-        "QOL_LINK_COPIED": "Link URL in Zwischenablage kopiert"
+        "QOL_LINK_COPIED": "Link URL in Zwischenablage kopiert",
+        "GRAPH_SHOW_DETAIL": "Zeige detailierte Ansicht",
+        "GRAPH_SHOW_SIMPLE": "Zeige vereinfachte Ansicht",
     },
     "hu": {
         "LANG_JAP": "Japán",

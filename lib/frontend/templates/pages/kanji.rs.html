@@ -28,7 +28,7 @@
     
       <!-- Left side: Kanji -->
       <div class="kanji-entry left detail d-flex flex-column">
-         <span class="kanji-preview x-large">
+         <span class="kanji-preview x-large"  @if k_item.has_compositions { onclick='generateTreeDiagram("@k_item.kanji.literal")' }>
            @k_item.kanji.literal
          </span>
          <div class="kanji-preview-info">
@@ -54,14 +54,6 @@
                     <a class="clickable no-align" href="/search/@part?t=1">@part</a>
                     }
                 </div>
-                }
-
-                @if k_item.has_compositions {
-                  <div class="notes graph">
-                      <b>@data.gettext("Decomposition:")</b>
-                      <br>
-                      <div class="clickable no-align" onclick='generateTreeDiagram("@k_item.kanji.literal")'>show graph</div>
-                  </div>
                 }
             </div>
          </div>

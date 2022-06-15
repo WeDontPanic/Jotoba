@@ -11,6 +11,7 @@
 }
 
 .kanji-preview.x-large {
+    cursor: pointer;
     font-size: 100px;
 }
 
