@@ -153,6 +153,10 @@
     max-width: 1145px;
 }
 
+#tree-toggle {
+    user-select: none;
+}
+
 #tree-target {
     align-items: center;
     text-align: center;
