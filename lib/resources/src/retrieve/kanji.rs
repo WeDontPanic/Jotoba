@@ -18,8 +18,13 @@ impl<'a> KanjiRetrieve<'a> {
     /// Get a kanji by its sequence id
     #[inline]
     pub fn by_literal(&self, literal: char) -> Option<&Kanji> {
-        //self.storage.dict_data.kanji.kanji.get(&literal)
         self.storage.literal_index.get(literal as u32)
+    }
+
+    /// Returns `true` if the index has the literal
+    #[inline]
+    pub fn has_literal(&self, literal: char) -> bool {
+        self.storage.literal_index.contains_key(literal as u32)
     }
 
     /// Returns all kanji with the given radicals

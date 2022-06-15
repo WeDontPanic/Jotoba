@@ -91,3 +91,18 @@ function openHelpPage() {
 
     Util.loadUrl("/help");
 }
+
+function onHomeClick(event) {
+    event.preventDefault();
+
+    switch (event.which) {
+        case 1:
+            location.href = location.origin;
+            break;
+        case 2:
+            window.open(location.origin, "_blank");
+            break;
+        default:
+            break;
+    }
+}

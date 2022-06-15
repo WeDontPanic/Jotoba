@@ -58,7 +58,7 @@ OverlaySettings.updateCheckboxes = function() {
     Util.setMdlCheckboxState("show_sentence_furigana_settings", Settings.search.showFurigana.val);
     Util.setMdlCheckboxState("focus_search_bar_settings", Settings.search.focusSearchbar.val);
     Util.setMdlCheckboxState("select_searchbar_content_settings", Settings.search.selectSearchbarContent.val);
-
+   
     // "Display" page
     Util.setMdlCheckboxState("use_dark_mode_settings", Settings.display.theme.val === "dark");
     Util.setMdlCheckboxState("show_kanji_on_load_settings", Settings.display.showKanjiOnLoad.val);

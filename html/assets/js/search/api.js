@@ -87,3 +87,29 @@ API.getHashtagData = function(currentText, callback) {
 
     callback(resultJSON);
 }
+
+/**
+ * Returns the kanji decomposition tree's data of the given literal
+ * 
+ * @param {string} targetLiteral literal to search for
+ * @returns the API result
+ */
+API.getGraphData = async function(targetLiteral) {
+    // Generate input
+    let inputJSON = {
+        "literal": targetLiteral,
+        "full": Settings.search.showFullGraph.val
+    };
+
+    // Get the data result from the server
+    let result = await $.ajax({ 
+        type : "POST", 
+        url : "/api/kanji/decompgraph", 
+        data: JSON.stringify(inputJSON),
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    }); 
+
+    return result;
+}

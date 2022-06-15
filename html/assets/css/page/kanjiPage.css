@@ -11,6 +11,7 @@
 }
 
 .kanji-preview.x-large {
+    cursor: pointer;
     font-size: 100px;
 }
 
@@ -149,18 +150,24 @@
 .tree-parent {
     cursor: initial;
     width: 90%;
+    max-width: 1145px;
+}
+
+#tree-toggle {
+    user-select: none;
 }
 
 #tree-target {
     align-items: center;
+    text-align: center;
     padding: 5%;
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
     background-color: var(--overlay);
 }
 
 #tree-target > svg {
-    max-width: 100%;
-    max-height: 100%;
+    max-height: 80vh;
+    max-width: 80vw;
 }
 
 #tree-target .link {
@@ -175,12 +182,17 @@
     stroke-width: 2px;
 }
 
+#tree-target circle.clickable {
+    cursor: pointer;
+}
+
 #tree-target text {
     fill: var(--graphText);
     font: 20px sans-serif;
 }
 
 #tree-target path {
+    pointer-events: none;
     stroke: none;
     fill-rule: nonzero;
     fill: var(--graphPath);

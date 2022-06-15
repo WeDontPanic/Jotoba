@@ -9,6 +9,7 @@ pub struct Request {
 #[derive(Serialize, Deserialize, Debug)]
 pub struct OutObject {
     name: char,
+    literal_available: bool,
     #[serde(skip_serializing_if = "Vec::is_empty")]
     children: Vec<OutObject>,
 }
@@ -19,16 +20,26 @@ impl OutObject {
         Self {
             name,
             children: vec![],
+            literal_available: false,
         }
     }
 
     #[inline]
     pub fn with_children(name: char, children: Vec<OutObject>) -> Self {
-        Self { name, children }
+        Self {
+            name,
+            children,
+            literal_available: false,
+        }
     }
 
     #[inline]
     pub fn add_child(&mut self, child: Self) {
         self.children.push(child)
+    }
+
+    #[inline]
+    pub fn set_literal_available(&mut self, literal_available: bool) {
+        self.literal_available = literal_available;
     }
 }

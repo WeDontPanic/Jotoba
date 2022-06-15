@@ -24,6 +24,7 @@ Settings.search = {
     selectSearchbarContent: { isCookie: false, id: "select_searchbar_content", dataType: "boolean", val: false },
     itemsPerPage: { isCookie: true, id: "items_per_page", dataType: "int", val: 10 },
     kanjiPerPage: { isCookie: true, id: "kanji_page_size", dataType: "int", val: 4 },
+    showFullGraph: { isCookie: false, id: "show_full_graph", dataType: "boolean", val: true },
 }
 
 // Default "display" settings

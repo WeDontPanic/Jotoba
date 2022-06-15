@@ -308,14 +308,15 @@ $(document).on("keypress", (event) => {
 });
 
 /* -- Kanji decomposition tree -- */
+var pendingRequests = 0;
+var lastTreeLiteral = "";
 
 // Generates the tree diagram
-var pendingRequests = 0;
-function generateTreeDiagram() {
+async function generateTreeDiagram(kanjiLiteral) {
     var width = 1000,
-        height = 1000;
-
-    var i = 0;
+        height = 1000,
+        i = 0;
+    lastTreeLiteral = kanjiLiteral;
 
     var tree = d3.layout.tree()
         .size([height, width]);
@@ -333,27 +334,28 @@ function generateTreeDiagram() {
         .append("g");
 
     // Build the tree
-    root = treeData[0];
+    let treeData = await API.getGraphData(kanjiLiteral);
+    root = treeData;
 
     // Compute the new tree layout
     var nodes = tree.nodes(root).reverse(),
         links = tree.links(nodes);
 
     // Normalize for fixed-depth
-    nodes.forEach(function (d) { d.y = d.depth * 100; });
+    nodes.forEach((d) => { d.y = d.depth * 100; });
 
     // Declare the nodes
     var node = svg.selectAll("g.node")
-        .data(nodes, function (d) { return d.id || (d.id = ++i); });
+        .data(nodes, (d) => { return d.id || (d.id = ++i); });
 
     // Declare the links
     var link = svg.selectAll("path.link")
-        .data(links, function (d) { return d.target.id; });
+        .data(links, (d) => { return d.target.id; });
 
     // Enter the nodes
     var nodeEnter = node.enter().append("g")
         .attr("class", "node")
-        .attr("transform", function (d) {
+        .attr("transform", (d) => {
             return "translate(" + d.x + "," + d.y + ")";
         });
 
@@ -364,39 +366,40 @@ function generateTreeDiagram() {
 
     // Text
     nodeEnter.append("text")
-        .attr("y", function (d) { // Text offset
+        .attr("y", (d) => { // Text offset
             return d.children || d._children ? 5 : 5;
         })
         .attr("text-anchor", "middle")
-        .text(function (d) { return d.name; })
-        .style("fill-opacity", 1);
+        .text((d) => { return d.name; })
+        .style("fill-opacity", 1)
+        .attr("has_data", (d) => {return d.literal_available});
 
     // Straight lines
     link.enter().insert("line")
         .attr("class", "link")
-        .attr("x1", function (d) { return d.source.x; })
-        .attr("y1", function (d) { return d.source.y; })
-        .attr("x2", function (d) { return d.target.x; })
-        .attr("y2", function (d) { return d.target.y; });
+        .attr("x1", (d) => { return d.source.x; })
+        .attr("y1", (d) => { return d.source.y; })
+        .attr("x2", (d) => { return d.target.x; })
+        .attr("y2", (d) => { return d.target.y; });
 
     // Move lines in front of circle to hide the lines (only needed for straight lines)
-    document.querySelectorAll(".link").forEach(e => {
+    document.querySelectorAll("#tree-target .link").forEach(e => {
         var node = e;
         var parent = e.parentNode;
         parent.removeChild(node);
         parent.prepend(e);
     });
 
-    const srcUrl = "/assets/svg/glyphes/";
-
     // Figure out how many requests are required
-    document.querySelectorAll("text").forEach((e) => {
+    const srcUrl = "/assets/svg/glyphes/";
+    document.querySelectorAll("#tree-target text").forEach((e) => {
         getSvgContent(e, srcUrl + e.innerHTML + ".svg");
         pendingRequests++;
     });
 
-    svg = document.querySelector('svg');
+    svg = document.querySelector('#tree-target svg');
 
+    // Calculate new Viewbox of SVG containing all children
     const { xMin, xMax, yMin, yMax } = [...svg.children].reduce((acc, el) => {
         const { x, y, width, height } = el.getBBox();
         if (!acc.xMin || x < acc.xMin) acc.xMin = x;
@@ -406,124 +409,50 @@ function generateTreeDiagram() {
         return acc;
     }, {});
 
+    // Update viewbox
     const viewbox = `${xMin} ${yMin} ${xMax - xMin} ${yMax - yMin}`;
-
     svg.setAttribute('viewBox', viewbox);
+
+    // Set toggler content
+    let toggler = document.getElementById("tree-toggle"); 
+    toggler.innerHTML = getText(Settings.search.showFullGraph.val ? "GRAPH_SHOW_SIMPLE" : "GRAPH_SHOW_DETAIL");
 }
 
+// Tries to replace the given target with an SVG using the given URL
 function getSvgContent(target, url) {
-    var text = "";
+    $.ajax({ 
+        type : "GET", 
+        url : url, 
 
-    console.log(url);
-    fetch(url).then(r => {
-        pendingRequests--;
-
-        r.text().then(t => {
-            if (text.length < 5) {
-                console.log("couldn't find " + target.innerHTML);
+        // Called upon server reponse
+        success : function(result) { 
+            
+            // Check if the result is actually an SVG or rather the 404 page
+            if (typeof result !== "object") {
                 return;
             }
 
-            console.log(t);
-            storedText = text;
-            replaceTextWithPath(target, text);
-        });
-
-    }).catch(e => console.log(e));
-}
-
-function replaceTextWithPath(target, svg) {
-    let g = svg.split("\n");
-
-    //target.replaceWith(g[3]);
-
-    let getNodes = str => {
-        console.log(target, str);
-        let x = new DOMParser().parseFromString(str, 'image/svg+xml');
-        return x.children[0];
-    }
-
-    let node = getNodes(g[3]);
-    target.replaceWith(node);
-
-    if (pendingRequests == 0)
-        document.querySelectorAll("svg").forEach(s => s.innerHTML += "");
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-const treeData = [
-    {
-        "name": "観",
-        "children": [
-            {
-                "name": "𮥶",
-                "children": [
-                    {
-                        "name": "𠂉",
-                        "children": [
-                            {
-                                "name": "一"
-                            }
-                        ]
-                    },
-                    {
-                        "name": "一"
-                    },
-                    {
-                        "name": "隹"
-                    }
-                ]
-            },
-            {
-                "name": "見",
-                "children": [
-                    {
-                        "name": "目",
-                        "children": [
-                            {
-                                "name": "囗"
-                            }
-                        ]
-                    },
-                    {
-                        "name": "儿",
-                        "children": [
-                            {
-                                "name": "丿"
-                            },
-                            {
-                                "name": "乚"
-                            }
-                        ]
-                    }
-                ]
+            // Add action btn to the circle if possible
+            if (target.getAttribute("has_data") === "true") {
+                target.previousElementSibling.classList.add("clickable");
+                target.previousElementSibling.addEventListener("click", () => {
+                    location.href = JotoTools.createUrl(target.innerHTML, 1);
+                });
             }
-        ]
-    }
 
-];
+            // Replace text element with SVG
+            target.replaceWith(result.firstElementChild.firstElementChild);
+        }, 
+
+        // Handle unexpected request errors
+        error : function(result) { 
+            console.log("caught error on decomposition tree:", result);
+        } 
+    }); 
+}
+
+// Called upon clicking on the toggle checkbox for a decomposition graph: rerenders the graph in the toggled complexity
+function onGraphToggleCheckboxClick(event) {
+    Settings.alterSearch('showFullGraph', !Settings.search.showFullGraph.val);
+    generateTreeDiagram(lastTreeLiteral);
+}
