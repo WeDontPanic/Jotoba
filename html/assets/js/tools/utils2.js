@@ -213,6 +213,16 @@ Util.getPageParameter = function(paramName) {
     return p;
 }
 
+// Adds a parameter to the given URL if location.href has a value set for it
+Util.addPageParameterIfNotNull = function(url, parameter) {
+    let current = Util.getPageParameter(parameter);
+    if (current !== null) {
+        url += `&${parameter}=${current}`;
+    }
+
+    return url;
+}
+
 // Sets a text field's cursor to the given position. -1 -> last position
 Util.setCaretPosition = function(elemId, caretPos) {
     var elem = document.getElementById(elemId);

@@ -23,10 +23,14 @@ JotoTools.createUrl = function(searchText, searchType, targetPage, languageCode,
 
     if (languageCode !== undefined) {
         url += "&l=" + languageCode;
+    } else {
+        url = Util.addPageParameterIfNotNull(url, "l");
     }
 
     if (sentenceIndex !== undefined) {
         url += "&i=" + sentenceIndex;
+    } else {
+        url = Util.addPageParameterIfNotNull(url, "i");
     }
 
     return url;

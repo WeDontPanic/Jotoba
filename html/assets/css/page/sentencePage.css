@@ -23,6 +23,9 @@
 }
 
 .sentence-share {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5em;
     width: 100%;
     font-size: 12px;
     margin-top: -10px;
@@ -33,4 +36,10 @@
     -webkit-writing-mode: tb;
         -ms-writing-mode: tb;
             writing-mode: tb;
+}
+
+.sentence-share > .searchSvg {
+    cursor: pointer;
+    color: var(--disabledColor);
+    background-color: var(--disabledColor);
 }

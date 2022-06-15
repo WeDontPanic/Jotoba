@@ -9,12 +9,12 @@ $('a').mousedown((event) => {
     event.preventDefault();
 });
 
-$(document).on('keyup keydown keypress', function(e){ shiftPressed = e.shiftKey} );
+$(document).on('keyup keydown keypress', function (e) { shiftPressed = e.shiftKey });
 
 // Key Events for easy usability
 $(document).on("keypress", (event) => {
     if ($('input:text').is(":focus")) return;
-    
+
     switch (event.key) {
         case '/': // Focus search bar
             event.preventDefault();
@@ -40,8 +40,12 @@ $(document).on("keypress", (event) => {
             break;
         case 'n': // Change to Names Tab
             changeSearchType(null, "3");
-            if (window.umami && !Util.isIndexPage())
+            if (window.umami && !Util.isIndexPage()) {
                 umami('shortcut: n');
+            }
+            break;
+        case 'N': // Open index in new tab
+            window.open(location.origin, "_blank");
             break;
         case 'p': // Play first Audio on page
             $(".audioBtn").first().trigger("click");
@@ -50,12 +54,12 @@ $(document).on("keypress", (event) => {
             break;
         case "Enter": // Do a search while rad-picker is opened
             if (!$(".overlay.radical").hasClass("hidden")) {
-               $(".btn-search").click();
+                $(".btn-search").click();
             }
             break;
         default:
             if (event.key > 0 && event.key < 10) {
-                let kanji = $('.kanji-preview.large.black')[event.key-1]
+                let kanji = $('.kanji-preview.large.black')[event.key - 1]
                 if (kanji !== undefined) {
                     kanji.click();
                 }
@@ -149,21 +153,21 @@ document.querySelectorAll(".furigana-kanji-container").forEach(container => {
                     range.setEndAfter(child);
                 }
 
-	            selection.addRange(range);
+                selection.addRange(range);
             });
-        
-        // Select all non-furigana children #2
+
+            // Select all non-furigana children #2
         } else {
             var range = document.createRange();
             range.setStartBefore(container);
             let lastChild = container.lastChild;
-            
+
             if (lastChild.tagName === "RUBY") {
                 range.setEndAfter(lastChild.children[0]);
             } else {
                 range.setEndAfter(lastChild);
             }
-            
+
             selection.addRange(range);
         }
     });
@@ -194,7 +198,7 @@ function shouldCopyKanji() {
 // Prevents the default User highlighting
 function preventDefaultHighlight(event, timeoutDurationMs, disableClick, disableDoubleClick) {
     startEventTimeout(event.target, timeoutDurationMs, disableClick, disableDoubleClick);
-	event.preventDefault();
+    event.preventDefault();
     Util.deleteSelection();
 }
 
@@ -203,7 +207,7 @@ function startEventTimeout(targetElement, durationMs, disableClick = true, disab
     // Disbale events for single clicks
     if (disableClick) {
         let eventFunc = $._data(targetElement, "events").click[0].handler;
-        $._data(targetElement, "events").click[0].handler = () => {};    
+        $._data(targetElement, "events").click[0].handler = () => { };
         setTimeout(() => {
             $._data(targetElement, "events").click[0].handler = eventFunc;
         }, durationMs);
@@ -212,12 +216,12 @@ function startEventTimeout(targetElement, durationMs, disableClick = true, disab
     // Disable events for double clicks
     if (disableDoubleClick) {
         let eventFuncDbl = $._data(targetElement, "events").dblclick[0].handler;
-        $._data(targetElement, "events").dblclick[0].handler = () => {};
-    
+        $._data(targetElement, "events").dblclick[0].handler = () => { };
+
         setTimeout(() => {
             $._data(targetElement, "events").dblclick[0].handler = eventFuncDbl;
         }, durationMs);
-    }    
+    }
 }
 
 // Used by kanji/kana copy to combine all parts, starts from the flex (parent)
@@ -242,7 +246,7 @@ function copyTranslationAndShowMessage(textParent) {
     });
 
     // Copy and visual feedback
-    JotoTools.copyTextAndEcho(fullContent,  onlyKanji ? getText("QOL_KANJI_COPIED") : (onlyKana ? getText("QOL_KANA_COPIED") : getText("QOL_SENTENCE_COPIED")))
+    JotoTools.copyTextAndEcho(fullContent, onlyKanji ? getText("QOL_KANJI_COPIED") : (onlyKana ? getText("QOL_KANA_COPIED") : getText("QOL_SENTENCE_COPIED")))
 }
 
 // Changes the search type in the upper row depending on the users input
@@ -303,25 +307,25 @@ Util.awaitDocumentReady(() => {
     $(".input-field.first-wrap").one("click", (event) => {
         $('.choices__list.choices__list--dropdown.index').addClass('animate');
     })
-    
+
     // Install the serviceWorker for PWA
     if ('serviceWorker' in navigator) {
         navigator.serviceWorker.register('/service-worker.js', {
             scope: "."
         })
-        .catch(function(error) {
-          console.log('Service worker registration failed, error:', error);
-        });
+            .catch(function (error) {
+                console.log('Service worker registration failed, error:', error);
+            });
     }
 
     // Change URL to contain the language code
     if (Util.isInPath("search")) {
         let currentParams = new URLSearchParams(document.location.search);
 
-        let txt = document.getElementById("search").value; 
+        let txt = document.getElementById("search").value;
         let index = currentParams.get("i") || undefined;
         let type = currentParams.get("t") || $('#search-type').val();
-        let lang = currentParams.get("l") || Cookies.get("default_lang");
+        let lang = currentParams.get("l") || Settings.language.searchLang.val;
         let page = currentParams.get("p") || $(".pagination-circle.active").html();
 
         history.replaceState({}, 'Jotoba', JotoTools.createUrl(txt, type, page || 1, lang, index));
