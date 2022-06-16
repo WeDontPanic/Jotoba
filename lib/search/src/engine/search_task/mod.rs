@@ -121,7 +121,7 @@ impl<'a, T: SearchEngine> SearchTask<'a, T> {
     pub fn has_term(&self) -> bool {
         self.queries.iter().any(|(query, language)| {
             T::get_index(*language)
-                .map(|i| i.get_indexer().clone().find_term(query).is_some())
+                .map(|i| i.get_indexer().find_term(query).is_some())
                 .unwrap_or(false)
         })
     }
@@ -196,7 +196,7 @@ impl<'a, T: SearchEngine> SearchTask<'a, T> {
             }
         };
 
-        let mut vec_store = index.get_vector_store().clone();
+        let vec_store = index.get_vector_store();
         let query_dimensions: Vec<_> = q_vec.vec_indices().collect();
 
         // Retrieve all document vectors that share at least one dimension with the query vector
@@ -290,7 +290,7 @@ impl<'a, T: SearchEngine> SearchTask<'a, T> {
         }
         let index = index.unwrap();
 
-        let mut vec_store = index.get_vector_store().clone();
+        let vec_store = index.get_vector_store();
         let query_dimensions: Vec<_> = q_vec.vec_indices().collect();
 
         // Retrieve all document vectors that share at least one dimension with the query vector

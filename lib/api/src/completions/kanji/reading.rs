@@ -53,7 +53,7 @@ fn score(literal: char, reading: &str, query: &str) -> usize {
     // Show readings with more results first
     if let Some(index) = k_reading::Engine::get_index(None) {
         let score_qurey = format!("{}{}", literal, reading);
-        if let Some(term) = index.get_indexer().clone().find_term(&score_qurey) {
+        if let Some(term) = index.get_indexer().find_term(&score_qurey) {
             score += term.doc_frequency() as usize;
         }
     }

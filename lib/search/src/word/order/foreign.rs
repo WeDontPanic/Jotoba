@@ -28,7 +28,7 @@ impl ForeignOrder {
             return vec;
         }
         let index = indexes::get().word().foreign(language)?;
-        let indexer = index.get_indexer().clone();
+        let indexer = index.get_indexer();
         let vec = make_search_vec(&indexer, query);
         let mut lock = self.query_vecs.lock();
         lock.insert((query.to_string(), language), vec.clone());

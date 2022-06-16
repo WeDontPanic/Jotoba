@@ -41,7 +41,7 @@ impl SearchEngine for Engine {
         let fmt_query = format_query(query);
         let mut terms = vec![(fmt_query.clone(), 1.0)];
 
-        let mut indexer = index.get_indexer().clone();
+        let indexer = index.get_indexer();
         for term in tinysegmenter::tokenize(&fmt_query) {
             let indexed = indexer.find_term(&term)?;
             if indexed.doc_frequency() >= 5_000 || terms.iter().any(|i| i.0 == term) {

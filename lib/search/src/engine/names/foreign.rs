@@ -50,7 +50,7 @@ impl SearchEngine for Engine {
     ) -> Option<&'b str> {
         let query_str = original;
 
-        let mut indexer = index.get_indexer().clone();
+        let indexer = index.get_indexer();
 
         let has_term = indexer.find_term(&query_str).is_some()
             || indexer.find_term(&query_str.to_lowercase()).is_some();
