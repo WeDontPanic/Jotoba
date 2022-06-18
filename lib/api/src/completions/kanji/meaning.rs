@@ -1,7 +1,9 @@
 use super::super::{words::foreign::try_romaji, Response};
 use crate::completions::convert_results;
 use autocompletion::suggest::{
-    extension::similar_terms::SimilarTermsExtension, query::SuggestionQuery, task::SuggestionTask,
+    extension::{ngram::NGramExtension, similar_terms::SimilarTermsExtension},
+    query::SuggestionQuery,
+    task::SuggestionTask,
 };
 use search::query::Query;
 
@@ -11,7 +13,13 @@ pub fn suggestions(query: &Query) -> Option<Response> {
 
     let mut suggestion_task = SuggestionTask::new(30);
 
-    suggestion_task.add_query(SuggestionQuery::new(index, &query.query));
+    let mut def_query = SuggestionQuery::new(index, &query.query);
+    let mut ng_ext = NGramExtension::new(index);
+    ng_ext.options.weights.freq_weight = 0.5;
+    ng_ext.options.weights.total_weight = 0.7;
+    def_query.add_extension(ng_ext);
+
+    suggestion_task.add_query(def_query);
 
     if let Some(hira_query) = try_romaji(&query.query) {
         let jp_index = indexes::get_suggestions().jp_words();

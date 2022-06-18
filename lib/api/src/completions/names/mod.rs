@@ -1,5 +1,7 @@
 use super::{convert_results, Response};
-use autocompletion::suggest::{query::SuggestionQuery, task::SuggestionTask};
+use autocompletion::suggest::{
+    extension::ngram::NGramExtension, query::SuggestionQuery, task::SuggestionTask,
+};
 use japanese::JapaneseExt;
 use search::query::{Query, QueryLang};
 
@@ -15,15 +17,18 @@ pub(crate) fn suggestions(query: Query) -> Option<Response> {
 /// Returns trascripted name suggestions
 pub fn transcription_suggestions(query: &Query) -> Option<Response> {
     let query_str = &query.query;
-
     let index = indexes::get_suggestions().names_foreign();
 
     let mut task = SuggestionTask::new(30);
 
-    task.add_query(SuggestionQuery::new(index, query_str));
+    let mut def_query = SuggestionQuery::new(index, query_str);
+    let ng_ext = NGramExtension::new(index);
+    def_query.add_extension(ng_ext);
+
+    task.add_query(def_query);
 
     if let Some(romaji_query) = super::words::foreign::try_romaji(query_str) {
-        let jp_index = indexes::get_suggestions().jp_words();
+        let jp_index = indexes::get_suggestions().names_native();
         task.add_query(SuggestionQuery::new(jp_index, romaji_query.clone()));
 
         let katakana = romaji::RomajiExt::to_katakana(romaji_query.as_str());
@@ -43,7 +48,11 @@ pub fn native_suggestions(query: &Query) -> Option<Response> {
     let index = indexes::get_suggestions().names_native();
     let mut task = SuggestionTask::new(30);
 
-    task.add_query(SuggestionQuery::new(index, query_str));
+    let mut def_query = SuggestionQuery::new(index, query_str);
+    let ng_ext = NGramExtension::new(index);
+    def_query.add_extension(ng_ext);
+
+    task.add_query(def_query);
 
     let katakana = romaji::RomajiExt::to_katakana(query_str.as_str());
     if &katakana != query_str {

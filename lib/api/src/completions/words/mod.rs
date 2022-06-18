@@ -2,7 +2,7 @@ pub mod foreign;
 pub mod kana_end_ext;
 pub mod native;
 
-use std::cmp::Ordering;
+use std::{cmp::Ordering, time::Instant};
 
 use japanese::JapaneseExt;
 use search::query::{Query, QueryLang};
@@ -28,6 +28,7 @@ pub(crate) fn suggestions(query: Query, radicals: &[char]) -> Option<Response> {
 
 /// Returns Ok(suggestions) for the given query ordered and ready to display
 fn try_word_suggestions(query: &Query, radicals: &[char]) -> Option<Vec<WordPair>> {
+    let start = Instant::now();
     // Get sugesstions for matching language
     let word_pairs = match query.language {
         QueryLang::Japanese => native::suggestions(&query, radicals)?,
@@ -39,6 +40,7 @@ fn try_word_suggestions(query: &Query, radicals: &[char]) -> Option<Vec<WordPair
             res
         }
     };
+    log::debug!("Suggestions took: {:?}", start.elapsed());
 
     Some(word_pairs)
 }

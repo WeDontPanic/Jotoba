@@ -1,6 +1,6 @@
 use autocompletion::suggest::{
     extension::{
-        kanji_align::KanjiAlignExtension, longest_prefix::LongestPrefixExtension,
+        kanji_align::KanjiAlignExtension, ngram::NGramExtension,
         similar_terms::SimilarTermsExtension,
     },
     query::SuggestionQuery,
@@ -17,17 +17,16 @@ pub fn suggestions(query: &Query, query_str: &str) -> Option<Vec<WordPair>> {
     let query_lower = autocompletion::index::basic::basic_format(query_str.trim());
     let mut task = SuggestionTask::new(30);
 
+    let lang = query.settings.language();
+
     // Default search query
-    task.add_query(new_suggestion_query(
-        &query_lower,
-        query.settings.user_lang,
-    )?);
+    task.add_query(new_suggestion_query(&query_lower, lang)?);
 
     // Add results for english
     if query.settings.show_english() {
         let mut en_sugg_query = new_suggestion_query(&query_lower, Language::English)?;
-        en_sugg_query.weights.total_weight = 0.3;
-        en_sugg_query.weights.freq_weight = 0.2;
+        en_sugg_query.weights.total_weight = 0.75;
+        en_sugg_query.weights.freq_weight = 0.15;
         task.add_query(en_sugg_query);
     }
 
@@ -36,7 +35,7 @@ pub fn suggestions(query: &Query, query_str: &str) -> Option<Vec<WordPair>> {
         println!("hira query: {hira_query}");
         let jp_engine = indexes::get_suggestions().jp_words();
         let mut query = SuggestionQuery::new(jp_engine, hira_query);
-        query.weights.total_weight = 0.5;
+        query.weights.total_weight = 0.45;
         /*
         query.weights.freq_weight = 0.1;
         query.weights.str_weight = 1.9;
@@ -76,18 +75,10 @@ fn new_suggestion_query(query: &str, lang: Language) -> Option<SuggestionQuery> 
     suggestion_query.weights.str_weight = 1.5;
     suggestion_query.weights.freq_weight = 0.5;
 
-    let mut ste = SimilarTermsExtension::new(engine, 5);
-    ste.options.threshold = 10;
-    ste.options.weights.freq_weight = 1.0;
-    ste.options.weights.str_weight = 1.0;
-    ste.options.weights.total_weight = 0.05;
-    //suggestion_query.add_extension(ste);
-
-    let mut lpe = LongestPrefixExtension::new(engine, 3, 10);
-    lpe.options.threshold = 10;
-    lpe.options.weights.freq_weight = 1.0;
-    lpe.options.weights.total_weight = 0.3;
-    //suggestion_query.add_extension(lpe);
+    let mut ng_ex = NGramExtension::with_sim_threshold(engine, 0.5);
+    ng_ex.options.weights.total_weight = 0.75;
+    ng_ex.options.weights.freq_weight = 0.005;
+    suggestion_query.add_extension(ng_ex);
 
     Some(suggestion_query)
 }

@@ -347,17 +347,19 @@ checksum = "d468802bab17cbc0cc575e9b053f41e72aa36bfa6b7f55e3529ffa43161b97fa"
 [[package]]
 name = "autocompletion"
 version = "0.1.0"
-source = "git+https://github.com/WeDontPanic/AutoCompletionFramework#0dc9f330273c213a144fa4fcaa33111969145b6c"
 dependencies = [
  "bincode",
  "eudex",
  "jpeudex",
+ "ngindex",
+ "ngram-tools",
  "order_struct",
  "priority_container",
  "qp-trie",
  "rayon",
  "serde",
  "strsim 0.10.0",
+ "vector_space_model2",
 ]
 
 [[package]]
@@ -629,10 +631,11 @@ dependencies = [
 [[package]]
 name = "compressed_vec"
 version = "0.1.1"
-source = "git+https://github.com/JojiiOfficial/CompressedVec#cf5662ab3786fee1e6f6f7b6b29b67ed3b9dcd77"
+source = "git+https://github.com/JojiiOfficial/CompressedVec#2c45e39764f173f0057923f1ba8f4f61395ad714"
 dependencies = [
  "bitpacking",
  "byteorder",
+ "serde",
  "utilsrs",
 ]
 
@@ -752,9 +755,9 @@ dependencies = [
 
 [[package]]
 name = "crossbeam-channel"
-version = "0.5.4"
+version = "0.5.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5aaa7bd5fb665c6864b5f963dd9097905c54125909c7aa94c9e18507cdbe6c53"
+checksum = "4c02a4d71819009c192cf4872265391563fd6a84c81ff2c0f2a7026ca4c1d85c"
 dependencies = [
  "cfg-if",
  "crossbeam-utils",
@@ -773,26 +776,26 @@ dependencies = [
 
 [[package]]
 name = "crossbeam-epoch"
-version = "0.9.8"
+version = "0.9.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1145cf131a2c6ba0615079ab6a638f7e1973ac9c2634fcbeaaad6114246efe8c"
+checksum = "07db9d94cbd326813772c968ccd25999e5f8ae22f4f8d1b11effa37ef6ce281d"
 dependencies = [
  "autocfg",
  "cfg-if",
  "crossbeam-utils",
- "lazy_static",
  "memoffset",
+ "once_cell",
  "scopeguard",
 ]
 
 [[package]]
 name = "crossbeam-utils"
-version = "0.8.8"
+version = "0.8.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0bf124c720b7686e3c2663cf54062ab0f68a88af2fb6a030e87e30bf721fcb38"
+checksum = "8ff1f980957787286a554052d03c7aee98d99cc32e09f6d45f0a814133c87978"
 dependencies = [
  "cfg-if",
- "lazy_static",
+ "once_cell",
 ]
 
 [[package]]
@@ -1876,6 +1879,20 @@ dependencies = [
 ]
 
 [[package]]
+name = "ngindex"
+version = "0.1.0"
+dependencies = [
+ "ngram-tools",
+ "serde",
+ "vector_space_model2",
+]
+
+[[package]]
+name = "ngram-tools"
+version = "0.1.0"
+source = "git+https://github.com/JojiiOfficial/ngram-tools#af52dfb6b41cabb9fc20211e034fbc81824be562"
+
+[[package]]
 name = "nom"
 version = "5.1.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2771,9 +2788,9 @@ dependencies = [
 
 [[package]]
 name = "strum_macros"
-version = "0.24.1"
+version = "0.24.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9550962e7cf70d9980392878dfaf1dcc3ece024f4cf3bf3c46b978d0bad61d6c"
+checksum = "6878079b17446e4d3eba6192bb0a2950d5b14f0ed8424b852310e5a94345d0ef"
 dependencies = [
  "heck",
  "proc-macro2",
@@ -3210,7 +3227,6 @@ checksum = "f1bddf1187be692e79c5ffeab891132dfb0f236ed36a43c7ed39f1165ee20191"
 [[package]]
 name = "vector_space_model2"
 version = "0.1.1"
-source = "git+https://github.com/JojiiOfficial/VectorSpaceModel#a44d3b043d627a0e29809fd5061503ca08f9359f"
 dependencies = [
  "bincode",
  "byteorder",

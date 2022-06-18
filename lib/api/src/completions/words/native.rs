@@ -2,7 +2,10 @@ use super::{super::*, kana_end_ext::KanaEndExtension};
 use autocompletion::{
     index::{str_item::StringItem, IndexItem},
     suggest::{
-        extension::{kanji_align::KanjiAlignExtension, similar_terms::SimilarTermsExtension},
+        extension::{
+            kanji_align::KanjiAlignExtension, ngram::NGramExtension,
+            similar_terms::SimilarTermsExtension,
+        },
         query::SuggestionQuery,
         task::SuggestionTask,
     },
@@ -17,7 +20,9 @@ pub fn suggestions(query: &Query, radicals: &[char]) -> Option<Vec<WordPair>> {
     let query_str = query.query.as_str();
 
     let mut suggestion_task = SuggestionTask::new(30);
+
     let mut main_sugg_query = SuggestionQuery::new(jp_engine, query_str);
+    main_sugg_query.weights.str_weight = 1.2;
 
     // Kanji reading align (くにうた ー＞ 国歌)
     let mut k_r_align = KanjiAlignExtension::new(jp_engine);
@@ -31,15 +36,20 @@ pub fn suggestions(query: &Query, radicals: &[char]) -> Option<Vec<WordPair>> {
     kana_end_ext.options.weights.freq_weight = 0.4;
     main_sugg_query.add_extension(kana_end_ext);
 
-    // Similar terms
+    // Similar terms based on pronounciation
     let mut ste = SimilarTermsExtension::new(jp_engine, 16);
     ste.options.threshold = 10;
     ste.options.weights.total_weight = 0.3;
     ste.options.weights.freq_weight = 0.6;
     //ste.options.weights.str_weight = 1.4;
-    main_sugg_query.add_extension(ste);
+    //main_sugg_query.add_extension(ste);
 
-    main_sugg_query.weights.str_weight = 1.2;
+    // Fix typos
+    let mut ng_ex = NGramExtension::with_sim_threshold(jp_engine, 0.5);
+    ng_ex.options.weights.total_weight = 0.5;
+    ng_ex.options.weights.freq_weight = 0.005;
+    main_sugg_query.add_extension(ng_ex);
+
     suggestion_task.add_query(main_sugg_query);
 
     // Add katakana results
