@@ -347,6 +347,7 @@ checksum = "d468802bab17cbc0cc575e9b053f41e72aa36bfa6b7f55e3529ffa43161b97fa"
 [[package]]
 name = "autocompletion"
 version = "0.1.0"
+source = "git+https://github.com/WeDontPanic/AutoCompletionFramework#b72513b99ea46ad590aa0df7b687e7e776069706"
 dependencies = [
  "bincode",
  "eudex",
@@ -360,7 +361,6 @@ dependencies = [
  "romaji",
  "serde",
  "strsim 0.10.0",
- "vector_space_model2",
 ]
 
 [[package]]
@@ -1882,6 +1882,7 @@ dependencies = [
 [[package]]
 name = "ngindex"
 version = "0.1.0"
+source = "git+https://github.com/JojiiOfficial/ngindex#75df023917ef5221b0ad6863334e9159f96d4220"
 dependencies = [
  "ngram-tools",
  "serde",
@@ -3228,6 +3229,7 @@ checksum = "f1bddf1187be692e79c5ffeab891132dfb0f236ed36a43c7ed39f1165ee20191"
 [[package]]
 name = "vector_space_model2"
 version = "0.1.1"
+source = "git+https://github.com/JojiiOfficial/VectorSpaceModel#4dd876837e607017bff1176685f79b33703d3122"
 dependencies = [
  "bincode",
  "byteorder",
