@@ -39,15 +39,15 @@ pub fn suggestions(query: &Query, radicals: &[char]) -> Option<Vec<WordPair>> {
     // Similar terms based on pronounciation
     let mut ste = SimilarTermsExtension::new(jp_engine, 16);
     ste.options.threshold = 10;
-    ste.options.weights.total_weight = 0.3;
-    ste.options.weights.freq_weight = 0.4;
+    ste.options.weights.total_weight = 0.6;
+    ste.options.weights.freq_weight = 0.5;
     //ste.options.weights.str_weight = 1.4;
     main_sugg_query.add_extension(ste);
 
     // Fix typos
     let mut ng_ex = NGramExtension::with_sim_threshold(jp_engine, 0.5);
     ng_ex.options.weights.freq_weight = 0.05;
-    ng_ex.query_weigth = 0.76;
+    ng_ex.query_weigth = 0.7;
     main_sugg_query.add_extension(ng_ex);
 
     suggestion_task.add_query(main_sugg_query);
