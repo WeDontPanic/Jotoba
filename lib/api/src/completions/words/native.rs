@@ -2,17 +2,14 @@ use super::{super::*, kana_end_ext::KanaEndExtension};
 use autocompletion::{
     index::{str_item::StringItem, IndexItem},
     suggest::{
-        extension::{
-            kanji_align::KanjiAlignExtension, ngram::NGramExtension,
-            similar_terms::SimilarTermsExtension,
-        },
+        extension::{kanji_align::KanjiAlignExtension, ngram::NGramExtension},
         query::SuggestionQuery,
         task::SuggestionTask,
     },
 };
 use romaji::RomajiExt;
 
-const MAX_SENTENCE_LEN: usize = 10;
+const MAX_SENTENCE_LEN: usize = 15;
 
 /// Get suggestions for foreign search input
 pub fn suggestions(query: &Query, radicals: &[char]) -> Option<Vec<WordPair>> {
@@ -37,17 +34,17 @@ pub fn suggestions(query: &Query, radicals: &[char]) -> Option<Vec<WordPair>> {
     main_sugg_query.add_extension(kana_end_ext);
 
     // Similar terms based on pronounciation
-    let mut ste = SimilarTermsExtension::new(jp_engine, 16);
+    /* let mut ste = SimilarTermsExtension::new(jp_engine, 16);
     ste.options.threshold = 10;
     ste.options.weights.total_weight = 0.3;
-    ste.options.weights.freq_weight = 0.6;
+    ste.options.weights.freq_weight = 0.4;
     //ste.options.weights.str_weight = 1.4;
-    //main_sugg_query.add_extension(ste);
+    main_sugg_query.add_extension(ste); */
 
     // Fix typos
     let mut ng_ex = NGramExtension::with_sim_threshold(jp_engine, 0.5);
     ng_ex.options.weights.total_weight = 0.5;
-    ng_ex.options.weights.freq_weight = 0.005;
+    ng_ex.options.weights.freq_weight = 0.0005;
     main_sugg_query.add_extension(ng_ex);
 
     suggestion_task.add_query(main_sugg_query);

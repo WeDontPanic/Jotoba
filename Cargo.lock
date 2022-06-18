@@ -357,6 +357,7 @@ dependencies = [
  "priority_container",
  "qp-trie",
  "rayon",
+ "romaji",
  "serde",
  "strsim 0.10.0",
  "vector_space_model2",

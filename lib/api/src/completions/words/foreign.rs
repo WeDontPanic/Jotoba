@@ -31,39 +31,45 @@ pub fn suggestions(query: &Query, query_str: &str) -> Option<Vec<WordPair>> {
     }
 
     // Romaji result
-    if let Some(hira_query) = try_romaji(query_str.trim()) {
-        println!("hira query: {hira_query}");
-        let jp_engine = indexes::get_suggestions().jp_words();
-        let mut query = SuggestionQuery::new(jp_engine, hira_query);
-        query.weights.total_weight = 0.45;
-        /*
-        query.weights.freq_weight = 0.1;
-        query.weights.str_weight = 1.9;
-        */
+    //if let Some(hira_query) = try_romaji(query_str.trim()) {
+    let hira_query = query_str.to_hiragana();
+    println!("hira query: {hira_query}");
+    let jp_engine = indexes::get_suggestions().jp_words();
+    let mut rom_query = SuggestionQuery::new(jp_engine, hira_query);
+    rom_query.weights.total_weight = 0.5;
+    /*
+    query.weights.freq_weight = 0.1;
+    query.weights.str_weight = 1.9;
+    */
 
-        let mut k_r_align = KanjiAlignExtension::new(jp_engine);
-        k_r_align.options.weights.freq_weight = 1.0;
-        k_r_align.options.threshold = 5;
-        query.add_extension(k_r_align);
+    let mut k_r_align = KanjiAlignExtension::new(jp_engine);
+    k_r_align.options.weights.freq_weight = 1.0;
+    k_r_align.options.threshold = 5;
+    rom_query.add_extension(k_r_align);
 
-        let mut similar_terms = SimilarTermsExtension::new(jp_engine, 16);
-        similar_terms.options.threshold = 10;
-        similar_terms.options.weights.total_weight = 0.4;
-        similar_terms.options.weights.freq_weight = 0.2;
-        similar_terms.options.weights.str_weight = 1.8;
-        query.add_extension(similar_terms);
+    let mut similar_terms = SimilarTermsExtension::new(jp_engine, 14);
+    similar_terms.options.threshold = 10;
+    similar_terms.options.weights.total_weight = 0.4;
+    similar_terms.options.weights.freq_weight = 0.2;
+    similar_terms.options.weights.str_weight = 1.8;
+    rom_query.add_extension(similar_terms);
 
-        task.set_rel_mod(|i, rel| {
-            let out = i.to_output();
-            let kana = &out.primary;
-            if japanese::romaji_prefix(query_str.trim(), &kana) {
-                return rel + 1000;
-            }
-            rel
-        });
+    let mut ng_ext = NGramExtension::with_sim_threshold(jp_engine, 0.35);
+    //ng_ext.options.weights.total_weight = 0.1;
+    ng_ext.options.weights.freq_weight = 0.001;
+    rom_query.add_extension(ng_ext);
 
-        task.add_query(query);
-    }
+    task.set_rel_mod(|i, rel| {
+        let out = i.to_output();
+        let kana = &out.primary;
+        if japanese::romaji_prefix(query_str.trim(), &kana) {
+            return rel + 1000;
+        }
+        rel
+    });
+
+    task.add_query(rom_query);
+    //}
 
     Some(convert_results(task.search()))
 }
