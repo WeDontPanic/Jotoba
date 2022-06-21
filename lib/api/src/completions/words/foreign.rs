@@ -52,11 +52,13 @@ pub fn suggestions(query: &Query, query_str: &str) -> Option<Vec<WordPair>> {
     similar_terms.options.weights.total_weight = 0.4;
     similar_terms.options.weights.freq_weight = 0.2;
     similar_terms.options.weights.str_weight = 1.8;
+    similar_terms.options.min_query_len = 4;
     rom_query.add_extension(similar_terms);
 
     let mut ng_ext = NGramExtension::with_sim_threshold(jp_engine, 0.35);
     //ng_ext.options.weights.total_weight = 0.1;
     ng_ext.options.weights.freq_weight = 0.001;
+    ng_ext.options.min_query_len = 5;
     rom_query.add_extension(ng_ext);
 
     task.set_rel_mod(|i, rel| {
@@ -84,6 +86,8 @@ fn new_suggestion_query(query: &str, lang: Language) -> Option<SuggestionQuery> 
     let mut ng_ex = NGramExtension::with_sim_threshold(engine, 0.5);
     ng_ex.options.weights.total_weight = 0.75;
     ng_ex.options.weights.freq_weight = 0.005;
+    ng_ex.query_weigth = 0.7;
+    ng_ex.options.min_query_len = 4;
     suggestion_query.add_extension(ng_ex);
 
     Some(suggestion_query)
