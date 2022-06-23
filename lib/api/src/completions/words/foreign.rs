@@ -32,11 +32,12 @@ pub fn suggestions(query: &Query, query_str: &str) -> Option<Vec<WordPair>> {
 
     // Romaji result
     //if let Some(hira_query) = try_romaji(query_str.trim()) {
-    let hira_query = query_str.to_hiragana();
+    let hira_query = try_romaji(query_str.trim()).unwrap_or_else(|| query_str.to_hiragana());
+    //let hira_query = query_str.to_hiragana();
     println!("hira query: {hira_query}");
     let jp_engine = indexes::get_suggestions().jp_words();
     let mut rom_query = SuggestionQuery::new(jp_engine, hira_query);
-    rom_query.weights.total_weight = 0.5;
+    rom_query.weights.total_weight = 0.6;
     /*
     query.weights.freq_weight = 0.1;
     query.weights.str_weight = 1.9;
@@ -49,16 +50,21 @@ pub fn suggestions(query: &Query, query_str: &str) -> Option<Vec<WordPair>> {
 
     let mut similar_terms = SimilarTermsExtension::new(jp_engine, 14);
     similar_terms.options.threshold = 10;
-    similar_terms.options.weights.total_weight = 0.4;
+    similar_terms.options.weights.total_weight = 0.75;
     similar_terms.options.weights.freq_weight = 0.2;
     similar_terms.options.weights.str_weight = 1.8;
     similar_terms.options.min_query_len = 4;
     rom_query.add_extension(similar_terms);
 
     let mut ng_ext = NGramExtension::with_sim_threshold(jp_engine, 0.35);
+    //ng_ext.options.threshold = 10;
+    ng_ext.options.weights.total_weight = 0.25;
+    ng_ext.options.weights.freq_weight = 0.04;
+    ng_ext.query_weigth = 0.85;
+    ng_ext.term_limit = 10_000;
     //ng_ext.options.weights.total_weight = 0.1;
-    ng_ext.options.weights.freq_weight = 0.001;
     ng_ext.options.min_query_len = 5;
+    ng_ext.cust_query = Some(query_str);
     rom_query.add_extension(ng_ext);
 
     task.set_rel_mod(|i, rel| {
@@ -84,8 +90,8 @@ fn new_suggestion_query(query: &str, lang: Language) -> Option<SuggestionQuery> 
     suggestion_query.weights.freq_weight = 0.5;
 
     let mut ng_ex = NGramExtension::with_sim_threshold(engine, 0.5);
-    ng_ex.options.weights.total_weight = 0.75;
-    ng_ex.options.weights.freq_weight = 0.005;
+    ng_ex.options.weights.total_weight = 0.7;
+    ng_ex.options.weights.freq_weight = 0.05;
     ng_ex.query_weigth = 0.7;
     ng_ex.options.min_query_len = 4;
     suggestion_query.add_extension(ng_ex);
