@@ -16,6 +16,14 @@ footer {
     gap: 2em;
 }
 
+.ref-row > .discordSvg, .ref-row > .githubSvg {
+    background-color: var(--searchTextColor);
+}
+
+:root.dark .ref-row > .discordSvg,:root.dark .ref-row > .githubSvg {
+    background-color: var(--tagColor);
+}
+
 .footer-hr {
     border-top: 1px solid var(--primaryColor);
     padding-bottom: 10px;
