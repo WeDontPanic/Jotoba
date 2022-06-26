@@ -6,7 +6,19 @@ pub struct Request {
     pub full: bool,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Deserialize, Serialize)]
+pub struct Response {
+    tree: OutObject,
+    has_big: bool,
+}
+
+impl Response {
+    pub fn new(tree: OutObject, has_big: bool) -> Self {
+        Self { tree, has_big }
+    }
+}
+
+#[derive(Serialize, Deserialize, Debug, PartialEq, Eq)]
 pub struct OutObject {
     name: char,
     literal_available: bool,
