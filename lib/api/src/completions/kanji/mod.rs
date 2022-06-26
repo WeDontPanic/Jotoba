@@ -18,7 +18,8 @@ pub(crate) fn suggestions(query: Query) -> Option<Response> {
 }
 
 fn japanese_suggestions(query: &Query) -> Option<Response> {
-    let mut suggestions = super::words::native::suggestions(&query, &[])?;
+    let romaji = romaji::RomajiExt::to_romaji(query.query.as_str());
+    let mut suggestions = super::words::native::suggestions(&query, &romaji, &[])?;
 
     // romev entries without kanji
     suggestions.retain(|i| i.secondary.is_some());

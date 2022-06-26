@@ -32,7 +32,18 @@ impl KanjiTreeBuilder {
 
         out.set_literal_available(retrieve.has_literal(c));
 
-        let radicals = ids_kanji.comp_by_lang(Origin::Japan)?.get_radicals();
+        //let radicals = ids_kanji.comp_by_lang(Origin::Japan)?.get_radicals();
+        let comps = match ids_kanji.comp_by_lang(Origin::Japan) {
+            Some(s) => s,
+            None => {
+                if ids_kanji.compositions.len() == 1 {
+                    &ids_kanji.compositions[0]
+                } else {
+                    return None;
+                }
+            }
+        };
+        let radicals = comps.get_radicals();
 
         // recursive exit condition
         if (radicals.len() == 1 && radicals[0] == c)
