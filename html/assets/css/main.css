@@ -785,3 +785,21 @@ a:hover {
     -webkit-mask: url("/assets/svg/ui/share.svg") no-repeat center;
     cursor: pointer;
 }
+
+.discordSvg {
+    height: 35px;
+    width: 35px;
+    background-color: var(--tagColor);
+    mask: url("/assets/svg/ui/_discord.svg") no-repeat center;
+    -webkit-mask: url("/assets/svg/ui/_discord.svg") no-repeat center;
+    cursor: pointer;
+}
+
+.githubSvg {
+    height: 35px;
+    width: 35px;
+    background-color: var(--tagColor);
+    mask: url("/assets/svg/ui/_github.svg") no-repeat center;
+    -webkit-mask: url("/assets/svg/ui/_github.svg") no-repeat center;
+    cursor: pointer;
+}

@@ -10,6 +10,12 @@ footer {
     height: max-content;
 }
 
+.ref-row {
+    display: flex;
+    place-content: center;
+    gap: 2em;
+}
+
 .footer-hr {
     border-top: 1px solid var(--primaryColor);
     padding-bottom: 10px;

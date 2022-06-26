@@ -1,22 +1,29 @@
 @use super::{paginator};
 @use crate::BaseData;
 @use resources::GIT_HASH;
-@(data: &BaseData)
+@(data: &BaseData, show_ref: bool)
 
 <footer>
 
    @:paginator(data)
 
+    @if show_ref {
+    <div class="ref-row">
+        <div class="discordSvg" onclick='window.open("https://discord.gg/ysSkFFxmjr", "_blank");'></div>
+        <div class="githubSvg" onclick='window.open("https://github.com/WeDontPanic/Jotoba", "_blank");'></div>
+    </div>
+    }
+
    <div class="center-text">
 
-      <hr class="footer-hr">
-      <span>
-         @data.gettext("Jotoba wouldn't be able to exist without the help of many open-source data sources.") <br> @data.gettext("Check out the") <a class="clickable no-align green" href="/about">@data.gettext("About Page")</a> @data.gettext("for a list of all contributors in this project.")
-      </span>
-      @if data.config.is_debug() {
-         <br><br> Git hash: @(GIT_HASH)
-      }
+        <hr class="footer-hr">
+        <span>
+            @data.gettext("Jotoba wouldn't be able to exist without the help of many open-source data sources.") <br> @data.gettext("Check out the") <a class="clickable no-align green" href="/about">@data.gettext("About Page")</a> @data.gettext("for a list of all contributors in this project.")
+        </span>
+        @if data.config.is_debug() {
+        <br><br> Git hash: @(GIT_HASH)
+        }
       
-   </div>
+    </div>
 
  </footer>
