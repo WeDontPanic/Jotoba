@@ -38,9 +38,8 @@ Settings.display = {
 // Default "other" settings
 Settings.other = {
     enableDoubleClickCopy: { isCookie: false, id: "dbl_click_copy", dataType: "boolean", val: true },
-    cookiesAllowed: { isCookie: false, id: "allow_cookies", dataType: "int", val: 1 },
-    firstVisit: { isCookie: false, id: "first_time", dataType: "boolean", val: true },
-    privacyChosen: { isCookie: false, id: "privacy_chosen", dataType: "boolean", val: true },
+    cookiesAllowed: { isCookie: false, id: "allow_cookies", dataType: "boolean", val: true },
+    firstVisit: { isCookie: false, id: "first_time", dataType: "boolean", val: true }
 }
 
 // Saves a settings-object into localStorage / Cookies
@@ -133,32 +132,26 @@ Settings.alterOther = function (key, value) {
 
 // Opens the Settings Overlay and accepts cookie usage
 Settings.cookiesAccepted = function (manuallyCalled) {
-    Settings.alterOther("cookiesAllowed", "1");
-
     if (manuallyCalled)
         Util.showMessage("success", getText("SETTINGS_COOKIE_ACCEPT"));
 
-    $('#cookie-footer').addClass("hidden");
-
+    Settings.alterOther("cookiesAllowed", true);
     Util.loadScript(analyticsUrl, true, analyticsAttributes);
     Util.setMdlCheckboxState("cookie_settings", true);
-    Settings.alterOther("privacyChosen", true);
 }
 
 // Revokes the right to store user Cookies
 Settings.revokeCookieAgreement = function (manuallyCalled) {
-    $('#cookie-footer').addClass("hidden");
-
     if (manuallyCalled)
         Util.showMessage("success", getText("SETTINGS_COOKIE_REJECT"));
 
-    Cookies.set("allow_cookies", "0", { path: '/', expires: 365 });
+    Settings.alterOther("cookiesAllowed", false);
     Util.setMdlCheckboxState("cookie_settings", false);
-    Settings.alterOther("privacyChosen", true);
 }
 
 // Special handling for allow_cookies
 Settings.onCookiesAcceptChange = function (allowed) {
+    console.log("allowed:", allowed);
     if (allowed) {
         Settings.cookiesAccepted(true);
     } else {
@@ -175,11 +168,6 @@ async function prepareSettingsOverlay() {
     OverlaySettings.updateSubEntries();
     OverlaySettings.updateSliders();
     OverlaySettings.updateInputs();
-
-    // Show Cookie footer if needed
-    if (!Settings.other.privacyChosen.val) {
-        $("#cookie-footer").removeClass("hidden");
-    }
 };
 
 // Load Settings on initial load

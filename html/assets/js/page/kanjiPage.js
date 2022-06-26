@@ -335,7 +335,7 @@ async function generateTreeDiagram(kanjiLiteral) {
 
     // Build the tree
     let treeData = await API.getGraphData(kanjiLiteral);
-    root = treeData;
+    root = treeData.tree;
 
     // Compute the new tree layout
     var nodes = tree.nodes(root).reverse(),
@@ -413,9 +413,14 @@ async function generateTreeDiagram(kanjiLiteral) {
     const viewbox = `${xMin} ${yMin} ${xMax - xMin} ${yMax - yMin}`;
     svg.setAttribute('viewBox', viewbox);
 
-    // Set toggler content
-    let toggler = document.getElementById("tree-toggle"); 
-    toggler.innerHTML = getText(Settings.search.showFullGraph.val ? "GRAPH_SHOW_SIMPLE" : "GRAPH_SHOW_DETAIL");
+    // Set toggler content if available
+    if (treeData.has_big) {
+        let toggler = document.getElementById("tree-toggle"); 
+        toggler.classList.remove("hidden");
+        if (Settings.search.showFullGraph.val) {
+            toggler.classList.add("detailed");
+        }
+    }
 }
 
 // Tries to replace the given target with an SVG using the given URL
@@ -453,6 +458,13 @@ function getSvgContent(target, url) {
 
 // Called upon clicking on the toggle checkbox for a decomposition graph: rerenders the graph in the toggled complexity
 function onGraphToggleCheckboxClick(event) {
+    if (window.umami) {
+        umami.trackEvent("Tree toggled", "function_press");
+    }
+    
     Settings.alterSearch('showFullGraph', !Settings.search.showFullGraph.val);
     generateTreeDiagram(lastTreeLiteral);
+
+    let toggler = document.getElementById("tree-toggle"); 
+    toggler.classList.toggle("detailed");
 }

@@ -148,13 +148,38 @@
 }
 
 .tree-parent {
+    position: relative;
     cursor: initial;
     width: 90%;
     max-width: 1145px;
 }
 
 #tree-toggle {
+    position: absolute;
     user-select: none;
+    cursor: pointer;
+    right: 1em;
+    top: 1em;
+    height: 26px;
+    width: 26px;
+    zoom: 1.2; 
+}
+
+@media only screen and (max-width: 600px) {
+    #tree-toggle {
+        zoom: 1; 
+    }
+}
+
+#tree-toggle {
+    background-color: var(--primaryColor) !important;
+    mask: url("/assets/svg/ui/graph_filled.svg") no-repeat center;
+    -webkit-mask: url("/assets/svg/ui/graph_filled.svg") no-repeat center;
+}
+
+#tree-toggle.detailed {
+    mask: url("/assets/svg/ui/graph_empty.svg") no-repeat center;
+    -webkit-mask: url("/assets/svg/ui/graph_empty.svg") no-repeat center;
 }
 
 #tree-target {
