@@ -39,6 +39,8 @@ pub async fn search(payload: Json<SearchPayload>) -> Result<Json<Resp>> {
 }
 
 #[inline]
-fn convert_sentence(sentence: search::sentence::result::Sentence) -> sentences::Sentence {
+pub(crate) fn convert_sentence(
+    sentence: search::sentence::result::Sentence,
+) -> sentences::Sentence {
     sentences::Sentence::new(sentence.furigana, sentence.translation)
 }

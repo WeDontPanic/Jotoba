@@ -1,4 +1,4 @@
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 
 use crate::jotoba::{
     languages::Language,
@@ -9,7 +9,7 @@ use crate::jotoba::{
 };
 
 /// A single word item
-#[derive(Clone, Serialize)]
+#[derive(Clone, Serialize, Deserialize)]
 pub struct Word {
     pub sequence: u32,
     pub is_common: bool,
@@ -32,7 +32,7 @@ pub struct Word {
     pub sentences_available: u16,
 }
 
-#[derive(Clone, Serialize)]
+#[derive(Clone, Serialize, Deserialize)]
 pub struct Sense {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub misc: Option<Misc>,

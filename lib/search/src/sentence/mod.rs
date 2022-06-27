@@ -121,17 +121,22 @@ fn get_result<T: SearchEngine<Output = &'static Sentence> + Send>(
     let lang = query.settings.user_lang;
     let found = search.find();
     let len = found.len();
+    let show_english = query.settings.show_english();
+
     let items = found
         .into_iter()
-        .filter_map(|i| map_sentence_to_item(i, lang, query))
+        .filter_map(|i| map_sentence_to_item(i, lang, show_english))
         .collect::<Vec<_>>();
     let hidden = query.has_tag(Tag::Hidden);
     SentenceResult { len, items, hidden }
 }
 
-fn map_sentence_to_item(sentence: &Sentence, lang: Language, query: &Query) -> Option<Item> {
-    let sentence =
-        result::Sentence::from_m_sentence(sentence.clone(), lang, query.settings.show_english)?;
+pub fn map_sentence_to_item(
+    sentence: &Sentence,
+    lang: Language,
+    show_english: bool,
+) -> Option<Item> {
+    let sentence = result::Sentence::from_m_sentence(sentence.clone(), lang, show_english)?;
     Some(result::Item { sentence })
 }
 

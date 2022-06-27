@@ -18,5 +18,5 @@ pub struct Request {
 /// Default mit threshold value for detection confidence
 #[inline]
 fn default_conf_threshold() -> i32 {
-    75
+    55
 }

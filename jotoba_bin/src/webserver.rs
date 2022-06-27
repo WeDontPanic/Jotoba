@@ -138,10 +138,18 @@ pub(super) async fn start(options: Options) -> std::io::Result<()> {
                                 "words",
                                 actixweb::post().to(api::app::search::words::search),
                             )
-                            .service(actixweb::scope("details").route(
-                                "word",
-                                actixweb::post().to(api::app::details::word::details),
-                            )),
+                            .service(
+                                actixweb::scope("details")
+                                    .route(
+                                        "word",
+                                        actixweb::post().to(api::app::details::word::details),
+                                    )
+                                    .route(
+                                        "sentence",
+                                        actixweb::post()
+                                            .to(api::app::details::sentences::details_ep),
+                                    ),
+                            ),
                     )
                     .service(
                         actixweb::scope("search")

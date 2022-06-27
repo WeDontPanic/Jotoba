@@ -1,7 +1,7 @@
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 
 /// Names API response. Contains all Names
-#[derive(Serialize, Clone)]
+#[derive(Serialize, Deserialize, Clone)]
 pub struct Response {
     sentences: Vec<Sentence>,
 }
@@ -13,7 +13,7 @@ impl Response {
     }
 }
 
-#[derive(Serialize, Clone)]
+#[derive(Serialize, Deserialize, Clone)]
 pub struct Sentence {
     content: String,
     translation: String,

@@ -37,11 +37,12 @@ fn jlpt_search(query: &Query, jlpt: u8) -> Result<SentenceResult, Error> {
 
     let len = senences.len();
 
+    let show_english = query.settings.show_english;
     let sentences = senences
         .into_iter()
         .skip(query.page_offset)
         .take(query.settings.page_size as usize)
-        .filter_map(|i| super::map_sentence_to_item(i, query.settings.user_lang, query))
+        .filter_map(|i| super::map_sentence_to_item(i, query.settings.user_lang, show_english))
         .collect::<Vec<_>>();
 
     let hidden = query.has_tag(Tag::Hidden);

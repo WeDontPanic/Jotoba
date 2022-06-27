@@ -1,4 +1,4 @@
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 
 use crate::jotoba::kanji::radical::DetailedRadical;
 
@@ -15,7 +15,7 @@ impl Response {
 }
 
 /// Kanji information
-#[derive(Clone, Debug, Serialize)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Kanji {
     pub literal: char,
     pub stroke_count: u8,
@@ -65,7 +65,7 @@ impl Kanji {
 }
 
 /// A word used in kanji compounds
-#[derive(Clone, Debug, Serialize)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct CompoundWord {
     pub jp: String,
     pub kana: String,
