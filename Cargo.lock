@@ -1485,7 +1485,7 @@ dependencies = [
  "rayon",
  "serde",
  "types",
- "vector_space_model2",
+ "vector_space_model2 0.1.1",
 ]
 
 [[package]]
@@ -1886,7 +1886,7 @@ source = "git+https://github.com/JojiiOfficial/ngindex#5e0a15b39dc82549b4beb3ed7
 dependencies = [
  "ngram-tools",
  "serde",
- "vector_space_model2",
+ "vector_space_model2 0.1.1 (git+https://github.com/JojiiOfficial/VectorSpaceModel)",
 ]
 
 [[package]]
@@ -2481,7 +2481,7 @@ dependencies = [
  "tinysegmenter",
  "types",
  "utils",
- "vector_space_model2",
+ "vector_space_model2 0.1.1",
 ]
 
 [[package]]
@@ -3225,6 +3225,17 @@ name = "vec_map"
 version = "0.8.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "f1bddf1187be692e79c5ffeab891132dfb0f236ed36a43c7ed39f1165ee20191"
+
+[[package]]
+name = "vector_space_model2"
+version = "0.1.1"
+dependencies = [
+ "bincode",
+ "byteorder",
+ "compressed_vec",
+ "indexed_file",
+ "serde",
+]
 
 [[package]]
 name = "vector_space_model2"

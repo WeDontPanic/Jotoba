@@ -1,6 +1,7 @@
 use std::{convert::TryFrom, io::Read};
 
 use byteorder::{ByteOrder, ReadBytesExt, WriteBytesExt};
+use serde::{Deserialize, Serialize};
 use types::jotoba::languages::Language;
 use vector_space_model2::{
     metadata::IndexVersion,
@@ -9,7 +10,7 @@ use vector_space_model2::{
 };
 
 /// Various metadata for the given Index
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct Metadata {
     pub version: IndexVersion,
     pub document_count: usize,

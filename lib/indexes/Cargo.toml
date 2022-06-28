@@ -7,8 +7,8 @@ edition = "2021"
 
 [dependencies]
 types = { path = "../types" }
-#vector_space_model2 = { path = "../../../VectorSpaceModel" }
-vector_space_model2 = { git = "https://github.com/JojiiOfficial/VectorSpaceModel" }
+vector_space_model2 = { path = "../../../VectorSpaceModel" }
+#vector_space_model2 = { git = "https://github.com/JojiiOfficial/VectorSpaceModel" }
 autocompletion = { git = "https://github.com/WeDontPanic/AutoCompletionFramework" }
 #autocompletion = { path = "../../../AutosuggestionFramework" }
 bktree = { git = "https://github.com/JojiiOfficial/bktree" }
