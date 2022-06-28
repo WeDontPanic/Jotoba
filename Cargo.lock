@@ -642,17 +642,17 @@ dependencies = [
 
 [[package]]
 name = "comrak"
-version = "0.13.0"
+version = "0.13.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3a00ddef7b344800116b794a7cabfb2c60ef4f44db2f44b0f8f3f6dd2ea43866"
+checksum = "5abafb60b4451c838c6940b1a3e09bfd93f02c3feb4569aa9949c9119e2a748d"
 dependencies = [
  "entities",
  "lazy_static",
+ "memchr",
  "pest",
  "pest_derive",
  "regex",
  "shell-words",
- "twoway",
  "typed-arena",
  "unicode_categories",
  "xdg",
@@ -2723,9 +2723,9 @@ checksum = "eb703cfe953bccee95685111adeedb76fabe4e97549a58d16f03ea7b9367bb32"
 
 [[package]]
 name = "smallvec"
-version = "1.8.0"
+version = "1.8.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f2dd574626839106c320a323308629dcb1acfc96e32a8cba364ddc61ac23ee83"
+checksum = "cc88c725d61fc6c3132893370cac4a0200e3fedf5da8331c570664b1987f5ca2"
 
 [[package]]
 name = "snmalloc-rs"
@@ -2790,9 +2790,9 @@ dependencies = [
 
 [[package]]
 name = "strum_macros"
-version = "0.24.0"
+version = "0.24.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6878079b17446e4d3eba6192bb0a2950d5b14f0ed8424b852310e5a94345d0ef"
+checksum = "4faebde00e8ff94316c01800f9054fd2ba77d30d9e922541913051d1d978918b"
 dependencies = [
  "heck",
  "proc-macro2",
@@ -3055,9 +3055,9 @@ dependencies = [
 
 [[package]]
 name = "tracing-core"
-version = "0.1.27"
+version = "0.1.28"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7709595b8878a4965ce5e87ebf880a7d39c9afc6837721b21a5a816a8117d921"
+checksum = "7b7358be39f2f274f322d2aaed611acc57f382e8eb1e5b48cb9ae30933495ce7"
 dependencies = [
  "once_cell",
 ]
@@ -3149,9 +3149,9 @@ checksum = "5bd2fe26506023ed7b5e1e315add59d6f584c621d037f9368fea9cfb988f368c"
 
 [[package]]
 name = "unicode-normalization"
-version = "0.1.19"
+version = "0.1.20"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d54590932941a9e9266f0832deed84ebe1bf2e4c9e4a3554d393d18f5e854bf9"
+checksum = "81dee68f85cab8cf68dec42158baf3a79a1cdc065a8b103025965d6ccb7f6cbd"
 dependencies = [
  "tinyvec",
 ]
@@ -3229,7 +3229,7 @@ checksum = "f1bddf1187be692e79c5ffeab891132dfb0f236ed36a43c7ed39f1165ee20191"
 [[package]]
 name = "vector_space_model2"
 version = "0.1.1"
-source = "git+https://github.com/JojiiOfficial/VectorSpaceModel#4dd876837e607017bff1176685f79b33703d3122"
+source = "git+https://github.com/JojiiOfficial/VectorSpaceModel#b383feaf47b09b54a797357004b6541ef992c84a"
 dependencies = [
  "bincode",
  "byteorder",

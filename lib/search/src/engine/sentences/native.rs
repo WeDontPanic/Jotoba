@@ -57,7 +57,7 @@ impl SearchEngine for Engine {
             };
         }
 
-        terms.retain(|w| !index.is_stopword_cust(&w, 20.0).unwrap_or(true));
+        terms.retain(|w| !index.is_stopword_cust(&w, 10.0).unwrap_or(true));
 
         let terms: Vec<_> = terms.into_iter().map(|i| format_query(&i)).collect();
         let vec = index.build_vector(&terms, Some(&TFIDF))?;
