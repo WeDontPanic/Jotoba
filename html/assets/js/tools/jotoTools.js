@@ -8,6 +8,7 @@ function JotoTools () {};
 // Creates a Jotoba-Search URL using the given parameters
 JotoTools.createUrl = function(searchText, searchType, targetPage, languageCode, sentenceIndex) {
     let url = window.location.origin;
+	let hasQ = false;
 
     if (searchText !== undefined) {
         url += "/search/" + encodeURIComponent(searchText);
@@ -15,22 +16,26 @@ JotoTools.createUrl = function(searchText, searchType, targetPage, languageCode,
 
     if (searchType !== undefined) {
         url += "?t=" + searchType;
+		hasQ = true;
     }
 
     if (targetPage !== undefined) {
-        url += "&p=" + targetPage;
+        url += (!hasQ ? "?p=" : "&p=") + targetPage;
+		hasQ = true;
     }
 
     if (languageCode !== undefined) {
-        url += "&l=" + languageCode;
+        url += (!hasQ ? "?l=" :"&l=") + languageCode;
+		hasQ = true;
     } else {
-        url = Util.addPageParameterIfNotNull(url, "l");
+        url = Util.addPageParameterIfNotNull(url, "l", !hasQ);
     }
 
     if (sentenceIndex !== undefined) {
-        url += "&i=" + sentenceIndex;
+        url += (!hasQ ? "?i=" :"&i=") + sentenceIndex;
+		hasQ = true;
     } else {
-        url = Util.addPageParameterIfNotNull(url, "i");
+        url = Util.addPageParameterIfNotNull(url, "i", !hasQ);
     }
 
     return url;
