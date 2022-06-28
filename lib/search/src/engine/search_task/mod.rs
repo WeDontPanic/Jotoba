@@ -196,15 +196,13 @@ impl<'a, T: SearchEngine> SearchTask<'a, T> {
             }
         };
 
-        let vec_store = index.get_vector_store();
-        let query_dimensions: Vec<_> = q_vec.vec_indices().collect();
-
         // Retrieve all document vectors that share at least one dimension with the query vector
-        let document_vectors = vec_store
-            .get_all_iter(&query_dimensions)
+        let vecs = index
+            .get_vector_store()
+            .get_for_vec(&q_vec)
             .take(self.vector_limit);
 
-        self.result_from_doc_vectors(document_vectors, &q_vec, q_str, language, out);
+        self.result_from_doc_vectors(vecs, &q_vec, q_str, language, out);
     }
 
     fn result_from_doc_vectors(

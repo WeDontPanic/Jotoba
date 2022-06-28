@@ -3234,6 +3234,7 @@ dependencies = [
  "byteorder",
  "compressed_vec",
  "indexed_file",
+ "itertools",
  "serde",
 ]
 
