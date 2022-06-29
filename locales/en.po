@@ -466,6 +466,9 @@ msgstr ""
 msgid "Share usage statistics"
 msgstr ""
 
+msgid "STATISTICS_EXPLANATION"
+msgstr "To help improve Jotoba, we collect certain anonymous data (in accordance with the GDPR) by default - but if you wish, we will stop collecting anything from you."
+
 # Cookie text
 msgid "To use this feature you have to accept to the use of cookies."
 msgstr ""

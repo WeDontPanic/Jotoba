@@ -214,10 +214,10 @@ Util.getPageParameter = function(paramName) {
 }
 
 // Adds a parameter to the given URL if location.href has a value set for it
-Util.addPageParameterIfNotNull = function(url, parameter) {
+Util.addPageParameterIfNotNull = function(url, parameter, useQuestionmark) {
     let current = Util.getPageParameter(parameter);
     if (current !== null) {
-        url += `&${parameter}=${current}`;
+        url += `${useQuestionmark ? "?" : "&"}${parameter}=${current}`;
     }
 
     return url;

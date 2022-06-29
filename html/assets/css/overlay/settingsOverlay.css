@@ -60,6 +60,10 @@
     flex-direction: row;
 }
 
+.settings-entry.ex {
+    font-size: 0.8em;
+}
+
 .settings-entry.txt-input {
     margin-top: 5px !important;
     margin-bottom: -15px !important;
