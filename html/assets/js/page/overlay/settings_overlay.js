@@ -66,7 +66,7 @@ OverlaySettings.updateCheckboxes = function() {
     
     // "Other" page
     Util.setMdlCheckboxState("dbl_click_copy_settings", Settings.other.enableDoubleClickCopy.val);
-    Util.setMdlCheckboxState("cookie_settings", Settings.other.cookiesAllowed.val);
+    Util.setMdlCheckboxState("tracking_settings", Settings.other.trackingAllowed.val);
 }
 
 // Updates all Sub entries

@@ -38,7 +38,7 @@ Settings.display = {
 // Default "other" settings
 Settings.other = {
     enableDoubleClickCopy: { isCookie: false, id: "dbl_click_copy", dataType: "boolean", val: true },
-    cookiesAllowed: { isCookie: false, id: "allow_cookies", dataType: "boolean", val: true },
+    trackingAllowed: { isCookie: false, id: "tracking_cookies", dataType: "boolean", val: true },
     firstVisit: { isCookie: false, id: "first_time", dataType: "boolean", val: true }
 }
 
@@ -131,30 +131,30 @@ Settings.alterOther = function (key, value) {
 }
 
 // Opens the Settings Overlay and accepts cookie usage
-Settings.cookiesAccepted = function (manuallyCalled) {
+Settings.trackingAccepted = function (manuallyCalled) {
     if (manuallyCalled)
         Util.showMessage("success", getText("SETTINGS_COOKIE_ACCEPT"));
 
-    Settings.alterOther("cookiesAllowed", true);
+    Settings.alterOther("trackingAllowed", true);
     Util.loadScript(analyticsUrl, true, analyticsAttributes);
-    Util.setMdlCheckboxState("cookie_settings", true);
+    Util.setMdlCheckboxState("tracking_settings", true);
 }
 
 // Revokes the right to store user Cookies
-Settings.revokeCookieAgreement = function (manuallyCalled) {
+Settings.trackingDeclined = function (manuallyCalled) {
     if (manuallyCalled)
         Util.showMessage("success", getText("SETTINGS_COOKIE_REJECT"));
 
-    Settings.alterOther("cookiesAllowed", false);
-    Util.setMdlCheckboxState("cookie_settings", false);
+    Settings.alterOther("trackingAllowed", false);
+    Util.setMdlCheckboxState("tracking_settings", false);
 }
 
-// Special handling for allow_cookies
-Settings.onCookiesAcceptChange = function (allowed) {
+// Special handling for tracking_cookies
+Settings.onTrackingAcceptChange = function (allowed) {
     if (allowed) {
-        Settings.cookiesAccepted(true);
+        Settings.trackingAccepted(true);
     } else {
-        Settings.revokeCookieAgreement(true);
+        Settings.trackingDeclined(true);
     }
 }
 
@@ -186,7 +186,7 @@ Util.awaitDocumentReady(() => {
     }
 
     // Load analytics if allowed -> At this points any external source with high prio has already been loaded in and should have overwritten the analytics vars
-    if (Settings.other.cookiesAllowed.val && analyticsUrl.length > 0) {
+    if (Settings.other.trackingAllowed.val && analyticsUrl.length > 0) {
         Util.loadScript(analyticsUrl, true, analyticsAttributes);
         for (let umamiElement of document.querySelectorAll("[class*=umami]")) {
             for (let className of umamiElement.classList) {
