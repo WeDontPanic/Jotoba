@@ -187,7 +187,6 @@ Util.awaitDocumentReady(() => {
 
     // Load analytics if allowed -> At this points any external source with high prio has already been loaded in and should have overwritten the analytics vars
     if (Settings.other.cookiesAllowed.val && analyticsUrl.length > 0) {
-        console.log("load script!");
         Util.loadScript(analyticsUrl, true, analyticsAttributes);
         for (let umamiElement of document.querySelectorAll("[class*=umami]")) {
             for (let className of umamiElement.classList) {
