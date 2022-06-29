@@ -18,6 +18,7 @@ use test_case::test_case;
 #[test_case("だいがくにかよってる","だいがくにかよってる","だいがくにかよってる"; "Kana only")]
 #[test_case("朝に道を聞かば、夕べに死すとも可なり","あしたにみちをきかばゆうべにしすともかなり","[朝|あした]に[道|みち]を[聞|き]かば、[夕|ゆう]べに[死|し]すとも[可|か]なり"; "Special character")]
 #[test_case("水気","みずけ","[水気|みず|け]"; "Weird reading 1")]
+#[test_case("益々","ますます","[益々|ますます]"; "ノマ")]
 fn test_gen_furigana(kanji: &str, kana: &str, expected: &str) {
     let retrieve: resources::retrieve::kanji::KanjiRetrieve<'_> = LAZY_STORAGE.kanji();
     let built = generate::checked(retrieve, kanji, kana);

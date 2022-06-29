@@ -42,14 +42,6 @@ pub(super) fn parse(request: &HttpRequest) -> UserSettings {
         .and_then(|i| Some(i.value() == "true"))
         .unwrap_or_else(|| UserSettings::default().show_example_sentences);
 
-    let cookies_enabled = request
-        .cookie("allow_cookies")
-        .and_then(|i| {
-            let c: u8 = i.value().parse().ok()?;
-            Some(c == 1)
-        })
-        .unwrap_or_else(|| UserSettings::default().cookies_enabled);
-
     let sentence_furigana = request
         .cookie("sentence_furigana")
         .and_then(|i| Some(i.value() == "true"))
@@ -59,7 +51,6 @@ pub(super) fn parse(request: &HttpRequest) -> UserSettings {
         user_lang,
         show_english,
         english_on_top,
-        cookies_enabled,
         page_lang,
         page_size: items_per_page,
         kanji_page_size: items_per_kanji_page,

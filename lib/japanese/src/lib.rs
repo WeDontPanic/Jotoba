@@ -112,6 +112,7 @@ impl JapaneseExt for char {
             || ((*self) >= '\u{FF10}' && (*self) <= '\u{FF19}')
             || ((*self) >= '\u{20000}' && (*self) <= '\u{2A6DF}')
             || (*self) == '\u{29E8A}'
+            || (*self) == '\u{3005}'
     }
 
     #[inline]
@@ -151,7 +152,7 @@ impl JapaneseExt for char {
     #[inline]
     fn is_symbol(&self) -> bool {
         // https://www.htmlsymbols.xyz/ascii-symbols/fullwidth-ascii-variants
-        ((*self) >= '\u{3000}' && (*self) <= '\u{303F}')
+        ((*self) >= '\u{3000}' && (*self) <= '\u{303F}' && (*self) != '\u{3005}')
             || ((*self) >= '\u{0370}' && (*self) <= '\u{03FF}')
             || ((*self) >= '\u{25A0}' && (*self) <= '\u{25FF}')
             || ((*self) >= '\u{FF01}' && (*self) <= '\u{FF0F}')
@@ -159,7 +160,6 @@ impl JapaneseExt for char {
             || ((*self) >= '\u{FF3B}' && (*self) <= '\u{FF40}')
             || ((*self) >= '\u{FF5B}' && (*self) <= '\u{FF5E}')
             || (*self) == '\u{002D}'
-            || (*self) == '\u{3005}'
             || (*self) == '\u{00D7}'
     }
 
@@ -489,6 +489,7 @@ mod tests {
     use crate::{text_parts, to_fullwidth, to_halfwidth, JapaneseExt};
 
     #[test_case("音",true; "音")]
+    #[test_case("々", true)]
     #[test_case("あ",false; "Kana 'a'")]
     #[test_case("、",false; "Special japanese char")]
     fn is_kanji(inp: &str, expcected: bool) {
@@ -497,6 +498,7 @@ mod tests {
 
     #[test_case("、",true; "Symbol")]
     #[test_case("音",false; "Kanji")]
+    #[test_case("々", false)]
     #[test_case("あ",false; "Kana")]
     fn is_symbol(inp: &str, expcected: bool) {
         assert_eq!(inp.is_symbol(), expcected);
