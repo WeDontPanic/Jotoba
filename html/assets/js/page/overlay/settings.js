@@ -38,7 +38,7 @@ Settings.display = {
 // Default "other" settings
 Settings.other = {
     enableDoubleClickCopy: { isCookie: false, id: "dbl_click_copy", dataType: "boolean", val: true },
-    trackingAllowed: { isCookie: false, id: "tracking_cookies", dataType: "boolean", val: true },
+    trackingAllowed: { isCookie: false, id: "tracking_allowed", dataType: "boolean", val: true },
     firstVisit: { isCookie: false, id: "first_time", dataType: "boolean", val: true }
 }
 
@@ -149,7 +149,7 @@ Settings.trackingDeclined = function (manuallyCalled) {
     Util.setMdlCheckboxState("tracking_settings", false);
 }
 
-// Special handling for tracking_cookies
+// Special handling for tracking_allowed
 Settings.onTrackingAcceptChange = function (allowed) {
     if (allowed) {
         Settings.trackingAccepted(true);
