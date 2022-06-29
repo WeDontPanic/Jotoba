@@ -194,7 +194,7 @@ Util.awaitDocumentReady(() => {
                     let desiredEvent = className.split("--");
                     umamiElement.addEventListener(desiredEvent[1], () => {
                         if (window.umami) {
-                            umami(desiredEvent[2])
+                            umami.trackEvent(desiredEvent[2], "css-event")
                         }
                     })
                 }
