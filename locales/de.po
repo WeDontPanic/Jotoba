@@ -466,6 +466,9 @@ msgstr "\"Quick-Copy\" aktivieren"
 msgid "Share usage statistics"
 msgstr "Nutzungsstatistiken teilen"
 
+msgid "STATISTICS_EXPLANATION"
+msgstr "Um Jotoba zu verbessern, sammeln wir vollständig anonymisierte Daten zur Webseitennutzung. Du kannst jedoch jederzeit aus der Sammlung aussteigen."
+
 # Cookie text
 msgid "To use this feature you have to accept to the use of cookies."
 msgstr "Um dieses Feature nutzen zu können, musst du den Cookies zustimmen."

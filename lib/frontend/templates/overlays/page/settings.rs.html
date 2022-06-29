@@ -200,18 +200,21 @@
                  <section class="mdl-layout__tab-panel" id="scroll-tab-4">
                      <div class="page-content">
                         <div class="d-flex flex-column">
-                           <div class="settings-entry">
-                              <span class="inner-title">@data.gettext("Enable Quick-Copy"):</span>
-                              <label for="dbl_click_copy_settings" class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect">
-                                 <input checked id="dbl_click_copy_settings" type="checkbox" class="mdl-checkbox__input" onchange="Settings.alterOther('enableDoubleClickCopy', event.target.checked)">
-                              </label>
-                           </div>
-                           <div class="settings-entry">
-                              <span class="inner-title">@data.gettext("Share usage statistics"):</span>
-                              <label for="cookie_settings" class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect">
-                                 <input checked id="cookie_settings" type="checkbox" class="mdl-checkbox__input" onchange="Settings.onCookiesAcceptChange(event.target.checked)">
-                              </label>
-                           </div>
+                            <div class="settings-entry">
+                                <span class="inner-title">@data.gettext("Enable Quick-Copy"):</span>
+                                <label for="dbl_click_copy_settings" class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect">
+                                    <input checked id="dbl_click_copy_settings" type="checkbox" class="mdl-checkbox__input" onchange="Settings.alterOther('enableDoubleClickCopy', event.target.checked)">
+                                </label>
+                            </div>
+                            <div class="settings-entry">
+                                <span class="inner-title">@data.gettext("Share usage statistics"):</span>
+                                <label for="cookie_settings" class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect">
+                                    <input checked id="cookie_settings" type="checkbox" class="mdl-checkbox__input" onchange="Settings.onCookiesAcceptChange(event.target.checked)">
+                                </label>
+                            </div>
+                            <div class="settings-entry ex">
+                                <label>@data.gettext("STATISTICS_EXPLANATION")</label>
+                            </div>
                         </div>
                      </div>
                  </section>

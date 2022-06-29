@@ -151,7 +151,6 @@ Settings.revokeCookieAgreement = function (manuallyCalled) {
 
 // Special handling for allow_cookies
 Settings.onCookiesAcceptChange = function (allowed) {
-    console.log("allowed:", allowed);
     if (allowed) {
         Settings.cookiesAccepted(true);
     } else {
@@ -184,5 +183,23 @@ Util.awaitDocumentReady(() => {
     // Add the info-icon on initial page load if needed
     if (Settings.other.firstVisit.val) {
         $(".infoBtn").addClass("new");
+    }
+
+    // Load analytics if allowed -> At this points any external source with high prio has already been loaded in and should have overwritten the analytics vars
+    if (Settings.other.cookiesAllowed.val && analyticsUrl.length > 0) {
+        console.log("load script!");
+        Util.loadScript(analyticsUrl, true, analyticsAttributes);
+        for (let umamiElement of document.querySelectorAll("[class*=umami]")) {
+            for (let className of umamiElement.classList) {
+                if (className.includes("umami")) {
+                    let desiredEvent = className.split("--");
+                    umamiElement.addEventListener(desiredEvent[1], () => {
+                        if (window.umami) {
+                            umami(desiredEvent[2])
+                        }
+                    })
+                }
+            }
+        }
     }
 });
