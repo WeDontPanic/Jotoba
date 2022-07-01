@@ -1,5 +1,6 @@
 pub mod lang;
 pub(crate) mod prefix;
+pub mod req_terms;
 pub(crate) mod tags;
 
 use super::{prefix::SearchPrefix, Form, Query, Tag, UserSettings};
@@ -76,6 +77,7 @@ impl QueryParser {
         }
 
         let (new_query, tags) = Self::extract_tags(&stripped);
+        let (new_query, must_contain) = req_terms::parse(&new_query);
         let query_str: String = new_query
             .trim()
             .chars()
@@ -104,6 +106,7 @@ impl QueryParser {
             page: self.page,
             word_index: self.word_index,
             cust_lang: self.language_override,
+            must_contain,
         })
     }
 

@@ -43,6 +43,8 @@ pub struct Query {
     pub page: usize,
     /// Word index within a sentence reader search
     pub word_index: usize,
+    /// All terms the result has to contain to be shown
+    pub must_contain: Vec<String>,
     /// Overwrite the users settings language temporarily
     pub cust_lang: Option<Language>,
 }
