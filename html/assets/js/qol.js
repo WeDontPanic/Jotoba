@@ -21,27 +21,27 @@ $(document).on("keypress", (event) => {
             $('#search').focus();
             $('#search').select();
             if (window.umami)
-                umami('shortcut: /');
+                umami.trackEvent('/', "shortcut");
             break
         case 'w': // Focus search bar
             changeSearchType(null, "0");
             if (window.umami && Util.isIndexPage())
-                umami('shortcut: w');
+                umami.trackEvent('w', "shortcut");
             break;
         case 'k': // Change to Word Tab
             changeSearchType(null, "1");
             if (window.umami && !Util.isIndexPage())
-                umami('shortcut: k');
+                umami.trackEvent('k', "shortcut");
             break;
         case 's': // Change to Sentence Tab
             changeSearchType(null, "2");
             if (window.umami && !Util.isIndexPage())
-                umami('shortcut: s');
+                umami.trackEvent('s', "shortcut");
             break;
         case 'n': // Change to Names Tab
             changeSearchType(null, "3");
             if (window.umami && !Util.isIndexPage()) {
-                umami('shortcut: n');
+                umami.trackEvent('n', "shortcut");
             }
             break;
         case 'N': // Open index in new tab
@@ -50,7 +50,7 @@ $(document).on("keypress", (event) => {
         case 'p': // Play first Audio on page
             $(".audioBtn").first().trigger("click");
             if (window.umami && !Util.isIndexPage())
-                umami('shortcut: p');
+                umami.trackEvent('p', "shortcut");
             break;
         case "Enter": // Do a search while rad-picker is opened
             if (!$(".overlay.radical").hasClass("hidden")) {
