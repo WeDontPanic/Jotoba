@@ -113,7 +113,7 @@ impl<'a> Search<'a> {
         Option<sentence_reader::Sentence>,
         Option<sentence_reader::Part>,
     ) {
-        if !self.query.parse_japanese || !allow_sentence {
+        if !allow_sentence {
             return (query_str.to_owned(), None, None);
         }
 

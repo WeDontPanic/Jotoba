@@ -1,14 +1,10 @@
+pub mod lang;
 pub(crate) mod prefix;
 pub(crate) mod tags;
 
-use super::{prefix::SearchPrefix, regex::RegexSQuery, Form, Query, QueryLang, Tag, UserSettings};
-use itertools::Itertools;
+use super::{prefix::SearchPrefix, Form, Query, Tag, UserSettings};
 use japanese::JapaneseExt;
-use std::cmp::Ordering;
-use types::jotoba::{
-    kanji, languages::Language as ContentLanguage, search::SearchTarget,
-    words::part_of_speech::PosSimple,
-};
+use types::jotoba::{kanji, languages::Language as ContentLanguage, search::SearchTarget};
 
 /// Max amount of characters a query is allowed to have
 pub const MAX_QUERY_LEN: usize = 400;
@@ -19,13 +15,19 @@ pub const JAPANESE_THRESHOLD: usize = 40;
 
 /// Represents a query
 pub struct QueryParser {
+    /// Where to search {Words,Names,Kanji,Sentences}
     q_type: SearchTarget,
+    /// The unmodified query from the search-input
     raw_query: String,
-    tags: Vec<Tag>,
+    /// Users settings
     user_settings: UserSettings,
+    /// Item offset based on the picked page
     page_offset: usize,
+    /// Current page
     page: usize,
+    /// Word index for the sentence reader
     word_index: usize,
+    /// Overwrite the users settings language
     language_override: Option<ContentLanguage>,
 }
 
@@ -39,7 +41,6 @@ impl QueryParser {
         QueryParser {
             q_type: query_type,
             raw_query,
-            tags: vec![],
             user_settings,
             page_offset: 0,
             page: 0,
@@ -74,8 +75,8 @@ impl QueryParser {
             self.language_override = Some(lang_overwrite);
         }
 
-        let (new_query, tags) = Self::partition_tags_query(&stripped);
-        let query: String = new_query
+        let (new_query, tags) = Self::extract_tags(&stripped);
+        let query_str: String = new_query
             .trim()
             .chars()
             .into_iter()
@@ -83,62 +84,51 @@ impl QueryParser {
             .collect();
 
         // Don't allow empty queries
-        if query.is_empty() && !self.tags.iter().any(|i| i.is_empty_allowed()) {
-            println!("empty");
+        if query_str.is_empty() && !tags.iter().any(|i| i.is_producer()) {
             return None;
         }
 
-        let parse_japanese = self.need_jp_parsing();
+        let q_lang = lang::parse(&query_str);
+        let target = self.get_search_target(&tags);
+        let form = self.parse_form(&query_str, &tags);
 
         Some(Query {
-            q_lang: parse_language(&query),
-            target: self.get_search_target(),
-            form: self.parse_form(&query),
+            q_lang,
+            target,
+            form,
             tags,
-            query_str: query,
+            query_str,
             raw_query: self.raw_query,
             settings: self.user_settings,
             page_offset: self.page_offset,
             page: self.page,
             word_index: self.word_index,
-            parse_japanese,
             cust_lang: self.language_override,
         })
     }
 
-    // Split the query string into tags and the actual query
-    fn partition_tags_query(query_str: &str) -> (String, Vec<Tag>) {
+    // Extracts all tags from `query_str` and returns a new String along with the extracted tags
+    #[inline]
+    fn extract_tags(query_str: &str) -> (String, Vec<Tag>) {
         tags::extract_parse(query_str, |t_s| {
             let parsed = tags::parse(&t_s.to_lowercase());
             (parsed, true)
         })
     }
 
-    fn need_jp_parsing(&self) -> bool {
-        let mod_tags = self
-            .tags
-            .iter()
-            .filter(|i| i.is_search_type() && *i.as_search_type().unwrap() == SearchTarget::Words)
-            .collect_vec();
-
-        self.tags.is_empty()
-            || utils::same_elements(&mod_tags, &[&Tag::PartOfSpeech(PosSimple::Verb)])
-    }
-
     /// Parses the QueryType based on the user selection and tags
     #[inline]
-    fn get_search_target(&self) -> SearchTarget {
-        self.tags
-            .iter()
+    fn get_search_target(&self, tags: &[Tag]) -> SearchTarget {
+        tags.iter()
             .filter_map(|i| i.as_search_type())
             .copied()
             .next()
             .unwrap_or(self.q_type)
     }
 
-    fn parse_form(&self, query: &str) -> Form {
+    fn parse_form(&self, query: &str, tags: &[Tag]) -> Form {
         // Tag only search
-        if query.is_empty() && self.tags.iter().any(|i| i.is_empty_allowed()) {
+        if query.is_empty() && tags.iter().any(|i| i.is_producer()) {
             return Form::TagOnly;
         }
 
@@ -191,36 +181,6 @@ impl QueryParser {
     }
 }
 
-/// Returns a number 0-100 of japanese character ratio
-fn get_jp_part(inp: &str) -> usize {
-    let mut total = 0;
-    let mut japanese = 0;
-    for c in inp.chars() {
-        total += 1;
-        if c.is_japanese() {
-            japanese += 1;
-        }
-    }
-
-    ((japanese as f32 / total as f32) * 100f32) as usize
-}
-
-/// Tries to determine between Japanese/Non japnaese
-pub fn parse_language(query: &str) -> QueryLang {
-    let query = strip_regex(query).unwrap_or_else(|| query.to_string());
-    if utils::korean::is_hangul_str(&query) {
-        return QueryLang::Korean;
-    }
-
-    let query = format_kanji_reading(&query);
-
-    match get_jp_part(&query).cmp(&JAPANESE_THRESHOLD) {
-        Ordering::Equal => QueryLang::Undetected,
-        Ordering::Less => QueryLang::Foreign,
-        Ordering::Greater => QueryLang::Japanese,
-    }
-}
-
 #[inline]
 pub fn format_kanji_reading(s: &str) -> String {
     s.replace('.', "").replace('-', "").replace(' ', "")
@@ -228,9 +188,4 @@ pub fn format_kanji_reading(s: &str) -> String {
 
 pub fn calc_page_offset(page: usize, page_size: usize) -> usize {
     page.saturating_sub(1) * page_size
-}
-
-/// Removes regex parts from a query. Returns `None` if `query` does not contain regex symbols
-fn strip_regex(query: &str) -> Option<String> {
-    Some(RegexSQuery::new(query)?.get_chars().into_iter().collect())
 }

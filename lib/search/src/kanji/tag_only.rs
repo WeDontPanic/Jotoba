@@ -3,7 +3,7 @@ use crate::query::{tags::Tag, Query};
 use error::Error;
 
 pub fn search(query: &Query) -> Result<KanjiResult, Error> {
-    let single_tag = query.tags.iter().find(|i| i.is_empty_allowed());
+    let single_tag = query.tags.iter().find(|i| i.is_producer());
 
     if single_tag.is_none() {
         return Ok(KanjiResult::default());

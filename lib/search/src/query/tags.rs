@@ -16,9 +16,9 @@ pub enum Tag {
 }
 
 impl Tag {
-    /// Returns true if the tag is allowed to be used without a query
+    /// Returns true if the tag can be used without a query
     #[inline]
-    pub fn is_empty_allowed(&self) -> bool {
+    pub fn is_producer(&self) -> bool {
         self.is_jlpt() || self.is_genki_lesson() || self.is_irregular_iru_eru()
     }
 

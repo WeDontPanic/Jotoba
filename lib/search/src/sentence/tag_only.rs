@@ -10,7 +10,7 @@ pub(super) fn search(query: &Query) -> Result<SentenceResult, Error> {
     let filter_tag = query
         .tags
         .iter()
-        .find(|i| i.is_empty_allowed())
+        .find(|i| i.is_producer())
         // We expect to find one since this function should only be called if there is one
         .ok_or(Error::Unexpected)?;
 

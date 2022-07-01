@@ -5,7 +5,7 @@ use types::jotoba::words::filter_languages;
 use utils::to_option;
 
 pub(super) fn search(search: &Search<'_>) -> Result<ResultData, Error> {
-    let filter_tag = search.query.tags.iter().find(|i| i.is_empty_allowed());
+    let filter_tag = search.query.tags.iter().find(|i| i.is_producer());
 
     if filter_tag.is_none() {
         println!("No tag found");

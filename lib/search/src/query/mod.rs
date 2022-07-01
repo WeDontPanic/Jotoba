@@ -23,17 +23,27 @@ const QUERY_ENCODE_SET: &AsciiSet = &NON_ALPHANUMERIC.add(b'/');
 /// A parsed query for a search request
 #[derive(Debug, Clone, PartialEq, Default, Hash)]
 pub struct Query {
+    /// The raw query string from the user without any modifications
     pub raw_query: String,
+    /// Parsed query string which will be used to find results
     pub query_str: String,
+    /// Where to search {Words,Names,Kanji,Sentences}
     pub target: SearchTarget,
+    /// Additional tags eg. #kanji or #jlpt4
     pub tags: Vec<Tag>,
+    /// The form of the Query. Eg. KanjiReadingSearch or TagOnly
     pub form: Form,
+    /// The language of the passed query string
     pub q_lang: QueryLang,
+    /// User settings
     pub settings: UserSettings,
+    /// Item offset based on the (current) page
     pub page_offset: usize,
+    /// Current page
     pub page: usize,
+    /// Word index within a sentence reader search
     pub word_index: usize,
-    pub parse_japanese: bool,
+    /// Overwrite the users settings language temporarily
     pub cust_lang: Option<Language>,
 }
 

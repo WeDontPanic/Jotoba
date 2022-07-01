@@ -15,7 +15,7 @@ pub(crate) fn adjust(request: Request) -> Request {
     // Some inputs place the roman letter of the japanese text while typing with romanized input.
     // If input is japanese but last character is a romanized letter, strip it off
 
-    let lang = query::parser::parse_language(&query_str);
+    let lang = query::parser::lang::parse(&query_str);
 
     if lang == QueryLang::Japanese && query_str.ends_with("ｎ") {
         query_str = query_str.replace("ｎ", "ん");
