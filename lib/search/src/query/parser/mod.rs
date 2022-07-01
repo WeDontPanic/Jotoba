@@ -35,12 +35,12 @@ impl QueryParser {
     /// Create a new QueryParser
     pub fn new(
         raw_query: String,
-        query_type: SearchTarget,
+        q_type: SearchTarget,
         user_settings: UserSettings,
     ) -> QueryParser {
         QueryParser {
-            q_type: query_type,
             raw_query,
+            q_type,
             user_settings,
             page_offset: 0,
             page: 0,
@@ -111,8 +111,8 @@ impl QueryParser {
     #[inline]
     fn extract_tags(query_str: &str) -> (String, Vec<Tag>) {
         tags::extract_parse(query_str, |t_s| {
-            let parsed = tags::parse(&t_s.to_lowercase());
-            (parsed, true)
+            let s = t_s.to_lowercase();
+            (tags::parse(&s), true)
         })
     }
 
@@ -159,22 +159,24 @@ impl QueryParser {
     /// Returns Some(KanjiReading) if the query is a kanji reading query
     fn parse_kanji_reading(&self, query: &str) -> Option<kanji::reading::ReadingSearch> {
         // Format of kanji query: '<Kanji> <reading>'
-        if utils::real_string_len(query) >= 3 && query.contains(' ') {
-            let split: Vec<_> = query.split(' ').collect();
+        if utils::real_string_len(query) < 3 || !query.contains(' ') {
+            return None;
+        }
 
-            let kanji_literal = split[0].trim();
+        let split: Vec<_> = query.split(' ').collect();
 
-            if kanji_literal.trim().is_kanji()
+        let kanji_lit = split[0].trim();
+
+        if kanji_lit.is_kanji()
                 && format_kanji_reading(split[1]).is_japanese()
                 // don't allow queries like '音楽 おと'
-                && utils::real_string_len(kanji_literal) == 1
-            {
-                // Kanji detected
-                return Some(kanji::reading::ReadingSearch {
-                    literal: split[0].chars().next().unwrap(),
-                    reading: split[1].to_string(),
-                });
-            }
+                && utils::real_string_len(kanji_lit) == 1
+        {
+            // Kanji detected
+            return Some(kanji::reading::ReadingSearch {
+                literal: split[0].chars().next().unwrap(),
+                reading: split[1].to_string(),
+            });
         }
 
         None

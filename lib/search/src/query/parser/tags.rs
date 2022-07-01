@@ -9,7 +9,7 @@ use types::jotoba::{
 use utils::trim_string_end;
 
 /// Regex for finding tags within a query.
-static TAG_REGEX: Lazy<Regex> = Lazy::new(|| regex::Regex::new("#[a-zA-Z0-9\\-]*").unwrap());
+static TAG_REGEX: Lazy<Regex> = Lazy::new(|| regex::Regex::new("#[a-zA-Z0-9\\-]+").unwrap());
 
 /// Extracts all tags from the query and returns a new one without tags along with those tags which were extracted
 pub fn extract_parse<'a, F>(inp: &'a str, parse: F) -> (String, Vec<Tag>)
@@ -65,7 +65,6 @@ pub fn parse(s: &str) -> Option<Tag> {
         }
     }
 
-    #[allow(irrefutable_let_patterns)]
     if let Some(tag) = parse_genki_tag(s) {
         return Some(tag);
     } else if let Some(tag) = parse_jlpt_tag(s) {
@@ -80,25 +79,22 @@ pub fn parse(s: &str) -> Option<Tag> {
     }
 }
 
-/// Returns `Some(u8)` if `s` is a valid N-tag
+/// Returns `Some(u8)` if `s` is a valid N/jlpt-tag
 fn parse_jlpt_tag(s: &str) -> Option<Tag> {
-    if s.chars().skip(1).next()?.to_lowercase().next()? != 'n' {
-        return None;
-    }
-
-    let nr: u8 = s[2..].parse().ok()?;
-    (nr > 0 && nr < 6).then(|| Tag::Jlpt(nr))
+    let jlpt = s
+        .strip_prefix("#n")
+        .or_else(|| s.strip_prefix("#jlpt"))?
+        .parse::<u8>()
+        .ok()?
+        .min(5)
+        .max(1);
+    Some(Tag::Jlpt(jlpt))
 }
 
 /// Returns `Some(u8)` if `s` is a valid genki-tag
 fn parse_genki_tag(s: &str) -> Option<Tag> {
-    let e = s.trim().strip_prefix("#")?.trim().to_lowercase();
-    if !e.starts_with("genki") {
-        return None;
-    }
-
-    let nr: u8 = s[6..].parse().ok()?;
-    (nr >= 3 && nr <= 23).then(|| Tag::GenkiLesson(nr))
+    let genki = s.strip_prefix("#genki")?.parse::<u8>().ok()?.max(3).min(23);
+    Some(Tag::GenkiLesson(genki))
 }
 
 /// Parse only search type
