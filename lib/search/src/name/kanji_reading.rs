@@ -3,27 +3,24 @@ use crate::{
     engine::{names::native, SearchTask},
     query::Query,
 };
-use error::Error;
 use japanese::furigana::generate::{assign_readings, ReadingRetrieve};
 use resources::retrieve::kanji::KanjiRetrieve;
-use types::jotoba::names::Name;
+use types::jotoba::{kanji::reading::ReadingSearch, names::Name};
 
 /// Search by kanji reading
-pub fn search(query: &Query) -> Result<NameResult, Error> {
-    let kanji_reading = query.form.as_kanji_reading().ok_or(Error::Unexpected)?;
-
-    let query_str = kanji_reading.literal.to_string();
+pub fn search(query: &Query, k_reading: &ReadingSearch) -> NameResult {
+    let query_str = k_reading.literal.to_string();
 
     let mut task = SearchTask::<native::Engine>::new(&query_str)
         .limit(query.settings.page_size as usize)
         .offset(query.page_offset);
 
-    let literal = kanji_reading.literal;
-    let reading = kanji_reading.reading.clone();
+    let literal = k_reading.literal;
+    let reading = k_reading.reading.clone();
 
     task.set_result_filter(move |name| filter(name, &reading, literal).unwrap_or(false));
 
-    Ok(NameResult::from(task.find()))
+    NameResult::from(task.find())
 }
 
 /// Search result filter function

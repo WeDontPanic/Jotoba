@@ -7,26 +7,39 @@ use crate::{
         names::{foreign, native},
         SearchEngine, SearchTask,
     },
-    query::QueryLang,
+    query::{Form, QueryLang},
 };
-use error::Error;
 use japanese::JapaneseExt;
 use result::NameResult;
 use types::jotoba::{names::Name, search::guess::Guess};
 
 /// Search for names
-#[inline]
-pub fn search(query: &Query) -> Result<NameResult, Error> {
-    if query.form.is_kanji_reading() {
-        kanji_reading::search(&query)
-    } else {
-        let res;
-        if query.q_lang == QueryLang::Japanese {
-            res = handle_search(japanese_search(&query));
-        } else {
-            res = handle_search(foreign_search(&query));
+pub fn search(query: &Query) -> NameResult {
+    match query.form {
+        Form::Sequence(seq) => sequence_search(seq),
+        Form::KanjiReading(ref reading) => kanji_reading::search(&query, reading),
+        _ => {
+            if query.q_lang == QueryLang::Japanese {
+                handle_search(japanese_search(&query))
+            } else {
+                handle_search(foreign_search(&query))
+            }
         }
-        Ok(res)
+    }
+}
+
+/// Search for sequence
+fn sequence_search(seq: u32) -> NameResult {
+    let retr = resources::get().names();
+
+    let mut names = vec![];
+    if let Some(name) = retr.by_sequence(seq) {
+        names.push(name);
+    }
+
+    NameResult {
+        items: names,
+        total_count: 1,
     }
 }
 

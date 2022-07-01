@@ -90,7 +90,7 @@ impl QueryParser {
 
         let q_lang = lang::parse(&query_str);
         let target = self.get_search_target(&tags);
-        let form = self.parse_form(&query_str, &tags);
+        let form = self.parse_form(&query_str, &tags, s_prefix);
 
         Some(Query {
             q_lang,
@@ -126,7 +126,12 @@ impl QueryParser {
             .unwrap_or(self.q_type)
     }
 
-    fn parse_form(&self, query: &str, tags: &[Tag]) -> Form {
+    fn parse_form(&self, query: &str, tags: &[Tag], s_prefix: Option<SearchPrefix>) -> Form {
+        // Sequence search
+        if let Some(SearchPrefix::BySequence(r#seq)) = s_prefix {
+            return Form::Sequence(seq);
+        }
+
         // Tag only search
         if query.is_empty() && tags.iter().any(|i| i.is_producer()) {
             return Form::TagOnly;

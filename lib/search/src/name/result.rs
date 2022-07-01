@@ -9,6 +9,13 @@ pub struct NameResult {
     pub total_count: u32,
 }
 
+impl NameResult {
+    #[inline]
+    pub fn new(items: Vec<&'static Name>, total_count: u32) -> Self {
+        Self { items, total_count }
+    }
+}
+
 /// Returns the Name's types in an human readable way
 pub fn get_types_humanized(name: &Name, dict: &TranslationDict, lang: Language) -> String {
     if let Some(ref n_types) = name.name_type {

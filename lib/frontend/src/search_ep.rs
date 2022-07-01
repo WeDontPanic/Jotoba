@@ -127,7 +127,7 @@ async fn kanji_search<'a>(base_data: &mut BaseData<'a>, query: &'a Query) -> SRe
 /// Perform a name search
 async fn name_search<'a>(base_data: &mut BaseData<'a>, query: &'a Query) -> SResult {
     let q = query.to_owned();
-    let result = web::block(move || search::name::search(&q)).await??;
+    let result = web::block(move || search::name::search(&q)).await?;
 
     base_data.with_pages(result.total_count, query.page as u32);
     Ok(ResultData::Name(result.items))

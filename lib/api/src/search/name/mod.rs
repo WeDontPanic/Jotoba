@@ -6,6 +6,6 @@ use super::{Result, SearchRequest};
 /// Do a name search via API
 pub async fn name_search(payload: Json<SearchRequest>) -> Result<Json<Response>> {
     let query = super::parse_query(payload, SearchTarget::Kanji)?;
-    let result = web::block(move || search::name::search(&query)).await??;
+    let result = web::block(move || search::name::search(&query)).await?;
     Ok(Json(result.items.into()))
 }

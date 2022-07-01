@@ -15,9 +15,33 @@ use types::jotoba::{languages::Language, search::guess::Guess, sentences::Senten
 pub fn search(query: &Query) -> Result<SentenceResult, Error> {
     let res = match query.form {
         Form::TagOnly => tag_only::search(query)?,
+        Form::Sequence(seq) => seq_search(query, seq),
         _ => normal_search(query),
     };
     Ok(res)
+}
+
+/// Search by sequence id
+fn seq_search(query: &Query, seq: u32) -> SentenceResult {
+    let sentence = resources::get().sentences().by_id(seq);
+    if sentence.is_none() {
+        return SentenceResult::default();
+    }
+    let sentence = sentence.unwrap();
+
+    let lang = query.get_search_lang();
+    let show_english = query.settings.show_english();
+    let sentence = match map_sentence_to_item(sentence, lang, show_english) {
+        Some(s) => s,
+        None => return SentenceResult::default(),
+    };
+
+    let hidden = query.has_tag(Tag::Hidden);
+    SentenceResult {
+        items: vec![sentence],
+        len: 1,
+        hidden,
+    }
 }
 
 fn normal_search(query: &Query) -> SentenceResult {

@@ -6,5 +6,5 @@ pub enum SearchPrefix {
     /// A custom language prefix. Eg: 'rus: Россия'
     LangOverwrite(Language),
     /// Search by sequence-id within jmdict
-    BySequence(usize),
+    BySequence(u32),
 }

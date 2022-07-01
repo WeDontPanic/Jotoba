@@ -22,7 +22,7 @@ pub async fn search(payload: Json<SearchPayload>) -> Result<Json<Resp>> {
         .ok_or(RestError::BadRequest)?;
 
     let query_c = query.clone();
-    let result = web::block(move || search::name::search(&query_c)).await??;
+    let result = web::block(move || search::name::search(&query_c)).await?;
     let res = names::Response::new(result.items.into_iter().cloned().collect());
     let len = result.total_count as u32;
     let page = new_page(&payload, res, len, payload.settings.page_size);

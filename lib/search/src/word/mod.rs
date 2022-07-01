@@ -59,6 +59,7 @@ impl<'a> Search<'a> {
         let search_result = match self.query.form {
             Form::KanjiReading(_) => kanji::by_reading(self)?,
             Form::TagOnly => tag_only::search(self)?,
+            Form::Sequence(seq) => self.sequence_search(seq),
             _ => self.do_word_search()?,
         };
 
@@ -76,6 +77,27 @@ impl<'a> Search<'a> {
             searched_query: search_result.searched_query,
         };
         Ok(res)
+    }
+
+    /// Search by sequence number
+    fn sequence_search(&self, seq: u32) -> ResultData {
+        let word = match resources::get().words().by_sequence(seq) {
+            Some(w) => w,
+            None => return ResultData::default(),
+        };
+        let mut words = vec![word.clone()];
+
+        filter_languages(
+            words.iter_mut(),
+            self.query.settings.user_lang,
+            self.query.settings.show_english,
+        );
+
+        ResultData {
+            words,
+            count: 1,
+            ..Default::default()
+        }
     }
 
     /// Search by a word

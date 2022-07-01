@@ -9,7 +9,7 @@ pub fn parse_prefix(query: &str) -> (&str, Option<SearchPrefix>) {
     }
 
     if let Some(seq_id) = try_sequence(query) {
-        return ("", Some(SearchPrefix::BySequence(seq_id)));
+        return (query, Some(SearchPrefix::BySequence(seq_id)));
     }
 
     (query, None)
@@ -38,10 +38,10 @@ fn try_lang_prefix(query: &str) -> (&str, Option<Language>) {
 }
 
 #[inline]
-fn try_sequence(query: &str) -> Option<usize> {
+fn try_sequence(query: &str) -> Option<u32> {
     if let Some(seq_str) = query.strip_prefix("seq:") {
         let seq_str = seq_str.trim();
-        let parsed: usize = seq_str.parse().ok()?;
+        let parsed: u32 = seq_str.parse().ok()?;
         return Some(parsed);
     }
     None
