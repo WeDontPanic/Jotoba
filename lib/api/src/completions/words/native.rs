@@ -17,7 +17,7 @@ const MAX_SENTENCE_LEN: usize = 15;
 /// Get suggestions for foreign search input
 pub fn suggestions(query: &Query, romaji_query: &str, radicals: &[char]) -> Option<Vec<WordPair>> {
     let jp_engine = indexes::get_suggestions().jp_words();
-    let query_str = query.query.as_str();
+    let query_str = query.query_str.as_str();
 
     let mut suggestion_task = SuggestionTask::new(30);
 

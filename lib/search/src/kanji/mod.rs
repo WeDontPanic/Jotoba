@@ -22,12 +22,12 @@ pub fn search(query: &Query) -> Result<KanjiResult, Error> {
         return tag_only::search(query);
     }
 
-    let query_str = format_query(&query.query);
+    let query_str = format_query(&query.query_str);
 
-    let res = match query.language {
-        QueryLang::Japanese => by_japanese_query(&query.query),
-        QueryLang::Korean => by_korean_reading(&query.query),
-        QueryLang::Foreign | QueryLang::Undetected => by_meaning(&query.query),
+    let res = match query.q_lang {
+        QueryLang::Japanese => by_japanese_query(&query.query_str),
+        QueryLang::Korean => by_korean_reading(&query.query_str),
+        QueryLang::Foreign | QueryLang::Undetected => by_meaning(&query.query_str),
     };
 
     let mut items = to_item(res, &query);
@@ -103,7 +103,7 @@ fn kanji_from_str(text: &str) -> Vec<Kanji> {
 
 /// Guesses the amount of results a search would return with given `query`
 pub fn guess_result(query: &Query) -> Option<Guess> {
-    let query_str = &query.query;
+    let query_str = &query.query_str;
 
     let kanji_storage = resources::get().kanji();
     let guess = query_str

@@ -1,4 +1,4 @@
-use crate::jotoba::search::QueryType;
+use crate::jotoba::search::SearchTarget;
 use serde::{Deserialize, Serialize};
 
 /// Request payload structure for suggestion endpoint
@@ -13,7 +13,7 @@ pub struct Request {
 
     /// The search type the input is designed for
     #[serde(default)]
-    pub search_type: QueryType,
+    pub search_type: SearchTarget,
 
     #[serde(default)]
     pub radicals: Vec<char>,

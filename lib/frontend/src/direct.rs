@@ -8,7 +8,7 @@ use search::{
     sentence::{self, result::SentenceResult},
     word::{self, result::WordResult},
 };
-use types::jotoba::{search::QueryType, words::filter_languages};
+use types::jotoba::{search::SearchTarget, words::filter_languages};
 
 use crate::{
     og_tags::{self, TagKeyName},
@@ -28,13 +28,13 @@ pub async fn direct_ep(
     let settings = user_settings::parse(&request);
 
     let (stype, id) = h_query.into_inner();
-    let query_type = QueryType::try_from(stype).map_err(|_| Error::BadRequest)?;
+    let query_type = SearchTarget::try_from(stype).map_err(|_| Error::BadRequest)?;
 
     let result_data = match query_type {
-        QueryType::Words => find_direct_word(&id, &settings).await,
-        QueryType::Names => find_direct_name(&id).await,
-        QueryType::Sentences => find_direct_sentence(&id, &settings).await,
-        QueryType::Kanji => return Ok(redirect_home()),
+        SearchTarget::Words => find_direct_word(&id, &settings).await,
+        SearchTarget::Names => find_direct_name(&id).await,
+        SearchTarget::Sentences => find_direct_sentence(&id, &settings).await,
+        SearchTarget::Kanji => return Ok(redirect_home()),
     };
 
     if let Err(err) = result_data {
@@ -53,15 +53,15 @@ pub async fn direct_ep(
     Ok(HttpResponse::Ok().body(render!(templates::base, base_data).render()))
 }
 
-fn set_og_tag(base_data: &mut BaseData, query_type: QueryType) {
+fn set_og_tag(base_data: &mut BaseData, query_type: SearchTarget) {
     let search_result = base_data.site.as_search_result().unwrap();
     let mut search_res_og = og_tags::TagSet::with_capacity(5);
 
     let title = match query_type {
-        QueryType::Kanji => return,
-        QueryType::Sentences => "Jotoba sentence".to_string(),
-        QueryType::Names => format!("{} - Jotoba name", search_res_val(&search_result).unwrap()),
-        QueryType::Words => format!("{} - Jotoba word", search_res_val(&search_result).unwrap()),
+        SearchTarget::Kanji => return,
+        SearchTarget::Sentences => "Jotoba sentence".to_string(),
+        SearchTarget::Names => format!("{} - Jotoba name", search_res_val(&search_result).unwrap()),
+        SearchTarget::Words => format!("{} - Jotoba word", search_res_val(&search_result).unwrap()),
     };
 
     let descrption = "Jotoba entry. See more...";

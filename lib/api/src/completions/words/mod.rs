@@ -14,7 +14,7 @@ pub(crate) fn suggestions(query: Query, radicals: &[char]) -> Option<Response> {
     let response = try_word_suggestions(&query, radicals)?;
 
     // Tries to do a katakana search if nothing was found
-    let result = if response.is_empty() && query.query.is_hiragana() {
+    let result = if response.is_empty() && query.query_str.is_hiragana() {
         try_word_suggestions(&get_katakana_query(&query), radicals)?
     } else {
         response
@@ -31,15 +31,15 @@ fn try_word_suggestions(query: &Query, radicals: &[char]) -> Option<Vec<WordPair
     let start = Instant::now();
     // Get sugesstions for matching language
 
-    let romaji_query = RomajiExt::to_romaji(query.query.as_str());
+    let romaji_query = RomajiExt::to_romaji(query.query_str.as_str());
 
-    let word_pairs = match query.language {
+    let word_pairs = match query.q_lang {
         QueryLang::Japanese => native::suggestions(&query, &romaji_query, radicals)?,
         QueryLang::Foreign | QueryLang::Undetected | QueryLang::Korean => {
-            let mut res = foreign::suggestions(&query, &query.query).unwrap_or_default();
+            let mut res = foreign::suggestions(&query, &query.query_str).unwrap_or_default();
 
             // Order: put exact matches to top
-            res.sort_by(|a, b| word_pair_order(a, b, &query.query));
+            res.sort_by(|a, b| word_pair_order(a, b, &query.query_str));
             res
         }
     };
@@ -56,7 +56,7 @@ fn word_pair_order(a: &WordPair, b: &WordPair, query: &str) -> Ordering {
 /// Returns an equivalent katakana query
 fn get_katakana_query(query: &Query) -> Query {
     Query {
-        query: romaji::RomajiExt::to_katakana(query.query.as_str()),
+        query_str: romaji::RomajiExt::to_katakana(query.query_str.as_str()),
         ..query.clone()
     }
 }

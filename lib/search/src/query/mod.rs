@@ -1,5 +1,6 @@
 pub mod form;
 pub mod parser;
+pub mod prefix;
 pub mod regex;
 pub mod tags;
 pub mod user_settings;
@@ -8,60 +9,45 @@ pub use form::Form;
 pub use tags::Tag;
 pub use user_settings::UserSettings;
 
-use self::{regex::RegexSQuery, tags::SearchTypeTag};
-use itertools::Itertools;
+use self::regex::RegexSQuery;
 use percent_encoding::{utf8_percent_encode, AsciiSet, NON_ALPHANUMERIC};
 use std::hash::Hash;
 use types::jotoba::{
     languages::Language,
-    search::QueryType,
+    search::SearchTarget,
     words::{misc::Misc, part_of_speech::PosSimple},
 };
 
 const QUERY_ENCODE_SET: &AsciiSet = &NON_ALPHANUMERIC.add(b'/');
 
-/// A single user provided query in a parsed format
+/// A parsed query for a search request
 #[derive(Debug, Clone, PartialEq, Default, Hash)]
 pub struct Query {
-    pub original_query: String,
-    pub query: String,
-    pub type_: QueryType,
+    pub raw_query: String,
+    pub query_str: String,
+    pub target: SearchTarget,
     pub tags: Vec<Tag>,
     pub form: Form,
-    pub language: QueryLang,
+    pub q_lang: QueryLang,
     pub settings: UserSettings,
     pub page_offset: usize,
     pub page: usize,
     pub word_index: usize,
     pub parse_japanese: bool,
-    pub language_override: Option<Language>,
-    /// Whether to use the user query only or modify it if necessary
-    pub use_original: bool,
+    pub cust_lang: Option<Language>,
 }
 
-/// The language of the query
-#[derive(Debug, Clone, Copy, PartialEq, Hash)]
+/// The language of the query content itself
+#[derive(Debug, Default, Clone, Copy, PartialEq, Hash)]
 pub enum QueryLang {
     Japanese,
     Foreign,
     Korean,
+    #[default]
     Undetected,
 }
 
-impl Default for QueryLang {
-    #[inline]
-    fn default() -> Self {
-        Self::Undetected
-    }
-}
-
 impl Query {
-    /// Returns true if the query is valid
-    #[inline]
-    pub fn is_valid(&self) -> bool {
-        !self.query.is_empty()
-    }
-
     /// Returns true if the query has at least one pos tag
     #[inline]
     pub fn has_part_of_speech_tags(&self) -> bool {
@@ -70,7 +56,7 @@ impl Query {
 
     /// Returns an iterator over all search type tags
     #[inline]
-    pub fn get_search_type_tags(&self) -> impl Iterator<Item = &SearchTypeTag> + '_ {
+    pub fn get_search_type_tags(&self) -> impl Iterator<Item = &SearchTarget> + '_ {
         self.tags.iter().filter_map(|i| i.as_search_type())
     }
 
@@ -107,42 +93,34 @@ impl Query {
     /// Returns the original_query with search type tags omitted
     #[inline]
     pub fn without_search_type_tags(&self) -> String {
-        self.original_query
-            .clone()
-            .split(' ')
-            .into_iter()
-            .filter(|i| {
-                let is_tag = i.starts_with('#');
-
-                let is_search_type_tag = is_tag
-                    .then(|| Tag::parse_from_str(i).map(|i| Tag::is_search_type(&i)))
-                    .flatten()
-                    .unwrap_or_default();
-
-                // Filter out all search type tags
-                (is_tag && !is_search_type_tag) || !is_tag
-            })
-            .join(" ")
+        let (new_query, _) = parser::tags::extract_parse(&self.raw_query, |s| {
+            let p = parser::tags::parse(&s);
+            if p.is_none() {
+                return (None, false);
+            }
+            (p, p.unwrap().is_search_type())
+        });
+        new_query
     }
 
-    /// Encodes the query using percent encoding
+    /// Encodes the parsed query string using percent encoding
     pub fn get_query_encoded(&self) -> String {
-        utf8_percent_encode(&self.query, QUERY_ENCODE_SET).to_string()
+        utf8_percent_encode(&self.query_str, QUERY_ENCODE_SET).to_string()
     }
 
     /// Returns the language with lang override applied
-    pub fn get_lang_with_override(&self) -> Language {
-        self.language_override.unwrap_or(self.settings.user_lang)
+    pub fn get_search_lang(&self) -> Language {
+        self.cust_lang.unwrap_or(self.settings.user_lang)
     }
 
     /// Returns a `RegexSQuery` if the query contains a valid regex
     pub fn as_regex_query(&self) -> Option<RegexSQuery> {
         // Only japanese regex support (for now)
-        if self.language != QueryLang::Japanese {
+        if self.q_lang != QueryLang::Japanese {
             return None;
         }
 
         // returns `None` if no regex given, so we don't need to check for that here
-        RegexSQuery::new(&self.query)
+        RegexSQuery::new(&self.query_str)
     }
 }

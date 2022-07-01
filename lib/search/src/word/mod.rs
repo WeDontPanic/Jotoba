@@ -80,7 +80,7 @@ impl<'a> Search<'a> {
 
     /// Search by a word
     fn do_word_search(&self) -> Result<ResultData, Error> {
-        let native_word_res = self.native_results(&self.query.query)?;
+        let native_word_res = self.native_results(&self.query.query_str)?;
         let gloss_word_res = self.gloss_results()?;
 
         let sentence_parts = native_word_res
@@ -179,7 +179,7 @@ impl<'a> Search<'a> {
         ),
         Error,
     > {
-        if self.query.language != QueryLang::Japanese && !query_str.is_japanese() {
+        if self.query.q_lang != QueryLang::Japanese && !query_str.is_japanese() {
             return Err(Error::NotFound);
         }
 
@@ -196,13 +196,13 @@ impl<'a> Search<'a> {
             }
         }
 
-        let fmt_query = japanese::to_halfwidth(&self.query.query);
+        let fmt_query = japanese::to_halfwidth(&self.query.query_str);
         let (query, mut sentence, word_info) = self.parse_sentence(&fmt_query, allow_sentence);
 
         let original_query = if sentence.is_some() {
             word_info.as_ref().unwrap().get_inflected().clone()
         } else {
-            self.query.query.clone()
+            self.query.query_str.clone()
         };
 
         let mut search_task = self.native_search_task(&query, &original_query, sentence.is_some());
@@ -214,7 +214,7 @@ impl<'a> Search<'a> {
 
         // If query was modified (ie. through reflection), search for original too
         if query != query_str && sentence.is_none() {
-            search_task.add_query(&self.query.query);
+            search_task.add_query(&self.query.query_str);
         }
 
         let res = search_task.find();
@@ -277,10 +277,10 @@ impl<'a> Search<'a> {
     /// Returns a `SearchTask` for the current query. This will be used to find all words for
     /// the search
     fn gloss_search_task(&self) -> SearchTask<foreign::Engine> {
-        let used_lang = self.query.get_lang_with_override();
+        let used_lang = self.query.get_search_lang();
 
         let mut search_task: SearchTask<foreign::Engine> =
-            SearchTask::with_language(&self.query.query, used_lang)
+            SearchTask::with_language(&self.query.query_str, used_lang)
                 .limit(self.query.settings.page_size as usize)
                 .offset(self.query.page_offset)
                 .threshold(0.4f32);
@@ -291,7 +291,7 @@ impl<'a> Search<'a> {
         // Don't show english results if user wants to search in a specified language
         //&& self.query.language_override.is_none()
         {
-            search_task.add_language_query(&self.query.query, Language::English);
+            search_task.add_language_query(&self.query.query_str, Language::English);
         }
 
         // Set user defined filter
@@ -310,7 +310,7 @@ impl<'a> Search<'a> {
     /// Search for words by their translations
     fn gloss_results(&self) -> Result<ResultData, Error> {
         if !matches!(
-            self.query.language,
+            self.query.q_lang,
             QueryLang::Foreign | QueryLang::Undetected
         ) {
             return Ok(ResultData::default());
@@ -318,7 +318,7 @@ impl<'a> Search<'a> {
 
         let mut search_task = self.gloss_search_task();
 
-        let could_be_romaji = japanese::guessing::could_be_romaji(&self.query.query);
+        let could_be_romaji = japanese::guessing::could_be_romaji(&self.query.query_str);
 
         // TODO: fix aligning
         search_task.set_align(false);
@@ -334,18 +334,17 @@ impl<'a> Search<'a> {
 
         let mut infl_info = None;
         let mut sentence = None;
-        let mut searched_query = self.query.query.clone();
+        let mut searched_query = self.query.query_str.clone();
 
-        if !self.query.use_original
-            && count < 50
+        if count < 50
             && could_be_romaji
             && !SearchTask::<foreign::Engine>::with_language(
-                &self.query.query.to_lowercase(),
-                self.query.get_lang_with_override(),
+                &self.query.query_str.to_lowercase(),
+                self.query.get_search_lang(),
             )
             .has_term()
         {
-            let hg_query = utils::format_romaji_nn(&self.query.query).to_hiragana();
+            let hg_query = utils::format_romaji_nn(&self.query.query_str).to_hiragana();
             let hg_search = self.native_search(&hg_query, false);
             if let Ok((native_res, inflection_info, sent, sq)) = hg_search {
                 infl_info = inflection_info;
@@ -380,7 +379,7 @@ impl<'a> Search<'a> {
 
         filter_languages(
             wordresults.iter_mut(),
-            self.query.get_lang_with_override(),
+            self.query.get_search_lang(),
             self.query.settings.show_english,
         );
 
@@ -396,14 +395,14 @@ impl<'a> Search<'a> {
     }
 
     fn check_other_lang(&self) -> Result<ResultData, Error> {
-        let guessed_langs = foreign::guess_language(&self.query.query)
+        let guessed_langs = foreign::guess_language(&self.query.query_str)
             .into_iter()
-            .filter(|i| *i != self.query.get_lang_with_override())
+            .filter(|i| *i != self.query.get_search_lang())
             .collect::<Vec<_>>();
 
         if guessed_langs.len() == 1 {
             let mut new_query = self.query.clone();
-            new_query.language_override = Some(guessed_langs[0]);
+            new_query.cust_lang = Some(guessed_langs[0]);
             return Search { query: &new_query }.gloss_results();
         }
 
@@ -514,9 +513,9 @@ pub fn wc_to_simple_pos(wc: &WordClass) -> Option<PosSimple> {
 }
 
 pub fn guess_inp_language(query: &Query) -> Vec<Language> {
-    foreign::guess_language(&query.query)
+    foreign::guess_language(&query.query_str)
         .into_iter()
-        .filter(|i| *i != query.get_lang_with_override())
+        .filter(|i| *i != query.get_search_lang())
         .collect()
 }
 
@@ -524,7 +523,7 @@ pub fn guess_inp_language(query: &Query) -> Vec<Language> {
 pub fn guess_result(query: &Query) -> Option<Guess> {
     let search = Search { query };
 
-    if query.language == QueryLang::Japanese {
+    if query.q_lang == QueryLang::Japanese {
         guess_native(search)
     } else {
         guess_foreign(search)
@@ -532,9 +531,9 @@ pub fn guess_result(query: &Query) -> Option<Guess> {
 }
 
 fn guess_native(search: Search) -> Option<Guess> {
-    let (query, sentence, _) = search.parse_sentence(&search.query.query, false);
+    let (query, sentence, _) = search.parse_sentence(&search.query.query_str, false);
     search
-        .native_search_task(&query, &search.query.query, sentence.is_some())
+        .native_search_task(&query, &search.query.query_str, sentence.is_some())
         .estimate_result_count()
         .ok()
 }

@@ -61,7 +61,7 @@ fn alternative_reading_search(search: &Search<'_>) -> Result<ResultData, Error> 
     // Modify search query
     Search {
         query: &Query {
-            query: kanji::literal_kun_reading(&reading.reading),
+            query_str: kanji::literal_kun_reading(&reading.reading),
             ..search.query.to_owned()
         },
     }

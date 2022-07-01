@@ -1,5 +1,5 @@
 use query::Query;
-use types::jotoba::search::{help::SearchHelp, QueryType};
+use types::jotoba::search::{help::SearchHelp, SearchTarget};
 
 pub mod engine;
 pub mod kanji;
@@ -47,19 +47,19 @@ impl SearchMode {
 }
 
 /// Build a [`SearchHelp`] in for cases without any search results
-pub fn build_help(querytype: QueryType, query: &Query) -> Option<SearchHelp> {
+pub fn build_help(querytype: SearchTarget, query: &Query) -> Option<SearchHelp> {
     let mut help = SearchHelp::default();
 
-    for qt in QueryType::iterate().filter(|i| *i != querytype) {
+    for qt in SearchTarget::iterate().filter(|i| *i != querytype) {
         match qt {
-            QueryType::Kanji => help.kanji = kanji::guess_result(query),
-            QueryType::Sentences => help.sentences = sentence::guess_result(query),
-            QueryType::Names => help.names = name::guess_result(query),
-            QueryType::Words => help.words = word::guess_result(query),
+            SearchTarget::Kanji => help.kanji = kanji::guess_result(query),
+            SearchTarget::Sentences => help.sentences = sentence::guess_result(query),
+            SearchTarget::Names => help.names = name::guess_result(query),
+            SearchTarget::Words => help.words = word::guess_result(query),
         }
     }
 
-    if querytype == QueryType::Words {
+    if querytype == SearchTarget::Words {
         help.other_langs = word::guess_inp_language(query);
     }
 

@@ -7,7 +7,7 @@ use search::query::{Query, QueryLang};
 
 /// Returns name suggestions
 pub(crate) fn suggestions(query: Query) -> Option<Response> {
-    match query.language {
+    match query.q_lang {
         QueryLang::Japanese => native_suggestions(&query),
         QueryLang::Foreign => transcription_suggestions(&query),
         _ => None,
@@ -16,7 +16,7 @@ pub(crate) fn suggestions(query: Query) -> Option<Response> {
 
 /// Returns trascripted name suggestions
 pub fn transcription_suggestions(query: &Query) -> Option<Response> {
-    let query_str = &query.query;
+    let query_str = &query.query_str;
     let index = indexes::get_suggestions().names_foreign();
 
     let mut task = SuggestionTask::new(30);
@@ -43,7 +43,7 @@ pub fn transcription_suggestions(query: &Query) -> Option<Response> {
 
 /// Returns native name suggestions
 pub fn native_suggestions(query: &Query) -> Option<Response> {
-    let query_str = &query.query;
+    let query_str = &query.query_str;
 
     let index = indexes::get_suggestions().names_native();
     let mut task = SuggestionTask::new(30);

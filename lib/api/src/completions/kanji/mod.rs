@@ -6,7 +6,7 @@ use types::api::completions::Response;
 
 /// Returns kanji suggestions
 pub(crate) fn suggestions(query: Query) -> Option<Response> {
-    match query.language {
+    match query.q_lang {
         QueryLang::Foreign => meaning::suggestions(&query),
         QueryLang::Japanese => japanese_suggestions(&query),
         /*
@@ -18,7 +18,7 @@ pub(crate) fn suggestions(query: Query) -> Option<Response> {
 }
 
 fn japanese_suggestions(query: &Query) -> Option<Response> {
-    let romaji = romaji::RomajiExt::to_romaji(query.query.as_str());
+    let romaji = romaji::RomajiExt::to_romaji(query.query_str.as_str());
     let mut suggestions = super::words::native::suggestions(&query, &romaji, &[])?;
 
     // romev entries without kanji

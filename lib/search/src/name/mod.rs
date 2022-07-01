@@ -21,7 +21,7 @@ pub fn search(query: &Query) -> Result<NameResult, Error> {
         kanji_reading::search(&query)
     } else {
         let res;
-        if query.language == QueryLang::Japanese {
+        if query.q_lang == QueryLang::Japanese {
             res = handle_search(japanese_search(&query));
         } else {
             res = handle_search(foreign_search(&query));
@@ -31,14 +31,14 @@ pub fn search(query: &Query) -> Result<NameResult, Error> {
 }
 
 fn japanese_search(query: &Query) -> SearchTask<native::Engine> {
-    SearchTask::<native::Engine>::new(&query.query)
+    SearchTask::<native::Engine>::new(&query.query_str)
         .threshold(0.05f32)
         .offset(query.page_offset)
         .limit(query.settings.page_size as usize)
 }
 
 fn foreign_search(query: &Query) -> SearchTask<foreign::Engine> {
-    SearchTask::<foreign::Engine>::new(&query.query)
+    SearchTask::<foreign::Engine>::new(&query.query_str)
         .threshold(0.05f32)
         .offset(query.page_offset)
         .limit(query.settings.page_size as usize)
@@ -56,7 +56,7 @@ pub fn guess_result(query: &Query) -> Option<Guess> {
         return None;
     }
 
-    if query.query.is_japanese() {
+    if query.query_str.is_japanese() {
         japanese_search(query).estimate_result_count()
     } else {
         foreign_search(query).estimate_result_count()

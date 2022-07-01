@@ -34,7 +34,7 @@ use search::{kanji::result::Item as KanjiItem, query::UserSettings, word::result
 use types::jotoba::{
     names::Name,
     pagination::Pagination,
-    search::{help::SearchHelp, QueryType},
+    search::{help::SearchHelp, SearchTarget},
 };
 use unescaped::{UnescapedStr, UnescapedString};
 
@@ -195,9 +195,9 @@ impl<'a> BaseData<'a> {
     }
 
     /// Return a string 'selected' if the query_type in qs is equal to i
-    pub fn sel_str(&self, i: QueryType) -> &'static str {
+    pub fn sel_str(&self, i: SearchTarget) -> &'static str {
         let is_selected = match &self.site {
-            Site::SearchResult(search_result) => search_result.query.type_ == i,
+            Site::SearchResult(search_result) => search_result.query.target == i,
             _ => false,
         };
 
@@ -264,7 +264,7 @@ impl<'a> SearchResult<'a> {
         let mut tags = og_tags::TagSet::with_capacity(5);
 
         let search_type_name = self.search_type_ogg();
-        let query = &self.query.query;
+        let query = &self.query.query_str;
         let title = format!("Jotoba {search_type_name} search result for '{query}'");
         let description = self.og_tag_description();
 

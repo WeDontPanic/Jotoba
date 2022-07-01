@@ -5,7 +5,7 @@ use crate::app::Result;
 use actix_web::web::{self, Json};
 use error::api_error::RestError;
 use types::api::app::search::responses::Response;
-use types::jotoba::search::QueryType;
+use types::jotoba::search::SearchTarget;
 use types::{
     api::app::search::{
         query::SearchPayload,
@@ -40,7 +40,7 @@ pub async fn search(payload: Json<SearchPayload>) -> Result<Json<Resp>> {
     let len = result.total_len as u32;
     let kanji = kanji::Response::new(items);
     let page = new_page(&payload, kanji, len, payload.settings.kanji_page_size);
-    let res = super::new_response(page, QueryType::Kanji, &query);
+    let res = super::new_response(page, SearchTarget::Kanji, &query);
 
     Ok(Json(res))
 }

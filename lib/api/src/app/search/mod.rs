@@ -12,7 +12,7 @@ use types::{
     api::app::search::{query::SearchPayload, responses::Response},
     jotoba::{
         pagination::{page::Page, Pagination},
-        search::QueryType,
+        search::SearchTarget,
     },
 };
 
@@ -21,7 +21,7 @@ const LAST_PAGE: u32 = 100;
 
 pub(crate) fn new_response<T: Serialize>(
     page: Page<T>,
-    q_type: QueryType,
+    q_type: SearchTarget,
     query: &Query,
 ) -> Response<T> {
     Response::with_help_fn(page, |p| {
@@ -56,15 +56,19 @@ pub(crate) fn new_page<V: Serialize + Clone>(
 pub(crate) fn convert_payload(pl: &SearchPayload) -> QueryParser {
     let user_settings = convert_user_settings(&pl.settings);
 
-    QueryParser::new(
+    let mut q_parser = QueryParser::new(
         pl.query_str.clone(),
-        types::jotoba::search::QueryType::Kanji,
+        types::jotoba::search::SearchTarget::Kanji,
         user_settings,
-        pl.page.unwrap_or_default() as usize,
-        pl.word_index.unwrap_or_default(),
-        false,
-        pl.lang_overwrite,
     )
+    .with_page(pl.page.unwrap_or_default() as usize)
+    .with_word_index(pl.word_index.unwrap_or_default());
+
+    if let Some(lang) = pl.lang_overwrite {
+        q_parser = q_parser.with_lang_overwrite(lang);
+    }
+
+    q_parser
 }
 
 pub(crate) fn convert_user_settings(

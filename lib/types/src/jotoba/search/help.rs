@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::jotoba::languages::Language;
 
-use super::{guess::Guess, QueryType};
+use super::{guess::Guess, SearchTarget};
 
 /// Structure containing information for better search help in case no item was
 /// found in a search
@@ -43,12 +43,12 @@ impl SearchHelp {
     }
 
     /// Returns an iterator over all (QueryType, Guess) pairs that have a value
-    pub fn iter_items(&self) -> impl Iterator<Item = (QueryType, Guess)> {
+    pub fn iter_items(&self) -> impl Iterator<Item = (SearchTarget, Guess)> {
         let types = &[
-            (self.words, QueryType::Words),
-            (self.names, QueryType::Names),
-            (self.sentences, QueryType::Sentences),
-            (self.kanji, QueryType::Kanji),
+            (self.words, SearchTarget::Words),
+            (self.names, SearchTarget::Names),
+            (self.sentences, SearchTarget::Sentences),
+            (self.kanji, SearchTarget::Kanji),
         ];
 
         types

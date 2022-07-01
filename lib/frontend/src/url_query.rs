@@ -5,12 +5,12 @@ use search::{
     query::{parser::QueryParser, UserSettings},
 };
 use serde::{Deserialize, Deserializer};
-use types::jotoba::{languages::Language, search::QueryType};
+use types::jotoba::{languages::Language, search::SearchTarget};
 
 #[derive(Deserialize)]
 pub struct QueryStruct {
     #[serde(rename = "t")]
-    pub search_type: Option<QueryType>,
+    pub search_type: Option<SearchTarget>,
     #[serde(rename = "i")]
     pub word_index: Option<usize>,
     #[serde(rename = "p", default = "default_page")]
@@ -47,15 +47,19 @@ impl QueryStruct {
     /// Returns a [`QueryParser`] of the query
     #[inline]
     pub fn as_query_parser(&self, user_settings: UserSettings) -> QueryParser {
-        QueryParser::new(
+        let mut q_parser = QueryParser::new(
             self.query_str.clone(),
             self.search_type.unwrap_or_default(),
             user_settings,
-            self.page,
-            self.word_index.unwrap_or_default(),
-            true,
-            self.lang_overwrite,
         )
+        .with_page(self.page)
+        .with_word_index(self.word_index.unwrap_or_default());
+
+        if let Some(lang) = self.lang_overwrite {
+            q_parser = q_parser.with_lang_overwrite(lang);
+        }
+
+        q_parser
     }
 }
 
@@ -71,7 +75,7 @@ pub struct NoJSQueryStruct {
     #[serde(rename = "s")]
     pub query: String,
     #[serde(rename = "t")]
-    pub search_type: Option<QueryType>,
+    pub search_type: Option<SearchTarget>,
     #[serde(rename = "i")]
     pub word_index: Option<usize>,
     #[serde(rename = "p", default = "default_page")]

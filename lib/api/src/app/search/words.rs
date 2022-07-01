@@ -12,7 +12,7 @@ use types::{
             Response,
         },
     },
-    jotoba::search::QueryType,
+    jotoba::search::SearchTarget,
 };
 
 /// API response type
@@ -44,7 +44,7 @@ pub async fn search(payload: Json<SearchPayload>) -> Result<Json<Resp>> {
     let len = result.count as u32;
 
     let page = new_page(&payload, res, len, payload.settings.page_size);
-    let res = super::new_response(page, QueryType::Words, &query);
+    let res = super::new_response(page, SearchTarget::Words, &query);
     Ok(Json(res))
 }
 

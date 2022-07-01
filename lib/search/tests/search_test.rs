@@ -6,7 +6,7 @@ use search::{
 use test_case::test_case;
 use types::jotoba::{
     languages::Language,
-    search::QueryType,
+    search::SearchTarget,
     words::{inflection::Inflection, part_of_speech::PosSimple},
 };
 
@@ -22,7 +22,7 @@ use types::jotoba::{
 #[test_case("書いておく",&[Inflection::TeOku])]
 fn inflections(query_str: &str, exp_infl: &[Inflection]) {
     wait();
-    let query = parse_query(query_str, Language::English, QueryType::Words);
+    let query = parse_query(query_str, Language::English, SearchTarget::Words);
     let res = search(&query).expect("Failed to do search");
     assert!(res.inflection_info.is_some());
     let infl_info = res.inflection_info.unwrap();
@@ -37,7 +37,7 @@ fn inflections(query_str: &str, exp_infl: &[Inflection]) {
 fn sentence_reader_test(query_str: &str, exp_parts: &[&str]) {
     wait();
     //
-    let query = parse_query(query_str, Language::English, QueryType::Words);
+    let query = parse_query(query_str, Language::English, SearchTarget::Words);
     let res = search(&query).unwrap();
     let sentence = res.sentence_parts;
     assert!(sentence.is_some());
@@ -100,7 +100,7 @@ fn correct_kanji_shown(query_str: &str) {
 fn word_search(query_str: &str, language: Language, first_res: &str) {
     wait();
 
-    let query = parse_query(query_str, language, QueryType::Words);
+    let query = parse_query(query_str, language, SearchTarget::Words);
     let res = search(&query).unwrap();
     let word = match res.words().next() {
         Some(n) => n,
@@ -120,7 +120,7 @@ fn word_search(query_str: &str, language: Language, first_res: &str) {
 fn pos_tag_test(query_str: &str, exp_pos: &[PosSimple], exp_res: &[&str]) {
     wait();
 
-    let query = parse_query(query_str, Language::English, QueryType::Words);
+    let query = parse_query(query_str, Language::English, SearchTarget::Words);
     let res = search(&query).expect("Search crashed");
     let have_tag = res
         .words()
@@ -170,7 +170,7 @@ fn test_romaji(query_str: &str, expected: &[&str]) {
 
 fn make_query(query_str: &str, language: Language) -> Query {
     Query {
-        query: query_str.to_string(),
+        query_str: query_str.to_string(),
         settings: UserSettings {
             user_lang: language,
             ..UserSettings::default()
@@ -179,10 +179,10 @@ fn make_query(query_str: &str, language: Language) -> Query {
     }
 }
 
-fn parse_query(query_str: &str, language: Language, q_type: QueryType) -> Query {
+fn parse_query(query_str: &str, language: Language, q_type: SearchTarget) -> Query {
     let mut settings = UserSettings::default();
     settings.user_lang = language;
-    QueryParser::new(query_str.to_string(), q_type, settings, 0, 0, true, None)
+    QueryParser::new(query_str.to_string(), q_type, settings)
         .parse()
         .expect("Invaild query passed")
 }

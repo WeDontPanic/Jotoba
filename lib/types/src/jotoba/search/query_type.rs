@@ -4,7 +4,7 @@ use localization::{language::Language, traits::Translatable, TranslationDict};
 use serde::Deserialize;
 
 #[derive(Deserialize, Debug, Copy, Clone, PartialEq, Hash)]
-pub enum QueryType {
+pub enum SearchTarget {
     #[serde(rename = "1")]
     Kanji,
     #[serde(rename = "2")]
@@ -15,7 +15,7 @@ pub enum QueryType {
     Words,
 }
 
-impl QueryType {
+impl SearchTarget {
     /// Iterate over all query types
     pub fn iterate() -> impl Iterator<Item = Self> {
         vec![Self::Kanji, Self::Sentences, Self::Names, Self::Words].into_iter()
@@ -33,15 +33,15 @@ impl QueryType {
     #[inline]
     pub fn get_type_id(&self) -> u8 {
         match self {
-            QueryType::Kanji => 1,
-            QueryType::Sentences => 2,
-            QueryType::Names => 3,
-            QueryType::Words => 0,
+            SearchTarget::Kanji => 1,
+            SearchTarget::Sentences => 2,
+            SearchTarget::Names => 3,
+            SearchTarget::Words => 0,
         }
     }
 }
 
-impl TryFrom<u8> for QueryType {
+impl TryFrom<u8> for SearchTarget {
     type Error = ();
 
     #[inline]
@@ -56,7 +56,7 @@ impl TryFrom<u8> for QueryType {
     }
 }
 
-impl Default for QueryType {
+impl Default for SearchTarget {
     #[inline]
     fn default() -> Self {
         Self::Words
@@ -64,14 +64,14 @@ impl Default for QueryType {
 }
 
 #[cfg(feature = "jotoba_intern")]
-impl Translatable for QueryType {
+impl Translatable for SearchTarget {
     #[inline]
     fn get_id(&self) -> &'static str {
         match self {
-            QueryType::Kanji => "Kanji",
-            QueryType::Sentences => "Sentences",
-            QueryType::Names => "Names",
-            QueryType::Words => "Words",
+            SearchTarget::Kanji => "Kanji",
+            SearchTarget::Sentences => "Sentences",
+            SearchTarget::Names => "Names",
+            SearchTarget::Words => "Words",
         }
     }
 }

@@ -224,6 +224,15 @@ pub fn is_surrounded_by<'a>(
     })
 }
 
+/// Trims a string owned
+#[inline]
+pub fn trim_string_end(mut s: String) -> String {
+    while s.ends_with(' ') {
+        s.pop();
+    }
+    s
+}
+
 /// Returns true if [`s`] represents [`c`]
 pub fn char_eq_str(c: char, s: &str) -> bool {
     let mut chars = s.chars();

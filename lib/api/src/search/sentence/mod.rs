@@ -1,14 +1,14 @@
 use actix_web::web::{self, Json};
 use types::{
     api::search::sentence::{Response, Sentence},
-    jotoba::search::QueryType,
+    jotoba::search::SearchTarget,
 };
 
 use super::{Result, SearchRequest};
 
 /// Do a Sentence search via API
 pub async fn sentence_search(payload: Json<SearchRequest>) -> Result<Json<Response>> {
-    let query = super::parse_query(payload, QueryType::Kanji)?;
+    let query = super::parse_query(payload, SearchTarget::Kanji)?;
 
     let result = web::block(move || search::sentence::search(&query))
         .await??

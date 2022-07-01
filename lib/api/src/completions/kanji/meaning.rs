@@ -13,7 +13,7 @@ pub fn suggestions(query: &Query) -> Option<Response> {
 
     let mut suggestion_task = SuggestionTask::new(30);
 
-    let mut def_query = SuggestionQuery::new(index, &query.query);
+    let mut def_query = SuggestionQuery::new(index, &query.query_str);
     let mut ng_ext = NGramExtension::new(index);
     ng_ext.options.weights.freq_weight = 0.5;
     ng_ext.options.weights.total_weight = 0.7;
@@ -21,7 +21,7 @@ pub fn suggestions(query: &Query) -> Option<Response> {
 
     suggestion_task.add_query(def_query);
 
-    if let Some(hira_query) = try_romaji(&query.query) {
+    if let Some(hira_query) = try_romaji(&query.query_str) {
         let jp_index = indexes::get_suggestions().jp_words();
         let mut rom_sug_query = SuggestionQuery::new(jp_index, hira_query);
         rom_sug_query.weights.total_weight = 0.5;

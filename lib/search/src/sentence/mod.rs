@@ -21,7 +21,7 @@ pub fn search(query: &Query) -> Result<SentenceResult, Error> {
 }
 
 fn normal_search(query: &Query) -> SentenceResult {
-    if query.language == QueryLang::Japanese {
+    if query.q_lang == QueryLang::Japanese {
         let query_str = jp_reading(query);
         get_result(jp_search(query, &query_str), query)
     } else {
@@ -30,7 +30,7 @@ fn normal_search(query: &Query) -> SentenceResult {
 }
 
 fn foreign_search(query: &Query) -> SearchTask<foreign::Engine> {
-    let query_str = &query.query;
+    let query_str = &query.query_str;
 
     let mut search_task =
         SearchTask::<foreign::Engine>::with_language(query_str, query.settings.user_lang)
@@ -39,7 +39,7 @@ fn foreign_search(query: &Query) -> SearchTask<foreign::Engine> {
             .threshold(0.2);
 
     if query.settings.show_english && query.settings.user_lang != Language::English {
-        search_task.add_language_query(&query.query, Language::English)
+        search_task.add_language_query(&query.query_str, Language::English)
     }
 
     lang_filter(query, &mut search_task);
@@ -142,7 +142,7 @@ pub fn map_sentence_to_item(
 
 /// Guesses the amount of results a search would return with given `query`
 pub fn guess_result(query: &Query) -> Option<Guess> {
-    if query.language == QueryLang::Japanese {
+    if query.q_lang == QueryLang::Japanese {
         let query_str = jp_reading(query);
         jp_search(query, &query_str).estimate_result_count()
     } else {
@@ -152,7 +152,7 @@ pub fn guess_result(query: &Query) -> Option<Guess> {
 }
 
 fn jp_reading(query: &Query) -> String {
-    let mut query_str = query.query.clone();
+    let mut query_str = query.query_str.clone();
 
     if let Some(kanji_reading) = query.form.as_kanji_reading() {
         query_str = kanji_reading.literal.to_string();

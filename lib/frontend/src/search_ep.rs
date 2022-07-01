@@ -15,7 +15,7 @@ use search::{
 };
 use std::{sync::Arc, time::Instant};
 use types::jotoba::search::help::SearchHelp;
-use types::jotoba::search::QueryType;
+use types::jotoba::search::SearchTarget;
 
 /// Endpoint to perform a search
 pub async fn search_ep_no_js(
@@ -62,12 +62,12 @@ async fn search(
     let start = Instant::now();
 
     // Log search duration if too long and available
-    let search_result = do_search(query.type_, &locale_dict, settings, &query, &config).await?;
+    let search_result = do_search(query.target, &locale_dict, settings, &query, &config).await?;
 
     log::debug!(
         "{:?} search for {:?} took {:?}",
-        query.type_,
-        query.query,
+        query.target,
+        query.query_str,
         start.elapsed()
     );
 
@@ -76,7 +76,7 @@ async fn search(
 
 /// Run the search and return the `BaseData` for the result page to render
 async fn do_search<'a>(
-    querytype: QueryType,
+    querytype: SearchTarget,
     locale_dict: &'a TranslationDict,
     settings: UserSettings,
     query: &'a Query,
@@ -85,10 +85,10 @@ async fn do_search<'a>(
     let mut base_data = BaseData::new(locale_dict, settings, &config.asset_hash, &config);
 
     let result_data = match querytype {
-        QueryType::Kanji => kanji_search(&mut base_data, &query).await,
-        QueryType::Sentences => sentence_search(&mut base_data, &query).await,
-        QueryType::Names => name_search(&mut base_data, &query).await,
-        QueryType::Words => word_search(&mut base_data, &query).await,
+        SearchTarget::Kanji => kanji_search(&mut base_data, &query).await,
+        SearchTarget::Sentences => sentence_search(&mut base_data, &query).await,
+        SearchTarget::Names => name_search(&mut base_data, &query).await,
+        SearchTarget::Words => word_search(&mut base_data, &query).await,
     }?;
 
     let mut search_help: Option<SearchHelp> = None;
@@ -188,7 +188,7 @@ fn sentry_request_from_http(request: &HttpRequest) -> sentry::protocol::Request 
 }
 
 #[cfg(feature = "sentry_error")]
-fn log_duration(search_type: QueryType, duration: Duration) {
+fn log_duration(search_type: SearchTarget, duration: Duration) {
     sentry::capture_message(
         format!("{:?}-search took: {:?}", search_type, duration).as_str(),
         sentry::Level::Warning,
