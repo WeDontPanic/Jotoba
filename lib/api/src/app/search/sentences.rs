@@ -22,12 +22,12 @@ pub async fn search(payload: Json<SearchPayload>) -> Result<Json<Resp>> {
         .ok_or(RestError::BadRequest)?;
 
     let query_c = query.clone();
-    let result = web::block(move || search::sentence::search(&query_c)).await??;
+    let result = web::block(move || search::sentence::Search::new(&query_c).search()).await??;
 
     let items = result
         .items
         .into_iter()
-        .map(|i| convert_sentence(i.sentence))
+        .map(|i| convert_sentence(i))
         .collect::<Vec<_>>();
 
     let res = sentences::Response::new(items);

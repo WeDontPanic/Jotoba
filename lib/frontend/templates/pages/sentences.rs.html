@@ -24,20 +24,20 @@
 
         <!-- Share Icon -->
         <div class="sentence-share">
-          <div class="shareSvg" onclick='JotoTools.copyTextAndEcho(JotoTools.pathToUrl("/direct/2/@sentence.sentence.id"), "QOL_LINK_COPIED");'></div>
-          <div class="searchSvg" onclick='Util.loadUrl(JotoTools.createUrl("@sentence.sentence.content"))'></div>
+          <div class="shareSvg" onclick='JotoTools.copyTextAndEcho(JotoTools.pathToUrl("/direct/2/@sentence.id"), "QOL_LINK_COPIED");'></div>
+          <div class="searchSvg" onclick='Util.loadUrl(JotoTools.createUrl("@sentence.content"))'></div>
         </div>
 
         <!-- Sentence -->
         <div class="d-flex flex-row wrap sentence">
-          @:render_sentence_html(sentence.sentence.furigana_pairs().collect(), "small", data.user_settings.sentence_furigana)
+          @:render_sentence_html(sentence.furigana_pairs().collect(), "small", data.user_settings.sentence_furigana)
         </div>
 
          <!-- Translation -->
         <div class="sentence-translation original" style="@if sentences.hidden { display: none; }">
-          @sentence.sentence.translation
+          @sentence.translation
         </div>
-        @if let Some(ref english) = sentence.sentence.get_english() {
+        @if let Some(ref english) = sentence.get_english() {
           <hr class="lang-separator" style="@if sentences.hidden { display: none; }"/>
           <div class="sentence-translation" style="@if sentences.hidden { display: none; }">
             @english

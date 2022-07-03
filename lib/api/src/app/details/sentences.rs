@@ -29,7 +29,7 @@ fn sentence_details(payload: &DetailsPayload) -> Option<sentence::Details> {
 
     let sentence =
         search::sentence::map_sentence_to_item(sentence, payload.language, payload.show_english)?;
-    let sentence = convert_sentence(sentence.sentence);
+    let sentence = convert_sentence(sentence);
     Some(sentence::Details::new(sentence, words, kanji))
 }
 

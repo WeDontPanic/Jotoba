@@ -1,26 +1,21 @@
 use japanese::{furigana, furigana::SentencePartRef};
 use types::jotoba::languages::Language;
 
-#[derive(PartialEq, Clone, Default)]
+#[derive(Clone, Default)]
 pub struct SentenceResult {
-    pub items: Vec<Item>,
+    pub items: Vec<Sentence>,
     pub len: usize,
     pub hidden: bool,
 }
 
-#[derive(PartialEq, Clone)]
-pub struct Item {
-    pub sentence: Sentence,
-}
-
-#[derive(PartialEq, Clone)]
+#[derive(Clone)]
 pub struct Sentence {
     pub id: u32,
     pub content: String,
     pub furigana: String,
     pub translation: String,
     pub language: Language,
-    pub eng: String,
+    pub eng: Option<String>,
 }
 
 impl Sentence {
@@ -31,7 +26,7 @@ impl Sentence {
 
     #[inline]
     pub fn get_english(&self) -> Option<&str> {
-        (self.eng != "-").then(|| self.eng.as_str())
+        self.eng.as_deref()
     }
 
     #[inline]
@@ -40,9 +35,11 @@ impl Sentence {
         language: Language,
         allow_english: bool,
     ) -> Option<Self> {
-        let mut translation = s.get_translations(language);
+        let mut translation = s
+            .translation_for(language)
+            .or_else(|| s.translation_for(Language::English));
         if translation.is_none() && allow_english {
-            translation = s.get_translations(Language::English);
+            translation = s.translation_for(Language::English);
         }
 
         Some(Self {
@@ -50,15 +47,15 @@ impl Sentence {
             translation: translation?.to_string(),
             content: s.japanese,
             furigana: s.furigana,
-            eng: String::from("-"),
+            eng: None,
             language,
         })
     }
 }
 
-impl From<(Vec<Item>, usize, bool)> for SentenceResult {
+impl From<(Vec<Sentence>, usize, bool)> for SentenceResult {
     #[inline]
-    fn from((items, len, hidden): (Vec<Item>, usize, bool)) -> Self {
+    fn from((items, len, hidden): (Vec<Sentence>, usize, bool)) -> Self {
         Self { items, len, hidden }
     }
 }

@@ -61,11 +61,15 @@ impl Sentence {
 
     /// Returns the translation for a given language if exists
     #[inline]
-    pub fn get_translations(&self, language: Language) -> Option<&str> {
+    pub fn translation_for(&self, language: Language) -> Option<&str> {
         self.translations
             .iter()
             .find(|i| i.language == language)
             .map(|i| i.text.as_str())
+    }
+
+    pub fn get_translation(&self, language: Language, allow_english: bool) -> Option<&str> {
+        None
     }
 
     /// Calculates a bitmask to efficiently determine the supported languages of a sentence

@@ -80,8 +80,8 @@ fn get_example_sentence(id: u32, language: Language) -> Option<(String, String)>
     let sentence = resources::get().sentences().by_id(id)?;
 
     let translation = sentence
-        .get_translations(language)
-        .or_else(|| sentence.get_translations(Language::English))?;
+        .translation_for(language)
+        .or_else(|| sentence.translation_for(Language::English))?;
 
     Some((sentence.furigana.clone(), translation.to_string()))
 }

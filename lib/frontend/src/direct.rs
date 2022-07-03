@@ -147,9 +147,7 @@ pub async fn find_direct_sentence(id: &str, settings: &UserSettings) -> Result<R
             .unwrap();
 
     Ok(ResultData::Sentence(SentenceResult {
-        items: vec![sentence::result::Item {
-            sentence: res_sentence,
-        }],
+        items: vec![res_sentence],
         len: 1,
         hidden: false,
     }))

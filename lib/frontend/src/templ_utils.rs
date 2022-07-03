@@ -79,8 +79,8 @@ pub fn ext_sentence(
         .by_id(sense.example_sentence?)?;
 
     let translation = sentence
-        .get_translations(*language)
-        .or_else(|| sentence.get_translations(Language::English))?;
+        .translation_for(*language)
+        .or_else(|| sentence.translation_for(Language::English))?;
 
     let furigana: Vec<_> = furigana::parse::from_str(&sentence.furigana).collect();
     Some((furigana, translation))

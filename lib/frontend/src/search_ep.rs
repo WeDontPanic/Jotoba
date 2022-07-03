@@ -105,7 +105,8 @@ type SResult = Result<ResultData, web_error::Error>;
 /// Perform a sentence search
 async fn sentence_search<'a>(base_data: &mut BaseData<'a>, query: &'a Query) -> SResult {
     let q = query.to_owned();
-    let result = web::block(move || search::sentence::search(&q)).await??;
+
+    let result = web::block(move || search::sentence::Search::new(&q).search()).await??;
 
     base_data.with_pages(result.len as u32, query.page as u32);
     Ok(ResultData::Sentence(result))
