@@ -140,7 +140,7 @@
                 </div>
               }
               @if let Some(audio) = word.audio_file("ogg") {
-                <span class="clickable audioBtn umami--click--play-audio-button" data="/audio/@audio">@data.gettext("Play audio")
+                <span class="clickable audioBtn p" data-p='"button", @{"props":@{"name": "Play audio"@}@}' data="/audio/@audio">@data.gettext("Play audio")
                   <audio preload="none">
                     <source src="/audio/@audio" type="audio/ogg">
                     @if let Some(audio) = word.audio_file("mp3") {
@@ -157,11 +157,11 @@
 
                 
                 <!-- Tooltip -->
-                  <div id="m@word.sequence" class="word-tooltip tooltipSvg d-flex flex-column noselect"></div>
+                  <div id="m@word.sequence" class="word-tooltip tooltipSvg d-flex flex-column noselect p" data-p='"button", @{"props":@{"name": "3-dot", "category": "popup"@}@}'></div>
 
-                  <ul id="info-dropdown" class="mdl-menu mdl-menu--bottom-right mdl-js-menu mdl-js-ripple-effect umami--click--info-dropdown" for="m@word.sequence">
+                  <ul id="info-dropdown" class="mdl-menu mdl-menu--bottom-right mdl-js-menu mdl-js-ripple-effect" for="m@word.sequence">
                     @if word.get_inflections().is_some() {
-                      <li id="conjugationBtn" class="info-entry noselect" data-toggle="modal" data-target="#conj@word.sequence" class="mdl-menu__item">
+                      <li id="conjugationBtn" class="info-entry noselect p" data-p='"button", @{"props":@{"name": "Show Conjugations", "category": "3-dot"@}@}' data-toggle="modal" data-target="#conj@word.sequence" class="mdl-menu__item">
                         <div class="conjugationSvg"></div> 
                         <span class="text">@data.gettext("Show Conjugations")</span>
                       </li>
@@ -169,7 +169,7 @@
                     }
                     
                     @if let Some(ref collocations) = word.collocations {
-                      <li id="collocationBtn" class="info-entry noselect umami--click--collocation-button" data-toggle="modal" data-target="#coll@word.sequence" class="mdl-menu__item">
+                      <li id="collocationBtn" class="info-entry noselect p" data-p='"button", @{"props":@{"name": "Show Collocations", "category": "3-dot"@}@}' data-toggle="modal" data-target="#coll@word.sequence" class="mdl-menu__item">
                         <div class="conjugationSvg"></div>
                         <span class="text">@data.ngettext("Show collocation", collocations.len() as u64)</span>
                       </li>
@@ -178,7 +178,7 @@
 
                     <!-- TODO Implement if statement here + Translate -->
                     @* @if 
-                      <li id="jdefBtn" class="info-entry noselect umami--click--jdef-button" data-toggle="modal" data-target="#jdef@word.sequence" class="mdl-menu__item">
+                      <li id="jdefBtn" class="info-entry noselect p" data-p='"button", @{"props":@{"name": "Show Japanese definitions", "category": "3-dot"@}@}' data-toggle="modal" data-target="#jdef@word.sequence" class="mdl-menu__item">
                         <div class="conjugationSvg"></div>
                         <span class="text">@data.gettext("Japanese definitions")</span>
                       </li>
@@ -186,7 +186,7 @@
                     @if_end *@
 
                     @if let Some(intransitive) = get_intransitive_counterpart(&word) {
-                      <li class="info-entry noselect umami--click--intransitive-button" class="mdl-menu__item"> 
+                      <li class="info-entry noselect p" data-p='"button", @{"props":@{"name": "Show Intransitive", "category": "3-dot"@}@}' class="mdl-menu__item"> 
                         <div class="transitivitySvg"></div>
                         <span class="text">
                           <a class="no-highlight" draggable="false" href="/search/@intransitive.get_reading().reading">@data.gettext("Intransitive word")</a>
@@ -196,7 +196,7 @@
                     }
 
                     @if let Some(transitive) = get_transitive_counterpart(&word) {
-                      <li class="info-entry noselect umami--click--transitive-button" class="mdl-menu__item">
+                      <li class="info-entry noselect p" data-p='"button", @{"props":@{"name": "Show Transitive", "category": "3-dot"@}@}' class="mdl-menu__item">
                         <div class="transitivitySvg"></div>
                         <span class="text">
                           <a class="no-highlight" draggable="false" href="/search/@transitive.get_reading().reading">@data.gettext("Transitive word")</a>
@@ -206,7 +206,7 @@
                     }
 
                     @if word.has_sentence(data.user_settings.user_lang) || (data.user_settings.show_english && word.has_sentence(Language::English)) {
-                      <li class="info-entry noselect umami--click--sentences-button" class="mdl-menu__item">
+                      <li class="info-entry noselect p" data-p='"button", @{"props":@{"name": "Sentence Search", "category": "3-dot"@}@}' class="mdl-menu__item">
                         <div class="sentenceSvg"></div>
                         <span class="text">
                           <a class="no-highlight" draggable="false" href="/search/@word.get_reading().reading?t=2">@data.gettext("Sentence search")</a>
@@ -215,7 +215,7 @@
                     }
 
                     @if let Some(audio) = word.audio_file("ogg") {
-                      <li disabled class="mdl-menu__item umami--click--audio-download-button"><hr></li>
+                      <li disabled class="mdl-menu__item p" data-p='"button", @{"props":@{"name": "Download audio", "category": "3-dot"@}@}'><hr></li>
                       <li id="AudioDlBtn" class="info-entry noselect" class="mdl-menu__item">
                         <div class="downloadSvg"></div>
                         <span class="text">
@@ -232,7 +232,7 @@
                     }
 
                     <li disabled class="mdl-menu__item"><hr></li>
-                    <li class="info-entry noselect">
+                    <li class="info-entry noselect p" data-p='"button", @{"props":@{"name": "Direct reference", "category": "3-dot"@}@}'>
                       <div class="linkSvg"></div>
                       <span class="text">
                         <a class="no-highlight" draggable="false" href="/direct/0/@word.sequence">@data.gettext("Direct reference")</a>

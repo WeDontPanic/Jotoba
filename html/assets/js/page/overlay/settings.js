@@ -136,7 +136,7 @@ Settings.trackingAccepted = function (manuallyCalled) {
         Util.showMessage("success", getText("SETTINGS_COOKIE_ACCEPT"));
 
     Settings.alterOther("trackingAllowed", true);
-    Util.loadScript(analyticsUrl, true, analyticsAttributes);
+    loadAnalytics();
     Util.setMdlCheckboxState("tracking_settings", true);
 }
 
@@ -187,18 +187,30 @@ Util.awaitDocumentReady(() => {
 
     // Load analytics if allowed -> At this points any external source with high prio has already been loaded in and should have overwritten the analytics vars
     if (Settings.other.trackingAllowed.val && analyticsUrl.length > 0) {
-        Util.loadScript(analyticsUrl, true, analyticsAttributes);
-        for (let umamiElement of document.querySelectorAll("[class*=umami]")) {
-            for (let className of umamiElement.classList) {
-                if (className.includes("umami")) {
-                    let desiredEvent = className.split("--");
-                    umamiElement.addEventListener(desiredEvent[1], () => {
-                        if (window.umami) {
-                            umami.trackEvent(desiredEvent[2], "css-event")
-                        }
-                    })
-                }
-            }
-        }
+        loadAnalytics();
     }
 });
+
+function loadAnalytics() {
+    Util.awaitDocumentReady(() => {
+        Util.loadScript(analyticsUrl, true, analyticsAttributes, () => {
+            // Prepare any css-based events after the script is ready
+            let buttons = document.querySelectorAll(".p");
+
+            for (var i = 0; i < buttons.length; i++) {
+                buttons[i].addEventListener('click', handleEvent);
+            }
+
+            function handleEvent(event) {
+                if (window.plausible) {
+                    let attribute =  event.target.getAttribute('data-p');
+                    if (!attribute) return;
+
+                    let eventData = attribute.split(/,(.+)/);
+                    let events = [JSON.parse(eventData[0]), JSON.parse(eventData[1] || '{}')];
+                    plausible(...events);
+                }
+            }
+        });
+    });
+}

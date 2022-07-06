@@ -15,13 +15,13 @@
 
             <!-- Settings Button -->
             <div class="btn-container"> 
-               <div class="settingsSvg settingsBtn umami--click--settings-button" data-toggle="modal" data-target="#settingsModal"></div>
+               <div class="settingsSvg settingsBtn" data-p='"button", @{"props":@{"name": "Settings Overlay", "category": "modal"@}@}' data-toggle="modal" data-target="#settingsModal"></div>
             </div>
 
             <!-- Home / Info Button -->
             <div class="btn-container right">
                <div class="homeBtn noselect" onmousedown='onHomeClick(event)'>home</div>
-               <div class="infoSvg infoBtn umami--click--help-button" onclick='openHelpPage()'></div>
+               <div class="infoSvg infoBtn" data-p='"button", @{"props":@{"name": "Help", "category": "page-swap"@}@}' onclick='openHelpPage()'></div>
             </div>
 
             <!-- Search Bar -->
@@ -43,10 +43,10 @@
                               <button id="searchBtn" class="search-embedded-btn search" type="submit">
                                  <div class="searchSvg"></div>
                               </button>
-                              <button type="button" id="voiceBtn" class="search-embedded-btn umami--click--speak-button" onclick='toggleSpeakOverlay()'>
+                              <button type="button" id="voiceBtn" class="search-embedded-btn p" data-p='"button", @{"props":@{"name": "Voice Overlay", "category": "toggle"@}@}' onclick='toggleSpeakOverlay()'>
                                  <div class="voiceSvg"></div> 
                               </button>
-                              <button type="button" class="search-embedded-btn radical" onclick="toggleRadicalOverlay()">
+                              <button type="button" class="search-embedded-btn radical p" data-p='"button", @{"props":@{"name": "Radical Overlay", "category": "toggle"@}@}' onclick="toggleRadicalOverlay()">
                                  <span class="rad-picker-icon noselect">部</span>
                               </button>
                           </div>

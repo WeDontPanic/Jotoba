@@ -40,7 +40,7 @@
                                     </div>
                                  </div>
                                  <div class="choices__list choices__list--dropdown">
-                                 <div id="search-lang-select" class="choices__list umami--change--search-language-change">
+                                 <div id="search-lang-select" class="choices__list p" data-p='"button", @{"props":@{"name": "Search language change Select", "category": "settings"@}@}'>
                                     <div data-value="en-US" class="choices__item choices__item--choice choices__item--selectable">@data.gettext("English")</div>
                                     <div data-value="de-DE" class="choices__item choices__item--choice choices__item--selectable">@data.gettext("German")</div>
                                     <div data-value="es-ES" class="choices__item choices__item--choice choices__item--selectable">@data.gettext("Spanish")</div>
@@ -66,7 +66,7 @@
                                     <div class="choices__item choices__item--selectable">@data.gettext("English")</div>
                                  </div>
                               </div>
-                              <div class="choices__list choices__list--dropdown umami--change--page-language-change">
+                              <div class="choices__list choices__list--dropdown p" data-p='"button", @{"props":@{"name": "Page language change Select", "category": "settings"@}@}'>
                                  <div id="page-lang-select" class="choices__list">
                                     <div data-value="en-US" class="choices__item choices__item--choice choices__item--selectable">@data.gettext("English")</div>
                                     <div data-value="de-DE" class="choices__item choices__item--choice choices__item--selectable">@data.gettext("German")</div>
@@ -170,19 +170,19 @@
                            <div class="settings-entry">
                               <span class="inner-title display">@data.gettext("Use dark mode"):</span>
                               <label for="use_dark_mode_settings" class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect">
-                                 <input checked id="use_dark_mode_settings" type="checkbox" class="mdl-checkbox__input umami--click--dark-mode-button" onchange="setTheme(event.target.checked ? 'dark' : 'light')">
+                                 <input checked id="use_dark_mode_settings" type="checkbox" class="mdl-checkbox__input p" data-p='"button", @{"props":@{"name": "Dark Mode", "category": "settings"@}@}' onchange="setTheme(event.target.checked ? 'dark' : 'light')">
                               </label>
                            </div>
                            <div class="settings-entry">
                               <span class="inner-title display">@data.gettext("Show kanji on load"):</span>
                               <label for="show_kanji_on_load_settings" class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect">
-                                 <input checked id="show_kanji_on_load_settings" type="checkbox" class="mdl-checkbox__input umami--click--dark-mode-button" onchange="Settings.alterDisplay('showKanjiOnLoad', event.target.checked)">
+                                 <input checked id="show_kanji_on_load_settings" type="checkbox" class="mdl-checkbox__input p" data-p='"button", @{"props":@{"name": "Show Kanji on load", "category": "settings"@}@}' onchange="Settings.alterDisplay('showKanjiOnLoad', event.target.checked)">
                               </label>
                            </div>
                            <div class="settings-entry">
                               <span class="inner-title display">@data.gettext("Show kanji numbers"):</span>
                               <label for="show_kanji_numbers_settings" class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect">
-                                 <input checked id="show_kanji_numbers_settings" type="checkbox" class="mdl-checkbox__input umami--click--dark-mode-button" onchange="Settings.alterDisplay('showKanjiNumbers', event.target.checked); if(JotoTools.getCurrentSearchType() == 1) location.reload();">
+                                 <input checked id="show_kanji_numbers_settings" type="checkbox" class="mdl-checkbox__input p" data-p='"button", @{"props":@{"name": "Show Kanji numbers", "category": "settings"@}@}' onchange="Settings.alterDisplay('showKanjiNumbers', event.target.checked); if(JotoTools.getCurrentSearchType() == 1) location.reload();">
                               </label>
                            </div>
                            <div class="settings-entry">

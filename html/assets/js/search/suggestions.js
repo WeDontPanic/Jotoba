@@ -126,13 +126,13 @@ function loadSuggestionApiData(result) {
 
         // Add to Page
         sContainer.innerHTML += 
-            ` <a onclick='${window.umami ? `umami.trackEvent("#${i}", "suggestions")` : ""}' href="/search/${searchValue}?t=${currentPage}" class="search-suggestion"> ` +
+            ` <a onclick='${window.plausible ? `plausible("suggestions", {props: {index: "#${i}", container: "search"}})` : ""}' href="/search/${searchValue}?t=${currentPage}" class="search-suggestion"> ` +
             '   <span class="primary-suggestion">'+primaryResult+'</span> ' +
             '   <span class="secondary-suggestion">'+secondaryResult+'</span> ' +
             ' </a> ';    
 
         rContainer.innerHTML += 
-            ` <a onclick='${window.umami ? `umami.trackEvent("#${i}", "suggestions")` : ""}' href="/search/${searchValue}?t=${currentPage}" class="search-suggestion"> ` +
+            ` <a onclick='${window.plausible ? `plausible("suggestions", {props: {index: "#${i}", container: "radicals"}});` : ""}' href="/search/${searchValue}?t=${currentPage}" class="search-suggestion"> ` +
             '   <span class="primary-suggestion">'+primaryResult+'</span> ' +
             ' </a> ';      
     }

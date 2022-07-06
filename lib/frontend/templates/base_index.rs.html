@@ -36,10 +36,10 @@
                               <div class="input-group">
                                  <input id="search" name="s" type="text" value="" placeholder='@data.gettext("Search...")' tabindex="1" lang="ja" autocapitalize="off" autocomplete="off" data-autoload="false" data-effective-keyword="">
                                  <span id="shadow-text"></span>
-                                 <button type="button" class="btn bg-transparent search-embedded-btn umami--click--image-upload-button" onclick="toggleImageSearchOverlay()">
+                                 <button type="button" class="btn bg-transparent search-embedded-btn p" data-p='"button", @{"props":@{"name": "Image upload Overlay", "category": "modal"@}@}' onclick="toggleImageSearchOverlay()">
                                     <div class="cameraSvg index"></div>
                                  </button>
-                                 <button type="button" class="btn bg-transparent search-embedded-btn umami--click--speak-button" onclick="toggleSpeakOverlay()">
+                                 <button type="button" class="btn bg-transparent search-embedded-btn p" data-p='"button", @{"props":@{"name": "Voice input Overlay", "category": "modal"@}@}' onclick="toggleSpeakOverlay()">
                                     <div class="voiceSvg index"></div> 
                                  </button>
                               </div>
@@ -64,7 +64,7 @@
                         @data.gettext("No new notifications")
                      </div>
                      <div class="button-container">
-                        <button class="overlay-button umami--click--nofitication-show-all-button" onclick="showAllNotifications()">@data.gettext("Show all")</button> <!-- TODO -->
+                        <button class="overlay-button p" data-p='"button", @{"props":@{"name": "All notifications", "category": "page-swap"@}@}' onclick="showAllNotifications()">@data.gettext("Show all")</button>
                         <button class="overlay-button" onclick="closeNotifications()">@data.gettext("Close")</button>
                      </div>
                   </div>
@@ -112,14 +112,14 @@
 
          <!-- Settings Button -->
          <div class="btn-container">
-            <div class="settingsSvg settingsBtn index umami--click--settings-button" data-toggle="modal" data-target="#settingsModal"></div>
+            <div class="settingsSvg settingsBtn index p" data-p='"button", @{"props":@{"name": "Settings Overlay", "category": "modal"@}@}' data-toggle="modal" data-target="#settingsModal"></div>
          </div>
 
          <!-- Info / Notification Button-->
          <div class="btn-container">
-            <div class="infoSvg infoBtn index umami--click--help-button" onclick='openHelpPage()'></div>
+            <div class="infoSvg infoBtn index p" data-p='"button", @{"props":@{"name": "Help", "category": "page-swap"@}@}' onclick='openHelpPage()'></div>
             <div>
-               <div class="notificationSvg notificationBtn index umami--click--notification-button" onclick="toggleNotifications(event)"></div>
+               <div class="notificationSvg notificationBtn index p" data-p='"button", @{"props":@{"name": "Notifications Popup", "category": "popup"@}@}' onclick="toggleNotifications(event)"></div>
                <span class="notificationPoint"></span>
             </div>
          </div>      

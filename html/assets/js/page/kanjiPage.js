@@ -458,8 +458,8 @@ function getSvgContent(target, url) {
 
 // Called upon clicking on the toggle checkbox for a decomposition graph: rerenders the graph in the toggled complexity
 function onGraphToggleCheckboxClick(event) {
-    if (window.umami) {
-        umami.trackEvent("Tree toggled", "function_press");
+    if (window.plausible) {
+        plausible("toggle", {props: {name: "Tree toggle"}});
     }
     
     Settings.alterSearch('showFullGraph', !Settings.search.showFullGraph.val);

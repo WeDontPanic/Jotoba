@@ -20,28 +20,28 @@ $(document).on("keypress", (event) => {
             event.preventDefault();
             $('#search').focus();
             $('#search').select();
-            if (window.umami)
-                umami.trackEvent('/', "shortcut");
+            if (window.plausible)
+                plausible("shortcut", {props: {key: "/"}});
             break
         case 'w': // Focus search bar
             changeSearchType(null, "0");
-            if (window.umami && Util.isIndexPage())
-                umami.trackEvent('w', "shortcut");
+            if (window.plausible && Util.isIndexPage())
+                plausible("shortcut", {props: {key: "w"}});
             break;
         case 'k': // Change to Word Tab
             changeSearchType(null, "1");
-            if (window.umami && !Util.isIndexPage())
-                umami.trackEvent('k', "shortcut");
+            if (window.plausible && !Util.isIndexPage())
+                plausible("shortcut", {props: {key: "k"}});
             break;
         case 's': // Change to Sentence Tab
             changeSearchType(null, "2");
-            if (window.umami && !Util.isIndexPage())
-                umami.trackEvent('s', "shortcut");
+            if (window.plausible && !Util.isIndexPage())
+                plausible("shortcut", {props: {key: "s"}});
             break;
         case 'n': // Change to Names Tab
             changeSearchType(null, "3");
-            if (window.umami && !Util.isIndexPage()) {
-                umami.trackEvent('n', "shortcut");
+            if (window.plausible && !Util.isIndexPage()) {
+                plausible("shortcut", {props: {key: "n"}});
             }
             break;
         case 'N': // Open index in new tab
@@ -49,8 +49,8 @@ $(document).on("keypress", (event) => {
             break;
         case 'p': // Play first Audio on page
             $(".audioBtn").first().trigger("click");
-            if (window.umami && !Util.isIndexPage())
-                umami.trackEvent('p', "shortcut");
+            if (window.plausible && !Util.isIndexPage())
+                plausible("shortcut", {props: {key: "p"}});
             break;
         case "Enter": // Do a search while rad-picker is opened
             if (!$(".overlay.radical").hasClass("hidden")) {
