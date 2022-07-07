@@ -57,6 +57,10 @@ function onSearchStart() {
     var search_value = $('#search').val();
     var search_type = $('#search-type').val();
 
+    if (window.plausible) {
+        plausible('search', {props: {query: search_value, origin: location.pathname, language: Settings.language.searchLang.val}});
+    }
+
     if (search_value.length == 0) {
         Util.loadUrl(JotoTools.createUrl());
     } else {
