@@ -46,4 +46,29 @@ impl Form {
     pub fn is_tag_only(&self) -> bool {
         matches!(self, Self::TagOnly)
     }
+
+    /// Returns `true` if the form is no special type of search
+    #[inline]
+    pub fn is_normal(&self) -> bool {
+        match self {
+            Form::SingleWord | Form::MultiWords | Form::Undetected => true,
+            _ => false,
+        }
+    }
+
+    /// Returns `true` if the form is [`Sequence`].
+    ///
+    /// [`Sequence`]: Form::Sequence
+    #[inline]
+    pub fn is_sequence(&self) -> bool {
+        matches!(self, Self::Sequence(..))
+    }
+
+    pub fn as_sequence(&self) -> Option<&u32> {
+        if let Self::Sequence(v) = self {
+            Some(v)
+        } else {
+            None
+        }
+    }
 }

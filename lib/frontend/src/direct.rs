@@ -5,7 +5,7 @@ use config::Config;
 use localization::TranslationDict;
 use search::{
     query::{Query, UserSettings},
-    sentence::{self, result::SentenceResult},
+    sentence,
     word::{self, result::WordResult},
 };
 use types::jotoba::{search::SearchTarget, words::filter_languages};
@@ -146,9 +146,10 @@ pub async fn find_direct_sentence(id: &str, settings: &UserSettings) -> Result<R
         sentence::result::Sentence::from_m_sentence(res_sentence, settings.user_lang, true)
             .unwrap();
 
-    Ok(ResultData::Sentence(SentenceResult {
+    use search::result::SearchResult as SearchResult2;
+    Ok(ResultData::Sentence(SearchResult2 {
         items: vec![res_sentence],
-        len: 1,
-        hidden: false,
+        total: 1,
+        other_data: sentence::result::ResData::new(false),
     }))
 }

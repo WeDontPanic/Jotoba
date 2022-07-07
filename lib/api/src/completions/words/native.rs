@@ -36,21 +36,29 @@ pub fn suggestions(query: &Query, romaji_query: &str, radicals: &[char]) -> Opti
     kana_end_ext.options.weights.freq_weight = 0.4;
     main_sugg_query.add_extension(kana_end_ext);
 
-    // Similar terms based on pronounciation
-    let mut ste = SimilarTermsExtension::new(jp_engine, 16);
-    ste.options.threshold = 10;
-    ste.options.weights.total_weight = 0.6;
-    ste.options.weights.freq_weight = 0.5;
-    //ste.options.weights.str_weight = 1.4;
-    main_sugg_query.add_extension(ste);
+    let (norm_form, sentence) = normalize_inflections(query_str);
+    if let Some(normalized) = norm_form {
+        let mut norm_query = SuggestionQuery::new(jp_engine, normalized);
+        norm_query.threshold = 10;
+        norm_query.weights.total_weight = 0.75;
+        norm_query.weights.freq_weight = 0.5;
+        suggestion_task.add_query(norm_query);
+    }
 
     // Fix typos
     let mut ng_ex = NGramExtension::with_sim_threshold(jp_engine, 0.5);
     ng_ex.options.weights.freq_weight = 0.05;
     ng_ex.query_weigth = 0.7;
     ng_ex.cust_query = Some(&romaji_query);
-
     main_sugg_query.add_extension(ng_ex);
+
+    // Similar terms based on pronounciation
+    let mut ste = SimilarTermsExtension::new(jp_engine, 16);
+    ste.options.threshold = 10;
+    ste.options.weights.total_weight = 0.45;
+    ste.options.weights.freq_weight = 0.05;
+    //ste.options.weights.str_weight = 1.4;
+    main_sugg_query.add_extension(ste);
 
     suggestion_task.add_query(main_sugg_query);
 
@@ -62,15 +70,6 @@ pub fn suggestions(query: &Query, romaji_query: &str, radicals: &[char]) -> Opti
             kana_query.weights.total_weight = 0.8;
             suggestion_task.add_query(kana_query);
         }
-    }
-
-    let (norm_form, sentence) = normalize_inflections(query_str);
-    if let Some(normalized) = norm_form {
-        let mut norm_query = SuggestionQuery::new(jp_engine, normalized);
-        norm_query.threshold = 2;
-        norm_query.weights.total_weight = 0.01;
-        norm_query.weights.freq_weight = 0.0;
-        suggestion_task.add_query(norm_query);
     }
 
     let sentence_len = sentence.len();

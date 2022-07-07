@@ -1,6 +1,9 @@
+use itertools::Itertools;
 use japanese::furigana::{self, SentencePartRef};
+use localization::{traits::Translatable, TranslationDict};
 use types::jotoba::{
     languages::Language,
+    names::Name,
     words::{filter_languages, sense::Sense, Word},
 };
 
@@ -84,4 +87,19 @@ pub fn ext_sentence(
 
     let furigana: Vec<_> = furigana::parse::from_str(&sentence.furigana).collect();
     Some((furigana, translation))
+}
+
+pub fn get_types_humanized(
+    name: &Name,
+    dict: &TranslationDict,
+    lang: localization::language::Language,
+) -> String {
+    if let Some(ref n_types) = name.name_type {
+        n_types
+            .iter()
+            .filter_map(|i| (!i.is_gender()).then(|| i.pgettext(dict, "name_type", Some(lang))))
+            .join(", ")
+    } else {
+        String::from("")
+    }
 }

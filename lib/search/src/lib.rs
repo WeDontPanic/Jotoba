@@ -1,13 +1,17 @@
-use query::Query;
-use types::jotoba::search::{help::SearchHelp, SearchTarget};
-
 pub mod engine;
+pub mod executor;
 pub mod kanji;
 pub mod name;
 pub mod query;
 pub mod radical;
+pub mod result;
 pub mod sentence;
 pub mod word;
+
+pub use executor::SearchExecutor;
+
+use query::Query;
+use types::jotoba::search::{help::SearchHelp, SearchTarget};
 
 /// How string items should be matched with each other
 #[derive(Clone, Copy, Debug)]
@@ -53,8 +57,12 @@ pub fn build_help(querytype: SearchTarget, query: &Query) -> Option<SearchHelp> 
     for qt in SearchTarget::iterate().filter(|i| *i != querytype) {
         match qt {
             SearchTarget::Kanji => help.kanji = kanji::guess_result(query),
-            SearchTarget::Sentences => help.sentences = sentence::guess_result(query),
-            SearchTarget::Names => help.names = name::guess_result(query),
+            SearchTarget::Sentences => {
+                help.sentences = SearchExecutor::new(sentence::Search::new(query)).guess()
+            }
+            SearchTarget::Names => {
+                help.names = SearchExecutor::new(name::Search::new(query)).guess()
+            }
             SearchTarget::Words => help.words = word::guess_result(query),
         }
     }

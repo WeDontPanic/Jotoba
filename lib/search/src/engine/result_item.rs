@@ -48,7 +48,7 @@ impl<T: PartialEq> PartialEq for ResultItem<T> {
 
 impl<T: PartialEq> Eq for ResultItem<T> {}
 
-impl<T: PartialEq + Hash> Hash for ResultItem<T> {
+impl<T: PartialEq + Hash + Eq> Hash for ResultItem<T> {
     #[inline(always)]
     fn hash<H: Hasher>(&self, state: &mut H) {
         self.item.hash(state);

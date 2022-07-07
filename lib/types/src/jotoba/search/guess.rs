@@ -24,6 +24,22 @@ impl Guess {
         Self { value, guess_type }
     }
 
+    /// Creates a new guess value with a given limit. If `value` exceeds the with_limit
+    /// `GuessType::MoreThan` will be used. Otherwise GuessType::Accurate
+    pub fn with_limit(value: u32, limit: u32) -> Self {
+        let gt;
+        if value > limit {
+            gt = GuessType::MoreThan;
+        } else {
+            gt = GuessType::Accurate;
+        }
+
+        Self {
+            value: value.min(limit),
+            guess_type: gt,
+        }
+    }
+
     /// Formats the guess to a human readable string
     pub fn format(&self) -> String {
         let prefix = self.guess_type.get_prefix();

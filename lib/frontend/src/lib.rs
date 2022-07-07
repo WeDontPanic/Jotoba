@@ -28,7 +28,7 @@ use localization::{
 };
 use news::NewsEntry;
 use og_tags::TagKeyName;
-use search::{query::Query, sentence::result::SentenceResult};
+use search::{query::Query, result::SearchResult as SearchResult2};
 
 use search::{kanji::result::Item as KanjiItem, query::UserSettings, word::result::WordResult};
 use types::jotoba::{
@@ -73,7 +73,7 @@ pub enum ResultData {
     Word(WordResult),
     KanjiInfo(Vec<KanjiItem>),
     Name(Vec<&'static Name>),
-    Sentence(SentenceResult),
+    Sentence(SearchResult2<search::sentence::result::Sentence, search::sentence::result::ResData>),
 }
 
 impl<'a> BaseData<'a> {

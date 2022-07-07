@@ -21,7 +21,18 @@ impl<'a> SentenceRetrieve<'a> {
 
     /// Returns an iterator over all sentences with given `jlpt` level
     #[inline]
-    pub fn by_jlpt(&self, jlpt: u8) -> impl Iterator<Item = &'_ Sentence> {
+    pub fn ids_by_jlpt(&self, jlpt: u8) -> impl Iterator<Item = u32> + 'a {
+        self.storage
+            .jlpt_map
+            .get(&jlpt)
+            .into_iter()
+            .flatten()
+            .copied()
+    }
+
+    /// Returns an iterator over all sentences with given `jlpt` level
+    #[inline]
+    pub fn by_jlpt<'b>(&'b self, jlpt: u8) -> impl Iterator<Item = &'a Sentence> + 'b {
         self.storage
             .jlpt_map
             .get(&jlpt)

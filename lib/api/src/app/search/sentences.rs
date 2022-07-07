@@ -22,7 +22,11 @@ pub async fn search(payload: Json<SearchPayload>) -> Result<Json<Resp>> {
         .ok_or(RestError::BadRequest)?;
 
     let query_c = query.clone();
-    let result = web::block(move || search::sentence::Search::new(&query_c).search()).await??;
+    let result = web::block(move || {
+        let search = search::sentence::Search::new(&query_c);
+        search::SearchExecutor::new(search).run()
+    })
+    .await?;
 
     let items = result
         .items
@@ -31,7 +35,7 @@ pub async fn search(payload: Json<SearchPayload>) -> Result<Json<Resp>> {
         .collect::<Vec<_>>();
 
     let res = sentences::Response::new(items);
-    let len = result.len as u32;
+    let len = result.total as u32;
 
     let page = new_page(&payload, res, len, payload.settings.page_size);
     let res = super::new_response(page, SearchTarget::Sentences, &query);

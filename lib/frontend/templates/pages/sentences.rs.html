@@ -1,10 +1,11 @@
-@use search::sentence::result::SentenceResult;
+@use search::sentence::result::{Sentence, ResData};
+@use search::result::SearchResult;
 @use super::search_help;
 
 @use crate::templates::functional::{render_sentence_html};
 
 @use crate::BaseData;
-@(data: &BaseData, sentences: SentenceResult)
+@(data: &BaseData, sentences: SearchResult<Sentence, ResData>)
 
   <link rel="stylesheet" type="text/css" href="/variable_assets/@data.asset_hash/assets/css/page/multiPage/kanji.css">
   <link rel="stylesheet" type="text/css" href="/variable_assets/@data.asset_hash/assets/css/page/multiPage/kana.css">
@@ -34,18 +35,18 @@
         </div>
 
          <!-- Translation -->
-        <div class="sentence-translation original" style="@if sentences.hidden { display: none; }">
+        <div class="sentence-translation original" style="@if sentences.other_data.hidden { display: none; }">
           @sentence.translation
         </div>
         @if let Some(ref english) = sentence.get_english() {
-          <hr class="lang-separator" style="@if sentences.hidden { display: none; }"/>
-          <div class="sentence-translation" style="@if sentences.hidden { display: none; }">
+          <hr class="lang-separator" style="@if sentences.other_data.hidden { display: none; }"/>
+          <div class="sentence-translation" style="@if sentences.other_data.hidden { display: none; }">
             @english
           </div>
         }
 
         <!-- Toggle Btn -->
-        @if sentences.hidden {
+        @if sentences.other_data.hidden {
           <div class="sentence-toggle hide hidden noselect" onclick='toggleTranslation(this)'>[@data.gettext("hide")]</div>
           <div class="sentence-toggle show noselect" onclick='toggleTranslation(this)'>[@data.gettext("show")]</div>
         }

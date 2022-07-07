@@ -9,6 +9,7 @@ use actix_web::{web, HttpRequest, HttpResponse};
 use config::Config;
 use localization::TranslationDict;
 use percent_encoding::percent_decode;
+use search::SearchExecutor;
 use search::{
     self,
     query::{Query, UserSettings},
@@ -106,9 +107,14 @@ type SResult = Result<ResultData, web_error::Error>;
 async fn sentence_search<'a>(base_data: &mut BaseData<'a>, query: &'a Query) -> SResult {
     let q = query.to_owned();
 
-    let result = web::block(move || search::sentence::Search::new(&q).search()).await??;
+    //let result = web::block(move || search::sentence::Search::new(&q).search()).await??;
+    let result = web::block(move || {
+        let s = search::sentence::Search::new(&q);
+        search::SearchExecutor::new(s).run()
+    })
+    .await?;
 
-    base_data.with_pages(result.len as u32, query.page as u32);
+    base_data.with_pages(result.total as u32, query.page as u32);
     Ok(ResultData::Sentence(result))
 }
 
@@ -128,9 +134,13 @@ async fn kanji_search<'a>(base_data: &mut BaseData<'a>, query: &'a Query) -> SRe
 /// Perform a name search
 async fn name_search<'a>(base_data: &mut BaseData<'a>, query: &'a Query) -> SResult {
     let q = query.to_owned();
-    let result = web::block(move || search::name::search(&q)).await?;
+    let result = web::block(move || {
+        let search = search::name::Search::new(&q);
+        SearchExecutor::new(search).run()
+    })
+    .await?;
 
-    base_data.with_pages(result.total_count, query.page as u32);
+    base_data.with_pages(result.total as u32, query.page as u32);
     Ok(ResultData::Name(result.items))
 }
 

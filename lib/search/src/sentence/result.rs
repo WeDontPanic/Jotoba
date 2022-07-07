@@ -1,13 +1,19 @@
 use japanese::{furigana, furigana::SentencePartRef};
 use types::jotoba::languages::Language;
 
-#[derive(Clone, Default)]
-pub struct SentenceResult {
-    pub items: Vec<Sentence>,
-    pub len: usize,
+/// Additional result data for a sentence search
+#[derive(Clone, Copy, Default)]
+pub struct ResData {
     pub hidden: bool,
 }
 
+impl ResData {
+    pub fn new(hidden: bool) -> Self {
+        Self { hidden }
+    }
+}
+
+/// A displayable sentence
 #[derive(Clone)]
 pub struct Sentence {
     pub id: u32,
@@ -35,27 +41,15 @@ impl Sentence {
         language: Language,
         allow_english: bool,
     ) -> Option<Self> {
-        let mut translation = s
-            .translation_for(language)
-            .or_else(|| s.translation_for(Language::English));
-        if translation.is_none() && allow_english {
-            translation = s.translation_for(Language::English);
-        }
+        let translation = s.get_translation(language, allow_english)?.to_string();
 
         Some(Self {
             id: s.id,
-            translation: translation?.to_string(),
+            translation,
             content: s.japanese,
             furigana: s.furigana,
             eng: None,
             language,
         })
-    }
-}
-
-impl From<(Vec<Sentence>, usize, bool)> for SentenceResult {
-    #[inline]
-    fn from((items, len, hidden): (Vec<Sentence>, usize, bool)) -> Self {
-        Self { items, len, hidden }
     }
 }

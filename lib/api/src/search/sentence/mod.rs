@@ -10,12 +10,15 @@ use super::{Result, SearchRequest};
 pub async fn sentence_search(payload: Json<SearchRequest>) -> Result<Json<Response>> {
     let query = super::parse_query(payload, SearchTarget::Kanji)?;
 
-    let result = web::block(move || search::sentence::Search::new(&query).search())
-        .await??
-        .items
-        .into_iter()
-        .map(|i| search_to_sentence(i))
-        .collect::<Vec<_>>();
+    let result = web::block(move || {
+        let search = search::sentence::Search::new(&query);
+        search::SearchExecutor::new(search).run()
+    })
+    .await?
+    .items
+    .into_iter()
+    .map(|i| search_to_sentence(i))
+    .collect::<Vec<_>>();
 
     Ok(Json(result.into()))
 }

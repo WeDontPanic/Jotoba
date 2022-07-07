@@ -163,12 +163,12 @@ impl<'a> Search<'a> {
 
     /// Returns a `SearchTask` for the current query. This will be used to find all words for
     /// the search
-    fn native_search_task<'b>(
+    fn native_search_task(
         &self,
-        query: &'b str,
+        query: &str,
         original_query: &str,
         sentence: bool,
-    ) -> SearchTask<'b, native::Engine> {
+    ) -> SearchTask<native::Engine> {
         let mut search_task: SearchTask<native::Engine> = SearchTask::new(&query)
             .limit(self.query.settings.page_size as usize)
             .offset(self.query.page_offset)

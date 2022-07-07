@@ -1,4 +1,7 @@
+pub mod pushable;
 pub mod sort_item;
+
+use self::pushable::Pushable;
 
 use super::{result::SearchResult, result_item::ResultItem, SearchEngine};
 use error::Error;
@@ -12,12 +15,12 @@ use types::jotoba::{
 };
 use vector_space_model2::{DocumentVector, Vector};
 
-pub struct SearchTask<'a, T>
+pub struct SearchTask<T>
 where
     T: SearchEngine,
 {
     /// Search query
-    queries: Vec<(&'a str, Option<Language>)>,
+    queries: Vec<(String, Option<Language>)>,
     /// filter out vectors
     vec_filter: Option<Box<dyn Fn(&T::Document) -> bool>>,
     /// Filter out results
@@ -34,30 +37,32 @@ where
     phantom: PhantomData<T>,
 }
 
-impl<'a, T: SearchEngine> SearchTask<'a, T> {
+impl<T: SearchEngine> SearchTask<T> {
     /// Creates a new Search task
     #[inline]
-    pub fn new(query: &'a str) -> Self {
+    pub fn new<S: AsRef<str>>(query: S) -> Self {
         let mut task = Self::default();
-        task.queries.push((query, None));
+        task.queries.push((query.as_ref().to_string(), None));
         task
     }
 
     /// Creates a new Search task with a query assigned language
-    pub fn with_language(query: &'a str, language: Language) -> Self {
+    pub fn with_language<S: AsRef<str>>(query: S, language: Language) -> Self {
         let mut task = Self::default();
-        task.queries.push((query, Some(language)));
+        task.queries
+            .push((query.as_ref().to_string(), Some(language)));
         task
     }
 
     /// Adds another query to look out for to the search task
-    pub fn add_language_query(&mut self, query: &'a str, language: Language) {
-        self.queries.push((query, Some(language)));
+    pub fn add_language_query<S: AsRef<str>>(&mut self, query: S, language: Language) {
+        self.queries
+            .push((query.as_ref().to_string(), Some(language)));
     }
 
     /// Adds another query to look out for to the search task
-    pub fn add_query(&mut self, query: &'a str) {
-        self.queries.push((query, None));
+    pub fn add_query<S: AsRef<str>>(&mut self, query: S) {
+        self.queries.push((query.as_ref().to_string(), None));
     }
 
     /// Set the total limit. This is the max amount of vectors which will be loaded and processed
@@ -141,7 +146,7 @@ impl<'a, T: SearchEngine> SearchTask<'a, T> {
     }
 
     /// Runs the search task and writes all items into the priority queue
-    pub fn find_to(&self, out: &mut StableUniquePrioContainerMax<ResultItem<T::Output>>) {
+    pub fn find_to<I: Pushable<Item = ResultItem<T::Output>>>(&self, out: &mut I) {
         for (q_str, vec, lang) in self.get_queries() {
             self.find_by_vec(vec, &q_str, lang, out);
         }
@@ -181,12 +186,12 @@ impl<'a, T: SearchEngine> SearchTask<'a, T> {
         })
     }
 
-    fn find_by_vec(
+    fn find_by_vec<I: Pushable<Item = ResultItem<T::Output>>>(
         &self,
         q_vec: Vector,
         q_str: &str,
         language: Option<Language>,
-        out: &mut StableUniquePrioContainerMax<ResultItem<T::Output>>,
+        out: &mut I,
     ) {
         let index = match T::get_index(language) {
             Some(index) => index,
@@ -205,13 +210,13 @@ impl<'a, T: SearchEngine> SearchTask<'a, T> {
         self.result_from_doc_vectors(vecs, &q_vec, q_str, language, out);
     }
 
-    fn result_from_doc_vectors(
+    fn result_from_doc_vectors<I: Pushable<Item = ResultItem<T::Output>>>(
         &self,
         document_vectors: impl Iterator<Item = DocumentVector<T::Document>>,
         q_vec: &Vector,
         q_str: &str,
         language: Option<Language>,
-        out: &mut StableUniquePrioContainerMax<ResultItem<T::Output>>,
+        out: &mut I,
     ) {
         let storage = resources::get();
 
@@ -231,7 +236,7 @@ impl<'a, T: SearchEngine> SearchTask<'a, T> {
                     continue;
                 }
 
-                out.insert(ResultItem::new_raw(res_doc, score, language));
+                out.push(ResultItem::new_raw(res_doc, score, language));
             }
         }
     }
@@ -351,7 +356,7 @@ impl<'a, T: SearchEngine> SearchTask<'a, T> {
     }
 }
 
-impl<'a, T: SearchEngine> Default for SearchTask<'a, T> {
+impl<T: SearchEngine> Default for SearchTask<T> {
     #[inline]
     fn default() -> Self {
         Self {

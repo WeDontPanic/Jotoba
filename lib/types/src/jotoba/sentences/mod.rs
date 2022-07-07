@@ -1,10 +1,10 @@
+use super::languages::Language;
 use bitflags::BitFlag;
 use serde::{Deserialize, Serialize};
-
-use super::languages::Language;
+use std::hash::Hash;
 
 /// A single Sentence with multiple translations.
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, Eq, Hash, Default)]
+#[derive(Debug, Clone, Deserialize, Serialize, Default)]
 pub struct Sentence {
     pub id: u32,
     pub japanese: String,
@@ -15,7 +15,7 @@ pub struct Sentence {
 }
 
 /// A Translation for a sentence
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Translation {
     pub text: String,
     pub language: Language,
@@ -69,6 +69,14 @@ impl Sentence {
     }
 
     pub fn get_translation(&self, language: Language, allow_english: bool) -> Option<&str> {
+        if let Some(s) = self.translation_for(language) {
+            return Some(s);
+        }
+
+        if allow_english {
+            return self.translation_for(Language::English);
+        }
+
         None
     }
 
@@ -104,5 +112,21 @@ impl From<(String, Language)> for Translation {
     #[inline]
     fn from((text, language): (String, Language)) -> Self {
         Self { text, language }
+    }
+}
+
+impl PartialEq for Sentence {
+    #[inline]
+    fn eq(&self, other: &Self) -> bool {
+        self.id == other.id
+    }
+}
+
+impl Eq for Sentence {}
+
+impl Hash for Sentence {
+    #[inline]
+    fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
+        self.id.hash(state);
     }
 }

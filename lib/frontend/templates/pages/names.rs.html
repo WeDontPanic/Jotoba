@@ -1,6 +1,6 @@
 @use types::jotoba::names::Name;
 @use super::search_help;
-@use search::name::result::get_types_humanized;
+@use crate::templ_utils::get_types_humanized;
 @use crate::BaseData;
 
 @(data: &BaseData, names: Vec<&Name>)
