@@ -10,7 +10,7 @@ use actix_web::{web::Json, HttpRequest};
 use error::api_error::RestError;
 use japanese::JapaneseExt;
 use types::{
-    api::radical::search::{Request, ResRadical, Response},
+    api::radical::search::{Request, Response},
     jotoba::languages::Language,
 };
 
@@ -42,17 +42,14 @@ pub async fn search_radical(
 }
 
 /// Maps radicals by its literals to ResRadical with its stroke count
-fn map_radicals(inp: &[char]) -> HashMap<u8, BTreeSet<ResRadical>> {
-    let mut radicals: HashMap<u8, BTreeSet<ResRadical>> = HashMap::with_capacity(inp.len());
+fn map_radicals(inp: &[char]) -> HashMap<u8, BTreeSet<char>> {
+    let mut radicals: HashMap<u8, BTreeSet<char>> = HashMap::with_capacity(inp.len());
 
     for (lit, strokes) in inp
         .iter()
         .filter_map(|lit| japanese::radicals::get_radical(*lit))
     {
-        radicals
-            .entry(strokes as u8)
-            .or_default()
-            .insert(ResRadical { literal: lit });
+        radicals.entry(strokes as u8).or_default().insert(lit);
     }
 
     radicals
