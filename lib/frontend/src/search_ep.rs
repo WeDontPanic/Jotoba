@@ -147,9 +147,13 @@ async fn name_search<'a>(base_data: &mut BaseData<'a>, query: &'a Query) -> SRes
 /// Perform a word search
 async fn word_search<'a>(base_data: &mut BaseData<'a>, query: &'a Query) -> SResult {
     let q = query.to_owned();
-    let result = web::block(move || search::word::search(&q)).await??;
+    let result = web::block(move || {
+        let search = search::word::Search::new(&q);
+        SearchExecutor::new(search).run()
+    })
+    .await?;
 
-    base_data.with_pages(result.count as u32, query.page as u32);
+    base_data.with_pages(result.total as u32, query.page as u32);
     Ok(ResultData::Word(result))
 }
 

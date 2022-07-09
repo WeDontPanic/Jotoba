@@ -15,12 +15,14 @@ use crate::{
         },
         SearchTask,
     },
-    executor::{producer::Producer, searchable::Searchable},
+    executor::{out_builder::OutputBuilder, producer::Producer, searchable::Searchable},
     query::Form,
 };
 
 use self::{
-    producer::{k_reading::KReadingProducer, tag::TagProducer},
+    producer::{
+        k_reading::KReadingProducer, regex::RegexProducer, sequence::SeqProducer, tag::TagProducer,
+    },
     result::{InflectionInformation, WordResult},
 };
 use super::query::{Query, QueryLang};
@@ -48,6 +50,8 @@ impl<'a> Search<'a> {
         let producer: Vec<Box<dyn Producer<Target = Self>>> = vec![
             Box::new(KReadingProducer::new(query)),
             Box::new(TagProducer::new(query)),
+            Box::new(SeqProducer::new(query)),
+            Box::new(RegexProducer::new(query)),
         ];
 
         Self { query, producer }
@@ -65,6 +69,10 @@ impl<'a> Searchable for Search<'a> {
 
     fn get_query(&self) -> &Query {
         self.query
+    }
+
+    fn mod_output(&self, out: &mut OutputBuilder<Self::Item, Self::OutputAdd>) {
+        out.output_add.raw_query = self.query.raw_query.clone();
     }
 
     #[inline]

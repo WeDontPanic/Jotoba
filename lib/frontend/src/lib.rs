@@ -30,11 +30,12 @@ use news::NewsEntry;
 use og_tags::TagKeyName;
 use search::{query::Query, result::SearchResult as SearchResult2};
 
-use search::{kanji::result::Item as KanjiItem, query::UserSettings, word::result::WordResult};
+use search::{kanji::result::Item as KanjiItem, query::UserSettings};
 use types::jotoba::{
     names::Name,
     pagination::Pagination,
     search::{help::SearchHelp, SearchTarget},
+    words::Word,
 };
 use unescaped::{UnescapedStr, UnescapedString};
 
@@ -70,7 +71,7 @@ pub struct SearchResult<'a> {
 /// The particular search result items
 #[derive(Clone)]
 pub enum ResultData {
-    Word(WordResult),
+    Word(SearchResult2<Word, search::word::result::AddResData>),
     KanjiInfo(Vec<KanjiItem>),
     Name(Vec<&'static Name>),
     Sentence(SearchResult2<search::sentence::result::Sentence, search::sentence::result::ResData>),
@@ -292,7 +293,7 @@ impl<'a> SearchResult<'a> {
 
     fn result_count(&self) -> usize {
         match &self.result {
-            ResultData::Word(w) => w.count,
+            ResultData::Word(w) => w.items.len(),
             ResultData::KanjiInfo(k) => k.len(),
             ResultData::Name(n) => n.len(),
             ResultData::Sentence(s) => s.items.len(),

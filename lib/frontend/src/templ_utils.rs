@@ -1,7 +1,9 @@
 use itertools::Itertools;
 use japanese::furigana::{self, SentencePartRef};
 use localization::{traits::Translatable, TranslationDict};
+use search::result::SearchResult;
 use types::jotoba::{
+    kanji::Kanji,
     languages::Language,
     names::Name,
     words::{filter_languages, sense::Sense, Word},
@@ -102,4 +104,12 @@ pub fn get_types_humanized(
     } else {
         String::from("")
     }
+}
+
+pub fn word_kanji<O>(res: &SearchResult<Word, O>) -> Vec<Kanji> {
+    search::word::kanji::load_word_kanji_info(&res.items)
+}
+
+pub fn has_kanji<O>(res: &SearchResult<Word, O>) -> bool {
+    !word_kanji(res).is_empty()
 }

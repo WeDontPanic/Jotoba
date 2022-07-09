@@ -3,12 +3,32 @@ use types::jotoba::{
     words::{inflection::Inflection, Word},
 };
 
-#[derive(Default)]
+#[derive(Default, Clone)]
 pub struct AddResData {
     pub sentence: Option<SentenceInfo>,
     pub inflection: Option<InflectionInformation>,
+    pub raw_query: String,
 }
 
+impl AddResData {
+    pub fn has_sentence(&self) -> bool {
+        self.sentence.is_some()
+    }
+
+    pub fn has_inflection(&self) -> bool {
+        self.inflection.is_some()
+    }
+
+    pub fn sentence_parts(&self) -> Option<&sentence_reader::Sentence> {
+        self.sentence.as_ref().and_then(|i| i.parts.as_ref())
+    }
+
+    pub fn sentence_index(&self) -> usize {
+        self.sentence.as_ref().map(|i| i.index).unwrap_or(0)
+    }
+}
+
+#[derive(Default, Clone)]
 pub struct SentenceInfo {
     pub parts: Option<sentence_reader::Sentence>,
     pub index: usize,

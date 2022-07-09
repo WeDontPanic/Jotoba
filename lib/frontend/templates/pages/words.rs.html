@@ -1,5 +1,7 @@
-@use search::word::result::{Item, WordResult, selected};
+@use search::word::result::{selected, AddResData};
+@use types::jotoba::words::Word;
 @use types::jotoba::languages::Language;
+@use search::result::SearchResult;
 @use search::query::Query;
 @use japanese::furigana::parse::from_str as furi_from_str;
 @use crate::templ_utils::*;
@@ -9,7 +11,7 @@
 @use crate::templates::overlays::info::*;
 
 @use crate::BaseData;
-@(data: &BaseData, query: &Query, result: WordResult)
+@(data: &BaseData, query: &Query, result: SearchResult<Word, AddResData>)
 
 <link rel="stylesheet" type="text/css" media="print" onload="this.media='all'" href="/variable_assets/@data.asset_hash/assets/css/tools/ripple.css">
 
@@ -21,14 +23,14 @@
 
 <script defer src="/variable_assets/@data.asset_hash/assets/js/page/wordPage.js"></script>
 
-  @if let Some(ref inflection) = result.inflection_info {
+  @if let Some(ref inflection) = result.inflection {
     <div class="search-annotation">
 
       <!-- Search Inflections -->
       <div class="search-inflection">
         <span>
           @data.ngt_search_links("{} could be an inflection of {}, with this form:", 1,
-          &[&result.searched_query, &inflection.lexeme], inflection.inflections.len() as u64)
+          &[&result.other_data.raw_query, &inflection.lexeme], inflection.inflections.len() as u64)
           <br>
           <span class="forms">
             @for inflection in inflection.inflections.iter() {
@@ -38,27 +40,27 @@
         </span>
       </div>
 
-      @if result.sentence_parts.is_none() {
+      @if result.has_sentence() {
         <br>
       }
 
     </div>
   }
 
-  @if let Some(ref sentence_parts) = result.sentence_parts {
+  @if let Some(sentence_parts) = result.sentence_parts() {
     <div class="search-annotation">
       <!-- Sentence Info -->
       <div id="sr" class="d-flex wrap">
         @for part in sentence_parts.iter() {
           @if let Some(furigana) = part.furigana() {
             <a id="p@part.pos()" href="/search/@query.get_query_encoded()?i=@part.pos()"
-              class="@part.word_class_lower().unwrap_or_default() sentence-part @selected(part.pos(), result.sentence_index)">
+              class="@part.word_class_lower().unwrap_or_default() sentence-part @selected(part.pos(), result.sentence_index())">
               @:render_sentence_html(furi_from_str(furigana).collect(), "", true)
               </a>
           } else {
             <!-- TODO find a better way to keep this consistent. Implement with reader_sentence.rs.html -->
             <a id="p@part.pos()" href="/search/@query.get_query_encoded()?i=@part.pos()"
-              class="@part.word_class_lower().unwrap_or_default() sentence-part @selected(part.pos(), result.sentence_index)">
+              class="@part.word_class_lower().unwrap_or_default() sentence-part @selected(part.pos(), result.sentence_index())">
               <div class="furigana-kanji-container">
                 <ruby>
                   <span class="kanji-preview">@part.get_inflected()</span>
@@ -91,16 +93,14 @@
         @data.gettext_fmt("Temporarily switched language to {}", &[data.gettext(new_lang)])
       }*@
 
-      @if result.has_word() {
+      @if !result.is_empty() {
         <h3 class="noselect word-title">@data.gettext("Words")</h3>
       } else {
         @:search_help(&data, data.gettext("words").as_str())
       }
 
       <!-- Word, Sentence, Name Templates here -->
-      @for i in result.items.iter() {
-        @if let Item::Word(word) = i {
-
+      @for word in result.items.iter() {
           @if word.get_reading().len() > 3 {
             <div class="d-flex flex-row wrap"> 
               @if let Some(s_pairs) = word.get_furigana() {
@@ -347,65 +347,62 @@
               <hr class="res-separator" />
             </div>
           </div>
-        }
       }
       
     </div>
-    <div id="secondaryInfo" class="secondary-info @if !result.contains_kanji { hidden }">
+    <div id="secondaryInfo" class="secondary-info @if !has_kanji(&result) { hidden }">
       <h3 class="noselect">@data.gettext("Kanji")</h3>
       <!-- Kanji Templates here -->
-      @for i in result.items.iter() {
-        @if let Item::Kanji(kanji) = i {
-          <div class="kanji-parent">
-            <!-- Tags -->
-            <div class="tags">
-              @data.ngettext_fmt("{} stroke", kanji.stroke_count as u64, &[kanji.stroke_count]).
-              @if let Some(jlpt_lvl) = kanji.jlpt {
-                @data.gettext_fmt("JLPT N{}", &[jlpt_lvl])}@*
-              *@@if let Some(grade) = kanji.grade {@if kanji.jlpt.is_some() {. }
-                @data.gettext_fmt("Taught in {} grade", &[grade])
+      @for kanji in word_kanji(&result) {
+        <div class="kanji-parent">
+          <!-- Tags -->
+          <div class="tags">
+            @data.ngettext_fmt("{} stroke", kanji.stroke_count as u64, &[kanji.stroke_count]).
+            @if let Some(jlpt_lvl) = kanji.jlpt {
+              @data.gettext_fmt("JLPT N{}", &[jlpt_lvl])}@*
+            *@@if let Some(grade) = kanji.grade {@if kanji.jlpt.is_some() {. }
+              @data.gettext_fmt("Taught in {} grade", &[grade])
+            }
+          </div>
+
+          <!-- Kanji and translation -->
+          <div class="kanji-entry left d-flex flex-row">
+            <a class="kanji-preview large black" href="/search/@kanji.literal?t=1">
+              @kanji.literal
+            </a>
+            <div class="translation kanji">
+              @kanji.meanings.join(", ")
+            </div>
+          </div>
+
+          <!-- Kun readings -->
+          @if !kanji.kunyomi.is_empty() {
+            <div class="tags no-margin">@data.gettext("Kun")</div>
+            <div class="d-flex flex-row wrap noselect">
+              @for (pos, reading) in kanji.kunyomi.iter().enumerate() {
+                @if pos > 0 {
+                  <span class="tags no-margin fat right-padding-10">,</span>
+                }
+                <a class="clickable no-align green" href="/search/@kanji.literal @reading">@reading</a>
               }
             </div>
+          }
 
-            <!-- Kanji and translation -->
-            <div class="kanji-entry left d-flex flex-row">
-              <a class="kanji-preview large black" href="/search/@kanji.literal?t=1">
-                @kanji.literal
-              </a>
-              <div class="translation kanji">
-                @kanji.meanings.join(", ")
-              </div>
+          <!-- On readings -->
+          @if !kanji.onyomi.is_empty() {
+            <div class="tags no-margin">@data.gettext("On")</div>
+            <div class="d-flex flex-row wrap noselect">
+              @for (pos, reading) in kanji.onyomi.iter().enumerate() {
+                @if pos > 0 {
+                  <span class="tags no-margin fat right-padding-10">,</span>
+                }
+                <a class="clickable no-align green" href="/search/@kanji.literal @reading">@reading</a>
+              }
             </div>
+          }
 
-            <!-- Kun readings -->
-            @if !kanji.kunyomi.is_empty() {
-              <div class="tags no-margin">@data.gettext("Kun")</div>
-              <div class="d-flex flex-row wrap noselect">
-                @for (pos, reading) in kanji.kunyomi.iter().enumerate() {
-                  @if pos > 0 {
-                    <span class="tags no-margin fat right-padding-10">,</span>
-                  }
-                  <a class="clickable no-align green" href="/search/@kanji.literal @reading">@reading</a>
-                }
-              </div>
-            }
-
-            <!-- On readings -->
-            @if !kanji.onyomi.is_empty() {
-              <div class="tags no-margin">@data.gettext("On")</div>
-              <div class="d-flex flex-row wrap noselect">
-                @for (pos, reading) in kanji.onyomi.iter().enumerate() {
-                  @if pos > 0 {
-                    <span class="tags no-margin fat right-padding-10">,</span>
-                  }
-                  <a class="clickable no-align green" href="/search/@kanji.literal @reading">@reading</a>
-                }
-              </div>
-            }
-
-            <hr />
-          </div>
-        }
+          <hr />
+        </div>
       }
     </div>
   </div>

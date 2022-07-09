@@ -71,8 +71,7 @@ fn alternative_reading_search(search: &Search2<'_>) -> Result<ResultData, Error>
 /// Load word assigned kanji
 pub fn load_word_kanji_info(words: &[Word]) -> Vec<Kanji> {
     let kanji_resources = resources::get().kanji();
-
-    let kanji_literals = words
+    words
         .iter()
         .filter_map(|i| {
             let kanji = &i.reading.kanji.as_ref()?.reading;
@@ -84,7 +83,5 @@ pub fn load_word_kanji_info(words: &[Word]) -> Vec<Kanji> {
         .filter_map(|i| kanji_resources.by_literal(i).cloned())
         .unique_by(|i| i.literal)
         .take(10)
-        .collect::<Vec<_>>();
-
-    kanji_literals
+        .collect()
 }

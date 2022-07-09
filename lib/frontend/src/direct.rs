@@ -6,9 +6,12 @@ use localization::TranslationDict;
 use search::{
     query::{Query, UserSettings},
     sentence,
-    word::{self, result::WordResult},
+    word::result::AddResData,
 };
-use types::jotoba::{search::SearchTarget, words::filter_languages};
+use types::jotoba::{
+    search::SearchTarget,
+    words::{filter_languages, Word},
+};
 
 use crate::{
     og_tags::{self, TagKeyName},
@@ -77,7 +80,7 @@ fn set_og_tag(base_data: &mut BaseData, query_type: SearchTarget) {
 
 fn search_res_val(res: &SearchResult) -> Option<String> {
     Some(match &res.result {
-        ResultData::Word(w) => w.get_items().0[0].get_reading().reading.clone(),
+        ResultData::Word(w) => w.items[0].get_reading().reading.clone(),
         ResultData::Name(n) => n[0].kanji.as_ref().unwrap_or(&n[0].kana).to_string(),
         _ => return None,
     })
@@ -99,16 +102,13 @@ pub async fn find_direct_word(id: &str, settings: &UserSettings) -> Result<Resul
     let show_english = !results[0].has_language(settings.user_lang, false) || settings.show_english;
     filter_languages(results.iter_mut(), settings.user_lang, show_english);
 
-    let kanji = search::word::kanji::load_word_kanji_info(&results)
-        .into_iter()
-        .map(|k| word::result::Item::Kanji(k));
-
     let word = results.remove(0);
 
-    let mut items = vec![word::result::Item::Word(word)];
-    items.extend(kanji);
-    let contains_kanji = items.len() > 1;
-
+    Ok(ResultData::Word(search::result::SearchResult::<
+        Word,
+        AddResData,
+    >::with_other_default(vec![word], 1)))
+    /*
     Ok(ResultData::Word(WordResult {
         items,
         count: 1,
@@ -117,7 +117,7 @@ pub async fn find_direct_word(id: &str, settings: &UserSettings) -> Result<Resul
         sentence_parts: None,
         sentence_index: 0,
         searched_query: String::new(),
-    }))
+    }))*/
 }
 
 /// Find direct name

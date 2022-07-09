@@ -1,0 +1,89 @@
+use itertools::Itertools;
+use types::jotoba::{search::guess::Guess, words::Word};
+
+use crate::{
+    engine::{
+        result_item::ResultItem,
+        search_task::pushable::{Counter, Pushable},
+        words::native::regex,
+    },
+    executor::{out_builder::OutputBuilder, producer::Producer, searchable::Searchable},
+    query::{regex::RegexSQuery, Query},
+    word::{order::regex_order, Search},
+};
+
+pub struct RegexProducer<'a> {
+    query: &'a Query,
+}
+
+impl<'a> RegexProducer<'a> {
+    pub fn new(query: &'a Query) -> Self {
+        Self { query }
+    }
+
+    fn find_to_unsorted<P: Pushable<Item = ResultItem<&'static Word>>>(
+        &self,
+        out: &mut P,
+    ) -> Option<()> {
+        let regex_query = self.query.as_regex_query()?;
+        search(&regex_query, |_, _| 0, out);
+        Some(())
+    }
+
+    fn find_to<P: Pushable<Item = ResultItem<&'static Word>>>(&self, out: &mut P) -> Option<()> {
+        let regex_query = self.query.as_regex_query()?;
+        search(&regex_query, |w, r| regex_order(w, r, &regex_query), out);
+        Some(())
+    }
+}
+
+impl<'a> Producer for RegexProducer<'a> {
+    type Target = Search<'a>;
+
+    fn produce(
+        &self,
+        out: &mut OutputBuilder<
+            <Self::Target as Searchable>::Item,
+            <Self::Target as Searchable>::OutputAdd,
+        >,
+    ) {
+        self.find_to(out);
+    }
+
+    fn should_run(&self, _already_found: usize) -> bool {
+        self.query.as_regex_query().is_some()
+    }
+
+    fn estimate(&self) -> Option<types::jotoba::search::guess::Guess> {
+        let mut counter = Counter::new();
+        self.find_to_unsorted(&mut counter);
+        Some(Guess::with_limit(counter.val() as u32, 100))
+    }
+}
+
+pub fn search<'a, F, P>(query: &'a RegexSQuery, sort: F, out: &mut P)
+where
+    F: Fn(&'a Word, &'a str) -> usize,
+    P: Pushable<Item = ResultItem<&'static Word>>,
+{
+    let word_resources = resources::get().words();
+
+    let index = indexes::get().word().regex();
+    let possible_results = regex::find_words(index, &query.get_chars());
+
+    for seq_id in possible_results.into_iter().sorted() {
+        let word = word_resources.by_sequence(seq_id).unwrap();
+
+        let item_iter = word
+            .reading_iter(true)
+            .filter_map(|i| query.matches(&i.reading).then(|| (word, &i.reading)))
+            .map(|(word, reading)| {
+                let order = sort(word, reading);
+                ResultItem::new(word, order)
+            });
+
+        for i in item_iter {
+            out.push(i);
+        }
+    }
+}

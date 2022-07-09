@@ -51,7 +51,7 @@ where
 }
 
 /// Get all indexed words using characters in `chars`
-fn find_words(index: &RegexSearchIndex, chars: &[char]) -> IntSet {
+pub(crate) fn find_words(index: &RegexSearchIndex, chars: &[char]) -> IntSet {
     if chars.is_empty() {
         return IntSet::new();
     }

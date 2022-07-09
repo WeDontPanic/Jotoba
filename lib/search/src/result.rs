@@ -1,3 +1,5 @@
+use std::ops::Deref;
+
 /// The final result of a search
 #[derive(Clone)]
 pub struct SearchResult<T, O = ()> {
@@ -36,6 +38,16 @@ impl<T, O> SearchResult<T, O> {
             other_data,
         }
     }
+
+    #[inline]
+    pub fn len(&self) -> usize {
+        self.items.len()
+    }
+
+    #[inline]
+    pub fn is_empty(&self) -> bool {
+        self.len() == 0
+    }
 }
 
 impl<T, O: Default> SearchResult<T, O> {
@@ -46,5 +58,14 @@ impl<T, O: Default> SearchResult<T, O> {
             total,
             other_data: O::default(),
         }
+    }
+}
+
+impl<T, O> Deref for SearchResult<T, O> {
+    type Target = O;
+
+    #[inline]
+    fn deref(&self) -> &Self::Target {
+        &self.other_data
     }
 }

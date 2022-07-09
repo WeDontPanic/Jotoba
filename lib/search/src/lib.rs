@@ -63,7 +63,9 @@ pub fn build_help(querytype: SearchTarget, query: &Query) -> Option<SearchHelp> 
             SearchTarget::Names => {
                 help.names = SearchExecutor::new(name::Search::new(query)).guess()
             }
-            SearchTarget::Words => help.words = word::guess_result(query),
+            SearchTarget::Words => {
+                help.words = SearchExecutor::new(word::Search::new(query)).guess()
+            }
         }
     }
 
