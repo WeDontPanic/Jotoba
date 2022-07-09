@@ -10,8 +10,4 @@ services:
     volumes:
       - ./html:/app/html
       - ./resources:/app/resources
-      - ./unidic-mecab:/app/unidic-mecab
-      - ./indexes:/app/indexes
-      - ./suggestions:/app/suggestions
-      - ./news:/app/news
       - ./data:/app/data
