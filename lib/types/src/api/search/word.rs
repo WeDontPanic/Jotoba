@@ -18,6 +18,12 @@ pub struct Response {
     words: Vec<Word>,
 }
 
+impl Response {
+    pub fn new(words: Vec<Word>, kanji: Vec<Kanji>) -> Self {
+        Self { kanji, words }
+    }
+}
+
 /// Represents a single Word result with 1 (main) Japanese reading and n glosses
 #[derive(Serialize, Deserialize)]
 pub struct Word {

@@ -33,7 +33,7 @@ impl<'a> Producer for NameProducer<'a> {
         &self,
         out: &mut OutputBuilder<
             <Self::Target as Searchable>::Item,
-            <Self::Target as Searchable>::OutputAdd,
+            <Self::Target as Searchable>::ResAdd,
         >,
     ) {
         if self.query.q_lang == QueryLang::Japanese {

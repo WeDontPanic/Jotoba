@@ -5,7 +5,7 @@ pub mod searchable;
 use crate::result::SearchResult;
 use out_builder::OutputBuilder;
 use searchable::Searchable;
-use types::jotoba::search::guess::Guess;
+use types::jotoba::search::guess::{Guess, GuessType};
 
 /// Executes a search
 pub struct SearchExecutor<S: Searchable> {
@@ -19,7 +19,7 @@ impl<S: Searchable> SearchExecutor<S> {
     }
 
     /// Executes the search
-    pub fn run(self) -> SearchResult<S::OutputItem, S::OutputAdd> {
+    pub fn run(self) -> SearchResult<S::OutItem, S::ResAdd> {
         let query = self.search.get_query();
         let limit = query.settings.page_size as usize;
         let offset = query.page_offset;
@@ -44,6 +44,23 @@ impl<S: Searchable> SearchExecutor<S> {
     }
 
     pub fn guess(&self) -> Option<Guess> {
-        None
+        let mut sum = 0usize;
+        let mut gt = GuessType::Accurate;
+
+        for prod in self.search.get_producer() {
+            if !prod.should_run(sum) {
+                continue;
+            }
+
+            if let Some(guess) = prod.estimate() {
+                sum += guess.value as usize;
+                if guess.guess_type == GuessType::MoreThan {
+                    gt = GuessType::MoreThan;
+                }
+            }
+        }
+
+        let sum = sum.min(100);
+        Some(Guess::new(sum as u32, gt))
     }
 }

@@ -125,6 +125,12 @@ impl Query {
         self.cust_lang.unwrap_or(self.settings.user_lang)
     }
 
+    /// Shortcut for query.settings.user_lang. This does not apply overwritten language. For that use `get_search_lang`
+    #[inline]
+    pub fn lang(&self) -> Language {
+        self.settings.user_lang
+    }
+
     /// Returns a `RegexSQuery` if the query contains a valid regex
     pub fn as_regex_query(&self) -> Option<RegexSQuery> {
         // Only japanese regex support (for now)

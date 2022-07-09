@@ -60,11 +60,6 @@ impl<T: SearchEngine> SearchTask<T> {
             .push((query.as_ref().to_string(), Some(language)));
     }
 
-    /// Adds another query to look out for to the search task
-    pub fn add_query<S: AsRef<str>>(&mut self, query: S) {
-        self.queries.push((query.as_ref().to_string(), None));
-    }
-
     /// Set the total limit. This is the max amount of vectors which will be loaded and processed
     pub fn limit(mut self, total_limit: usize) -> Self {
         self.limit = total_limit;

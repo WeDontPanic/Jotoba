@@ -7,7 +7,7 @@ use crate::{
     engine::result_item::ResultItem,
     executor::{out_builder::OutputBuilder, producer::Producer, searchable::Searchable},
     name::Search,
-    query::{Form, Query},
+    query::Query,
 };
 
 pub struct SeqProducer<'a> {
@@ -20,10 +20,8 @@ impl<'a> SeqProducer<'a> {
     }
 
     fn name(&self) -> Option<&'static Name> {
-        if let Form::Sequence(seq) = self.query.form {
-            return resources::get().names().by_sequence(seq);
-        }
-        None
+        let seq = *self.query.form.as_sequence()?;
+        resources::get().names().by_sequence(seq)
     }
 }
 
@@ -34,7 +32,7 @@ impl<'a> Producer for SeqProducer<'a> {
         &self,
         out: &mut OutputBuilder<
             <Self::Target as Searchable>::Item,
-            <Self::Target as Searchable>::OutputAdd,
+            <Self::Target as Searchable>::ResAdd,
         >,
     ) {
         if let Some(name) = self.name() {

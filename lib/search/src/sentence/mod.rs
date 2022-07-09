@@ -32,20 +32,20 @@ impl<'a> Search<'a> {
 }
 
 impl<'a> Searchable for Search<'a> {
-    type OutputAdd = ResData;
-    type OutputItem = result::Sentence;
+    type ResAdd = ResData;
+    type OutItem = result::Sentence;
     type Item = &'static Sentence;
 
     fn get_producer<'s>(&'s self) -> &Vec<Box<dyn Producer<Target = Self> + 's>> {
         &self.producer
     }
 
-    fn mod_output(&self, out: &mut OutputBuilder<Self::Item, Self::OutputAdd>) {
+    fn mod_output(&self, out: &mut OutputBuilder<Self::Item, Self::ResAdd>) {
         out.output_add = ResData::new(self.query.has_tag(Tag::Hidden));
     }
 
     #[inline]
-    fn to_output_item(&self, item: Self::Item) -> Self::OutputItem {
+    fn to_output_item(&self, item: Self::Item) -> Self::OutItem {
         let lang = self.query.settings.language();
         let show_english = self.query.settings.show_english;
         map_sentence_to_item(item, lang, show_english).unwrap()

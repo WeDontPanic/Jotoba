@@ -9,7 +9,7 @@ pub struct Guess {
 }
 
 /// Vague guess relation to a guesses actual value
-#[derive(Clone, Copy, Debug, Serialize, Deserialize)]
+#[derive(Clone, Copy, Debug, Serialize, Deserialize, PartialEq, Eq)]
 pub enum GuessType {
     Accurate,
     MoreThan,

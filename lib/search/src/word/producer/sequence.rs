@@ -32,7 +32,7 @@ impl<'a> Producer for SeqProducer<'a> {
         &self,
         out: &mut OutputBuilder<
             <Self::Target as Searchable>::Item,
-            <Self::Target as Searchable>::OutputAdd,
+            <Self::Target as Searchable>::ResAdd,
         >,
     ) {
         if let Some(word) = self.word() {

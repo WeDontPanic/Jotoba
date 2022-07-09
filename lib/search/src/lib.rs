@@ -70,7 +70,7 @@ pub fn build_help(querytype: SearchTarget, query: &Query) -> Option<SearchHelp> 
     }
 
     if querytype == SearchTarget::Words {
-        help.other_langs = word::guess_inp_language(query);
+        //help.other_langs = word::guess_inp_language(query);
     }
 
     (!help.is_empty()).then(|| help)

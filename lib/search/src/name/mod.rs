@@ -1,7 +1,9 @@
 mod producer;
 
-use super::query::Query;
-use crate::executor::{producer::Producer, searchable::Searchable};
+use crate::{
+    executor::{producer::Producer, searchable::Searchable},
+    query::Query,
+};
 use producer::{kanji_reading::KreadingProducer, names::NameProducer, sequence::SeqProducer};
 use types::jotoba::names::Name;
 
@@ -21,12 +23,12 @@ impl<'a> Search<'a> {
 }
 
 impl<'a> Searchable for Search<'a> {
-    type OutputAdd = ();
-    type OutputItem = &'static Name;
     type Item = &'static Name;
+    type OutItem = &'static Name;
+    type ResAdd = ();
 
     #[inline]
-    fn to_output_item(&self, item: Self::Item) -> Self::OutputItem {
+    fn to_output_item(&self, item: Self::Item) -> Self::OutItem {
         item
     }
 

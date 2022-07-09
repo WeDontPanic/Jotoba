@@ -1,11 +1,4 @@
-pub mod foreign;
-pub mod japanese;
-pub mod k_reading;
-pub mod regex;
-pub mod sequence;
-pub mod tag;
-
-/*
+use japanese::{guessing::could_be_romaji, JapaneseExt};
 
 use crate::{
     executor::{out_builder::OutputBuilder, producer::Producer, searchable::Searchable},
@@ -21,6 +14,10 @@ impl<'a> RomajiProducer<'a> {
     pub fn new(query: &'a Query) -> Self {
         Self { query }
     }
+
+    fn romaji_query(&self) -> String {
+        self.query.query_str.to_hiragana()
+    }
 }
 
 impl<'a> Producer for RomajiProducer<'a> {
@@ -35,6 +32,8 @@ impl<'a> Producer for RomajiProducer<'a> {
     ) {
         todo!()
     }
-}
 
-*/
+    fn should_run(&self, already_found: usize) -> bool {
+        already_found < 100 && could_be_romaji(&self.query.query_str)
+    }
+}

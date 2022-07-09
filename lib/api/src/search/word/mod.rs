@@ -1,11 +1,27 @@
 use super::{Result, SearchRequest};
 use actix_web::web::{self, Json};
-use types::{api::search::word::Response, jotoba::search::SearchTarget};
+use search::{word::Search, SearchExecutor};
+use types::{
+    api::search::{
+        kanji::Kanji,
+        word::{Response, Word},
+    },
+    jotoba::search::SearchTarget,
+};
 
 /// Do a word search via API
 pub async fn word_search(payload: Json<SearchRequest>) -> Result<Json<Response>> {
     let query = super::parse_query(payload, SearchTarget::Words)?;
-    let result = web::block(move || search::word::search(&query)).await??;
-    let response: Response = result.get_items().into();
-    Ok(Json(response))
+    let result = web::block(move || {
+        let search = Search::new(&query);
+        SearchExecutor::new(search).run()
+    })
+    .await?;
+
+    let kanji: Vec<Kanji> = search::word::kanji::load_word_kanji_info(&result.items)
+        .into_iter()
+        .map(|i| (&i).into())
+        .collect();
+    let words: Vec<Word> = result.items.into_iter().map(|i| (&i).into()).collect();
+    Ok(Json(Response::new(words, kanji)))
 }

@@ -44,7 +44,7 @@ impl<'a> Producer for RegexProducer<'a> {
         &self,
         out: &mut OutputBuilder<
             <Self::Target as Searchable>::Item,
-            <Self::Target as Searchable>::OutputAdd,
+            <Self::Target as Searchable>::ResAdd,
         >,
     ) {
         self.find_to(out);

@@ -1,13 +1,12 @@
-use japanese::furigana::generate::{assign_readings, ReadingRetrieve};
-use resources::retrieve::kanji::KanjiRetrieve;
-use types::jotoba::names::Name;
-
 use crate::{
     engine::{names::native, SearchTask},
     executor::{out_builder::OutputBuilder, producer::Producer, searchable::Searchable},
     name::Search,
     query::Query,
 };
+use japanese::furigana::generate::{assign_readings, ReadingRetrieve};
+use resources::retrieve::kanji::KanjiRetrieve;
+use types::jotoba::{names::Name, search::guess::Guess};
 
 pub struct KreadingProducer<'a> {
     query: &'a Query,
@@ -21,9 +20,7 @@ impl<'a> KreadingProducer<'a> {
     fn search_task(&self) -> Option<SearchTask<native::Engine>> {
         let k_reading = self.query.form.as_kanji_reading()?;
 
-        let query_str = k_reading.literal.to_string();
-
-        let mut task = SearchTask::<native::Engine>::new(&query_str);
+        let mut task = SearchTask::<native::Engine>::new(k_reading.literal.to_string());
 
         let literal = k_reading.literal;
         let reading = k_reading.reading.clone();
@@ -41,7 +38,7 @@ impl<'a> Producer for KreadingProducer<'a> {
         &self,
         out: &mut OutputBuilder<
             <Self::Target as Searchable>::Item,
-            <Self::Target as Searchable>::OutputAdd,
+            <Self::Target as Searchable>::ResAdd,
         >,
     ) {
         if let Some(task) = self.search_task() {
@@ -53,7 +50,7 @@ impl<'a> Producer for KreadingProducer<'a> {
         self.query.form.is_kanji_reading()
     }
 
-    fn estimate(&self) -> Option<types::jotoba::search::guess::Guess> {
+    fn estimate(&self) -> Option<Guess> {
         self.search_task()?.estimate_result_count().ok()
     }
 }

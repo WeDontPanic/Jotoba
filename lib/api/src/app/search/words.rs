@@ -4,6 +4,8 @@ use super::convert_payload;
 use crate::app::Result;
 use actix_web::web::{self, Json};
 use error::api_error::RestError;
+use search::word::Search;
+use search::SearchExecutor;
 use types::{
     api::app::search::{
         query::SearchPayload,
@@ -26,22 +28,31 @@ pub async fn search(payload: Json<SearchPayload>) -> Result<Json<Resp>> {
     let user_lang = query.settings.user_lang;
 
     let query_c = query.clone();
-    let result = web::block(move || search::word::search(&query_c)).await??;
+    let result = web::block(move || {
+        let search = Search::new(&query_c);
+        SearchExecutor::new(search).run()
+    })
+    .await?;
 
     let words = result
-        .words()
+        .items
+        .iter()
         .map(|i| super::super::conv_word(i.clone(), user_lang))
         .collect();
 
-    let sentence = result
-        .sentence_parts
-        .map(|i| conv_sentence(i, result.sentence_index));
-    let infl_info = result.inflection_info.map(|i| conv_infl_info(i));
+    let s_index = result.sentence_index();
 
-    let original_query = result.searched_query;
+    let sentence = result
+        .other_data
+        .sentence
+        .and_then(|i| i.parts)
+        .map(|i| conv_sentence(i, s_index));
+    let infl_info = result.other_data.inflection.map(|i| conv_infl_info(i));
+
+    let original_query = result.other_data.raw_query.clone();
 
     let res = words::Response::new(words, infl_info, sentence, original_query);
-    let len = result.count as u32;
+    let len = result.total as u32;
 
     let page = new_page(&payload, res, len, payload.settings.page_size);
     let res = super::new_response(page, SearchTarget::Words, &query);

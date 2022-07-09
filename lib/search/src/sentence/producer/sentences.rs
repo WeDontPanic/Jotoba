@@ -21,7 +21,7 @@ impl<'a> Producer for SentenceProducer<'a> {
         &self,
         out: &mut OutputBuilder<
             <Self::Target as Searchable>::Item,
-            <Self::Target as Searchable>::OutputAdd,
+            <Self::Target as Searchable>::ResAdd,
         >,
     ) {
         if self.japanese {
@@ -54,12 +54,11 @@ impl<'a> SentenceProducer<'a> {
     fn foreign(&self) -> SearchTask<foreign::Engine> {
         let query_str = &self.query.query_str;
 
-        let mut search_task =
-            SearchTask::<foreign::Engine>::with_language(query_str, self.query.settings.user_lang)
-                .threshold(0.2);
+        let mut search_task: SearchTask<foreign::Engine> =
+            SearchTask::with_language(query_str, self.query.lang()).threshold(0.2);
 
         if self.query.settings.show_english && self.query.settings.user_lang != Language::English {
-            search_task.add_language_query(&self.query.query_str, Language::English)
+            search_task.add_language_query(&query_str, Language::English)
         }
 
         self.lang_filter(&mut search_task);

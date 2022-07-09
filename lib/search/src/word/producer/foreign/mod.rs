@@ -1,11 +1,4 @@
-pub mod foreign;
-pub mod japanese;
-pub mod k_reading;
-pub mod regex;
-pub mod sequence;
-pub mod tag;
-
-/*
+pub mod romaji;
 
 use crate::{
     executor::{out_builder::OutputBuilder, producer::Producer, searchable::Searchable},
@@ -13,17 +6,17 @@ use crate::{
     word::Search,
 };
 
-pub struct RomajiProducer<'a> {
+pub struct ForeignProducer<'a> {
     query: &'a Query,
 }
 
-impl<'a> RomajiProducer<'a> {
+impl<'a> ForeignProducer<'a> {
     pub fn new(query: &'a Query) -> Self {
         Self { query }
     }
 }
 
-impl<'a> Producer for RomajiProducer<'a> {
+impl<'a> Producer for ForeignProducer<'a> {
     type Target = Search<'a>;
 
     fn produce(
@@ -33,8 +26,10 @@ impl<'a> Producer for RomajiProducer<'a> {
             <Self::Target as Searchable>::ResAdd,
         >,
     ) {
-        todo!()
+        //
+    }
+
+    fn should_run(&self, already_found: usize) -> bool {
+        true
     }
 }
-
-*/
