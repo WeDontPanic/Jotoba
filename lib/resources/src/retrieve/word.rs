@@ -20,7 +20,7 @@ impl<'a> WordRetrieve<'a> {
     }
 
     /// returns an iterator over all irregular ichidan words
-    pub fn irregular_ichidan(&'a self) -> impl Iterator<Item = &'a Word> {
+    pub fn irregular_ichidan<'b>(&'b self) -> impl Iterator<Item = &'a Word> + 'b {
         self.storage
             .irregular_ichidan
             .iter()
@@ -40,7 +40,7 @@ impl<'a> WordRetrieve<'a> {
 
     /// Returns an iterator over all words with given `jlpt` level
     #[inline]
-    pub fn by_jlpt(&self, jlpt: u8) -> impl Iterator<Item = &'_ Word> {
+    pub fn by_jlpt<'b>(&'b self, jlpt: u8) -> impl Iterator<Item = &'a Word> + 'b {
         self.storage
             .jlpt_word_map
             .get(&jlpt)

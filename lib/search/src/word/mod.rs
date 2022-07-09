@@ -1,5 +1,6 @@
 pub mod kanji;
 pub mod order;
+pub mod producer;
 mod regex;
 pub mod result;
 pub mod tag_only;
@@ -14,10 +15,14 @@ use crate::{
         },
         SearchTask,
     },
+    executor::{producer::Producer, searchable::Searchable},
     query::Form,
 };
 
-use self::result::{InflectionInformation, WordResult};
+use self::{
+    producer::{k_reading::KReadingProducer, tag::TagProducer},
+    result::{InflectionInformation, WordResult},
+};
 use super::query::{Query, QueryLang};
 use error::Error;
 use itertools::Itertools;
@@ -29,18 +34,67 @@ use types::jotoba::{
     kanji::Kanji,
     languages::Language,
     search::guess::Guess,
-    words::{filter_languages, part_of_speech::PosSimple, Word},
+    words::{adjust_language, filter_languages, part_of_speech::PosSimple, Word},
 };
 use utils::{real_string_len, to_option};
 
 pub struct Search<'a> {
+    query: &'a Query,
+    producer: Vec<Box<dyn Producer<Target = Self> + 'a>>,
+}
+
+impl<'a> Search<'a> {
+    pub fn new(query: &'a Query) -> Self {
+        let producer: Vec<Box<dyn Producer<Target = Self>>> = vec![
+            Box::new(KReadingProducer::new(query)),
+            Box::new(TagProducer::new(query)),
+        ];
+
+        Self { query, producer }
+    }
+}
+
+impl<'a> Searchable for Search<'a> {
+    type OutputAdd = result::AddResData;
+    type OutputItem = Word;
+    type Item = &'static Word;
+
+    fn get_producer<'s>(&'s self) -> &Vec<Box<dyn Producer<Target = Self> + 's>> {
+        &self.producer
+    }
+
+    fn get_query(&self) -> &Query {
+        self.query
+    }
+
+    #[inline]
+    fn to_output_item(&self, item: Self::Item) -> Self::OutputItem {
+        let mut item = item.to_owned();
+        adjust_language(
+            &mut item,
+            self.query.get_search_lang(),
+            self.query.settings.show_english(),
+        );
+        item
+    }
+
+    fn filter(&self, word: &Self::Item) -> bool {
+        // Filter word if doesn't have proper language
+        !word.has_language(
+            self.query.get_search_lang(),
+            self.query.settings.show_english(),
+        )
+    }
+}
+
+pub struct Search2<'a> {
     query: &'a Query,
 }
 
 /// Search among all data based on the input query
 #[inline]
 pub fn search(query: &Query) -> Result<WordResult, Error> {
-    Search { query }.do_search()
+    Search2 { query }.do_search()
 }
 
 #[derive(Default)]
@@ -53,7 +107,7 @@ pub struct ResultData {
     pub searched_query: String,
 }
 
-impl<'a> Search<'a> {
+impl<'a> Search2<'a> {
     /// Do the search
     fn do_search(&self) -> Result<WordResult, Error> {
         let search_result = match self.query.form {
@@ -425,7 +479,7 @@ impl<'a> Search<'a> {
         if guessed_langs.len() == 1 {
             let mut new_query = self.query.clone();
             new_query.cust_lang = Some(guessed_langs[0]);
-            return Search { query: &new_query }.gloss_results();
+            return Search2 { query: &new_query }.gloss_results();
         }
 
         Ok(ResultData::default())
@@ -543,7 +597,7 @@ pub fn guess_inp_language(query: &Query) -> Vec<Language> {
 
 /// Guesses the amount of results a search would return with given `query`
 pub fn guess_result(query: &Query) -> Option<Guess> {
-    let search = Search { query };
+    let search = Search2 { query };
 
     if query.q_lang == QueryLang::Japanese {
         guess_native(search)
@@ -552,7 +606,7 @@ pub fn guess_result(query: &Query) -> Option<Guess> {
     }
 }
 
-fn guess_native(search: Search) -> Option<Guess> {
+fn guess_native(search: Search2) -> Option<Guess> {
     let (query, sentence, _) = search.parse_sentence(&search.query.query_str, false);
     search
         .native_search_task(&query, &search.query.query_str, sentence.is_some())
@@ -560,7 +614,7 @@ fn guess_native(search: Search) -> Option<Guess> {
         .ok()
 }
 
-fn guess_foreign(search: Search) -> Option<Guess> {
+fn guess_foreign(search: Search2) -> Option<Guess> {
     let mut task = search.gloss_search_task();
     task.set_align(false);
     task.estimate_result_count().ok()

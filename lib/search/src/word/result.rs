@@ -3,6 +3,18 @@ use types::jotoba::{
     words::{inflection::Inflection, Word},
 };
 
+#[derive(Default)]
+pub struct AddResData {
+    pub sentence: Option<SentenceInfo>,
+    pub inflection: Option<InflectionInformation>,
+}
+
+pub struct SentenceInfo {
+    pub parts: Option<sentence_reader::Sentence>,
+    pub index: usize,
+    pub query: String,
+}
+
 #[derive(Debug, Clone, PartialEq)]
 pub struct WordResult {
     pub items: Vec<Item>,

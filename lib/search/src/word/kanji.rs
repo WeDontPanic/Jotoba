@@ -1,4 +1,4 @@
-use super::{super::query::Query, ResultData, Search};
+use super::{super::query::Query, ResultData, Search2};
 use crate::{
     engine::{words::native::k_reading, SearchTask},
     word::order,
@@ -12,7 +12,7 @@ use types::jotoba::{
 };
 
 /// Runs a kanji reading search
-pub(super) fn by_reading(search: &Search<'_>) -> Result<ResultData, Error> {
+pub(super) fn by_reading(search: &Search2<'_>) -> Result<ResultData, Error> {
     let reading = search
         .query
         .form
@@ -55,11 +55,11 @@ fn reading_search(query: &Query, engine_query: &str) -> ResultData {
 }
 
 /// Do a search without the kanji literal or reading
-fn alternative_reading_search(search: &Search<'_>) -> Result<ResultData, Error> {
+fn alternative_reading_search(search: &Search2<'_>) -> Result<ResultData, Error> {
     let reading = search.query.form.as_kanji_reading().unwrap();
 
     // Modify search query
-    Search {
+    Search2 {
         query: &Query {
             query_str: kanji::literal_kun_reading(&reading.reading),
             ..search.query.to_owned()

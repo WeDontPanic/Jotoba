@@ -17,7 +17,7 @@ impl<'a> KanjiRetrieve<'a> {
 
     /// Get a kanji by its sequence id
     #[inline]
-    pub fn by_literal(&self, literal: char) -> Option<&Kanji> {
+    pub fn by_literal(&self, literal: char) -> Option<&'a Kanji> {
         self.storage.literal_index.get(literal as u32)
     }
 
@@ -29,7 +29,7 @@ impl<'a> KanjiRetrieve<'a> {
 
     /// Returns all kanji with the given radicals
     #[inline]
-    pub fn by_radicals(&self, radicals: &[char]) -> Vec<&Kanji> {
+    pub fn by_radicals(&self, radicals: &[char]) -> Vec<&'a Kanji> {
         let rad_map = &self.storage.radical_map;
 
         let mut maps = radicals
@@ -48,24 +48,24 @@ impl<'a> KanjiRetrieve<'a> {
 
     /// Returns all kanji with given jlpt level
     #[inline]
-    pub fn by_jlpt(&self, jlpt: u8) -> Option<&Vec<char>> {
+    pub fn by_jlpt(&self, jlpt: u8) -> Option<&'a Vec<char>> {
         self.storage.jlpt_data.get(&jlpt)
     }
 
     /// Returns an iterator over all radicals
     #[inline]
-    pub fn radicals(&self) -> impl Iterator<Item = &DetailedRadical> {
+    pub fn radicals(&self) -> impl Iterator<Item = &'a DetailedRadical> {
         self.storage.radical_data.iter().map(|i| i.1)
     }
 
     /// Returns a list of kanji taught in given genki_lesson
     #[inline]
-    pub fn by_genki_lesson(&self, genki_lektion: u8) -> Option<&Vec<char>> {
+    pub fn by_genki_lesson(&self, genki_lektion: u8) -> Option<&'a Vec<char>> {
         self.storage.genki_levels.get(&genki_lektion)
     }
 
     #[inline]
-    pub fn iter(&self) -> impl Iterator<Item = &Kanji> {
+    pub fn iter(&self) -> impl Iterator<Item = &'a Kanji> {
         self.storage.literal_index.iter().map(|i| i.1)
     }
 
@@ -75,7 +75,7 @@ impl<'a> KanjiRetrieve<'a> {
     }
 
     #[inline]
-    pub fn ids(&self, kanji_lit: char) -> Option<&IDS> {
+    pub fn ids(&self, kanji_lit: char) -> Option<&'a IDS> {
         self.storage.ids_index.get(&kanji_lit)
     }
 

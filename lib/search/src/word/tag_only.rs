@@ -1,10 +1,10 @@
-use super::{ResultData, Search};
+use super::{ResultData, Search2};
 use crate::query::tags::Tag;
 use error::Error;
 use types::jotoba::words::filter_languages;
 use utils::to_option;
 
-pub(super) fn search(search: &Search<'_>) -> Result<ResultData, Error> {
+pub(super) fn search(search: &Search2<'_>) -> Result<ResultData, Error> {
     let filter_tag = search.query.tags.iter().find(|i| i.is_producer());
 
     if filter_tag.is_none() {
@@ -19,7 +19,7 @@ pub(super) fn search(search: &Search<'_>) -> Result<ResultData, Error> {
     }
 }
 
-fn irreg_godan(search: &Search<'_>) -> Result<ResultData, Error> {
+fn irreg_godan(search: &Search2<'_>) -> Result<ResultData, Error> {
     let mut words = resources::get()
         .words()
         .irregular_ichidan()
@@ -43,7 +43,7 @@ fn irreg_godan(search: &Search<'_>) -> Result<ResultData, Error> {
     })
 }
 
-fn jlpt_search(search: &Search<'_>, jlpt: u8) -> Result<ResultData, Error> {
+fn jlpt_search(search: &Search2<'_>, jlpt: u8) -> Result<ResultData, Error> {
     assert!(jlpt > 0 && jlpt < 6);
 
     let pos_filter = to_option(search.query.get_part_of_speech_tags().copied().collect());
@@ -53,7 +53,7 @@ fn jlpt_search(search: &Search<'_>, jlpt: u8) -> Result<ResultData, Error> {
     let mut wordresults = resources
         .words()
         .by_jlpt(jlpt)
-        .filter(|word| Search::word_filter(&search.query, word, &pos_filter))
+        .filter(|word| Search2::word_filter(&search.query, word, &pos_filter))
         .cloned()
         .collect::<Vec<_>>();
 
