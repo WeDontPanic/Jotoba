@@ -1,3 +1,5 @@
+use std::any::type_name;
+
 use super::{out_builder::OutputBuilder, searchable::Searchable};
 use types::jotoba::search::guess::Guess;
 
@@ -18,5 +20,9 @@ pub trait Producer {
 
     fn estimate(&self) -> Option<Guess> {
         None
+    }
+
+    fn name(&self) -> String {
+        type_name::<Self>().to_string()
     }
 }

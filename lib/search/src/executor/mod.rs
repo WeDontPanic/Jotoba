@@ -3,6 +3,7 @@ pub mod producer;
 pub mod searchable;
 
 use crate::result::SearchResult;
+use log::debug;
 use out_builder::OutputBuilder;
 use searchable::Searchable;
 use types::jotoba::search::guess::{Guess, GuessType};
@@ -30,7 +31,11 @@ impl<S: Searchable> SearchExecutor<S> {
             if !prod.should_run(out.p.total_pushed()) {
                 continue;
             }
+            let before = out.p.total_pushed();
             prod.produce(&mut out);
+            let after = out.p.total_pushed();
+            let name = prod.name();
+            debug!("{name}: {}", after - before);
         }
 
         self.search.mod_output(&mut out);

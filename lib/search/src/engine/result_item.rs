@@ -39,6 +39,21 @@ impl<T: PartialEq> ResultItem<T> {
     }
 }
 
+impl<T> ResultItem<T> {
+    /// Maps the item within the result without changing other data
+    pub fn map_item<F, O>(self, f: F) -> ResultItem<O>
+    where
+        F: Fn(T) -> O,
+    {
+        let item = (f)(self.item);
+        ResultItem {
+            item,
+            relevance: self.relevance,
+            language: self.language,
+        }
+    }
+}
+
 impl<T: PartialEq> PartialEq for ResultItem<T> {
     #[inline(always)]
     fn eq(&self, other: &Self) -> bool {
@@ -49,14 +64,14 @@ impl<T: PartialEq> PartialEq for ResultItem<T> {
 impl<T: PartialEq> Eq for ResultItem<T> {}
 
 impl<T: PartialEq + Hash + Eq> Hash for ResultItem<T> {
-    #[inline(always)]
+    #[inline]
     fn hash<H: Hasher>(&self, state: &mut H) {
         self.item.hash(state);
     }
 }
 
 impl<T: PartialEq> PartialOrd for ResultItem<T> {
-    #[inline(always)]
+    #[inline]
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
         Some(self.relevance.cmp(&other.relevance))
     }

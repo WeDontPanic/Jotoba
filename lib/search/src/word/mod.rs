@@ -7,12 +7,18 @@ use crate::{
     executor::{out_builder::OutputBuilder, producer::Producer, searchable::Searchable},
     query::Query,
 };
-use producer::{
-    k_reading::KReadingProducer, regex::RegexProducer, sequence::SeqProducer, tag::TagProducer,
-};
 use types::jotoba::words::{adjust_language, Word};
 
-use self::producer::foreign::ForeignProducer;
+use producer::{
+    foreign::{romaji::RomajiProducer, ForeignProducer},
+    japanese::NativeProducer,
+    k_reading::KReadingProducer,
+    regex::RegexProducer,
+    sequence::SeqProducer,
+    tag::TagProducer,
+};
+
+use self::producer::japanese::sentence_reader::SReaderProducer;
 
 /// Word search
 pub struct Search<'a> {
@@ -27,6 +33,9 @@ impl<'a> Search<'a> {
             Box::new(TagProducer::new(query)),
             Box::new(SeqProducer::new(query)),
             Box::new(RegexProducer::new(query)),
+            Box::new(RomajiProducer::new(query)),
+            Box::new(SReaderProducer::new(query)),
+            Box::new(NativeProducer::new(query)),
             Box::new(ForeignProducer::new(query)),
         ];
 

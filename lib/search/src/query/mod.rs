@@ -131,6 +131,12 @@ impl Query {
         self.settings.user_lang
     }
 
+    /// Shortcut for query.settings.show_english
+    #[inline]
+    pub fn show_english(&self) -> bool {
+        self.settings.show_english
+    }
+
     /// Returns a `RegexSQuery` if the query contains a valid regex
     pub fn as_regex_query(&self) -> Option<RegexSQuery> {
         // Only japanese regex support (for now)
