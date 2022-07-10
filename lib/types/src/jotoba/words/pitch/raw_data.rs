@@ -26,6 +26,11 @@ impl PitchValues {
     }
 
     #[inline]
+    pub fn is_empty(&self) -> bool {
+        self.raw == 0
+    }
+
+    #[inline]
     pub fn count(&self) -> u8 {
         (self.raw >> 12) as u8
     }

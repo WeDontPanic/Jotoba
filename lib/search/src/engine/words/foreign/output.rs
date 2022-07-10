@@ -1,4 +1,4 @@
-use std::hash::Hash;
+use std::{borrow::Borrow, hash::Hash};
 use types::jotoba::words::{sense, Word};
 
 #[derive(Clone)]
@@ -42,5 +42,19 @@ impl AsRef<Word> for WordOutput {
     #[inline]
     fn as_ref(&self) -> &Word {
         &self.word
+    }
+}
+
+impl Borrow<Word> for &WordOutput {
+    #[inline]
+    fn borrow(&self) -> &Word {
+        self.word
+    }
+}
+
+impl Borrow<Word> for WordOutput {
+    #[inline]
+    fn borrow(&self) -> &Word {
+        self.word
     }
 }

@@ -122,6 +122,18 @@ impl Word {
         Some((sense, gloss))
     }
 
+    pub fn gloss_iter_by_lang(
+        &self,
+        language: Language,
+        english: bool,
+    ) -> impl Iterator<Item = &str> {
+        self.sense_gloss_iter()
+            .filter(move |i| {
+                i.0.language == language || (english && i.0.language == Language::English)
+            })
+            .map(|i| i.1.gloss.as_str())
+    }
+
     /// Get amount of tags which will be displayed below the reading
     #[inline]
     pub fn get_word_tag_count(&self) -> u8 {
@@ -146,8 +158,11 @@ impl Word {
     /// Returns true if word has a misc information matching `misc`. This requires english glosses
     /// to be available since they're the only one holding misc information
     #[inline]
-    pub fn has_misc(&self, misc: Misc) -> bool {
-        self.senses.iter().filter_map(|i| i.misc).any(|i| i == misc)
+    pub fn has_misc(&self, misc: &Misc) -> bool {
+        self.senses
+            .iter()
+            .filter_map(|i| i.misc)
+            .any(|i| i == *misc)
     }
 
     /// Returns `true` if word has at least one of the provided part of speech
@@ -236,6 +251,11 @@ impl Word {
     #[inline]
     pub fn get_kana(&self) -> &str {
         &self.reading.kana.reading
+    }
+
+    #[inline]
+    pub fn has_pitch(&self) -> bool {
+        !self.accents.is_empty()
     }
 
     /// Returns a renderable vec of accents with kana characters

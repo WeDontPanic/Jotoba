@@ -26,6 +26,7 @@ impl<'a> WordRetrieve<'a> {
             .iter()
             .copied()
             .filter_map(|seq| self.by_sequence(seq))
+            .rev()
     }
 
     /// returns an iterator over all irregular ichidan words

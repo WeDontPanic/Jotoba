@@ -105,6 +105,7 @@ fn parse_search_type(s: &str) -> Option<Tag> {
         "name" | "names" => Tag::SearchType(SearchTarget::Names),
         "word" | "words" => Tag::SearchType(SearchTarget::Words),
         "abbreviation" | "abbrev" => Tag::Misc(Misc::Abbreviation),
+        "uwk" => Tag::Misc(Misc::UsuallyWrittenInKana),
         _ => return None,
     })
 }

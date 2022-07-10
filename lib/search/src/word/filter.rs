@@ -1,0 +1,64 @@
+use crate::query::Query;
+use std::borrow::Borrow;
+use types::jotoba::words::{part_of_speech::PosSimple, Word};
+
+/// Returns `true` for all words the query has a filter for aka if the word should be filtered out of the results
+#[inline]
+pub fn filter_word<W: Borrow<Word>>(word: W, query: &Query) -> bool {
+    #[inline]
+    fn inner(word: &Word, query: &Query) -> Option<()> {
+        by_language(word, query)?;
+        by_pos_tags(word, query)?;
+        by_misc_tags(word, query)?;
+        by_quot_marks(word, query)?;
+
+        Some(())
+    }
+
+    inner(word.borrow(), query).is_none()
+}
+
+#[inline]
+fn by_language(w: &Word, query: &Query) -> Option<()> {
+    w.has_language(query.get_search_lang(), query.show_english())
+        .then(|| ())
+}
+
+#[inline]
+fn by_pos_tags(w: &Word, query: &Query) -> Option<()> {
+    let to_filter_tags = pos_tags(query);
+    if to_filter_tags.is_empty() {
+        return Some(());
+    }
+
+    w.has_pos(&to_filter_tags).then(|| ())
+}
+
+#[inline]
+fn by_misc_tags(w: &Word, query: &Query) -> Option<()> {
+    query.get_misc_tags().all(|mt| w.has_misc(mt)).then(|| ())
+}
+
+fn by_quot_marks(w: &Word, query: &Query) -> Option<()> {
+    if query.must_contain.is_empty() {
+        return Some(());
+    }
+
+    let mut quot_terms = query.must_contain.clone();
+
+    for i in w.gloss_iter_by_lang(query.get_search_lang(), query.show_english()) {
+        let i = i.to_lowercase();
+        quot_terms.retain(|j| !i.contains(j));
+        if quot_terms.is_empty() {
+            break;
+        }
+    }
+
+    // Success if all quted terms were removed
+    quot_terms.is_empty().then(|| ())
+}
+
+#[inline]
+fn pos_tags(query: &Query) -> Vec<PosSimple> {
+    query.get_part_of_speech_tags().copied().collect()
+}

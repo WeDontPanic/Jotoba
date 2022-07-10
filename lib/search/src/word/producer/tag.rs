@@ -23,19 +23,27 @@ impl<'a> TagProducer<'a> {
     where
         P: Pushable<Item = ResultItem<&'static Word>>,
     {
-        self.push_jlpt(out);
-        self.push_irr_ichidan(out);
+        let producer_tag = self.query.tags.iter().find(|i| i.is_producer()).unwrap();
+        self.find_words(out, producer_tag);
     }
 
-    fn push_jlpt<P>(&self, out: &mut P)
+    fn find_words<P>(&self, out: &mut P, tag: &Tag)
     where
         P: Pushable<Item = ResultItem<&'static Word>>,
     {
-        let jlpt = match self.query.tags.iter().filter_map(|i| i.as_jlpt()).nth(0) {
-            Some(j) => j.min(5).max(1),
-            None => return,
-        };
+        match tag {
+            Tag::PartOfSpeech(pos) => self.push_generic(out, |w| w.has_pos(&[*pos])),
+            Tag::Misc(m) => self.push_generic(out, |w| w.has_misc(m)),
+            Tag::Jlpt(jlpt) => self.push_jlpt(out, *jlpt),
+            Tag::IrregularIruEru => self.push_irr_ichidan(out),
+            _ => (),
+        }
+    }
 
+    fn push_jlpt<P>(&self, out: &mut P, jlpt: u8)
+    where
+        P: Pushable<Item = ResultItem<&'static Word>>,
+    {
         for w in resources::get().words().by_jlpt(jlpt) {
             let len = w.get_reading().len();
             let rel = 1000usize.saturating_sub(len);
@@ -47,12 +55,23 @@ impl<'a> TagProducer<'a> {
     where
         P: Pushable<Item = ResultItem<&'static Word>>,
     {
-        if !self.query.tags.contains(&Tag::IrregularIruEru) {
-            return;
-        }
-
         for w in resources::get().words().irregular_ichidan() {
             out.push(ResultItem::new(w, 0));
+        }
+    }
+
+    fn push_generic<P, F>(&self, out: &mut P, filter: F)
+    where
+        P: Pushable<Item = ResultItem<&'static Word>>,
+        F: Fn(&Word) -> bool,
+    {
+        for w in resources::get().words().iter() {
+            if !filter(w) {
+                continue;
+            }
+
+            let score = generic_order(w);
+            out.push(ResultItem::new(w, score));
         }
     }
 }
@@ -71,7 +90,7 @@ impl<'a> Producer for TagProducer<'a> {
     }
 
     fn should_run(&self, _already_found: usize) -> bool {
-        self.query.tags.iter().any(|i| i.is_producer())
+        self.query.query_str.is_empty() && self.query.tags.iter().any(|i| i.is_producer())
     }
 
     fn estimate(&self) -> Option<types::jotoba::search::guess::Guess> {
@@ -79,4 +98,26 @@ impl<'a> Producer for TagProducer<'a> {
         self.find_to(&mut counter);
         Some(Guess::with_limit(counter.val() as u32, 100))
     }
+}
+
+fn generic_order(word: &Word) -> usize {
+    let mut score = 0usize;
+
+    if word.is_common() {
+        score += 10;
+    }
+
+    if let Some(jlpt) = word.jlpt_lvl {
+        score += 3 + jlpt as usize;
+    }
+
+    if word.has_collocations() {
+        score += 1;
+    }
+
+    if word.has_pitch() {
+        score += 1;
+    }
+
+    score
 }

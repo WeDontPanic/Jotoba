@@ -1,3 +1,4 @@
+pub mod filter;
 pub mod kanji;
 pub mod order;
 pub mod producer;
@@ -74,12 +75,6 @@ impl<'a> Searchable for Search<'a> {
     }
 
     fn filter(&self, word: &Self::Item) -> bool {
-        // TODO: apply filters: tags, "must-contain"
-
-        // Filter word if doesn't have proper language
-        !word.has_language(
-            self.query.get_search_lang(),
-            self.query.settings.show_english(),
-        )
+        filter::filter_word(*word, self.query)
     }
 }

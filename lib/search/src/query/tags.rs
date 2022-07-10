@@ -6,20 +6,27 @@ use types::jotoba::{
 /// Hashtag based search tags
 #[derive(Debug, Clone, Copy, PartialEq, Hash)]
 pub enum Tag {
-    SearchType(SearchTarget),
+    // Producer tags
     PartOfSpeech(PosSimple),
     Misc(Misc),
     Jlpt(u8),
     GenkiLesson(u8),
-    Hidden,
     IrregularIruEru,
+
+    // Non producer
+    SearchType(SearchTarget),
+    Hidden,
 }
 
 impl Tag {
     /// Returns true if the tag can be used without a query
     #[inline]
     pub fn is_producer(&self) -> bool {
-        self.is_jlpt() || self.is_genki_lesson() || self.is_irregular_iru_eru()
+        self.is_jlpt()
+            || self.is_genki_lesson()
+            || self.is_irregular_iru_eru()
+            || self.is_misc()
+            || self.is_part_of_speech()
     }
 
     /// Returns `true` if the tag is [`SearchType`].

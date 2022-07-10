@@ -13,7 +13,7 @@ use types::jotoba::{
     languages::Language,
     search::guess::{Guess, GuessType},
 };
-use vector_space_model2::{DocumentVector, Vector};
+use vector_space_model2::{term_store::TermIndexer, DocumentVector, Vector};
 
 pub struct SearchTask<T>
 where
@@ -22,7 +22,7 @@ where
     /// Search query
     queries: Vec<(String, Option<Language>)>,
     /// filter out vectors
-    vec_filter: Option<Box<dyn Fn(&T::Document) -> bool>>,
+    vec_filter: Option<Box<dyn Fn(&DocumentVector<T::Document>, &Vector) -> bool>>,
     /// Filter out results
     res_filter: Option<Box<dyn Fn(&T::Output) -> bool>>,
     /// Custom result order function
@@ -96,7 +96,7 @@ impl<T: SearchEngine> SearchTask<T> {
     /// Set the search task's vector filter.
     pub fn set_vector_filter<F: 'static>(&mut self, vec_filter: F)
     where
-        F: Fn(&T::Document) -> bool,
+        F: Fn(&DocumentVector<T::Document>, &Vector) -> bool,
     {
         self.vec_filter = Some(Box::new(vec_filter));
     }
@@ -132,6 +132,11 @@ impl<T: SearchEngine> SearchTask<T> {
                 .map(|i| i.get_indexer().find_term(&q_fmt).is_some())
                 .unwrap_or(false)
         })
+    }
+
+    pub fn get_indexer(language: Option<Language>) -> Option<&'static TermIndexer> {
+        let index = T::get_index(language)?;
+        Some(index.get_indexer())
     }
 
     pub fn find_exact(&self) -> SearchResult<T::Output> {
@@ -224,7 +229,7 @@ impl<T: SearchEngine> SearchTask<T> {
         let storage = resources::get();
 
         for dvec in document_vectors {
-            if !self.filter_vector(&dvec.document) {
+            if !self.filter_vector(&dvec, &q_vec) {
                 continue;
             }
 
@@ -308,7 +313,7 @@ impl<T: SearchEngine> SearchTask<T> {
 
         let res = document_vectors
             .filter_map(|i| {
-                if !self.filter_vector(&i.document) {
+                if !self.filter_vector(&i, &q_vec) {
                     return None;
                 }
 
@@ -354,8 +359,11 @@ impl<T: SearchEngine> SearchTask<T> {
     }
 
     #[inline]
-    fn filter_vector(&self, vec: &T::Document) -> bool {
-        self.vec_filter.as_ref().map(|i| i(vec)).unwrap_or(true)
+    fn filter_vector(&self, vec: &DocumentVector<T::Document>, query_vec: &Vector) -> bool {
+        self.vec_filter
+            .as_ref()
+            .map(|i| i(vec, query_vec))
+            .unwrap_or(true)
     }
 }
 
