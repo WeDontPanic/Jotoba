@@ -12,6 +12,7 @@ use crate::{
     word::{order, Search},
 };
 
+/// Kanji reading search producer
 pub struct KReadingProducer<'a> {
     query: &'a Query,
 }
@@ -28,7 +29,6 @@ impl<'a> KReadingProducer<'a> {
         let kanji_storage = resources::get().kanji();
 
         let kanji = kanji_storage.by_literal(reading.literal)?;
-
         kanji.has_reading(&reading.reading).then(|| kanji)
     }
 

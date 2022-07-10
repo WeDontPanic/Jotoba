@@ -31,4 +31,11 @@ impl<'a> NativeSearch<'a> {
 
         task
     }
+
+    /// Returns `true` if Native search has `term` in index
+    pub fn has_term(term: &str) -> bool {
+        SearchTask::<native::Engine>::new(term)
+            .threshold(0.4f32)
+            .has_term()
+    }
 }

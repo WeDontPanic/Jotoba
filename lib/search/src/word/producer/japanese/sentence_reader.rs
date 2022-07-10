@@ -4,7 +4,7 @@ use types::jotoba::words::{part_of_speech::PosSimple, Word};
 use crate::{
     engine::{words::native, SearchTask},
     executor::{out_builder::OutputBuilder, producer::Producer, searchable::Searchable},
-    query::Query,
+    query::{Query, QueryLang},
     word::{
         result::{InflectionInformation, SentenceInfo},
         Search,
@@ -13,7 +13,7 @@ use crate::{
 
 use super::task::NativeSearch;
 
-/// Produces search results for native search input
+/// Producer for sentence reader and inflection information
 pub struct SReaderProducer<'a> {
     query: &'a Query,
     parsed: ParseResult,
@@ -74,20 +74,21 @@ impl<'a> Producer for SReaderProducer<'a> {
     }
 
     fn should_run(&self, _already_found: usize) -> bool {
-        if self.query.as_regex_query().is_some()
-            || self.parsed.is_none()
+        if self.parsed.is_none()
+            || self.query.is_regex()
             || !self.query.form.is_normal()
+            || self.query.q_lang != QueryLang::Japanese
         {
             return false;
         }
 
+        // Always run inlfections
         if self.parsed.is_inflected_word() {
             return true;
         }
 
-        !NativeSearch::new(self.query, &self.query.query_str)
-            .task()
-            .has_term()
+        // Only run sentence reader search if the query is not a term in the index
+        !NativeSearch::has_term(&self.query.query_str)
     }
 }
 
@@ -112,11 +113,10 @@ fn furigana_by_reading(morpheme: &str, part: &sentence_reader::Part) -> Option<S
     st.with_custom_order(move |item| furi_order(item.item(), &pos, &morph));
 
     let found = st.find();
-    if found.is_empty() {
-        return None;
-    }
-    let word = word_storage.by_sequence(found[0].item.sequence as u32)?;
-    word.furigana.as_ref().cloned()
+    word_storage
+        .by_sequence(found.get(0)?.item.sequence)?
+        .furigana
+        .clone()
 }
 
 fn furi_order(i: &Word, pos: &Option<PosSimple>, morph: &str) -> usize {

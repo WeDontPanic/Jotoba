@@ -1,5 +1,5 @@
 use super::result_item::ResultItem;
-use std::{collections::HashSet, fmt::Debug, hash::Hash, ops::Index, slice::Iter, vec::IntoIter};
+use std::{fmt::Debug, slice::Iter};
 
 /// A result from a search. Contains information about the actual
 /// amount of items returned and the items to display on the current page.
@@ -47,56 +47,11 @@ impl<T> SearchResult<T> {
     pub fn into_iter(self) -> impl Iterator<Item = T> {
         self.items.into_iter().map(|i| i.item)
     }
-}
 
-impl<T: Clone + Hash + Eq> SearchResult<T> {
-    pub fn merge<O>(&mut self, other: O)
-    where
-        O: Iterator<Item = ResultItem<T>>,
-    {
-        self.total_items += merge_sorted_list(&mut self.items, other);
-    }
-}
-
-/// Merges two sorted sequences `other` and `src` and stores result into `src`. Ignores duplicates.
-fn merge_sorted_list<O, T: Clone + Hash + Eq>(src: &mut Vec<ResultItem<T>>, other: O) -> usize
-where
-    O: Iterator<Item = ResultItem<T>>,
-{
-    let mut add_cnt = 0;
-
-    // Use a hashset to be able to look up whether an element from `other` is already in `src` the
-    // fastest way possible
-    let hash_set = HashSet::<T>::from_iter(src.clone().into_iter().map(|i| i.item));
-
-    for i in other {
-        if !hash_set.contains(&i.item) {
-            add_cnt += 1;
-            src.push(i);
-        }
-    }
-
-    // We might have changed the ordering
-    src.sort_by(|a, b| a.cmp(&b).reverse());
-    add_cnt
-}
-
-impl<T: PartialEq> IntoIterator for SearchResult<T> {
-    type Item = ResultItem<T>;
-    type IntoIter = IntoIter<Self::Item>;
-
+    /// Returns the item at `index` from the result or None if index is out of bounds
     #[inline]
-    fn into_iter(self) -> Self::IntoIter {
-        self.items.into_iter()
-    }
-}
-
-impl<T: PartialEq> Index<usize> for SearchResult<T> {
-    type Output = ResultItem<T>;
-
-    #[inline]
-    fn index(&self, index: usize) -> &Self::Output {
-        &self.items[index]
+    pub fn get(&self, index: usize) -> Option<&ResultItem<T>> {
+        self.items.get(index)
     }
 }
 

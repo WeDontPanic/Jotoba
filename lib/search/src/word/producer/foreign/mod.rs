@@ -34,15 +34,21 @@ impl<'a> Producer for ForeignProducer<'a> {
             <Self::Target as Searchable>::ResAdd,
         >,
     ) {
+        // convert WordOutput -> Word
         let mut p_mod = PushMod::new(out, |i: ResultItem<WordOutput>| i.map_item(|i| i.word));
 
-        let f_search = ForeignSearch::new(self.query, &self.query.query_str, self.query.lang());
-        f_search.task().find_to(&mut p_mod);
+        let q_str = &self.query.query_str;
+        let lang = self.query.get_search_lang();
+
+        ForeignSearch::new(self.query, q_str, lang)
+            .task()
+            .find_to(&mut p_mod);
 
         // Add english results
-        if self.query.lang() != Language::English && self.query.show_english() {
-            let f_search = ForeignSearch::new(self.query, &self.query.query_str, Language::English);
-            f_search.task().find_to(&mut p_mod);
+        if lang != Language::English && self.query.show_english() {
+            ForeignSearch::new(self.query, q_str, Language::English)
+                .task()
+                .find_to(&mut p_mod);
         }
     }
 

@@ -47,6 +47,8 @@ pub struct Query {
     pub must_contain: Vec<String>,
     /// Overwrite the users settings language temporarily
     pub cust_lang: Option<Language>,
+    /// Regex query (for jp)
+    pub regex: Option<RegexSQuery>,
 }
 
 /// The language of the query content itself
@@ -137,14 +139,14 @@ impl Query {
         self.settings.show_english
     }
 
-    /// Returns a `RegexSQuery` if the query contains a valid regex
-    pub fn as_regex_query(&self) -> Option<RegexSQuery> {
-        // Only japanese regex support (for now)
-        if self.q_lang != QueryLang::Japanese {
-            return None;
-        }
+    /// Returns `true` if the query is a regex query
+    #[inline]
+    pub fn is_regex(&self) -> bool {
+        self.regex.is_some()
+    }
 
-        // returns `None` if no regex given, so we don't need to check for that here
-        RegexSQuery::new(&self.query_str)
+    /// Returns a `RegexSQuery` if the query contains a valid regex
+    pub fn as_regex_query(&self) -> Option<&RegexSQuery> {
+        self.regex.as_ref()
     }
 }

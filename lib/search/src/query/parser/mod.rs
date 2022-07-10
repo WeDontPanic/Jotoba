@@ -3,7 +3,7 @@ pub(crate) mod prefix;
 pub mod req_terms;
 pub(crate) mod tags;
 
-use super::{prefix::SearchPrefix, Form, Query, Tag, UserSettings};
+use super::{prefix::SearchPrefix, regex::RegexSQuery, Form, Query, Tag, UserSettings};
 use japanese::JapaneseExt;
 use types::jotoba::{kanji, languages::Language as ContentLanguage, search::SearchTarget};
 
@@ -94,6 +94,8 @@ impl QueryParser {
         let target = self.get_search_target(&tags);
         let form = self.parse_form(&query_str, &tags, s_prefix);
 
+        let regex = RegexSQuery::new(&query_str);
+
         Some(Query {
             q_lang,
             target,
@@ -107,6 +109,7 @@ impl QueryParser {
             word_index: self.word_index,
             cust_lang: self.language_override,
             must_contain,
+            regex,
         })
     }
 

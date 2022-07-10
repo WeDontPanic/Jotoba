@@ -80,7 +80,7 @@ pub fn japanese_search_order(item: SortItem<&'static Word>, original_query: Opti
     }
 
     if reading.starts_with(&query_str) || (query_str.is_kana() && reading.starts_with(&query_str)) {
-        score += 20;
+        score += 200;
     }
 
     // If alternative reading matches query exactly

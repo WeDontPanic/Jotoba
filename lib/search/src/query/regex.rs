@@ -13,6 +13,8 @@
 //! a query contains regex syntax, only full words will be matched. If words should also be open to
 //! an end (eg. right variable) then a regex charecter has to be placed at the end as well
 
+use std::hash::Hash;
+
 use regex::Regex;
 
 /// All characters treated as regex characters
@@ -92,3 +94,19 @@ fn adjust_regex(query: &str) -> String {
         .replace('＋', "+")
         .replace('？', "?")
 }
+
+impl Hash for RegexSQuery {
+    #[inline]
+    fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
+        self.query.hash(state);
+    }
+}
+
+impl PartialEq for RegexSQuery {
+    #[inline]
+    fn eq(&self, other: &Self) -> bool {
+        self.query == other.query
+    }
+}
+
+impl Eq for RegexSQuery {}

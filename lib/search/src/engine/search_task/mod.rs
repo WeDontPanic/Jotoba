@@ -128,7 +128,6 @@ impl<T: SearchEngine> SearchTask<T> {
     pub fn has_term(&self) -> bool {
         self.queries.iter().any(|(query, language)| {
             let q_fmt = T::query_formatted(query);
-            println!("fmt: {q_fmt:?}");
             T::get_index(*language)
                 .map(|i| i.get_indexer().find_term(&q_fmt).is_some())
                 .unwrap_or(false)
