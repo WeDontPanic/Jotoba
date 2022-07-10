@@ -6,7 +6,7 @@ use autocompletion::suggest::{
     query::SuggestionQuery,
     task::SuggestionTask,
 };
-use japanese::guessing::is_romaji_repl;
+use japanese::guessing::{could_be_romaji, is_romaji_repl};
 use types::jotoba::languages::Language;
 use utils::real_string_len;
 
@@ -37,7 +37,11 @@ pub fn suggestions(query: &Query, query_str: &str) -> Option<Vec<WordPair>> {
     println!("hira query: {hira_query}");
     let jp_engine = indexes::get_suggestions().jp_words();
     let mut rom_query = SuggestionQuery::new(jp_engine, hira_query);
-    rom_query.weights.total_weight = 0.6;
+    if could_be_romaji(query_str) {
+        rom_query.weights.total_weight = 0.99;
+    } else {
+        rom_query.weights.total_weight = 0.5;
+    }
     /*
     query.weights.freq_weight = 0.1;
     query.weights.str_weight = 1.9;
@@ -56,7 +60,7 @@ pub fn suggestions(query: &Query, query_str: &str) -> Option<Vec<WordPair>> {
     similar_terms.options.min_query_len = 4;
     rom_query.add_extension(similar_terms);
 
-    let mut ng_ext = NGramExtension::with_sim_threshold(jp_engine, 0.35);
+    let mut ng_ext = NGramExtension::with_sim_threshold(jp_engine, 0.4);
     //ng_ext.options.threshold = 10;
     ng_ext.options.weights.total_weight = 0.25;
     ng_ext.options.weights.freq_weight = 0.04;

@@ -43,7 +43,7 @@ impl<'a> Producer for NativeProducer<'a> {
     }
 
     fn should_run(&self, already_found: usize) -> bool {
-        if self.query.q_lang != QueryLang::Japanese {
+        if self.query.q_lang != QueryLang::Japanese || self.query.query_str.is_empty() {
             return false;
         }
 

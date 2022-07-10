@@ -53,6 +53,6 @@ impl<'a> Producer for ForeignProducer<'a> {
     }
 
     fn should_run(&self, _already_found: usize) -> bool {
-        self.query.q_lang == QueryLang::Foreign
+        self.query.q_lang == QueryLang::Foreign && !self.query.query_str.is_empty()
     }
 }

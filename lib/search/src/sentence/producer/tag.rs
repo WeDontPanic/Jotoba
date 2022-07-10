@@ -55,6 +55,11 @@ impl<'a> Producer for TagProducer<'a> {
         }
     }
 
+    fn should_run(&self, _already_found: usize) -> bool {
+        // Only run for jlpt tags
+        self.query.tags.iter().any(|i| i.is_jlpt())
+    }
+
     fn estimate(&self) -> Option<types::jotoba::search::guess::Guess> {
         let mut len = 0;
         if let Some(jlpt) = self.jlpt() {
