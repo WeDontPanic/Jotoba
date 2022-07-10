@@ -48,6 +48,10 @@ impl<T, O> SearchResult<T, O> {
     pub fn is_empty(&self) -> bool {
         self.len() == 0
     }
+
+    pub fn iter(&self) -> impl Iterator<Item = &T> {
+        self.items.iter()
+    }
 }
 
 impl<T, O: Default> SearchResult<T, O> {

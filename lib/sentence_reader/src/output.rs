@@ -1,7 +1,7 @@
 use crate::sentence::part::Part;
 
 /// Result of a sentence/inflection analysis
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum ParseResult {
     Sentence(Sentence),
     InflectedWord(Part),

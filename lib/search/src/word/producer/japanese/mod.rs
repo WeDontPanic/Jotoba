@@ -18,6 +18,13 @@ impl<'a> NativeProducer<'a> {
     pub fn new(query: &'a Query) -> Self {
         Self { query }
     }
+
+    /// Returns `true` if the term in the query is in the db
+    fn has_term(&self) -> bool {
+        NativeSearch::new(self.query, &self.query.query_str)
+            .task()
+            .has_term()
+    }
 }
 
 impl<'a> Producer for NativeProducer<'a> {
@@ -36,6 +43,10 @@ impl<'a> Producer for NativeProducer<'a> {
     }
 
     fn should_run(&self, already_found: usize) -> bool {
-        already_found == 0 && self.query.q_lang == QueryLang::Japanese
+        if self.query.q_lang != QueryLang::Japanese {
+            return false;
+        }
+
+        already_found == 0 || self.has_term()
     }
 }

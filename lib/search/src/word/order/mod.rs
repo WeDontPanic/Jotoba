@@ -66,7 +66,7 @@ pub fn japanese_search_order(item: SortItem<&'static Word>, original_query: Opti
         if original_query == reading || original_query == kana
         //&& query_str != reading.reading
         {
-            score += 500;
+            score = score.saturating_add(100000000usize);
         }
     }
 

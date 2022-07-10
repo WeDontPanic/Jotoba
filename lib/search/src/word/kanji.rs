@@ -2,7 +2,7 @@ use itertools::Itertools;
 use japanese::CharType;
 use types::jotoba::{kanji::Kanji, words::Word};
 
-/// Load word assigned kanji
+/// Retrieves all (up to 10) kanji for words in correct order without duplicates
 pub fn load_word_kanji_info(words: &[Word]) -> Vec<Kanji> {
     let kanji_resources = resources::get().kanji();
     words

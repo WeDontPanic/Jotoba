@@ -34,6 +34,7 @@ where
     offset: usize,
     allow_align: bool,
     est_limit: usize,
+    score_multiplier: f32,
     phantom: PhantomData<T>,
 }
 
@@ -86,6 +87,12 @@ impl<T: SearchEngine> SearchTask<T> {
         self
     }
 
+    /// Adds a custom score multiplier to the task
+    pub fn with_score_multiplier(mut self, m: f32) -> Self {
+        self.score_multiplier = m;
+        self
+    }
+
     /// Set the search task's vector filter.
     pub fn set_vector_filter<F: 'static>(&mut self, vec_filter: F)
     where
@@ -120,8 +127,10 @@ impl<T: SearchEngine> SearchTask<T> {
     #[inline]
     pub fn has_term(&self) -> bool {
         self.queries.iter().any(|(query, language)| {
+            let q_fmt = T::query_formatted(query);
+            println!("fmt: {q_fmt:?}");
             T::get_index(*language)
-                .map(|i| i.get_indexer().find_term(query).is_some())
+                .map(|i| i.get_indexer().find_term(&q_fmt).is_some())
                 .unwrap_or(false)
         })
     }
@@ -335,8 +344,8 @@ impl<T: SearchEngine> SearchTask<T> {
     #[inline]
     fn calc_score(&self, si: SortItem<T::Output>) -> usize {
         match self.cust_order.as_ref() {
-            Some(cust_sort) => cust_sort(si),
-            None => T::score(si),
+            Some(cust_sort) => (cust_sort(si) as f32 * self.score_multiplier) as usize,
+            None => (T::score(si) as f32 * self.score_multiplier) as usize,
         }
     }
 
@@ -366,6 +375,7 @@ impl<T: SearchEngine> Default for SearchTask<T> {
             allow_align: true,
             phantom: PhantomData,
             cust_order: None,
+            score_multiplier: 1.0,
         }
     }
 }

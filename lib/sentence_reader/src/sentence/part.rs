@@ -1,7 +1,7 @@
 use super::{inflection, owned_morpheme::OwnedMorpheme, FromMorphemes};
 use igo_unidic::{Morpheme, WordClass};
 use japanese::{furigana, CharType, JapaneseExt};
-use types::jotoba::words::inflection::Inflection;
+use types::jotoba::words::{inflection::Inflection, part_of_speech::PosSimple};
 
 /// A single word within a sentence. This already contains all inflection parts
 #[derive(Debug, Clone, PartialEq)]
@@ -192,4 +192,21 @@ impl Into<types::api::app::search::responses::words::SentencePart> for Part {
             furigana, position, inflected, word_class,
         )
     }
+}
+
+/// Converts WordClass to simple part of speech
+pub fn wc_to_simple_pos(wc: &WordClass) -> Option<PosSimple> {
+    Some(match wc {
+        WordClass::Particle(_) => PosSimple::Particle,
+        WordClass::Verb(_) => PosSimple::Verb,
+        WordClass::Adjective(_) => PosSimple::Adjective,
+        WordClass::Adverb => PosSimple::Adverb,
+        WordClass::Noun(_) => PosSimple::Noun,
+        WordClass::Pronoun => PosSimple::Pronoun,
+        WordClass::Interjection => PosSimple::Interjection,
+        WordClass::Conjungtion => PosSimple::Conjungation,
+        WordClass::Suffix => PosSimple::Suffix,
+        WordClass::Prefix => PosSimple::Prefix,
+        _ => return None,
+    })
 }

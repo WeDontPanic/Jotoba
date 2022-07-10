@@ -22,7 +22,7 @@ impl<'a> NativeSearch<'a> {
         let mut task: SearchTask<native::Engine> =
             SearchTask::new(self.query_str).threshold(0.4f32);
 
-        let original_query = self.query_str.to_string();
+        let original_query = self._query.raw_query.clone();
         task.with_custom_order(move |item| {
             order::japanese_search_order(item, Some(&original_query))
         });

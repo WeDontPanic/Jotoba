@@ -38,7 +38,7 @@ impl SearchEngine for Engine {
         _allow_align: bool,
         _language: Option<Language>,
     ) -> Option<(Vector, String)> {
-        let fmt_query = format_query(query);
+        let fmt_query = Self::query_formatted(query);
         let mut terms = vec![(fmt_query.clone(), 1.0)];
 
         let indexer = index.get_indexer();
@@ -54,8 +54,8 @@ impl SearchEngine for Engine {
         let vec = index.build_vector_weights(&terms)?;
         Some((vec, fmt_query))
     }
-}
 
-fn format_query(inp: &str) -> String {
-    japanese::to_halfwidth(inp)
+    fn query_formatted(inp: &str) -> String {
+        japanese::to_halfwidth(inp)
+    }
 }

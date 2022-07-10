@@ -57,7 +57,9 @@ impl<'a> Searchable for Search<'a> {
     }
 
     fn mod_output(&self, out: &mut OutputBuilder<Self::Item, Self::ResAdd>) {
-        out.output_add.raw_query = self.query.raw_query.clone();
+        if out.output_add.raw_query.is_empty() {
+            out.output_add.raw_query = self.query.raw_query.clone();
+        }
     }
 
     #[inline]

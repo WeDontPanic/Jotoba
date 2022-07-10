@@ -12,7 +12,7 @@ use sentence::SentenceAnalyzer;
 pub use igo_unidic;
 
 pub use output::Sentence;
-pub use sentence::part::Part;
+pub use sentence::part::{self, Part};
 
 pub static JA_NL_PARSER: Lazy<OnceCell<igo_unidic::Parser>> = Lazy::new(|| OnceCell::new());
 

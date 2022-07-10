@@ -1,14 +1,21 @@
 use japanese::JapaneseExt;
 use search::{
     query::{parser::QueryParser, Query, UserSettings},
-    word::search,
+    result::SearchResult,
+    word::{kanji::load_word_kanji_info, result::AddResData},
+    SearchExecutor,
 };
 use test_case::test_case;
 use types::jotoba::{
     languages::Language,
     search::SearchTarget,
-    words::{inflection::Inflection, part_of_speech::PosSimple},
+    words::{inflection::Inflection, part_of_speech::PosSimple, Word},
 };
+
+fn search(query: &Query) -> SearchResult<Word, AddResData> {
+    let search = search::word::Search::new(query);
+    SearchExecutor::new(search).run()
+}
 
 /// ----------- Inflections --------------- ///
 
@@ -23,9 +30,9 @@ use types::jotoba::{
 fn inflections(query_str: &str, exp_infl: &[Inflection]) {
     wait();
     let query = parse_query(query_str, Language::English, SearchTarget::Words);
-    let res = search(&query).expect("Failed to do search");
-    assert!(res.inflection_info.is_some());
-    let infl_info = res.inflection_info.unwrap();
+    let res = search(&query);
+    assert!(res.inflection.is_some());
+    let infl_info = res.inflection.as_ref().unwrap();
     assert!(utils::same_elements(&infl_info.inflections, exp_infl));
 }
 
@@ -38,12 +45,12 @@ fn sentence_reader_test(query_str: &str, exp_parts: &[&str]) {
     wait();
     //
     let query = parse_query(query_str, Language::English, SearchTarget::Words);
-    let res = search(&query).unwrap();
-    let sentence = res.sentence_parts;
+    let res = search(&query);
+    let sentence = res.sentence.clone();
     assert!(sentence.is_some());
     let sentence = sentence.unwrap();
     let mut exp_iter = exp_parts.iter();
-    for part in sentence.iter() {
+    for part in sentence.parts.unwrap().iter() {
         let exp = exp_iter.next().expect("Expected parts to short");
         assert_eq!(&part.get_inflected(), exp);
     }
@@ -61,10 +68,10 @@ fn sentence_reader_test(query_str: &str, exp_parts: &[&str]) {
 fn correct_kanji_shown(query_str: &str) {
     wait();
     let query = make_query(query_str, Language::English);
-    let res = search(&query).expect("Failed to do search");
+    let res = search(&query);
 
     let mut exp_kanji: Vec<char> = Vec::new();
-    for word in res.words() {
+    for word in &res.items {
         for kanji in word
             .get_reading()
             .reading
@@ -77,7 +84,8 @@ fn correct_kanji_shown(query_str: &str) {
         }
     }
 
-    for (pos, kanji) in res.kanji().enumerate() {
+    let kanji = load_word_kanji_info(&res.items);
+    for (pos, kanji) in kanji.into_iter().enumerate() {
         assert_eq!(exp_kanji[pos], kanji.literal);
     }
 }
@@ -101,8 +109,8 @@ fn word_search(query_str: &str, language: Language, first_res: &str) {
     wait();
 
     let query = parse_query(query_str, language, SearchTarget::Words);
-    let res = search(&query).unwrap();
-    let word = match res.words().next() {
+    let res = search(&query);
+    let word = match res.items.get(0) {
         Some(n) => n,
         None => return,
     };
@@ -121,14 +129,15 @@ fn pos_tag_test(query_str: &str, exp_pos: &[PosSimple], exp_res: &[&str]) {
     wait();
 
     let query = parse_query(query_str, Language::English, SearchTarget::Words);
-    let res = search(&query).expect("Search crashed");
+    let res = search(&query);
     let have_tag = res
-        .words()
+        .items
+        .iter()
         .all(|i| exp_pos.iter().all(|j| i.has_pos(&[*j])));
     assert!(have_tag);
     assert!(exp_res
         .iter()
-        .all(|j| res.words().any(|w| w.has_reading(j))));
+        .all(|j| res.items.iter().any(|w| w.has_reading(j))));
 }
 
 /// ----------- JP search Relevance ----------- ///
@@ -160,9 +169,9 @@ fn test_jp_search() {
 fn test_romaji(query_str: &str, expected: &[&str]) {
     wait();
 
-    let res = search(&make_query(query_str, Language::English)).expect("Engine failed");
+    let res = search(&make_query(query_str, Language::English));
     for exp in expected.iter() {
-        if !res.words().take(3).any(|i| i.has_reading(exp)) {
+        if !res.iter().take(3).any(|i| i.has_reading(exp)) {
             panic!("Expected {:?} to find {exp:?} (Romaji search)", query_str);
         }
     }

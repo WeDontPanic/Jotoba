@@ -58,4 +58,8 @@ pub trait SearchEngine: Indexable {
     fn score(item: SortItem<Self::Output>) -> usize {
         (item.vec_simiarity() * 100.0) as usize
     }
+
+    fn query_formatted(inp: &str) -> String {
+        inp.to_string()
+    }
 }
