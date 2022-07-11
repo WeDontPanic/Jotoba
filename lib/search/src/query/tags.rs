@@ -22,11 +22,7 @@ impl Tag {
     /// Returns true if the tag can be used without a query
     #[inline]
     pub fn is_producer(&self) -> bool {
-        self.is_jlpt()
-            || self.is_genki_lesson()
-            || self.is_irregular_iru_eru()
-            || self.is_misc()
-            || self.is_part_of_speech()
+        !self.is_search_type() && !self.is_hidden()
     }
 
     /// Returns `true` if the tag is [`SearchType`].
@@ -113,5 +109,13 @@ impl Tag {
     /// [`IrregularIruEru`]: Tag::IrregularIruEru
     pub fn is_irregular_iru_eru(&self) -> bool {
         matches!(self, Self::IrregularIruEru)
+    }
+
+    /// Returns `true` if the tag is [`Hidden`].
+    ///
+    /// [`Hidden`]: Tag::Hidden
+    #[must_use]
+    pub fn is_hidden(&self) -> bool {
+        matches!(self, Self::Hidden)
     }
 }

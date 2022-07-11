@@ -1,4 +1,4 @@
-mod filter;
+pub mod filter;
 pub mod foreign;
 mod kanji;
 pub mod native;

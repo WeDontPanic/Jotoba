@@ -57,4 +57,9 @@ impl<'a> Searchable for Search<'a> {
     fn get_query(&self) -> &Query {
         self.query
     }
+
+    #[inline]
+    fn filter(&self, item: &Self::Item) -> bool {
+        !producer::filter::filter_sentence(self.query, item)
+    }
 }

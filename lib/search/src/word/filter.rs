@@ -1,4 +1,4 @@
-use crate::query::Query;
+use crate::query::{Query, QueryLang};
 use std::borrow::Borrow;
 use types::jotoba::words::{part_of_speech::PosSimple, Word};
 
@@ -10,7 +10,10 @@ pub fn filter_word<W: Borrow<Word>>(word: W, query: &Query) -> bool {
         by_language(word, query)?;
         by_pos_tags(word, query)?;
         by_misc_tags(word, query)?;
-        by_quot_marks(word, query)?;
+
+        if query.q_lang == QueryLang::Foreign {
+            by_quot_marks(word, query)?;
+        }
 
         Some(())
     }
@@ -51,6 +54,16 @@ fn by_quot_marks(w: &Word, query: &Query) -> Option<()> {
         quot_terms.retain(|j| !i.contains(j));
         if quot_terms.is_empty() {
             break;
+        }
+    }
+
+    if !quot_terms.is_empty() {
+        for i in w.reading_iter(true) {
+            let i = &i.reading;
+            quot_terms.retain(|j| !i.contains(j));
+            if quot_terms.is_empty() {
+                break;
+            }
         }
     }
 

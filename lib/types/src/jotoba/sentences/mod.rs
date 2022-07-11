@@ -53,6 +53,11 @@ impl Sentence {
             .collect()
     }
 
+    #[cfg(feature = "jotoba_intern")]
+    pub fn get_furigana(&self) -> impl Iterator<Item = japanese::furigana::SentencePartRef> {
+        japanese::furigana::parse::from_str(&self.furigana)
+    }
+
     /// Returns `true` if the sentence contains a translation for `language`
     #[inline]
     pub fn has_translation(&self, language: Language) -> bool {

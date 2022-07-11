@@ -1,8 +1,8 @@
-use sentence_reader::{output::ParseResult, Parser, Sentence};
+use sentence_reader::{output::ParseResult, Parser, Part, Sentence};
 use types::jotoba::words::{part_of_speech::PosSimple, Word};
 
 use crate::{
-    engine::{words::native, SearchTask},
+    engine::{search_task::cpushable::FilteredMaxCounter, words::native, SearchTask},
     executor::{out_builder::OutputBuilder, producer::Producer, searchable::Searchable},
     query::{Query, QueryLang},
     word::{
@@ -24,6 +24,42 @@ impl<'a> SReaderProducer<'a> {
         let parsed = Parser::new(&query.query_str).parse();
         Self { query, parsed }
     }
+
+    /// Search task for inflected word
+    fn infl_task(&self) -> Option<SearchTask<native::Engine>> {
+        let infl = self.parsed.as_inflected_word()?;
+        let normalized = infl.get_normalized();
+        Some(NativeSearch::new(self.query, &normalized).task())
+    }
+
+    /// Selected word index within the sentence
+    #[inline]
+    fn sentence_index(&self) -> usize {
+        self.parsed
+            .as_sentence()
+            .map(|s| self.query.word_index.clamp(0, s.word_count() - 1))
+            .unwrap_or(0)
+    }
+
+    /// Selected word in the sentence
+    #[inline]
+    fn sentence_word(&self) -> Option<&Part> {
+        let sentence = self.parsed.as_sentence()?;
+        let index = self.sentence_index();
+        sentence.get_at(index)
+    }
+
+    /// Normalized search task for sentences
+    fn snt_task_normalized(&self) -> Option<SearchTask<native::Engine>> {
+        let word = self.sentence_word().unwrap();
+        Some(NativeSearch::new(self.query, &word.get_normalized()).task())
+    }
+
+    /// Inflected search task for an inflected word in a sentence
+    fn snt_task_infl(&self) -> Option<SearchTask<native::Engine>> {
+        let word = self.sentence_word().unwrap();
+        Some(NativeSearch::new(self.query, &word.get_inflected()).task())
+    }
 }
 
 impl<'a> Producer for SReaderProducer<'a> {
@@ -37,10 +73,7 @@ impl<'a> Producer for SReaderProducer<'a> {
         >,
     ) {
         if let ParseResult::InflectedWord(infl) = &self.parsed {
-            let normalized = infl.get_normalized();
-            NativeSearch::new(self.query, &normalized)
-                .task()
-                .find_to(out);
+            self.infl_task().unwrap().find_to(out);
             out.output_add.inflection = InflectionInformation::from_part(infl);
             return;
         }
@@ -48,19 +81,12 @@ impl<'a> Producer for SReaderProducer<'a> {
         if let ParseResult::Sentence(mut sentence) = self.parsed.clone() {
             set_furigana(&mut sentence);
 
-            let index = self.query.word_index.clamp(0, sentence.word_count() - 1);
-            let word = sentence.get_at(index).unwrap();
+            let word = self.sentence_word().unwrap();
 
-            // Find normalized
-            NativeSearch::new(self.query, &word.get_normalized())
-                .task()
-                .find_to(out);
+            self.snt_task_normalized().unwrap().find_to(out);
 
             if word.get_inflected() != word.get_normalized() {
-                // Find inflected
-                NativeSearch::new(self.query, &word.get_inflected())
-                    .task()
-                    .find_to(out);
+                self.snt_task_infl().unwrap().find_to(out);
             }
 
             out.output_add.inflection = InflectionInformation::from_part(word);
@@ -90,6 +116,21 @@ impl<'a> Producer for SReaderProducer<'a> {
 
         // Only run sentence reader search if the query is not a term in the index
         !NativeSearch::has_term(&self.query.query_str)
+    }
+
+    fn estimate_to(&self, out: &mut FilteredMaxCounter<<Self::Target as Searchable>::Item>) {
+        if let Some(infl) = self.infl_task() {
+            infl.estimate_to(out);
+            return;
+        }
+
+        if self.parsed.is_sentence() {
+            self.snt_task_normalized().unwrap().estimate_to(out);
+            let word = self.sentence_word().unwrap();
+            if word.get_inflected() != word.get_normalized() {
+                self.snt_task_infl().unwrap().estimate_to(out);
+            }
+        }
     }
 }
 
