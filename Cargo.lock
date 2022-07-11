@@ -303,7 +303,7 @@ dependencies = [
  "news",
  "once_cell",
  "order_struct",
- "priority_container",
+ "priority_container 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "rayon",
  "regex",
  "resources",
@@ -355,7 +355,7 @@ dependencies = [
  "ngindex",
  "ngram-tools",
  "order_struct",
- "priority_container",
+ "priority_container 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "qp-trie",
  "rayon",
  "romaji",
@@ -2148,6 +2148,11 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c4886bb938a91e70d3a84efa590f753cf52076149f5963de5727085435f5cbcb"
 
 [[package]]
+name = "priority_container"
+version = "0.1.1"
+source = "git+https://github.com/JojiiOfficial/PrioContainer/#cd9f4de269176505e0a53b86f34706d76dd5f2c2"
+
+[[package]]
 name = "proc-macro-error"
 version = "1.0.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2454,7 +2459,7 @@ dependencies = [
  "once_cell",
  "order_struct",
  "percent-encoding",
- "priority_container",
+ "priority_container 0.1.1 (git+https://github.com/JojiiOfficial/PrioContainer/)",
  "rayon",
  "regex",
  "resources",
