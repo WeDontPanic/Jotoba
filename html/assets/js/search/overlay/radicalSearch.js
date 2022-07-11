@@ -225,7 +225,7 @@ function addRadicalsFromArray(index, array) {
 
     for (let a = 0; a < array.length; a++) {
         for (let j = 0; j < radicals[index].length; j++) {
-            if (radicals[index][j] == array[a].l) {
+            if (radicals[index][j] == array[a]) {
                 html += '<span class="rad-btn picker'+(radicalMask[index][j] == 1 ? " selected" : "")+(radicalMask[index][j] == -1 ? " disabled" : "")+'" index='+index+' position='+j+' onClick="handleRadicalSelect(event)">'+radicals[index][j]+'</span>';
             }
         }
@@ -454,6 +454,7 @@ function getRadicalSearchResults() {
             'Content-Type': 'application/json'
         },
         success : function(result) { 
+            console.log(result);
             // Load the results into frontend
             loadRadicalSearchResults(result);
             lastRadicalSearchResult = result;
