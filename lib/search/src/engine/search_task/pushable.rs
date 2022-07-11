@@ -2,6 +2,8 @@ use crate::engine::result_item::ResultItem;
 use priority_container::StableUniquePrioContainerMax;
 use std::{hash::Hash, marker::PhantomData};
 
+use super::cpushable::CPushable;
+
 pub trait Pushable {
     type Item;
 
@@ -69,7 +71,7 @@ where
     }
 }
 
-impl<'a, P, I, O, F> Pushable for PushMod<'a, P, I, O, F>
+impl<'a, P, I, O, F> CPushable for PushMod<'a, P, I, O, F>
 where
     F: Fn(I) -> O,
     P: Pushable<Item = O>,
@@ -77,7 +79,8 @@ where
     type Item = I;
 
     #[inline]
-    fn push(&mut self, i: Self::Item) {
+    fn push(&mut self, i: Self::Item) -> bool {
         self.output.push((self.f)(i));
+        true
     }
 }

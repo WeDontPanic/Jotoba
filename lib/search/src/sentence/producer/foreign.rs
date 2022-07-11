@@ -1,5 +1,5 @@
 use crate::{
-    engine::{sentences::foreign, SearchTask},
+    engine::{search_task::cpushable::FilteredMaxCounter, sentences::foreign, SearchTask},
     executor::{out_builder::OutputBuilder, producer::Producer, searchable::Searchable},
     query::{Query, QueryLang},
     sentence::Search,
@@ -57,5 +57,9 @@ impl<'a> Producer for ForeignProducer<'a> {
 
     fn should_run(&self, _already_found: usize) -> bool {
         self.query.form.is_normal() && self.query.q_lang == QueryLang::Foreign
+    }
+
+    fn estimate_to(&self, out: &mut FilteredMaxCounter<<Self::Target as Searchable>::Item>) {
+        self.task().estimate_to(out);
     }
 }

@@ -1,12 +1,12 @@
 use crate::{
-    engine::{names::native, SearchTask},
+    engine::{names::native, search_task::cpushable::FilteredMaxCounter, SearchTask},
     executor::{out_builder::OutputBuilder, producer::Producer, searchable::Searchable},
     name::Search,
     query::Query,
 };
 use japanese::furigana::generate::{assign_readings, ReadingRetrieve};
 use resources::retrieve::kanji::KanjiRetrieve;
-use types::jotoba::{names::Name, search::guess::Guess};
+use types::jotoba::names::Name;
 
 pub struct KreadingProducer<'a> {
     query: &'a Query,
@@ -50,8 +50,10 @@ impl<'a> Producer for KreadingProducer<'a> {
         self.query.form.is_kanji_reading()
     }
 
-    fn estimate(&self) -> Option<Guess> {
-        self.search_task()?.estimate_result_count().ok()
+    fn estimate_to(&self, out: &mut FilteredMaxCounter<<Self::Target as Searchable>::Item>) {
+        if let Some(task) = self.search_task() {
+            task.estimate_to(out);
+        }
     }
 }
 

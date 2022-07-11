@@ -1,10 +1,16 @@
 use crate::{
-    engine::result_item::ResultItem,
+    engine::{
+        result_item::ResultItem,
+        search_task::{
+            cpushable::FilteredMaxCounter,
+            pushable::{PushMod, Pushable},
+        },
+    },
     executor::{out_builder::OutputBuilder, producer::Producer, searchable::Searchable},
     query::Query,
     sentence::Search,
 };
-use types::jotoba::{languages::Language, search::guess::Guess, sentences::Sentence};
+use types::jotoba::{languages::Language, sentences::Sentence};
 
 /// Producer for Tags
 pub struct TagProducer<'a> {
@@ -36,6 +42,17 @@ impl<'a> TagProducer<'a> {
             })
             .take(10000)
     }
+
+    fn find_to<P>(&self, out: &mut P)
+    where
+        P: Pushable<Item = ResultItem<&'static Sentence>>,
+    {
+        if let Some(jlpt) = self.jlpt() {
+            for sentence in self.jlpt_iter(jlpt) {
+                out.push(ResultItem::new(sentence, 0));
+            }
+        }
+    }
 }
 
 impl<'a> Producer for TagProducer<'a> {
@@ -48,24 +65,16 @@ impl<'a> Producer for TagProducer<'a> {
             <Self::Target as Searchable>::ResAdd,
         >,
     ) {
-        if let Some(jlpt) = self.jlpt() {
-            for sentence in self.jlpt_iter(jlpt) {
-                out.push(ResultItem::new(sentence, 0));
-            }
-        }
+        self.find_to(out);
+    }
+
+    fn estimate_to(&self, out: &mut FilteredMaxCounter<<Self::Target as Searchable>::Item>) {
+        let mut m = PushMod::new(out, |i: ResultItem<&Sentence>| i.item);
+        self.find_to(&mut m);
     }
 
     fn should_run(&self, _already_found: usize) -> bool {
         // Only run for jlpt tags
         self.query.tags.iter().any(|i| i.is_jlpt())
-    }
-
-    fn estimate(&self) -> Option<types::jotoba::search::guess::Guess> {
-        let mut len = 0;
-        if let Some(jlpt) = self.jlpt() {
-            len = self.jlpt_iter(jlpt).count() as u32;
-        }
-
-        Some(Guess::with_limit(len, 100))
     }
 }

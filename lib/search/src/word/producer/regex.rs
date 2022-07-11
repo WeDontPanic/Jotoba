@@ -1,10 +1,13 @@
 use itertools::Itertools;
-use types::jotoba::{search::guess::Guess, words::Word};
+use types::jotoba::words::Word;
 
 use crate::{
     engine::{
         result_item::ResultItem,
-        search_task::pushable::{Counter, Pushable},
+        search_task::{
+            cpushable::FilteredMaxCounter,
+            pushable::{PushMod, Pushable},
+        },
         words::native::regex,
     },
     executor::{out_builder::OutputBuilder, producer::Producer, searchable::Searchable},
@@ -54,10 +57,9 @@ impl<'a> Producer for RegexProducer<'a> {
         self.query.as_regex_query().is_some()
     }
 
-    fn estimate(&self) -> Option<types::jotoba::search::guess::Guess> {
-        let mut counter = Counter::new();
-        self.find_to_unsorted(&mut counter);
-        Some(Guess::with_limit(counter.val() as u32, 100))
+    fn estimate_to(&self, out: &mut FilteredMaxCounter<<Self::Target as Searchable>::Item>) {
+        let mut mid = PushMod::new(out, |i: ResultItem<&'static Word>| i.item);
+        self.find_to_unsorted(&mut mid);
     }
 }
 

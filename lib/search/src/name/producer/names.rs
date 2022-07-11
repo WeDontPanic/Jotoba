@@ -1,6 +1,7 @@
 use crate::{
     engine::{
         names::{foreign, native},
+        search_task::cpushable::FilteredMaxCounter,
         SearchTask,
     },
     executor::{out_builder::OutputBuilder, producer::Producer, searchable::Searchable},
@@ -43,11 +44,11 @@ impl<'a> Producer for NameProducer<'a> {
         }
     }
 
-    fn estimate(&self) -> Option<types::jotoba::search::guess::Guess> {
+    fn estimate_to(&self, out: &mut FilteredMaxCounter<<Self::Target as Searchable>::Item>) {
         if self.query.q_lang == QueryLang::Japanese {
-            self.jp_task().estimate_result_count().ok()
+            self.jp_task().estimate_to(out);
         } else {
-            self.foreign_task().estimate_result_count().ok()
+            self.foreign_task().estimate_to(out);
         }
     }
 }

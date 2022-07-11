@@ -1,7 +1,6 @@
-use std::any::type_name;
-
 use super::{out_builder::OutputBuilder, searchable::Searchable};
-use types::jotoba::search::guess::Guess;
+use crate::engine::search_task::cpushable::FilteredMaxCounter;
+use std::any::type_name;
 
 pub trait Producer {
     type Target: Searchable;
@@ -18,9 +17,7 @@ pub trait Producer {
         true
     }
 
-    fn estimate(&self) -> Option<Guess> {
-        None
-    }
+    fn estimate_to(&self, _out: &mut FilteredMaxCounter<<Self::Target as Searchable>::Item>) {}
 
     fn name(&self) -> String {
         type_name::<Self>().to_string()

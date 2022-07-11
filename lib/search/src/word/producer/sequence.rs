@@ -1,15 +1,15 @@
-use types::jotoba::{
-    search::guess::{Guess, GuessType},
-    words::Word,
-};
-
 use crate::{
-    engine::result_item::ResultItem,
+    engine::{
+        result_item::ResultItem,
+        search_task::cpushable::{CPushable, FilteredMaxCounter},
+    },
     executor::{out_builder::OutputBuilder, producer::Producer, searchable::Searchable},
     query::Query,
     word::Search,
 };
+use types::jotoba::words::Word;
 
+/// Producer for a Word by its sequence id
 pub struct SeqProducer<'a> {
     query: &'a Query,
 }
@@ -19,6 +19,7 @@ impl<'a> SeqProducer<'a> {
         Self { query }
     }
 
+    // Find the word
     pub fn word(&self) -> Option<&'static Word> {
         let seq = *self.query.form.as_sequence()?;
         resources::get().words().by_sequence(seq)
@@ -44,8 +45,9 @@ impl<'a> Producer for SeqProducer<'a> {
         self.query.form.is_sequence()
     }
 
-    fn estimate(&self) -> Option<Guess> {
-        let count = self.word().map_or(1, |_| 0);
-        Some(Guess::new(count, GuessType::Accurate))
+    fn estimate_to(&self, out: &mut FilteredMaxCounter<<Self::Target as Searchable>::Item>) {
+        if let Some(word) = self.word() {
+            out.push(word);
+        }
     }
 }

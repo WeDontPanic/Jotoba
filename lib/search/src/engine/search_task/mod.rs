@@ -258,7 +258,7 @@ impl<T: SearchEngine> SearchTask<T> {
     #[inline]
     pub fn estimate_to<P>(&self, out: &mut P)
     where
-        P: CPushable<Item = ()>,
+        P: CPushable<Item = T::Output>,
     {
         if let Some(vec) = self.gen_query_vec() {
             self.estimate_by_vec_to(vec, out);
@@ -267,7 +267,7 @@ impl<T: SearchEngine> SearchTask<T> {
 
     fn estimate_by_vec_to<P>(&self, q_vec: Vector, out: &mut P)
     where
-        P: CPushable<Item = ()>,
+        P: CPushable<Item = T::Output>,
     {
         let vec_store = self.get_index().get_vector_store();
         let query_dimensions: Vec<_> = q_vec.vec_indices().collect();
@@ -306,9 +306,9 @@ impl<T: SearchEngine> SearchTask<T> {
                     }
                 }
 
-                unique.insert(res_doc);
+                unique.insert(res_doc.clone());
 
-                let can_push_more = out.push(());
+                let can_push_more = out.push(res_doc);
                 if !can_push_more {
                     break 'o;
                 }

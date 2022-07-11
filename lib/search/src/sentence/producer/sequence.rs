@@ -1,13 +1,13 @@
 use crate::{
-    engine::result_item::ResultItem,
+    engine::{
+        result_item::ResultItem,
+        search_task::cpushable::{CPushable, FilteredMaxCounter},
+    },
     executor::{out_builder::OutputBuilder, producer::Producer, searchable::Searchable},
     query::Query,
     sentence::Search,
 };
-use types::jotoba::{
-    search::guess::{Guess, GuessType},
-    sentences::Sentence,
-};
+use types::jotoba::sentences::Sentence;
 
 /// Producer for sentence by seq
 pub struct SequenceProducer<'a> {
@@ -40,9 +40,10 @@ impl<'a> Producer for SequenceProducer<'a> {
         }
     }
 
-    fn estimate(&self) -> Option<types::jotoba::search::guess::Guess> {
-        let count = self.sentence().is_some() as u32;
-        Some(Guess::new(count, GuessType::Accurate))
+    fn estimate_to(&self, out: &mut FilteredMaxCounter<<Self::Target as Searchable>::Item>) {
+        if let Some(sentence) = self.sentence() {
+            out.push(sentence);
+        }
     }
 
     fn should_run(&self, _already_found: usize) -> bool {

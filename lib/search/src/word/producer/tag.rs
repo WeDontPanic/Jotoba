@@ -1,9 +1,12 @@
-use types::jotoba::{search::guess::Guess, words::Word};
+use types::jotoba::words::Word;
 
 use crate::{
     engine::{
         result_item::ResultItem,
-        search_task::pushable::{Counter, Pushable},
+        search_task::{
+            cpushable::FilteredMaxCounter,
+            pushable::{PushMod, Pushable},
+        },
     },
     executor::{out_builder::OutputBuilder, producer::Producer, searchable::Searchable},
     query::{Query, Tag},
@@ -93,10 +96,9 @@ impl<'a> Producer for TagProducer<'a> {
         self.query.query_str.is_empty() && self.query.tags.iter().any(|i| i.is_producer())
     }
 
-    fn estimate(&self) -> Option<types::jotoba::search::guess::Guess> {
-        let mut counter = Counter::new();
-        self.find_to(&mut counter);
-        Some(Guess::with_limit(counter.val() as u32, 100))
+    fn estimate_to(&self, out: &mut FilteredMaxCounter<<Self::Target as Searchable>::Item>) {
+        let mut mid = PushMod::new(out, |i: ResultItem<&Word>| i.item);
+        self.find_to(&mut mid);
     }
 }
 

@@ -1,9 +1,12 @@
-use types::jotoba::{kanji::Kanji, search::guess::Guess, words::Word};
+use types::jotoba::{kanji::Kanji, words::Word};
 
 use crate::{
     engine::{
         result_item::ResultItem,
-        search_task::pushable::{Counter, Pushable},
+        search_task::{
+            cpushable::FilteredMaxCounter,
+            pushable::{PushMod, Pushable},
+        },
         words::native::k_reading,
         SearchTask,
     },
@@ -71,9 +74,9 @@ impl<'a> Producer for KReadingProducer<'a> {
         self.query.form.is_kanji_reading()
     }
 
-    fn estimate(&self) -> Option<types::jotoba::search::guess::Guess> {
-        let mut counter = Counter::new();
-        self.find_to(&mut counter);
-        Some(Guess::with_limit(counter.val() as u32, 100))
+    fn estimate_to(&self, out: &mut FilteredMaxCounter<<Self::Target as Searchable>::Item>) {
+        let mut m = PushMod::new(out, |i: ResultItem<&Word>| i.item);
+        // TODO: use estimate_to here
+        self.find_to(&mut m);
     }
 }

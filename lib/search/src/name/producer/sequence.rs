@@ -1,14 +1,13 @@
-use types::jotoba::{
-    names::Name,
-    search::guess::{Guess, GuessType},
-};
-
 use crate::{
-    engine::result_item::ResultItem,
+    engine::{
+        result_item::ResultItem,
+        search_task::cpushable::{CPushable, FilteredMaxCounter},
+    },
     executor::{out_builder::OutputBuilder, producer::Producer, searchable::Searchable},
     name::Search,
     query::Query,
 };
+use types::jotoba::names::Name;
 
 pub struct SeqProducer<'a> {
     query: &'a Query,
@@ -40,9 +39,10 @@ impl<'a> Producer for SeqProducer<'a> {
         }
     }
 
-    fn estimate(&self) -> Option<types::jotoba::search::guess::Guess> {
-        let len = self.name().map_or(1, |_| 0);
-        Some(Guess::new(len, GuessType::Accurate))
+    fn estimate_to(&self, out: &mut FilteredMaxCounter<<Self::Target as Searchable>::Item>) {
+        if let Some(name) = self.name() {
+            out.push(name);
+        }
     }
 
     fn should_run(&self, _already_found: usize) -> bool {
