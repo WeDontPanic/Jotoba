@@ -26,6 +26,11 @@ impl<'a, I: Eq + Hash + Clone, OA: Default> OutputBuilder<'a, I, OA> {
             self.p.insert(item);
         }
     }
+
+    #[inline]
+    pub fn inc_push(&mut self, delta: usize) {
+        self.p.inc_push(delta)
+    }
 }
 
 impl<'a, I: Eq + Hash + Clone, OA: Default> Pushable for OutputBuilder<'a, I, OA> {

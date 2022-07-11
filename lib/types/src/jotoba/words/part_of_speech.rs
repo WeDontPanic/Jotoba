@@ -4,10 +4,23 @@ use std::convert::TryFrom;
 #[cfg(feature = "jotoba_intern")]
 use localization::{language::Language, traits::Translatable, TranslationDict};
 use serde::{Deserialize, Serialize};
+use strum::{AsRefStr, EnumIter, IntoEnumIterator};
 use strum_macros::EnumString;
 
 #[derive(
-    Debug, PartialEq, Clone, Copy, Hash, EnumString, Serialize, Deserialize, Ord, PartialOrd, Eq,
+    Debug,
+    PartialEq,
+    Clone,
+    Copy,
+    Hash,
+    EnumString,
+    EnumIter,
+    AsRefStr,
+    Serialize,
+    Deserialize,
+    Ord,
+    PartialOrd,
+    Eq,
 )]
 #[repr(u8)]
 pub enum PosSimple {
@@ -47,6 +60,18 @@ pub enum PosSimple {
     Intransitive,
     #[strum(serialize = "unclassified", serialize = "unc")]
     Unclassified,
+}
+
+impl PosSimple {
+    #[inline]
+    pub fn iter() -> impl Iterator<Item = PosSimple> {
+        <PosSimple as IntoEnumIterator>::iter()
+    }
+
+    #[inline]
+    pub fn as_str(&self) -> &str {
+        self.as_ref()
+    }
 }
 
 impl TryFrom<i32> for PosSimple {

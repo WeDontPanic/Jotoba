@@ -35,7 +35,7 @@ img_scan = ["api/img_scan"]
 news_inotify = ["news/news_inotify"]
 
 [dev-dependencies]
-criterion = "0.3.5"
+criterion = "0.3.6"
 japanese = { path = "../lib/japanese" }
 
 [[bench]]

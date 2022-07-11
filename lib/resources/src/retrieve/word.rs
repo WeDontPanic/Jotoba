@@ -1,4 +1,4 @@
-use types::jotoba::words::Word;
+use types::jotoba::words::{misc::Misc, part_of_speech::PosSimple, Word};
 
 use super::super::storage::word::WordStorage;
 
@@ -45,6 +45,28 @@ impl<'a> WordRetrieve<'a> {
         self.storage
             .jlpt_word_map
             .get(&jlpt)
+            .into_iter()
+            .flatten()
+            .filter_map(move |i| self.by_sequence(*i))
+    }
+
+    /// Returns an iterator over all words with given `misc`
+    #[inline]
+    pub fn by_pos_simple<'b>(&'b self, pos: PosSimple) -> impl Iterator<Item = &'a Word> + 'b {
+        self.storage
+            .pos_map
+            .get(&(pos as u8))
+            .into_iter()
+            .flatten()
+            .filter_map(move |i| self.by_sequence(*i))
+    }
+
+    /// Returns an iterator over all words with given `misc`
+    #[inline]
+    pub fn by_misc<'b>(&'b self, misc: Misc) -> impl Iterator<Item = &'a Word> + 'b {
+        self.storage
+            .misc_map
+            .get(&(misc as u8))
             .into_iter()
             .flatten()
             .filter_map(move |i| self.by_sequence(*i))

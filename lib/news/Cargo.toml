@@ -8,8 +8,8 @@ edition = "2021"
 [dependencies]
 utils = { path = "../utils" }
 itertools = "0.10.3"
-once_cell = { version = "1.12.0", default-features = false }
-comrak = { version = "0.13.1", default-features = false }
+once_cell = { version = "1.13.0", default-features = false }
+comrak = { version = "0.13.2", default-features = false }
 
 [target.'cfg(unix)'.dependencies]
 inotify = { version = "0.10.0", optional = true }

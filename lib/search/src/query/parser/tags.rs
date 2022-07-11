@@ -71,12 +71,13 @@ pub fn parse(s: &str) -> Option<Tag> {
         return Some(tag);
     } else if let Some(tag) = parse_search_type(s) {
         return Some(tag);
-    } else {
-        match PosSimple::from_str(&s[1..]) {
-            Ok(pos) => return Some(Tag::PartOfSpeech(pos)),
-            _ => return None,
-        }
+    } else if let Some(pos) = PosSimple::from_str(&s[1..]).ok() {
+        return Some(Tag::PartOfSpeech(pos));
+    } else if let Some(misc) = Misc::from_str(&s[1..]).ok() {
+        return Some(Tag::Misc(misc));
     }
+
+    None
 }
 
 /// Returns `Some(u8)` if `s` is a valid N/jlpt-tag

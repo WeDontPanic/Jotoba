@@ -1,119 +1,122 @@
 #[cfg(feature = "jotoba_intern")]
 use localization::traits::Translatable;
-use strum_macros::{AsRefStr, EnumString};
+use strum::IntoEnumIterator;
+use strum_macros::{AsRefStr, EnumIter, EnumString};
 
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, PartialEq, Clone, Copy, AsRefStr, EnumString, Serialize, Deserialize, Hash)]
+#[derive(
+    Debug, PartialEq, Clone, Copy, AsRefStr, EnumString, Serialize, Deserialize, Hash, EnumIter,
+)]
 #[repr(u8)]
 pub enum Misc {
-    #[strum(serialize = "abbr")]
+    #[strum(serialize = "abbr", serialize = "abbreviation")]
     Abbreviation,
-    #[strum(serialize = "arch")]
+    #[strum(serialize = "arch", serialize = "archaism")]
     Archaism,
-    #[strum(serialize = "char")]
+    #[strum(serialize = "char", serialize = "character")]
     Character,
-    #[strum(serialize = "chn")]
+    #[strum(serialize = "chn", serialize = "childrenslanguage")]
     ChildrensLanguage,
-    #[strum(serialize = "col")]
+    #[strum(serialize = "col", serialize = "colloquialism")]
     Colloquialism,
-    #[strum(serialize = "company")]
+    #[strum(serialize = "company", serialize = "companyname")]
     CompanyName,
-    #[strum(serialize = "creat")]
+    #[strum(serialize = "creat", serialize = "creature")]
     Creature,
     #[strum(serialize = "dated")]
     DatedTerm,
-    #[strum(serialize = "dei")]
+    #[strum(serialize = "dei", serialize = "deity")]
     Deity,
-    #[strum(serialize = "derog")]
+    #[strum(serialize = "derog", serialize = "derogatory")]
     Derogatory,
-    #[strum(serialize = "doc")]
+    #[strum(serialize = "doc", serialize = "document")]
     Document,
-    #[strum(serialize = "ev")]
+    #[strum(serialize = "ev", serialize = "event")]
     Event,
-    #[strum(serialize = "fam")]
+    #[strum(serialize = "fam", serialize = "familiarlanguage")]
     FamiliarLanguage,
-    #[strum(serialize = "fem")]
+    #[strum(serialize = "fem", serialize = "femaleterm")]
     FemaleTermOrLanguage,
-    #[strum(serialize = "fict")]
+    #[strum(serialize = "fict", serialize = "fiction")]
     Fiction,
-    #[strum(serialize = "given")]
+    #[strum(serialize = "given", serialize = "givenname")]
     GivenName,
     #[strum(serialize = "group")]
     Group,
-    #[strum(serialize = "hist")]
+    #[strum(serialize = "hist", serialize = "Historical")]
     HistoricalTerm,
-    #[strum(serialize = "hon")]
+    #[strum(serialize = "hon", serialize = "honorific")]
     HonorificLanguage,
-    #[strum(serialize = "hum")]
+    #[strum(serialize = "hum", serialize = "humblelanguage")]
     HumbleLanguage,
-    #[strum(serialize = "id")]
+    #[strum(serialize = "id", serialize = "idomatic")]
     IdiomaticExpression,
     #[strum(serialize = "joc")]
     JocularHumorousTerm,
-    #[strum(serialize = "leg")]
+    #[strum(serialize = "leg", serialize = "legend")]
     Legend,
-    #[strum(serialize = "form")]
+    #[strum(serialize = "form", serialize = "formal")]
     LiteraryOrFormalTerm,
-    #[strum(serialize = "m-sl")]
+    #[strum(serialize = "m-sl", serialize = "mangaslang")]
     MangaSlang,
-    #[strum(serialize = "male")]
+    #[strum(serialize = "male", serialize = "maleterm")]
     MaleTermOrLanguage,
-    #[strum(serialize = "myth")]
+    #[strum(serialize = "myth", serialize = "mythology")]
     Mythology,
-    #[strum(serialize = "net-sl")]
+    #[strum(serialize = "net-sl", serialize = "internetslang")]
     InternetSlang,
-    #[strum(serialize = "obj")]
+    #[strum(serialize = "obj", serialize = "object")]
     Object,
-    #[strum(serialize = "obs")]
+    #[strum(serialize = "obs", serialize = "obsolete")]
     ObsoleteTerm,
-    #[strum(serialize = "obsc")]
+    #[strum(serialize = "obsc", serialize = "obscure")]
     ObscureTerm,
-    #[strum(serialize = "on-mim")]
+    #[strum(serialize = "on-mim", serialize = "onomatopoeic")]
     OnomatopoeicOrMimeticWord,
-    #[strum(serialize = "organization")]
+    #[strum(serialize = "organization", serialize = "organizationname")]
     OrganizationName,
-    #[strum(serialize = "oth")]
+    #[strum(serialize = "oth", serialize = "other")]
     Other,
-    #[strum(serialize = "person")]
+    #[strum(serialize = "person", serialize = "personname")]
     Personname,
-    #[strum(serialize = "place")]
+    #[strum(serialize = "place", serialize = "placename")]
     PlaceName,
-    #[strum(serialize = "poet")]
+    #[strum(serialize = "poet", serialize = "poeticalterm")]
     PoeticalTerm,
-    #[strum(serialize = "pol")]
+    #[strum(serialize = "pol", serialize = "politelanguage")]
     PoliteLanguage,
-    #[strum(serialize = "product")]
+    #[strum(serialize = "product", serialize = "productname")]
     ProductName,
     #[strum(serialize = "proverb")]
     Proverb,
-    #[strum(serialize = "quote")]
+    #[strum(serialize = "quote", serialize = "quotation")]
     Quotation,
     #[strum(serialize = "rare")]
     Rare,
-    #[strum(serialize = "relig")]
+    #[strum(serialize = "relig", serialize = "religion")]
     Religion,
-    #[strum(serialize = "sens")]
+    #[strum(serialize = "sens", serialize = "sensitive")]
     Sensitive,
-    #[strum(serialize = "serv")]
+    #[strum(serialize = "serv", serialize = "service")]
     Service,
-    #[strum(serialize = "sl")]
+    #[strum(serialize = "sl", serialize = "slang")]
     Slang,
-    #[strum(serialize = "station")]
+    #[strum(serialize = "station", serialize = "railwaystation")]
     RailwayStation,
     #[strum(serialize = "surname")]
     FamilyOrSurname,
-    #[strum(serialize = "uk")]
+    #[strum(serialize = "uk", serialize = "usuallykana")]
     UsuallyWrittenInKana,
     #[strum(serialize = "unclass")]
     UnclassifiedName,
-    #[strum(serialize = "vulg")]
+    #[strum(serialize = "vulg", serialize = "vulgar")]
     VulgarExpressionOrWord,
-    #[strum(serialize = "work")]
+    #[strum(serialize = "work", serialize = "artwork")]
     ArtWork,
-    #[strum(serialize = "X")]
+    #[strum(serialize = "X", serialize = "rude")]
     RudeOrXRatedTerm,
-    #[strum(serialize = "yoji")]
+    #[strum(serialize = "yoji", serialize = "yojijukugo")]
     Yojijukugo,
 }
 
@@ -176,5 +179,17 @@ impl Translatable for Misc {
             Misc::RudeOrXRatedTerm => "Rude/x-rated term",
             Misc::Yojijukugo => "Yojijukugo",
         }
+    }
+}
+
+impl Misc {
+    #[inline]
+    pub fn iter() -> impl Iterator<Item = Misc> {
+        <Misc as IntoEnumIterator>::iter()
+    }
+
+    #[inline]
+    pub fn as_str(&self) -> &str {
+        self.as_ref()
     }
 }

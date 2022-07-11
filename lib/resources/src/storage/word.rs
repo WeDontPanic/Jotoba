@@ -14,6 +14,8 @@ pub struct WordStorage {
     // Search tags
     pub jlpt_word_map: HashMap<u8, Vec<u32>>,
     pub irregular_ichidan: Vec<u32>,
+    pub pos_map: HashMap<u8, Vec<u32>>,
+    pub misc_map: HashMap<u8, Vec<u32>>,
 
     // Feature information
     has_accents: bool,

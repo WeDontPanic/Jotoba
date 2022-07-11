@@ -19,15 +19,15 @@ types = { path = "../types", default-features = false, features = [
 ] }
 log = "0.4.17"
 itertools = "0.10.3"
-once_cell = { version = "1.12.0", default-features = false }
-regex = { version = "1.5.6", features = ["std"], default-features = false }
+once_cell = { version = "1.13.0", default-features = false }
+regex = { version = "1.6.0", features = ["std"], default-features = false }
 #vector_space_model2 = { path = "../../../VectorSpaceModel" }
 vector_space_model2 = { git = "https://github.com/JojiiOfficial/VectorSpaceModel" }
 tinysegmenter = "0.1.1"
 percent-encoding = "2.1.0"
 rayon = "1.5.3"
 priority_container = "0.1.1"
-#priority_container = {path = "../../../priority_container"}
+#priority_container = { path = "../../../priority_container" }
 order_struct = { git = "https://github.com/JojiiOfficial/OrderStruct" }
 spin = { version = "0.9.3", default-features = false, features = [
   "spin_mutex",

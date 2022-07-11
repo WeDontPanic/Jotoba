@@ -5,8 +5,6 @@ pub mod languages;
 pub mod names;
 /// Contains structures used for pagination
 pub mod pagination;
-/// Contains all structures of Jotobas resources
-pub mod resources;
 /// Contains search related structures and enums
 pub mod search;
 pub mod sentences;

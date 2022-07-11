@@ -34,47 +34,23 @@ impl<'a> TagProducer<'a> {
     where
         P: Pushable<Item = ResultItem<&'static Word>>,
     {
+        let words = resources::get().words();
         match tag {
-            Tag::PartOfSpeech(pos) => self.push_generic(out, |w| w.has_pos(&[*pos])),
-            Tag::Misc(m) => self.push_generic(out, |w| w.has_misc(m)),
-            Tag::Jlpt(jlpt) => self.push_jlpt(out, *jlpt),
-            Tag::IrregularIruEru => self.push_irr_ichidan(out),
+            Tag::PartOfSpeech(pos) => self.push_iter(words.by_pos_simple(*pos), out),
+            Tag::Misc(m) => self.push_iter(words.by_misc(*m), out),
+            Tag::Jlpt(jlpt) => self.push_iter(words.by_jlpt(*jlpt), out),
+            Tag::IrregularIruEru => self.push_iter(words.irregular_ichidan(), out),
             _ => (),
         }
     }
 
-    fn push_jlpt<P>(&self, out: &mut P, jlpt: u8)
+    fn push_iter<P, I>(&self, iter: I, out: &mut P)
     where
         P: Pushable<Item = ResultItem<&'static Word>>,
+        I: Iterator<Item = &'static Word>,
     {
-        for w in resources::get().words().by_jlpt(jlpt) {
-            let len = w.get_reading().len();
-            let rel = 1000usize.saturating_sub(len);
-            out.push(ResultItem::new(w, rel))
-        }
-    }
-
-    fn push_irr_ichidan<P>(&self, out: &mut P)
-    where
-        P: Pushable<Item = ResultItem<&'static Word>>,
-    {
-        for w in resources::get().words().irregular_ichidan() {
-            out.push(ResultItem::new(w, 0));
-        }
-    }
-
-    fn push_generic<P, F>(&self, out: &mut P, filter: F)
-    where
-        P: Pushable<Item = ResultItem<&'static Word>>,
-        F: Fn(&Word) -> bool,
-    {
-        for w in resources::get().words().iter() {
-            if !filter(w) {
-                continue;
-            }
-
-            let score = generic_order(w);
-            out.push(ResultItem::new(w, score));
+        for (pos, w) in iter.enumerate().take(1000) {
+            out.push(ResultItem::new(w, pos));
         }
     }
 }
@@ -93,6 +69,7 @@ impl<'a> Producer for TagProducer<'a> {
     }
 
     fn should_run(&self, _already_found: usize) -> bool {
+        // Only run this producer if there is no query (except tags) and there are tags which can produce output
         self.query.query_str.is_empty() && self.query.tags.iter().any(|i| i.is_producer())
     }
 
@@ -100,26 +77,4 @@ impl<'a> Producer for TagProducer<'a> {
         let mut mid = PushMod::new(out, |i: ResultItem<&Word>| i.item);
         self.find_to(&mut mid);
     }
-}
-
-fn generic_order(word: &Word) -> usize {
-    let mut score = 0usize;
-
-    if word.is_common() {
-        score += 10;
-    }
-
-    if let Some(jlpt) = word.jlpt_lvl {
-        score += 3 + jlpt as usize;
-    }
-
-    if word.has_collocations() {
-        score += 1;
-    }
-
-    if word.has_pitch() {
-        score += 1;
-    }
-
-    score
 }
