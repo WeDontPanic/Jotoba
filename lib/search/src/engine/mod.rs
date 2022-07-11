@@ -9,7 +9,6 @@ pub mod words;
 
 pub use search_task::SearchTask;
 
-use resources::storage::ResourceStorage;
 use std::hash::Hash;
 use types::jotoba::languages::Language;
 use vector_space_model2::{metadata::Metadata, traits::Decodable, Index, Vector};
@@ -33,10 +32,7 @@ pub trait SearchEngine: Indexable {
     type Output: PartialEq + Eq + Hash + 'static + Send + Sync + Clone;
 
     /// Loads the corresponding Output type from a document
-    fn doc_to_output(
-        storage: &'static ResourceStorage,
-        input: &Self::Document,
-    ) -> Option<Vec<Self::Output>>;
+    fn doc_to_output(input: &Self::Document) -> Option<Vec<Self::Output>>;
 
     /// Generates a vector for a query, in order to be able to compare results with a vector
     fn gen_query_vector(

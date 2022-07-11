@@ -16,8 +16,7 @@ impl<'a> NativeSearch<'a> {
     }
 
     pub fn task(&self) -> SearchTask<native::Engine> {
-        let mut task: SearchTask<native::Engine> =
-            SearchTask::new(self.query_str).threshold(0.4f32);
+        let mut task: SearchTask<native::Engine> = SearchTask::new(self.query_str);
 
         let original_query = self.query.raw_query.clone();
         task.with_custom_order(move |item| {
@@ -32,8 +31,6 @@ impl<'a> NativeSearch<'a> {
 
     /// Returns `true` if Native search has `term` in index
     pub fn has_term(term: &str) -> bool {
-        SearchTask::<native::Engine>::new(term)
-            .threshold(0.4f32)
-            .has_term()
+        SearchTask::<native::Engine>::new(term).has_term()
     }
 }

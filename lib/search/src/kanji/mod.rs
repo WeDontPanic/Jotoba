@@ -61,7 +61,7 @@ fn by_japanese_query(query: &str) -> Vec<Kanji> {
 
 /// Search for kanji using kana query
 fn kana_search(query: &str) -> Vec<Kanji> {
-    let mut search_task = SearchTask::<native::Engine>::new(query).threshold(0.7);
+    let mut search_task = SearchTask::<native::Engine>::new(query);
 
     let q = query.to_string();
     search_task.set_result_filter(move |i| i.has_reading(&q));

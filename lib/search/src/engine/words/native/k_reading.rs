@@ -1,5 +1,4 @@
 use crate::engine::{Indexable, SearchEngine};
-use resources::storage::ResourceStorage;
 use types::jotoba::languages::Language;
 use types::jotoba::words::Word;
 use vector_space_model2::{DefaultMetadata, Vector};
@@ -22,11 +21,8 @@ impl SearchEngine for Engine {
     type Output = &'static Word;
 
     #[inline]
-    fn doc_to_output<'a>(
-        storage: &'static ResourceStorage,
-        inp: &Self::Document,
-    ) -> Option<Vec<Self::Output>> {
-        storage.words().by_sequence(*inp).map(|i| vec![i])
+    fn doc_to_output<'a>(inp: &Self::Document) -> Option<Vec<Self::Output>> {
+        resources::get().words().by_sequence(*inp).map(|i| vec![i])
     }
 
     fn gen_query_vector(

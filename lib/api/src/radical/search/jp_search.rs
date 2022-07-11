@@ -28,7 +28,7 @@ fn kanji_search(query: &str) -> Vec<char> {
 /// Does a kana word-search and returns some likely radicals for the given query
 fn kana_search(query: &str) -> Vec<char> {
     let mut search_task: SearchTask<engine::words::native::Engine> =
-        SearchTask::new(&query).limit(3).threshold(0.8f32);
+        SearchTask::new(&query).limit(3);
 
     let original_query = query.to_string();
     search_task.with_custom_order(move |item| {

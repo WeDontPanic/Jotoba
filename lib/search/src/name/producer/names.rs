@@ -18,11 +18,11 @@ impl<'a> NameProducer<'a> {
     }
 
     fn jp_task(&self) -> SearchTask<native::Engine> {
-        SearchTask::<native::Engine>::new(&self.query.query_str).threshold(0.05f32)
+        SearchTask::<native::Engine>::new(&self.query.query_str)
     }
 
     fn foreign_task(&self) -> SearchTask<foreign::Engine> {
-        SearchTask::<foreign::Engine>::new(&self.query.query_str).threshold(0.05f32)
+        SearchTask::<foreign::Engine>::new(&self.query.query_str)
     }
 }
 

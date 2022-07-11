@@ -1,9 +1,7 @@
-use std::collections::HashSet;
-
 use crate::engine::{Indexable, SearchEngine};
 use indexes::sentences::document::SentenceDocument;
-use resources::storage::ResourceStorage;
 use sentence_reader::output::ParseResult;
+use std::collections::HashSet;
 use types::jotoba::{languages::Language, sentences::Sentence};
 use vector_space_model2::{build::weights::TFIDF, DefaultMetadata, Vector};
 
@@ -25,11 +23,11 @@ impl SearchEngine for Engine {
     type Output = &'static Sentence;
 
     #[inline]
-    fn doc_to_output(
-        storage: &'static ResourceStorage,
-        inp: &Self::Document,
-    ) -> Option<Vec<Self::Output>> {
-        storage.sentences().by_id(inp.seq_id).map(|i| vec![i])
+    fn doc_to_output(inp: &Self::Document) -> Option<Vec<Self::Output>> {
+        resources::get()
+            .sentences()
+            .by_id(inp.seq_id)
+            .map(|i| vec![i])
     }
 
     fn gen_query_vector(

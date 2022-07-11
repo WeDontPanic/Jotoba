@@ -17,9 +17,9 @@ impl ResData {
 #[derive(Clone)]
 pub struct Sentence {
     pub id: u32,
-    pub content: String,
-    pub furigana: String,
-    pub translation: String,
+    pub content: &'static str,
+    pub furigana: &'static str,
+    pub translation: &'static str,
     pub language: Language,
     pub eng: Option<String>,
 }
@@ -37,17 +37,17 @@ impl Sentence {
 
     #[inline]
     pub fn from_m_sentence(
-        s: types::jotoba::sentences::Sentence,
+        s: &'static types::jotoba::sentences::Sentence,
         language: Language,
         allow_english: bool,
     ) -> Option<Self> {
-        let translation = s.get_translation(language, allow_english)?.to_string();
+        let translation = s.get_translation(language, allow_english)?;
 
         Some(Self {
             id: s.id,
             translation,
-            content: s.japanese,
-            furigana: s.furigana,
+            content: &s.japanese,
+            furigana: &s.furigana,
             eng: None,
             language,
         })

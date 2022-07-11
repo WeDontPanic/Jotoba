@@ -139,8 +139,7 @@ pub async fn find_direct_sentence(id: &str, settings: &UserSettings) -> Result<R
     let res_sentence = resources::get()
         .sentences()
         .by_id(sequence_id)
-        .ok_or(web_error::Error::NotFound)?
-        .clone();
+        .ok_or(web_error::Error::NotFound)?;
 
     let res_sentence =
         sentence::result::Sentence::from_m_sentence(res_sentence, settings.user_lang, true)

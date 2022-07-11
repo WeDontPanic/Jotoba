@@ -1,26 +1,28 @@
+pub mod cpushable;
 pub mod pushable;
 pub mod sort_item;
 
-use self::pushable::Pushable;
+use self::{
+    cpushable::{CPushable, MaxCounter},
+    pushable::Pushable,
+};
 
 use super::{result::SearchResult, result_item::ResultItem, SearchEngine};
 use error::Error;
-use itertools::Itertools;
 use priority_container::StableUniquePrioContainerMax;
 use sort_item::SortItem;
-use std::marker::PhantomData;
+use std::{collections::HashSet, marker::PhantomData};
 use types::jotoba::{
     languages::Language,
     search::guess::{Guess, GuessType},
 };
-use vector_space_model2::{term_store::TermIndexer, DocumentVector, Vector};
+use vector_space_model2::{term_store::TermIndexer, DocumentVector, Index, Vector};
 
-pub struct SearchTask<T>
-where
-    T: SearchEngine,
-{
+pub struct SearchTask<T: SearchEngine> {
     /// Search query
-    queries: Vec<(String, Option<Language>)>,
+    query_str: String,
+    /// Language of query
+    query_lang: Option<Language>,
     /// filter out vectors
     vec_filter: Option<Box<dyn Fn(&DocumentVector<T::Document>, &Vector) -> bool>>,
     /// Filter out results
@@ -28,7 +30,7 @@ where
     /// Custom result order function
     cust_order: Option<Box<dyn Fn(SortItem<T::Output>) -> usize>>,
     /// Min relevance returned from vector space algo
-    threshold: f32,
+    threshold: usize,
     vector_limit: usize,
     limit: usize,
     offset: usize,
@@ -43,22 +45,16 @@ impl<T: SearchEngine> SearchTask<T> {
     #[inline]
     pub fn new<S: AsRef<str>>(query: S) -> Self {
         let mut task = Self::default();
-        task.queries.push((query.as_ref().to_string(), None));
+        task.query_str = query.as_ref().to_string();
         task
     }
 
     /// Creates a new Search task with a query assigned language
     pub fn with_language<S: AsRef<str>>(query: S, language: Language) -> Self {
         let mut task = Self::default();
-        task.queries
-            .push((query.as_ref().to_string(), Some(language)));
+        task.query_str = query.as_ref().to_string();
+        task.query_lang = Some(language);
         task
-    }
-
-    /// Adds another query to look out for to the search task
-    pub fn add_language_query<S: AsRef<str>>(&mut self, query: S, language: Language) {
-        self.queries
-            .push((query.as_ref().to_string(), Some(language)));
     }
 
     /// Set the total limit. This is the max amount of vectors which will be loaded and processed
@@ -69,7 +65,7 @@ impl<T: SearchEngine> SearchTask<T> {
 
     /// Sets the search task's threshold. This does not apply on the final score, which can be
     /// overwritten by `order` but applies to the vector space relevance itself.
-    pub fn threshold(mut self, threshold: f32) -> Self {
+    pub fn threshold(mut self, threshold: usize) -> Self {
         self.threshold = threshold;
         self
     }
@@ -117,46 +113,44 @@ impl<T: SearchEngine> SearchTask<T> {
         self.cust_order = Some(Box::new(res_filter));
     }
 
-    /// Returns the amount of queries, this search task is going to look out for
-    #[inline]
-    pub fn query_count(&self) -> usize {
-        self.queries.len()
+    fn gen_query_vec(&self) -> Option<Vector> {
+        let index = self.get_index();
+        let (vec, _) = T::gen_query_vector(index, &self.query_str, false, self.query_lang)?;
+        Some(vec)
     }
 
     /// Returns `true` if the search task's query is a term in the corresponding index
     #[inline]
     pub fn has_term(&self) -> bool {
-        self.queries.iter().any(|(query, language)| {
-            let q_fmt = T::query_formatted(query);
-            T::get_index(*language)
-                .map(|i| i.get_indexer().find_term(&q_fmt).is_some())
-                .unwrap_or(false)
-        })
+        let q_fmt = T::query_formatted(&self.query_str);
+        self.get_index().get_indexer().find_term(&q_fmt).is_some()
+    }
+
+    #[inline]
+    pub fn get_index(&self) -> &'static Index<T::Document, T::Metadata> {
+        T::get_index(self.query_lang).expect("Lang not loaded")
     }
 
     pub fn get_indexer(language: Option<Language>) -> Option<&'static TermIndexer> {
-        let index = T::get_index(language)?;
-        Some(index.get_indexer())
+        Some(T::get_index(language)?.get_indexer())
     }
 
     pub fn find_exact(&self) -> SearchResult<T::Output> {
-        let (query, lang) = self.queries.get(0).unwrap();
-        let index = T::get_index(*lang).expect("Lang not loaded");
-
-        let query_vec = match index.build_vector(&[query], None) {
+        let index = self.get_index();
+        let query_vec = match index.build_vector(&[&self.query_str], None) {
             Some(qv) => qv,
             None => return SearchResult::default(),
         };
 
         let mut out = StableUniquePrioContainerMax::new(self.offset + self.limit);
-        self.find_by_vec(query_vec, query, *lang, &mut out);
+        self.find_by_vec(query_vec, &mut out);
         self.make_result(out)
     }
 
     /// Runs the search task and writes all items into the priority queue
     pub fn find_to<I: Pushable<Item = ResultItem<T::Output>>>(&self, out: &mut I) {
-        for (q_str, vec, lang) in self.get_queries() {
-            self.find_by_vec(vec, &q_str, lang, out);
+        if let Some(qvec) = self.gen_query_vec() {
+            self.find_by_vec(qvec, out);
         }
     }
 
@@ -184,67 +178,47 @@ impl<T: SearchEngine> SearchTask<T> {
         super::utils::page_from_pqueue(self.limit, self.offset, pqueue)
     }
 
-    /// Returns an iterator over all queries in form of document vectors and its assigned language
-    fn get_queries<'b>(&'b self) -> impl Iterator<Item = (String, Vector, Option<Language>)> + 'b {
-        self.queries.iter().filter_map(move |(q_str, lang)| {
-            let index = T::get_index(*lang).expect("Lang not loaded");
-            let allow_align = self.allow_align && !self.has_term();
-            let (vec, aligned) = T::gen_query_vector(index, q_str, allow_align, *lang)?;
-            Some((aligned, vec, *lang))
-        })
-    }
-
-    fn find_by_vec<I: Pushable<Item = ResultItem<T::Output>>>(
-        &self,
-        q_vec: Vector,
-        q_str: &str,
-        language: Option<Language>,
-        out: &mut I,
-    ) {
-        let index = match T::get_index(language) {
-            Some(index) => index,
-            None => {
-                log::error!("Index {language:?} not loaded");
-                return;
-            }
-        };
-
+    fn find_by_vec<I: Pushable<Item = ResultItem<T::Output>>>(&self, q_vec: Vector, out: &mut I) {
         // Retrieve all document vectors that share at least one dimension with the query vector
-        let vecs = index
+        let vecs = self
+            .get_index()
             .get_vector_store()
             .get_for_vec(&q_vec)
             .take(self.vector_limit);
 
-        self.result_from_doc_vectors(vecs, &q_vec, q_str, language, out);
+        self.load_documents_to(vecs, &q_vec, out);
     }
 
-    fn result_from_doc_vectors<I: Pushable<Item = ResultItem<T::Output>>>(
-        &self,
-        document_vectors: impl Iterator<Item = DocumentVector<T::Document>>,
-        q_vec: &Vector,
-        q_str: &str,
-        language: Option<Language>,
-        out: &mut I,
-    ) {
-        let storage = resources::get();
-
-        for dvec in document_vectors {
+    fn load_documents_to<P, I>(&self, dvec_iter: I, q_vec: &Vector, out: &mut P)
+    where
+        P: Pushable<Item = ResultItem<T::Output>>,
+        I: Iterator<Item = DocumentVector<T::Document>>,
+    {
+        for dvec in dvec_iter {
             if !self.filter_vector(&dvec, &q_vec) {
                 continue;
             }
 
-            for res_doc in T::doc_to_output(storage, &dvec.document).unwrap_or_default() {
+            for res_doc in T::doc_to_output(&dvec.document).unwrap_or_default() {
                 if !self.filter_result(&res_doc) {
                     continue;
                 }
 
-                let sort_item = SortItem::new(&res_doc, 0.0, q_str, language, q_vec, dvec.vector());
+                let sort_item = SortItem::new(
+                    &res_doc,
+                    0.0,
+                    &self.query_str,
+                    self.query_lang,
+                    q_vec,
+                    dvec.vector(),
+                );
+
                 let score = self.calc_score(sort_item);
                 if score < self.threshold as usize {
                     continue;
                 }
 
-                out.push(ResultItem::new_raw(res_doc, score, language));
+                out.push(ResultItem::new_raw(res_doc, score, self.query_lang));
             }
         }
     }
@@ -257,20 +231,13 @@ impl<T: SearchEngine> SearchTask<T> {
     /// - n = 0 => m = 0
     /// - n <= m
     pub fn estimate_result_count(&self) -> Result<Guess, Error> {
-        let estimated = self
-            .get_queries()
-            .map(|(_, vec, lang)| {
-                // TODO: maybe remove stopwords from vec to make it faster
-                self.estimate_by_vec(vec, lang, self.est_limit)
-            })
-            .collect::<Result<Vec<_>, Error>>()?
-            .into_iter()
-            .max()
-            .unwrap_or(0);
+        let mut counter = MaxCounter::new(self.est_limit + 1);
+        self.estimate_to(&mut counter);
+        let estimated = counter.val();
 
         let mut guess_type = GuessType::Undefined;
 
-        if (self.queries.len() == 1 && estimated <= self.est_limit) || estimated == 0 {
+        if (estimated <= self.est_limit) || estimated == 0 {
             // All filtering operations are applied in estimation algorithm as well.
             // Since we use the max value of query
             // result, we can only assure it being accurate if there was only one query and no
@@ -288,20 +255,21 @@ impl<T: SearchEngine> SearchTask<T> {
         Ok(Guess::new(est_result, guess_type))
     }
 
-    fn estimate_by_vec(
-        &self,
-        q_vec: Vector,
-        language: Option<Language>,
-        est_limit: usize,
-    ) -> Result<usize, Error> {
-        let index = T::get_index(language);
-        if index.is_none() {
-            log::error!("Failed to retrieve {:?} index with language", language);
-            return Err(Error::Unexpected);
+    #[inline]
+    pub fn estimate_to<P>(&self, out: &mut P)
+    where
+        P: CPushable<Item = ()>,
+    {
+        if let Some(vec) = self.gen_query_vec() {
+            self.estimate_by_vec_to(vec, out);
         }
-        let index = index.unwrap();
+    }
 
-        let vec_store = index.get_vector_store();
+    fn estimate_by_vec_to<P>(&self, q_vec: Vector, out: &mut P)
+    where
+        P: CPushable<Item = ()>,
+    {
+        let vec_store = self.get_index().get_vector_store();
         let query_dimensions: Vec<_> = q_vec.vec_indices().collect();
 
         // Retrieve all document vectors that share at least one dimension with the query vector
@@ -309,39 +277,43 @@ impl<T: SearchEngine> SearchTask<T> {
             .get_all_iter(&query_dimensions)
             .take(self.vector_limit);
 
-        let storage = resources::get();
+        let mut unique = HashSet::with_capacity(50);
 
-        let res = document_vectors
-            .filter_map(|i| {
-                if !self.filter_vector(&i, &q_vec) {
-                    return None;
+        'o: for dvec in document_vectors {
+            if !self.filter_vector(&dvec, &q_vec) {
+                continue;
+            }
+
+            for res_doc in T::doc_to_output(&dvec.document).unwrap_or_default() {
+                if unique.contains(&res_doc) || !self.filter_result(&res_doc) {
+                    continue;
                 }
 
-                /*
-                let similarity = T::similarity(i.vector(), &q_vec);
-                if similarity < self.threshold {
-                    return None;
+                // Don't ignore threshold if set
+                if self.threshold > 0 {
+                    let sort_item = SortItem::new(
+                        &res_doc,
+                        0.0,
+                        &self.query_str,
+                        self.query_lang,
+                        &q_vec,
+                        dvec.vector(),
+                    );
+
+                    let score = self.calc_score(sort_item);
+                    if score < self.threshold as usize {
+                        continue;
+                    }
                 }
-                */
-                // TODO: handle new score func here and filter using threshold
-                let similarity = 0;
 
-                // Retrieve `Output` values for given documents
-                let res = T::doc_to_output(storage, &i.document)?
-                    .into_iter()
-                    .map(move |i| (similarity, i));
+                unique.insert(res_doc);
 
-                Some(res)
-            })
-            .flatten()
-            .filter(|i| self.filter_result(&i.1))
-            .map(|(_, item)| item)
-            .unique()
-            // `+1` to find out if there are more items
-            .take(est_limit + 1)
-            .count();
-
-        Ok(res)
+                let can_push_more = out.push(());
+                if !can_push_more {
+                    break 'o;
+                }
+            }
+        }
     }
 
     /// Calculates the score using a custom function if provided or just `rel` otherwise
@@ -371,10 +343,11 @@ impl<T: SearchEngine> Default for SearchTask<T> {
     #[inline]
     fn default() -> Self {
         Self {
-            queries: vec![],
+            query_str: String::default(),
+            query_lang: None,
             vec_filter: None,
             res_filter: None,
-            threshold: 0.2,
+            threshold: 0,
             limit: 1000,
             est_limit: 100,
             vector_limit: 100_000,

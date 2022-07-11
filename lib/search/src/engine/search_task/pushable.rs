@@ -1,8 +1,6 @@
-use std::{hash::Hash, marker::PhantomData};
-
-use priority_container::StableUniquePrioContainerMax;
-
 use crate::engine::result_item::ResultItem;
+use priority_container::StableUniquePrioContainerMax;
+use std::{hash::Hash, marker::PhantomData};
 
 pub trait Pushable {
     type Item;

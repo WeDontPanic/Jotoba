@@ -1,4 +1,6 @@
+mod filter;
+pub mod foreign;
 mod kanji;
-pub mod sentences;
+pub mod native;
 pub mod sequence;
 pub mod tag;

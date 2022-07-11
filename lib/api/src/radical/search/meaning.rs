@@ -29,9 +29,7 @@ pub fn search(query: &str, language: Language) -> Vec<char> {
 /// Does a kana word-search and returns some likely radicals for the given query
 fn word_search(query: &str, language: Language) -> Vec<char> {
     let mut search_task: SearchTask<engine::words::foreign::Engine> =
-        SearchTask::with_language(&query, language)
-            .limit(3)
-            .threshold(0.8f32);
+        SearchTask::with_language(&query, language).limit(3);
 
     let order = ForeignOrder::new();
     search_task.with_custom_order(move |item| order.score(item, language));

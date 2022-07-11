@@ -2,7 +2,6 @@ pub mod output;
 
 use crate::engine::{Indexable, SearchEngine, SearchTask};
 use indexes::{metadata::Metadata, words::document::FWordDoc};
-use resources::storage::ResourceStorage;
 use types::jotoba::languages::Language;
 use utils::to_option;
 use vector_space_model2::{build::weights::TFIDF, Vector};
@@ -28,10 +27,8 @@ impl SearchEngine for Engine {
     type Output = WordOutput;
 
     #[inline]
-    fn doc_to_output(
-        storage: &'static ResourceStorage,
-        inp: &Self::Document,
-    ) -> Option<Vec<Self::Output>> {
+    fn doc_to_output(inp: &Self::Document) -> Option<Vec<Self::Output>> {
+        let storage = resources::get();
         let out_items = inp
             .items
             .iter()

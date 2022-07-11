@@ -105,9 +105,7 @@ fn set_furigana(s: &mut Sentence) {
 fn furigana_by_reading(morpheme: &str, part: &sentence_reader::Part) -> Option<String> {
     let word_storage = resources::get().words();
 
-    let mut st = SearchTask::<native::Engine>::new(morpheme)
-        .threshold(0.7)
-        .limit(10);
+    let mut st = SearchTask::<native::Engine>::new(morpheme).limit(10);
 
     let pos = sentence_reader::part::wc_to_simple_pos(&part.word_class_raw());
     let morph = morpheme.to_string();

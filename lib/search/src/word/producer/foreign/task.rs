@@ -24,7 +24,7 @@ impl<'a> ForeignSearch<'a> {
 
     pub fn task(&self) -> SearchTask<foreign::Engine> {
         let mut task: SearchTask<foreign::Engine> =
-            SearchTask::with_language(self.query_str, self.language).threshold(0.4f32);
+            SearchTask::with_language(self.query_str, self.language);
 
         let lang = self.language;
         let orderer = order::foreign::ForeignOrder::new();
