@@ -43,7 +43,7 @@ pub fn regex_order(word: &Word, found_in: &str, _query: &RegexSQuery) -> usize {
 
 /// Search order for words searched by japanese meaning/kanji/reading
 pub fn japanese_search_order(item: SortItem<&'static Word>, original_query: Option<&str>) -> usize {
-    let mut score: usize = (item.vec_simiarity() * 10f32) as usize;
+    let mut score: usize = (item.vec_simiarity() * 500f32) as usize;
 
     let word = item.item();
     let query_str = japanese::to_halfwidth(item.query());
@@ -71,12 +71,12 @@ pub fn japanese_search_order(item: SortItem<&'static Word>, original_query: Opti
     }
 
     if word.jlpt_lvl.is_some() {
-        score += 10;
+        score += 20;
     }
 
     // Is common
     if word.is_common() {
-        score += 20;
+        score += 30;
     }
 
     if reading.starts_with(&query_str) || (query_str.is_kana() && reading.starts_with(&query_str)) {

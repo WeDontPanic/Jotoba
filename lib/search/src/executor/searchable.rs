@@ -1,9 +1,9 @@
 use super::{out_builder::OutputBuilder, producer::Producer};
 use crate::query::Query;
-use std::hash::Hash;
+use std::{fmt::Debug, hash::Hash};
 
 pub trait Searchable {
-    type Item: Clone + Eq + Hash;
+    type Item: Clone + Eq + Hash + Debug;
     type OutItem;
     type ResAdd: Default;
 
