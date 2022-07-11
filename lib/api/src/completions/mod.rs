@@ -18,6 +18,11 @@ pub async fn suggestion_ep(payload: Json<Request>) -> Result<Json<Response>, act
     // Adjust payload and parse to query
     let (query, radicals) = request::get_query(request::adjust(payload.into_inner()))?;
 
+    // Eg. when tags get parsed, the query becomes empty
+    if query.query_str.trim().is_empty() {
+        return Ok(Json(Response::default()));
+    }
+
     Ok(Json(get_suggestions(query, radicals)))
 }
 

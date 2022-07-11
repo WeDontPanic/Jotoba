@@ -80,6 +80,14 @@ impl Sense {
     }
 
     #[inline]
+    pub fn has_pos_simple(&self, s: &PosSimple) -> bool {
+        //self.get_pos_simple().contains(s)
+        self.part_of_speech
+            .iter()
+            .any(|p| p.to_pos_simple().contains(s))
+    }
+
+    #[inline]
     pub fn gloss_by_id(&self, id: u8) -> Option<&Gloss> {
         self.glosses.iter().find(|i| i.id == id)
     }

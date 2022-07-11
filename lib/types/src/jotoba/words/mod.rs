@@ -177,6 +177,21 @@ impl Word {
         false
     }
 
+    /// Returns `true` if word has all of the provided part of speech
+    #[inline]
+    pub fn has_all_pos(&self, pos_filter: &[PosSimple]) -> bool {
+        self.has_all_pos_iter(pos_filter.iter())
+    }
+
+    /// Returns `true` if word has all of the provided part of speech
+    #[inline]
+    pub fn has_all_pos_iter<'a, I>(&self, mut pos_filter: I) -> bool
+    where
+        I: Iterator<Item = &'a PosSimple> + 'a,
+    {
+        pos_filter.all(|pos| self.senses.iter().any(|s| s.has_pos_simple(pos)))
+    }
+
     /// Returns `true` if a word has at least one translation for the provided language, or english
     /// if `allow_english` is `true`
     #[inline]

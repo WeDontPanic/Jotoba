@@ -70,7 +70,7 @@ pub(crate) fn get_language(request: &Request) -> Language {
 
 /// Validates the API request payload
 pub(crate) fn validate(payload: &Request) -> Result<(), RestError> {
-    let query_len = real_string_len(&payload.input);
+    let query_len = real_string_len(&payload.input.trim());
     if query_len < 1 || query_len > 37 {
         return Err(RestError::BadRequest.into());
     }
