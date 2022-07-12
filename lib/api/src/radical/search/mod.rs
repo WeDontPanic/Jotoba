@@ -21,24 +21,34 @@ pub async fn search_radical(
 ) -> Result<Json<Response>, actix_web::Error> {
     verify_payload(&mut payload)?;
 
-    let user_lang = request
-        .cookie("default_lang")
-        .and_then(|i| Language::from_str(i.value()).ok())
-        .unwrap_or_default();
+    let rad_res;
+    let mut kanji_res = vec![];
 
-    let res = if !payload.query.is_japanese() {
-        meaning::search(&payload.query, user_lang)
+    if payload.query.is_japanese() {
+        rad_res = jp_search::search(&payload.query);
+        kanji_res = jp_search::similar_kanji_search(&payload.query);
     } else {
-        jp_search::search(&payload.query)
-    };
+        rad_res = meaning::search(&payload.query, user_lang(&request));
+    }
 
-    if res.is_empty() {
+    if rad_res.is_empty() && kanji_res.is_empty() {
         return Ok(Json(Response::default()));
     }
 
+    let radicals = map_radicals(&rad_res);
+
     Ok(Json(Response {
-        radicals: map_radicals(&res),
+        radicals,
+        kanji: kanji_res,
     }))
+}
+
+/// Load the users language from cookies
+fn user_lang(request: &HttpRequest) -> Language {
+    request
+        .cookie("default_lang")
+        .and_then(|i| Language::from_str(i.value()).ok())
+        .unwrap_or_default()
 }
 
 /// Maps radicals by its literals to ResRadical with its stroke count
