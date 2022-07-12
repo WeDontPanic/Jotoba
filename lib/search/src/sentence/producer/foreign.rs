@@ -6,6 +6,8 @@ use crate::{
 };
 use types::jotoba::languages::Language;
 
+use super::filter::FeQotTermsVecFilter;
+
 /// Producer for sentences by foreign keywords
 pub struct ForeignProducer<'a> {
     query: &'a Query,
@@ -26,6 +28,10 @@ impl<'a> ForeignProducer<'a> {
         let query_c = self.query.clone();
         search_task
             .set_result_filter(move |sentence| super::filter::filter_sentence(&query_c, sentence));
+
+        let indexer = search_task.get_index().get_indexer();
+        let vec_filter = FeQotTermsVecFilter::new(&self.query, indexer);
+        search_task.set_vector_filter(move |dv, _| vec_filter.filter(dv));
 
         let query_c = self.query.clone();
         search_task.with_custom_order(move |item| {

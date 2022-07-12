@@ -33,6 +33,7 @@ impl<'a> ForeignSearch<'a> {
         let query_c = self.query.clone();
         task.set_result_filter(move |item| !filter::filter_word(item, &query_c));
 
+        /*
         if !self.query.must_contain.is_empty() {
             let indexer = SearchTask::<foreign::Engine>::get_indexer(Some(self.language)).unwrap();
 
@@ -50,6 +51,7 @@ impl<'a> ForeignSearch<'a> {
                     .any(|d| d_v.vector().has_dim(*d as u32))
             });
         }
+        */
 
         task
     }

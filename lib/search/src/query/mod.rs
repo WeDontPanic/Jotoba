@@ -109,10 +109,11 @@ impl Query {
     pub fn without_search_type_tags(&self) -> String {
         let (new_query, _) = parser::tags::extract_parse(&self.raw_query, |s| {
             let p = parser::tags::parse(&s);
-            if p.is_none() {
-                return (None, false);
+            if p.is_empty() {
+                return (vec![], false);
             }
-            (p, p.unwrap().is_search_type())
+            let retain = p.iter().any(|i| i.is_search_type());
+            (p, retain)
         });
         new_query
     }

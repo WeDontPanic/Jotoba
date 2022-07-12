@@ -1,4 +1,4 @@
-use types::jotoba::sentences::Sentence;
+use types::jotoba::sentences::{tag::Tag, Sentence};
 
 use super::super::storage::sentence::SentenceStorage;
 
@@ -28,6 +28,17 @@ impl<'a> SentenceRetrieve<'a> {
             .into_iter()
             .flatten()
             .copied()
+    }
+
+    /// Returns an iterator over all sentences with given `tag`
+    #[inline]
+    pub fn by_tag<'b>(&'b self, tag: &Tag) -> impl Iterator<Item = &'a Sentence> + 'b {
+        self.storage
+            .tag_map
+            .get(tag)
+            .into_iter()
+            .flatten()
+            .filter_map(move |i| self.by_id(*i))
     }
 
     /// Returns an iterator over all sentences with given `jlpt` level

@@ -4,6 +4,7 @@ use regex::Regex;
 use std::str::FromStr;
 use types::jotoba::{
     search::SearchTarget,
+    sentences,
     words::{misc::Misc, part_of_speech::PosSimple},
 };
 use utils::trim_string_end;
@@ -14,7 +15,7 @@ static TAG_REGEX: Lazy<Regex> = Lazy::new(|| regex::Regex::new("#[a-zA-Z0-9\\-]+
 /// Extracts all tags from the query and returns a new one without tags along with those tags which were extracted
 pub fn extract_parse<'a, F>(inp: &'a str, parse: F) -> (String, Vec<Tag>)
 where
-    F: Fn(&str) -> (Option<Tag>, bool),
+    F: Fn(&str) -> (Vec<Tag>, bool),
 {
     let mut new_out = inp.to_string();
 
@@ -26,10 +27,10 @@ where
     for m in TAG_REGEX.find_iter(inp) {
         let tag_str = m.as_str();
 
-        let (tag, remove) = parse(tag_str);
+        let (parsed_tags, remove) = parse(tag_str);
 
-        if let Some(tag) = tag {
-            tags.push(tag);
+        if !parsed_tags.is_empty() {
+            tags.extend(parsed_tags);
         }
 
         if !remove {
@@ -54,30 +55,39 @@ where
 }
 
 /// Parse a tag from a string
-pub fn parse(s: &str) -> Option<Tag> {
+pub fn parse(s: &str) -> Vec<Tag> {
+    let mut tags: Vec<Tag> = vec![];
+
     if let Some(tag) = s.to_lowercase().strip_prefix("#") {
         match tag {
-            "hidden" | "hide" => return Some(Tag::Hidden),
+            "hidden" | "hide" => tags.push(Tag::Hidden),
             "irrichidan" | "irregularichidan" | "irregular-ichidan" => {
-                return Some(Tag::IrregularIruEru)
+                tags.push(Tag::IrregularIruEru);
             }
             _ => (),
         }
     }
 
     if let Some(tag) = parse_genki_tag(s) {
-        return Some(tag);
-    } else if let Some(tag) = parse_jlpt_tag(s) {
-        return Some(tag);
-    } else if let Some(tag) = parse_search_type(s) {
-        return Some(tag);
-    } else if let Some(pos) = PosSimple::from_str(&s[1..]).ok() {
-        return Some(Tag::PartOfSpeech(pos));
-    } else if let Some(misc) = Misc::from_str(&s[1..]).ok() {
-        return Some(Tag::Misc(misc));
+        tags.push(tag);
+    }
+    if let Some(tag) = parse_jlpt_tag(s) {
+        tags.push(tag);
+    }
+    if let Some(tag) = parse_search_type(s) {
+        tags.push(tag);
+    }
+    if let Some(pos) = PosSimple::from_str(&s[1..]).ok() {
+        tags.push(Tag::PartOfSpeech(pos));
+    }
+    if let Some(misc) = Misc::from_str(&s[1..]).ok() {
+        tags.push(Tag::Misc(misc));
+    }
+    if let Some(sentence_tag) = sentences::Tag::from_str(&s[1..]).ok() {
+        tags.push(Tag::SentenceTag(sentence_tag));
     }
 
-    None
+    tags
 }
 
 /// Returns `Some(u8)` if `s` is a valid N/jlpt-tag

@@ -1,3 +1,7 @@
+pub mod tag;
+
+pub use self::tag::Tag;
+
 use super::languages::Language;
 use bitflags::BitFlag;
 use serde::{Deserialize, Serialize};
@@ -12,6 +16,7 @@ pub struct Sentence {
     pub translations: Vec<Translation>,
     pub jlpt_guess: Option<u8>,
     pub level: Option<i8>,
+    pub tags: Vec<Tag>,
 }
 
 /// A Translation for a sentence
@@ -29,6 +34,7 @@ impl Sentence {
         japanese: String,
         furigana: String,
         translations: Vec<Translation>,
+        tags: Vec<Tag>,
     ) -> Self {
         Sentence {
             id,
@@ -37,6 +43,7 @@ impl Sentence {
             translations,
             jlpt_guess: None,
             level: None,
+            tags,
         }
     }
 
@@ -56,6 +63,12 @@ impl Sentence {
     #[cfg(feature = "jotoba_intern")]
     pub fn get_furigana(&self) -> impl Iterator<Item = japanese::furigana::SentencePartRef> {
         japanese::furigana::parse::from_str(&self.furigana)
+    }
+
+    /// Returns `true` if the sentence has the given tag
+    #[inline]
+    pub fn has_tag(&self, tag: &Tag) -> bool {
+        self.tags.iter().any(|i| i == tag)
     }
 
     /// Returns `true` if the sentence contains a translation for `language`
@@ -91,7 +104,10 @@ impl Sentence {
     }
 }
 
-pub fn lang_mask<I: Iterator<Item = Language>>(langs: I) -> u16 {
+pub fn lang_mask<I>(langs: I) -> u16
+where
+    I: Iterator<Item = Language>,
+{
     let mut lang_mask = BitFlag::<u16>::new();
     for lang in langs {
         let lang: i32 = lang.into();

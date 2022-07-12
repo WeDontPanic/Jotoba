@@ -1,5 +1,6 @@
 use types::jotoba::{
     search::SearchTarget,
+    sentences,
     words::{misc::Misc, part_of_speech::PosSimple},
 };
 
@@ -11,6 +12,7 @@ pub enum Tag {
     Misc(Misc),
     Jlpt(u8),
     GenkiLesson(u8),
+    SentenceTag(sentences::Tag),
     IrregularIruEru,
 
     // Non producer
@@ -92,10 +94,12 @@ impl Tag {
     /// Returns `true` if the tag is [`GenkiLesson`].
     ///
     /// [`GenkiLesson`]: Tag::GenkiLesson
+    #[inline]
     pub fn is_genki_lesson(&self) -> bool {
         matches!(self, Self::GenkiLesson(..))
     }
 
+    #[inline]
     pub fn as_genki_lesson(&self) -> Option<u8> {
         if let Self::GenkiLesson(v) = self {
             Some(*v)
@@ -117,5 +121,23 @@ impl Tag {
     #[must_use]
     pub fn is_hidden(&self) -> bool {
         matches!(self, Self::Hidden)
+    }
+
+    /// Returns `true` if the tag is [`SentenceTag`].
+    ///
+    /// [`SentenceTag`]: Tag::SentenceTag
+    #[must_use]
+    #[inline]
+    pub fn is_sentence_tag(&self) -> bool {
+        matches!(self, Self::SentenceTag(..))
+    }
+
+    #[inline]
+    pub fn as_sentence_tag(&self) -> Option<&sentences::Tag> {
+        if let Self::SentenceTag(v) = self {
+            Some(v)
+        } else {
+            None
+        }
     }
 }

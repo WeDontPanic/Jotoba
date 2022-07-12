@@ -22,11 +22,19 @@ impl<'a> TagProducer<'a> {
         Self { query }
     }
 
+    fn get_producer_tag(&self) -> Option<&Tag> {
+        self.query
+            .tags
+            .iter()
+            .find(|i| i.is_producer() && !i.is_sentence_tag())
+    }
+
     fn find_to<P>(&self, out: &mut P)
     where
         P: CPushable<Item = ResultItem<&'static Word>>,
     {
-        let producer_tag = self.query.tags.iter().find(|i| i.is_producer()).unwrap();
+        // Find first producer tag. All other tags are treated as filter
+        let producer_tag = self.get_producer_tag().unwrap();
         self.find_words(out, producer_tag);
     }
 
@@ -77,7 +85,7 @@ impl<'a> Producer for TagProducer<'a> {
 
     fn should_run(&self, _already_found: usize) -> bool {
         // Only run this producer if there is no query (except tags) and there are tags which can produce output
-        self.query.query_str.is_empty() && self.query.tags.iter().any(|i| i.is_producer())
+        self.query.query_str.is_empty() && self.get_producer_tag().is_some()
     }
 
     fn estimate_to(&self, out: &mut FilteredMaxCounter<<Self::Target as Searchable>::Item>) {

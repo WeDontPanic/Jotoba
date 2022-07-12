@@ -46,7 +46,6 @@ impl SearchEngine for Engine {
         allow_align: bool,
         language: Option<Language>,
     ) -> Option<(Vector, String)> {
-        //let query_str = self.fixed_term(index).unwrap_or(self.get_query_str());
         let query_str = query.to_lowercase();
 
         // search query to document vector

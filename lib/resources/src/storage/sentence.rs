@@ -2,15 +2,18 @@ use std::collections::HashMap;
 
 use intmap::IntMap;
 use serde::{Deserialize, Serialize};
-use types::jotoba::sentences::Sentence;
+use types::jotoba::sentences::{tag::Tag, Sentence};
 
 use super::feature::Feature;
 
 /// Storage for sentence related data
-#[derive(Serialize, Deserialize, Default, Clone)]
+#[derive(Serialize, Deserialize, Clone, Default)]
 pub struct SentenceStorage {
     /// Mapping sentence by its ID
     pub sentences: IntMap<Sentence>,
+
+    /// Mappings of tags to sentences with this tag
+    pub tag_map: HashMap<Tag, Vec<u32>>,
 
     // Search tags
     pub jlpt_map: HashMap<u8, Vec<u32>>,
@@ -26,6 +29,10 @@ impl SentenceStorage {
 
         if !self.sentences.is_empty() {
             out.push(Feature::Sentences);
+        }
+
+        if !self.tag_map.is_empty() {
+            out.push(Feature::SentenceTags);
         }
 
         if !self.jlpt_map.is_empty() {

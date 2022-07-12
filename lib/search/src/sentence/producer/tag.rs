@@ -2,15 +2,15 @@ use crate::{
     engine::{
         result_item::ResultItem,
         search_task::{
-            cpushable::FilteredMaxCounter,
-            pushable::{PushMod, Pushable},
+            cpushable::{CPushable, FilteredMaxCounter},
+            pushable::PushMod,
         },
     },
     executor::{out_builder::OutputBuilder, producer::Producer, searchable::Searchable},
-    query::Query,
+    query::{Query, Tag},
     sentence::Search,
 };
-use types::jotoba::{languages::Language, sentences::Sentence};
+use types::jotoba::sentences::Sentence;
 
 /// Producer for Tags
 pub struct TagProducer<'a> {
@@ -22,34 +22,46 @@ impl<'a> TagProducer<'a> {
         Self { query }
     }
 
-    fn jlpt(&self) -> Option<u8> {
-        self.query
-            .tags
-            .iter()
-            .find(|i| i.is_jlpt())
-            .map(|i| i.as_jlpt().unwrap())
-    }
-
-    fn jlpt_iter(&self, jlpt: u8) -> impl Iterator<Item = &'static Sentence> + 'a {
-        resources::get()
-            .sentences()
-            .ids_by_jlpt(jlpt)
-            .filter_map(|i| resources::get().sentences().by_id(i))
-            .filter(|sentence| {
-                sentence.has_translation(self.query.settings.user_lang)
-                    && (sentence.has_translation(Language::English)
-                        && self.query.settings.show_english)
-            })
-            .take(10000)
-    }
-
     fn find_to<P>(&self, out: &mut P)
     where
-        P: Pushable<Item = ResultItem<&'static Sentence>>,
+        P: CPushable<Item = ResultItem<&'static Sentence>>,
     {
-        if let Some(jlpt) = self.jlpt() {
-            for sentence in self.jlpt_iter(jlpt) {
-                out.push(ResultItem::new(sentence, 0));
+        let tag = self
+            .query
+            .tags
+            .iter()
+            .filter(|i| i.is_jlpt() || i.is_sentence_tag())
+            .find(|i| i.is_producer())
+            .unwrap();
+        self.push_tag(tag, out);
+    }
+
+    pub fn push_tag<P>(&self, tag: &Tag, out: &mut P)
+    where
+        P: CPushable<Item = ResultItem<&'static Sentence>>,
+    {
+        let s_res = resources::get().sentences();
+
+        match tag {
+            Tag::SentenceTag(sentence_tag) => self.push_iter(s_res.by_tag(sentence_tag), out),
+            Tag::Jlpt(jlpt) => self.push_iter(s_res.by_jlpt(*jlpt), out),
+            _ => (),
+        }
+    }
+
+    fn push_iter<P, I>(&self, iter: I, out: &mut P)
+    where
+        P: CPushable<Item = ResultItem<&'static Sentence>>,
+        I: Iterator<Item = &'static Sentence>,
+    {
+        let mut c = 0;
+        for w in iter {
+            let item = ResultItem::new(w, c);
+            if out.push(item) {
+                c += 1;
+                if c >= 1000 {
+                    break;
+                }
             }
         }
     }
@@ -74,7 +86,13 @@ impl<'a> Producer for TagProducer<'a> {
     }
 
     fn should_run(&self, _already_found: usize) -> bool {
-        // Only run for jlpt tags
-        self.query.tags.iter().any(|i| i.is_jlpt())
+        self.query.query_str.is_empty()
+            && self
+                .query
+                .tags
+                .iter()
+                // Only run for jjlpt and sentence tags
+                .filter(|i| i.is_jlpt() || i.is_sentence_tag())
+                .any(|i| i.is_producer())
     }
 }

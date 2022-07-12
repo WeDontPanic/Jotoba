@@ -18,6 +18,7 @@ pub enum Feature {
 
     // Sentences
     SentenceJLPT,
+    SentenceTags,
 
     // Words
     WordIrregularIchidan,

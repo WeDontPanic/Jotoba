@@ -13,6 +13,11 @@ pub struct SentenceDocument {
 }
 
 impl SentenceDocument {
+    #[inline]
+    pub fn new(seq_id: u32, mask: u16) -> Self {
+        Self { seq_id, mask }
+    }
+
     /// Returns true if the given SentenceDocument has a translation for `language`
     #[inline]
     pub fn has_language(&self, language: Language) -> bool {
