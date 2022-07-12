@@ -48,7 +48,6 @@ impl<S: Searchable> SearchExecutor<S> {
         let len = out.p.total_pushed();
         let items: Vec<_> = crate::engine::utils::page_from_pqueue(limit, offset, out.p)
             .into_iter()
-            //.inspect(|i| println!("{:#?}: {}", i.item, i.relevance))
             .map(|i| self.search.to_output_item(i.item))
             .collect();
         SearchResult::with_other_data(items, len, out.output_add)

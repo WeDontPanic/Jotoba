@@ -14,25 +14,25 @@ pub enum Misc {
     Abbreviation,
     #[strum(serialize = "arch", serialize = "archaism")]
     Archaism,
-    #[strum(serialize = "char", serialize = "character")]
+    #[strum(serialize = "char")]
     Character,
     #[strum(serialize = "chn", serialize = "childrenslanguage")]
     ChildrensLanguage,
     #[strum(serialize = "col", serialize = "colloquialism")]
     Colloquialism,
-    #[strum(serialize = "company", serialize = "companyname")]
+    #[strum(serialize = "company")]
     CompanyName,
-    #[strum(serialize = "creat", serialize = "creature")]
+    #[strum(serialize = "creat")]
     Creature,
     #[strum(serialize = "dated")]
     DatedTerm,
-    #[strum(serialize = "dei", serialize = "deity")]
+    #[strum(serialize = "dei")]
     Deity,
     #[strum(serialize = "derog", serialize = "derogatory")]
     Derogatory,
-    #[strum(serialize = "doc", serialize = "document")]
+    #[strum(serialize = "doc")]
     Document,
-    #[strum(serialize = "ev", serialize = "event")]
+    #[strum(serialize = "ev")]
     Event,
     #[strum(serialize = "fam", serialize = "familiarlanguage")]
     FamiliarLanguage,
@@ -40,7 +40,7 @@ pub enum Misc {
     FemaleTermOrLanguage,
     #[strum(serialize = "fict", serialize = "fiction")]
     Fiction,
-    #[strum(serialize = "given", serialize = "givenname")]
+    #[strum(serialize = "given")]
     GivenName,
     #[strum(serialize = "group")]
     Group,
@@ -62,7 +62,7 @@ pub enum Misc {
     MangaSlang,
     #[strum(serialize = "male", serialize = "maleterm")]
     MaleTermOrLanguage,
-    #[strum(serialize = "myth", serialize = "mythology")]
+    #[strum(serialize = "myth")]
     Mythology,
     #[strum(serialize = "net-sl", serialize = "internetslang")]
     InternetSlang,
@@ -74,7 +74,7 @@ pub enum Misc {
     ObscureTerm,
     #[strum(serialize = "on-mim", serialize = "onomatopoeic")]
     OnomatopoeicOrMimeticWord,
-    #[strum(serialize = "organization", serialize = "organizationname")]
+    #[strum(serialize = "organization")]
     OrganizationName,
     #[strum(serialize = "oth", serialize = "other")]
     Other,
@@ -94,15 +94,15 @@ pub enum Misc {
     Quotation,
     #[strum(serialize = "rare")]
     Rare,
-    #[strum(serialize = "relig", serialize = "religion")]
+    #[strum(serialize = "relig")]
     Religion,
     #[strum(serialize = "sens", serialize = "sensitive")]
     Sensitive,
-    #[strum(serialize = "serv", serialize = "service")]
+    #[strum(serialize = "serv")]
     Service,
     #[strum(serialize = "sl", serialize = "slang")]
     Slang,
-    #[strum(serialize = "station", serialize = "railwaystation")]
+    #[strum(serialize = "station")]
     RailwayStation,
     #[strum(serialize = "surname")]
     FamilyOrSurname,

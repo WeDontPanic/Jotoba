@@ -204,7 +204,7 @@ pub fn wc_to_simple_pos(wc: &WordClass) -> Option<PosSimple> {
         WordClass::Noun(_) => PosSimple::Noun,
         WordClass::Pronoun => PosSimple::Pronoun,
         WordClass::Interjection => PosSimple::Interjection,
-        WordClass::Conjungtion => PosSimple::Conjungation,
+        WordClass::Conjungtion => PosSimple::Conjunction,
         WordClass::Suffix => PosSimple::Suffix,
         WordClass::Prefix => PosSimple::Prefix,
         _ => return None,

@@ -2150,7 +2150,7 @@ checksum = "c4886bb938a91e70d3a84efa590f753cf52076149f5963de5727085435f5cbcb"
 [[package]]
 name = "priority_container"
 version = "0.1.1"
-source = "git+https://github.com/JojiiOfficial/PrioContainer/#cd9f4de269176505e0a53b86f34706d76dd5f2c2"
+source = "git+https://github.com/JojiiOfficial/PrioContainer/#c60ec03d8a1f6c415b0bb12fe6d9ce00ea7554eb"
 
 [[package]]
 name = "proc-macro-error"

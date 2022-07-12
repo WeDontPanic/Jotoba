@@ -1,6 +1,5 @@
-use types::jotoba::words::{misc::Misc, part_of_speech::PosSimple, Word};
-
 use super::super::storage::word::WordStorage;
+use types::jotoba::words::{misc::Misc, part_of_speech::PosSimple, Word};
 
 #[derive(Clone, Copy)]
 pub struct WordRetrieve<'a> {
@@ -26,7 +25,6 @@ impl<'a> WordRetrieve<'a> {
             .iter()
             .copied()
             .filter_map(|seq| self.by_sequence(seq))
-            .rev()
     }
 
     /// returns an iterator over all irregular ichidan words

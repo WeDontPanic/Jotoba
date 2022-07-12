@@ -28,8 +28,8 @@ pub enum PosSimple {
     Adverb,
     #[strum(serialize = "auxilary", serialize = "aux")]
     Auxilary,
-    #[strum(serialize = "conjungation", serialize = "conj")]
-    Conjungation,
+    #[strum(serialize = "conjunction", serialize = "conj")]
+    Conjunction,
     #[strum(serialize = "noun", serialize = "n")]
     Noun,
     #[strum(serialize = "prefix", serialize = "pre")]
@@ -80,7 +80,7 @@ impl TryFrom<i32> for PosSimple {
         Ok(match i {
             0 => Self::Adverb,
             1 => Self::Auxilary,
-            2 => Self::Conjungation,
+            2 => Self::Conjunction,
             3 => Self::Noun,
             4 => Self::Prefix,
             5 => Self::Suffix,
@@ -106,7 +106,7 @@ impl Into<i32> for PosSimple {
         match self {
             Self::Adverb => 0,
             Self::Auxilary => 1,
-            Self::Conjungation => 2,
+            Self::Conjunction => 2,
             Self::Noun => 3,
             Self::Prefix => 4,
             Self::Suffix => 5,
@@ -133,7 +133,7 @@ impl PartOfSpeech {
             PartOfSpeech::Adjective(_) | PartOfSpeech::AuxilaryAdj => PosSimple::Adjective,
             PartOfSpeech::Adverb | PartOfSpeech::AdverbTo => PosSimple::Adverb,
             PartOfSpeech::Auxilary => PosSimple::Auxilary,
-            PartOfSpeech::Conjungation => PosSimple::Conjungation,
+            PartOfSpeech::Conjunction => PosSimple::Conjunction,
             PartOfSpeech::Counter => PosSimple::Counter,
             PartOfSpeech::Expr => PosSimple::Expr,
             PartOfSpeech::Interjection => PosSimple::Interjection,
@@ -183,7 +183,7 @@ pub enum PartOfSpeech {
     AuxilaryVerb,
 
     // Other
-    Conjungation,
+    Conjunction,
     Counter,
     Expr,
     Interjection,
@@ -353,7 +353,7 @@ impl Translatable for PartOfSpeech {
             PartOfSpeech::Verb(verb) => verb.get_id(),
             PartOfSpeech::AuxilaryAdj => "Auxilary adjective",
             PartOfSpeech::AuxilaryVerb => "Auxilary Verb",
-            PartOfSpeech::Conjungation => "Conjugation",
+            PartOfSpeech::Conjunction => "Conjunction",
             PartOfSpeech::Unclassified => "Unclassified",
         }
     }
@@ -751,7 +751,7 @@ impl Into<String> for PartOfSpeech {
                 PartOfSpeech::Adverb => "adv",
                 PartOfSpeech::Auxilary => "aux",
                 PartOfSpeech::Counter => "ctr",
-                PartOfSpeech::Conjungation => "conj",
+                PartOfSpeech::Conjunction => "conj",
                 PartOfSpeech::Expr => "exp",
                 PartOfSpeech::Interjection => "int",
                 PartOfSpeech::Numeric => "num",
@@ -786,7 +786,7 @@ impl TryFrom<&str> for PartOfSpeech {
             "int" => PartOfSpeech::Interjection,
             "num" => PartOfSpeech::Numeric,
             "prt" => PartOfSpeech::Particle,
-            "conj" => PartOfSpeech::Conjungation,
+            "conj" => PartOfSpeech::Conjunction,
             "suf" => PartOfSpeech::Suffix,
             "unc" => PartOfSpeech::Unclassified,
             "adv-to" => PartOfSpeech::AdverbTo,

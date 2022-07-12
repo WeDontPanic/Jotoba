@@ -4,8 +4,8 @@ use crate::{
     engine::{
         result_item::ResultItem,
         search_task::{
-            cpushable::FilteredMaxCounter,
-            pushable::{PushMod, Pushable},
+            cpushable::{CPushable, FilteredMaxCounter},
+            pushable::PushMod,
         },
     },
     executor::{out_builder::OutputBuilder, producer::Producer, searchable::Searchable},
@@ -24,7 +24,7 @@ impl<'a> TagProducer<'a> {
 
     fn find_to<P>(&self, out: &mut P)
     where
-        P: Pushable<Item = ResultItem<&'static Word>>,
+        P: CPushable<Item = ResultItem<&'static Word>>,
     {
         let producer_tag = self.query.tags.iter().find(|i| i.is_producer()).unwrap();
         self.find_words(out, producer_tag);
@@ -32,7 +32,7 @@ impl<'a> TagProducer<'a> {
 
     fn find_words<P>(&self, out: &mut P, tag: &Tag)
     where
-        P: Pushable<Item = ResultItem<&'static Word>>,
+        P: CPushable<Item = ResultItem<&'static Word>>,
     {
         let words = resources::get().words();
         match tag {
@@ -46,11 +46,18 @@ impl<'a> TagProducer<'a> {
 
     fn push_iter<P, I>(&self, iter: I, out: &mut P)
     where
-        P: Pushable<Item = ResultItem<&'static Word>>,
+        P: CPushable<Item = ResultItem<&'static Word>>,
         I: Iterator<Item = &'static Word>,
     {
-        for (pos, w) in iter.enumerate().take(1000) {
-            out.push(ResultItem::new(w, pos));
+        let mut c = 0;
+        for w in iter {
+            let item = ResultItem::new(w, c);
+            if out.push(item) {
+                c += 1;
+                if c >= 1000 {
+                    break;
+                }
+            }
         }
     }
 }
