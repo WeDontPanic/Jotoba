@@ -36,7 +36,7 @@ pub fn suggestions(query: &Query, query_str: &str) -> Option<Vec<WordPair>> {
     //let hira_query = query_str.to_hiragana();
     println!("hira query: {hira_query}");
     let jp_engine = indexes::get_suggestions().jp_words();
-    let mut rom_query = SuggestionQuery::new(jp_engine, hira_query);
+    let mut rom_query = SuggestionQuery::new(jp_engine, hira_query.clone());
     if could_be_romaji(query_str) {
         rom_query.weights.total_weight = 0.99;
     } else {
@@ -68,7 +68,7 @@ pub fn suggestions(query: &Query, query_str: &str) -> Option<Vec<WordPair>> {
     ng_ext.term_limit = 10_000;
     //ng_ext.options.weights.total_weight = 0.1;
     ng_ext.options.min_query_len = 5;
-    ng_ext.cust_query = Some(query_str);
+    ng_ext.cust_query = Some(hira_query);
     rom_query.add_extension(ng_ext);
 
     task.set_rel_mod(|i, rel| {

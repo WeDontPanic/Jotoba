@@ -50,7 +50,7 @@ pub fn suggestions(query: &Query, _romaji_query: &str, radicals: &[char]) -> Opt
     ng_ex.options.weights.freq_weight = 0.05;
     ng_ex.query_weigth = 0.7;
     //ng_ex.cust_query = Some(&romaji_query);
-    ng_ex.cust_query = Some(query_str);
+    ng_ex.cust_query = Some(query_str.to_owned());
     main_sugg_query.add_extension(ng_ex);
 
     // Similar terms based on pronounciation
