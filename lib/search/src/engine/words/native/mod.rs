@@ -2,6 +2,7 @@ pub mod k_reading;
 pub mod regex;
 
 use crate::engine::{Indexable, SearchEngine};
+use japanese::JapaneseExt;
 use types::jotoba::languages::Language;
 use types::jotoba::words::Word;
 use vector_space_model2::{DefaultMetadata, Vector};
@@ -51,7 +52,8 @@ impl SearchEngine for Engine {
         Some((vec, fmt_query))
     }
 
+    #[inline]
     fn query_formatted(inp: &str) -> String {
-        japanese::to_halfwidth(inp)
+        japanese::to_halfwidth(inp).to_hiragana()
     }
 }

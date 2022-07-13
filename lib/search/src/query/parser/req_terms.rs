@@ -24,7 +24,10 @@ pub fn parse(inp: &str) -> (String, Vec<String>) {
 
         let s = r.start + 1;
         let e = r.end - 1;
-        terms.push(inp[s..e].to_string().to_lowercase());
+        let term = &inp[s..e].trim();
+        if !term.is_empty() {
+            terms.push(term.to_string().to_lowercase());
+        }
         delta += 2;
     }
 

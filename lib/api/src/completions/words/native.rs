@@ -15,7 +15,7 @@ use romaji::RomajiExt;
 const MAX_SENTENCE_LEN: usize = 15;
 
 /// Get suggestions for foreign search input
-pub fn suggestions(query: &Query, romaji_query: &str, radicals: &[char]) -> Option<Vec<WordPair>> {
+pub fn suggestions(query: &Query, _romaji_query: &str, radicals: &[char]) -> Option<Vec<WordPair>> {
     let jp_engine = indexes::get_suggestions().jp_words();
     let query_str = query.query_str.as_str();
 
@@ -49,7 +49,8 @@ pub fn suggestions(query: &Query, romaji_query: &str, radicals: &[char]) -> Opti
     let mut ng_ex = NGramExtension::with_sim_threshold(jp_engine, 0.5);
     ng_ex.options.weights.freq_weight = 0.05;
     ng_ex.query_weigth = 0.7;
-    ng_ex.cust_query = Some(&romaji_query);
+    //ng_ex.cust_query = Some(&romaji_query);
+    ng_ex.cust_query = Some(query_str);
     main_sugg_query.add_extension(ng_ex);
 
     // Similar terms based on pronounciation

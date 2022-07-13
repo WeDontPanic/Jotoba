@@ -3,7 +3,7 @@ use indexes::sentences::document::SentenceDocument;
 use sentence_reader::output::ParseResult;
 use std::collections::HashSet;
 use types::jotoba::{languages::Language, sentences::Sentence};
-use vector_space_model2::{build::weights::TFIDF, DefaultMetadata, Vector};
+use vector_space_model2::{DefaultMetadata, Vector};
 
 pub struct Engine {}
 
@@ -58,11 +58,21 @@ impl SearchEngine for Engine {
         terms.retain(|w| !index.is_stopword_cust(&w, 10.0).unwrap_or(true));
 
         let terms: Vec<_> = terms.into_iter().map(|i| format_query(&i)).collect();
-        let vec = index.build_vector(&terms, Some(&TFIDF))?;
+        let vec = index.build_vector(&terms, Some(&QueryTFIDF))?;
         Some((vec, query.to_string()))
     }
 }
 
+#[inline]
 fn format_query(inp: &str) -> String {
     japanese::to_halfwidth(inp)
+}
+
+/// Normal TF.IDF (normaized)
+pub struct QueryTFIDF;
+impl vector_space_model2::build::weights::TermWeight for QueryTFIDF {
+    #[inline]
+    fn weight(&self, _current: f32, _tf: usize, df: usize, total_docs: usize) -> f32 {
+        (1.0 + total_docs as f32 / df as f32).log10()
+    }
 }

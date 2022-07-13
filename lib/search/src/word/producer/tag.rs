@@ -55,11 +55,11 @@ impl<'a> TagProducer<'a> {
     fn push_iter<P, I>(&self, iter: I, out: &mut P)
     where
         P: CPushable<Item = ResultItem<&'static Word>>,
-        I: Iterator<Item = &'static Word>,
+        I: Iterator<Item = &'static Word> + DoubleEndedIterator,
     {
         let mut c = 0;
-        for w in iter {
-            let item = ResultItem::new(w, c);
+        for w in iter.rev() {
+            let item = ResultItem::new(w, 1000 - c);
             if out.push(item) {
                 c += 1;
                 if c >= 1000 {

@@ -19,7 +19,9 @@ impl<'a> WordRetrieve<'a> {
     }
 
     /// returns an iterator over all irregular ichidan words
-    pub fn irregular_ichidan<'b>(&'b self) -> impl Iterator<Item = &'a Word> + 'b {
+    pub fn irregular_ichidan<'b>(
+        &'b self,
+    ) -> impl Iterator<Item = &'a Word> + 'b + DoubleEndedIterator {
         self.storage
             .irregular_ichidan
             .iter()
@@ -39,7 +41,10 @@ impl<'a> WordRetrieve<'a> {
 
     /// Returns an iterator over all words with given `jlpt` level
     #[inline]
-    pub fn by_jlpt<'b>(&'b self, jlpt: u8) -> impl Iterator<Item = &'a Word> + 'b {
+    pub fn by_jlpt<'b>(
+        &'b self,
+        jlpt: u8,
+    ) -> impl Iterator<Item = &'a Word> + 'b + DoubleEndedIterator {
         self.storage
             .jlpt_word_map
             .get(&jlpt)
@@ -50,7 +55,10 @@ impl<'a> WordRetrieve<'a> {
 
     /// Returns an iterator over all words with given `misc`
     #[inline]
-    pub fn by_pos_simple<'b>(&'b self, pos: PosSimple) -> impl Iterator<Item = &'a Word> + 'b {
+    pub fn by_pos_simple<'b>(
+        &'b self,
+        pos: PosSimple,
+    ) -> impl Iterator<Item = &'a Word> + 'b + DoubleEndedIterator {
         self.storage
             .pos_map
             .get(&(pos as u8))
@@ -61,7 +69,10 @@ impl<'a> WordRetrieve<'a> {
 
     /// Returns an iterator over all words with given `misc`
     #[inline]
-    pub fn by_misc<'b>(&'b self, misc: Misc) -> impl Iterator<Item = &'a Word> + 'b {
+    pub fn by_misc<'b>(
+        &'b self,
+        misc: Misc,
+    ) -> impl Iterator<Item = &'a Word> + 'b + DoubleEndedIterator {
         self.storage
             .misc_map
             .get(&(misc as u8))

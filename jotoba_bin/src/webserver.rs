@@ -1,4 +1,5 @@
 use actix_files::NamedFile;
+use indexes::storage::suggestions;
 use localization::TranslationDict;
 
 use actix_web::{
@@ -254,8 +255,7 @@ async fn docs(_req: HttpRequest) -> actix_web::Result<NamedFile> {
 pub(crate) fn prepare_data(ccf: &Config) {
     let cf = ccf.clone();
     thread::spawn(move || {
-        indexes::storage::suggestions::load(cf.get_suggestion_sources())
-            .expect("Failed to load suggestions");
+        suggestions::load(cf.get_suggestion_sources()).expect("Failed to load suggestions");
         log::debug!("Suggestions loaded");
     });
 
