@@ -59,8 +59,6 @@ impl<'input> Parser<'input> {
                 .unwrap_or(ParseResult::None);
         }
 
-        let sentence = Sentence::new(sent_parse);
-        println!("{sentence:?}");
-        ParseResult::Sentence(sentence)
+        ParseResult::Sentence(Sentence::new(sent_parse))
     }
 }

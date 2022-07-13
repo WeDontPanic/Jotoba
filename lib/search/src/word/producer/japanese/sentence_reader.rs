@@ -1,3 +1,4 @@
+use japanese::JapaneseExt;
 use sentence_reader::{output::ParseResult, Parser, Part, Sentence};
 use types::jotoba::words::{part_of_speech::PosSimple, Word};
 
@@ -90,7 +91,7 @@ impl<'a> Producer for SReaderProducer<'a> {
             }
 
             out.output_add.inflection = InflectionInformation::from_part(word);
-            out.output_add.raw_query = word.get_normalized();
+            out.output_add.raw_query = word.get_inflected();
             out.output_add.sentence = Some(SentenceInfo {
                 parts: Some(sentence.clone()),
                 index: self.query.word_index,
@@ -160,9 +161,25 @@ fn furigana_by_reading(morpheme: &str, part: &sentence_reader::Part) -> Option<S
 }
 
 fn furi_order(i: &Word, pos: &Option<PosSimple>, morph: &str) -> usize {
-    let mut score: usize = 100;
-    if i.get_reading().reading != morph {
-        score = 0;
+    let mut score: usize = 0;
+
+    let reading = &i.get_reading().reading;
+    let reading_len = utils::real_string_len(reading);
+
+    if reading == morph {
+        score += 100;
+    }
+
+    if reading_len == 1 && reading.is_kanji() {
+        let kanji = reading.chars().next().unwrap();
+        let kana = i.get_kana();
+        let norm = indexes::get()
+            .kanji()
+            .reading_fre()
+            .norm_reading_freq(kanji, kana);
+        if let Some(norm) = norm {
+            score += (norm * 10.0) as usize;
+        }
     }
 
     if let Some(pos) = pos {

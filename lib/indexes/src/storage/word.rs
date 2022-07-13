@@ -1,6 +1,6 @@
 use super::utils;
 use crate::{
-    kanji_reading,
+    kanji,
     regex::RegexSearchIndex,
     relevance::RelevanceIndex,
     words::{ForeignIndex, NativeIndex},
@@ -23,7 +23,7 @@ pub struct WordStore {
     regex: RegexSearchIndex,
     relevance: HashMap<Language, RelevanceIndex>,
 
-    k_reading: kanji_reading::Index,
+    k_reading: kanji::reading::Index,
 }
 
 impl WordStore {
@@ -32,7 +32,7 @@ impl WordStore {
         native: NativeIndex,
         regex: RegexSearchIndex,
         relevance: HashMap<Language, RelevanceIndex>,
-        k_reading: kanji_reading::Index,
+        k_reading: kanji::reading::Index,
     ) -> Self {
         Self {
             foreign,
@@ -68,7 +68,7 @@ impl WordStore {
         utils::check_lang_map(&self.foreign)
     }
 
-    pub fn k_reading(&self) -> &kanji_reading::Index {
+    pub fn k_reading(&self) -> &kanji::reading::Index {
         &self.k_reading
     }
 }
@@ -84,7 +84,7 @@ pub(crate) fn load<P: AsRef<Path>>(path: P) -> Result<WordStore, Box<dyn Error +
         "Loaded relevance for: {:?}",
         relevance.keys().collect::<Vec<_>>()
     );
-    let k_reading = kanji_reading::Index::open(path.as_ref().join(KANJI_READING_INDEX))?;
+    let k_reading = kanji::reading::Index::open(path.as_ref().join(KANJI_READING_INDEX))?;
     debug!("Loading indexes sync took: {:?}", start.elapsed());
     Ok(WordStore::new(foreign, native, regex, relevance, k_reading))
 }
@@ -113,7 +113,7 @@ pub(crate) fn load<P: AsRef<Path> + Send + Sync>(
             relevance = Some(load_rel_index(path.as_ref()));
         });
         s.spawn(|_| {
-            k_reading = Some(kanji_reading::Index::open(
+            k_reading = Some(kanji::reading::Index::open(
                 path.as_ref().join(KANJI_READING_INDEX),
             ));
         });

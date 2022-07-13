@@ -49,6 +49,7 @@ pub fn japanese_search_order(item: SortItem<&'static Word>, original_query: Opti
     let query_str = japanese::to_halfwidth(item.query());
 
     let reading = japanese::to_halfwidth(&word.get_reading().reading);
+    let reading_len = utils::real_string_len(&reading);
     let kana = japanese::to_halfwidth(&word.reading.kana.reading);
 
     if reading == *query_str || kana == *query_str {
@@ -81,6 +82,17 @@ pub fn japanese_search_order(item: SortItem<&'static Word>, original_query: Opti
 
     if reading.starts_with(&query_str) || (query_str.is_kana() && reading.starts_with(&query_str)) {
         score += 200;
+    }
+
+    if reading_len == 1 && reading.is_kanji() {
+        let kanji = reading.chars().next().unwrap();
+        let norm = indexes::get()
+            .kanji()
+            .reading_fre()
+            .norm_reading_freq(kanji, word.get_kana());
+        if let Some(read_freq) = norm {
+            score += (read_freq * 100.0) as usize;
+        }
     }
 
     // If alternative reading matches query exactly

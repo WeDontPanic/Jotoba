@@ -1136,7 +1136,7 @@ msgid "Abbreviation"
 msgstr "Rövidítés"
 
 msgid "Archaism"
-msgstr ""
+msgstr "Régies kifejezés"
 
 msgid "Character"
 msgstr "Karakter"

@@ -1,3 +1,4 @@
+pub mod kanji;
 pub mod name;
 pub mod radical;
 pub mod sentence;
@@ -7,7 +8,10 @@ pub mod word;
 
 use once_cell::sync::OnceCell;
 use std::{error::Error, path::Path};
-use {name::NameStore, radical::RadicalStore, sentence::SentenceStore, word::WordStore};
+use {
+    kanji::KanjiStore, name::NameStore, radical::RadicalStore, sentence::SentenceStore,
+    word::WordStore,
+};
 
 /// In-memory store for all indexes
 pub(crate) static INDEX_STORE: OnceCell<IndexStore> = OnceCell::new();
@@ -18,6 +22,7 @@ pub struct IndexStore {
     sentence: SentenceStore,
     name: NameStore,
     radical: RadicalStore,
+    kanji: KanjiStore,
 }
 
 impl IndexStore {
@@ -39,6 +44,11 @@ impl IndexStore {
     #[inline(always)]
     pub fn radical(&self) -> &RadicalStore {
         &self.radical
+    }
+
+    #[inline(always)]
+    pub fn kanji(&self) -> &KanjiStore {
+        &self.kanji
     }
 
     /// Returns `true` if all indexes are properly loaded
@@ -94,10 +104,14 @@ pub fn load_raw<P: AsRef<Path>>(
     log::debug!("Loading radical index");
     let radical = radical::load(index_folder.as_ref())?;
 
+    log::debug!("Loading kanji reading frequency index");
+    let kanji = kanji::load(index_folder.as_ref())?;
+
     Ok(IndexStore {
         word,
         sentence,
         name,
         radical,
+        kanji,
     })
 }
