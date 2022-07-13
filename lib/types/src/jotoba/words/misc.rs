@@ -125,7 +125,7 @@ impl Translatable for Misc {
     fn get_id(&self) -> &'static str {
         match self {
             Misc::Abbreviation => "Abbreviation",
-            Misc::Archaism => "Anarchism",
+            Misc::Archaism => "Archaism",
             Misc::Character => "Character",
             Misc::ChildrensLanguage => "Childrens language",
             Misc::Colloquialism => "Colloquialism",

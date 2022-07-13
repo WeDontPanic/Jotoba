@@ -1144,7 +1144,7 @@ msgstr ""
 msgid "Abbreviation"
 msgstr ""
 
-msgid "Anarchism"
+msgid "Archaism"
 msgstr ""
 
 msgid "Character"

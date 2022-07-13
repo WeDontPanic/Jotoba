@@ -1135,8 +1135,8 @@ msgstr "ritkán használt kanji forma"
 msgid "Abbreviation"
 msgstr "Rövidítés"
 
-msgid "Anarchism"
-msgstr "Rendbomlás"
+msgid "Archaism"
+msgstr ""
 
 msgid "Character"
 msgstr "Karakter"

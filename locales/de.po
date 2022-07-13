@@ -1142,8 +1142,8 @@ msgstr "Selten verwendete Kanjiform"
 msgid "Abbreviation"
 msgstr "Abkürzung"
 
-msgid "Anarchism"
-msgstr "Anarchismus"
+msgid "Archaism"
+msgstr "Archaismus"
 
 msgid "Character"
 msgstr "Charakter"
