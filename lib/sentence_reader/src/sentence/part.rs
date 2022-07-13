@@ -1,7 +1,10 @@
 use super::{inflection, owned_morpheme::OwnedMorpheme, FromMorphemes};
 use igo_unidic::{Morpheme, WordClass};
 use japanese::{furigana, CharType, JapaneseExt};
-use types::jotoba::words::{inflection::Inflection, part_of_speech::PosSimple};
+use types::{
+    api::app::search::responses::words::SentencePart,
+    jotoba::words::{inflection::Inflection, part_of_speech::PosSimple},
+};
 
 /// A single word within a sentence. This already contains all inflection parts
 #[derive(Debug, Clone, PartialEq)]
@@ -166,6 +169,10 @@ impl<'b> FromMorphemes<'static, 'b> for Part {
 fn merge_furigana(src: &str, furi: &str) -> String {
     let mut furi_out = String::with_capacity(furi.len());
     let mut kana_paths = japanese::all_words_with_ct(src, CharType::Kana).into_iter();
+    let mut kanji_paths = japanese::all_words_with_ct(src, CharType::Kanji)
+        .into_iter()
+        .map(|i| i.chars().collect::<Vec<_>>())
+        .flatten();
 
     for furi_part in furigana::parse::from_str(furi) {
         if furi_part.kanji.is_none() {
@@ -175,22 +182,24 @@ fn merge_furigana(src: &str, furi: &str) -> String {
             continue;
         }
 
-        furi_out.push_str(&furi_part.encode());
+        let mut cloned = furi_part.to_owned();
+        if let Some(k) = furi_part.kanji {
+            cloned.kanji = Some(k.chars().map(|_| kanji_paths.next().unwrap()).collect());
+        }
+        furi_out.push_str(&cloned.encode());
     }
 
     furi_out
 }
 
-impl Into<types::api::app::search::responses::words::SentencePart> for Part {
+impl Into<SentencePart> for Part {
     #[inline]
-    fn into(self) -> types::api::app::search::responses::words::SentencePart {
+    fn into(self) -> SentencePart {
         let furigana = self.furigana().map(|i| i.to_string());
         let position = self.pos();
         let inflected = self.get_inflected();
         let word_class = self.word_class();
-        types::api::app::search::responses::words::SentencePart::new(
-            furigana, position, inflected, word_class,
-        )
+        SentencePart::new(furigana, position, inflected, word_class)
     }
 }
 

@@ -60,6 +60,7 @@ impl<'input> Parser<'input> {
         }
 
         let sentence = Sentence::new(sent_parse);
+        println!("{sentence:?}");
         ParseResult::Sentence(sentence)
     }
 }

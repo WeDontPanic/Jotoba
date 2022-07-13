@@ -97,6 +97,14 @@ impl<'a> SentencePartRef<'a> {
     pub fn is_empty(&self) -> bool {
         self.kana.trim().is_empty()
     }
+
+    #[inline]
+    pub fn to_owned(&self) -> SentencePart {
+        SentencePart {
+            kana: self.kana.to_owned(),
+            kanji: self.kanji.map(|i| i.to_owned()),
+        }
+    }
 }
 
 /// Check wether the passed furigana pairs are representing the given kana text or not
