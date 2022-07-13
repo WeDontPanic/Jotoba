@@ -124,7 +124,7 @@ pub(crate) fn map_morph_to_rule(pos: usize, morph: &Morpheme<'_, '_>) -> Option<
         return Some("たい");
     }
 
-    if morph.lexeme == "た" || morph.lexeme == "だ" {
+    if (morph.lexeme == "た" || morph.lexeme == "だ") && morph.surface != "に" {
         return Some("た");
     }
 

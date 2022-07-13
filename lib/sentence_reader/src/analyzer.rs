@@ -91,6 +91,13 @@ fn get_rules() -> RuleSet {
     // Exceptions
     rules.push(Rule::new("いただき", &["ます"]));
 
+    // ぬ
+    //rules.push(Rule::new("V", &["ます"]));
+    rules.push(Rule::new("ん", end));
+
+    // だった
+    rules.push(Rule::new("た", &["た"]));
+
     // Generation/Root
     rules.push(Rule::new(
         "V",
@@ -115,6 +122,8 @@ fn get_rules() -> RuleSet {
             "させる",
             // the さ of される
             "さ",
+            // ぬ
+            "ん",
         ],
     ));
 

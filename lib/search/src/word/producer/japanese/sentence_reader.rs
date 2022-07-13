@@ -82,10 +82,9 @@ impl<'a> Producer for SReaderProducer<'a> {
         if let ParseResult::Sentence(mut sentence) = self.parsed.clone() {
             set_furigana(&mut sentence);
 
-            let word = self.sentence_word().unwrap();
-
             self.snt_task_normalized().unwrap().find_to(out);
 
+            let word = self.sentence_word().unwrap();
             if word.get_inflected() != word.get_normalized() {
                 self.snt_task_infl().unwrap().find_to(out);
             }
