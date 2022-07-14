@@ -346,10 +346,12 @@ fn check() -> bool {
         return false;
     }
 
+    /*
     if !indexes::get_suggestions().check() {
         log::error!("Not all suggestion indexes are available!");
         //return false;
     }
+    */
 
     true
 }
