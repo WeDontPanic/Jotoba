@@ -152,7 +152,11 @@ fn furigana_by_reading(morpheme: &str, part: &sentence_reader::Part) -> Option<S
     let morph = morpheme.to_string();
     st.with_custom_order(move |item| furi_order(item.item(), &pos, &morph));
 
+    let morph = morpheme.to_string();
+    st.set_result_filter(move |i| i.has_reading(&morph));
+
     let found = st.find();
+    println!("res: {found:#?}");
     word_storage
         .by_sequence(found.get(0)?.item.sequence)?
         .furigana

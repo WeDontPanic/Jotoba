@@ -90,8 +90,10 @@ impl Part {
                 if !furi.contains('|') {
                     out.push_str(&furi);
                 } else {
-                    has_furigana = true;
-                    out.push_str(&merge_furigana(&morpheme.surface, &furi));
+                    if let Some(furi) = merge_furigana(&morpheme.surface, &furi) {
+                        has_furigana = true;
+                        out.push_str(&furi);
+                    }
                 }
             } else {
                 out.push_str(&morpheme.surface);
@@ -166,7 +168,7 @@ impl<'b> FromMorphemes<'static, 'b> for Part {
 ///
 /// Example:
 /// src: "行った" furi: "[行|い]く" => [行|い]った
-fn merge_furigana(src: &str, furi: &str) -> String {
+fn merge_furigana(src: &str, furi: &str) -> Option<String> {
     let mut furi_out = String::with_capacity(furi.len());
     let mut kana_paths = japanese::all_words_with_ct(src, CharType::Kana).into_iter();
     let mut kanji_paths = japanese::all_words_with_ct(src, CharType::Kanji)
@@ -184,12 +186,16 @@ fn merge_furigana(src: &str, furi: &str) -> String {
 
         let mut cloned = furi_part.to_owned();
         if let Some(k) = furi_part.kanji {
-            cloned.kanji = Some(k.chars().map(|_| kanji_paths.next().unwrap()).collect());
+            let kanji = k
+                .chars()
+                .map(|_| kanji_paths.next())
+                .collect::<Option<String>>()?;
+            cloned.kanji = Some(kanji);
         }
         furi_out.push_str(&cloned.encode());
     }
 
-    furi_out
+    Some(furi_out)
 }
 
 impl Into<SentencePart> for Part {
