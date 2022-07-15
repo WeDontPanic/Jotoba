@@ -1,7 +1,10 @@
 pub mod output;
 
 use crate::engine::{Indexable, SearchEngine, SearchTask};
-use indexes::{metadata::Metadata, words::document::FWordDoc};
+use indexes::{
+    metadata::Metadata,
+    words::{document::FWordDoc, ForeignIndex},
+};
 use types::jotoba::languages::Language;
 use utils::to_option;
 use vector_space_model2::{build::weights::TFIDF, Vector};
@@ -13,6 +16,7 @@ pub struct Engine {}
 impl Indexable for Engine {
     type Metadata = Metadata;
     type Document = FWordDoc;
+    type Index = ForeignIndex;
 
     #[inline]
     fn get_index(

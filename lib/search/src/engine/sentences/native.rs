@@ -1,5 +1,5 @@
 use crate::engine::{Indexable, SearchEngine};
-use indexes::sentences::document::SentenceDocument;
+use indexes::sentences::{document::SentenceDocument, NativeIndex};
 use sentence_reader::output::ParseResult;
 use std::collections::HashSet;
 use types::jotoba::{languages::Language, sentences::Sentence};
@@ -10,6 +10,7 @@ pub struct Engine {}
 impl Indexable for Engine {
     type Metadata = DefaultMetadata;
     type Document = SentenceDocument;
+    type Index = NativeIndex;
 
     #[inline]
     fn get_index(

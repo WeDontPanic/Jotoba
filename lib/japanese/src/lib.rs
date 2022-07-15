@@ -41,6 +41,9 @@ pub trait JapaneseExt {
     /// Returns true if self is written in katakana
     fn is_katakana(&self) -> bool;
 
+    /// Returns true if self is written in katakana
+    fn has_katakana(&self) -> bool;
+
     /// Returns true if self is written in hiragana
     fn is_hiragana(&self) -> bool;
 
@@ -128,6 +131,11 @@ impl JapaneseExt for char {
     #[inline]
     fn has_japanese(&self) -> bool {
         self.is_japanese()
+    }
+
+    #[inline]
+    fn has_katakana(&self) -> bool {
+        self.is_katakana()
     }
 
     #[inline]
@@ -315,6 +323,11 @@ impl JapaneseExt for str {
     #[inline]
     fn is_katakana(&self) -> bool {
         self.chars().all(|s| s.is_katakana())
+    }
+
+    #[inline]
+    fn has_katakana(&self) -> bool {
+        self.chars().any(|s| s.is_katakana())
     }
 
     #[inline]

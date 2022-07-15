@@ -84,6 +84,7 @@ fn names() -> bool {
 
     let transcr_index = indexes::get().name().foreign();
     for i in transcr_index
+        .index()
         .get_vector_store()
         .iter()
         .map(|i| i.document.clone().into_iter())

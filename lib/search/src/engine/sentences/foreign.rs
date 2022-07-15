@@ -1,5 +1,8 @@
 use crate::engine::{Indexable, SearchEngine};
-use indexes::{metadata::Metadata, sentences::document::SentenceDocument};
+use indexes::{
+    metadata::Metadata,
+    sentences::{document::SentenceDocument, ForeignIndex},
+};
 use types::jotoba::{languages::Language, sentences::Sentence};
 use vector_space_model2::Vector;
 
@@ -8,6 +11,7 @@ pub struct Engine {}
 impl Indexable for Engine {
     type Metadata = Metadata;
     type Document = SentenceDocument;
+    type Index = ForeignIndex;
 
     #[inline]
     fn get_index(

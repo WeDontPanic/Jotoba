@@ -24,6 +24,7 @@ impl<'a> NameProducer<'a> {
 
     fn foreign_task(&self) -> SearchTask<foreign::Engine> {
         SearchTask::<foreign::Engine>::new(&self.query.query_str)
+            .threshold((0.3 * 100000.0) as usize)
     }
 }
 
