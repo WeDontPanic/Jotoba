@@ -4,8 +4,13 @@ use crate::{
     executor::{producer::Producer, searchable::Searchable},
     query::Query,
 };
-use producer::{kanji_reading::KreadingProducer, names::NameProducer, sequence::SeqProducer};
+use producer::{
+    foreign::ForeignProducer, kanji_reading::KreadingProducer, native::NativeProducer,
+    sequence::SeqProducer,
+};
 use types::jotoba::names::Name;
+
+use self::producer::native::split::SplitProducer;
 
 pub struct Search<'a> {
     query: &'a Query,
@@ -17,7 +22,9 @@ impl<'a> Search<'a> {
         let mut producer: Vec<Box<dyn Producer<Target = Self>>> = vec![];
         producer.push(Box::new(SeqProducer::new(query)));
         producer.push(Box::new(KreadingProducer::new(query)));
-        producer.push(Box::new(NameProducer::new(query)));
+        producer.push(Box::new(ForeignProducer::new(query)));
+        producer.push(Box::new(NativeProducer::new(query)));
+        producer.push(Box::new(SplitProducer::new(query)));
         Self { query, producer }
     }
 }

@@ -1,9 +1,9 @@
-use japanese::JapaneseExt;
+use japanese::{furigana::SentencePartRef, JapaneseExt};
 use sentence_reader::{output::ParseResult, Parser, Part, Sentence};
 use types::jotoba::words::{part_of_speech::PosSimple, Word};
 
 use crate::{
-    engine::{search_task::cpushable::FilteredMaxCounter, words::native, SearchTask},
+    engine::{self, search_task::cpushable::FilteredMaxCounter, words::native, SearchTask},
     executor::{out_builder::OutputBuilder, producer::Producer, searchable::Searchable},
     query::{Query, QueryLang},
     word::{
@@ -144,26 +144,46 @@ fn set_furigana(s: &mut Sentence) {
 
 /// Returns furigana of the given `morpheme` if available
 fn furigana_by_reading(morpheme: &str, part: &sentence_reader::Part) -> Option<String> {
+    word_furi(morpheme, part).or_else(|| name_furi(morpheme))
+}
+
+fn name_furi(morpheme: &str) -> Option<String> {
+    let mut task = SearchTask::<engine::names::native::Engine>::new(morpheme).limit(1);
+    let morpheme_c = morpheme.to_string();
+    task.set_result_filter(move |n| n.get_reading() == morpheme_c && n.has_kanji());
+    let res = task.find();
+
+    if res.total_items != 1 {
+        return None;
+    }
+
+    let name = res.get(0).unwrap().item;
+    let kanji = name.kanji.as_ref().unwrap();
+    Some(SentencePartRef::with_kanji(&name.kana, kanji).encode())
+}
+
+fn word_furi(morpheme: &str, part: &sentence_reader::Part) -> Option<String> {
     let word_storage = resources::get().words();
 
     let mut st = SearchTask::<native::Engine>::new(morpheme).limit(10);
 
     let pos = sentence_reader::part::wc_to_simple_pos(&part.word_class_raw());
     let morph = morpheme.to_string();
-    st.with_custom_order(move |item| furi_order(item.item(), &pos, &morph));
+    st.with_custom_order(move |item| word_furi_order(item.item(), &pos, &morph));
 
     let morph = morpheme.to_string();
     st.set_result_filter(move |i| i.has_reading(&morph));
 
     let found = st.find();
-    println!("res: {found:#?}");
-    word_storage
-        .by_sequence(found.get(0)?.item.sequence)?
-        .furigana
-        .clone()
+
+    found.get(0).and_then(|word| {
+        word_storage
+            .by_sequence(word.item.sequence)
+            .and_then(|i| i.furigana.clone())
+    })
 }
 
-fn furi_order(i: &Word, pos: &Option<PosSimple>, morph: &str) -> usize {
+fn word_furi_order(i: &Word, pos: &Option<PosSimple>, morph: &str) -> usize {
     let mut score: usize = 0;
 
     let reading = &i.get_reading().reading;

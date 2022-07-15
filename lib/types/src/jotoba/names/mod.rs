@@ -52,4 +52,14 @@ impl Name {
             .map(|i| i.iter().any(|j| !j.is_gender()))
             .unwrap_or(false)
     }
+
+    #[inline]
+    pub fn get_reading(&self) -> &str {
+        self.kanji.as_ref().unwrap_or(&self.kana)
+    }
+
+    #[inline]
+    pub fn has_kanji(&self) -> bool {
+        self.kanji.is_some()
+    }
 }

@@ -1,25 +1,17 @@
 use crate::{
-    engine::{
-        names::{foreign, native},
-        search_task::cpushable::FilteredMaxCounter,
-        SearchTask,
-    },
+    engine::{names::foreign, search_task::cpushable::FilteredMaxCounter, SearchTask},
     executor::{out_builder::OutputBuilder, producer::Producer, searchable::Searchable},
     name::Search,
     query::{Query, QueryLang},
 };
 
-pub struct NameProducer<'a> {
+pub struct ForeignProducer<'a> {
     query: &'a Query,
 }
 
-impl<'a> NameProducer<'a> {
+impl<'a> ForeignProducer<'a> {
     pub fn new(query: &'a Query) -> Self {
         Self { query }
-    }
-
-    fn jp_task(&self) -> SearchTask<native::Engine> {
-        SearchTask::<native::Engine>::new(&self.query.query_str)
     }
 
     fn foreign_task(&self) -> SearchTask<foreign::Engine> {
@@ -27,7 +19,7 @@ impl<'a> NameProducer<'a> {
     }
 }
 
-impl<'a> Producer for NameProducer<'a> {
+impl<'a> Producer for ForeignProducer<'a> {
     type Target = Search<'a>;
 
     fn produce(
@@ -37,18 +29,14 @@ impl<'a> Producer for NameProducer<'a> {
             <Self::Target as Searchable>::ResAdd,
         >,
     ) {
-        if self.query.q_lang == QueryLang::Japanese {
-            self.jp_task().find_to(out);
-        } else {
-            self.foreign_task().find_to(out);
-        }
+        self.foreign_task().find_to(out);
+    }
+
+    fn should_run(&self, _already_found: usize) -> bool {
+        self.query.q_lang != QueryLang::Japanese
     }
 
     fn estimate_to(&self, out: &mut FilteredMaxCounter<<Self::Target as Searchable>::Item>) {
-        if self.query.q_lang == QueryLang::Japanese {
-            self.jp_task().estimate_to(out);
-        } else {
-            self.foreign_task().estimate_to(out);
-        }
+        self.foreign_task().estimate_to(out);
     }
 }
