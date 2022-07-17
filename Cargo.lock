@@ -295,7 +295,7 @@ dependencies = [
  "ids_parser",
  "indexes",
  "intmap",
- "itertools",
+ "itertools 0.10.3",
  "japanese",
  "jpeudex",
  "leptess",
@@ -307,12 +307,12 @@ dependencies = [
  "rayon",
  "regex",
  "resources",
- "romaji",
  "search",
  "sentence_reader",
  "serde",
  "types",
  "utils",
+ "wana_kana",
 ]
 
 [[package]]
@@ -735,7 +735,7 @@ dependencies = [
  "clap",
  "criterion-plot",
  "csv",
- "itertools",
+ "itertools 0.10.3",
  "lazy_static",
  "num-traits",
  "oorandom",
@@ -757,7 +757,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d00996de9f2f7559f7f4dc286073197f83e92256a59ed395f9aac01fe717da57"
 dependencies = [
  "cast 0.2.7",
- "itertools",
+ "itertools 0.10.3",
 ]
 
 [[package]]
@@ -1115,7 +1115,7 @@ dependencies = [
  "actix-web",
  "config",
  "error",
- "itertools",
+ "itertools 0.10.3",
  "japanese",
  "localization",
  "log",
@@ -1538,6 +1538,15 @@ checksum = "879d54834c8c76457ef4293a689b2a8c59b076067ad77b15efafbb05f92a592b"
 
 [[package]]
 name = "itertools"
+version = "0.8.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f56a2d0bc861f9165be4eb3442afd3c236d8a98afd426f65d92324ae1091a484"
+dependencies = [
+ "either",
+]
+
+[[package]]
+name = "itertools"
 version = "0.10.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a9a9d19fa1e79b6215ff29b9d6880b706147f16e9b1dbb1e4e5947b5b02bc5e3"
@@ -1561,12 +1570,12 @@ checksum = "112c678d4050afce233f4f2852bb2eb519230b3cf12f33585275537d7e41578d"
 name = "japanese"
 version = "0.1.0"
 dependencies = [
- "itertools",
+ "itertools 0.10.3",
  "japanese",
  "resources",
- "romaji",
  "test-case",
  "utils",
+ "wana_kana",
 ]
 
 [[package]]
@@ -1857,7 +1866,7 @@ version = "0.1.0"
 dependencies = [
  "comrak",
  "inotify",
- "itertools",
+ "itertools 0.10.3",
  "once_cell",
  "utils",
 ]
@@ -2377,7 +2386,7 @@ checksum = "ef88d8c2492d7266e264b31e0ffcf1149d5ba183bccd3abaf1483ee905fc85de"
 dependencies = [
  "base64",
  "bytecount",
- "itertools",
+ "itertools 0.10.3",
  "md5",
  "nom 7.1.1",
 ]
@@ -2452,7 +2461,7 @@ dependencies = [
  "error",
  "indexes",
  "intmap",
- "itertools",
+ "itertools 0.10.3",
  "japanese",
  "localization",
  "log",
@@ -3073,7 +3082,7 @@ name = "types"
 version = "0.1.0"
 dependencies = [
  "bitflags 0.1.0",
- "itertools",
+ "itertools 0.10.3",
  "japanese",
  "jp_inflections",
  "localization",
@@ -3172,7 +3181,7 @@ dependencies = [
 name = "utils"
 version = "0.1.0"
 dependencies = [
- "itertools",
+ "itertools 0.10.3",
  "rand",
  "sabi",
 ]
@@ -3213,7 +3222,7 @@ dependencies = [
  "byteorder",
  "compressed_vec",
  "indexed_file",
- "itertools",
+ "itertools 0.10.3",
  "serde",
 ]
 
@@ -3238,6 +3247,17 @@ dependencies = [
  "same-file",
  "winapi",
  "winapi-util",
+]
+
+[[package]]
+name = "wana_kana"
+version = "2.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "5422b401e00b7e3d45c55756298aeda568afe57b0380406d3530d64c243d8c00"
+dependencies = [
+ "fnv",
+ "itertools 0.8.2",
+ "lazy_static",
 ]
 
 [[package]]

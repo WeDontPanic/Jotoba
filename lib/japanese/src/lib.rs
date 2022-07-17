@@ -2,8 +2,6 @@ pub mod furigana;
 pub mod guessing;
 pub mod radicals;
 
-pub use romaji;
-
 use itertools::Itertools;
 use std::{iter, ops::Range};
 use utils;
@@ -40,6 +38,9 @@ pub trait JapaneseExt {
 
     /// Returns true if self is written in katakana
     fn is_katakana(&self) -> bool;
+
+    /// Returns true if self is written in katakana
+    fn has_katakana(&self) -> bool;
 
     /// Returns true if self is written in hiragana
     fn is_hiragana(&self) -> bool;
@@ -131,6 +132,11 @@ impl JapaneseExt for char {
     }
 
     #[inline]
+    fn has_katakana(&self) -> bool {
+        self.is_katakana()
+    }
+
+    #[inline]
     fn is_katakana(&self) -> bool {
         (*self) >= '\u{30A0}' && (*self) <= '\u{30FF}'
     }
@@ -170,7 +176,7 @@ impl JapaneseExt for char {
 
     #[inline]
     fn to_hiragana(&self) -> String {
-        romaji::RomajiExt::to_hiragana(self.to_string().as_str())
+        wana_kana::to_hiragana::to_hiragana(self.to_string().as_str())
     }
 
     #[inline]
@@ -318,6 +324,11 @@ impl JapaneseExt for str {
     }
 
     #[inline]
+    fn has_katakana(&self) -> bool {
+        self.chars().any(|s| s.is_katakana())
+    }
+
+    #[inline]
     fn is_hiragana(&self) -> bool {
         self.chars().all(|s| s.is_hiragana())
     }
@@ -339,7 +350,7 @@ impl JapaneseExt for str {
 
     #[inline]
     fn to_hiragana(&self) -> String {
-        romaji::RomajiExt::to_hiragana(self)
+        wana_kana::to_hiragana::to_hiragana(self)
     }
 
     #[inline]
@@ -387,10 +398,16 @@ impl JapaneseExt for str {
     }
 }
 
+pub fn to_hira_fmt(inp: &str) -> String {
+    let inp = inp.to_lowercase();
+    let i = inp.replace("nn", "ん");
+    wana_kana::to_hiragana::to_hiragana(&i)
+}
+
 /// Returns `true` if `romaji` is a prefix of `hira` where romaji is romaji text and `hira` is text written in hiragana
 #[inline]
 pub fn romaji_prefix(romaji: &str, hira: &str) -> bool {
-    romaji::RomajiExt::to_romaji(hira)
+    wana_kana::to_romaji::to_romaji(hira)
         .to_lowercase()
         .starts_with(&romaji.to_lowercase())
 }

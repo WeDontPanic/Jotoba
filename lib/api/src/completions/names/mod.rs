@@ -4,6 +4,7 @@ use autocompletion::suggest::{
 };
 use japanese::JapaneseExt;
 use search::query::{Query, QueryLang};
+use wana_kana::to_katakana::to_katakana;
 
 /// Returns name suggestions
 pub(crate) fn suggestions(query: Query) -> Option<Response> {
@@ -31,7 +32,7 @@ pub fn transcription_suggestions(query: &Query) -> Option<Response> {
         let jp_index = indexes::get_suggestions().names_native();
         task.add_query(SuggestionQuery::new(jp_index, romaji_query.clone()));
 
-        let katakana = romaji::RomajiExt::to_katakana(romaji_query.as_str());
+        let katakana = to_katakana(romaji_query.as_str());
         if katakana != romaji_query {
             task.add_query(SuggestionQuery::new(index, katakana));
         }
@@ -54,7 +55,7 @@ pub fn native_suggestions(query: &Query) -> Option<Response> {
 
     task.add_query(def_query);
 
-    let katakana = romaji::RomajiExt::to_katakana(query_str.as_str());
+    let katakana = to_katakana(query_str.as_str());
     if &katakana != query_str {
         task.add_query(SuggestionQuery::new(index, katakana));
     }

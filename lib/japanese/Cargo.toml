@@ -9,7 +9,7 @@ edition = "2021"
 [dependencies]
 utils = { path = "../utils" }
 itertools = "0.10.3"
-romaji = "0.1.1"
+wana_kana = "*"
 
 
 [dev-dependencies]

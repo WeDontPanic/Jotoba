@@ -54,6 +54,12 @@ impl SearchEngine for Engine {
 
     #[inline]
     fn query_formatted(inp: &str) -> String {
-        japanese::to_halfwidth(inp).to_hiragana()
+        let q = japanese::to_halfwidth(inp);
+
+        if !inp.has_katakana() && !inp.is_japanese() {
+            return q.to_hiragana();
+        }
+
+        q
     }
 }

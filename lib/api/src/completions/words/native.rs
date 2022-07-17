@@ -10,7 +10,7 @@ use autocompletion::{
         task::SuggestionTask,
     },
 };
-use romaji::RomajiExt;
+use wana_kana::ConvertJapanese;
 
 const MAX_SENTENCE_LEN: usize = 15;
 

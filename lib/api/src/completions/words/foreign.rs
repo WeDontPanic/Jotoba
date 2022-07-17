@@ -6,7 +6,10 @@ use autocompletion::suggest::{
     query::SuggestionQuery,
     task::SuggestionTask,
 };
-use japanese::guessing::{could_be_romaji, is_romaji_repl};
+use japanese::{
+    guessing::{could_be_romaji, is_romaji_repl},
+    to_hira_fmt,
+};
 use types::jotoba::languages::Language;
 use utils::real_string_len;
 
@@ -32,7 +35,8 @@ pub fn suggestions(query: &Query, query_str: &str) -> Option<Vec<WordPair>> {
 
     // Romaji result
     //if let Some(hira_query) = try_romaji(query_str.trim()) {
-    let hira_query = try_romaji(query_str.trim()).unwrap_or_else(|| query_str.to_hiragana());
+    let hira_query =
+        try_romaji(query_str.trim()).unwrap_or_else(|| japanese::to_hira_fmt(query_str));
     //let hira_query = query_str.to_hiragana();
     println!("hira query: {hira_query}");
     let jp_engine = indexes::get_suggestions().jp_words();
@@ -117,7 +121,7 @@ pub(crate) fn try_romaji(query_str: &str) -> Option<String> {
     }
 
     if let Some(v) = is_romaji_repl(query_str) {
-        return Some(v.to_hiragana());
+        return Some(to_hira_fmt(&v));
     }
 
     if str_len < 3 {
@@ -132,7 +136,7 @@ pub(crate) fn try_romaji(query_str: &str) -> Option<String> {
     if str_len > min_len {
         let prefix = strip_str_end(query_str, 1);
         if let Some(v) = is_romaji_repl(prefix) {
-            return Some(v.to_hiragana());
+            return Some(to_hira_fmt(&v));
         }
     }
 
@@ -141,7 +145,7 @@ pub(crate) fn try_romaji(query_str: &str) -> Option<String> {
     if str_len >= min_len + 2 && end_three_char_kana(query_str) {
         let prefix = strip_str_end(query_str, 2);
         if let Some(v) = is_romaji_repl(prefix) {
-            return Some(v.to_hiragana());
+            return Some(to_hira_fmt(&v));
         }
     }
 

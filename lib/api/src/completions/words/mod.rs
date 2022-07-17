@@ -4,10 +4,11 @@ pub mod native;
 
 use std::{cmp::Ordering, time::Instant};
 
-use romaji::RomajiExt;
+use japanese::JapaneseExt;
 use search::query::{Query, QueryLang};
 use types::api::completions::{Response, WordPair};
 use utils::bool_ord;
+use wana_kana::{to_katakana::to_katakana, to_romaji::to_romaji};
 
 /// Returns word suggestions based on the query. Applies various approaches to give better results
 pub(crate) fn suggestions(query: Query, radicals: &[char]) -> Option<Response> {
@@ -31,7 +32,7 @@ fn try_word_suggestions(query: &Query, radicals: &[char]) -> Option<Vec<WordPair
     let start = Instant::now();
     // Get sugesstions for matching language
 
-    let romaji_query = RomajiExt::to_romaji(query.query_str.as_str());
+    let romaji_query = to_romaji(query.query_str.as_str());
 
     let word_pairs = match query.q_lang {
         QueryLang::Japanese => native::suggestions(&query, &romaji_query, radicals)?,
@@ -56,7 +57,7 @@ fn word_pair_order(a: &WordPair, b: &WordPair, query: &str) -> Ordering {
 /// Returns an equivalent katakana query
 fn get_katakana_query(query: &Query) -> Query {
     Query {
-        query_str: romaji::RomajiExt::to_katakana(query.query_str.as_str()),
+        query_str: to_katakana(query.query_str.as_str()),
         ..query.clone()
     }
 }

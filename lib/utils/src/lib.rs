@@ -224,7 +224,6 @@ pub fn is_surrounded_by<'a>(
     })
 }
 
-/// Trims a string owned
 #[inline]
 pub fn trim_string_end(mut s: String) -> String {
     while s.ends_with(' ') {

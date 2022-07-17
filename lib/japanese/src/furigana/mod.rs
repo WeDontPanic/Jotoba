@@ -110,9 +110,7 @@ impl<'a> SentencePartRef<'a> {
 /// Check wether the passed furigana pairs are representing the given kana text or not
 pub fn check_pairs(pars: &[SentencePart], kana: &str) -> bool {
     let s: String = pars.iter().map(|i| i.kana.clone()).collect();
-
-    romaji::RomajiExt::to_hiragana(s.as_str()).replace("・", "")
-        == romaji::RomajiExt::to_hiragana(kana).replace("・", "")
+    s.as_str().to_hiragana().replace("・", "") == kana.to_hiragana().replace("・", "")
 }
 
 /// Generates all kanji readins from a kanji and kana string an returns them (kanji, kana)

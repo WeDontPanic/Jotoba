@@ -1,4 +1,4 @@
-use japanese::{guessing::could_be_romaji, JapaneseExt};
+use japanese::guessing::could_be_romaji;
 
 use crate::{
     engine::{search_task::cpushable::FilteredMaxCounter, words::native, SearchTask},
@@ -17,7 +17,7 @@ impl<'a> RomajiProducer<'a> {
     }
 
     fn romaji_query(&self) -> String {
-        self.query.query_str.to_hiragana()
+        japanese::to_hira_fmt(&self.query.query_str)
     }
 
     fn task(&self) -> SearchTask<native::Engine> {
