@@ -114,8 +114,8 @@ impl<'a> Producer for SReaderProducer<'a> {
             return true;
         }
 
-        // Only run sentence reader search if the query is not a term in the index
-        !NativeSearch::has_term(&self.query.query_str)
+        // For sentences only run if the query is not a term in the db
+        !word_exists(&self.query.query_str)
     }
 
     fn estimate_to(&self, out: &mut FilteredMaxCounter<<Self::Target as Searchable>::Item>) {
@@ -132,6 +132,26 @@ impl<'a> Producer for SReaderProducer<'a> {
             }
         }
     }
+}
+
+/// Returns `true` if the word exists in all words
+fn word_exists(term: &str) -> bool {
+    if !NativeSearch::has_term(term) {
+        return false;
+    }
+
+    let mut task = SearchTask::<native::Engine>::new(term).limit(1);
+
+    let query = term.to_string();
+    task.set_vector_filter(move |i, _| {
+        resources::get()
+            .words()
+            .by_sequence(i.document)
+            .unwrap()
+            .has_reading(&query)
+    });
+
+    task.find_exact().len() == 1
 }
 
 /// Generates furigana for a sentence
