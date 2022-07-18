@@ -26,7 +26,11 @@ impl<'a> TagProducer<'a> {
         self.query
             .tags
             .iter()
-            .find(|i| i.is_producer() && !i.is_sentence_tag())
+            .filter(|i| i.is_producer() && !i.is_sentence_tag())
+            // Use tag with fewest items that it'll produce to reduce the amount of items that have to be filtered
+            .map(|i| (self.tag_len(i).unwrap_or(usize::MAX), i))
+            .min_by_key(|i| i.0)
+            .map(|i| i.1)
     }
 
     fn find_to<P>(&self, out: &mut P)
@@ -66,6 +70,19 @@ impl<'a> TagProducer<'a> {
                     break;
                 }
             }
+        }
+    }
+
+    /// Returns the amount of words a given tag has assigned/indexed
+    #[inline]
+    fn tag_len(&self, tag: &Tag) -> Option<usize> {
+        let w_retr = resources::get().words();
+        match tag {
+            Tag::PartOfSpeech(p) => w_retr.pos_simple_len(p),
+            Tag::Misc(m) => w_retr.misc_len(m),
+            Tag::Jlpt(j) => w_retr.jlpt_len(*j),
+            Tag::IrregularIruEru => todo!(),
+            _ => None,
         }
     }
 }

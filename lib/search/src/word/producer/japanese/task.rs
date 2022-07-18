@@ -1,7 +1,7 @@
 use crate::{
     engine::{words::native, SearchTask},
     query::Query,
-    word::{filter, order},
+    word::{filter::WordFilter, order},
 };
 
 /// Helper for creating SearchTask for foreign queries
@@ -23,8 +23,8 @@ impl<'a> NativeSearch<'a> {
             order::japanese_search_order(item, Some(&original_query))
         });
 
-        let query_c = self.query.clone();
-        task.set_result_filter(move |item| !filter::filter_word(*item, &query_c));
+        let filter = WordFilter::new(self.query.clone());
+        task.set_result_filter(move |item| !filter.filter_word(*item));
 
         task
     }

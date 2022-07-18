@@ -19,12 +19,13 @@ use producer::{
     tag::TagProducer,
 };
 
-use self::producer::japanese::sentence_reader::SReaderProducer;
+use self::{filter::WordFilter, producer::japanese::sentence_reader::SReaderProducer};
 
 /// Word search
 pub struct Search<'a> {
     query: &'a Query,
     producer: Vec<Box<dyn Producer<Target = Self> + 'a>>,
+    filter: WordFilter,
 }
 
 impl<'a> Search<'a> {
@@ -40,7 +41,12 @@ impl<'a> Search<'a> {
             Box::new(ForeignProducer::new(query)),
         ];
 
-        Self { query, producer }
+        let filter = WordFilter::new(query.clone());
+        Self {
+            query,
+            producer,
+            filter,
+        }
     }
 }
 
@@ -75,6 +81,6 @@ impl<'a> Searchable for Search<'a> {
     }
 
     fn filter(&self, word: &Self::Item) -> bool {
-        filter::filter_word(*word, self.query)
+        self.filter.filter_word(*word)
     }
 }
