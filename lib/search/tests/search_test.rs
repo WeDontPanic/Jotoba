@@ -164,8 +164,9 @@ fn test_jp_search() {
 #[test_case("kanjiru", &["感じる"])]
 #[test_case("ongaku", &["音楽"])]
 #[test_case("kimi", &["君"])]
-//#[test_case("kiku", &["聞く"])]
-//#[test_case("suki", &["好き"])]
+#[test_case("jitensha", &["自転車"])]
+#[test_case("kiku", &["聞く"])]
+#[test_case("suki", &["好き"])]
 fn test_romaji(query_str: &str, expected: &[&str]) {
     wait();
 

@@ -35,8 +35,8 @@ impl<'a> Search<'a> {
             Box::new(SeqProducer::new(query)),
             Box::new(RegexProducer::new(query)),
             Box::new(RomajiProducer::new(query)),
-            Box::new(NativeProducer::new(query)),
             Box::new(SReaderProducer::new(query)),
+            Box::new(NativeProducer::new(query)),
             Box::new(ForeignProducer::new(query)),
         ];
 
