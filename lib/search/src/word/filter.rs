@@ -41,6 +41,11 @@ impl WordFilter {
 
     #[inline]
     fn by_jlpt(&self, w: &Word) -> Option<()> {
+        // Ignore if not set
+        if self.jlpt_lvl.is_none() {
+            return Some(());
+        }
+
         (w.jlpt_lvl == self.jlpt_lvl).then(|| ())
     }
 
