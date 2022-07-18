@@ -79,6 +79,9 @@ impl FrequencyIndex {
     pub fn norm_reading_freq(&self, kanji: char, reading: &str) -> Option<f32> {
         let freq_data = self.data.get(&kanji)?;
         let read_freq = freq_data.get_reading(reading)?;
+        if freq_data.total() < 200 {
+            return None;
+        }
         Some(read_freq as f32 / freq_data.total as f32)
     }
 }

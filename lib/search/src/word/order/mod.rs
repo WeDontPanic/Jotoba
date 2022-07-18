@@ -43,7 +43,7 @@ pub fn regex_order(word: &Word, found_in: &str, _query: &RegexSQuery) -> usize {
 
 /// Search order for words searched by japanese meaning/kanji/reading
 pub fn japanese_search_order(item: SortItem<&'static Word>, original_query: Option<&str>) -> usize {
-    let mut score: usize = (item.vec_simiarity() * 500f32) as usize;
+    let mut score: usize = (item.vec_simiarity() * 100f32) as usize;
 
     let word = item.item();
     let query_str = japanese::to_halfwidth(item.query());
