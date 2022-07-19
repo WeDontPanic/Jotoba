@@ -101,47 +101,95 @@ pub struct InflectionPair {
 pub(super) fn of_word(word: &Word) -> Option<Inflections> {
     let verb = get_jp_verb(word)?;
     let build = || -> Result<Inflections, jp_inflections::error::Error> {
+        let is_exception = word.get_reading().reading == "する"
+            || word.get_reading().reading == "くる";
+
+        if is_exception {
+            return Ok(Inflections {
+                present: InflectionPair {
+                    positive: verb.dictionary(WordForm::Short)?.get_reading(),
+                    negative: verb.negative(WordForm::Short)?.get_reading(),
+                },
+                present_polite: InflectionPair {
+                    positive: verb.dictionary(WordForm::Long)?.get_reading(),
+                    negative: verb.negative(WordForm::Long)?.get_reading(),
+                },
+
+                past: InflectionPair {
+                    positive: verb.past(WordForm::Short)?.get_reading(),
+                    negative: verb.negative_past(WordForm::Short)?.get_reading(),
+                },
+                past_polite: InflectionPair {
+                    positive: verb.past(WordForm::Long)?.get_reading(),
+                    negative: verb.negative_past(WordForm::Long)?.get_reading(),
+                },
+                te_form: InflectionPair {
+                    positive: verb.te_form()?.get_reading(),
+                    negative: verb.negative_te_form()?.get_reading(),
+                },
+                potential: InflectionPair {
+                    positive: verb.potential(WordForm::Short)?.get_reading(),
+                    negative: verb.negative_potential(WordForm::Short)?.get_reading(),
+                },
+                passive: InflectionPair {
+                    positive: verb.passive()?.get_reading(),
+                    negative: verb.negative_passive()?.get_reading(),
+                },
+                causative: InflectionPair {
+                    positive: verb.causative()?.get_reading(),
+                    negative: verb.negative_causative()?.get_reading(),
+                },
+                causative_passive: InflectionPair {
+                    positive: verb.causative_passive()?.get_reading(),
+                    negative: verb.negative_causative_passive()?.get_reading(),
+                },
+                imperative: InflectionPair {
+                    positive: verb.imperative()?.get_reading(),
+                    negative: verb.imperative_negative()?.get_reading(),
+                },
+            });
+        }
         Ok(Inflections {
             present: InflectionPair {
-                positive: verb.dictionary(WordForm::Short)?.get_reading(),
-                negative: verb.negative(WordForm::Short)?.get_reading(),
+                positive: verb.dictionary(WordForm::Short)?.kana,
+                negative: verb.negative(WordForm::Short)?.kana,
             },
             present_polite: InflectionPair {
-                positive: verb.dictionary(WordForm::Long)?.get_reading(),
-                negative: verb.negative(WordForm::Long)?.get_reading(),
+                positive: verb.dictionary(WordForm::Long)?.kana,
+                negative: verb.negative(WordForm::Long)?.kana,
             },
 
             past: InflectionPair {
-                positive: verb.past(WordForm::Short)?.get_reading(),
-                negative: verb.negative_past(WordForm::Short)?.get_reading(),
+                positive: verb.past(WordForm::Short)?.kana,
+                negative: verb.negative_past(WordForm::Short)?.kana,
             },
             past_polite: InflectionPair {
-                positive: verb.past(WordForm::Long)?.get_reading(),
-                negative: verb.negative_past(WordForm::Long)?.get_reading(),
+                positive: verb.past(WordForm::Long)?.kana,
+                negative: verb.negative_past(WordForm::Long)?.kana,
             },
             te_form: InflectionPair {
-                positive: verb.te_form()?.get_reading(),
-                negative: verb.negative_te_form()?.get_reading(),
+                positive: verb.te_form()?.kana,
+                negative: verb.negative_te_form()?.kana,
             },
             potential: InflectionPair {
-                positive: verb.potential(WordForm::Short)?.get_reading(),
-                negative: verb.negative_potential(WordForm::Short)?.get_reading(),
+                positive: verb.potential(WordForm::Short)?.kana,
+                negative: verb.negative_potential(WordForm::Short)?.kana,
             },
             passive: InflectionPair {
-                positive: verb.passive()?.get_reading(),
-                negative: verb.negative_passive()?.get_reading(),
+                positive: verb.passive()?.kana,
+                negative: verb.negative_passive()?.kana,
             },
             causative: InflectionPair {
-                positive: verb.causative()?.get_reading(),
-                negative: verb.negative_causative()?.get_reading(),
+                positive: verb.causative()?.kana,
+                negative: verb.negative_causative()?.kana,
             },
             causative_passive: InflectionPair {
-                positive: verb.causative_passive()?.get_reading(),
-                negative: verb.negative_causative_passive()?.get_reading(),
+                positive: verb.causative_passive()?.kana,
+                negative: verb.negative_causative_passive()?.kana,
             },
             imperative: InflectionPair {
-                positive: verb.imperative()?.get_reading(),
-                negative: verb.imperative_negative()?.get_reading(),
+                positive: verb.imperative()?.kana,
+                negative: verb.imperative_negative()?.kana,
             },
         })
     }()
