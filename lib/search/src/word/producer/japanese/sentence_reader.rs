@@ -151,7 +151,8 @@ fn word_exists(term: &str) -> bool {
             .has_reading(&query)
     });
 
-    task.find_exact().len() == 1
+    let len = task.find_exact().len();
+    len > 0
 }
 
 /// Generates furigana for a sentence
