@@ -152,12 +152,13 @@ pub(super) fn of_word(word: &Word) -> Option<Inflections> {
 
 /// Returns a jp_inflections::Verb if [`self`] is a verb
 fn get_jp_verb(word: &Word) -> Option<Verb> {
-    let is_suru = word.get_pos().any(|i| match i {
+    let is_exception = word.get_pos().any(|i| match i {
         PartOfSpeech::Verb(v) => match v {
             part_of_speech::VerbType::Irregular(i) => match i {
                 IrregularVerb::Suru => true,
                 _ => false,
             },
+            part_of_speech::VerbType::Kuru => true,
             _ => false,
         },
         _ => false,
@@ -167,7 +168,7 @@ fn get_jp_verb(word: &Word) -> Option<Verb> {
         VerbType::Ichidan
     } else if word.get_pos().any(|i| i.is_godan()) {
         VerbType::Godan
-    } else if is_suru {
+    } else if is_exception {
         VerbType::Exception
     } else {
         return None;
