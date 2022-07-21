@@ -108,45 +108,45 @@ pub(super) fn of_word(word: &Word) -> Option<Inflections> {
 
         return Ok(Inflections {
             present: InflectionPair {
-                positive: verb.dictionary(WordForm::Short)?.try_kanji(is_exception),
-                negative: verb.negative(WordForm::Short)?.try_kanji(is_exception),
+                positive: verb.dictionary(WordForm::Short)?.try_kana(is_exception),
+                negative: verb.negative(WordForm::Short)?.try_kana(is_exception),
             },
             present_polite: InflectionPair {
-                positive: verb.dictionary(WordForm::Long)?.try_kanji(is_exception),
-                negative: verb.negative(WordForm::Long)?.try_kanji(is_exception),
+                positive: verb.dictionary(WordForm::Long)?.try_kana(is_exception),
+                negative: verb.negative(WordForm::Long)?.try_kana(is_exception),
             },
 
             past: InflectionPair {
-                positive: verb.past(WordForm::Short)?.try_kanji(is_exception),
-                negative: verb.negative_past(WordForm::Short)?.try_kanji(is_exception),
+                positive: verb.past(WordForm::Short)?.try_kana(is_exception),
+                negative: verb.negative_past(WordForm::Short)?.try_kana(is_exception),
             },
             past_polite: InflectionPair {
-                positive: verb.past(WordForm::Long)?.try_kanji(is_exception),
-                negative: verb.negative_past(WordForm::Long)?.try_kanji(is_exception),
+                positive: verb.past(WordForm::Long)?.try_kana(is_exception),
+                negative: verb.negative_past(WordForm::Long)?.try_kana(is_exception),
             },
             te_form: InflectionPair {
-                positive: verb.te_form()?.try_kanji(is_exception),
-                negative: verb.negative_te_form()?.try_kanji(is_exception),
+                positive: verb.te_form()?.try_kana(is_exception),
+                negative: verb.negative_te_form()?.try_kana(is_exception),
             },
             potential: InflectionPair {
-                positive: verb.potential(WordForm::Short)?.try_kanji(is_exception),
-                negative: verb.negative_potential(WordForm::Short)?.try_kanji(is_exception),
+                positive: verb.potential(WordForm::Short)?.try_kana(is_exception),
+                negative: verb.negative_potential(WordForm::Short)?.try_kana(is_exception),
             },
             passive: InflectionPair {
-                positive: verb.passive()?.try_kanji(is_exception),
-                negative: verb.negative_passive()?.try_kanji(is_exception),
+                positive: verb.passive()?.try_kana(is_exception),
+                negative: verb.negative_passive()?.try_kana(is_exception),
             },
             causative: InflectionPair {
-                positive: verb.causative()?.try_kanji(is_exception),
-                negative: verb.negative_causative()?.try_kanji(is_exception),
+                positive: verb.causative()?.try_kana(is_exception),
+                negative: verb.negative_causative()?.try_kana(is_exception),
             },
             causative_passive: InflectionPair {
-                positive: verb.causative_passive()?.try_kanji(is_exception),
-                negative: verb.negative_causative_passive()?.try_kanji(is_exception),
+                positive: verb.causative_passive()?.try_kana(is_exception),
+                negative: verb.negative_causative_passive()?.try_kana(is_exception),
             },
             imperative: InflectionPair {
-                positive: verb.imperative()?.try_kanji(is_exception),
-                negative: verb.imperative_negative()?.try_kanji(is_exception),
+                positive: verb.imperative()?.try_kana(is_exception),
+                negative: verb.imperative_negative()?.try_kana(is_exception),
             },
         });
     }()
