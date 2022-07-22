@@ -101,49 +101,54 @@ pub struct InflectionPair {
 pub(super) fn of_word(word: &Word) -> Option<Inflections> {
     let verb = get_jp_verb(word)?;
     let build = || -> Result<Inflections, jp_inflections::error::Error> {
-        Ok(Inflections {
+        let is_exception = word.reading.kanji
+            .as_ref()
+            .map(|kanji| kanji.reading == "為る" || kanji.reading == "来る")
+            .unwrap_or(false);
+
+        return Ok(Inflections {
             present: InflectionPair {
-                positive: verb.dictionary(WordForm::Short)?.get_reading(),
-                negative: verb.negative(WordForm::Short)?.get_reading(),
+                positive: verb.dictionary(WordForm::Short)?.try_kana(is_exception),
+                negative: verb.negative(WordForm::Short)?.try_kana(is_exception),
             },
             present_polite: InflectionPair {
-                positive: verb.dictionary(WordForm::Long)?.get_reading(),
-                negative: verb.negative(WordForm::Long)?.get_reading(),
+                positive: verb.dictionary(WordForm::Long)?.try_kana(is_exception),
+                negative: verb.negative(WordForm::Long)?.try_kana(is_exception),
             },
 
             past: InflectionPair {
-                positive: verb.past(WordForm::Short)?.get_reading(),
-                negative: verb.negative_past(WordForm::Short)?.get_reading(),
+                positive: verb.past(WordForm::Short)?.try_kana(is_exception),
+                negative: verb.negative_past(WordForm::Short)?.try_kana(is_exception),
             },
             past_polite: InflectionPair {
-                positive: verb.past(WordForm::Long)?.get_reading(),
-                negative: verb.negative_past(WordForm::Long)?.get_reading(),
+                positive: verb.past(WordForm::Long)?.try_kana(is_exception),
+                negative: verb.negative_past(WordForm::Long)?.try_kana(is_exception),
             },
             te_form: InflectionPair {
-                positive: verb.te_form()?.get_reading(),
-                negative: verb.negative_te_form()?.get_reading(),
+                positive: verb.te_form()?.try_kana(is_exception),
+                negative: verb.negative_te_form()?.try_kana(is_exception),
             },
             potential: InflectionPair {
-                positive: verb.potential(WordForm::Short)?.get_reading(),
-                negative: verb.negative_potential(WordForm::Short)?.get_reading(),
+                positive: verb.potential(WordForm::Short)?.try_kana(is_exception),
+                negative: verb.negative_potential(WordForm::Short)?.try_kana(is_exception),
             },
             passive: InflectionPair {
-                positive: verb.passive()?.get_reading(),
-                negative: verb.negative_passive()?.get_reading(),
+                positive: verb.passive()?.try_kana(is_exception),
+                negative: verb.negative_passive()?.try_kana(is_exception),
             },
             causative: InflectionPair {
-                positive: verb.causative()?.get_reading(),
-                negative: verb.negative_causative()?.get_reading(),
+                positive: verb.causative()?.try_kana(is_exception),
+                negative: verb.negative_causative()?.try_kana(is_exception),
             },
             causative_passive: InflectionPair {
-                positive: verb.causative_passive()?.get_reading(),
-                negative: verb.negative_causative_passive()?.get_reading(),
+                positive: verb.causative_passive()?.try_kana(is_exception),
+                negative: verb.negative_causative_passive()?.try_kana(is_exception),
             },
             imperative: InflectionPair {
-                positive: verb.imperative()?.get_reading(),
-                negative: verb.imperative_negative()?.get_reading(),
+                positive: verb.imperative()?.try_kana(is_exception),
+                negative: verb.imperative_negative()?.try_kana(is_exception),
             },
-        })
+        });
     }()
     .ok()?;
 
