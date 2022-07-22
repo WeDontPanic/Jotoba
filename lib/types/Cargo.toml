@@ -9,7 +9,7 @@ edition = "2021"
 japanese = { path = "../japanese" }
 strum = { version = "0.24.1", features = ["derive"] }
 strum_macros = "0.24.2"
-serde = { version = "1.0.139", features = ["derive"] }
+serde = { version = "1.0.140", features = ["derive"] }
 jp_inflections = { git = "https://github.com/JojiiOfficial/Japanese_Inflections" }
 bitflags = { git = "https://github.com/JojiiOfficial/BitFlags" }
 itertools = "0.10.3"
@@ -29,4 +29,4 @@ api = []
 raw_types = []
 
 [dev-dependencies]
-test-case = "2.1.0"
+test-case = "2.2.1"

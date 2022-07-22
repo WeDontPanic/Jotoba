@@ -1,7 +1,7 @@
-use super::part_of_speech::{self, IrregularVerb, PartOfSpeech};
-
-use super::Word;
-
+use super::{
+    part_of_speech::{self, IrregularVerb, PartOfSpeech},
+    Word,
+};
 use jp_inflections::{Verb, VerbType, WordForm};
 use serde::{Deserialize, Serialize};
 
@@ -101,7 +101,9 @@ pub struct InflectionPair {
 pub(super) fn of_word(word: &Word) -> Option<Inflections> {
     let verb = get_jp_verb(word)?;
     let build = || -> Result<Inflections, jp_inflections::error::Error> {
-        let is_exception = word.reading.kanji
+        let is_exception = word
+            .reading
+            .kanji
             .as_ref()
             .map(|kanji| kanji.reading == "為る" || kanji.reading == "来る")
             .unwrap_or(false);
@@ -130,7 +132,9 @@ pub(super) fn of_word(word: &Word) -> Option<Inflections> {
             },
             potential: InflectionPair {
                 positive: verb.potential(WordForm::Short)?.try_kana(is_exception),
-                negative: verb.negative_potential(WordForm::Short)?.try_kana(is_exception),
+                negative: verb
+                    .negative_potential(WordForm::Short)?
+                    .try_kana(is_exception),
             },
             passive: InflectionPair {
                 positive: verb.passive()?.try_kana(is_exception),

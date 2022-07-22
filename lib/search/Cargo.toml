@@ -35,4 +35,4 @@ spin = { version = "0.9.4", default-features = false, features = [
 intmap = { git = "https://github.com/JojiiOfficial/rust-intmap" }
 
 [dev-dependencies]
-test-case = "2.1.0"
+test-case = "2.2.1"

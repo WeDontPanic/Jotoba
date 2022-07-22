@@ -9,10 +9,10 @@ edition = "2021"
 [dependencies]
 utils = { path = "../utils" }
 itertools = "0.10.3"
-wana_kana = "*"
+wana_kana = "2.1.0"
 
 
 [dev-dependencies]
-test-case = "2.1.0"
+test-case = "2.2.1"
 resources = { path = "../resources" }
 japanese = { path = "../japanese" }
