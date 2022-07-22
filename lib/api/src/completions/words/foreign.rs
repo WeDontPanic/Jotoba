@@ -130,7 +130,7 @@ pub(crate) fn try_romaji(query_str: &str) -> Option<String> {
 
     // 'n' is the only hiragana with with=1 in romaji so allow them
     // to be treated properly too
-    let min_len = 3 - query_str.chars().filter(|i| *i == 'n').count();
+    let min_len = 3usize.saturating_sub(query_str.chars().filter(|i| *i == 'n').count());
 
     // Strip one to avoid switching between romaji/normal results
     if str_len > min_len {
