@@ -312,7 +312,7 @@ dependencies = [
  "serde",
  "types",
  "utils",
- "wana_kana",
+ "wana_kana 2.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
@@ -1566,7 +1566,7 @@ dependencies = [
  "resources",
  "test-case",
  "utils",
- "wana_kana",
+ "wana_kana 2.1.0 (git+https://github.com/WeDontPanic/wana_kana_rust)",
 ]
 
 [[package]]
@@ -3248,6 +3248,16 @@ name = "wana_kana"
 version = "2.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "5422b401e00b7e3d45c55756298aeda568afe57b0380406d3530d64c243d8c00"
+dependencies = [
+ "fnv",
+ "itertools 0.8.2",
+ "lazy_static",
+]
+
+[[package]]
+name = "wana_kana"
+version = "2.1.0"
+source = "git+https://github.com/WeDontPanic/wana_kana_rust#c8fd1cf09cea0db3ccacb1f3ea0a4e1383bf6b79"
 dependencies = [
  "fnv",
  "itertools 0.8.2",

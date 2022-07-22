@@ -28,12 +28,8 @@ impl<'a> NativeProducer<'a> {
         search_task.with_custom_order(move |item| {
             let mut rel = item.vec_simiarity();
 
-            if !item.item().japanese.contains(&query_str) {
-                rel *= 0.55;
-            }
-
-            if !item.item().has_translation(query_c.settings.user_lang) {
-                rel *= 0.9;
+            if !item.item().has_translation(query_c.lang()) {
+                rel *= 0.99;
             }
 
             (rel * 1_000_000.0) as usize

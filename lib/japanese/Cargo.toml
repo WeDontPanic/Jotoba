@@ -9,7 +9,7 @@ edition = "2021"
 [dependencies]
 utils = { path = "../utils" }
 itertools = "0.10.3"
-wana_kana = "2.1.0"
+wana_kana = { git = "https://github.com/WeDontPanic/wana_kana_rust" }
 
 
 [dev-dependencies]

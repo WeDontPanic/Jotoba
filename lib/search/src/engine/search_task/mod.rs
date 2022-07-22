@@ -4,14 +4,14 @@ pub mod sort_item;
 
 use self::{
     cpushable::{CPushable, MaxCounter},
-    pushable::Pushable,
+    pushable::{PushMod, Pushable},
 };
 
 use super::{result::SearchResult, result_item::ResultItem, SearchEngine};
 use error::Error;
 use priority_container::StableUniquePrioContainerMax;
 use sort_item::SortItem;
-use std::{collections::HashSet, marker::PhantomData};
+use std::{collections::HashSet, fmt::Debug, hash::Hash, marker::PhantomData};
 use types::jotoba::{
     languages::Language,
     search::guess::{Guess, GuessType},
@@ -38,6 +38,31 @@ pub struct SearchTask<T: SearchEngine> {
     est_limit: usize,
     score_multiplier: f32,
     phantom: PhantomData<T>,
+}
+
+impl<U, T> SearchTask<T>
+where
+    U: Debug + PartialEq + Eq + Hash + 'static + Send + Sync + Clone,
+    T: SearchEngine<Output = U>,
+{
+    /// Runs the search task and returns the result.
+    pub fn find_dbg(&self) -> SearchResult<T::Output> {
+        let cap = self.limit + self.offset;
+        let mut pqueue = StableUniquePrioContainerMax::new_allocated(cap, cap);
+        self.find_to_dbg(&mut pqueue);
+        self.make_result(pqueue)
+    }
+
+    /// Runs the search task and writes all items into the priority queue
+    pub fn find_to_dbg<I: Pushable<Item = ResultItem<T::Output>>>(&self, out: &mut I) {
+        let mut map = PushMod::new(out, |i: ResultItem<T::Output>| {
+            println!("{:?}: {}", i.item, i.relevance);
+            i
+        });
+        if let Some(qvec) = self.gen_query_vec() {
+            self.find_by_vec(qvec, &mut map);
+        }
+    }
 }
 
 impl<T: SearchEngine> SearchTask<T> {

@@ -8,7 +8,7 @@ use serde::{Deserialize, Serialize};
 use std::hash::Hash;
 
 /// A single Sentence with multiple translations.
-#[derive(Debug, Clone, Deserialize, Serialize, Default)]
+#[derive(Clone, Deserialize, Serialize, Default)]
 pub struct Sentence {
     pub id: u32,
     pub japanese: String,
@@ -17,6 +17,13 @@ pub struct Sentence {
     pub jlpt_guess: Option<u8>,
     pub level: Option<i8>,
     pub tags: Vec<Tag>,
+}
+
+impl std::fmt::Debug for Sentence {
+    #[inline]
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", self.japanese)
+    }
 }
 
 /// A Translation for a sentence
