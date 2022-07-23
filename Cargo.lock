@@ -1607,7 +1607,7 @@ dependencies = [
 [[package]]
 name = "jp_inflections"
 version = "0.1.3"
-source = "git+https://github.com/JojiiOfficial/Japanese_Inflections#49ff864181b3b2e1f3a364462e53cdbfb830db91"
+source = "git+https://github.com/JojiiOfficial/Japanese_Inflections#bff34fb33f26685890b739a3d000c18969ad65d3"
 
 [[package]]
 name = "jp_utils"
