@@ -122,8 +122,8 @@ pub fn foreign_search_fall_back(
         score += 10;
     }
 
-    if word.jlpt_lvl.is_some() {
-        score += (word.jlpt_lvl.unwrap() * 2) as usize;
+    if let Some(jlpt) = word.get_jlpt_lvl() {
+        score += (jlpt * 2) as usize;
     }
 
     // Result found within users specified language
@@ -164,7 +164,7 @@ pub(super) fn kanji_reading_search(item: SortItem<&'static Word>) -> usize {
         score += 100;
     }
 
-    if let Some(jlpt) = word.jlpt_lvl {
+    if let Some(jlpt) = word.get_jlpt_lvl() {
         score += jlpt as usize * 10;
     }
 

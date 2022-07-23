@@ -39,7 +39,7 @@ impl WordStorage {
         self.clear();
 
         for word in words {
-            if let Some(jlpt) = word.jlpt_lvl {
+            if let Some(jlpt) = word.get_jlpt_lvl() {
                 self.jlpt_word_map
                     .entry(jlpt)
                     .or_default()

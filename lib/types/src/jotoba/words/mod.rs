@@ -12,6 +12,8 @@ pub mod priority;
 pub mod reading;
 pub mod sense;
 
+use std::num::{NonZeroU32, NonZeroU8};
+
 pub use dict::Dict;
 
 use self::{
@@ -19,7 +21,6 @@ use self::{
     misc::Misc,
     part_of_speech::{PartOfSpeech, PosSimple},
     pitch::{raw_data::PitchValues, Pitch},
-    priority::Priority,
     reading::{Reading, ReadingIter},
     sense::{Sense, SenseGlossIter},
 };
@@ -35,14 +36,15 @@ use japanese::furigana::{self, SentencePartRef};
 #[derive(Clone, Default, Serialize, Deserialize, Eq)]
 pub struct Word {
     pub sequence: u32,
-    pub priorities: Option<Vec<Priority>>,
+    //pub priorities: Option<Vec<Priority>>,
+    pub common: bool,
     pub reading: Reading,
     pub senses: Vec<Sense>,
     pub furigana: Option<String>,
-    pub jlpt_lvl: Option<u8>,
+    pub jlpt_lvl: Option<NonZeroU8>,
     pub collocations: Option<Vec<u32>>,
-    pub transive_verion: Option<u32>,
-    pub intransive_verion: Option<u32>,
+    pub transive_verion: Option<NonZeroU32>,
+    pub intransive_verion: Option<NonZeroU32>,
     pub sentences_available: u16,
     pub accents: PitchValues,
 }
@@ -52,13 +54,14 @@ impl Word {
     #[inline]
     pub fn is_common(&self) -> bool {
         //self.reading.get_reading().priorities.is_some()
-        self.reading_iter(true).any(|i| i.priorities.is_some())
+        //self.reading_iter(true).any(|i| i.priorities.is_some())
+        self.common
     }
 
     /// Returns the jlpt level of a word. `None` if a word doesn't have a JLPT lvl assigned
     #[inline]
     pub fn get_jlpt_lvl(&self) -> Option<u8> {
-        self.jlpt_lvl
+        self.jlpt_lvl.map(|i| i.get())
     }
 
     /// Returns the main reading of a word. This is the kanji reading if a kanji reading

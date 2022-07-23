@@ -40,10 +40,10 @@ pub(crate) fn conv_word(word: jotoba::words::Word, lang: Language) -> words::Wor
         alt_readings,
         senses,
         accents,
+        jlpt_lvl: word.jlpt_lvl.map(|i| i.get()),
         furigana: word.furigana,
-        jlpt_lvl: word.jlpt_lvl,
-        transive_verion: word.transive_verion,
-        intransive_verion: word.intransive_verion,
+        transive_verion: word.transive_verion.map(|i| i.get()),
+        intransive_verion: word.intransive_verion.map(|i| i.get()),
         sentences_available: word.sentences_available,
         audio,
     }

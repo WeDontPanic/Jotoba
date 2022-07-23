@@ -46,7 +46,7 @@ impl WordFilter {
             return Some(());
         }
 
-        (w.jlpt_lvl == self.jlpt_lvl).then(|| ())
+        (w.get_jlpt_lvl() == self.jlpt_lvl).then(|| ())
     }
 
     #[inline]

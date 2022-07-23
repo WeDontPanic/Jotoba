@@ -5,7 +5,10 @@ pub use self::tag::Tag;
 use super::languages::Language;
 use bitflags::BitFlag;
 use serde::{Deserialize, Serialize};
-use std::hash::Hash;
+use std::{
+    hash::Hash,
+    num::{NonZeroI8, NonZeroU8},
+};
 
 /// A single Sentence with multiple translations.
 #[derive(Clone, Deserialize, Serialize, Default)]
@@ -14,8 +17,8 @@ pub struct Sentence {
     pub japanese: String,
     pub furigana: String,
     pub translations: Vec<Translation>,
-    pub jlpt_guess: Option<u8>,
-    pub level: Option<i8>,
+    pub jlpt_guess: Option<NonZeroU8>,
+    pub level: Option<NonZeroI8>,
     pub tags: Vec<Tag>,
 }
 
@@ -55,7 +58,11 @@ impl Sentence {
     }
 
     pub fn set_jlpt_guess(&mut self, guess: u8) {
-        self.jlpt_guess = Some(guess)
+        if !(1..=5).contains(&guess) {
+            return;
+        }
+
+        self.jlpt_guess = Some(NonZeroU8::new(guess).unwrap())
     }
 
     /// Returns the kana reading of a sentence
@@ -108,6 +115,13 @@ impl Sentence {
     /// Calculates a bitmask to efficiently determine the supported languages of a sentence
     pub fn calc_lang_mask(&self) -> u16 {
         lang_mask(self.translations.iter().map(|i| i.language))
+    }
+
+    #[inline]
+    pub fn level(&self) -> Option<i8> {
+        // We add 10 to each value in preprocessing to prevent it reaching 0 which
+        // we want to be able to use NonZeroI8
+        self.level.map(|i| i.get() - 10)
     }
 }
 
