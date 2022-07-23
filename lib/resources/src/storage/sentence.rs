@@ -1,10 +1,8 @@
-use std::collections::HashMap;
-
+use super::feature::Feature;
 use intmap::IntMap;
 use serde::{Deserialize, Serialize};
+use std::collections::HashMap;
 use types::jotoba::sentences::{tag::Tag, Sentence};
-
-use super::feature::Feature;
 
 /// Storage for sentence related data
 #[derive(Serialize, Deserialize, Clone, Default)]

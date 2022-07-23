@@ -15,8 +15,6 @@ pub struct Name {
     pub transcription: String,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub name_type: Option<Vec<NameType>>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub xref: Option<String>,
 }
 
 impl From<&crate::jotoba::names::Name> for Name {
@@ -27,7 +25,6 @@ impl From<&crate::jotoba::names::Name> for Name {
             kanji: name.kanji.clone(),
             transcription: name.transcription.clone(),
             name_type: name.name_type.clone(),
-            xref: name.xref.clone(),
         }
     }
 }

@@ -1,3 +1,4 @@
+pub mod compress;
 pub mod furigana;
 pub mod guessing;
 pub mod radicals;

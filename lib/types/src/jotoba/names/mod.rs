@@ -2,6 +2,7 @@ pub mod name_type;
 
 use name_type::NameType;
 use serde::{Deserialize, Serialize};
+use std::hash::Hasher;
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Name {
@@ -22,7 +23,7 @@ impl PartialEq for Name {
 
 impl std::hash::Hash for Name {
     #[inline]
-    fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
+    fn hash<H: Hasher>(&self, state: &mut H) {
         self.sequence.hash(state);
     }
 }

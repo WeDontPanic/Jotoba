@@ -1,6 +1,5 @@
-use types::jotoba::names::Name;
-
 use super::super::storage::name::NameStorage;
+use types::jotoba::names::Name;
 
 #[derive(Clone, Copy)]
 pub struct NameRetrieve<'a> {
@@ -16,7 +15,7 @@ impl<'a> NameRetrieve<'a> {
     /// Get a name by its sequence id
     #[inline]
     pub fn by_sequence(&self, seq_id: u32) -> Option<&'a Name> {
-        self.storage.names.get(seq_id)
+        self.storage.names.get(&seq_id)
     }
 
     /// Returns the amount of names

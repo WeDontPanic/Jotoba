@@ -1,6 +1,5 @@
-use types::jotoba::sentences::{tag::Tag, Sentence};
-
 use super::super::storage::sentence::SentenceStorage;
+use types::jotoba::sentences::{tag::Tag, Sentence};
 
 #[derive(Clone, Copy)]
 pub struct SentenceRetrieve<'a> {
