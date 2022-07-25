@@ -33,6 +33,11 @@ pub fn find_kanji(rads: &[char]) -> Response {
         possible_rads.entry(s_count as u32).or_default().push(c);
     }
 
+    // Sort all radicals
+    for (_, v) in possible_rads.iter_mut() {
+        v.sort_unstable();
+    }
+
     let mut kanji_res2 = HashMap::<u32, Vec<char>>::with_capacity(kanji_res.len());
     kanji_res2.extend(kanji_res);
 
