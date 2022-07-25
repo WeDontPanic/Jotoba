@@ -52,8 +52,8 @@ pub fn japanese_search_order(item: SortItem<&'static Word>, original_query: Opti
     let reading_len = utils::real_string_len(&reading);
     let kana = japanese::to_halfwidth(&word.reading.kana.reading);
 
-    if reading == *query_str || kana == *query_str {
-        score += 80;
+    if word.has_reading(&query_str) {
+        score += 100000000;
 
         // Show kana only readings on top if they match with query
         if word.reading.kanji.is_none() {
