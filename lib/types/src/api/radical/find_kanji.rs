@@ -11,5 +11,6 @@ pub struct Request {
 #[derive(Serialize, Deserialize)]
 pub struct Response {
     pub kanji: HashMap<u32, Vec<char>>,
-    pub possible_radicals: Vec<char>,
+    //pub possible_radicals: Vec<char>,
+    pub possible_radicals: HashMap<u32, Vec<char>>,
 }

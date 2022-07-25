@@ -26,13 +26,12 @@ pub fn find_kanji(rads: &[char]) -> Response {
         }
     }
 
-    let mut possible_rads = Vec::with_capacity(possible_rads_set.len());
-    possible_rads.extend(
-        possible_rads_set
-            .iter()
-            .map(|i| unsafe { char::from_u32_unchecked(i) }),
-    );
-    sort_by_stroke_order(&mut possible_rads);
+    let mut possible_rads = HashMap::<u32, Vec<char>>::new();
+    for i in possible_rads_set {
+        let c = unsafe { char::from_u32_unchecked(i) };
+        let s_count = japanese::radicals::get_radical(c).unwrap().1;
+        possible_rads.entry(s_count as u32).or_default().push(c);
+    }
 
     let mut kanji_res2 = HashMap::<u32, Vec<char>>::with_capacity(kanji_res.len());
     kanji_res2.extend(kanji_res);
@@ -41,11 +40,6 @@ pub fn find_kanji(rads: &[char]) -> Response {
         possible_radicals: possible_rads,
         kanji: kanji_res2,
     }
-}
-
-#[inline]
-fn sort_by_stroke_order(inp: &mut [char]) {
-    inp.sort_by_cached_key(|i| japanese::radicals::get_radical(*i).unwrap().1);
 }
 
 fn push_or_insert<T>(map: &mut IntMap<Vec<T>>, key: u32, item: T) {
