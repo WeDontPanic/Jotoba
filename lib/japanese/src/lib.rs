@@ -399,6 +399,12 @@ impl JapaneseExt for str {
     }
 }
 
+pub fn to_kk_fmt(inp: &str) -> String {
+    let inp = inp.to_lowercase();
+    let i = inp.replace("nn", "ン");
+    wana_kana::to_katakana::to_katakana(&i)
+}
+
 pub fn to_hira_fmt(inp: &str) -> String {
     let inp = inp.to_lowercase();
     let i = inp.replace("nn", "ん");

@@ -16,12 +16,21 @@ impl<'a> RomajiProducer<'a> {
         Self { query }
     }
 
-    fn romaji_query(&self) -> String {
+    fn hira_query(&self) -> String {
         japanese::to_hira_fmt(&self.query.query_str)
     }
 
-    fn task(&self) -> SearchTask<native::Engine> {
-        let hira_query_str = self.romaji_query();
+    fn kk_query(&self) -> String {
+        japanese::to_kk_fmt(&self.query.query_str)
+    }
+
+    fn kk_task(&self) -> SearchTask<native::Engine> {
+        let hira_query_str = self.kk_query();
+        NativeSearch::new(self.query, &hira_query_str).task()
+    }
+
+    fn hira_task(&self) -> SearchTask<native::Engine> {
+        let hira_query_str = self.hira_query();
         NativeSearch::new(self.query, &hira_query_str).task()
     }
 }
@@ -36,11 +45,13 @@ impl<'a> Producer for RomajiProducer<'a> {
             <Self::Target as Searchable>::ResAdd,
         >,
     ) {
-        self.task().find_to(out);
+        self.hira_task().find_to(out);
+        self.kk_task().find_to(out);
     }
 
     fn estimate_to(&self, out: &mut FilteredMaxCounter<<Self::Target as Searchable>::Item>) {
-        self.task().estimate_to(out);
+        self.hira_task().estimate_to(out);
+        self.kk_task().estimate_to(out);
     }
 
     fn should_run(&self, already_found: usize) -> bool {
