@@ -7,7 +7,7 @@ use self::{
     pushable::{PushMod, Pushable},
 };
 
-use super::{result::SearchResult, result_item::ResultItem, SearchEngine};
+use super::{result::SearchResult, result_item::ResultItem, Index, SearchEngine};
 use error::Error;
 use priority_container::StableUniquePrioContainerMax;
 use sort_item::SortItem;
@@ -16,7 +16,7 @@ use types::jotoba::{
     languages::Language,
     search::guess::{Guess, GuessType},
 };
-use vector_space_model2::{term_store::TermIndexer, DocumentVector, Index, Vector};
+use vector_space_model2::{term_store::TermIndexer, DocumentVector, Vector};
 
 pub struct SearchTask<T: SearchEngine> {
     /// Search query
@@ -152,7 +152,7 @@ impl<T: SearchEngine> SearchTask<T> {
     }
 
     #[inline]
-    pub fn get_index(&self) -> &'static Index<T::Document, T::Metadata> {
+    pub fn get_index(&self) -> &'static T::Index {
         T::get_index(self.query_lang).expect("Lang not loaded")
     }
 

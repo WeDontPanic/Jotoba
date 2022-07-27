@@ -9,19 +9,52 @@ pub mod words;
 
 pub use search_task::SearchTask;
 
+use ngindex::{build::weights::TermWeight, term_store::TermIndexer, VectorStore};
+use search_task::sort_item::SortItem;
 use std::hash::Hash;
 use types::jotoba::languages::Language;
-use vector_space_model2::{metadata::Metadata, traits::Decodable, Index, Vector};
+use vector_space_model2::{metadata::Metadata, traits::Decodable, Vector};
 
-use self::search_task::sort_item::SortItem;
+pub trait Index<D> {
+    fn get_indexer(&self) -> &TermIndexer;
+    fn get_vector_store(&self) -> &VectorStore<D>;
+    fn build_vector(&self, terms: &[&str], something: Option<&dyn TermWeight>) -> Option<Vector>;
+}
+
+impl<T: Decodable, M> Index<T> for vector_space_model2::Index<T, M> {
+    fn get_indexer(&self) -> &TermIndexer {
+        self.get_indexer()
+    }
+
+    fn get_vector_store(&self) -> &VectorStore<T> {
+        self.get_vector_store()
+    }
+
+    fn build_vector(&self, terms: &[&str], weight: Option<&dyn TermWeight>) -> Option<Vector> {
+        self.build_vector(terms, weight)
+    }
+}
+
+impl<T: Decodable> Index<T> for ngindex::NGIndex<T> {
+    fn get_indexer(&self) -> &TermIndexer {
+        self.index().get_indexer()
+    }
+
+    fn get_vector_store(&self) -> &VectorStore<T> {
+        self.index().get_vector_store()
+    }
+
+    fn build_vector(&self, terms: &[&str], _: Option<&dyn TermWeight>) -> Option<Vector> {
+        self.make_query_vec(terms[0])
+    }
+}
 
 pub trait Indexable {
     type Metadata: Metadata + 'static;
     type Document: Decodable + Clone + 'static + Eq + Hash + Send;
+    type Index: Index<Self::Document> + 'static;
 
-    fn get_index(
-        language: Option<Language>,
-    ) -> Option<&'static Index<Self::Document, Self::Metadata>>;
+    fn get_index(language: Option<Language>) -> Option<&'static Self::Index>;
 }
 
 pub trait DocumentGenerateable {
@@ -36,7 +69,7 @@ pub trait SearchEngine: Indexable {
 
     /// Generates a vector for a query, in order to be able to compare results with a vector
     fn gen_query_vector(
-        index: &Index<Self::Document, Self::Metadata>,
+        index: &Self::Index,
         query: &str,
         align: bool,
         language: Option<Language>,
@@ -44,7 +77,7 @@ pub trait SearchEngine: Indexable {
 
     fn align_query<'b>(
         _original: &'b str,
-        _index: &Index<Self::Document, Self::Metadata>,
+        _index: &Self::Index,
         _language: Option<Language>,
     ) -> Option<&'b str> {
         None

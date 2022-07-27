@@ -1,4 +1,5 @@
 use crate::engine::{Indexable, SearchEngine};
+use indexes::names::NativeIndex;
 use types::jotoba::{languages::Language, names::Name};
 use utils::to_option;
 use vector_space_model2::{DefaultMetadata, Vector};
@@ -8,6 +9,7 @@ pub struct Engine {}
 impl Indexable for Engine {
     type Metadata = DefaultMetadata;
     type Document = Vec<u32>;
+    type Index = NativeIndex;
 
     #[inline]
     fn get_index(

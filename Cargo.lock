@@ -352,7 +352,7 @@ dependencies = [
  "bincode",
  "eudex",
  "jpeudex",
- "ngindex",
+ "ngindex 0.1.0 (git+https://github.com/JojiiOfficial/ngindex)",
  "ngram-tools",
  "order_struct",
  "priority_container 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -1465,6 +1465,7 @@ dependencies = [
  "bktree",
  "byteorder",
  "log",
+ "ngindex 0.1.0",
  "once_cell",
  "rayon",
  "serde",
@@ -1860,6 +1861,15 @@ dependencies = [
  "itertools 0.10.3",
  "once_cell",
  "utils",
+]
+
+[[package]]
+name = "ngindex"
+version = "0.1.0"
+dependencies = [
+ "ngram-tools",
+ "serde",
+ "vector_space_model2",
 ]
 
 [[package]]
@@ -2456,6 +2466,7 @@ dependencies = [
  "japanese",
  "localization",
  "log",
+ "ngindex 0.1.0",
  "once_cell",
  "order_struct",
  "percent-encoding",

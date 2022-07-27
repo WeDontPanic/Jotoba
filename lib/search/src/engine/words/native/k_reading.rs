@@ -8,6 +8,7 @@ pub struct Engine {}
 impl Indexable for Engine {
     type Metadata = DefaultMetadata;
     type Document = u32;
+    type Index = vector_space_model2::Index<Self::Document, Self::Metadata>;
 
     #[inline]
     fn get_index(

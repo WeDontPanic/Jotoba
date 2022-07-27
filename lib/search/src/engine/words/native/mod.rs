@@ -2,9 +2,9 @@ pub mod k_reading;
 pub mod regex;
 
 use crate::engine::{Indexable, SearchEngine};
+use indexes::words::NativeIndex;
 use japanese::JapaneseExt;
-use types::jotoba::languages::Language;
-use types::jotoba::words::Word;
+use types::jotoba::{languages::Language, words::Word};
 use vector_space_model2::{DefaultMetadata, Vector};
 
 pub struct Engine {}
@@ -12,6 +12,7 @@ pub struct Engine {}
 impl Indexable for Engine {
     type Metadata = DefaultMetadata;
     type Document = u32;
+    type Index = NativeIndex;
 
     #[inline]
     fn get_index(
