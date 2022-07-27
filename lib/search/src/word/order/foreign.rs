@@ -52,6 +52,15 @@ impl ForeignOrder {
 
     pub fn score(&self, item: SortItem<WordOutput>, user_lang: Language) -> usize {
         let relevance = item.vec_simiarity();
+
+        /*
+        let w = &item.item().word.get_reading().reading;
+        let rel = (relevance * 1000000000000.0) as usize;
+        //println!("{w:?}: {relevance}");
+
+        return rel;
+        */
+
         let word_output = item.item();
         let query_lang = item.language().unwrap();
         let query_str = item.query().trim().to_lowercase();
