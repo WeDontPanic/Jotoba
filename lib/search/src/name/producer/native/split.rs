@@ -43,7 +43,7 @@ impl<'a> SplitProducer<'a> {
             task.with_custom_order(move |i| {
                 let sim = i.vec_simiarity();
                 let rel = query_count - pos;
-                ((rel as f32 * 10.0 * sim) * 10.0) as usize
+                (rel as f32 * sim) as usize
             });
 
             (cb)(&task, out);
