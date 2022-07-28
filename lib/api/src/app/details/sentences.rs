@@ -21,7 +21,6 @@ pub async fn details_ep(payload: Json<DetailsPayload>) -> Result<Json<sentence::
 
 fn sentence_details(payload: &DetailsPayload) -> Option<sentence::Details> {
     let sentence = resources::get().sentences().by_id(payload.sequence)?;
-    println!("found by id");
 
     let kanji = get_kanji(sentence);
 

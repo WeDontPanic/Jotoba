@@ -100,7 +100,6 @@ impl<'a> Producer for SReaderProducer<'a> {
     }
 
     fn should_run(&self, _already_found: usize) -> bool {
-        println!("{:#?}", self.query);
         if self.parsed.is_none()
             || self.query.q_lang != QueryLang::Japanese
             || !self.query.form.is_normal()
