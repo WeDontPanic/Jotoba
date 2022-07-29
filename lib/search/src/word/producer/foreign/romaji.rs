@@ -31,7 +31,9 @@ impl<'a> RomajiProducer<'a> {
 
     fn hira_task(&self) -> SearchTask<native::Engine> {
         let hira_query_str = self.hira_query();
-        NativeSearch::new(self.query, &hira_query_str).task()
+        NativeSearch::new(self.query, &hira_query_str)
+            .with_custom_original_query(&hira_query_str)
+            .task()
     }
 }
 
