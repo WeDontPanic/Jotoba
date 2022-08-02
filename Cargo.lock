@@ -1539,7 +1539,7 @@ dependencies = [
  "bktree",
  "byteorder",
  "log",
- "ngindex 0.1.0",
+ "ngindex 0.1.0 (git+https://github.com/JojiiOfficial/ngindex)",
  "once_cell",
  "rayon",
  "serde",
