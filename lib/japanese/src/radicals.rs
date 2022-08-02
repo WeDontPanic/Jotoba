@@ -1,3 +1,5 @@
+use cached::proc_macro::cached;
+
 pub const RADICALS: &[(u32, &[&str]); 15] = &[
     (1, &["一", "｜", "丶", "ノ", "乙", "亅"]),
     (
@@ -80,6 +82,7 @@ pub fn is_radical(lit: char) -> bool {
 
 /// Returns a radical literal with its stroke count if found
 #[inline]
+#[cached(size = 1000)]
 pub fn get_radical(lit: char) -> Option<(char, u32)> {
     RADICALS.iter().find_map(|i| {
         i.1.iter().find_map(|j| {

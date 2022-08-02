@@ -1,8 +1,6 @@
 use serde::{Deserialize, Serialize};
 use std::collections::{BTreeSet, HashMap};
 
-use crate::jotoba::kanji::Kanji;
-
 /// Request struct for kanji_by_radicals endpoint
 #[derive(Deserialize)]
 pub struct Request {
@@ -29,20 +27,3 @@ impl KanjiRads {
         Self { kanji, rads }
     }
 }
-
-/*
-impl From<&Kanji> for KanjiRads {
-    #[inline]
-    fn from(k: &Kanji) -> Self {
-        let mut rads = HashMap::with_capacity(k.parts.len());
-        for part in &k.parts {
-            //let stroke_count =
-            //
-        }
-        Self {
-            kanji: k.literal,
-            rads,
-        }
-    }
-}
-*/

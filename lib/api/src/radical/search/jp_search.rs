@@ -1,8 +1,7 @@
-use std::collections::{HashMap, HashSet};
-
 use itertools::Itertools;
 use japanese::JapaneseExt;
 use search::engine::{words::native, SearchTask};
+use std::collections::{HashMap, HashSet};
 use types::{api::radical::search::KanjiRads, jotoba::kanji::Kanji};
 
 /// Returns a list of radicals based on the radical-search `query`
