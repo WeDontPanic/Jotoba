@@ -1,4 +1,4 @@
-pub const RADICALS: &[(i32, &[&str]); 15] = &[
+pub const RADICALS: &[(u32, &[&str]); 15] = &[
     (1, &["一", "｜", "丶", "ノ", "乙", "亅"]),
     (
         2,
@@ -80,7 +80,7 @@ pub fn is_radical(lit: char) -> bool {
 
 /// Returns a radical literal with its stroke count if found
 #[inline]
-pub fn get_radical(lit: char) -> Option<(char, i32)> {
+pub fn get_radical(lit: char) -> Option<(char, u32)> {
     RADICALS.iter().find_map(|i| {
         i.1.iter().find_map(|j| {
             let found = j.chars().next().unwrap() == lit;

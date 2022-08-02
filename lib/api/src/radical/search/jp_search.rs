@@ -1,4 +1,4 @@
-use std::collections::HashSet;
+use std::collections::{HashMap, HashSet};
 
 use itertools::Itertools;
 use japanese::JapaneseExt;
@@ -26,7 +26,7 @@ pub fn similar_kanji_search(query: &str) -> Vec<KanjiRads> {
 
     for kanji in kanji {
         // Add written kanji to the result too
-        out.push(kanji.into());
+        out.push(into_kanji_rads(kanji));
         dups.insert(kanji.literal);
 
         for part in kanji.parts.iter() {
@@ -37,7 +37,7 @@ pub fn similar_kanji_search(query: &str) -> Vec<KanjiRads> {
                     continue;
                 }
                 dups.insert(k.literal);
-                out.push(k.into());
+                out.push(into_kanji_rads(k));
             }
         }
     }
@@ -49,6 +49,18 @@ pub fn similar_kanji_search(query: &str) -> Vec<KanjiRads> {
 #[inline]
 fn get_kanji(lit: char) -> Option<&'static Kanji> {
     resources::get().kanji().by_literal(lit)
+}
+
+/// Convert a kanji to a `KanjiRads`
+fn into_kanji_rads(kanji: &Kanji) -> KanjiRads {
+    let mut rads: HashMap<u32, Vec<char>> = HashMap::with_capacity(kanji.parts.len());
+    for part in &kanji.parts {
+        let stroke_count = japanese::radicals::get_radical(*part).map(|i| i.1);
+        if let Some(stroke_count) = stroke_count {
+            rads.entry(stroke_count).or_default().push(*part);
+        }
+    }
+    KanjiRads::new(kanji.literal, rads)
 }
 
 /// Takes all kanji from `query` and returns a list of all unique radicals to build all kanji

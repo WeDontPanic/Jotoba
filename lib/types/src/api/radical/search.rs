@@ -17,25 +17,32 @@ pub struct Response {
 }
 
 /// Kanji literal with radicals
-#[derive(Serialize, Deserialize, Default, Hash, PartialEq, Eq)]
+#[derive(Serialize, Deserialize, Default, PartialEq, Eq)]
 pub struct KanjiRads {
     pub kanji: char,
-    pub rads: Vec<char>,
+    pub rads: HashMap<u32, Vec<char>>,
 }
 
 impl KanjiRads {
     #[inline]
-    pub fn new(kanji: char, rads: Vec<char>) -> Self {
+    pub fn new(kanji: char, rads: HashMap<u32, Vec<char>>) -> Self {
         Self { kanji, rads }
     }
 }
 
+/*
 impl From<&Kanji> for KanjiRads {
     #[inline]
     fn from(k: &Kanji) -> Self {
+        let mut rads = HashMap::with_capacity(k.parts.len());
+        for part in &k.parts {
+            //let stroke_count =
+            //
+        }
         Self {
             kanji: k.literal,
-            rads: k.parts.clone(),
+            rads,
         }
     }
 }
+*/
