@@ -33,7 +33,8 @@ spin = { version = "0.9.4", default-features = false, features = [
   "spin_mutex",
 ] }
 intmap = { git = "https://github.com/JojiiOfficial/rust-intmap" }
-ngindex = { path = "../../../ngindex" }
+#ngindex = { path = "../../../ngindex" }
+ngindex = { git = "https://github.com/JojiiOfficial/ngindex" }
 
 [dev-dependencies]
 test-case = "2.2.1"
