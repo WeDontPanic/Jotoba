@@ -18,7 +18,7 @@ pub struct Word {
     pub alt_readings: Vec<String>,
     pub senses: Vec<Sense>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub audio: Option<String>,
+    pub audio: Option<Audio>,
     #[serde(skip_serializing_if = "Vec::is_empty")]
     pub accents: Vec<Pitch>,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -30,6 +30,26 @@ pub struct Word {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub intransive_verion: Option<u32>,
     pub sentences_available: u16,
+}
+
+#[derive(Clone, Serialize, Deserialize)]
+pub struct Audio {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    ogg: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    mp3: Option<String>,
+}
+
+impl Audio {
+    #[inline]
+    pub fn new(ogg: Option<String>, mp3: Option<String>) -> Self {
+        Self { ogg, mp3 }
+    }
+
+    #[inline]
+    pub fn is_empty(&self) -> bool {
+        self.ogg.is_none() && self.mp3.is_none()
+    }
 }
 
 #[derive(Clone, Serialize, Deserialize)]
