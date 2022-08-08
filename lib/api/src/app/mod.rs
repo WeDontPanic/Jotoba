@@ -12,7 +12,8 @@ pub type Result<T> = std::result::Result<T, RestError>;
 pub(crate) fn conv_word(word: jotoba::words::Word, lang: Language) -> words::Word {
     let is_common = word.is_common();
     let accents = word.get_pitches();
-    let audio = word.audio_file("ogg");
+
+    let audio = word.audio_file();
 
     let reading = word
         .furigana

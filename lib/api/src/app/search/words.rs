@@ -34,11 +34,16 @@ pub async fn search(payload: Json<SearchPayload>) -> Result<Json<Resp>> {
     })
     .await?;
 
+    let kanji = search::word::kanji::load_word_kanji_info(&result.items)
+        .into_iter()
+        .map(|i| i.into())
+        .collect::<Vec<_>>();
+
     let words = result
         .items
         .iter()
         .map(|i| super::super::conv_word(i.clone(), user_lang))
-        .collect();
+        .collect::<Vec<_>>();
 
     let s_index = result.sentence_index();
 
@@ -51,7 +56,7 @@ pub async fn search(payload: Json<SearchPayload>) -> Result<Json<Resp>> {
 
     let original_query = result.other_data.raw_query.clone();
 
-    let res = words::Response::new(words, infl_info, sentence, original_query);
+    let res = words::Response::new(words, kanji, infl_info, sentence, original_query);
     let len = result.total as u32;
 
     let page = new_page(&payload, res, len, payload.settings.page_size);

@@ -111,10 +111,7 @@ impl From<&crate::jotoba::words::Word> for Word {
             },
             senses,
             alt_readings: None,
-            audio: word
-                .audio_file("ogg")
-                .as_ref()
-                .map(|i| format!("/audio/{}", i)),
+            audio: word.audio_file().as_ref().map(|i| format!("/audio/{}", i)),
             pitch,
         }
     }
