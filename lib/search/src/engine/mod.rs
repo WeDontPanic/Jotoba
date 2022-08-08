@@ -62,7 +62,7 @@ pub trait DocumentGenerateable {
 }
 
 pub trait SearchEngine: Indexable {
-    type Output: PartialEq + Eq + Hash + 'static + Send + Sync + Clone;
+    type Output: Eq + Hash + Clone;
 
     /// Loads the corresponding Output type from a document
     fn doc_to_output(input: &Self::Document) -> Option<Vec<Self::Output>>;

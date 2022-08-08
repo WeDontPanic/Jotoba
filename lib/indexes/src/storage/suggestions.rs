@@ -5,28 +5,36 @@ use serde::{Deserialize, Serialize};
 use std::{collections::HashMap, error::Error, path::Path};
 use types::jotoba::languages::Language;
 
+pub const K_MEANING_NGRAM: usize = 3;
+
+pub const FG_WORDS_NGRAM: usize = 3;
+pub const JP_WORDS_NGRAM: usize = 2;
+
+pub const FG_NAMES_NGRAM: usize = 3;
+pub const JP_NAMES_NGRAM: usize = 2;
+
 /// In-memory store for all suggestion indexes
 pub(crate) static SUGGESTION_STORE: OnceCell<SuggestionStorage> = OnceCell::new();
 
 /// Contains all suggestion index data
 #[derive(Serialize, Deserialize)]
 pub struct SuggestionStorage {
-    jp_words: JapaneseIndex,
-    foreign_words: HashMap<Language, BasicIndex>,
+    jp_words: JapaneseIndex<JP_WORDS_NGRAM>,
+    foreign_words: HashMap<Language, BasicIndex<FG_WORDS_NGRAM>>,
 
-    kanji_meanings: JapaneseIndex,
+    kanji_meanings: JapaneseIndex<K_MEANING_NGRAM>,
 
-    names_native: JapaneseIndex,
-    names_foreign: BasicIndex,
+    names_native: JapaneseIndex<JP_NAMES_NGRAM>,
+    names_foreign: BasicIndex<FG_NAMES_NGRAM>,
 }
 
 impl SuggestionStorage {
     pub fn new(
         jp_words: JapaneseIndex,
-        foreign_words: HashMap<Language, BasicIndex>,
-        kanji_meanings: JapaneseIndex,
-        names_native: JapaneseIndex,
-        names_foreign: BasicIndex,
+        foreign_words: HashMap<Language, BasicIndex<FG_WORDS_NGRAM>>,
+        kanji_meanings: JapaneseIndex<K_MEANING_NGRAM>,
+        names_native: JapaneseIndex<JP_NAMES_NGRAM>,
+        names_foreign: BasicIndex<FG_NAMES_NGRAM>,
     ) -> Self {
         Self {
             jp_words,
@@ -43,22 +51,22 @@ impl SuggestionStorage {
     }
 
     #[inline]
-    pub fn foreign_words(&self, language: Language) -> Option<&BasicIndex> {
+    pub fn foreign_words(&self, language: Language) -> Option<&BasicIndex<FG_WORDS_NGRAM>> {
         self.foreign_words.get(&language)
     }
 
     #[inline]
-    pub fn kanji_meanings(&self) -> &JapaneseIndex {
+    pub fn kanji_meanings(&self) -> &JapaneseIndex<K_MEANING_NGRAM> {
         &self.kanji_meanings
     }
 
     #[inline]
-    pub fn names_native(&self) -> &JapaneseIndex {
+    pub fn names_native(&self) -> &JapaneseIndex<JP_NAMES_NGRAM> {
         &self.names_native
     }
 
     #[inline]
-    pub fn names_foreign(&self) -> &BasicIndex {
+    pub fn names_foreign(&self) -> &BasicIndex<FG_NAMES_NGRAM> {
         &self.names_foreign
     }
 

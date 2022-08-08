@@ -65,14 +65,14 @@ pub fn suggestions(query: &Query, query_str: &str) -> Option<Vec<WordPair>> {
     rom_query.add_extension(similar_terms);
 
     let mut ng_ext = NGramExtension::with_sim_threshold(jp_engine, 0.4);
-    //ng_ext.options.threshold = 10;
+    ng_ext.options.threshold = 5;
     ng_ext.options.weights.total_weight = 0.25;
-    ng_ext.options.weights.freq_weight = 0.04;
-    ng_ext.query_weigth = 0.85;
-    ng_ext.term_limit = 10_000;
-    //ng_ext.options.weights.total_weight = 0.1;
+    ng_ext.options.weights.freq_weight = 0.02;
+    ng_ext.query_weigth = 0.15;
+    ng_ext.options.limit = 100;
+    ng_ext.query_weigth = 0.05;
     ng_ext.options.min_query_len = 5;
-    ng_ext.cust_query = Some(hira_query);
+    ng_ext.cust_query = Some(hira_query.clone());
     rom_query.add_extension(ng_ext);
 
     task.set_rel_mod(|i, rel| {
@@ -100,8 +100,10 @@ fn new_suggestion_query(query: &str, lang: Language) -> Option<SuggestionQuery> 
     let mut ng_ex = NGramExtension::with_sim_threshold(engine, 0.5);
     ng_ex.options.weights.total_weight = 0.7;
     ng_ex.options.weights.freq_weight = 0.05;
-    ng_ex.query_weigth = 0.7;
-    ng_ex.options.min_query_len = 4;
+    ng_ex.query_weigth = 0.05;
+    ng_ex.options.min_query_len = 5;
+    ng_ex.options.limit = 100;
+    ng_ex.options.threshold = 5;
     suggestion_query.add_extension(ng_ex);
 
     Some(suggestion_query)

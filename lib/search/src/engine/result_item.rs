@@ -9,7 +9,7 @@ use types::jotoba::languages::Language;
 pub struct ResultItem<T> {
     pub item: T,
     pub relevance: usize,
-    pub language: Option<Language>,
+    language: Option<Language>,
 }
 
 impl<T: PartialEq> ResultItem<T> {
@@ -21,21 +21,6 @@ impl<T: PartialEq> ResultItem<T> {
             relevance,
             language: None,
         }
-    }
-
-    #[inline]
-    pub fn new_raw(item: T, relevance: usize, language: Option<Language>) -> Self {
-        Self {
-            item,
-            relevance,
-            language,
-        }
-    }
-
-    /// Create a new ResultItem<T> with a language set
-    #[inline]
-    pub fn with_language(item: T, relevance: usize, language: Language) -> Self {
-        Self::new_raw(item, relevance, Some(language))
     }
 }
 
@@ -81,19 +66,5 @@ impl<T: PartialEq> Ord for ResultItem<T> {
     #[inline]
     fn cmp(&self, other: &Self) -> Ordering {
         self.relevance.cmp(&other.relevance)
-    }
-}
-
-impl<T: PartialEq> From<T> for ResultItem<T> {
-    #[inline]
-    fn from(item: T) -> Self {
-        ResultItem::new(item, 0)
-    }
-}
-
-impl<T: PartialEq> From<(T, usize)> for ResultItem<T> {
-    #[inline]
-    fn from((item, relevance): (T, usize)) -> Self {
-        ResultItem::new(item, relevance)
     }
 }

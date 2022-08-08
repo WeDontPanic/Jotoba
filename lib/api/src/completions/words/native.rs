@@ -108,7 +108,7 @@ pub fn suggestions(query: &Query, _romaji_query: &str, radicals: &[char]) -> Opt
     Some(convert_results(suggestion_task.search()))
 }
 
-fn normalize_inflections(query_str: &str) -> (Option<String>, Vec<String>) {
+pub(crate) fn normalize_inflections(query_str: &str) -> (Option<String>, Vec<String>) {
     let parse_res = sentence_reader::Parser::new(query_str).parse();
 
     if let sentence_reader::output::ParseResult::InflectedWord(word) = parse_res {

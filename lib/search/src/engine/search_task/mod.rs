@@ -2,14 +2,11 @@ pub mod cpushable;
 pub mod pushable;
 pub mod sort_item;
 
-use self::{
-    cpushable::{CPushable, MaxCounter},
-    pushable::{PushMod, Pushable},
-};
-
 use super::{result::SearchResult, result_item::ResultItem, Index, SearchEngine};
+use cpushable::{CPushable, MaxCounter};
 use error::Error;
 use priority_container::StableUniquePrioContainerMax;
+use pushable::{PushMod, Pushable};
 use sort_item::SortItem;
 use std::{collections::HashSet, fmt::Debug, hash::Hash, marker::PhantomData};
 use types::jotoba::{
@@ -243,7 +240,7 @@ impl<T: SearchEngine> SearchTask<T> {
                     continue;
                 }
 
-                out.push(ResultItem::new_raw(res_doc, score, self.query_lang));
+                out.push(ResultItem::new(res_doc, score));
             }
         }
     }

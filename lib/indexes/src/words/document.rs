@@ -1,9 +1,10 @@
 use std::io::Read;
 
 use byteorder::{ReadBytesExt, WriteBytesExt};
+use serde::{Deserialize, Serialize};
 use vector_space_model2::traits::{Decodable, Encodable};
 
-#[derive(Clone, Hash, PartialEq, Eq, Debug)]
+#[derive(Clone, Hash, PartialEq, Eq, Debug, Serialize, Deserialize)]
 pub struct FWordDoc {
     pub items: Vec<FWordDocItem>,
 }
@@ -15,7 +16,7 @@ impl FWordDoc {
     }
 }
 
-#[derive(Clone, PartialEq, Eq, Hash, Debug)]
+#[derive(Clone, PartialEq, Eq, Hash, Debug, Serialize, Deserialize)]
 pub struct FWordDocItem {
     pub seq_id: u32,
     pub positions: Vec<u16>,

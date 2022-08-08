@@ -9,10 +9,10 @@ edition = "2021"
 types = { path = "../types" }
 #vector_space_model2 = { path = "../../../VectorSpaceModel" }
 vector_space_model2 = { git = "https://github.com/JojiiOfficial/VectorSpaceModel" }
-autocompletion = { git = "https://github.com/WeDontPanic/AutoCompletionFramework" }
-#autocompletion = { path = "../../../AutosuggestionFramework" }
+#autocompletion = { git = "https://github.com/WeDontPanic/AutoCompletionFramework" }
+autocompletion = { path = "../../../AutoCompletionFramework" }
 bktree = { git = "https://github.com/JojiiOfficial/bktree" }
-serde = { version = "1.0.140", features = ["derive"] }
+serde = { version = "1.0.142", features = ["derive"] }
 byteorder = "1.4.3"
 bitflags = { git = "https://github.com/JojiiOfficial/BitFlags" }
 once_cell = { version = "1.13.0", default-features = false }
