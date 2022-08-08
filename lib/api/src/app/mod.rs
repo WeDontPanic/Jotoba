@@ -13,8 +13,7 @@ pub(crate) fn conv_word(word: jotoba::words::Word, lang: Language) -> words::Wor
     let is_common = word.is_common();
     let accents = word.get_pitches();
 
-    let audio = words::Audio::new(word.audio_file("ogg"), word.audio_file("mp3"));
-    let audio = (!audio.is_empty()).then(|| audio);
+    let audio = word.audio_file();
 
     let reading = word
         .furigana

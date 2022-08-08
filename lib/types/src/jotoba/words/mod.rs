@@ -254,12 +254,9 @@ impl Word {
 
     /// Get the audio path of a word
     #[inline]
-    pub fn audio_file(&self, file_ending: &str) -> Option<String> {
+    pub fn audio_file(&self) -> Option<String> {
         self.reading.kanji.as_ref().and_then(|kanji| {
-            let file = format!(
-                "{}/{}【{}】.{}",
-                file_ending, kanji.reading, self.reading.kana.reading, file_ending
-            );
+            let file = format!("mp3/{}【{}】.mp3", kanji.reading, self.reading.kana.reading);
             std::path::Path::new(&format!("html/audio/{}", file))
                 .exists()
                 .then(|| file)

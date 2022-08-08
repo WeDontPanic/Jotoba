@@ -139,13 +139,10 @@
                   @data.gettext_fmt("JLPT N{}", &[lvl])
                 </div>
               }
-              @if let Some(audio) = word.audio_file("ogg") {
+              @if let Some(audio) = word.audio_file() {
                 <span class="clickable audioBtn p" data-p='"button", @{"props":@{"name": "Play audio", "category": "util"@}@}' data="/audio/@audio">@data.gettext("Play audio")
                   <audio preload="none">
-                    <source src="/audio/@audio" type="audio/ogg">
-                    @if let Some(audio) = word.audio_file("mp3") {
-                      <source src="/audio/@audio" type="audio/mp3">
-                    }
+                    <source src="/audio/@audio" type="audio/mp3">
                   </audio>
                 </span>
               }
@@ -214,7 +211,7 @@
                       </li>
                     }
 
-                    @if let Some(audio) = word.audio_file("ogg") {
+                    @if let Some(audio) = word.audio_file() {
                       <li disabled class="mdl-menu__item p" data-p='"button", @{"props":@{"name": "Download audio", "category": "3-dot"@}@}'><hr></li>
                       <li id="AudioDlBtn" class="info-entry noselect" class="mdl-menu__item">
                         <div class="downloadSvg"></div>
