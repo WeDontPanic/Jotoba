@@ -9,21 +9,21 @@ edition = "2021"
 types = { path = "../types" }
 #vector_space_model2 = { path = "../../../VectorSpaceModel" }
 vector_space_model2 = { git = "https://github.com/JojiiOfficial/VectorSpaceModel" }
-#autocompletion = { git = "https://github.com/WeDontPanic/AutoCompletionFramework" }
-autocompletion = { path = "../../../AutoCompletionFramework" }
+autocompletion = { git = "https://github.com/WeDontPanic/AutoCompletionFramework" }
+#autocompletion = { path = "../../../AutoCompletionFramework" }
 bktree = { git = "https://github.com/JojiiOfficial/bktree" }
-serde = { version = "1.0.142", features = ["derive"] }
+serde = { version = "1.0.143", features = ["derive"] }
 byteorder = "1.4.3"
 bitflags = { git = "https://github.com/JojiiOfficial/BitFlags" }
 once_cell = { version = "1.13.0", default-features = false }
 bincode = "1.3.3"
 log = "0.4.17"
 rayon = { version = "1.5.3", optional = true }
-#ngindex = { git = "https://github.com/JojiiOfficial/ngindex" }
+ngindex = { git = "https://github.com/JojiiOfficial/ngindex" }
 qp-trie = { git = "https://github.com/sdleffler/qp-trie-rs", features = [
   "serde",
 ] }
-ngindex = { path = "../../../ngindex" }
+#ngindex = { path = "../../../ngindex" }
 
 [features]
 default = []
