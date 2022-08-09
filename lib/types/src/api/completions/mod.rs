@@ -2,7 +2,7 @@ use crate::jotoba::search::SearchTarget;
 use serde::{Deserialize, Serialize};
 
 /// Request payload structure for suggestion endpoint
-#[derive(Deserialize)]
+#[derive(Deserialize, Debug)]
 pub struct Request {
     /// The search query to find suggestions for
     pub input: String,
@@ -13,10 +13,14 @@ pub struct Request {
 
     /// The search type the input is designed for
     #[serde(default)]
-    pub search_type: SearchTarget,
+    #[serde(rename = "search_type")]
+    pub search_target: SearchTarget,
 
     #[serde(default)]
     pub radicals: Vec<char>,
+
+    #[serde(default)]
+    pub hashtag: bool,
 }
 
 /// Response struct for suggestion endpoint
@@ -45,20 +49,16 @@ impl Response {
 }
 
 /// The type of suggestion. `Default` in most cases
-#[derive(Deserialize, Serialize)]
+#[derive(Deserialize, Serialize, Default)]
 #[serde(rename_all = "snake_case")]
 pub enum SuggestionType {
     /// Default suggestion type
+    #[default]
     Default,
     /// Special suggestion type for kanji readings
     KanjiReading,
-}
-
-impl Default for SuggestionType {
-    #[inline]
-    fn default() -> Self {
-        Self::Default
-    }
+    /// Hash tag suggestions
+    Hashtag,
 }
 
 /// A word with kana and kanji reading used within [`SuggestionResponse`]
@@ -88,6 +88,7 @@ impl WordPair {
     }
 
     /// Returns true if [`self`] contains [`reading`]
+    #[inline]
     pub fn has_reading(&self, reading: &str) -> bool {
         self.primary == reading
             || self

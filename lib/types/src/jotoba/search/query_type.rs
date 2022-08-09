@@ -1,9 +1,9 @@
 #[cfg(feature = "jotoba_intern")]
 use localization::{language::Language, traits::Translatable, TranslationDict};
 
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 
-#[derive(Deserialize, Debug, Copy, Clone, PartialEq, Hash)]
+#[derive(Serialize, Deserialize, Debug, Copy, Clone, PartialEq, Hash)]
 pub enum SearchTarget {
     #[serde(rename = "1")]
     Kanji,
@@ -17,8 +17,9 @@ pub enum SearchTarget {
 
 impl SearchTarget {
     /// Iterate over all query types
+    #[inline]
     pub fn iterate() -> impl Iterator<Item = Self> {
-        vec![Self::Kanji, Self::Sentences, Self::Names, Self::Words].into_iter()
+        [Self::Kanji, Self::Sentences, Self::Names, Self::Words].into_iter()
     }
 
     #[cfg(feature = "jotoba_intern")]

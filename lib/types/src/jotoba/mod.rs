@@ -10,3 +10,6 @@ pub mod search;
 pub mod sentences;
 /// Contains all structures and enums for Jotoba words
 pub mod words;
+
+/// Types used in indexes
+pub mod indexes;

@@ -37,9 +37,7 @@ pub(crate) fn adjust(request: Request) -> Request {
 
     Request {
         input: query_str.to_owned(),
-        lang: request.lang,
-        search_type: request.search_type,
-        radicals: request.radicals,
+        ..request
     }
 }
 
@@ -47,7 +45,7 @@ pub(crate) fn adjust(request: Request) -> Request {
 pub(crate) fn get_query(request: Request) -> Result<(Query, Vec<char>), RestError> {
     let query_str = request.input.trim_start().to_string();
 
-    let search_type = request.search_type;
+    let search_type = request.search_target;
 
     let settings = UserSettings {
         user_lang: get_language(&request),
@@ -71,9 +69,8 @@ pub(crate) fn get_language(request: &Request) -> Language {
 /// Validates the API request payload
 pub(crate) fn validate(payload: &Request) -> Result<(), RestError> {
     let query_len = real_string_len(&payload.input.trim());
-    if query_len < 1 || query_len > 37 {
+    if (query_len < 1 && !payload.hashtag) || query_len > 37 {
         return Err(RestError::BadRequest.into());
     }
-
     Ok(())
 }

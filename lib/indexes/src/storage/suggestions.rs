@@ -1,3 +1,5 @@
+use crate::hashtag::HashTagIndex;
+
 use super::utils;
 use autocompletion::index::{basic::BasicIndex, japanese::JapaneseIndex};
 use once_cell::sync::OnceCell;
@@ -26,6 +28,8 @@ pub struct SuggestionStorage {
 
     names_native: JapaneseIndex<JP_NAMES_NGRAM>,
     names_foreign: BasicIndex<FG_NAMES_NGRAM>,
+
+    hashtag: HashTagIndex,
 }
 
 impl SuggestionStorage {
@@ -35,6 +39,7 @@ impl SuggestionStorage {
         kanji_meanings: JapaneseIndex<K_MEANING_NGRAM>,
         names_native: JapaneseIndex<JP_NAMES_NGRAM>,
         names_foreign: BasicIndex<FG_NAMES_NGRAM>,
+        hashtag: HashTagIndex,
     ) -> Self {
         Self {
             jp_words,
@@ -42,6 +47,7 @@ impl SuggestionStorage {
             kanji_meanings,
             names_native,
             names_foreign,
+            hashtag,
         }
     }
 
@@ -68,6 +74,11 @@ impl SuggestionStorage {
     #[inline]
     pub fn names_foreign(&self) -> &BasicIndex<FG_NAMES_NGRAM> {
         &self.names_foreign
+    }
+
+    #[inline]
+    pub fn hashtags(&self) -> &HashTagIndex {
+        &self.hashtag
     }
 
     pub fn check(&self) -> bool {

@@ -7,23 +7,36 @@ use actix_web::web::Json;
 use japanese::JapaneseExt;
 use search::query::{Form, Query};
 use types::{
-    api::completions::{Request, Response, WordPair},
+    api::completions::{Request, Response, SuggestionType, WordPair},
     jotoba::{kanji::reading::ReadingSearch, search::SearchTarget},
 };
+use words::hashtag;
+
+pub async fn suggestion_ep(payload: Json<Request>) -> Result<Json<Response>, actix_web::Error> {
+    Ok(Json(suggestion_ep_inner(payload)?))
+}
 
 /// Get search suggestions endpoint
-pub async fn suggestion_ep(payload: Json<Request>) -> Result<Json<Response>, actix_web::Error> {
+fn suggestion_ep_inner(payload: Json<Request>) -> Result<Response, actix_web::Error> {
     request::validate(&payload)?;
+
+    if payload.hashtag {
+        let suggestions = hashtag::suggestions(&payload.input, payload.search_target);
+        if let Some(res) = suggestions {
+            return Ok(Response::with_type(res, SuggestionType::Hashtag));
+        }
+        return Ok(Response::default());
+    }
 
     // Adjust payload and parse to query
     let (query, radicals) = request::get_query(request::adjust(payload.into_inner()))?;
 
     // Eg. when tags get parsed, the query becomes empty
     if query.query_str.trim().is_empty() {
-        return Ok(Json(Response::default()));
+        return Ok(Response::default());
     }
 
-    Ok(Json(get_suggestions(query, radicals)))
+    Ok(get_suggestions(query, radicals))
 }
 
 /// Returns best matching suggestions for the given query

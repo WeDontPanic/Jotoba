@@ -1,4 +1,5 @@
 pub mod foreign;
+pub mod hashtag;
 pub mod kana_end_ext;
 pub mod native;
 
@@ -21,10 +22,7 @@ pub(crate) fn suggestions(query: Query, radicals: &[char]) -> Option<Response> {
         response
     };
 
-    Some(Response {
-        suggestions: result,
-        ..Default::default()
-    })
+    Some(Response::new(result))
 }
 
 /// Returns Ok(suggestions) for the given query ordered and ready to display
@@ -50,6 +48,7 @@ fn try_word_suggestions(query: &Query, radicals: &[char]) -> Option<Vec<WordPair
 }
 
 /// Ordering for [`WordPair`]s which puts the exact matches to top
+#[inline]
 fn word_pair_order(a: &WordPair, b: &WordPair, query: &str) -> Ordering {
     bool_ord(a.has_reading(&query), b.has_reading(&query))
 }

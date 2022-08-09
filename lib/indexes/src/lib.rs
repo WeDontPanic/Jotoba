@@ -1,3 +1,4 @@
+pub mod hashtag;
 pub mod kanji;
 pub mod metadata;
 pub mod names;
@@ -8,5 +9,4 @@ pub mod sentences;
 pub mod storage;
 pub mod words;
 
-pub use storage::get;
-pub use storage::suggestions::get_suggestions;
+pub use storage::{get, suggestions::get_suggestions};
