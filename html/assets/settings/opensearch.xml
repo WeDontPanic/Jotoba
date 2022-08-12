@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<OpenSearchDescription xmlns="http://a9.com/-/spec/opensearch/1.1/">
+<OpenSearchDescription xmlns="http://a9.com/-/spec/opensearch/1.1/"
+        xmlns:suggestions="http://www.opensearch.org/specifications/opensearch/extensions/suggestions/1.1">
     <ShortName>Jotoba</ShortName>
-    <Description>Search for words on Jotoba.de</Description>
-    <Url type="text/html" template="https://jotoba.de/search/{searchTerms}"/>
+    <Description>Japanese dictionary search</Description>
     <Image width="16" height="16" type="image/png">https://jotoba.de/assets/jotokun/favicon.png</Image>
+    <Url template="https://jotoba.de/api/os-suggestions?q={searchTerms}" rel="suggestions" type="application/x-suggestions+json"/>
+    <Url type="text/html" template="https://jotoba.de/search?s={searchTerms}" rel="results"/>
+    <Url type="application/opensearchdescription+xml" rel="self" template="https://jotoba.de/assets/settings/opensearch.xml" />
 </OpenSearchDescription>

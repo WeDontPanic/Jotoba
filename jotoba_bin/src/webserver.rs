@@ -184,6 +184,10 @@ pub(super) async fn start(options: Options) -> std::io::Result<()> {
                         "/suggestion",
                         actixweb::post().to(api::completions::suggestion_ep),
                     )
+                    .route(
+                        "/os-suggestions",
+                        actixweb::get().to(api::completions::opensearch::suggestion_ep),
+                    )
                     .route("/img_scan", actixweb::post().to(api::img::scan_ep))
                     .route("/news/short", actixweb::post().to(api::news::short::news))
                     .route(

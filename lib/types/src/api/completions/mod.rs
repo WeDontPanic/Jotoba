@@ -97,6 +97,11 @@ impl WordPair {
                 .map(|i| i == reading)
                 .unwrap_or_default()
     }
+
+    #[inline]
+    pub fn secondary_preferred(&self) -> &String {
+        self.secondary.as_ref().unwrap_or(&self.primary)
+    }
 }
 
 #[cfg(feature = "jotoba_intern")]

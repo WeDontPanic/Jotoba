@@ -1,5 +1,6 @@
 mod kanji;
 mod names;
+pub mod opensearch;
 mod request;
 mod words;
 
@@ -13,11 +14,11 @@ use types::{
 use words::hashtag;
 
 pub async fn suggestion_ep(payload: Json<Request>) -> Result<Json<Response>, actix_web::Error> {
-    Ok(Json(suggestion_ep_inner(payload)?))
+    Ok(Json(suggestion_ep_inner(payload.into_inner())?))
 }
 
 /// Get search suggestions endpoint
-fn suggestion_ep_inner(payload: Json<Request>) -> Result<Response, actix_web::Error> {
+pub(crate) fn suggestion_ep_inner(payload: Request) -> Result<Response, actix_web::Error> {
     request::validate(&payload)?;
 
     if payload.hashtag {
@@ -29,7 +30,7 @@ fn suggestion_ep_inner(payload: Json<Request>) -> Result<Response, actix_web::Er
     }
 
     // Adjust payload and parse to query
-    let (query, radicals) = request::get_query(request::adjust(payload.into_inner()))?;
+    let (query, radicals) = request::get_query(request::adjust(payload))?;
 
     // Eg. when tags get parsed, the query becomes empty
     if query.query_str.trim().is_empty() {

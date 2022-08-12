@@ -3,7 +3,7 @@ use localization::{language::Language, traits::Translatable, TranslationDict};
 
 use serde::{Deserialize, Serialize};
 
-#[derive(Serialize, Deserialize, Debug, Copy, Clone, PartialEq, Hash)]
+#[derive(Serialize, Deserialize, Debug, Copy, Clone, PartialEq, Hash, Default)]
 pub enum SearchTarget {
     #[serde(rename = "1")]
     Kanji,
@@ -11,6 +11,7 @@ pub enum SearchTarget {
     Sentences,
     #[serde(rename = "3")]
     Names,
+    #[default]
     #[serde(rename = "0", other)]
     Words,
 }
@@ -54,13 +55,6 @@ impl TryFrom<u8> for SearchTarget {
             3 => Self::Names,
             _ => return Err(()),
         })
-    }
-}
-
-impl Default for SearchTarget {
-    #[inline]
-    fn default() -> Self {
-        Self::Words
     }
 }
 
