@@ -1,7 +1,7 @@
 use engine::{
     pushable::FilteredMaxCounter,
     pushable::{PushMod, Pushable},
-    rel_item::RelItem,
+    relevance::item::RelItem,
 };
 use types::jotoba::{kanji::Kanji, words::Word};
 

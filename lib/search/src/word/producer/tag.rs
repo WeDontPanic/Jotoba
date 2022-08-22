@@ -8,7 +8,7 @@ use crate::{
 use engine::{
     pushable::FilteredMaxCounter,
     pushable::{PushMod, Pushable},
-    rel_item::RelItem,
+    relevance::item::RelItem,
 };
 
 pub struct TagProducer<'a> {
@@ -79,7 +79,7 @@ impl<'a> TagProducer<'a> {
             Tag::PartOfSpeech(p) => w_retr.pos_simple_len(p),
             Tag::Misc(m) => w_retr.misc_len(m),
             Tag::Jlpt(j) => w_retr.jlpt_len(*j),
-            Tag::IrregularIruEru => todo!(),
+            Tag::IrregularIruEru => Some(w_retr.irregular_ichidan_len()),
             _ => None,
         }
     }

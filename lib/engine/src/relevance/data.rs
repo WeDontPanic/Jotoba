@@ -52,7 +52,7 @@ impl<'item, 'query, T, I, Q> SortData<'item, 'query, T, I, Q> {
     }
 
     #[inline]
-    pub fn query(&mut self) -> &'query Q {
+    pub fn query(&self) -> &'query Q {
         self.query
     }
 

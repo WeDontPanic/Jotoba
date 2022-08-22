@@ -5,7 +5,7 @@
 use super::{result::SearchResult, Index, SearchEngine};
 use engine::{
     pushable::{MaxCounter, PushMod, Pushable},
-    rel_item::RelItem,
+    relevance::item::RelItem,
     relevance::data::SortData,
 };
 use error::Error;

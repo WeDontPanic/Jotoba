@@ -8,7 +8,7 @@ use crate::{
     word::Search,
 };
 use engine::pushable::FilteredMaxCounter;
-use engine::{pushable::PushMod, rel_item::RelItem};
+use engine::{pushable::PushMod, relevance::item::RelItem};
 use task::ForeignSearch;
 use types::jotoba::languages::Language;
 

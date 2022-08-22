@@ -1,4 +1,4 @@
-use engine::{pushable::Pushable, rel_item::RelItem};
+use engine::{pushable::Pushable, relevance::item::RelItem};
 use priority_container::StableUniquePrioContainerMax;
 use std::hash::Hash;
 

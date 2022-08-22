@@ -1,6 +1,6 @@
 use engine::{
     pushable::{FilteredMaxCounter, Pushable},
-    rel_item::RelItem,
+    relevance::item::RelItem,
 };
 use sentence_reader::{output::ParseResult, Parser};
 use types::jotoba::names::Name;

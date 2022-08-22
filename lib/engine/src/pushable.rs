@@ -1,4 +1,4 @@
-use crate::rel_item::RelItem;
+use super::relevance::item::RelItem;
 use priority_container::StableUniquePrioContainerMax;
 use std::{hash::Hash, marker::PhantomData};
 

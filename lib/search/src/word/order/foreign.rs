@@ -52,9 +52,7 @@ impl ForeignOrder {
     }
 
     pub fn score(&self, item: SortData<WordOutput, Vector, Vector>, user_lang: Language) -> usize {
-        //let relevance = item.vec_simiarity();
-        todo!();
-        let relevance = 0.0;
+        let relevance = item.vec_similarity();
 
         /*
         let w = &item.item().word.get_reading().reading;

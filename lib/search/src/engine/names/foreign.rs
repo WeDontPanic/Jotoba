@@ -46,12 +46,7 @@ impl SearchEngine for Engine {
 
     #[inline]
     fn score(item: SortData<Self::Output, Vector, Vector>) -> usize {
-        /*
-        let qvec = item.query_vec();
-        let dvec = item.item_vec();
-        (dice(qvec, dvec) * 100000.0) as usize
-        */
-        todo!()
+        (dice(item.query(), item.index_item()) * 100000.0) as usize
     }
 }
 

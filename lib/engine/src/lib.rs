@@ -1,5 +1,4 @@
 pub mod pushable;
-pub mod rel_item;
 pub mod relevance;
 pub mod result;
 pub mod task;

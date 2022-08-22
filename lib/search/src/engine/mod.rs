@@ -85,8 +85,7 @@ pub trait SearchEngine: Indexable {
 
     #[inline]
     fn score(item: SortData<Self::Output, Vector, Vector>) -> usize {
-        todo!()
-        //(item.vec_simiarity() * 100.0) as usize
+        (item.vec_similarity() * 100.0) as usize
     }
 
     fn query_formatted(inp: &str) -> String {

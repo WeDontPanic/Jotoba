@@ -3,7 +3,7 @@ use crate::{
     query::Query,
     word::Search,
 };
-use engine::{pushable::FilteredMaxCounter, pushable::Pushable, rel_item::RelItem};
+use engine::{pushable::FilteredMaxCounter, pushable::Pushable, relevance::item::RelItem};
 use types::jotoba::words::Word;
 
 /// Producer for a Word by its sequence id

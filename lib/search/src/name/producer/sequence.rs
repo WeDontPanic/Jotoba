@@ -5,7 +5,7 @@ use crate::{
 };
 use engine::{
     pushable::{FilteredMaxCounter, Pushable},
-    rel_item::RelItem,
+    relevance::item::RelItem,
 };
 use types::jotoba::names::Name;
 

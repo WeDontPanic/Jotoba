@@ -1,6 +1,6 @@
 use crate::{
     pushable::{MaxCounter, PushMod, Pushable},
-    rel_item::RelItem,
+    relevance::item::RelItem,
     relevance::{data::SortData, RelevanceEngine},
     result::SearchResult,
     Engine,

@@ -1,4 +1,4 @@
-use super::rel_item::RelItem;
+use super::relevance::item::RelItem;
 use std::{fmt::Debug, slice::Iter};
 
 /// A result from a search. Contains information about the actual
