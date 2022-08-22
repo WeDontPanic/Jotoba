@@ -35,6 +35,8 @@ pub enum Field {
     Buddhism,
     #[strum(serialize = "bus")]
     Business,
+    #[strum(serialize = "cards")]
+    Cards,
     #[strum(serialize = "chem")]
     Chemistry,
     #[strum(serialize = "Christn")]
@@ -45,6 +47,8 @@ pub enum Field {
     Clothing,
     #[strum(serialize = "cryst")]
     Crystallography,
+    #[strum(serialize = "dent")]
+    Dentistry,
     #[strum(serialize = "ecol")]
     Ecology,
     #[strum(serialize = "econ")]
@@ -89,6 +93,8 @@ pub enum Field {
     Horseracing,
     #[strum(serialize = "law")]
     Law,
+    #[strum(serialize = "kabuki")]
+    Kabuki,
     #[strum(serialize = "ling")]
     Linguistics,
     #[strum(serialize = "logic")]
@@ -125,6 +131,8 @@ pub enum Field {
     Physics,
     #[strum(serialize = "physiol")]
     Physiology,
+    #[strum(serialize = "politics")]
+    Politics,
     #[strum(serialize = "print")]
     Printing,
     #[strum(serialize = "psych")]
@@ -171,6 +179,7 @@ impl Translatable for Field {
             Field::Botany => "Botany",
             Field::Buddhism => "Buddhism",
             Field::Business => "Business",
+            Field::Cards => "Cards",
             Field::Chemistry => "Chemistry",
             Field::Christianity => "Christianity",
             Field::Computing => "Computing",
@@ -196,6 +205,7 @@ impl Translatable for Field {
             Field::GreekMythology => "Greek mythology",
             Field::Hanafuda => "Hanafuda",
             Field::Horseracing => "Horseracing",
+            Field::Kabuki => "Kabuki",
             Field::Law => "Law",
             Field::Linguistics => "Linguistics",
             Field::Logic => "Logic",
@@ -229,6 +239,8 @@ impl Translatable for Field {
             Field::Videogame => "Videogame",
             Field::Zoology => "Zoology",
             Field::Clothing => "Clothing",
+            Field::Dentistry => "Dentistry",
+            Field::Politics => "Politics",
         }
     }
 

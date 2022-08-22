@@ -34,6 +34,8 @@ pub enum Misc {
     Document,
     #[strum(serialize = "ev")]
     Event,
+    #[strum(serialize = "euph")]
+    Euphemistic,
     #[strum(serialize = "fam", serialize = "familiarlanguage")]
     FamiliarLanguage,
     #[strum(serialize = "fem", serialize = "femaleterm")]
@@ -136,6 +138,7 @@ impl Translatable for Misc {
             Misc::Derogatory => "Derogatory",
             Misc::Document => "Document",
             Misc::Event => "Event",
+            Misc::Euphemistic => "Euphemistic",
             Misc::FamiliarLanguage => "Familiar language",
             Misc::FemaleTermOrLanguage => "Female term/language",
             Misc::Fiction => "Fiction",

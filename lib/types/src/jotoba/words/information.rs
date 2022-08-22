@@ -25,6 +25,10 @@ pub enum Information {
     UsuallyKana,
     #[strum(serialize = "rK")]
     RarelyUsedKanjiForm,
+    #[strum(serialize = "sK")]
+    SearchOnlyKanji,
+    #[strum(serialize = "sk")]
+    SearchOnlyKana,
 }
 
 #[cfg(feature = "jotoba_intern")]
@@ -40,6 +44,8 @@ impl Translatable for Information {
             Information::Gikun => "gikun",
             Information::UsuallyKana => "usually written in kana",
             Information::RarelyUsedKanjiForm => "rarely used kanji form",
+            Information::SearchOnlyKanji => "Seach only kanji form",
+            Information::SearchOnlyKana => "Seach only kana form",
         }
     }
 }
