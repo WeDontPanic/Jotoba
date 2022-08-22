@@ -1,4 +1,5 @@
-use crate::engine::{search_task::sort_item::SortItem, words::foreign::output::WordOutput};
+use crate::engine::words::foreign::output::WordOutput;
+use engine::relevance::data::SortData;
 use indexes::relevance::RelevanceIndex;
 use spin::Mutex;
 use std::collections::HashMap;
@@ -50,8 +51,10 @@ impl ForeignOrder {
         Some(res as usize)
     }
 
-    pub fn score(&self, item: SortItem<WordOutput>, user_lang: Language) -> usize {
-        let relevance = item.vec_simiarity();
+    pub fn score(&self, item: SortData<WordOutput, Vector, Vector>, user_lang: Language) -> usize {
+        //let relevance = item.vec_simiarity();
+        todo!();
+        let relevance = 0.0;
 
         /*
         let w = &item.item().word.get_reading().reading;
@@ -63,7 +66,7 @@ impl ForeignOrder {
 
         let word_output = item.item();
         let query_lang = item.language().unwrap();
-        let query_str = item.query().trim().to_lowercase();
+        let query_str = item.query_str().trim().to_lowercase();
 
         let text_score = (relevance as f64 * 10.0) as usize;
         let word = word_output.word;

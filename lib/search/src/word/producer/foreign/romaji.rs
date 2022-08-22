@@ -1,11 +1,12 @@
 use japanese::guessing::could_be_romaji;
 
 use crate::{
-    engine::{search_task::cpushable::FilteredMaxCounter, words::native, SearchTask},
+    engine::{words::native, SearchTask},
     executor::{out_builder::OutputBuilder, producer::Producer, searchable::Searchable},
     query::{Query, QueryLang},
     word::{producer::japanese::task::NativeSearch, Search},
 };
+use engine::pushable::FilteredMaxCounter;
 
 pub struct RomajiProducer<'a> {
     query: &'a Query,

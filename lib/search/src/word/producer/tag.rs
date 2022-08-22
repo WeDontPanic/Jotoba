@@ -1,16 +1,14 @@
 use types::jotoba::words::Word;
 
 use crate::{
-    engine::{
-        result_item::ResultItem,
-        search_task::{
-            cpushable::{CPushable, FilteredMaxCounter},
-            pushable::PushMod,
-        },
-    },
     executor::{out_builder::OutputBuilder, producer::Producer, searchable::Searchable},
     query::{Query, Tag},
     word::Search,
+};
+use engine::{
+    pushable::FilteredMaxCounter,
+    pushable::{PushMod, Pushable},
+    rel_item::RelItem,
 };
 
 pub struct TagProducer<'a> {
@@ -35,7 +33,7 @@ impl<'a> TagProducer<'a> {
 
     fn find_to<P>(&self, out: &mut P)
     where
-        P: CPushable<Item = ResultItem<&'static Word>>,
+        P: Pushable<Item = RelItem<&'static Word>>,
     {
         // Find first producer tag. All other tags are treated as filter
         let producer_tag = self.get_producer_tag().unwrap();
@@ -44,7 +42,7 @@ impl<'a> TagProducer<'a> {
 
     fn find_words<P>(&self, out: &mut P, tag: &Tag)
     where
-        P: CPushable<Item = ResultItem<&'static Word>>,
+        P: Pushable<Item = RelItem<&'static Word>>,
     {
         let words = resources::get().words();
         match tag {
@@ -58,12 +56,12 @@ impl<'a> TagProducer<'a> {
 
     fn push_iter<P, I>(&self, iter: I, out: &mut P)
     where
-        P: CPushable<Item = ResultItem<&'static Word>>,
+        P: Pushable<Item = RelItem<&'static Word>>,
         I: Iterator<Item = &'static Word> + DoubleEndedIterator,
     {
         let mut c = 0;
         for w in iter.rev() {
-            let item = ResultItem::new(w, 1000 - c);
+            let item = RelItem::new(w, (1000 - c) as f32);
             if out.push(item) {
                 c += 1;
                 if c >= 1000 {
@@ -106,7 +104,7 @@ impl<'a> Producer for TagProducer<'a> {
     }
 
     fn estimate_to(&self, out: &mut FilteredMaxCounter<<Self::Target as Searchable>::Item>) {
-        let mut mid = PushMod::new(out, |i: ResultItem<&Word>| i.item);
+        let mut mid = PushMod::new(out, |i: RelItem<&Word>| i.item);
         self.find_to(&mut mid);
     }
 }

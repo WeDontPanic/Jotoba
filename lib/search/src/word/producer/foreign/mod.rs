@@ -2,15 +2,13 @@ pub mod romaji;
 pub mod task;
 
 use crate::{
-    engine::{
-        result_item::ResultItem,
-        search_task::{cpushable::FilteredMaxCounter, pushable::PushMod},
-        words::foreign::output::WordOutput,
-    },
+    engine::words::foreign::output::WordOutput,
     executor::{out_builder::OutputBuilder, producer::Producer, searchable::Searchable},
     query::{Query, QueryLang},
     word::Search,
 };
+use engine::pushable::FilteredMaxCounter;
+use engine::{pushable::PushMod, rel_item::RelItem};
 use task::ForeignSearch;
 use types::jotoba::languages::Language;
 
@@ -36,7 +34,7 @@ impl<'a> Producer for ForeignProducer<'a> {
         >,
     ) {
         // convert WordOutput -> Word
-        let mut p_mod = PushMod::new(out, |i: ResultItem<WordOutput>| i.map_item(|i| i.word));
+        let mut p_mod = PushMod::new(out, |i: RelItem<WordOutput>| i.map_item(|i| i.word));
 
         let q_str = &self.query.query_str;
         let lang = self.query.get_search_lang();

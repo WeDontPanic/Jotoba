@@ -4,7 +4,8 @@ pub mod searchable;
 
 use std::time::Instant;
 
-use crate::{engine::search_task::cpushable::FilteredMaxCounter, result::SearchResult};
+use crate::result::SearchResult;
+use engine::pushable::FilteredMaxCounter;
 use log::debug;
 use out_builder::OutputBuilder;
 use searchable::Searchable;

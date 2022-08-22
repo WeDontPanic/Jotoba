@@ -1,7 +1,9 @@
 pub mod split;
 
+use engine::pushable::FilteredMaxCounter;
+
 use crate::{
-    engine::{names::native, search_task::cpushable::FilteredMaxCounter, SearchTask},
+    engine::{names::native, SearchTask},
     executor::{out_builder::OutputBuilder, producer::Producer, searchable::Searchable},
     name::Search,
     query::{Query, QueryLang},

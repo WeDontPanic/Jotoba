@@ -1,9 +1,10 @@
+use engine::pushable::FilteredMaxCounter;
 use japanese::{furigana::SentencePartRef, JapaneseExt};
 use sentence_reader::{output::ParseResult, Parser, Part, Sentence};
 use types::jotoba::words::{part_of_speech::PosSimple, Word};
 
 use crate::{
-    engine::{self, search_task::cpushable::FilteredMaxCounter, words::native, SearchTask},
+    engine::{words::native, SearchTask},
     executor::{out_builder::OutputBuilder, producer::Producer, searchable::Searchable},
     query::{Query, QueryLang},
     word::{
@@ -168,7 +169,7 @@ fn furigana_by_reading(morpheme: &str, part: &sentence_reader::Part) -> Option<S
 }
 
 fn name_furi(morpheme: &str) -> Option<String> {
-    let mut task = SearchTask::<engine::names::native::Engine>::new(morpheme).limit(1);
+    let mut task = SearchTask::<crate::engine::names::native::Engine>::new(morpheme).limit(1);
     let morpheme_c = morpheme.to_string();
     task.set_result_filter(move |n| n.get_reading() == morpheme_c && n.has_kanji());
     let res = task.find();

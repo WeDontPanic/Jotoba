@@ -1,4 +1,5 @@
-use crate::engine::{search_task::sort_item::SortItem, Indexable, SearchEngine};
+use crate::engine::{Indexable, SearchEngine};
+use engine::relevance::data::SortData;
 use indexes::names::ForeignIndex;
 use ngindex::dice;
 use types::jotoba::{languages::Language, names::Name};
@@ -44,10 +45,13 @@ impl SearchEngine for Engine {
     }
 
     #[inline]
-    fn score(item: SortItem<Self::Output>) -> usize {
+    fn score(item: SortData<Self::Output, Vector, Vector>) -> usize {
+        /*
         let qvec = item.query_vec();
         let dvec = item.item_vec();
         (dice(qvec, dvec) * 100000.0) as usize
+        */
+        todo!()
     }
 }
 

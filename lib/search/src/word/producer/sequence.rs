@@ -1,12 +1,9 @@
 use crate::{
-    engine::{
-        result_item::ResultItem,
-        search_task::cpushable::{CPushable, FilteredMaxCounter},
-    },
     executor::{out_builder::OutputBuilder, producer::Producer, searchable::Searchable},
     query::Query,
     word::Search,
 };
+use engine::{pushable::FilteredMaxCounter, pushable::Pushable, rel_item::RelItem};
 use types::jotoba::words::Word;
 
 /// Producer for a Word by its sequence id
@@ -37,7 +34,7 @@ impl<'a> Producer for SeqProducer<'a> {
         >,
     ) {
         if let Some(word) = self.word() {
-            out.push(ResultItem::new(word, 0));
+            out.push(RelItem::new(word, 0.0));
         }
     }
 

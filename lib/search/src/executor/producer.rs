@@ -1,5 +1,5 @@
 use super::{out_builder::OutputBuilder, searchable::Searchable};
-use crate::engine::search_task::cpushable::FilteredMaxCounter;
+use engine::pushable::FilteredMaxCounter;
 use std::any::type_name;
 
 pub trait Producer {

@@ -1,6 +1,7 @@
 pub mod foreign;
 
-use crate::{engine::search_task::sort_item::SortItem, query::regex::RegexSQuery, SearchMode};
+use crate::{query::regex::RegexSQuery, SearchMode};
+use engine::relevance::data::SortData;
 use japanese::JapaneseExt;
 use once_cell::sync::Lazy;
 use regex::Regex;
@@ -9,6 +10,7 @@ use types::jotoba::{
     words::{sense::Gloss, Word},
 };
 use utils::real_string_len;
+use vector_space_model2::Vector;
 
 /// A Regex matching parentheses and its contents
 pub(crate) static REMOVE_PARENTHESES: Lazy<Regex> =
@@ -42,11 +44,14 @@ pub fn regex_order(word: &Word, found_in: &str, _query: &RegexSQuery) -> usize {
 }
 
 /// Search order for words searched by japanese meaning/kanji/reading
-pub fn japanese_search_order(item: SortItem<&'static Word>, original_query: Option<&str>) -> usize {
-    let mut score: usize = (item.vec_simiarity() * 100f32) as usize;
+pub fn japanese_search_order(
+    item: SortData<&'static Word, Vector, Vector>,
+    original_query: Option<&str>,
+) -> usize {
+    let mut score: usize = (item.vec_similarity() * 100f32) as usize;
 
     let word = item.item();
-    let query_str = japanese::to_halfwidth(item.query());
+    let query_str = japanese::to_halfwidth(item.query_str());
 
     let reading = japanese::to_halfwidth(&word.get_reading().reading);
     let reading_len = utils::real_string_len(&reading);
@@ -156,7 +161,7 @@ pub fn foreign_search_fall_back(
     score
 }
 
-pub(super) fn kanji_reading_search(item: SortItem<&'static Word>) -> usize {
+pub(super) fn kanji_reading_search(item: SortData<&'static Word, Vector, Vector>) -> usize {
     let word = item.item();
     let mut score: usize = 0;
 

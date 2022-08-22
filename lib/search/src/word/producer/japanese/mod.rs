@@ -2,12 +2,13 @@ pub mod sentence_reader;
 pub mod task;
 
 use crate::{
-    engine::{search_task::cpushable::FilteredMaxCounter, words::native, SearchTask},
+    engine::{words::native, SearchTask},
     executor::{out_builder::OutputBuilder, producer::Producer, searchable::Searchable},
     query::{Query, QueryLang},
     word::Search,
 };
 
+use engine::pushable::FilteredMaxCounter;
 use task::NativeSearch;
 
 /// Produces search results for native search input

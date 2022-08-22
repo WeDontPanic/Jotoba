@@ -1,15 +1,12 @@
+use engine::{
+    pushable::FilteredMaxCounter,
+    pushable::{PushMod, Pushable},
+    rel_item::RelItem,
+};
 use types::jotoba::{kanji::Kanji, words::Word};
 
 use crate::{
-    engine::{
-        result_item::ResultItem,
-        search_task::{
-            cpushable::FilteredMaxCounter,
-            pushable::{PushMod, Pushable},
-        },
-        words::native::k_reading,
-        SearchTask,
-    },
+    engine::{words::native::k_reading, SearchTask},
     executor::{out_builder::OutputBuilder, producer::Producer, searchable::Searchable},
     query::Query,
     word::{order, Search},
@@ -44,7 +41,7 @@ impl<'a> KReadingProducer<'a> {
 
     fn find_to<P>(&self, out: &mut P)
     where
-        P: Pushable<Item = ResultItem<&'static Word>>,
+        P: Pushable<Item = RelItem<&'static Word>>,
     {
         let engine_query = match self.kr_query() {
             Some(q) => q,
@@ -75,7 +72,7 @@ impl<'a> Producer for KReadingProducer<'a> {
     }
 
     fn estimate_to(&self, out: &mut FilteredMaxCounter<<Self::Target as Searchable>::Item>) {
-        let mut m = PushMod::new(out, |i: ResultItem<&Word>| i.item);
+        let mut m = PushMod::new(out, |i: RelItem<&Word>| i.item);
         // TODO: use estimate_to here
         self.find_to(&mut m);
     }

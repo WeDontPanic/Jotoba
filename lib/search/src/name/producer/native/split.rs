@@ -1,13 +1,12 @@
+use engine::{
+    pushable::{FilteredMaxCounter, Pushable},
+    rel_item::RelItem,
+};
 use sentence_reader::{output::ParseResult, Parser};
 use types::jotoba::names::Name;
 
 use crate::{
-    engine::{
-        names::native,
-        result_item::ResultItem,
-        search_task::cpushable::{CPushable, FilteredMaxCounter},
-        SearchTask,
-    },
+    engine::{names::native, SearchTask},
     executor::{out_builder::OutputBuilder, producer::Producer, searchable::Searchable},
     name::Search,
     query::Query,
@@ -34,14 +33,14 @@ impl<'a> SplitProducer<'a> {
     fn run<C, P, O>(&self, cb: C, out: &mut P)
     where
         C: Fn(&SearchTask<native::Engine>, &mut P),
-        P: CPushable<Item = O>,
+        P: Pushable<Item = O>,
     {
         let queries = self.queries();
         let query_count = queries.len();
         for (pos, query) in queries.into_iter().enumerate() {
             let mut task = SearchTask::<native::Engine>::new(&query);
             task.with_custom_order(move |i| {
-                let sim = i.vec_simiarity();
+                let sim = i.vec_similarity();
                 let rel = query_count - pos;
                 (rel as f32 * sim) as usize
             });
@@ -52,7 +51,7 @@ impl<'a> SplitProducer<'a> {
 
     fn find_to<P>(&self, out: &mut P)
     where
-        P: CPushable<Item = ResultItem<&'static Name>>,
+        P: Pushable<Item = RelItem<&'static Name>>,
     {
         self.run(|engine, out| engine.find_to(out), out);
     }

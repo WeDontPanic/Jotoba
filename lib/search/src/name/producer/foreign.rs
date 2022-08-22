@@ -1,5 +1,7 @@
+use engine::pushable::FilteredMaxCounter;
+
 use crate::{
-    engine::{names::foreign, search_task::cpushable::FilteredMaxCounter, SearchTask},
+    engine::{names::foreign, SearchTask},
     executor::{out_builder::OutputBuilder, producer::Producer, searchable::Searchable},
     name::Search,
     query::{Query, QueryLang},

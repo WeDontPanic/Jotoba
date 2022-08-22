@@ -8,6 +8,7 @@ edition = "2021"
 
 [dependencies]
 japanese = { path = "../japanese" }
+engine = { path = "../engine" }
 sentence_reader = { path = "../sentence_reader", features = ["jotoba_intern"] }
 error = { path = "../error" }
 utils = { path = "../utils" }
@@ -19,7 +20,7 @@ types = { path = "../types", default-features = false, features = [
 ] }
 log = "0.4.17"
 itertools = "0.10.3"
-once_cell = { version = "1.13.0", default-features = false }
+once_cell = { version = "1.13.1", default-features = false }
 regex = { version = "1.6.0", features = ["std"], default-features = false }
 #vector_space_model2 = { path = "../../../VectorSpaceModel" }
 vector_space_model2 = { git = "https://github.com/JojiiOfficial/VectorSpaceModel" }

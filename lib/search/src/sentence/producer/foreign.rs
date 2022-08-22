@@ -1,9 +1,10 @@
 use crate::{
-    engine::{search_task::cpushable::FilteredMaxCounter, sentences::foreign, SearchTask},
+    engine::{sentences::foreign, SearchTask},
     executor::{out_builder::OutputBuilder, producer::Producer, searchable::Searchable},
     query::{Query, QueryLang},
     sentence::Search,
 };
+use engine::pushable::FilteredMaxCounter;
 use types::jotoba::languages::Language;
 
 use super::filter::FeQotTermsVecFilter;
@@ -35,7 +36,7 @@ impl<'a> ForeignProducer<'a> {
 
         let query_c = self.query.clone();
         search_task.with_custom_order(move |item| {
-            let mut rel = item.vec_simiarity();
+            let mut rel = item.vec_similarity();
 
             if !item.item().has_translation(query_c.settings.user_lang) {
                 rel *= 0.8;

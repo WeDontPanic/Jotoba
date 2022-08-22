@@ -1,6 +1,5 @@
+use super::rel_item::RelItem;
 use std::{fmt::Debug, slice::Iter};
-
-use engine::rel_item::RelItem;
 
 /// A result from a search. Contains information about the actual
 /// amount of items returned and the items to display on the current page.

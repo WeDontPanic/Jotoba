@@ -1,11 +1,11 @@
 use crate::{
-    engine::{
-        result_item::ResultItem,
-        search_task::cpushable::{CPushable, FilteredMaxCounter},
-    },
     executor::{out_builder::OutputBuilder, producer::Producer, searchable::Searchable},
     query::Query,
     sentence::Search,
+};
+use engine::{
+    pushable::{FilteredMaxCounter, Pushable},
+    rel_item::RelItem,
 };
 use types::jotoba::sentences::Sentence;
 
@@ -36,7 +36,7 @@ impl<'a> Producer for SequenceProducer<'a> {
         >,
     ) {
         if let Some(s) = self.sentence() {
-            out.push(ResultItem::new(s, 0));
+            out.push(RelItem::new(s, 0.0));
         }
     }
 

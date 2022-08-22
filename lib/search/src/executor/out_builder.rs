@@ -1,9 +1,9 @@
-use crate::engine::{result_item::ResultItem, search_task::cpushable::CPushable};
+use engine::{pushable::Pushable, rel_item::RelItem};
 use priority_container::StableUniquePrioContainerMax;
 use std::hash::Hash;
 
 pub struct OutputBuilder<'a, I, OA> {
-    pub(crate) p: StableUniquePrioContainerMax<ResultItem<I>>,
+    pub(crate) p: StableUniquePrioContainerMax<RelItem<I>>,
     pub(crate) filter: Box<dyn Fn(&I) -> bool + 'a>,
     pub(crate) output_add: OA,
 }
@@ -23,7 +23,7 @@ impl<'a, I: Eq + Hash + Clone, OA: Default> OutputBuilder<'a, I, OA> {
 
     /// Pushes an element into the output and  returns `true` if it was not filtered out
     #[inline]
-    pub fn push(&mut self, item: ResultItem<I>) -> bool {
+    pub fn push(&mut self, item: RelItem<I>) -> bool {
         if !(self.filter)(&item.item) {
             self.p.insert(item);
             return true;
@@ -33,8 +33,8 @@ impl<'a, I: Eq + Hash + Clone, OA: Default> OutputBuilder<'a, I, OA> {
     }
 }
 
-impl<'a, I: Eq + Hash + Clone, OA: Default> CPushable for OutputBuilder<'a, I, OA> {
-    type Item = ResultItem<I>;
+impl<'a, I: Eq + Hash + Clone, OA: Default> Pushable for OutputBuilder<'a, I, OA> {
+    type Item = RelItem<I>;
 
     /// Pushes an element into the output and  returns `true` if it was not filtered out
     #[inline]

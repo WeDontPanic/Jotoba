@@ -1,14 +1,12 @@
 use crate::{
-    engine::{
-        result_item::ResultItem,
-        search_task::{
-            cpushable::{CPushable, FilteredMaxCounter},
-            pushable::PushMod,
-        },
-    },
     executor::{out_builder::OutputBuilder, producer::Producer, searchable::Searchable},
     query::{Query, Tag},
     sentence::Search,
+};
+use engine::{
+    pushable::FilteredMaxCounter,
+    pushable::{PushMod, Pushable},
+    rel_item::RelItem,
 };
 use types::jotoba::sentences::Sentence;
 
@@ -24,7 +22,7 @@ impl<'a> TagProducer<'a> {
 
     fn find_to<P>(&self, out: &mut P)
     where
-        P: CPushable<Item = ResultItem<&'static Sentence>>,
+        P: Pushable<Item = RelItem<&'static Sentence>>,
     {
         let tag = self
             .query
@@ -38,7 +36,7 @@ impl<'a> TagProducer<'a> {
 
     pub fn push_tag<P>(&self, tag: &Tag, out: &mut P)
     where
-        P: CPushable<Item = ResultItem<&'static Sentence>>,
+        P: Pushable<Item = RelItem<&'static Sentence>>,
     {
         let s_res = resources::get().sentences();
 
@@ -51,12 +49,12 @@ impl<'a> TagProducer<'a> {
 
     fn push_iter<P, I>(&self, iter: I, out: &mut P)
     where
-        P: CPushable<Item = ResultItem<&'static Sentence>>,
+        P: Pushable<Item = RelItem<&'static Sentence>>,
         I: Iterator<Item = &'static Sentence>,
     {
         let mut c = 0;
         for w in iter {
-            let item = ResultItem::new(w, c);
+            let item = RelItem::new(w, c as f32);
             if out.push(item) {
                 c += 1;
                 if c >= 1000 {
@@ -81,7 +79,7 @@ impl<'a> Producer for TagProducer<'a> {
     }
 
     fn estimate_to(&self, out: &mut FilteredMaxCounter<<Self::Target as Searchable>::Item>) {
-        let mut m = PushMod::new(out, |i: ResultItem<&Sentence>| i.item);
+        let mut m = PushMod::new(out, |i: RelItem<&Sentence>| i.item);
         self.find_to(&mut m);
     }
 

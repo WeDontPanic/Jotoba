@@ -1,11 +1,11 @@
 use crate::{
-    engine::{
-        result_item::ResultItem,
-        search_task::cpushable::{CPushable, FilteredMaxCounter},
-    },
     executor::{out_builder::OutputBuilder, producer::Producer, searchable::Searchable},
     name::Search,
     query::Query,
+};
+use engine::{
+    pushable::{FilteredMaxCounter, Pushable},
+    rel_item::RelItem,
 };
 use types::jotoba::names::Name;
 
@@ -35,7 +35,7 @@ impl<'a> Producer for SeqProducer<'a> {
         >,
     ) {
         if let Some(name) = self.name() {
-            out.push(ResultItem::new(name, 0));
+            out.push(RelItem::new(name, 0.0));
         }
     }
 

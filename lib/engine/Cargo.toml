@@ -1,0 +1,22 @@
+[package]
+name = "engine"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+indexes = { path = "../indexes" }
+resources = { path = "../resources" }
+types = { path = "../types", default-features = false, features = [
+  "jotoba_intern",
+] }
+priority_container = { git = "https://github.com/JojiiOfficial/PrioContainer/" }
+order_struct = { git = "https://github.com/JojiiOfficial/OrderStruct" }
+intmap = { git = "https://github.com/JojiiOfficial/rust-intmap" }
+ngindex = { git = "https://github.com/JojiiOfficial/ngindex", rev = "431c1fc9d4387906214f568bb9e2398bc28bb35d" }
+log = "0.4.17"
+# TODO: replace with git
+index_framework = { path = "../../../index_framework" }
+vsm = { path = "../../../vsm" }
+vector_space_model2 = { git = "https://github.com/JojiiOfficial/VectorSpaceModel" }

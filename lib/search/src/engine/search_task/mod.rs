@@ -1,13 +1,15 @@
-pub mod cpushable;
-pub mod pushable;
-pub mod sort_item;
+//pub mod cpushable;
+//pub mod pushable;
+//pub mod sort_item;
 
-use super::{result::SearchResult, result_item::ResultItem, Index, SearchEngine};
-use cpushable::{CPushable, MaxCounter};
+use super::{result::SearchResult, Index, SearchEngine};
+use engine::{
+    pushable::{MaxCounter, PushMod, Pushable},
+    rel_item::RelItem,
+    relevance::data::SortData,
+};
 use error::Error;
 use priority_container::StableUniquePrioContainerMax;
-use pushable::{PushMod, Pushable};
-use sort_item::SortItem;
 use std::{collections::HashSet, fmt::Debug, hash::Hash, marker::PhantomData};
 use types::jotoba::{
     languages::Language,
@@ -25,7 +27,7 @@ pub struct SearchTask<T: SearchEngine> {
     /// Filter out results
     res_filter: Option<Box<dyn Fn(&T::Output) -> bool>>,
     /// Custom result order function
-    cust_order: Option<Box<dyn Fn(SortItem<T::Output>) -> usize>>,
+    cust_order: Option<Box<dyn Fn(SortData<T::Output, Vector, Vector>) -> usize>>,
     /// Min relevance returned from vector space algo
     threshold: usize,
     vector_limit: usize,
@@ -51,8 +53,8 @@ where
     }
 
     /// Runs the search task and writes all items into the priority queue
-    pub fn find_to_dbg<I: Pushable<Item = ResultItem<T::Output>>>(&self, out: &mut I) {
-        let mut map = PushMod::new(out, |i: ResultItem<T::Output>| {
+    pub fn find_to_dbg<I: Pushable<Item = RelItem<T::Output>>>(&self, out: &mut I) {
+        let mut map = PushMod::new(out, |i: RelItem<T::Output>| {
             println!("{:?}: {}", i.item, i.relevance);
             i
         });
@@ -130,7 +132,7 @@ impl<T: SearchEngine> SearchTask<T> {
     /// Set the search task's custom order function
     pub fn with_custom_order<F: 'static>(&mut self, res_filter: F)
     where
-        F: Fn(SortItem<T::Output>) -> usize,
+        F: Fn(SortData<T::Output, Vector, Vector>) -> usize,
     {
         self.cust_order = Some(Box::new(res_filter));
     }
@@ -170,7 +172,7 @@ impl<T: SearchEngine> SearchTask<T> {
     }
 
     /// Runs the search task and writes all items into the priority queue
-    pub fn find_to<I: Pushable<Item = ResultItem<T::Output>>>(&self, out: &mut I) {
+    pub fn find_to<I: Pushable<Item = RelItem<T::Output>>>(&self, out: &mut I) {
         if let Some(qvec) = self.gen_query_vec() {
             self.find_by_vec(qvec, out);
         }
@@ -187,7 +189,7 @@ impl<T: SearchEngine> SearchTask<T> {
     /// Builds output from the given Prio Queue
     fn make_result(
         &self,
-        data: StableUniquePrioContainerMax<ResultItem<T::Output>>,
+        data: StableUniquePrioContainerMax<RelItem<T::Output>>,
     ) -> SearchResult<T::Output> {
         let total_count = data.total_pushed();
         let p_items = self.take_page(data);
@@ -200,7 +202,7 @@ impl<T: SearchEngine> SearchTask<T> {
         super::utils::page_from_pqueue(self.limit, self.offset, pqueue)
     }
 
-    fn find_by_vec<I: Pushable<Item = ResultItem<T::Output>>>(&self, q_vec: Vector, out: &mut I) {
+    fn find_by_vec<I: Pushable<Item = RelItem<T::Output>>>(&self, q_vec: Vector, out: &mut I) {
         // Retrieve all document vectors that share at least one dimension with the query vector
         let vecs = self
             .get_index()
@@ -213,7 +215,7 @@ impl<T: SearchEngine> SearchTask<T> {
 
     fn load_documents_to<P, I>(&self, dvec_iter: I, q_vec: &Vector, out: &mut P)
     where
-        P: Pushable<Item = ResultItem<T::Output>>,
+        P: Pushable<Item = RelItem<T::Output>>,
         I: Iterator<Item = DocumentVector<T::Document>>,
     {
         for dvec in dvec_iter {
@@ -226,13 +228,13 @@ impl<T: SearchEngine> SearchTask<T> {
                     continue;
                 }
 
-                let sort_item = SortItem::new(
+                let sort_item = SortData::new(
                     &res_doc,
+                    dvec.vector(),
                     0.0,
+                    q_vec,
                     &self.query_str,
                     self.query_lang,
-                    q_vec,
-                    dvec.vector(),
                 );
 
                 let score = self.calc_score(sort_item);
@@ -240,7 +242,7 @@ impl<T: SearchEngine> SearchTask<T> {
                     continue;
                 }
 
-                out.push(ResultItem::new(res_doc, score));
+                out.push(RelItem::new(res_doc, score as f32));
             }
         }
     }
@@ -280,7 +282,7 @@ impl<T: SearchEngine> SearchTask<T> {
     #[inline]
     pub fn estimate_to<P>(&self, out: &mut P)
     where
-        P: CPushable<Item = T::Output>,
+        P: Pushable<Item = T::Output>,
     {
         if let Some(vec) = self.gen_query_vec() {
             self.estimate_by_vec_to(vec, out);
@@ -289,7 +291,7 @@ impl<T: SearchEngine> SearchTask<T> {
 
     fn estimate_by_vec_to<P>(&self, q_vec: Vector, out: &mut P)
     where
-        P: CPushable<Item = T::Output>,
+        P: Pushable<Item = T::Output>,
     {
         let vec_store = self.get_index().get_vector_store();
         let query_dimensions: Vec<_> = q_vec.vec_indices().collect();
@@ -313,13 +315,13 @@ impl<T: SearchEngine> SearchTask<T> {
 
                 // Don't ignore threshold if set
                 if self.threshold > 0 {
-                    let sort_item = SortItem::new(
+                    let sort_item = SortData::new(
                         &res_doc,
+                        dvec.vector(),
                         0.0,
+                        &q_vec,
                         &self.query_str,
                         self.query_lang,
-                        &q_vec,
-                        dvec.vector(),
                     );
 
                     let score = self.calc_score(sort_item);
@@ -340,7 +342,7 @@ impl<T: SearchEngine> SearchTask<T> {
 
     /// Calculates the score using a custom function if provided or just `rel` otherwise
     #[inline]
-    fn calc_score(&self, si: SortItem<T::Output>) -> usize {
+    fn calc_score(&self, si: SortData<T::Output, Vector, Vector>) -> usize {
         match self.cust_order.as_ref() {
             Some(cust_sort) => (cust_sort(si) as f32 * self.score_multiplier) as usize,
             None => (T::score(si) as f32 * self.score_multiplier) as usize,

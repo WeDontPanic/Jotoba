@@ -1,16 +1,16 @@
 pub mod names;
 pub mod radical;
 pub mod result;
-pub mod result_item;
+//pub mod result_item;
 pub mod search_task;
 pub mod sentences;
 pub mod utils;
 pub mod words;
 
+use engine::relevance::data::SortData;
 pub use search_task::SearchTask;
 
 use ngindex::{build::weights::TermWeight, term_store::TermIndexer, VectorStore};
-use search_task::sort_item::SortItem;
 use std::hash::Hash;
 use types::jotoba::languages::Language;
 use vector_space_model2::{metadata::Metadata, traits::Decodable, Vector};
@@ -84,8 +84,9 @@ pub trait SearchEngine: Indexable {
     }
 
     #[inline]
-    fn score(item: SortItem<Self::Output>) -> usize {
-        (item.vec_simiarity() * 100.0) as usize
+    fn score(item: SortData<Self::Output, Vector, Vector>) -> usize {
+        todo!()
+        //(item.vec_simiarity() * 100.0) as usize
     }
 
     fn query_formatted(inp: &str) -> String {

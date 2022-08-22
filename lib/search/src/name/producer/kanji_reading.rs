@@ -1,9 +1,10 @@
 use crate::{
-    engine::{names::native, search_task::cpushable::FilteredMaxCounter, SearchTask},
+    engine::{names::native, SearchTask},
     executor::{out_builder::OutputBuilder, producer::Producer, searchable::Searchable},
     name::Search,
     query::Query,
 };
+use engine::pushable::FilteredMaxCounter;
 use japanese::furigana::generate::{assign_readings, ReadingRetrieve};
 use resources::retrieve::kanji::KanjiRetrieve;
 use types::jotoba::names::Name;

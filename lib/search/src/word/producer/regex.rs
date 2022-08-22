@@ -2,17 +2,15 @@ use itertools::Itertools;
 use types::jotoba::words::Word;
 
 use crate::{
-    engine::{
-        result_item::ResultItem,
-        search_task::{
-            cpushable::FilteredMaxCounter,
-            pushable::{PushMod, Pushable},
-        },
-        words::native::regex,
-    },
+    engine::words::native::regex,
     executor::{out_builder::OutputBuilder, producer::Producer, searchable::Searchable},
     query::{regex::RegexSQuery, Query},
     word::{order::regex_order, Search},
+};
+use engine::{
+    pushable::FilteredMaxCounter,
+    pushable::{PushMod, Pushable},
+    rel_item::RelItem,
 };
 
 pub struct RegexProducer<'a> {
@@ -24,7 +22,7 @@ impl<'a> RegexProducer<'a> {
         Self { query }
     }
 
-    fn find_to_unsorted<P: Pushable<Item = ResultItem<&'static Word>>>(
+    fn find_to_unsorted<P: Pushable<Item = RelItem<&'static Word>>>(
         &self,
         out: &mut P,
     ) -> Option<()> {
@@ -33,7 +31,7 @@ impl<'a> RegexProducer<'a> {
         Some(())
     }
 
-    fn find_to<P: Pushable<Item = ResultItem<&'static Word>>>(&self, out: &mut P) -> Option<()> {
+    fn find_to<P: Pushable<Item = RelItem<&'static Word>>>(&self, out: &mut P) -> Option<()> {
         let regex_query = self.query.as_regex_query()?;
         search(&regex_query, |w, r| regex_order(w, r, &regex_query), out);
         Some(())
@@ -58,7 +56,7 @@ impl<'a> Producer for RegexProducer<'a> {
     }
 
     fn estimate_to(&self, out: &mut FilteredMaxCounter<<Self::Target as Searchable>::Item>) {
-        let mut mid = PushMod::new(out, |i: ResultItem<&'static Word>| i.item);
+        let mut mid = PushMod::new(out, |i: RelItem<&'static Word>| i.item);
         self.find_to_unsorted(&mut mid);
     }
 }
@@ -66,7 +64,7 @@ impl<'a> Producer for RegexProducer<'a> {
 pub fn search<'a, F, P>(query: &'a RegexSQuery, sort: F, out: &mut P)
 where
     F: Fn(&'a Word, &'a str) -> usize,
-    P: Pushable<Item = ResultItem<&'static Word>>,
+    P: Pushable<Item = RelItem<&'static Word>>,
 {
     let word_resources = resources::get().words();
 
@@ -80,8 +78,8 @@ where
             .reading_iter(true)
             .filter_map(|i| query.matches(&i.reading).then(|| (word, &i.reading)))
             .map(|(word, reading)| {
-                let order = sort(word, reading);
-                ResultItem::new(word, order)
+                let order = sort(word, reading) as f32;
+                RelItem::new(word, order)
             });
 
         for i in item_iter {

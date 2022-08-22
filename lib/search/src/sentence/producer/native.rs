@@ -1,9 +1,10 @@
 use crate::{
-    engine::{search_task::cpushable::FilteredMaxCounter, sentences::native, SearchTask},
+    engine::{sentences::native, SearchTask},
     executor::{out_builder::OutputBuilder, producer::Producer, searchable::Searchable},
     query::{Query, QueryLang},
     sentence::Search,
 };
+use engine::pushable::FilteredMaxCounter;
 
 /// Producer for sentences by foreign keywords
 pub struct NativeProducer<'a> {
@@ -26,7 +27,7 @@ impl<'a> NativeProducer<'a> {
 
         let query_c = self.query.clone();
         search_task.with_custom_order(move |item| {
-            let mut rel = item.vec_simiarity();
+            let mut rel = item.vec_similarity();
 
             if !item.item().has_translation(query_c.lang()) {
                 rel *= 0.99;
