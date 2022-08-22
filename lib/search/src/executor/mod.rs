@@ -5,7 +5,7 @@ pub mod searchable;
 use std::time::Instant;
 
 use crate::result::SearchResult;
-use engine::pushable::FilteredMaxCounter;
+use engine::{pushable::FilteredMaxCounter, utils::page_from_pqueue};
 use log::debug;
 use out_builder::OutputBuilder;
 use searchable::Searchable;
@@ -47,7 +47,7 @@ impl<S: Searchable> SearchExecutor<S> {
         self.search.mod_output(&mut out);
 
         let len = out.p.total_pushed();
-        let items: Vec<_> = crate::engine::utils::page_from_pqueue(limit, offset, out.p)
+        let items: Vec<_> = page_from_pqueue(limit, offset, out.p)
             .into_iter()
             .map(|i| self.search.to_output_item(i.item))
             .collect();

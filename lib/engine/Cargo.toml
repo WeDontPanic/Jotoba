@@ -13,9 +13,6 @@ types = { path = "../types", default-features = false, features = [
 ] }
 priority_container = { git = "https://github.com/JojiiOfficial/PrioContainer/" }
 order_struct = { git = "https://github.com/JojiiOfficial/OrderStruct" }
-intmap = { git = "https://github.com/JojiiOfficial/rust-intmap" }
-ngindex = { git = "https://github.com/JojiiOfficial/ngindex", rev = "431c1fc9d4387906214f568bb9e2398bc28bb35d" }
-log = "0.4.17"
 # TODO: replace with git
 index_framework = { path = "../../../index_framework" }
 vsm = { path = "../../../vsm" }

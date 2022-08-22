@@ -1,15 +1,12 @@
 pub mod names;
 pub mod radical;
-pub mod result;
-//pub mod result_item;
 pub mod search_task;
 pub mod sentences;
-pub mod utils;
 pub mod words;
 
-use engine::relevance::data::SortData;
 pub use search_task::SearchTask;
 
+use engine::relevance::data::SortData;
 use ngindex::{build::weights::TermWeight, term_store::TermIndexer, VectorStore};
 use std::hash::Hash;
 use types::jotoba::languages::Language;

@@ -1,12 +1,10 @@
-//pub mod cpushable;
-//pub mod pushable;
-//pub mod sort_item;
-
-use super::{result::SearchResult, Index, SearchEngine};
+use super::{Index, SearchEngine};
 use engine::{
     pushable::{MaxCounter, PushMod, Pushable},
-    relevance::item::RelItem,
     relevance::data::SortData,
+    relevance::item::RelItem,
+    result::SearchResult,
+    utils::page_from_pqueue,
 };
 use error::Error;
 use priority_container::StableUniquePrioContainerMax;
@@ -199,7 +197,7 @@ impl<T: SearchEngine> SearchTask<T> {
     /// Takes the correct page from a UniquePrioContainerMax based on the given offset and limit
     #[inline]
     fn take_page<U: Ord>(&self, pqueue: StableUniquePrioContainerMax<U>) -> Vec<U> {
-        super::utils::page_from_pqueue(self.limit, self.offset, pqueue)
+        page_from_pqueue(self.limit, self.offset, pqueue)
     }
 
     fn find_by_vec<I: Pushable<Item = RelItem<T::Output>>>(&self, q_vec: Vector, out: &mut I) {

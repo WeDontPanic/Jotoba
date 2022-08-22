@@ -35,7 +35,7 @@ pub trait Engine<'index> {
     type Output: Eq + Hash + Clone;
 
     /// The search query
-    type Query: Into<Self::DictItem> + Clone;
+    type Query;
 
     fn make_query<S: AsRef<str>>(inp: S, lang: Option<Language>) -> Option<Self::Query>;
 
@@ -45,21 +45,17 @@ pub trait Engine<'index> {
     /// Returns the engines index
     fn get_index(lang: Option<Language>) -> &'index Self::B;
 
+    /// Returns a new retrieve for the given terms
+    fn retrieve_for(
+        inp: &Self::Query,
+        lang: Option<Language>,
+    ) -> Retrieve<'index, Self::B, Self::DictItem, Self::Document>;
+
     /// Returns a new retrieve for the engine
     #[inline]
     fn retrieve(
         lang: Option<Language>,
     ) -> Retrieve<'index, Self::B, Self::DictItem, Self::Document> {
         Retrieve::new(Self::get_index(lang))
-    }
-
-    /// Returns a new retrieve for the given terms
-    #[inline]
-    fn retrieve_for(
-        inp: Self::Query,
-        lang: Option<Language>,
-    ) -> Retrieve<'index, Self::B, Self::DictItem, Self::Document> {
-        let di: Self::DictItem = inp.into();
-        Retrieve::new(Self::get_index(lang)).by_term(di)
     }
 }

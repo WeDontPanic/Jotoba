@@ -187,7 +187,7 @@ where
     {
         let query = E::make_query(&self.query_str, self.query_lang)?;
 
-        let mut retr: E::Retriever = E::retrieve_for(query.clone(), self.query_lang).get();
+        let mut retr: E::Retriever = E::retrieve_for(&query, self.query_lang).get();
 
         let mut pushed = 0;
 

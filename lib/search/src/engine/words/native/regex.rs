@@ -1,4 +1,5 @@
-use crate::{engine::utils::page_from_pqueue, query::regex::RegexSQuery};
+use crate::query::regex::RegexSQuery;
+use engine::utils::page_from_pqueue;
 use indexes::regex::RegexSearchIndex;
 use intmap::int_set::IntSet;
 use itertools::Itertools;

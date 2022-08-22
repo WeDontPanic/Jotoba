@@ -36,6 +36,8 @@ spin = { version = "0.9.4", default-features = false, features = [
 intmap = { git = "https://github.com/JojiiOfficial/rust-intmap" }
 #ngindex = { path = "../../../ngindex" }
 ngindex = { git = "https://github.com/JojiiOfficial/ngindex", rev = "431c1fc9d4387906214f568bb9e2398bc28bb35d" }
+ngindex2 = { path = "../../../ngindex", package = "ngindex" }
+index_framework = { path = "../../../index_framework" }
 
 [dev-dependencies]
 test-case = "2.2.1"
