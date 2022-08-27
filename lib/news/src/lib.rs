@@ -164,7 +164,6 @@ fn fs_changed_update<F: Fn(&str) + Send + 'static>(news_folder: String, update: 
 
             for event in events {
                 if !event.mask.contains(EventMask::ISDIR) {
-                    println!("update");
                     update(&news_folder);
                 }
             }

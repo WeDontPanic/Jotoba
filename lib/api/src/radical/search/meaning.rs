@@ -40,7 +40,6 @@ fn word_search(query: &str, language: Language) -> Vec<char> {
         .into_iter()
         .filter(|word| word.word.get_reading().reading == query)
         .map(|i| {
-            println!("{}", i.word.get_reading().reading);
             i.word
                 .get_reading()
                 .reading

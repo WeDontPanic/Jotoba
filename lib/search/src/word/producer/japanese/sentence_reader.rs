@@ -173,7 +173,6 @@ fn word_exists(term: &str) -> bool {
     });
 
     let res = task.find();
-    println!("{res:#?}");
     res.len() > 0
 }
 

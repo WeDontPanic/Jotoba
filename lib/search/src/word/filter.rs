@@ -10,7 +10,6 @@ pub struct WordFilter {
 
 impl WordFilter {
     pub fn new(query: Query) -> Self {
-        println!("{:?}", query.must_contain);
         let jlpt_lvl = query.tags.iter().find_map(|i| i.as_jlpt());
         Self { query, jlpt_lvl }
     }
@@ -87,7 +86,6 @@ impl WordFilter {
         if !jp_q_terms.is_empty() {
             for term in jp_q_terms {
                 self.by_quot_marks_jp(w, &term)?;
-                println!("{term} in {:?}", w.get_reading().reading);
             }
         }
 
