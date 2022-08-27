@@ -130,7 +130,7 @@ where
 
     /// Rettrieves results and pushes them into `out`
     #[inline]
-    pub fn find_to<O>(&mut self, out: &mut O) -> Option<usize>
+    pub fn find_to<O>(&self, out: &mut O) -> Option<usize>
     where
         O: Pushable<Item = RelItem<E::Output>>,
     {
@@ -144,7 +144,7 @@ where
     ///
     /// - n = 0 => m = 0
     /// - n <= m
-    pub fn estimate_result_count(&mut self) -> Guess {
+    pub fn estimate_result_count(&self) -> Guess {
         let mut counter = MaxCounter::new(self.est_limit + 1);
         self.estimate_to(&mut counter);
         let estimated = counter.val();
@@ -171,7 +171,7 @@ where
 
     /// Estimates result count by pushing elements to `out`
     #[inline]
-    pub fn estimate_to<P>(&mut self, out: &mut P)
+    pub fn estimate_to<P>(&self, out: &mut P)
     where
         P: Pushable<Item = E::Output>,
     {
@@ -181,7 +181,7 @@ where
 
     /// Retrieves results and pushes all items into `out`. Calculates relevance for each item if `sort` is true or
     /// The SearchTask has a threshold set.
-    fn find_to_inner<O>(&mut self, out: &mut O, sort: bool) -> Option<usize>
+    fn find_to_inner<O>(&self, out: &mut O, sort: bool) -> Option<usize>
     where
         O: Pushable<Item = RelItem<E::Output>>,
     {
@@ -221,7 +221,7 @@ where
     }
 
     #[inline]
-    fn score(&mut self, out_item: &E::Output, index_item: &E::Document, query: &E::Query) -> f32 {
+    fn score(&self, out_item: &E::Output, index_item: &E::Document, query: &E::Query) -> f32 {
         let s_data = SortData::new(
             out_item,
             index_item,
@@ -231,7 +231,7 @@ where
             self.query_lang,
         );
         self.cust_order
-            .as_mut()
+            .as_ref()
             .map(|i| i.score(&s_data))
             .unwrap_or(0.0)
     }

@@ -32,7 +32,7 @@ impl NameStore {
 }
 
 pub(crate) fn load<P: AsRef<Path>>(path: P) -> Result<NameStore, Box<dyn Error + Send + Sync>> {
-    let foreign: ForeignIndex = utils::deser_file(path.as_ref(), FOREIGN_FILE)?;
-    let native = NativeIndex::open(path.as_ref().join(NATIVE_FILE))?;
+    let foreign = utils::deser_file(path.as_ref(), FOREIGN_FILE)?;
+    let native = utils::deser_file(path.as_ref(), NATIVE_FILE)?;
     Ok(NameStore::new(foreign, native))
 }

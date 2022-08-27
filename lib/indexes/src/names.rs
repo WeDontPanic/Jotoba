@@ -1,5 +1,5 @@
-use vector_space_model2::DefaultMetadata;
+pub const FOREIGN_NGRAM: usize = 3;
+pub type ForeignIndex = ngindex::NgramIndex<FOREIGN_NGRAM, u32>;
 
-// Index shortcuts
-pub type ForeignIndex = vector_space_model2::Index<Vec<u32>, DefaultMetadata>;
-pub type NativeIndex = vector_space_model2::Index<Vec<u32>, DefaultMetadata>;
+pub const NATIVE_NGRAM: usize = 3;
+pub type NativeIndex = ngindex::NgramIndex<NATIVE_NGRAM, u32>;

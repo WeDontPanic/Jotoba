@@ -1,10 +1,10 @@
 use crate::{
-    engine::{names::native, SearchTask},
+    engine::names::native::Engine,
     executor::{out_builder::OutputBuilder, producer::Producer, searchable::Searchable},
     name::Search,
     query::Query,
 };
-use engine::pushable::FilteredMaxCounter;
+use engine::{pushable::FilteredMaxCounter, task::SearchTask};
 use japanese::furigana::generate::{assign_readings, ReadingRetrieve};
 use resources::retrieve::kanji::KanjiRetrieve;
 use types::jotoba::names::Name;
@@ -18,15 +18,14 @@ impl<'a> KreadingProducer<'a> {
         Self { query }
     }
 
-    fn search_task(&self) -> Option<SearchTask<native::Engine>> {
+    fn search_task(&self) -> Option<SearchTask<'static, Engine>> {
         let k_reading = self.query.form.as_kanji_reading()?;
-
-        let mut task = SearchTask::<native::Engine>::new(k_reading.literal.to_string());
 
         let literal = k_reading.literal;
         let reading = k_reading.reading.clone();
 
-        task.set_result_filter(move |name| filter(name, &reading, literal).unwrap_or(false));
+        let task = SearchTask::<Engine>::new(k_reading.literal.to_string())
+            .with_result_filter(move |name| filter(name, &reading, literal).unwrap_or(false));
 
         Some(task)
     }

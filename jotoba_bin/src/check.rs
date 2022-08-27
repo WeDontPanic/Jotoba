@@ -84,12 +84,7 @@ fn names() -> bool {
     let name_retrieve = resources::get().names();
 
     let transcr_index = indexes::get().name().foreign();
-    for i in transcr_index
-        .get_vector_store()
-        .iter()
-        .map(|i| i.document.clone().into_iter())
-        .flatten()
-    {
+    for i in transcr_index.storage().iter().map(|i| *i.item()) {
         if name_retrieve.by_sequence(i).is_none() {
             println!("Foreign name index does not match resources");
             return false;
@@ -97,12 +92,7 @@ fn names() -> bool {
     }
 
     let jp_index = indexes::get().name().native();
-    for i in jp_index
-        .get_vector_store()
-        .iter()
-        .map(|i| i.document.clone().into_iter())
-        .flatten()
-    {
+    for i in jp_index.storage().iter().map(|i| *i.item()) {
         if name_retrieve.by_sequence(i).is_none() {
             println!("Japanese name index does not match resources");
             return false;

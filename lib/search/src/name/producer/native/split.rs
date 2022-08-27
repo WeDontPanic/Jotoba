@@ -1,14 +1,16 @@
 use engine::{
     pushable::{FilteredMaxCounter, Pushable},
-    relevance::item::RelItem,
+    relevance::{data::SortData, item::RelItem, RelevanceEngine},
+    task::SearchTask,
 };
+use ngindex2::{item::IndexItem, termset::TermSet};
 use sentence_reader::{output::ParseResult, Parser};
 use types::jotoba::names::Name;
 
 use crate::{
-    engine::{names::native, SearchTask},
+    engine::names::native::Engine,
     executor::{out_builder::OutputBuilder, producer::Producer, searchable::Searchable},
-    name::Search,
+    name::{order::japanese::NativeOrder, Search},
     query::Query,
 };
 
@@ -32,18 +34,15 @@ impl<'a> SplitProducer<'a> {
 
     fn run<C, P, O>(&self, cb: C, out: &mut P)
     where
-        C: Fn(&SearchTask<native::Engine>, &mut P),
+        C: Fn(&SearchTask<'static, Engine>, &mut P),
         P: Pushable<Item = O>,
     {
         let queries = self.queries();
         let query_count = queries.len();
         for (pos, query) in queries.into_iter().enumerate() {
-            let mut task = SearchTask::<native::Engine>::new(&query);
-            task.with_custom_order(move |i| {
-                let sim = i.vec_similarity();
-                let rel = query_count - pos;
-                (rel as f32 * sim) as usize
-            });
+            let task = SearchTask::<Engine>::new(&query)
+                .with_limit(1)
+                .with_custom_order(SplitOrder::new(query_count, pos));
 
             (cb)(&task, out);
         }
@@ -53,7 +52,12 @@ impl<'a> SplitProducer<'a> {
     where
         P: Pushable<Item = RelItem<&'static Name>>,
     {
-        self.run(|engine, out| engine.find_to(out), out);
+        self.run(
+            |engine, out| {
+                engine.find_to(out);
+            },
+            out,
+        );
     }
 }
 
@@ -72,9 +76,38 @@ impl<'a> Producer for SplitProducer<'a> {
 
     fn should_run(&self, already_found: usize) -> bool {
         already_found < 10
+        //already_found == 0
     }
 
     fn estimate_to(&self, out: &mut FilteredMaxCounter<<Self::Target as Searchable>::Item>) {
         self.run(|engine, out| engine.estimate_to(out), out);
+    }
+}
+
+struct SplitOrder {
+    q_count: usize,
+    pos: usize,
+}
+
+impl SplitOrder {
+    #[inline]
+    fn new(q_count: usize, pos: usize) -> Self {
+        Self { q_count, pos }
+    }
+}
+
+impl RelevanceEngine for SplitOrder {
+    type OutItem = &'static Name;
+    type IndexItem = IndexItem<u32>;
+    type Query = TermSet;
+
+    #[inline]
+    fn score<'item, 'query>(
+        &self,
+        item: &SortData<'item, 'query, Self::OutItem, Self::IndexItem, Self::Query>,
+    ) -> f32 {
+        let sim = NativeOrder.score(item);
+        let rel = (self.q_count - self.pos) as f32;
+        sim * rel * 0.001
     }
 }

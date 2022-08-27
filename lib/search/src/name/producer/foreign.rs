@@ -1,9 +1,9 @@
-use engine::pushable::FilteredMaxCounter;
+use engine::{pushable::FilteredMaxCounter, task::SearchTask};
 
 use crate::{
-    engine::{names::foreign, SearchTask},
+    engine::names::foreign::Engine,
     executor::{out_builder::OutputBuilder, producer::Producer, searchable::Searchable},
-    name::Search,
+    name::{order::foreign::ForeignOrder, Search},
     query::{Query, QueryLang},
 };
 
@@ -16,9 +16,11 @@ impl<'a> ForeignProducer<'a> {
         Self { query }
     }
 
-    fn foreign_task(&self) -> SearchTask<foreign::Engine> {
-        SearchTask::<foreign::Engine>::new(&self.query.query_str)
-            .threshold((0.3 * 100000.0) as usize)
+    fn foreign_task(&self) -> SearchTask<'static, Engine> {
+        let query = format_word(&self.query.query_str);
+        SearchTask::<Engine>::new(&query)
+            .with_custom_order(ForeignOrder)
+            .with_threshold(0.5)
     }
 }
 
@@ -42,4 +44,13 @@ impl<'a> Producer for ForeignProducer<'a> {
     fn estimate_to(&self, out: &mut FilteredMaxCounter<<Self::Target as Searchable>::Item>) {
         self.foreign_task().estimate_to(out);
     }
+}
+
+#[inline]
+fn format_word(inp: &str) -> String {
+    let mut out = String::from(inp.to_lowercase());
+    for i in ".,[]() \t\"'\\/-;:".chars() {
+        out = out.replace(i, " ");
+    }
+    out.to_lowercase()
 }

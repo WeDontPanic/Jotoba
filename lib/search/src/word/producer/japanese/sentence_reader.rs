@@ -9,7 +9,7 @@ use sentence_reader::{output::ParseResult, Parser, Part, Sentence};
 use types::jotoba::words::{part_of_speech::PosSimple, Word};
 
 use crate::{
-    engine::words::native::Engine,
+    engine::{names, words::native::Engine},
     executor::{out_builder::OutputBuilder, producer::Producer, searchable::Searchable},
     query::{Query, QueryLang},
     word::{
@@ -144,7 +144,7 @@ impl<'a> Producer for SReaderProducer<'a> {
     }
 
     fn estimate_to(&self, out: &mut FilteredMaxCounter<<Self::Target as Searchable>::Item>) {
-        if let Some(mut infl) = self.infl_task() {
+        if let Some(infl) = self.infl_task() {
             infl.estimate_to(out);
             return;
         }
@@ -190,10 +190,12 @@ fn furigana_by_reading(morpheme: &str, part: &sentence_reader::Part) -> Option<S
 }
 
 fn name_furi(morpheme: &str) -> Option<String> {
-    let mut task =
-        crate::engine::SearchTask::<crate::engine::names::native::Engine>::new(morpheme).limit(1);
     let morpheme_c = morpheme.to_string();
-    task.set_result_filter(move |n| n.get_reading() == morpheme_c && n.has_kanji());
+
+    let mut task = SearchTask::<names::native::Engine>::new(morpheme)
+        .with_limit(1)
+        .with_result_filter(move |n| n.get_reading() == morpheme_c && n.has_kanji());
+
     let res = task.find();
 
     if res.total_items != 1 {
@@ -241,7 +243,7 @@ impl RelevanceEngine for WordFuriOrder {
     type Query = TermSet;
 
     fn score<'item, 'query>(
-        &mut self,
+        &self,
         item: &SortData<'item, 'query, Self::OutItem, Self::IndexItem, Self::Query>,
     ) -> f32 {
         let mut score = 0.0;

@@ -9,7 +9,7 @@ pub trait RelevanceEngine {
     type Query;
 
     fn score<'item, 'query>(
-        &mut self,
+        &self,
         item: &SortData<'item, 'query, Self::OutItem, Self::IndexItem, Self::Query>,
     ) -> f32;
 }

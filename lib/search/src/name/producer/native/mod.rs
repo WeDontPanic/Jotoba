@@ -1,25 +1,28 @@
 pub mod split;
 
-use engine::pushable::FilteredMaxCounter;
-
 use crate::{
-    engine::{names::native, SearchTask},
+    engine::names::native::Engine,
     executor::{out_builder::OutputBuilder, producer::Producer, searchable::Searchable},
-    name::Search,
+    name::{order::japanese::NativeOrder, Search},
     query::{Query, QueryLang},
 };
+use engine::{pushable::FilteredMaxCounter, task::SearchTask};
 
 pub struct NativeProducer<'a> {
     query: &'a Query,
 }
 
 impl<'a> NativeProducer<'a> {
+    #[inline]
     pub fn new(query: &'a Query) -> Self {
         Self { query }
     }
 
-    fn jp_task(&self) -> SearchTask<native::Engine> {
-        SearchTask::<native::Engine>::new(&self.query.query_str)
+    #[inline]
+    fn jp_task(&self) -> SearchTask<'static, Engine> {
+        SearchTask::<Engine>::new(&self.query.query_str)
+            .with_custom_order(NativeOrder)
+            .with_threshold(0.3)
     }
 }
 

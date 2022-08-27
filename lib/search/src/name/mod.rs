@@ -1,3 +1,4 @@
+mod order;
 mod producer;
 
 use crate::{
@@ -39,10 +40,12 @@ impl<'a> Searchable for Search<'a> {
         item
     }
 
+    #[inline]
     fn get_producer<'s>(&'s self) -> &Vec<Box<dyn Producer<Target = Self> + 's>> {
         &self.producer
     }
 
+    #[inline]
     fn get_query(&self) -> &Query {
         self.query
     }

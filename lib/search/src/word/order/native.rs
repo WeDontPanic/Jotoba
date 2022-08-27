@@ -39,7 +39,7 @@ impl RelevanceEngine for NativeOrder {
     type Query = TermSet;
 
     fn score<'item, 'query>(
-        &mut self,
+        &self,
         item: &SortData<'item, 'query, Self::OutItem, Self::IndexItem, Self::Query>,
     ) -> f32 {
         let mut score = item.index_item().dice(item.query());

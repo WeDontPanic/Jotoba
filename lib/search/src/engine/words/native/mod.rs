@@ -2,7 +2,7 @@ pub mod k_reading;
 pub mod regex;
 
 use index_framework::{
-    retrieve::retriever::default::DefaultRetrieve,
+    retrieve::{retriever::default::DefaultRetrieve, Retrieve},
     traits::{backend::Backend, dictionary::IndexDictionary},
 };
 use indexes::words::NATIVE_NGRAM;
@@ -52,7 +52,7 @@ impl engine::Engine<'static> for Engine {
         query: &Self::Query,
         _q_str: &str,
         lang: Option<Language>,
-    ) -> index_framework::retrieve::Retrieve<'static, Self::B, Self::DictItem, Self::Document> {
+    ) -> Retrieve<'static, Self::B, Self::DictItem, Self::Document> {
         Self::retrieve(lang).by_term_ids(query.iter().copied())
     }
 }
