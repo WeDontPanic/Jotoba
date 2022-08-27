@@ -13,6 +13,7 @@ use crate::{
     executor::{out_builder::OutputBuilder, producer::Producer, searchable::Searchable},
     query::{Query, QueryLang},
     word::{
+        order::native::NativeOrder,
         result::{InflectionInformation, SentenceInfo},
         Search,
     },
@@ -35,8 +36,15 @@ impl<'a> SReaderProducer<'a> {
     /// Search task for inflected word
     fn infl_task(&self) -> Option<SearchTask<'static, Engine>> {
         let infl = self.parsed.as_inflected_word()?;
+
         let normalized = infl.get_normalized();
-        Some(NativeSearch::new(self.query, &normalized).task())
+
+        let original_query = <Engine as engine::Engine>::make_query(&self.query.query_str, None)?;
+
+        let search = NativeSearch::new(self.query, &normalized);
+        let o_query = search.original_query().to_string();
+        let order = NativeOrder::new(o_query).with_oquery_ts(original_query);
+        Some(search.task().with_custom_order(order))
     }
 
     /// Selected word index within the sentence
@@ -59,13 +67,25 @@ impl<'a> SReaderProducer<'a> {
     /// Normalized search task for sentences
     fn snt_task_normalized(&self) -> Option<SearchTask<'static, Engine>> {
         let word = self.sentence_word().unwrap();
-        Some(NativeSearch::new(self.query, &word.get_normalized()).task())
+
+        let inflected = word.get_inflected();
+        let normalized = word.get_normalized();
+
+        let search = NativeSearch::new(self.query, &normalized);
+
+        let order = NativeOrder::new(inflected).with_w_index(self.sentence_index());
+
+        Some(search.task().with_custom_order(order))
     }
 
     /// Inflected search task for an inflected word in a sentence
     fn snt_task_infl(&self) -> Option<SearchTask<'static, Engine>> {
         let word = self.sentence_word().unwrap();
-        Some(NativeSearch::new(self.query, &word.get_inflected()).task())
+        let inflected = word.get_inflected();
+        let search = NativeSearch::new(self.query, &inflected);
+        let o_query = search.original_query().to_string();
+        let order = NativeOrder::new(o_query).with_w_index(self.sentence_index());
+        Some(search.task().with_custom_order(order))
     }
 }
 
@@ -141,9 +161,7 @@ impl<'a> Producer for SReaderProducer<'a> {
 
 /// Returns `true` if the word exists in all words
 fn word_exists(term: &str) -> bool {
-    let task = SearchTask::<Engine>::new(term)
-        .with_limit(1)
-        .with_threshold(0.8);
+    let task = SearchTask::<Engine>::new(term).with_limit(1);
 
     let query = term.to_string();
     let mut task = task.with_item_filter(move |i| {
@@ -155,6 +173,7 @@ fn word_exists(term: &str) -> bool {
     });
 
     let res = task.find();
+    println!("{res:#?}");
     res.len() > 0
 }
 

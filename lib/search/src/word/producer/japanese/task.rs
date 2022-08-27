@@ -47,17 +47,19 @@ impl<'a> NativeSearch<'a> {
     }
 
     pub fn task(&self) -> SearchTask<'static, Engine> {
-        let original_query = self
-            .cust_original
-            .as_ref()
-            .unwrap_or(&self.query.raw_query.as_str())
-            .to_string();
-
         let filter = WordFilter::new(self.query.clone());
+        let original_query = self.original_query().to_string();
 
         SearchTask::new(self.query_str)
             .with_custom_order(NativeOrder::new(original_query))
             .with_result_filter(move |item| !filter.filter_word(*item))
             .with_threshold(self.threshold)
+    }
+
+    #[inline]
+    pub fn original_query(&self) -> &str {
+        self.cust_original
+            .as_ref()
+            .unwrap_or(&self.query.raw_query.as_str())
     }
 }

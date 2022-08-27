@@ -13,7 +13,7 @@ types = { path = "../types", default-features = false, features = [
 ] }
 priority_container = { git = "https://github.com/JojiiOfficial/PrioContainer/" }
 order_struct = { git = "https://github.com/JojiiOfficial/OrderStruct" }
-# TODO: replace with git
-index_framework = { path = "../../../index_framework" }
+#index_framework = { path = ""}
+index_framework = { git = "https://github.com/WeDontPanic/index_framework" }
 vsm = { path = "../../../vsm" }
 vector_space_model2 = { git = "https://github.com/JojiiOfficial/VectorSpaceModel" }
