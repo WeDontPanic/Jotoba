@@ -9,7 +9,7 @@ use sentence_reader::{output::ParseResult, Parser, Part, Sentence};
 use types::jotoba::words::{part_of_speech::PosSimple, Word};
 
 use crate::{
-    engine::words::native::Engine2,
+    engine::words::native::Engine,
     executor::{out_builder::OutputBuilder, producer::Producer, searchable::Searchable},
     query::{Query, QueryLang},
     word::{
@@ -33,7 +33,7 @@ impl<'a> SReaderProducer<'a> {
     }
 
     /// Search task for inflected word
-    fn infl_task(&self) -> Option<SearchTask<'static, Engine2>> {
+    fn infl_task(&self) -> Option<SearchTask<'static, Engine>> {
         let infl = self.parsed.as_inflected_word()?;
         let normalized = infl.get_normalized();
         Some(NativeSearch::new(self.query, &normalized).task())
@@ -57,13 +57,13 @@ impl<'a> SReaderProducer<'a> {
     }
 
     /// Normalized search task for sentences
-    fn snt_task_normalized(&self) -> Option<SearchTask<'static, Engine2>> {
+    fn snt_task_normalized(&self) -> Option<SearchTask<'static, Engine>> {
         let word = self.sentence_word().unwrap();
         Some(NativeSearch::new(self.query, &word.get_normalized()).task())
     }
 
     /// Inflected search task for an inflected word in a sentence
-    fn snt_task_infl(&self) -> Option<SearchTask<'static, Engine2>> {
+    fn snt_task_infl(&self) -> Option<SearchTask<'static, Engine>> {
         let word = self.sentence_word().unwrap();
         Some(NativeSearch::new(self.query, &word.get_inflected()).task())
     }
@@ -141,7 +141,7 @@ impl<'a> Producer for SReaderProducer<'a> {
 
 /// Returns `true` if the word exists in all words
 fn word_exists(term: &str) -> bool {
-    let task = SearchTask::<Engine2>::new(term)
+    let task = SearchTask::<Engine>::new(term)
         .with_limit(1)
         .with_threshold(0.8);
 
@@ -193,7 +193,7 @@ fn word_furi(morpheme: &str, part: &sentence_reader::Part) -> Option<String> {
     let pos = sentence_reader::part::wc_to_simple_pos(&part.word_class_raw());
     let morph = morpheme.to_string();
 
-    let mut st = SearchTask::<Engine2>::new(morpheme)
+    let mut st = SearchTask::<Engine>::new(morpheme)
         .with_limit(10)
         .with_custom_order(WordFuriOrder::new(pos, morpheme.to_string()))
         .with_result_filter(move |i| i.has_reading(&morph));

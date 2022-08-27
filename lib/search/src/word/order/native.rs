@@ -38,7 +38,7 @@ impl RelevanceEngine for NativeOrder {
 
         if self.orig_query != reading && self.orig_query != kana {
             //score += 100000000.0;
-            score *= 0.8;
+            score *= 0.6;
         }
 
         if word.jlpt_lvl.is_none() {

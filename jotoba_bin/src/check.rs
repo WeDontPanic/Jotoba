@@ -1,5 +1,6 @@
 use crate::webserver::prepare_data;
 use config::Config;
+use ngindex::index_framework::traits::{backend::Backend, storage::IndexStorage};
 use types::jotoba::languages::Language;
 
 /// Checks resources and returns `true` if required features are available
@@ -130,9 +131,9 @@ fn words() -> bool {
         }
     }
 
-    let jp_index = indexes::get().word().native();
-    for vec in jp_index.get_vector_store().iter() {
-        if word_retrieve.by_sequence(vec.document).is_none() {
+    let jp_index = indexes::get().word().native2();
+    for vec in jp_index.storage().iter() {
+        if word_retrieve.by_sequence(*vec.item()).is_none() {
             println!("Word and (Japanese) Index don't match");
             return false;
         }

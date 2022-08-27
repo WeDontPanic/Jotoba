@@ -3,7 +3,7 @@ use actix_web::web::Json;
 use engine::task::SearchTask;
 use error::api_error::RestError;
 use japanese::JapaneseExt;
-use search::{engine::words::native::Engine2, word::order::native::NativeOrder};
+use search::{engine::words::native::Engine, word::order::native::NativeOrder};
 use sentence_reader::output::ParseResult;
 use types::{
     api::app::{
@@ -65,7 +65,7 @@ fn get_words(sentence: &Sentence, payload: &DetailsPayload) -> Vec<Word> {
 }
 
 fn find_word(w: &str, payload: &DetailsPayload) -> Option<Word> {
-    let mut task = SearchTask::<Engine2>::new(w)
+    let mut task = SearchTask::<Engine>::new(w)
         .with_limit(4)
         .with_threshold(0.8)
         .with_custom_order(NativeOrder::new(w.to_string()));

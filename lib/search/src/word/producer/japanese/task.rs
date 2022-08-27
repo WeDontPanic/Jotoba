@@ -2,7 +2,7 @@ use engine::task::SearchTask;
 use japanese::JapaneseExt;
 
 use crate::{
-    engine::words::native::Engine2,
+    engine::words::native::Engine,
     query::Query,
     word::{filter::WordFilter, order::native::NativeOrder},
 };
@@ -46,7 +46,7 @@ impl<'a> NativeSearch<'a> {
         self
     }
 
-    pub fn task(&self) -> SearchTask<'static, Engine2> {
+    pub fn task(&self) -> SearchTask<'static, Engine> {
         let original_query = self
             .cust_original
             .as_ref()

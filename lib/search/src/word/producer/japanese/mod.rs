@@ -2,7 +2,7 @@ pub mod sentence_reader;
 pub mod task;
 
 use crate::{
-    engine::words::native::Engine2,
+    engine::words::native::Engine,
     executor::{out_builder::OutputBuilder, producer::Producer, searchable::Searchable},
     query::{Query, QueryLang},
     word::Search,
@@ -21,7 +21,7 @@ impl<'a> NativeProducer<'a> {
         Self { query }
     }
 
-    fn task(&self) -> SearchTask<'static, Engine2> {
+    fn task(&self) -> SearchTask<'static, Engine> {
         NativeSearch::new(self.query, &self.query.query_str).task()
     }
 }
