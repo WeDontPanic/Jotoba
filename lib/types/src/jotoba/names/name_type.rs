@@ -57,6 +57,8 @@ pub enum NameType {
     Religion,
     #[strum(serialize = "serv")]
     Service,
+    #[strum(serialize = "ship")]
+    Ship,
 }
 
 impl NameType {
@@ -96,6 +98,7 @@ impl Translatable for NameType {
             NameType::Other => "Other",
             NameType::Religion => "Religion",
             NameType::Service => "Service",
+            NameType::Ship => "Ship",
         }
     }
 }
