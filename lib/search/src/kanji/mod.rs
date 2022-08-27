@@ -4,10 +4,8 @@ mod tag_only;
 
 use self::result::KanjiResult;
 use super::query::Query;
-use crate::{
-    engine::{words::native, SearchTask},
-    query::QueryLang,
-};
+use crate::{engine::words::native::Engine2, query::QueryLang, word::order::native::NativeOrder};
+use engine::task::SearchTask;
 use error::Error;
 use japanese::JapaneseExt;
 use result::Item;
@@ -61,17 +59,16 @@ fn by_japanese_query(query: &str) -> Vec<Kanji> {
 
 /// Search for kanji using kana query
 fn kana_search(query: &str) -> Vec<Kanji> {
-    let mut search_task = SearchTask::<native::Engine>::new(query);
-
     let q = query.to_string();
-    search_task.set_result_filter(move |i| i.has_reading(&q));
 
-    let q = query.to_string();
-    search_task
-        .with_custom_order(move |item| crate::word::order::japanese_search_order(item, Some(&q)));
+    let mut search_task = SearchTask::<Engine2>::new(query)
+        .with_limit(10)
+        .with_threshold(0.8)
+        .with_result_filter(move |i| i.has_reading(&q))
+        .with_custom_order(NativeOrder::new(query.to_string()));
 
     search_task
-        .find_exact()
+        .find()
         .into_iter()
         .map(|i| kanji_from_str(&i.get_reading().reading))
         .flatten()

@@ -6,6 +6,7 @@ edition = "2021"
 
 [dependencies]
 japanese = { path = "../japanese" }
+engine = { path = "../engine" }
 news = { path = "../news" }
 error = { path = "../error", features = ["web_error"] }
 sentence_reader = { path = "../sentence_reader" }

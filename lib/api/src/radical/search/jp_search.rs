@@ -1,6 +1,7 @@
+use engine::task::SearchTask;
 use itertools::Itertools;
 use japanese::JapaneseExt;
-use search::engine::{words::native, SearchTask};
+use search::{engine::words::native::Engine2, word::order::native::NativeOrder};
 use std::collections::{HashMap, HashSet};
 use types::{api::radical::search::KanjiRads, jotoba::kanji::Kanji};
 
@@ -82,12 +83,10 @@ fn kanji_radicals(kanji: char) -> Vec<char> {
 
 /// Does a kana word-search and returns some likely radicals for the given query
 fn kana_search(query: &str) -> Vec<char> {
-    let mut search_task: SearchTask<native::Engine> = SearchTask::new(&query).limit(3);
-
-    let original_query = query.to_string();
-    search_task.with_custom_order(move |item| {
-        search::word::order::japanese_search_order(item, Some(&original_query))
-    });
+    let mut search_task: SearchTask<Engine2> = SearchTask::new(&query)
+        .with_limit(3)
+        .with_threshold(0.8)
+        .with_custom_order(NativeOrder::new(query.to_string()));
 
     search_task
         .find()

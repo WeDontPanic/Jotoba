@@ -1,7 +1,10 @@
+use engine::task::SearchTask;
+use japanese::JapaneseExt;
+
 use crate::{
-    engine::{words::native, SearchTask},
+    engine::words::native::Engine2,
     query::Query,
-    word::{filter::WordFilter, order},
+    word::{filter::WordFilter, order::native::NativeOrder},
 };
 
 /// Helper for creating SearchTask for foreign queries
@@ -9,14 +12,27 @@ pub struct NativeSearch<'a> {
     query: &'a Query,
     query_str: &'a str,
     cust_original: Option<&'a str>,
+    threshold: f32,
 }
 
 impl<'a> NativeSearch<'a> {
+    #[inline]
     pub(crate) fn new(query: &'a Query, query_str: &'a str) -> Self {
+        // Kanji queries are shorter so we need a lower threshold to not filter too many different words for short queries
+        let kana_count: usize = query_str.chars().filter(|i| i.is_kana()).count();
+        let kanji_count: usize = query_str.chars().filter(|i| i.is_kanji()).count();
+        let kanji_query = kanji_count >= (kana_count * 2);
+        let threshold = if kanji_query && (kanji_count + kana_count < 5) {
+            0.2
+        } else {
+            0.3
+        };
+
         Self {
             query,
             query_str,
             cust_original: None,
+            threshold,
         }
     }
 
@@ -25,28 +41,23 @@ impl<'a> NativeSearch<'a> {
         self
     }
 
-    pub fn task(&self) -> SearchTask<native::Engine> {
-        let mut task: SearchTask<native::Engine> = SearchTask::new(self.query_str);
+    pub fn with_threshold(mut self, threshold: f32) -> Self {
+        self.threshold = threshold;
+        self
+    }
 
+    pub fn task(&self) -> SearchTask<'static, Engine2> {
         let original_query = self
             .cust_original
             .as_ref()
             .unwrap_or(&self.query.raw_query.as_str())
             .to_string();
 
-        task.with_custom_order(move |item| {
-            order::japanese_search_order(item, Some(&original_query))
-        });
-
         let filter = WordFilter::new(self.query.clone());
-        task.set_result_filter(move |item| !filter.filter_word(*item));
 
-        task
-    }
-
-    /// Returns `true` if Native search has `term` in index
-    #[inline]
-    pub fn has_term(term: &str) -> bool {
-        SearchTask::<native::Engine>::new(term).has_term()
+        SearchTask::new(self.query_str)
+            .with_custom_order(NativeOrder::new(original_query))
+            .with_result_filter(move |item| !filter.filter_word(*item))
+            .with_threshold(self.threshold)
     }
 }

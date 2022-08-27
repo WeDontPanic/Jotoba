@@ -187,7 +187,8 @@ where
     {
         let query = E::make_query(&self.query_str, self.query_lang)?;
 
-        let mut retr: E::Retriever = E::retrieve_for(&query, self.query_lang).get();
+        let mut retr: E::Retriever =
+            E::retrieve_for(&query, &self.query_str, self.query_lang).get();
 
         let mut pushed = 0;
 
@@ -255,7 +256,7 @@ where
     fn retrieve_next(&self, retr: &mut E::Retriever) -> Option<(E::Document, Vec<E::Output>)> {
         let next = retr.next()?;
 
-        if self.item_filter(&next) {
+        if !self.item_filter(&next) {
             return Some((next, vec![]));
         };
 

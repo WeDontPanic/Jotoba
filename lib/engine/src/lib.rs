@@ -48,6 +48,7 @@ pub trait Engine<'index> {
     /// Returns a new retrieve for the given terms
     fn retrieve_for(
         inp: &Self::Query,
+        query_str: &str,
         lang: Option<Language>,
     ) -> Retrieve<'index, Self::B, Self::DictItem, Self::Document>;
 

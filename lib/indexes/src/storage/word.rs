@@ -86,6 +86,7 @@ pub(crate) fn load<P: AsRef<Path>>(path: P) -> Result<WordStore, Box<dyn Error +
     let start = std::time::Instant::now();
     let foreign = load_foreign(path.as_ref())?;
     let native = NativeIndex::open(path.as_ref().join(NATIVE_FILE))?;
+    let native2 = utils::deser_file(path.as_ref(), NATIVE_FILE2)?;
     let regex = utils::deser_file(path.as_ref(), REGEX_FILE)?;
     let relevance = load_rel_index(path.as_ref())?;
     debug!(
@@ -94,7 +95,9 @@ pub(crate) fn load<P: AsRef<Path>>(path: P) -> Result<WordStore, Box<dyn Error +
     );
     let k_reading = kanji::reading::Index::open(path.as_ref().join(KANJI_READING_INDEX))?;
     debug!("Loading indexes sync took: {:?}", start.elapsed());
-    Ok(WordStore::new(foreign, native, regex, relevance, k_reading))
+    Ok(WordStore::new(
+        foreign, native, native2, regex, relevance, k_reading,
+    ))
 }
 
 #[cfg(feature = "parallel")]

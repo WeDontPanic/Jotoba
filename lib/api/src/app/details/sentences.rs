@@ -1,11 +1,9 @@
 use crate::app::{search::sentences::convert_sentence, Result};
 use actix_web::web::Json;
+use engine::task::SearchTask;
 use error::api_error::RestError;
 use japanese::JapaneseExt;
-use search::{
-    engine::{words::native, SearchTask},
-    word::order,
-};
+use search::{engine::words::native::Engine2, word::order::native::NativeOrder};
 use sentence_reader::output::ParseResult;
 use types::{
     api::app::{
@@ -67,10 +65,12 @@ fn get_words(sentence: &Sentence, payload: &DetailsPayload) -> Vec<Word> {
 }
 
 fn find_word(w: &str, payload: &DetailsPayload) -> Option<Word> {
-    let mut task = SearchTask::<native::Engine>::new(w);
-    let original_query = w.to_string();
-    task.with_custom_order(move |item| order::japanese_search_order(item, Some(&original_query)));
-    let res = task.find_exact();
+    let mut task = SearchTask::<Engine2>::new(w)
+        .with_limit(4)
+        .with_threshold(0.8)
+        .with_custom_order(NativeOrder::new(w.to_string()));
+
+    let res = task.find();
     if res.len() == 0 {
         return None;
     }

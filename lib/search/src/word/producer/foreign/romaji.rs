@@ -1,12 +1,12 @@
 use japanese::guessing::could_be_romaji;
 
 use crate::{
-    engine::{words::native, SearchTask},
+    engine::words::native::Engine2,
     executor::{out_builder::OutputBuilder, producer::Producer, searchable::Searchable},
     query::{Query, QueryLang},
     word::{producer::japanese::task::NativeSearch, Search},
 };
-use engine::pushable::FilteredMaxCounter;
+use engine::{pushable::FilteredMaxCounter, task::SearchTask};
 
 pub struct RomajiProducer<'a> {
     query: &'a Query,
@@ -25,12 +25,12 @@ impl<'a> RomajiProducer<'a> {
         japanese::to_kk_fmt(&self.query.query_str)
     }
 
-    fn kk_task(&self) -> SearchTask<native::Engine> {
+    fn kk_task(&self) -> SearchTask<'static, Engine2> {
         let hira_query_str = self.kk_query();
         NativeSearch::new(self.query, &hira_query_str).task()
     }
 
-    fn hira_task(&self) -> SearchTask<native::Engine> {
+    fn hira_task(&self) -> SearchTask<'static, Engine2> {
         let hira_query_str = self.hira_query();
         NativeSearch::new(self.query, &hira_query_str)
             .with_custom_original_query(&hira_query_str)

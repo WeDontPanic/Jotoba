@@ -2,13 +2,13 @@ pub mod sentence_reader;
 pub mod task;
 
 use crate::{
-    engine::{words::native, SearchTask},
+    engine::words::native::Engine2,
     executor::{out_builder::OutputBuilder, producer::Producer, searchable::Searchable},
     query::{Query, QueryLang},
     word::Search,
 };
 
-use engine::pushable::FilteredMaxCounter;
+use engine::{pushable::FilteredMaxCounter, task::SearchTask};
 use task::NativeSearch;
 
 /// Produces search results for native search input
@@ -21,14 +21,7 @@ impl<'a> NativeProducer<'a> {
         Self { query }
     }
 
-    /// Returns `true` if the term in the query is in the db
-    fn has_term(&self) -> bool {
-        NativeSearch::new(self.query, &self.query.query_str)
-            .task()
-            .has_term()
-    }
-
-    fn task(&self) -> SearchTask<native::Engine> {
+    fn task(&self) -> SearchTask<'static, Engine2> {
         NativeSearch::new(self.query, &self.query.query_str).task()
     }
 }
@@ -55,6 +48,6 @@ impl<'a> Producer for NativeProducer<'a> {
             return false;
         }
 
-        already_found == 0 || self.has_term()
+        already_found < 10 || true
     }
 }

@@ -1,8 +1,8 @@
 pub mod foreign;
+pub mod native;
 
 use crate::{query::regex::RegexSQuery, SearchMode};
 use engine::relevance::data::SortData;
-use japanese::JapaneseExt;
 use once_cell::sync::Lazy;
 use regex::Regex;
 use types::jotoba::{
@@ -39,77 +39,6 @@ pub fn regex_order(word: &Word, found_in: &str, _query: &RegexSQuery) -> usize {
 
     // Show shorter words more on top
     score = score.saturating_sub(real_string_len(&word.get_reading().reading) * 3);
-
-    score
-}
-
-/// Search order for words searched by japanese meaning/kanji/reading
-pub fn japanese_search_order(
-    item: SortData<&'static Word, Vector, Vector>,
-    original_query: Option<&str>,
-) -> usize {
-    let mut score: usize = (item.vec_similarity() * 100f32) as usize;
-
-    let word = item.item();
-    let query_str = japanese::to_halfwidth(item.query_str());
-
-    let reading = japanese::to_halfwidth(&word.get_reading().reading);
-    let reading_len = utils::real_string_len(&reading);
-    let kana = japanese::to_halfwidth(&word.reading.kana.reading);
-
-    if word.has_reading(&query_str) {
-        score += 100000000;
-
-        // Show kana only readings on top if they match with query
-        if word.reading.kanji.is_none() {
-            score += 10;
-        }
-    } else if reading.starts_with(&query_str) {
-        score += 4;
-    }
-
-    if let Some(original_query) = original_query {
-        if original_query == reading || original_query == kana
-        //&& query_str != reading.reading
-        {
-            score = score.saturating_add(100000000usize);
-        }
-    }
-
-    if word.jlpt_lvl.is_some() {
-        score += 20;
-    }
-
-    // Is common
-    if word.is_common() {
-        score += 30;
-    }
-
-    if reading.starts_with(&query_str) || (query_str.is_kana() && reading.starts_with(&query_str)) {
-        score += 200;
-    }
-
-    if reading_len == 1 && reading.is_kanji() {
-        let kanji = reading.chars().next().unwrap();
-        let norm = indexes::get()
-            .kanji()
-            .reading_fre()
-            .norm_reading_freq(kanji, word.get_kana());
-        if let Some(read_freq) = norm {
-            score += (read_freq * 100.0) as usize;
-        }
-    }
-
-    // If alternative reading matches query exactly
-    if word
-        .reading
-        .alternative
-        .iter()
-        .map(|i| japanese::to_halfwidth(&i.reading))
-        .any(|i| i == *query_str)
-    {
-        score += 60;
-    }
 
     score
 }

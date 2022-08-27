@@ -1,10 +1,15 @@
-use engine::pushable::FilteredMaxCounter;
+use engine::{
+    pushable::FilteredMaxCounter,
+    relevance::{data::SortData, RelevanceEngine},
+    task::SearchTask,
+};
 use japanese::{furigana::SentencePartRef, JapaneseExt};
+use ngindex2::{item::IndexItem, termset::TermSet};
 use sentence_reader::{output::ParseResult, Parser, Part, Sentence};
 use types::jotoba::words::{part_of_speech::PosSimple, Word};
 
 use crate::{
-    engine::{words::native, SearchTask},
+    engine::words::native::Engine2,
     executor::{out_builder::OutputBuilder, producer::Producer, searchable::Searchable},
     query::{Query, QueryLang},
     word::{
@@ -28,7 +33,7 @@ impl<'a> SReaderProducer<'a> {
     }
 
     /// Search task for inflected word
-    fn infl_task(&self) -> Option<SearchTask<native::Engine>> {
+    fn infl_task(&self) -> Option<SearchTask<'static, Engine2>> {
         let infl = self.parsed.as_inflected_word()?;
         let normalized = infl.get_normalized();
         Some(NativeSearch::new(self.query, &normalized).task())
@@ -52,13 +57,13 @@ impl<'a> SReaderProducer<'a> {
     }
 
     /// Normalized search task for sentences
-    fn snt_task_normalized(&self) -> Option<SearchTask<native::Engine>> {
+    fn snt_task_normalized(&self) -> Option<SearchTask<'static, Engine2>> {
         let word = self.sentence_word().unwrap();
         Some(NativeSearch::new(self.query, &word.get_normalized()).task())
     }
 
     /// Inflected search task for an inflected word in a sentence
-    fn snt_task_infl(&self) -> Option<SearchTask<native::Engine>> {
+    fn snt_task_infl(&self) -> Option<SearchTask<'static, Engine2>> {
         let word = self.sentence_word().unwrap();
         Some(NativeSearch::new(self.query, &word.get_inflected()).task())
     }
@@ -119,7 +124,7 @@ impl<'a> Producer for SReaderProducer<'a> {
     }
 
     fn estimate_to(&self, out: &mut FilteredMaxCounter<<Self::Target as Searchable>::Item>) {
-        if let Some(infl) = self.infl_task() {
+        if let Some(mut infl) = self.infl_task() {
             infl.estimate_to(out);
             return;
         }
@@ -136,23 +141,21 @@ impl<'a> Producer for SReaderProducer<'a> {
 
 /// Returns `true` if the word exists in all words
 fn word_exists(term: &str) -> bool {
-    if !NativeSearch::has_term(term) {
-        return false;
-    }
-
-    let mut task = SearchTask::<native::Engine>::new(term).limit(1);
+    let task = SearchTask::<Engine2>::new(term)
+        .with_limit(1)
+        .with_threshold(0.8);
 
     let query = term.to_string();
-    task.set_vector_filter(move |i, _| {
+    let mut task = task.with_item_filter(move |i| {
         resources::get()
             .words()
-            .by_sequence(i.document)
+            .by_sequence(*i.item())
             .unwrap()
             .has_reading(&query)
     });
 
-    let len = task.find_exact().len();
-    len > 0
+    let res = task.find();
+    res.len() > 0
 }
 
 /// Generates furigana for a sentence
@@ -169,7 +172,8 @@ fn furigana_by_reading(morpheme: &str, part: &sentence_reader::Part) -> Option<S
 }
 
 fn name_furi(morpheme: &str) -> Option<String> {
-    let mut task = SearchTask::<crate::engine::names::native::Engine>::new(morpheme).limit(1);
+    let mut task =
+        crate::engine::SearchTask::<crate::engine::names::native::Engine>::new(morpheme).limit(1);
     let morpheme_c = morpheme.to_string();
     task.set_result_filter(move |n| n.get_reading() == morpheme_c && n.has_kanji());
     let res = task.find();
@@ -186,61 +190,81 @@ fn name_furi(morpheme: &str) -> Option<String> {
 fn word_furi(morpheme: &str, part: &sentence_reader::Part) -> Option<String> {
     let word_storage = resources::get().words();
 
-    let mut st = SearchTask::<native::Engine>::new(morpheme).limit(10);
-
     let pos = sentence_reader::part::wc_to_simple_pos(&part.word_class_raw());
     let morph = morpheme.to_string();
-    st.with_custom_order(move |item| word_furi_order(item.item(), &pos, &morph));
 
-    let morph = morpheme.to_string();
-    st.set_result_filter(move |i| i.has_reading(&morph));
+    let mut st = SearchTask::<Engine2>::new(morpheme)
+        .with_limit(10)
+        .with_custom_order(WordFuriOrder::new(pos, morpheme.to_string()))
+        .with_result_filter(move |i| i.has_reading(&morph));
 
-    let found = st.find();
-
-    found.get(0).and_then(|word| {
+    st.find().get(0).and_then(|word| {
         word_storage
             .by_sequence(word.item.sequence)
             .and_then(|i| i.furigana.clone())
     })
 }
 
-fn word_furi_order(i: &Word, pos: &Option<PosSimple>, morph: &str) -> usize {
-    let mut score: usize = 0;
+struct WordFuriOrder {
+    pos: Option<PosSimple>,
+    morph: String,
+}
 
-    let reading = &i.get_reading().reading;
-    let reading_len = utils::real_string_len(reading);
-
-    if reading == morph {
-        score += 100;
+impl WordFuriOrder {
+    #[inline]
+    fn new(pos: Option<PosSimple>, morph: String) -> Self {
+        Self { pos, morph }
     }
+}
 
-    if reading_len == 1 && reading.is_kanji() {
-        let kanji = reading.chars().next().unwrap();
-        let kana = i.get_kana();
-        let norm = indexes::get()
-            .kanji()
-            .reading_fre()
-            .norm_reading_freq(kanji, kana);
-        if let Some(norm) = norm {
-            score += (norm * 10.0) as usize;
+impl RelevanceEngine for WordFuriOrder {
+    type OutItem = &'static Word;
+    type IndexItem = IndexItem<u32>;
+    type Query = TermSet;
+
+    fn score<'item, 'query>(
+        &mut self,
+        item: &SortData<'item, 'query, Self::OutItem, Self::IndexItem, Self::Query>,
+    ) -> f32 {
+        let mut score = 0.0;
+
+        let i = item.item();
+        let reading = &i.get_reading().reading;
+        let reading_len = utils::real_string_len(reading);
+
+        if reading == &self.morph {
+            score += 100.0;
         }
-    }
 
-    if let Some(pos) = pos {
-        if i.has_pos(&[*pos]) {
-            score += 20;
-        } else {
-            score = score.saturating_sub(30);
+        if reading_len == 1 && reading.is_kanji() {
+            let kanji = reading.chars().next().unwrap();
+            let kana = i.get_kana();
+            let norm = indexes::get()
+                .kanji()
+                .reading_fre()
+                .norm_reading_freq(kanji, kana);
+            if let Some(norm) = norm {
+                score += norm * 10.0;
+            }
         }
-    }
 
-    if i.is_common() {
-        score += 2;
-    }
+        if let Some(ref pos) = self.pos {
+            if i.has_pos(&[*pos]) {
+                score += 20.0;
+            } else {
+                //score = score.saturating_sub(30);
+                score = (score - 30.0).max(0.0);
+            }
+        }
 
-    if i.get_jlpt_lvl().is_some() {
-        score += 2;
-    }
+        if i.is_common() {
+            score += 2.0;
+        }
 
-    score
+        if i.get_jlpt_lvl().is_some() {
+            score += 2.0;
+        }
+
+        score
+    }
 }
