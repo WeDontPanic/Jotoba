@@ -22,8 +22,8 @@ impl<'a> NativeSearch<'a> {
         let kana_count: usize = query_str.chars().filter(|i| i.is_kana()).count();
         let kanji_count: usize = query_str.chars().filter(|i| i.is_kanji()).count();
         let kanji_query = kanji_count >= (kana_count * 2);
-        let threshold = if kanji_query && (kanji_count + kana_count < 5) {
-            0.2
+        let threshold = if kanji_query || (kanji_count + kana_count < 5) {
+            0.15
         } else {
             0.3
         };
