@@ -1,4 +1,5 @@
-use crate::query::{Query, QueryLang};
+use crate::query::Query;
+use japanese::JapaneseExt;
 use std::borrow::Borrow;
 use types::jotoba::words::Word;
 
@@ -9,6 +10,7 @@ pub struct WordFilter {
 
 impl WordFilter {
     pub fn new(query: Query) -> Self {
+        println!("{:?}", query.must_contain);
         let jlpt_lvl = query.tags.iter().find_map(|i| i.as_jlpt());
         Self { query, jlpt_lvl }
     }
@@ -23,9 +25,7 @@ impl WordFilter {
             wf.by_pos_tags(word)?;
             wf.by_jlpt(word)?;
 
-            if wf.query.q_lang == QueryLang::Foreign {
-                wf.by_quot_marks(word)?;
-            }
+            wf.by_quot_marks(word)?;
 
             Some(())
         }
@@ -68,27 +68,43 @@ impl WordFilter {
             return Some(());
         }
 
-        let mut quot_terms = self.query.must_contain.clone();
+        let (jp_q_terms, mut fn_q_terms): (Vec<_>, Vec<_>) = self
+            .query
+            .must_contain
+            .iter()
+            .partition(|i| i.is_japanese());
 
-        for i in w.gloss_iter_by_lang(self.query.get_search_lang(), self.query.show_english()) {
-            let i = i.to_lowercase();
-            quot_terms.retain(|j| !i.contains(j));
-            if quot_terms.is_empty() {
-                break;
-            }
-        }
-
-        if !quot_terms.is_empty() {
-            for i in w.reading_iter(true) {
-                let i = &i.reading;
-                quot_terms.retain(|j| !i.contains(j));
-                if quot_terms.is_empty() {
+        if !fn_q_terms.is_empty() {
+            for i in w.gloss_iter_by_lang(self.query.get_search_lang(), self.query.show_english()) {
+                let i = i.to_lowercase();
+                fn_q_terms.retain(|k| i.contains(k.as_str()));
+                if fn_q_terms.is_empty() {
                     break;
                 }
             }
         }
 
+        if !jp_q_terms.is_empty() {
+            for term in jp_q_terms {
+                self.by_quot_marks_jp(w, &term)?;
+                println!("{term} in {:?}", w.get_reading().reading);
+            }
+        }
+
         // Success if all quted terms were removed
-        quot_terms.is_empty().then(|| ())
+        fn_q_terms.is_empty().then(|| ())
+    }
+
+    #[inline]
+    fn by_quot_marks_jp(&self, w: &Word, q_term: &str) -> Option<()> {
+        if q_term.is_kana() {
+            if !w.get_kana().contains(q_term) {
+                return None;
+            }
+        } else if !w.reading_iter(false).any(|i| i.reading.contains(q_term)) {
+            return None;
+        }
+
+        Some(())
     }
 }
