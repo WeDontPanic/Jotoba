@@ -71,11 +71,11 @@ impl<'a> Details<'a> {
     }
 
     fn transitivity_pair(&self) -> Option<TransitivityPair> {
-        if let Some(trans) = self.word.transive_verion {
+        if let Some(trans) = self.word.transive_version {
             return Some(TransitivityPair::Transitive(trans.get()));
         }
 
-        if let Some(intrans) = self.word.intransive_verion {
+        if let Some(intrans) = self.word.intransive_version {
             return Some(TransitivityPair::Intransitive(intrans.get()));
         }
 

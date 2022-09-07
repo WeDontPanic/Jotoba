@@ -59,17 +59,17 @@ pub fn unescaped_string<T: ToString>(s: T) -> UnescapedString {
     UnescapedString::new(s)
 }
 
-/// Returns the transive verion of `word`
+/// Returns the transive version of `word`
 #[inline]
 pub fn get_transitive_counterpart(word: &Word) -> Option<Word> {
-    let seq_id = word.transive_verion.as_ref()?.get();
+    let seq_id = word.transive_version.as_ref()?.get();
     resources::get().words().by_sequence(seq_id).cloned()
 }
 
-/// Returns the intransive verion of `word`
+/// Returns the intransive version of `word`
 #[inline]
 pub fn get_intransitive_counterpart(word: &Word) -> Option<Word> {
-    let seq_id = word.intransive_verion.as_ref()?.get();
+    let seq_id = word.intransive_version.as_ref()?.get();
     resources::get().words().by_sequence(seq_id).cloned()
 }
 

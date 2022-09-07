@@ -13,7 +13,7 @@ pub(crate) fn conv_word(word: jotoba::words::Word, lang: Language) -> words::Wor
     let is_common = word.is_common();
     let accents = word.get_pitches();
 
-    let audio = word.audio_file();
+    let audio = word.audio_file().map(|audio| format!("/audio/{audio}"));
 
     let reading = word
         .furigana
@@ -43,8 +43,8 @@ pub(crate) fn conv_word(word: jotoba::words::Word, lang: Language) -> words::Wor
         accents,
         jlpt_lvl: word.jlpt_lvl.map(|i| i.get()),
         furigana: word.furigana,
-        transive_verion: word.transive_verion.map(|i| i.get()),
-        intransive_verion: word.intransive_verion.map(|i| i.get()),
+        transive_version: word.transive_version.map(|i| i.get()),
+        intransive_version: word.intransive_version.map(|i| i.get()),
         sentences_available: word.sentences_available,
         audio,
     }

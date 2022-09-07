@@ -26,9 +26,9 @@ pub struct Word {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub jlpt_lvl: Option<u8>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub transive_verion: Option<u32>,
+    pub transive_version: Option<u32>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub intransive_verion: Option<u32>,
+    pub intransive_version: Option<u32>,
     pub sentences_available: u16,
 }
 

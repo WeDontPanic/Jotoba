@@ -12,9 +12,9 @@ pub mod priority;
 pub mod reading;
 pub mod sense;
 
-use std::num::{NonZeroU32, NonZeroU8};
-
 pub use dict::Dict;
+
+use std::num::{NonZeroU32, NonZeroU8};
 
 use self::{
     inflection::Inflections,
@@ -43,8 +43,8 @@ pub struct Word {
     pub furigana: Option<String>,
     pub jlpt_lvl: Option<NonZeroU8>,
     pub collocations: Option<Vec<u32>>,
-    pub transive_verion: Option<NonZeroU32>,
-    pub intransive_verion: Option<NonZeroU32>,
+    pub transive_version: Option<NonZeroU32>,
+    pub intransive_version: Option<NonZeroU32>,
     pub sentences_available: u16,
     pub accents: PitchValues,
 }
