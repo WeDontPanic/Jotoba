@@ -10,7 +10,7 @@ edition = "2021"
 actix-web = { version = "4.1.0", optional = true }
 serde = "1.0.144"
 strum = "0.24.1"
-thiserror = "1.0.32"
+thiserror = "1.0.34"
 
 [features]
 default = []

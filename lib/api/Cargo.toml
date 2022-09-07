@@ -19,7 +19,7 @@ types = { path = "../types", default-features = false }
 actix-web = "4.1.0"
 actix-multipart = "0.4.0"
 itertools = "0.10.3"
-once_cell = { version = "1.13.1", default-features = false }
+once_cell = { version = "1.14.0", default-features = false }
 serde = "1.0.144"
 log = "0.4.17"
 wana_kana = "2.1.0"
@@ -32,7 +32,7 @@ rayon = "1.5.3"
 autocompletion = { git = "https://github.com/WeDontPanic/AutoCompletionFramework" }
 intmap = { git = "https://github.com/JojiiOfficial/rust-intmap" }
 priority_container = "0.1.1"
-futures = { version = "0.3.23", optional = true }
+futures = { version = "0.3.24", optional = true }
 leptess = { version = "0.13.2", optional = true }
 order_struct = { git = "https://github.com/JojiiOfficial/OrderStruct" }
 #ids_parser = { path = "../../../ids_parser" }
