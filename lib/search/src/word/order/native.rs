@@ -56,24 +56,30 @@ impl RelevanceEngine for NativeOrder {
         }
 
         let word = item.item();
-        let query_str = japanese::to_halfwidth(item.query_str());
+        let query_str = japanese::to_halfwidth(item.query_str()).to_hiragana();
 
         let reading = japanese::to_halfwidth(&word.get_reading().reading);
         let reading_len = utils::real_string_len(&reading);
-        let kana = japanese::to_halfwidth(&word.reading.kana.reading);
+        let kana = japanese::to_halfwidth(&word.reading.kana.reading).to_hiragana();
+
+        // Words with query as substring have more relevance
+        // スイス: スイス人 > スパイス
+        if !kana.contains(&query_str) {
+            score *= 0.8;
+        }
 
         if kana == self._orig_query || reading == self._orig_query {
             score = (score * 10.0).min(1.0);
         }
 
         if word.jlpt_lvl.is_none() {
-            score *= 0.99;
+            score *= 0.999;
         }
 
         // Is common
         if !word.is_common() {
             //score += 3.0;
-            score *= 0.99;
+            score *= 0.999;
         }
 
         if !reading.starts_with(&query_str)
