@@ -5,8 +5,8 @@ WORKDIR app
 COPY ./lib ./lib
 COPY ./.git ./.git
 COPY ./locales ./locales
-COPY ./Cargo.lock ./
-#COPY ./Cargo.toml ./
+#COPY ./Cargo.lock ./
+COPY ./Cargo.toml ./
 COPY ./tests ./tests
 COPY ./scripts ./scripts
 COPY ./jotoba_bin ./jotoba_bin
