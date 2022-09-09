@@ -224,6 +224,7 @@ impl Translatable for Field {
             Field::MechanicalEngineering => "MechanicalEngineering",
             Field::Medicine => "Medicine",
             Field::ClimateWeather => "Climate/weather",
+            Field::Manga => "Manga",
             Field::Military => "Military",
             Field::Music => "Music",
             Field::Ornithology => "Ornithology",
@@ -246,12 +247,12 @@ impl Translatable for Field {
             Field::Sumo => "Sumo",
             Field::Telecommunications => "Telecommunications",
             Field::Trademark => "Trademark",
+            Field::TV => "TV",
             Field::Videogame => "Videogame",
             Field::Zoology => "Zoology",
             Field::Clothing => "Clothing",
             Field::Dentistry => "Dentistry",
             Field::Politics => "Politics",
-            _ => todo!(),
         }
     }
 

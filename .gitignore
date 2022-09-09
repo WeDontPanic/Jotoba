@@ -28,4 +28,3 @@ img_scan_tmp/
 cluster_find
 .idea
 /resources_src/
-Cargo.lock
