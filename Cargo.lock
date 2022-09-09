@@ -3328,6 +3328,7 @@ checksum = "6a02e4885ed3bc0f2de90ea6dd45ebcbb66dacffe03547fadbb0eeae2770887d"
 [[package]]
 name = "vsm"
 version = "0.1.0"
+source = "git+https://github.com/JojiiOfficial/VSM#95e0b8b2ffd75219e4f664adfa7a3930b610e594"
 dependencies = [
  "index_framework",
  "intersect_iter",
