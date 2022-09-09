@@ -1655,7 +1655,7 @@ dependencies = [
  "localization",
  "log",
  "news",
- "ngindex 0.1.0",
+ "ngindex 0.1.0 (git+https://github.com/JojiiOfficial/ngindex)",
  "rayon",
  "resources",
  "search",
@@ -1915,16 +1915,6 @@ dependencies = [
  "itertools 0.10.3",
  "once_cell",
  "utils",
-]
-
-[[package]]
-name = "ngindex"
-version = "0.1.0"
-dependencies = [
- "index_framework",
- "intersect_iter",
- "ngram-tools",
- "serde",
 ]
 
 [[package]]
