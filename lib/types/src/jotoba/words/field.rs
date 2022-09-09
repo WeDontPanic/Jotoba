@@ -65,6 +65,8 @@ pub enum Field {
     Entomology,
     #[strum(serialize = "finc")]
     Finance,
+    #[strum(serialize = "film")]
+    Film,
     #[strum(serialize = "fish")]
     Fishing,
     #[strum(serialize = "food")]
@@ -103,6 +105,8 @@ pub enum Field {
     MartialArts,
     #[strum(serialize = "mahj")]
     Mahjong,
+    #[strum(serialize = "manga")]
+    Manga,
     #[strum(serialize = "math")]
     Mathematics,
     #[strum(serialize = "mech")]
@@ -143,6 +147,8 @@ pub enum Field {
     Shinto,
     #[strum(serialize = "rail")]
     Railway,
+    #[strum(serialize = "rommyth")]
+    RomanMythology,
     #[strum(serialize = "shogi")]
     Shogi,
     #[strum(serialize = "sports")]
@@ -155,6 +161,8 @@ pub enum Field {
     Telecommunications,
     #[strum(serialize = "tradem")]
     Trademark,
+    #[strum(serialize = "tv")]
+    TV,
     #[strum(serialize = "vidg")]
     Videogame,
     #[strum(serialize = "zool")]
@@ -191,6 +199,7 @@ impl Translatable for Field {
             Field::Embryology => "Embryology",
             Field::Engineering => "Engineering",
             Field::Entomology => "Entomology",
+            Field::Film => "Film",
             Field::Finance => "Finance",
             Field::Fishing => "Fishing",
             Field::FoodCooking => "FoodCooking",
@@ -229,6 +238,7 @@ impl Translatable for Field {
             Field::Psychology => "Psychology",
             Field::Psychitatry => "Psychiatry",
             Field::Railway => "Railway",
+            Field::RomanMythology => "Roman Mythology",
             Field::Shinto => "Shinto",
             Field::Shogi => "Shogi",
             Field::Sports => "Sports",
@@ -241,6 +251,7 @@ impl Translatable for Field {
             Field::Clothing => "Clothing",
             Field::Dentistry => "Dentistry",
             Field::Politics => "Politics",
+            _ => todo!(),
         }
     }
 
