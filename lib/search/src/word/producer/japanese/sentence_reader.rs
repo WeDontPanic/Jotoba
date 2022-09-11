@@ -125,7 +125,7 @@ impl<'a> Producer for SReaderProducer<'a> {
         }
     }
 
-    fn should_run(&self, _already_found: usize) -> bool {
+    fn should_run(&self, already_found: usize) -> bool {
         if self.parsed.is_none()
             || self.query.q_lang != QueryLang::Japanese
             || !self.query.form.is_normal()
@@ -137,6 +137,11 @@ impl<'a> Producer for SReaderProducer<'a> {
         // Always run inlfections
         if self.parsed.is_inflected_word() {
             return true;
+        }
+
+        // Disable sentence reader if already found some words
+        if already_found > 0 {
+            return false;
         }
 
         // For sentences only run if the query is not a term in the db

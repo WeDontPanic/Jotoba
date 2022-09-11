@@ -48,6 +48,6 @@ impl<'a> Producer for NativeProducer<'a> {
             return false;
         }
 
-        already_found < 10
+        already_found < 5
     }
 }
