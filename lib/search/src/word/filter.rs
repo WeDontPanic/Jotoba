@@ -76,7 +76,7 @@ impl WordFilter {
         if !fn_q_terms.is_empty() {
             for i in w.gloss_iter_by_lang(self.query.get_search_lang(), self.query.show_english()) {
                 let i = i.to_lowercase();
-                fn_q_terms.retain(|k| i.contains(k.as_str()));
+                fn_q_terms.retain(|k| !i.contains(k.as_str()));
                 if fn_q_terms.is_empty() {
                     break;
                 }
