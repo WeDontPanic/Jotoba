@@ -7,6 +7,6 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-itertools = "0.10.3"
+itertools = "0.10.4"
 rand = "0.8.5"
 sabi = { git = "https://github.com/yuk1ty/sabi" }

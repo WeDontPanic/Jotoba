@@ -16,9 +16,9 @@ config = { path = "../config" }
 resources = { path = "../resources" }
 indexes = { path = "../indexes" }
 types = { path = "../types", default-features = false }
-actix-web = "4.1.0"
+actix-web = "4.2.1"
 actix-multipart = "0.4.0"
-itertools = "0.10.3"
+itertools = "0.10.4"
 once_cell = { version = "1.14.0", default-features = false }
 serde = "1.0.144"
 log = "0.4.17"

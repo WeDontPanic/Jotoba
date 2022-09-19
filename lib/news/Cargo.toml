@@ -7,7 +7,7 @@ edition = "2021"
 
 [dependencies]
 utils = { path = "../utils" }
-itertools = "0.10.3"
+itertools = "0.10.4"
 once_cell = { version = "1.14.0", default-features = false }
 comrak = { version = "0.14.0", default-features = false }
 

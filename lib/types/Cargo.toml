@@ -12,7 +12,7 @@ strum_macros = "0.24.3"
 serde = { version = "1.0.144", features = ["derive"] }
 jp_inflections = { git = "https://github.com/JojiiOfficial/Japanese_Inflections" }
 bitflags = { git = "https://github.com/JojiiOfficial/BitFlags" }
-itertools = "0.10.3"
+itertools = "0.10.4"
 
 localization = { path = "../localization", optional = true }
 ### Note: This sub-crate is not allowed to have dependencies to other Jotoba crates, unless its only used if `jotoba_intern` is enabled.

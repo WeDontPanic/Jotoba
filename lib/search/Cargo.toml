@@ -19,7 +19,7 @@ types = { path = "../types", default-features = false, features = [
   "jotoba_intern",
 ] }
 log = "0.4.17"
-itertools = "0.10.3"
+itertools = "0.10.4"
 once_cell = { version = "1.14.0", default-features = false }
 regex = { version = "1.6.0", features = ["std"], default-features = false }
 #vector_space_model2 = { path = "../../../VectorSpaceModel" }

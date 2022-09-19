@@ -8,7 +8,7 @@ edition = "2021"
 
 [dependencies]
 utils = { path = "../utils" }
-itertools = "0.10.3"
+itertools = "0.10.4"
 wana_kana = { git = "https://github.com/WeDontPanic/wana_kana_rust" }
 cached = { version = "0.39.0", default-features = false, features = ["proc_macro"] }
 
