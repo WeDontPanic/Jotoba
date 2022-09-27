@@ -33,7 +33,7 @@ impl<'a> NativeProducer<'a> {
                 rel *= 0.99;
             }
 
-            (rel * 1_000_000.0) as usize
+            rel * 1_000_000.0
         });
 
         search_task

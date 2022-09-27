@@ -1758,6 +1758,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "levenshtein"
+version = "1.0.5"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "db13adb97ab515a3691f56e4dbab09283d0b86cb45abd991d8634a9d6f501760"
+
+[[package]]
 name = "libc"
 version = "0.2.132"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2532,6 +2538,7 @@ dependencies = [
  "intmap",
  "itertools 0.10.4",
  "japanese",
+ "levenshtein",
  "localization",
  "log",
  "ngindex 0.1.0 (git+https://github.com/JojiiOfficial/ngindex?rev=431c1fc9d4387906214f568bb9e2398bc28bb35d)",

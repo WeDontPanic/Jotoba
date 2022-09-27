@@ -40,6 +40,7 @@ ngindex = { git = "https://github.com/JojiiOfficial/ngindex", rev = "431c1fc9d43
 ngindex2 = { git = "https://github.com/JojiiOfficial/ngindex", package = "ngindex" }
 #index_framework = { path = "../../../index_framework" }
 index_framework = { git = "https://github.com/WeDontPanic/index_framework" }
+levenshtein = "*"
 
 [dev-dependencies]
 test-case = "2.2.1"

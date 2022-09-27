@@ -25,9 +25,9 @@ pub struct SearchTask<T: SearchEngine> {
     /// Filter out results
     res_filter: Option<Box<dyn Fn(&T::Output) -> bool>>,
     /// Custom result order function
-    cust_order: Option<Box<dyn Fn(SortData<T::Output, Vector, Vector>) -> usize>>,
+    cust_order: Option<Box<dyn Fn(SortData<T::Output, Vector, Vector>) -> f32>>,
     /// Min relevance returned from vector space algo
-    threshold: usize,
+    threshold: f32,
     vector_limit: usize,
     limit: usize,
     offset: usize,
@@ -87,7 +87,7 @@ impl<T: SearchEngine> SearchTask<T> {
 
     /// Sets the search task's threshold. This does not apply on the final score, which can be
     /// overwritten by `order` but applies to the vector space relevance itself.
-    pub fn threshold(mut self, threshold: usize) -> Self {
+    pub fn threshold(mut self, threshold: f32) -> Self {
         self.threshold = threshold;
         self
     }
@@ -130,7 +130,7 @@ impl<T: SearchEngine> SearchTask<T> {
     /// Set the search task's custom order function
     pub fn with_custom_order<F: 'static>(&mut self, res_filter: F)
     where
-        F: Fn(SortData<T::Output, Vector, Vector>) -> usize,
+        F: Fn(SortData<T::Output, Vector, Vector>) -> f32,
     {
         self.cust_order = Some(Box::new(res_filter));
     }
@@ -236,11 +236,11 @@ impl<T: SearchEngine> SearchTask<T> {
                 );
 
                 let score = self.calc_score(sort_item);
-                if score < self.threshold as usize {
+                if score < self.threshold {
                     continue;
                 }
 
-                out.push(RelItem::new(res_doc, score as f32));
+                out.push(RelItem::new(res_doc, score));
             }
         }
     }
@@ -312,7 +312,7 @@ impl<T: SearchEngine> SearchTask<T> {
                 }
 
                 // Don't ignore threshold if set
-                if self.threshold > 0 {
+                if self.threshold > 0.0 {
                     let sort_item = SortData::new(
                         &res_doc,
                         dvec.vector(),
@@ -323,7 +323,7 @@ impl<T: SearchEngine> SearchTask<T> {
                     );
 
                     let score = self.calc_score(sort_item);
-                    if score < self.threshold as usize {
+                    if score < self.threshold {
                         continue;
                     }
                 }
@@ -340,10 +340,10 @@ impl<T: SearchEngine> SearchTask<T> {
 
     /// Calculates the score using a custom function if provided or just `rel` otherwise
     #[inline]
-    fn calc_score(&self, si: SortData<T::Output, Vector, Vector>) -> usize {
+    fn calc_score(&self, si: SortData<T::Output, Vector, Vector>) -> f32 {
         match self.cust_order.as_ref() {
-            Some(cust_sort) => (cust_sort(si) as f32 * self.score_multiplier) as usize,
-            None => (T::score(si) as f32 * self.score_multiplier) as usize,
+            Some(cust_sort) => (cust_sort(si) * self.score_multiplier),
+            None => (T::score(si) * self.score_multiplier),
         }
     }
 
@@ -369,7 +369,7 @@ impl<T: SearchEngine> Default for SearchTask<T> {
             query_lang: None,
             vec_filter: None,
             res_filter: None,
-            threshold: 0,
+            threshold: 0.0,
             limit: 1000,
             est_limit: 100,
             vector_limit: 100_000,

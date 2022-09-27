@@ -90,24 +90,25 @@ pub fn foreign_search_fall_back(
     score
 }
 
-pub(super) fn kanji_reading_search(item: SortData<&'static Word, Vector, Vector>) -> usize {
+pub(super) fn kanji_reading_search(item: SortData<&'static Word, Vector, Vector>) -> f32 {
     let word = item.item();
-    let mut score: usize = 0;
+    let mut score: f32 = 0.0;
 
     if word.is_common() {
-        score += 100;
+        score += 100.0;
     }
 
     if let Some(jlpt) = word.get_jlpt_lvl() {
-        score += jlpt as usize * 10;
+        score += jlpt as f32 * 10.0;
     }
 
-    if score == 0 {
+    if score == 0.0 {
         // Show shorter words on top if they aren't important
         let reading_len = word.reading.get_reading().reading.chars().count();
-        score = 100usize.saturating_sub(reading_len * 2);
+        //score = 100usize.saturating_sub(reading_len * 2);
+        score = (0f32).max(100.0 - reading_len as f32 * 2.0);
     } else {
-        score += 100;
+        score += 100.0;
     }
 
     score

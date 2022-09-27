@@ -1,7 +1,10 @@
-use std::{borrow::Borrow, hash::Hash};
+use std::{
+    borrow::Borrow,
+    hash::{Hash, Hasher},
+};
 use types::jotoba::words::{sense, Word};
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct WordOutput {
     pub word: &'static Word,
     pub positions: Vec<u16>,
@@ -18,7 +21,7 @@ impl Eq for WordOutput {}
 
 impl Hash for WordOutput {
     #[inline]
-    fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
+    fn hash<H: Hasher>(&self, state: &mut H) {
         self.word.sequence.hash(state);
     }
 }

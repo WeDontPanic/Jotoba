@@ -14,7 +14,10 @@ pub mod sense;
 
 pub use dict::Dict;
 
-use std::num::{NonZeroU32, NonZeroU8};
+use std::{
+    hash::{Hash, Hasher},
+    num::{NonZeroU32, NonZeroU8},
+};
 
 use self::{
     inflection::Inflections,
@@ -62,6 +65,13 @@ impl Word {
     #[inline]
     pub fn get_jlpt_lvl(&self) -> Option<u8> {
         self.jlpt_lvl.map(|i| i.get())
+    }
+
+    /// Returns the main reading of a word as str. This is the kanji reading if a kanji reading
+    /// exists. Otherwise its the kana reading
+    #[inline]
+    pub fn get_reading_str(&self) -> &str {
+        &self.reading.get_reading().reading
     }
 
     /// Returns the main reading of a word. This is the kanji reading if a kanji reading
@@ -349,9 +359,9 @@ pub fn filter_languages<'a, I: 'a + Iterator<Item = &'a mut Word>>(
     }
 }
 
-impl std::hash::Hash for Word {
+impl Hash for Word {
     #[inline]
-    fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
+    fn hash<H: Hasher>(&self, state: &mut H) {
         self.sequence.hash(state);
     }
 }

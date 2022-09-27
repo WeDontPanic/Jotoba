@@ -42,7 +42,7 @@ impl<'a> ForeignProducer<'a> {
                 rel *= 0.8;
             }
 
-            (rel * 1_000_000.0) as usize
+            rel * 1_000_000.0
         });
 
         search_task

@@ -1,6 +1,7 @@
 use crate::engine::words::foreign::output::WordOutput;
 use engine::relevance::data::SortData;
 use indexes::relevance::RelevanceIndex;
+use log::warn;
 use spin::Mutex;
 use std::collections::HashMap;
 use types::jotoba::{languages::Language, words::sense::Sense};
@@ -43,44 +44,48 @@ impl ForeignOrder {
         seq_id: u32,
         sense: &Sense,
         sg_id: u16,
-    ) -> Option<usize> {
+    ) -> Option<f32> {
         let rel_index = indexes::get().word().relevance(sense.language)?;
         let rel_vec = rel_index.get(seq_id, sg_id)?;
         let query_vec = self.new_vec_cached(query_str, sense.language)?;
-        let res = vec_similarity(rel_vec, &query_vec, &rel_index) * 1000.0;
-        Some(res as usize)
+        Some(vec_similarity(rel_vec, &query_vec, &rel_index))
     }
 
-    pub fn score(&self, item: SortData<WordOutput, Vector, Vector>, user_lang: Language) -> usize {
-        let relevance = item.vec_similarity();
-
-        /*
-        let w = &item.item().word.get_reading().reading;
-        let rel = (relevance * 1000000000000.0) as usize;
-        //println!("{w:?}: {relevance}");
-
-        return rel;
-        */
+    pub fn score(&self, item: SortData<WordOutput, Vector, Vector>, user_lang: Language) -> f32 {
+        let txt_rel = item.vec_similarity();
 
         let word_output = item.item();
         let query_lang = item.language().unwrap();
         let query_str = item.query_str().trim().to_lowercase();
 
-        let text_score = (relevance as f64 * 10.0) as usize;
         let word = word_output.word;
 
-        /*
-        println!(
+        let txt_dist = word_output
+            .position_iter()
+            .map(|i| {
+                let gloss = word.get_sense_gloss(i.2).unwrap();
+                let gloss = gloss.1.gloss.to_lowercase();
+                let l = levenshtein::levenshtein(&gloss, &item.query_str().to_lowercase());
+                let max_len = gloss.len().max(item.query_str().len());
+                let sim = 1.0 - (l as f32 / max_len as f32);
+                (sim, gloss)
+            })
+            .max_by(|a, b| a.0.total_cmp(&b.0))
+            .unwrap();
+
+        let txt_dist = txt_dist.0;
+
+        /* println!(
             "------------\n{:?} ({})",
             word.get_reading().reading,
             word.sequence
-        );
-        */
+        ); */
+
         let gloss_relevance = word_output
             .position_iter()
             .filter_map(|(s_id, _, sg_id)| {
                 let sense = word.sense_by_id(s_id).expect("Failed to get sense");
-                let mut multiplier = 2.0;
+                let mut multiplier = 1.0;
                 if sense.language != user_lang {
                     multiplier = 0.1;
                 }
@@ -88,18 +93,46 @@ impl ForeignOrder {
             })
             .filter_map(|(sense, sg_id, multilpier)| {
                 self.gloss_relevance(&query_str, word.sequence, sense, sg_id)
-                    .map(|i| (i as f32 * multilpier) as usize)
+                    .map(|i| i as f32 * multilpier)
             })
-            .max()
+            .max_by(|a, b| a.total_cmp(b))
             .unwrap_or_else(|| {
-                super::foreign_search_fall_back(word, relevance, &query_str, query_lang, user_lang)
-                    * text_score
+                /*
+                super::foreign_search_fall_back(word, txt_rel, &query_str, query_lang, user_lang)
+                    as f32
+                    * txt_rel
+                    * 0.00
+                */
+                0.0
             });
 
-        //println!("gloss relevance: {gloss_relevance}");
-        //println!("text_score relevance: {text_score}");
+        if word.get_reading_str() == "音楽"
+            || word.get_reading_str() == "ミュージック"
+            || word.get_reading_str() == "鳴り物入り"
+        {
+            //println!("{item:#?}");
+            println!("{}", word.get_reading_str());
+            println!("gloss relevance: {gloss_relevance}");
+            println!("text_score relevance: {txt_dist}");
+            let total = gloss_relevance + txt_dist * 10.0;
+            println!("{total}");
+            println!("------------",);
+        }
 
-        gloss_relevance // + text_score
+        //println!("gloss relevance: {gloss_relevance}");
+        // println!("text_score relevance: {txt_dist}");
+
+        let mut rel_add = 0.0;
+        if txt_dist > 0.8 {
+            rel_add += gloss_relevance;
+            //println!("rel_add: {rel_add}");
+        } else {
+            //rel_add += gloss_relevance * 0.000001;
+        }
+
+        let total = rel_add + txt_dist * 10.0;
+        // println!("{total}");
+        total
     }
 }
 
@@ -119,6 +152,7 @@ fn make_search_vec(indexer: &TermIndexer, query: &str) -> Option<Vector> {
 
 #[inline]
 fn vec_similarity(src_vec: &Vector, query: &Vector, r_index: &RelevanceIndex) -> f32 {
+    return src_vec.get_dim(0).unwrap_or(0.0);
     let mut sum = 0.0;
     let mut overlapping_count: usize = 0;
 

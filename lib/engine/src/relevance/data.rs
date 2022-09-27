@@ -2,6 +2,7 @@ use types::jotoba::languages::Language;
 use vector_space_model2::Vector;
 
 /// Item to sort stuff
+#[derive(Debug)]
 pub struct SortData<'item, 'query, T, I, Q> {
     out_item: &'item T,
     index_item: &'item I,

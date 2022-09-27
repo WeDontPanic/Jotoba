@@ -209,7 +209,7 @@ impl<'a> SenseGlossIter<'a> {
 }
 
 impl<'a> Iterator for SenseGlossIter<'a> {
-    type Item = (&'a Sense, &'a Gloss);
+    type Item = (&'a Sense, &'a Gloss, u16);
 
     fn next(&mut self) -> Option<Self::Item> {
         let senses = &self.word.senses;
@@ -227,7 +227,9 @@ impl<'a> Iterator for SenseGlossIter<'a> {
             self.sense_pos += 1;
         }
 
-        Some((sense, gloss))
+        let id = to_unique_id(sense.id, gloss.id);
+
+        Some((sense, gloss, id))
     }
 }
 
