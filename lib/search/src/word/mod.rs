@@ -10,16 +10,15 @@ use crate::{
 };
 use types::jotoba::words::{adjust_language, Word};
 
+use filter::WordFilter;
 use producer::{
     foreign::{romaji::RomajiProducer, ForeignProducer},
-    japanese::NativeProducer,
+    japanese::{sentence_reader::SReaderProducer, NativeProducer},
     k_reading::KReadingProducer,
     regex::RegexProducer,
     sequence::SeqProducer,
     tag::TagProducer,
 };
-
-use self::{filter::WordFilter, producer::japanese::sentence_reader::SReaderProducer};
 
 /// Word search
 pub struct Search<'a> {
@@ -83,4 +82,17 @@ impl<'a> Searchable for Search<'a> {
     fn filter(&self, word: &Self::Item) -> bool {
         self.filter.filter_word(*word)
     }
+
+    #[inline]
+    fn max_top_dist(&self) -> Option<f32> {
+        if !max_top_dist_filter(&self.query) {
+            return None;
+        }
+        Some(1.0)
+    }
+}
+
+#[inline]
+fn max_top_dist_filter(query: &Query) -> bool {
+    !query.is_regex() && query.form.is_normal()
 }

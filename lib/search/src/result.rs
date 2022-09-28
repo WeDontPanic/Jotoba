@@ -65,6 +65,20 @@ impl<T, O: Default> SearchResult<T, O> {
     }
 }
 
+impl<T, O> Default for SearchResult<T, O>
+where
+    O: Default,
+{
+    #[inline]
+    fn default() -> Self {
+        Self {
+            items: vec![],
+            total: 0,
+            other_data: O::default(),
+        }
+    }
+}
+
 impl<T, O> Deref for SearchResult<T, O> {
     type Target = O;
 

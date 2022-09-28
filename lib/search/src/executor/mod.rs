@@ -5,7 +5,7 @@ pub mod searchable;
 use std::time::Instant;
 
 use crate::result::SearchResult;
-use engine::{pushable::FilteredMaxCounter, utils::page_from_pqueue};
+use engine::{pushable::FilteredMaxCounter, utils::page_from_pqueue_with_max_dist};
 use log::debug;
 use out_builder::OutputBuilder;
 use searchable::Searchable;
@@ -21,6 +21,7 @@ pub struct SearchExecutor<S: Searchable> {
 
 impl<S: Searchable> SearchExecutor<S> {
     /// Creates a new SearchExecutor
+    #[inline]
     pub fn new(search: S) -> Self {
         Self { search }
     }
@@ -46,11 +47,31 @@ impl<S: Searchable> SearchExecutor<S> {
 
         self.search.mod_output(&mut out);
 
-        let len = out.p.total_pushed();
-        let items: Vec<_> = page_from_pqueue(limit, offset, out.p)
-            .into_iter()
-            .map(|i| self.search.to_output_item(i.item))
-            .collect();
+        if out.is_empty() {
+            return SearchResult::default();
+        }
+
+        // Get total len of results
+        let len;
+        if let Some(max_top_dist) = self.search.max_top_dist() {
+            println!("max: {}", out.max);
+            len = out
+                .rel_list
+                .iter()
+                .filter(|i| **i + max_top_dist >= out.max)
+                .count();
+        } else {
+            len = out.p.total_pushed();
+        }
+        assert_eq!(out.p.total_pushed(), out.rel_list.len());
+
+        let max_top_dist = self.search.max_top_dist().unwrap_or(0.0);
+        let items: Vec<_> =
+            page_from_pqueue_with_max_dist(limit, offset, max_top_dist, out.max, out.p)
+                .into_iter()
+                .map(|i| self.search.to_output_item(i.item))
+                .collect();
+
         SearchResult::with_other_data(items, len, out.output_add)
     }
 

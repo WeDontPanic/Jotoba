@@ -21,4 +21,9 @@ pub trait Searchable {
     fn filter(&self, _item: &Self::Item) -> bool {
         false
     }
+
+    #[inline]
+    fn max_top_dist(&self) -> Option<f32> {
+        None
+    }
 }

@@ -112,6 +112,7 @@ impl RelevanceEngine for NativeOrder {
             score *= 0.8;
         }
 
+        //println!("{}: {}", word.get_reading_str(), score);
         score
     }
 }

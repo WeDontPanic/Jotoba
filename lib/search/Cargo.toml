@@ -19,16 +19,16 @@ types = { path = "../types", default-features = false, features = [
   "jotoba_intern",
 ] }
 log = "0.4.17"
-itertools = "0.10.4"
-once_cell = { version = "1.14.0", default-features = false }
+itertools = "0.10.5"
+once_cell = { version = "1.15.0", default-features = false }
 regex = { version = "1.6.0", features = ["std"], default-features = false }
 #vector_space_model2 = { path = "../../../VectorSpaceModel" }
 vector_space_model2 = { git = "https://github.com/JojiiOfficial/VectorSpaceModel" }
 tinysegmenter = "0.1.1"
 percent-encoding = "2.2.0"
 rayon = "1.5.3"
-priority_container = { git = "https://github.com/JojiiOfficial/PrioContainer/" }
-#priority_container = { path = "../../../priority_container" }
+#priority_container = { git = "https://github.com/JojiiOfficial/PrioContainer/" }
+priority_container = { path = "../../../priority_container" }
 order_struct = { git = "https://github.com/JojiiOfficial/OrderStruct" }
 spin = { version = "0.9.4", default-features = false, features = [
   "spin_mutex",
@@ -40,7 +40,7 @@ ngindex = { git = "https://github.com/JojiiOfficial/ngindex", rev = "431c1fc9d43
 ngindex2 = { git = "https://github.com/JojiiOfficial/ngindex", package = "ngindex" }
 #index_framework = { path = "../../../index_framework" }
 index_framework = { git = "https://github.com/WeDontPanic/index_framework" }
-levenshtein = "*"
+levenshtein = "1.0.5"
 
 [dev-dependencies]
 test-case = "2.2.1"

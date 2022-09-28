@@ -32,6 +32,10 @@ pub struct SearchTask<'index, E: Engine<'index>> {
 
     /// Min relevance returned from search algo
     threshold: f32,
+
+    /// Max distance to max item
+    max_dist: Option<f32>,
+
     limit: usize,
     offset: usize,
     est_limit: usize,
@@ -68,6 +72,13 @@ where
     #[inline]
     pub fn with_limit(mut self, total_limit: usize) -> Self {
         self.limit = total_limit;
+        self
+    }
+
+    /// Sets the max distance a result item can be ratet in order to be a part of the final result set
+    #[inline]
+    pub fn with_max_dist(mut self, max_dist: f32) -> Self {
+        self.max_dist = Some(max_dist);
         self
     }
 
@@ -293,6 +304,7 @@ impl<'a, T: Engine<'a>> Default for SearchTask<'a, T> {
             offset: 0,
             est_limit: 100,
             phantom: PhantomData,
+            max_dist: None,
         }
     }
 }
