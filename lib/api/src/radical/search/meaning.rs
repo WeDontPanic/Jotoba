@@ -1,9 +1,8 @@
+use engine::task::SearchTask;
 use itertools::Itertools;
 use japanese::JapaneseExt;
-use search::{
-    engine::{self, SearchTask},
-    word::order::foreign::ForeignOrder,
-};
+use search::engine::words::foreign::foreign2::Engine;
+use search::word::order::foreign::ForeignOrder;
 use types::jotoba::languages::Language;
 
 pub fn search(query: &str, language: Language) -> Vec<char> {
@@ -28,20 +27,21 @@ pub fn search(query: &str, language: Language) -> Vec<char> {
 
 /// Does a kana word-search and returns some likely radicals for the given query
 fn word_search(query: &str, language: Language) -> Vec<char> {
-    let mut search_task: SearchTask<engine::words::foreign::Engine> =
-        SearchTask::with_language(&query, language).limit(3);
+    let mut search_task: SearchTask<Engine> =
+        SearchTask::with_language(&query, language).with_limit(3);
 
+    // TODO this
     let order = ForeignOrder::new();
-    search_task.with_custom_order(move |item| order.score(item, language));
+    //search_task.with_custom_order(move |item| order.score(item, language));
+    //search_task.with_custom_order(res_filter)
 
     let kanji_retr = resources::get().kanji();
     search_task
         .find()
         .into_iter()
-        .filter(|word| word.word.get_reading().reading == query)
-        .map(|i| {
-            i.word
-                .get_reading()
+        .filter(|word| word.get_reading().reading == query)
+        .map(|word| {
+            word.get_reading()
                 .reading
                 .chars()
                 .filter(|i| i.is_kanji())

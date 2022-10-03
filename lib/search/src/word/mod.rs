@@ -88,7 +88,8 @@ impl<'a> Searchable for Search<'a> {
         if !max_top_dist_filter(&self.query) {
             return None;
         }
-        Some(1.0)
+        //Some(2.0)
+        None
     }
 }
 

@@ -2,13 +2,11 @@ pub mod romaji;
 pub mod task;
 
 use crate::{
-    engine::words::foreign::output::WordOutput,
     executor::{out_builder::OutputBuilder, producer::Producer, searchable::Searchable},
     query::{Query, QueryLang},
     word::Search,
 };
 use engine::pushable::FilteredMaxCounter;
-use engine::{pushable::PushMod, relevance::item::RelItem};
 use task::ForeignSearch;
 use types::jotoba::languages::Language;
 
@@ -34,39 +32,36 @@ impl<'a> Producer for ForeignProducer<'a> {
         >,
     ) {
         // convert WordOutput -> Word
-        let mut p_mod = PushMod::new(out, |i: RelItem<WordOutput>| i.map_item(|i| i.word));
+        //let mut p_mod = PushMod::new(out, |i: RelItem<WordOutput>| i.map_item(|i| i.word));
 
         let q_str = &self.query.query_str;
         let lang = self.query.get_search_lang();
 
         ForeignSearch::new(self.query, q_str, lang)
             .task()
-            .find_to(&mut p_mod);
+            .find_to(out);
 
         // Add english results
         if lang != Language::English && self.query.show_english() {
             ForeignSearch::new(self.query, q_str, Language::English)
                 .task()
-                .find_to(&mut p_mod);
+                .find_to(out);
         }
     }
 
     fn estimate_to(&self, out: &mut FilteredMaxCounter<<Self::Target as Searchable>::Item>) {
-        // convert WordOutput -> Word
-        let mut p_mod = PushMod::new(out, |i: WordOutput| i.word);
-
         let q_str = &self.query.query_str;
         let lang = self.query.get_search_lang();
 
         ForeignSearch::new(self.query, q_str, lang)
             .task()
-            .estimate_to(&mut p_mod);
+            .estimate_to(out);
 
         // Add english results
         if lang != Language::English && self.query.show_english() {
             ForeignSearch::new(self.query, q_str, Language::English)
                 .task()
-                .estimate_to(&mut p_mod);
+                .estimate_to(out);
         }
     }
 

@@ -1,9 +1,11 @@
+pub mod foreign2;
 pub mod output;
 
+/*
 use crate::engine::{Indexable, SearchEngine, SearchTask};
 use indexes::{
     metadata::Metadata,
-    words::{document::FWordDoc, ForeignIndex},
+    words::{document::FWordDoc, ForeignIndex2},
 };
 use types::jotoba::languages::Language;
 use utils::to_option;
@@ -16,7 +18,7 @@ pub struct Engine {}
 impl Indexable for Engine {
     type Metadata = Metadata;
     type Document = FWordDoc;
-    type Index = ForeignIndex;
+    type Index = ForeignIndex2;
 
     #[inline]
     fn get_index(
@@ -184,3 +186,4 @@ fn format_word(inp: &str) -> String {
     }
     out
 }
+*/

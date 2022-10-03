@@ -1,9 +1,7 @@
 #[cfg(feature = "jotoba_intern")]
 use localization::traits::Translatable;
-
-use std::convert::TryFrom;
-
 use serde::{Deserialize, Serialize};
+use std::{array::IntoIter, convert::TryFrom};
 use strum_macros::{AsRefStr, Display, EnumString};
 
 #[derive(
@@ -36,7 +34,7 @@ pub enum Language {
 impl Language {
     /// Returns an iterator over all Languages
     #[inline]
-    pub fn iter() -> impl Iterator<Item = Self> {
+    pub fn iter() -> IntoIter<Language, 10> {
         [
             Language::English,
             Language::German,
@@ -54,7 +52,7 @@ impl Language {
 
     /// Returns an iterator over all Languages which have words with this language
     #[inline]
-    pub fn iter_word() -> impl Iterator<Item = Self> {
+    pub fn iter_word() -> IntoIter<Language, 9> {
         [
             Language::English,
             Language::German,

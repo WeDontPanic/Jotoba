@@ -37,10 +37,16 @@ intmap = { git = "https://github.com/JojiiOfficial/rust-intmap" }
 #ngindex = { path = "../../../ngindex" }
 ngindex = { git = "https://github.com/JojiiOfficial/ngindex", rev = "431c1fc9d4387906214f568bb9e2398bc28bb35d" }
 #ngindex2 = { path = "../../../ngindex", package = "ngindex" }
-ngindex2 = { git = "https://github.com/JojiiOfficial/ngindex", package = "ngindex" }
-#index_framework = { path = "../../../index_framework" }
-index_framework = { git = "https://github.com/WeDontPanic/index_framework" }
+#ngindex2 = { git = "https://github.com/JojiiOfficial/ngindex", package = "ngindex" }
+ngindex2 = { path ="../../../ngindex", package = "ngindex" }
+index_framework = { path = "../../../index_framework" }
+#index_framework = { git = "https://github.com/WeDontPanic/index_framework" }
 levenshtein = "1.0.5"
+vsm = { path = "../../../vsm"}
+
+serde = {version = "*", features=["derive"]}
+bincode = "*"
+ngram-tools = { path = "../../../ngram-tools"}
 
 [dev-dependencies]
 test-case = "2.2.1"

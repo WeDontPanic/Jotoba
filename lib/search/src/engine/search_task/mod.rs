@@ -342,8 +342,8 @@ impl<T: SearchEngine> SearchTask<T> {
     #[inline]
     fn calc_score(&self, si: SortData<T::Output, Vector, Vector>) -> f32 {
         match self.cust_order.as_ref() {
-            Some(cust_sort) => (cust_sort(si) * self.score_multiplier),
-            None => (T::score(si) * self.score_multiplier),
+            Some(cust_sort) => cust_sort(si) * self.score_multiplier,
+            None => T::score(si) * self.score_multiplier,
         }
     }
 

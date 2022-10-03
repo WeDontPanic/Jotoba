@@ -6,10 +6,10 @@ use crate::{
     words::{ForeignIndex, NativeIndex},
 };
 use log::debug;
-use std::{collections::HashMap, error::Error, path::Path};
+use std::{collections::HashMap, error::Error, path::Path, str::FromStr};
 use types::jotoba::languages::Language;
 
-const FOREIGN_PREFIX: &str = "word_index";
+const FOREIGN_PREFIX: &str = "word_index_";
 const NATIVE_FILE: &str = "jp_index";
 const REGEX_FILE: &str = "regex_index";
 const RELEVANCE_PREFIX: &str = "relevance_index_";
@@ -130,8 +130,17 @@ fn load_foreign<P: AsRef<Path>>(
     path: P,
 ) -> Result<HashMap<Language, ForeignIndex>, Box<dyn Error + Send + Sync>> {
     utils::load_by_language(path, FOREIGN_PREFIX, |p| {
-        let index = ForeignIndex::open(p)?;
-        let lang = index.get_metadata().language;
+        //let index = ForeignIndex::open(p)?;
+        let index: ForeignIndex = utils::deser_file(p, "").unwrap();
+        let file_name = p
+            .file_name()
+            .unwrap()
+            .to_str()
+            .unwrap()
+            .strip_prefix(FOREIGN_PREFIX)
+            .unwrap();
+        let lang = Language::from_str(file_name).unwrap();
+        //let lang = index.get_metadata().language;
         Ok(Some((lang, index)))
     })
 }

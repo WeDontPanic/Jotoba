@@ -105,7 +105,8 @@ fn names() -> bool {
 fn words() -> bool {
     let word_retrieve = resources::get().words();
 
-    for language in Language::iter_word() {
+    // TODO
+    /* for language in Language::iter_word() {
         let w_index = indexes::get()
             .word()
             .foreign(language)
@@ -119,7 +120,7 @@ fn words() -> bool {
                 }
             }
         }
-    }
+    } */
 
     let jp_index = indexes::get().word().native2();
     for vec in jp_index.storage().iter() {

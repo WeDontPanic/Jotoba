@@ -4,7 +4,7 @@ members = ["jotoba_bin", "lib/*", "tests"]
 
 [profile.dev]
 opt-level = 2
-#incremental = true
+incremental = true
 
 [profile.release]
 #lto = "fat"
