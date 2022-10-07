@@ -1,17 +1,16 @@
-use std::ops::Deref;
-
+use crate::ng_freq::NgFreqIndex;
 use serde::{Deserialize, Serialize};
+use std::ops::Deref;
 use vsm::presets::VSMIndexSimple;
 
-use crate::ng_freq::NgFreqIndex;
-
+/// N-gram with for string similarity (NgFreqIndex) index
 pub type WordVecIndex = VSMIndexSimple<u32>;
 pub const NG_FREQ_N: usize = 3;
 
 #[derive(Serialize, Deserialize)]
 pub struct ForeignIndex {
-    vsm_index: WordVecIndex,
-    ng_index: NgFreqIndex,
+    pub vsm_index: WordVecIndex,
+    pub ng_index: NgFreqIndex,
 }
 
 impl ForeignIndex {
