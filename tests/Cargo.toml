@@ -9,7 +9,7 @@ edition = "2021"
 search = { path = "../lib/search" }
 japanese = { path = "../lib/japanese" }
 resources = { path = "../lib/resources" }
-test-case = "2.2.1"
+test-case = "2.2.2"
 
 [[test]]
 name = "test_furigana"
