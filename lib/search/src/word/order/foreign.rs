@@ -23,8 +23,8 @@ impl RelevanceEngine for ForeignOrder {
         let word = item.item();
 
         let lang = item.language().unwrap_or(Language::English);
-
-        let q_vec = get_ng_index(lang).build_vec(&item.query_str().trim().to_lowercase());
+        let tindex = get_ng_index(lang);
+        let q_vec = build_vec(tindex, item.query_str());
 
         //REMOVE_PARENTHESES.relpc
         let text_sim = word
@@ -38,14 +38,14 @@ impl RelevanceEngine for ForeignOrder {
                     ); */
                     return 0.0;
                 }
-                let vec = get_ng_index(lang).build_vec(&fmt);
+                let vec = build_vec(tindex, &fmt);
                 vec_sim(&vec, &q_vec)
             })
             .max_by(|a, b| a.total_cmp(&b))
             .unwrap_or(0.0);
 
         let mut rel_add = 0.0;
-        if text_sim >= 0.6 {
+        if text_sim >= 0.8 {
             rel_add += gloss_sim * 100.0;
         }
 
@@ -61,4 +61,9 @@ impl RelevanceEngine for ForeignOrder {
 #[inline]
 fn get_ng_index(lang: Language) -> &'static NgFreqIndex {
     indexes::get().word().foreign(lang).unwrap().ng_index()
+}
+
+#[inline]
+pub fn build_vec(index: &NgFreqIndex, term: &str) -> Vector {
+    index.build_custom_vec(term, |freq, tot| freq / tot)
 }

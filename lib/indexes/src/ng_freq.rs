@@ -42,16 +42,32 @@ impl NgFreqIndex {
         }
     }
 
+    #[inline]
     pub fn build_vec<A: AsRef<str>>(&self, inp: A) -> Vector {
+        self.build_custom_vec(inp, |freq, tot| (tot / freq).log2())
+    }
+
+    pub fn build_custom_vec<A, F>(&self, inp: A, inv_freq: F) -> Vector
+    where
+        A: AsRef<str>,
+        F: Fn(f32, f32) -> f32,
+    {
         let inp = inp.as_ref();
         let padded = self.get_padded(inp);
         let n = Self::n_for(inp, self.n);
 
+        let mut no_hit_counter = 0;
         let ng_ids: Vec<_> = Wordgrams::new(&padded, n)
             .map(|i| {
-                let id = self.index.t_ids.get(i).copied().unwrap_or(0);
-                let freq = self.index.inv_freq_oov(i);
-                (id, freq)
+                let id = self.index.t_ids.get(i).copied().unwrap_or_else(|| {
+                    no_hit_counter += 1;
+                    self.index.total as u32 + no_hit_counter
+                });
+
+                //let freq = self.index.inv_freq_oov(i);
+                let t_freq = self.index.freq_by_id(id).unwrap_or(1) as f32;
+                let weight = (inv_freq)(t_freq, self.index.total as f32);
+                (id, weight)
             })
             .collect();
 

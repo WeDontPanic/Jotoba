@@ -1,8 +1,7 @@
 pub mod foreign;
+pub mod native;
 
-// Shortcut for type of index
-//pub type ForeignIndex = VSMIndexSimple<u32>;
+// Shortcut for types of index
+
 pub type ForeignIndex = foreign::ForeignIndex;
-
-pub const NATIVE_NGRAM: usize = 3;
-pub type NativeIndex = ngindex::NgramIndex<NATIVE_NGRAM, u32>;
+pub type NativeIndex = native::NativeIndex;

@@ -5,7 +5,7 @@ use index_framework::{
     retrieve::{retriever::default::DefaultRetrieve, Retrieve},
     traits::{backend::Backend, dictionary::IndexDictionary},
 };
-use indexes::words::NATIVE_NGRAM;
+use indexes::words::native::N as NATIVE_NGRAM;
 use ngindex2::{item::IndexItem, termset::TermSet, utils::padded, NGIndex, Wordgrams};
 use types::jotoba::{languages::Language, words::Word};
 
@@ -44,7 +44,7 @@ impl engine::Engine<'static> for Engine {
 
     #[inline]
     fn get_index(_: Option<Language>) -> &'static Self::B {
-        indexes::get().word().native2()
+        indexes::get().word().native()
     }
 
     #[inline]

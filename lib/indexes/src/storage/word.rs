@@ -16,7 +16,7 @@ const KANJI_READING_INDEX: &str = "word_kr_index";
 /// Store for words
 pub struct WordStore {
     foreign: HashMap<Language, ForeignIndex>,
-    native2: NativeIndex,
+    native: NativeIndex,
 
     regex: RegexSearchIndex,
 
@@ -26,13 +26,13 @@ pub struct WordStore {
 impl WordStore {
     pub(crate) fn new(
         foreign: HashMap<Language, ForeignIndex>,
-        native2: NativeIndex,
+        native: NativeIndex,
         regex: RegexSearchIndex,
         k_reading: kanji::reading::Index,
     ) -> Self {
         Self {
             foreign,
-            native2,
+            native,
             regex,
             k_reading,
         }
@@ -57,8 +57,8 @@ impl WordStore {
         &self.k_reading
     }
 
-    pub fn native2(&self) -> &NativeIndex {
-        &self.native2
+    pub fn native(&self) -> &NativeIndex {
+        &self.native
     }
 }
 

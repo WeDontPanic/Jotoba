@@ -1,4 +1,5 @@
 use engine::relevance::{data::SortData, RelevanceEngine};
+use indexes::ng_freq::{vec_sim, NgFreqIndex};
 use japanese::JapaneseExt;
 use ngindex2::{item::IndexItem, termset::TermSet};
 use types::jotoba::words::Word;
@@ -42,7 +43,24 @@ impl RelevanceEngine for NativeOrder {
         &self,
         item: &SortData<'item, 'query, Self::OutItem, Self::IndexItem, Self::Query>,
     ) -> f32 {
+        let word = item.item();
         let mut score = item.index_item().dice(item.query());
+
+        let tindex = ng_freq_index();
+        let q_ng_vec = tindex.build_custom_vec(item.query_str(), |freq, tot| tot / freq);
+
+        let allow_kana = !item.query_str().has_kanji();
+
+        let s_sim = word
+            .reading_iter(allow_kana)
+            .map(|r| {
+                let vec = tindex.build_custom_vec(&r.reading, |freq, tot| tot / freq);
+                vec_sim(&vec, &q_ng_vec)
+            })
+            .max_by(|a, b| a.total_cmp(&b))
+            .unwrap_or(0.0);
+
+        score *= s_sim;
 
         if let Some(ref o_ts) = self.orig_query_ts {
             if self.w_index.unwrap_or(0) == 0 {
@@ -55,7 +73,6 @@ impl RelevanceEngine for NativeOrder {
             }
         }
 
-        let word = item.item();
         let query_str = japanese::to_halfwidth(item.query_str()).to_hiragana();
 
         let reading = japanese::to_halfwidth(&word.get_reading().reading);
@@ -115,4 +132,9 @@ impl RelevanceEngine for NativeOrder {
         //println!("{}: {}", word.get_reading_str(), score);
         score
     }
+}
+
+#[inline]
+fn ng_freq_index() -> &'static NgFreqIndex {
+    indexes::get().word().native().tf_index()
 }

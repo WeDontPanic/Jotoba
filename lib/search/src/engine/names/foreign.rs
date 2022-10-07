@@ -2,7 +2,7 @@ use index_framework::{
     retrieve::{retriever::default::DefaultRetrieve, Retrieve},
     traits::{backend::Backend, dictionary::IndexDictionary},
 };
-use indexes::{names::FOREIGN_NGRAM, words::NATIVE_NGRAM};
+use indexes::{names::FOREIGN_NGRAM, words::native::N as NATIVE_NGRAM};
 use ngindex2::{item::IndexItem, termset::TermSet, utils::padded, NGIndex, Wordgrams};
 use types::jotoba::{languages::Language, names::Name};
 

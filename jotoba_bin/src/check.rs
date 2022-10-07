@@ -120,7 +120,7 @@ fn words() -> bool {
         }
     }
 
-    let jp_index = indexes::get().word().native2();
+    let jp_index = indexes::get().word().native();
     for vec in jp_index.storage().iter() {
         if word_retrieve.by_sequence(*vec.item()).is_none() {
             println!("Word and (Japanese) Index don't match");

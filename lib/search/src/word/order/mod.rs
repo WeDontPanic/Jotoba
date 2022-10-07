@@ -1,6 +1,5 @@
 pub mod foreign;
 pub mod native;
-pub mod ngindex;
 
 use crate::{query::regex::RegexSQuery, SearchMode};
 use engine::relevance::data::SortData;
