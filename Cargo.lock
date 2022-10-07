@@ -1579,6 +1579,7 @@ dependencies = [
  "byteorder",
  "log",
  "ngindex 0.1.0",
+ "ngram-tools 0.1.0",
  "once_cell",
  "qp-trie",
  "rayon",

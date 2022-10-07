@@ -105,22 +105,20 @@ fn names() -> bool {
 fn words() -> bool {
     let word_retrieve = resources::get().words();
 
-    // TODO
-    /* for language in Language::iter_word() {
+    for language in Language::iter_word() {
         let w_index = indexes::get()
             .word()
             .foreign(language)
             .expect(&format!("Missing index {:?}", language));
 
-        for vec in w_index.get_vector_store().iter() {
-            for word_doc in vec.document.items.iter() {
-                if word_retrieve.by_sequence(word_doc.seq_id).is_none() {
-                    println!("Word and Index don't match");
-                    return false;
-                }
+        for doc_vec in w_index.storage().iter() {
+            let seq_id = *doc_vec.document();
+            if word_retrieve.by_sequence(seq_id).is_none() {
+                println!("Word and Index don't match");
+                return false;
             }
         }
-    } */
+    }
 
     let jp_index = indexes::get().word().native2();
     for vec in jp_index.storage().iter() {
