@@ -1,20 +1,8 @@
-use super::{ngindex::NgIndex, REMOVE_PARENTHESES};
+use super::REMOVE_PARENTHESES;
 use engine::relevance::{data::SortData, RelevanceEngine};
-use once_cell::sync::OnceCell;
-use std::{fs::File, io::BufReader};
+use indexes::ng_freq::{vec_sim, NgFreqIndex};
 use types::jotoba::{languages::Language, words::Word};
 use vsm::{doc_vec::DocVector, Vector};
-
-static TEST_INDEX: OnceCell<NgIndex> = OnceCell::new();
-
-fn get_test_index() -> &'static NgIndex {
-    TEST_INDEX.get_or_init(|| {
-        bincode::deserialize_from(BufReader::new(
-            File::open("/home/jojii/programming/rust/new_fg_search/ngindex").unwrap(),
-        ))
-        .unwrap()
-    })
-}
 
 pub struct ForeignOrder;
 
@@ -36,9 +24,7 @@ impl RelevanceEngine for ForeignOrder {
 
         let lang = item.language().unwrap_or(Language::English);
 
-        let q_vec = get_test_index()
-            .build_vec(&item.query_str().trim().to_lowercase())
-            .unwrap();
+        let q_vec = get_ng_index(lang).build_vec(&item.query_str().trim().to_lowercase());
 
         //REMOVE_PARENTHESES.relpc
         let text_sim = word
@@ -52,9 +38,8 @@ impl RelevanceEngine for ForeignOrder {
                     ); */
                     return 0.0;
                 }
-                let vec = get_test_index().build_vec(&fmt).unwrap();
-                let s = sim(&vec, &q_vec);
-                s
+                let vec = get_ng_index(lang).build_vec(&fmt);
+                vec_sim(&vec, &q_vec)
             })
             .max_by(|a, b| a.total_cmp(&b))
             .unwrap_or(0.0);
@@ -74,19 +59,6 @@ impl RelevanceEngine for ForeignOrder {
 }
 
 #[inline]
-fn sim(a: &Vector, b: &Vector) -> f32 {
-    if a.is_empty() || b.is_empty() {
-        return 0.0;
-    }
-
-    let both = a.overlapping(b).map(|(_, a_w, b_w)| a_w + b_w).sum::<f32>();
-
-    let sum = a
-        .sparse()
-        .iter()
-        .map(|i| i.1)
-        .chain(b.sparse().iter().map(|i| i.1))
-        .sum::<f32>();
-
-    both / sum
+fn get_ng_index(lang: Language) -> &'static NgFreqIndex {
+    indexes::get().word().foreign(lang).unwrap().ng_index()
 }

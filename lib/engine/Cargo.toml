@@ -11,8 +11,8 @@ resources = { path = "../resources" }
 types = { path = "../types", default-features = false, features = [
   "jotoba_intern",
 ] }
-#priority_container = { git = "https://github.com/JojiiOfficial/PrioContainer/" }
-priority_container = { path = "../../../priority_container" }
+#priority_container = { path = "../../../priority_container" }
+priority_container = { git = "https://github.com/JojiiOfficial/PrioContainer/" }
 order_struct = { git = "https://github.com/JojiiOfficial/OrderStruct" }
 #index_framework = { path = "../../../index_framework"}
 index_framework = { git = "https://github.com/WeDontPanic/index_framework" }

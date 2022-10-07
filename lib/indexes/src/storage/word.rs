@@ -2,7 +2,6 @@ use super::utils;
 use crate::{
     kanji,
     regex::RegexSearchIndex,
-    relevance::RelevanceIndex,
     words::{ForeignIndex, NativeIndex},
 };
 use log::debug;
@@ -12,7 +11,6 @@ use types::jotoba::languages::Language;
 const FOREIGN_PREFIX: &str = "word_index_";
 const NATIVE_FILE: &str = "jp_index";
 const REGEX_FILE: &str = "regex_index";
-const RELEVANCE_PREFIX: &str = "relevance_index_";
 const KANJI_READING_INDEX: &str = "word_kr_index";
 
 /// Store for words
@@ -21,7 +19,6 @@ pub struct WordStore {
     native2: NativeIndex,
 
     regex: RegexSearchIndex,
-    relevance: HashMap<Language, RelevanceIndex>,
 
     k_reading: kanji::reading::Index,
 }
@@ -31,14 +28,12 @@ impl WordStore {
         foreign: HashMap<Language, ForeignIndex>,
         native2: NativeIndex,
         regex: RegexSearchIndex,
-        relevance: HashMap<Language, RelevanceIndex>,
         k_reading: kanji::reading::Index,
     ) -> Self {
         Self {
             foreign,
             native2,
             regex,
-            relevance,
             k_reading,
         }
     }
@@ -52,11 +47,6 @@ impl WordStore {
     #[inline]
     pub fn regex(&self) -> &RegexSearchIndex {
         &self.regex
-    }
-
-    #[inline]
-    pub fn relevance(&self, language: Language) -> Option<&RelevanceIndex> {
-        self.relevance.get(&language)
     }
 
     pub(crate) fn check(&self) -> bool {
@@ -78,14 +68,9 @@ pub(crate) fn load<P: AsRef<Path>>(path: P) -> Result<WordStore, Box<dyn Error +
     let foreign = load_foreign(path.as_ref())?;
     let native = utils::deser_file(path.as_ref(), NATIVE_FILE)?;
     let regex = utils::deser_file(path.as_ref(), REGEX_FILE)?;
-    let relevance = load_rel_index(path.as_ref())?;
-    debug!(
-        "Loaded relevance for: {:?}",
-        relevance.keys().collect::<Vec<_>>()
-    );
     let k_reading = kanji::reading::Index::open(path.as_ref().join(KANJI_READING_INDEX))?;
     debug!("Loading indexes sync took: {:?}", start.elapsed());
-    Ok(WordStore::new(foreign, native, regex, relevance, k_reading))
+    Ok(WordStore::new(foreign, native, regex, k_reading))
 }
 
 #[cfg(feature = "parallel")]
@@ -96,7 +81,6 @@ pub(crate) fn load<P: AsRef<Path> + Send + Sync>(
     let mut foreign = None;
     let mut native = None;
     let mut regex: Option<Result<RegexSearchIndex, Box<dyn Error + Send + Sync>>> = None;
-    let mut relevance = None;
     let mut k_reading = None;
     rayon::scope(|s| {
         s.spawn(|_| {
@@ -109,9 +93,6 @@ pub(crate) fn load<P: AsRef<Path> + Send + Sync>(
             regex = Some(utils::deser_file(path.as_ref(), REGEX_FILE));
         });
         s.spawn(|_| {
-            relevance = Some(load_rel_index(path.as_ref()));
-        });
-        s.spawn(|_| {
             k_reading = Some(kanji::reading::Index::open(
                 path.as_ref().join(KANJI_READING_INDEX),
             ));
@@ -120,10 +101,9 @@ pub(crate) fn load<P: AsRef<Path> + Send + Sync>(
     let foreign = foreign.unwrap()?;
     let native = native.unwrap()?;
     let regex = regex.unwrap()?;
-    let relevance = relevance.unwrap()?;
     let k_reading = k_reading.unwrap()?;
     debug!("Loading indexes parallel took: {:?}", start.elapsed());
-    Ok(WordStore::new(foreign, native, regex, relevance, k_reading))
+    Ok(WordStore::new(foreign, native, regex, k_reading))
 }
 
 fn load_foreign<P: AsRef<Path>>(
@@ -142,18 +122,5 @@ fn load_foreign<P: AsRef<Path>>(
         let lang = Language::from_str(file_name).unwrap();
         //let lang = index.get_metadata().language;
         Ok(Some((lang, index)))
-    })
-}
-
-fn load_rel_index<P: AsRef<Path>>(
-    path: P,
-) -> Result<HashMap<Language, RelevanceIndex>, Box<dyn Error + Send + Sync>> {
-    utils::load_by_language(path, RELEVANCE_PREFIX, |p| {
-        let lang = match utils::lang_from_file(p, RELEVANCE_PREFIX) {
-            Some(l) => l,
-            None => return Ok(None),
-        };
-        let rel_index: RelevanceIndex = utils::deser_file(p, "")?;
-        Ok(Some((lang, rel_index)))
     })
 }

@@ -5,7 +5,6 @@ use std::{
     fs::File,
     io::{BufReader, Read},
     path::Path,
-    str::FromStr,
 };
 use types::jotoba::languages::Language;
 
@@ -54,11 +53,11 @@ where
     Ok(map)
 }
 
-pub fn lang_from_file<F: AsRef<Path>>(file: F, prefix: &str) -> Option<Language> {
+/* pub fn lang_from_file<F: AsRef<Path>>(file: F, prefix: &str) -> Option<Language> {
     let file_name = file.as_ref().file_name()?.to_str()?.to_string();
     let lang_str = file_name.strip_prefix(prefix).unwrap();
     Language::from_str(lang_str).ok()
-}
+} */
 
 /// Returns true if `map` has an entry for all language keys
 pub fn check_lang_map<T>(map: &HashMap<Language, T>) -> bool {

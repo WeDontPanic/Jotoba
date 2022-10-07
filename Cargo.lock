@@ -1019,7 +1019,7 @@ dependencies = [
  "index_framework",
  "indexes",
  "order_struct",
- "priority_container 0.1.1",
+ "priority_container 0.1.1 (git+https://github.com/JojiiOfficial/PrioContainer/)",
  "resources",
  "types",
  "vector_space_model2",
@@ -1494,12 +1494,13 @@ dependencies = [
  "bktree",
  "byteorder",
  "log",
- "ngindex 0.1.0",
+ "ngindex 0.1.0 (git+https://github.com/JojiiOfficial/ngindex)",
  "ngram-tools 0.1.0",
  "once_cell",
  "qp-trie",
  "rayon",
  "serde",
+ "test-case",
  "types",
  "vector_space_model2",
  "vsm",
@@ -2196,12 +2197,13 @@ checksum = "eb9f9e6e233e5c4a35559a617bf40a4ec447db2e84c20b55a6f83167b7e57872"
 [[package]]
 name = "priority_container"
 version = "0.1.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "c4886bb938a91e70d3a84efa590f753cf52076149f5963de5727085435f5cbcb"
 
 [[package]]
 name = "priority_container"
 version = "0.1.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c4886bb938a91e70d3a84efa590f753cf52076149f5963de5727085435f5cbcb"
+source = "git+https://github.com/JojiiOfficial/PrioContainer/#5d6d7c4b946ec20407a621e2ec16f7498248c179"
 
 [[package]]
 name = "proc-macro-error"
@@ -2505,13 +2507,13 @@ dependencies = [
  "levenshtein",
  "localization",
  "log",
- "ngindex 0.1.0",
  "ngindex 0.1.0 (git+https://github.com/JojiiOfficial/ngindex?rev=431c1fc9d4387906214f568bb9e2398bc28bb35d)",
- "ngram-tools 0.1.0",
+ "ngindex 0.1.0 (git+https://github.com/JojiiOfficial/ngindex)",
+ "ngram-tools 0.1.0 (git+https://github.com/JojiiOfficial/ngram-tools)",
  "once_cell",
  "order_struct",
  "percent-encoding",
- "priority_container 0.1.1",
+ "priority_container 0.1.1 (git+https://github.com/JojiiOfficial/PrioContainer/)",
  "rayon",
  "regex",
  "resources",

@@ -22,11 +22,12 @@ rayon = { version = "1.5.3", optional = true }
 qp-trie = { git = "https://github.com/sdleffler/qp-trie-rs", features = [
   "serde",
 ] }
-ngindex = { path = "../../../ngindex" }
-#ngindex = { git = "https://github.com/JojiiOfficial/ngindex" }
+#ngindex = { path = "../../../ngindex" }
+ngindex = { git = "https://github.com/JojiiOfficial/ngindex" }
 #vsm = { path = "../../../vsm"}
 vsm = { git = "https://github.com/JojiiOfficial/VSM"}
 ngram-tools = { path = "../../../ngram-tools"}
+test-case = "*"
 
 [features]
 default = []
