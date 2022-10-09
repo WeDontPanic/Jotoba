@@ -1,38 +1,39 @@
-use crate::engine::{Indexable, SearchEngine};
+use index_framework::retrieve::retriever::default::DefaultRetrieve;
 use types::jotoba::languages::Language;
 use types::jotoba::words::Word;
-use vector_space_model2::{DefaultMetadata, Vector};
 
-pub struct Engine {}
+pub struct Engine;
 
-impl Indexable for Engine {
-    type Metadata = DefaultMetadata;
+impl engine::Engine<'static> for Engine {
+    type B = indexes::kanji::reading::Index;
+    type DictItem = String;
     type Document = u32;
-    type Index = vector_space_model2::Index<Self::Document, Self::Metadata>;
-
-    #[inline]
-    fn get_index(
-        _language: Option<Language>,
-    ) -> Option<&'static vector_space_model2::Index<Self::Document, Self::Metadata>> {
-        Some(indexes::get().word().k_reading())
-    }
-}
-
-impl SearchEngine for Engine {
+    type Retriever = DefaultRetrieve<'static, Self::B, Self::DictItem, Self::Document>;
     type Output = &'static Word;
+    type Query = String;
 
-    #[inline]
-    fn doc_to_output<'a>(inp: &Self::Document) -> Option<Vec<Self::Output>> {
-        resources::get().words().by_sequence(*inp).map(|i| vec![i])
+    fn make_query<S: AsRef<str>>(inp: S, _lang: Option<Language>) -> Option<Self::Query> {
+        Some(inp.as_ref().to_string())
     }
 
-    fn gen_query_vector(
-        index: &vector_space_model2::Index<Self::Document, Self::Metadata>,
-        query: &str,
-        _allow_align: bool,
-        _language: Option<Language>,
-    ) -> Option<(Vector, String)> {
-        let vec = index.build_vector(&[query], None)?;
-        Some((vec, query.to_owned()))
+    #[inline]
+    fn doc_to_output(input: &Self::Document) -> Option<Vec<Self::Output>> {
+        resources::get()
+            .words()
+            .by_sequence(*input)
+            .map(|i| vec![i])
+    }
+
+    #[inline]
+    fn get_index(_lang: Option<Language>) -> &'static Self::B {
+        indexes::get().word().k_reading()
+    }
+
+    fn retrieve_for(
+        inp: &Self::Query,
+        _query_str: &str,
+        _lang: Option<Language>,
+    ) -> index_framework::retrieve::Retrieve<'static, Self::B, Self::DictItem, Self::Document> {
+        Self::retrieve(None).by_term(inp)
     }
 }

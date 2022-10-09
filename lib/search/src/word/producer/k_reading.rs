@@ -2,14 +2,15 @@ use engine::{
     pushable::FilteredMaxCounter,
     pushable::{PushMod, Pushable},
     relevance::item::RelItem,
+    task::SearchTask,
 };
 use types::jotoba::{kanji::Kanji, words::Word};
 
 use crate::{
-    engine::{words::native::k_reading, SearchTask},
+    engine::words::native::k_reading,
     executor::{out_builder::OutputBuilder, producer::Producer, searchable::Searchable},
     query::Query,
-    word::{order, Search},
+    word::{order::kanji_reading::KanjiReadingRelevance, Search},
 };
 
 /// Kanji reading search producer
@@ -48,9 +49,9 @@ impl<'a> KReadingProducer<'a> {
             None => return,
         };
 
-        let mut search_task = SearchTask::<k_reading::Engine>::new(&engine_query);
-        search_task.with_custom_order(move |item| order::kanji_reading_search(item));
-        search_task.find_to(out);
+        SearchTask::<k_reading::Engine>::new(&engine_query)
+            .with_custom_order(KanjiReadingRelevance)
+            .find_to(out);
     }
 }
 

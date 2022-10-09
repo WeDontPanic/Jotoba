@@ -39,7 +39,7 @@ order_struct = { git = "https://github.com/JojiiOfficial/OrderStruct" }
 ids_parser = { git = "https://github.com/JojiiOfficial/IDS-Parser" }
 #index_framework = { path = "../../../index_framework" }
 index_framework = { git = "https://github.com/WeDontPanic/index_framework" }
-serde_json = "1.0.85"
+serde_json = "1.0.86"
 
 [features]
 default = []

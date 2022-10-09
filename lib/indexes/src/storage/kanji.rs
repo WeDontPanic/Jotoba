@@ -14,7 +14,7 @@ impl KanjiStore {
     }
 
     #[inline(always)]
-    pub fn reading_fre(&self) -> &FrequencyIndex {
+    pub fn reading_freq(&self) -> &FrequencyIndex {
         &self.kread_frequency
     }
 }

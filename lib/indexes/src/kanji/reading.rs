@@ -1,4 +1,4 @@
-use vector_space_model2::DefaultMetadata;
+use index_framework::backend::memory::presets::Simple;
 
 // Index shortcuts
-pub type Index = vector_space_model2::Index<u32, DefaultMetadata>;
+pub type Index = Simple<String, u32>;

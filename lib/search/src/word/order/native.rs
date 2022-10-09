@@ -106,7 +106,7 @@ impl RelevanceEngine for NativeOrder {
             let kanji = reading.chars().next().unwrap();
             let norm = indexes::get()
                 .kanji()
-                .reading_fre()
+                .reading_freq()
                 .norm_reading_freq(kanji, word.get_kana());
             if let Some(_read_freq) = norm {
                 //score += read_freq;

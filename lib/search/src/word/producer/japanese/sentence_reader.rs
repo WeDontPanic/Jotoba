@@ -266,7 +266,7 @@ impl RelevanceEngine for WordFuriOrder {
             let kana = i.get_kana();
             let norm = indexes::get()
                 .kanji()
-                .reading_fre()
+                .reading_freq()
                 .norm_reading_freq(kanji, kana);
             if let Some(norm) = norm {
                 score += norm * 10.0;

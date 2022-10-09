@@ -1,7 +1,11 @@
+use engine::Engine;
+use index_framework::traits::{
+    backend::Backend, dictionary::IndexDictionary, postings::IndexPostings,
+};
 use japanese::JapaneseExt;
 use order_struct::order_nh::OrderVal;
 use priority_container::PrioContainerMax;
-use search::engine::{words::native::k_reading, Indexable};
+use search::engine::words::native::k_reading;
 use types::{
     api::completions::{Response, SuggestionType, WordPair},
     jotoba::kanji,
@@ -51,11 +55,11 @@ fn score(literal: char, reading: &str, query: &str) -> usize {
     }
 
     // Show readings with more results first
-    if let Some(index) = k_reading::Engine::get_index(None) {
-        let score_qurey = format!("{}{}", literal, reading);
-        if let Some(term) = index.get_indexer().find_term(&score_qurey) {
-            score += term.doc_frequency() as usize;
-        }
+    let index = k_reading::Engine::get_index(None);
+    let score_qurey = format!("{}{}", literal, reading);
+    if let Some(term_id) = index.dict().get_id(&score_qurey) {
+        let posting = index.postings(0).unwrap().get_posting(term_id);
+        score += (posting.len() as f32).log(1.01).floor() as usize;
     }
 
     score

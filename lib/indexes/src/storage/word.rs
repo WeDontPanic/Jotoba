@@ -49,16 +49,18 @@ impl WordStore {
         &self.regex
     }
 
-    pub(crate) fn check(&self) -> bool {
-        utils::check_lang_map(&self.foreign)
-    }
-
+    #[inline]
     pub fn k_reading(&self) -> &kanji::reading::Index {
         &self.k_reading
     }
 
+    #[inline]
     pub fn native(&self) -> &NativeIndex {
         &self.native
+    }
+
+    pub(crate) fn check(&self) -> bool {
+        utils::check_lang_map(&self.foreign)
     }
 }
 
@@ -68,7 +70,7 @@ pub(crate) fn load<P: AsRef<Path>>(path: P) -> Result<WordStore, Box<dyn Error +
     let foreign = load_foreign(path.as_ref())?;
     let native = utils::deser_file(path.as_ref(), NATIVE_FILE)?;
     let regex = utils::deser_file(path.as_ref(), REGEX_FILE)?;
-    let k_reading = kanji::reading::Index::open(path.as_ref().join(KANJI_READING_INDEX))?;
+    let k_reading = utils::deser_file(path.as_ref(), KANJI_READING_INDEX)?;
     debug!("Loading indexes sync took: {:?}", start.elapsed());
     Ok(WordStore::new(foreign, native, regex, k_reading))
 }
@@ -93,9 +95,7 @@ pub(crate) fn load<P: AsRef<Path> + Send + Sync>(
             regex = Some(utils::deser_file(path.as_ref(), REGEX_FILE));
         });
         s.spawn(|_| {
-            k_reading = Some(kanji::reading::Index::open(
-                path.as_ref().join(KANJI_READING_INDEX),
-            ));
+            k_reading = Some(utils::deser_file(path.as_ref(), KANJI_READING_INDEX));
         });
     });
     let foreign = foreign.unwrap()?;

@@ -1,8 +1,8 @@
 pub mod foreign;
+pub mod kanji_reading;
 pub mod native;
 
 use crate::{query::regex::RegexSQuery, SearchMode};
-use engine::relevance::data::SortData;
 use once_cell::sync::Lazy;
 use regex::Regex;
 use types::jotoba::{
@@ -10,7 +10,6 @@ use types::jotoba::{
     words::{sense::Gloss, Word},
 };
 use utils::real_string_len;
-use vector_space_model2::Vector;
 
 /// A Regex matching parentheses and its contents
 pub(crate) static REMOVE_PARENTHESES: Lazy<Regex> =
@@ -85,30 +84,6 @@ pub fn foreign_search_fall_back(
         score = score.saturating_sub(10);
     } else {
         score += 30;
-    }
-
-    score
-}
-
-pub(super) fn kanji_reading_search(item: SortData<&'static Word, Vector, Vector>) -> f32 {
-    let word = item.item();
-    let mut score: f32 = 0.0;
-
-    if word.is_common() {
-        score += 100.0;
-    }
-
-    if let Some(jlpt) = word.get_jlpt_lvl() {
-        score += jlpt as f32 * 10.0;
-    }
-
-    if score == 0.0 {
-        // Show shorter words on top if they aren't important
-        let reading_len = word.reading.get_reading().reading.chars().count();
-        //score = 100usize.saturating_sub(reading_len * 2);
-        score = (0f32).max(100.0 - reading_len as f32 * 2.0);
-    } else {
-        score += 100.0;
     }
 
     score

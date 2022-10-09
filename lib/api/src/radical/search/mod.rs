@@ -2,7 +2,7 @@ mod jp_search;
 mod meaning;
 
 use std::{
-    collections::{BTreeSet, HashMap},
+    collections::{BTreeSet, HashMap, HashSet},
     str::FromStr,
 };
 
@@ -44,6 +44,7 @@ pub async fn search_radical(
 }
 
 /// Load the users language from cookies
+#[inline]
 fn user_lang(request: &HttpRequest) -> Language {
     request
         .cookie("default_lang")
@@ -52,7 +53,7 @@ fn user_lang(request: &HttpRequest) -> Language {
 }
 
 /// Maps radicals by its literals to ResRadical with its stroke count
-fn map_radicals(inp: &[char]) -> HashMap<u8, BTreeSet<char>> {
+fn map_radicals(inp: &HashSet<char>) -> HashMap<u8, BTreeSet<char>> {
     let mut radicals: HashMap<u8, BTreeSet<char>> = HashMap::with_capacity(inp.len());
 
     for (lit, strokes) in inp

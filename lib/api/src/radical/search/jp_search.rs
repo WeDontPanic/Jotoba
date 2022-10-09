@@ -1,17 +1,15 @@
-use engine::task::SearchTask;
-use itertools::Itertools;
 use japanese::JapaneseExt;
-use search::{engine::words::native::Engine, word::order::native::NativeOrder};
+use search::radical::word::RomajiSearch;
 use std::collections::{HashMap, HashSet};
 use types::{api::radical::search::KanjiRads, jotoba::kanji::Kanji};
 
 /// Returns a list of radicals based on the radical-search `query`
-pub fn search(query: &str) -> Vec<char> {
+pub fn search(query: &str) -> HashSet<char> {
     if japanese::JapaneseExt::has_kanji(query) {
         return kanji_search(query);
     }
 
-    kana_search(query)
+    RomajiSearch::new(query).run()
 }
 
 /// Returns a List of kanji that use similar radicals as the query.
@@ -65,13 +63,9 @@ fn into_kanji_rads(kanji: &Kanji) -> KanjiRads {
 
 /// Takes all kanji from `query` and returns a list of all unique radicals to build all kanji
 /// picked from `query`
-fn kanji_search(query: &str) -> Vec<char> {
-    query
-        .chars()
-        .map(|k| kanji_radicals(k))
-        .flatten()
-        .unique()
-        .collect()
+#[inline]
+fn kanji_search(query: &str) -> HashSet<char> {
+    query.chars().map(|k| kanji_radicals(k)).flatten().collect()
 }
 
 #[inline]
@@ -80,9 +74,9 @@ fn kanji_radicals(kanji: char) -> Vec<char> {
         .map(|i| i.parts.clone())
         .unwrap_or_default()
 }
-
+/*
 /// Does a kana word-search and returns some likely radicals for the given query
-fn kana_search(query: &str) -> Vec<char> {
+fn kana_search(query: &str) -> HashSet<char> {
     let mut search_task: SearchTask<Engine> = SearchTask::new(&query)
         .with_limit(3)
         .with_threshold(0.8)
@@ -96,7 +90,6 @@ fn kana_search(query: &str) -> Vec<char> {
         .unique()
         .map(|kanji| kanji_radicals(kanji))
         .flatten()
-        .unique()
         .take(10)
         .collect()
-}
+} */
