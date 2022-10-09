@@ -27,7 +27,7 @@ pub fn search(query: &str, language: Language) -> Vec<char> {
 /// Does a kana word-search and returns some likely radicals for the given query
 fn word_search(query: &str, language: Language) -> Vec<char> {
     let mut search_task: SearchTask<Engine> = SearchTask::with_language(&query, language)
-        .with_custom_order(ForeignOrder)
+        .with_custom_order(ForeignOrder::new())
         .with_limit(3);
 
     let kanji_retr = resources::get().kanji();

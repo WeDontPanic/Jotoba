@@ -41,7 +41,7 @@ impl<'a> Producer for KreadingProducer<'a> {
             <Self::Target as Searchable>::ResAdd,
         >,
     ) {
-        if let Some(task) = self.search_task() {
+        if let Some(mut task) = self.search_task() {
             task.find_to(out);
         }
     }
@@ -51,7 +51,7 @@ impl<'a> Producer for KreadingProducer<'a> {
     }
 
     fn estimate_to(&self, out: &mut FilteredMaxCounter<<Self::Target as Searchable>::Item>) {
-        if let Some(task) = self.search_task() {
+        if let Some(mut task) = self.search_task() {
             task.estimate_to(out);
         }
     }

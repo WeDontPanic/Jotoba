@@ -59,6 +59,11 @@ impl TermFreqIndex {
     }
 
     #[inline]
+    pub fn vec_builder(&self) -> VecBuilder {
+        VecBuilder::new(self)
+    }
+
+    #[inline]
     pub fn get_id(&self, term: &str) -> Option<u32> {
         self.t_ids.get(term).copied()
     }
@@ -88,5 +93,37 @@ impl TermFreqIndex {
         let freq = self.freq(term).unwrap_or(1) as f32;
         let total = self.total as f32;
         (total / freq).log2()
+    }
+}
+
+/// Helper for building correct term frequency vectors
+pub struct VecBuilder<'index> {
+    index: &'index TermFreqIndex,
+    new_terms: HashMap<String, u32>,
+}
+
+impl<'index> VecBuilder<'index> {
+    #[inline]
+    pub(crate) fn new(index: &'index TermFreqIndex) -> Self {
+        Self {
+            index,
+            new_terms: HashMap::new(),
+        }
+    }
+
+    /// Retrieves the ID of a term or creates a new one and returns it
+    #[inline]
+    pub fn get_or_insert_id<S: AsRef<str>>(&mut self, term: S) -> u32 {
+        let term = term.as_ref();
+        // Try indexed ID
+        self.index.t_ids.get(term).copied().unwrap_or_else(|| {
+            // Try newly created term ID
+            self.new_terms.get(term).copied().unwrap_or_else(|| {
+                // Insert new ID
+                let new_id = (self.new_terms.len() + self.index.t_ids.len()) as u32;
+                self.new_terms.insert(term.to_string(), new_id);
+                new_id
+            })
+        })
     }
 }

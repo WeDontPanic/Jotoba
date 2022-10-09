@@ -1,10 +1,25 @@
+use std::collections::HashMap;
+
 use super::REMOVE_PARENTHESES;
 use engine::relevance::{data::SortData, RelevanceEngine};
 use indexes::ng_freq::{vec_sim, NgFreqIndex};
 use types::jotoba::{languages::Language, words::Word};
 use vsm::{doc_vec::DocVector, Vector};
 
-pub struct ForeignOrder;
+pub struct ForeignOrder {
+    query_vecs: HashMap<Language, Vector>,
+    lang: Language,
+}
+
+impl ForeignOrder {
+    #[inline]
+    pub fn new() -> Self {
+        Self {
+            query_vecs: HashMap::new(),
+            lang: Language::English,
+        }
+    }
+}
 
 impl RelevanceEngine for ForeignOrder {
     type OutItem = &'static Word;
@@ -18,13 +33,12 @@ impl RelevanceEngine for ForeignOrder {
     ) -> f32 {
         let query = item.query();
         let index_item = item.index_item().vec();
-        //let gloss_sim = query.scalar(index_item);
         let gloss_sim = query.scalar(index_item);
         let word = item.item();
 
         let lang = item.language().unwrap_or(Language::English);
         let tindex = get_ng_index(lang);
-        let q_vec = build_vec(tindex, item.query_str());
+        let q_vec = self.query_vecs.get(&lang).unwrap();
 
         //REMOVE_PARENTHESES.relpc
         let text_sim = word
@@ -55,6 +69,21 @@ impl RelevanceEngine for ForeignOrder {
             word.get_reading_str()
         ); */
         score
+    }
+
+    fn init(&mut self, init: engine::relevance::RelEngineInit) {
+        let lang = init.language.unwrap();
+
+        let qvec = build_vec(get_ng_index(lang), &init.query);
+        self.query_vecs.insert(lang, qvec);
+        assert!(self.query_vecs.contains_key(&lang));
+
+        if lang != Language::English {
+            let qvecen = build_vec(get_ng_index(Language::English), &init.query);
+            self.query_vecs.insert(Language::English, qvecen);
+        }
+
+        self.lang = lang;
     }
 }
 

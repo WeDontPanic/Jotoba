@@ -26,7 +26,7 @@ impl<'a> ForeignSearch<'a> {
     pub fn task(&self) -> SearchTask<'static, Engine> {
         let filter = WordFilter::new(self.query.clone());
         SearchTask::with_language(self.query_str, self.language)
-            .with_custom_order(ForeignOrder)
+            .with_custom_order(ForeignOrder::new())
             .with_result_filter(move |item| !filter.filter_word(*item))
     }
 }

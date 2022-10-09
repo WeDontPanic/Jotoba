@@ -34,17 +34,17 @@ impl<'a> SplitProducer<'a> {
 
     fn run<C, P, O>(&self, cb: C, out: &mut P)
     where
-        C: Fn(&SearchTask<'static, Engine>, &mut P),
+        C: Fn(&mut SearchTask<'static, Engine>, &mut P),
         P: Pushable<Item = O>,
     {
         let queries = self.queries();
         let query_count = queries.len();
         for (pos, query) in queries.into_iter().enumerate() {
-            let task = SearchTask::<Engine>::new(&query)
+            let mut task = SearchTask::<Engine>::new(&query)
                 .with_limit(1)
                 .with_custom_order(SplitOrder::new(query_count, pos));
 
-            (cb)(&task, out);
+            (cb)(&mut task, out);
         }
     }
 

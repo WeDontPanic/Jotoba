@@ -149,7 +149,7 @@ impl<'a> Producer for SReaderProducer<'a> {
     }
 
     fn estimate_to(&self, out: &mut FilteredMaxCounter<<Self::Target as Searchable>::Item>) {
-        if let Some(infl) = self.infl_task() {
+        if let Some(mut infl) = self.infl_task() {
             infl.estimate_to(out);
             return;
         }

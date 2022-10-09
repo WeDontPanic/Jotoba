@@ -3,6 +3,7 @@ use indexes::ng_freq::{vec_sim, NgFreqIndex};
 use japanese::JapaneseExt;
 use ngindex2::{item::IndexItem, termset::TermSet};
 use types::jotoba::words::Word;
+use vsm::Vector;
 
 pub struct NativeOrder {
     _orig_query: String,
@@ -10,6 +11,8 @@ pub struct NativeOrder {
 
     /// Word index in sentence reader
     w_index: Option<usize>,
+
+    query_vec: Vector,
 }
 
 impl NativeOrder {
@@ -19,6 +22,7 @@ impl NativeOrder {
             _orig_query: orig_query,
             orig_query_ts: None,
             w_index: None,
+            query_vec: Vector::new_empty(),
         }
     }
 
@@ -46,21 +50,13 @@ impl RelevanceEngine for NativeOrder {
         let word = item.item();
         let mut score = item.index_item().dice(item.query());
 
-        let tindex = ng_freq_index();
-        let q_ng_vec = tindex.build_custom_vec(item.query_str(), |freq, tot| tot / freq);
-
-        let allow_kana = !item.query_str().has_kanji();
-
-        let s_sim = word
-            .reading_iter(allow_kana)
-            .map(|r| {
-                let vec = tindex.build_custom_vec(&r.reading, |freq, tot| tot / freq);
-                vec_sim(&vec, &q_ng_vec)
-            })
-            .max_by(|a, b| a.total_cmp(&b))
-            .unwrap_or(0.0);
-
-        score *= s_sim;
+        let reading_vec = if item.query_str().has_kanji() {
+            build_ng_vec(word.get_reading_str())
+        } else {
+            word.get_kana();
+            build_ng_vec(word.get_kana())
+        };
+        score *= vec_sim(&reading_vec, &self.query_vec);
 
         if let Some(ref o_ts) = self.orig_query_ts {
             if self.w_index.unwrap_or(0) == 0 {
@@ -132,9 +128,18 @@ impl RelevanceEngine for NativeOrder {
         //println!("{}: {}", word.get_reading_str(), score);
         score
     }
+
+    fn init(&mut self, init: engine::relevance::RelEngineInit) {
+        self.query_vec = build_ng_vec(&init.query);
+    }
 }
 
 #[inline]
 fn ng_freq_index() -> &'static NgFreqIndex {
     indexes::get().word().native().tf_index()
+}
+
+#[inline]
+fn build_ng_vec(term: &str) -> Vector {
+    ng_freq_index().build_custom_vec(term, |freq, tot| (tot / freq).log2())
 }

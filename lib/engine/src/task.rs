@@ -1,7 +1,7 @@
 use crate::{
     pushable::{MaxCounter, PushMod, Pushable},
-    relevance::item::RelItem,
     relevance::{data::SortData, RelevanceEngine},
+    relevance::{item::RelItem, RelEngineInit},
     result::SearchResult,
     Engine,
 };
@@ -133,6 +133,7 @@ where
 
     /// Runs the search task and returns the result.
     pub fn find(&mut self) -> SearchResult<E::Output> {
+        self.rel_init();
         let cap = self.limit + self.offset;
         let mut pqueue = StableUniquePrioContainerMax::new_allocated(cap, cap);
         self.find_to(&mut pqueue);
@@ -141,10 +142,11 @@ where
 
     /// Rettrieves results and pushes them into `out`
     #[inline]
-    pub fn find_to<O>(&self, out: &mut O) -> Option<usize>
+    pub fn find_to<O>(&mut self, out: &mut O) -> Option<usize>
     where
         O: Pushable<Item = RelItem<E::Output>>,
     {
+        self.rel_init();
         self.find_to_inner(out, true)
     }
 
@@ -155,7 +157,9 @@ where
     ///
     /// - n = 0 => m = 0
     /// - n <= m
-    pub fn estimate_result_count(&self) -> Guess {
+    pub fn estimate_result_count(&mut self) -> Guess {
+        self.rel_init();
+
         let mut counter = MaxCounter::new(self.est_limit + 1);
         self.estimate_to(&mut counter);
         let estimated = counter.val();
@@ -182,10 +186,11 @@ where
 
     /// Estimates result count by pushing elements to `out`
     #[inline]
-    pub fn estimate_to<P>(&self, out: &mut P)
+    pub fn estimate_to<P>(&mut self, out: &mut P)
     where
         P: Pushable<Item = E::Output>,
     {
+        self.rel_init();
         let mut out = PushMod::new(out, |i: RelItem<E::Output>| i.item);
         self.find_to_inner(&mut out, false);
     }
@@ -287,6 +292,21 @@ where
     #[inline]
     fn item_filter(&self, item: &E::Document) -> bool {
         self.item_filter.as_ref().map(|i| i(item)).unwrap_or(true)
+    }
+
+    #[inline]
+    fn rel_init(&mut self) {
+        if self.cust_order.is_none() {
+            return;
+        }
+
+        let init = self.make_rel_init();
+        self.cust_order.as_mut().unwrap().init(init);
+    }
+
+    #[inline]
+    fn make_rel_init(&self) -> RelEngineInit {
+        RelEngineInit::new(self.query_str.clone(), self.query_lang)
     }
 }
 

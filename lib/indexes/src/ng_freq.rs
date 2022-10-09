@@ -2,7 +2,7 @@ use ngram_tools::iter::wordgrams::Wordgrams;
 use serde::{Deserialize, Serialize};
 use vsm::Vector;
 
-use crate::term_freq::TermFreqIndex;
+use crate::term_freq::{TermFreqIndex, VecBuilder};
 
 /// Wrapper around Term frequency index counting ngrams of terms instead of the terms intelf.
 #[derive(Serialize, Deserialize)]
@@ -43,6 +43,11 @@ impl NgFreqIndex {
     }
 
     #[inline]
+    pub fn build_vec_cntx<A: AsRef<str>>(&self, builder: &mut VecBuilder, inp: A) -> Vector {
+        self.build_custom_vec_cntx(builder, inp, |freq, tot| (tot / freq).log2())
+    }
+
+    #[inline]
     pub fn build_vec<A: AsRef<str>>(&self, inp: A) -> Vector {
         self.build_custom_vec(inp, |freq, tot| (tot / freq).log2())
     }
@@ -67,6 +72,34 @@ impl NgFreqIndex {
                 //let freq = self.index.inv_freq_oov(i);
                 let t_freq = self.index.freq_by_id(id).unwrap_or(1) as f32;
                 let weight = (inv_freq)(t_freq, self.index.total as f32);
+                (id, weight)
+            })
+            .collect();
+
+        Vector::create_new_raw(ng_ids)
+    }
+
+    pub fn build_custom_vec_cntx<A, F>(
+        &self,
+        builder: &mut VecBuilder,
+        inp: A,
+        inv_freq: F,
+    ) -> Vector
+    where
+        A: AsRef<str>,
+        F: Fn(f32, f32) -> f32,
+    {
+        let inp = inp.as_ref();
+        let padded = self.get_padded(inp);
+        let n = Self::n_for(inp, self.n);
+
+        let ng_ids: Vec<_> = Wordgrams::new(&padded, n)
+            .map(|i| {
+                let id = builder.get_or_insert_id(i);
+
+                let t_freq = self.index.freq_by_id(id).unwrap_or(1) as f32;
+                let weight = (inv_freq)(t_freq, self.index.total as f32);
+
                 (id, weight)
             })
             .collect();
