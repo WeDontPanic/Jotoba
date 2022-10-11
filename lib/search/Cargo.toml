@@ -42,8 +42,8 @@ ngindex2 = { git = "https://github.com/JojiiOfficial/ngindex", package = "nginde
 #index_framework = { path = "../../../index_framework" }
 index_framework = { git = "https://github.com/WeDontPanic/index_framework" }
 levenshtein = "1.0.5"
-vsm = { path = "../../../vsm"}
-#vsm = { git = "https://github.com/JojiiOfficial/VSM"}
+#vsm = { path = "../../../vsm"}
+vsm = { git = "https://github.com/JojiiOfficial/VSM"}
 sparse_vec = { git = "https://github.com/JojiiOfficial/SparseVec"}
 serde = { version = "1.0.145", features = ["derive"] }
 bincode = "1.3.3"
