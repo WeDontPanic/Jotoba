@@ -3,11 +3,12 @@ use std::collections::HashMap;
 use super::REMOVE_PARENTHESES;
 use engine::relevance::{data::SortData, RelevanceEngine};
 use indexes::ng_freq::{vec_sim, NgFreqIndex};
+use sparse_vec::{SpVec32, VecExt};
 use types::jotoba::{languages::Language, words::Word};
-use vsm::{doc_vec::DocVector, Vector};
+use vsm::doc_vec::DocVector;
 
 pub struct ForeignOrder {
-    query_vecs: HashMap<Language, Vector>,
+    query_vecs: HashMap<Language, SpVec32>,
     lang: Language,
 }
 
@@ -24,7 +25,7 @@ impl ForeignOrder {
 impl RelevanceEngine for ForeignOrder {
     type OutItem = &'static Word;
     type IndexItem = DocVector<u32>;
-    type Query = Vector;
+    type Query = SpVec32;
 
     #[inline]
     fn score<'item, 'query>(
@@ -93,6 +94,6 @@ fn get_ng_index(lang: Language) -> &'static NgFreqIndex {
 }
 
 #[inline]
-pub fn build_vec(index: &NgFreqIndex, term: &str) -> Vector {
+pub fn build_vec(index: &NgFreqIndex, term: &str) -> SpVec32 {
     index.build_custom_vec(term, |freq, tot| freq / tot)
 }

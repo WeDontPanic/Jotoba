@@ -1,6 +1,6 @@
 use ngram_tools::iter::wordgrams::Wordgrams;
 use serde::{Deserialize, Serialize};
-use vsm::Vector;
+use sparse_vec::{SpVec32, VecExt};
 
 use crate::term_freq::{TermFreqIndex, VecBuilder};
 
@@ -43,16 +43,16 @@ impl NgFreqIndex {
     }
 
     #[inline]
-    pub fn build_vec_cntx<A: AsRef<str>>(&self, builder: &mut VecBuilder, inp: A) -> Vector {
+    pub fn build_vec_cntx<A: AsRef<str>>(&self, builder: &mut VecBuilder, inp: A) -> SpVec32 {
         self.build_custom_vec_cntx(builder, inp, |freq, tot| (tot / freq).log2())
     }
 
     #[inline]
-    pub fn build_vec<A: AsRef<str>>(&self, inp: A) -> Vector {
+    pub fn build_vec<A: AsRef<str>>(&self, inp: A) -> SpVec32 {
         self.build_custom_vec(inp, |freq, tot| (tot / freq).log2())
     }
 
-    pub fn build_custom_vec<A, F>(&self, inp: A, inv_freq: F) -> Vector
+    pub fn build_custom_vec<A, F>(&self, inp: A, inv_freq: F) -> SpVec32
     where
         A: AsRef<str>,
         F: Fn(f32, f32) -> f32,
@@ -76,7 +76,7 @@ impl NgFreqIndex {
             })
             .collect();
 
-        Vector::create_new_raw(ng_ids)
+        SpVec32::create_new_raw(ng_ids)
     }
 
     pub fn build_custom_vec_cntx<A, F>(
@@ -84,7 +84,7 @@ impl NgFreqIndex {
         builder: &mut VecBuilder,
         inp: A,
         inv_freq: F,
-    ) -> Vector
+    ) -> SpVec32
     where
         A: AsRef<str>,
         F: Fn(f32, f32) -> f32,
@@ -104,7 +104,7 @@ impl NgFreqIndex {
             })
             .collect();
 
-        Vector::create_new_raw(ng_ids)
+        SpVec32::create_new_raw(ng_ids)
     }
 
     #[inline]
@@ -119,19 +119,23 @@ impl NgFreqIndex {
     }
 }
 
+// TODO: Put this function into some lib (maybe sparse vector?)
 #[inline]
-pub fn vec_sim(a: &Vector, b: &Vector) -> f32 {
+pub fn vec_sim(a: &SpVec32, b: &SpVec32) -> f32 {
     if a.is_empty() || b.is_empty() {
         return 0.0;
     }
 
-    let both = a.overlapping(b).map(|(_, a_w, b_w)| a_w + b_w).sum::<f32>();
+    let both = a
+        .intersect_iter(b)
+        .map(|(_, a_w, b_w)| a_w + b_w)
+        .sum::<f32>();
 
     let sum = a
-        .sparse()
+        .as_vec()
         .iter()
         .map(|i| i.1)
-        .chain(b.sparse().iter().map(|i| i.1))
+        .chain(b.weights())
         .sum::<f32>();
 
     both / sum
@@ -160,9 +164,9 @@ mod test {
         let pad_len = n.saturating_sub(1);
         let tot_len = pad_len * 2 + term_len;
         if term_len < n {
-            assert_eq!(music_vec.sparse().len(), tot_len - n);
+            assert_eq!(music_vec.dim_count(), tot_len - n);
         } else {
-            assert_eq!(music_vec.sparse().len(), tot_len - n + 1);
+            assert_eq!(music_vec.dim_count(), tot_len - n + 1);
         }
     }
 

@@ -2,8 +2,8 @@ use engine::relevance::{data::SortData, RelevanceEngine};
 use indexes::ng_freq::{vec_sim, NgFreqIndex};
 use japanese::JapaneseExt;
 use ngindex2::{item::IndexItem, termset::TermSet};
+use sparse_vec::{SpVec32, VecExt};
 use types::jotoba::words::Word;
-use vsm::Vector;
 
 pub struct NativeOrder {
     _orig_query: String,
@@ -12,7 +12,7 @@ pub struct NativeOrder {
     /// Word index in sentence reader
     w_index: Option<usize>,
 
-    query_vec: Vector,
+    query_vec: SpVec32,
 }
 
 impl NativeOrder {
@@ -22,7 +22,7 @@ impl NativeOrder {
             _orig_query: orig_query,
             orig_query_ts: None,
             w_index: None,
-            query_vec: Vector::new_empty(),
+            query_vec: SpVec32::empty(),
         }
     }
 
@@ -140,6 +140,6 @@ fn ng_freq_index() -> &'static NgFreqIndex {
 }
 
 #[inline]
-fn build_ng_vec(term: &str) -> Vector {
+fn build_ng_vec(term: &str) -> SpVec32 {
     ng_freq_index().build_custom_vec(term, |freq, tot| (tot / freq).log2())
 }

@@ -1023,7 +1023,7 @@ dependencies = [
  "resources",
  "types",
  "vector_space_model2",
- "vsm",
+ "vsm 0.1.0 (git+https://github.com/JojiiOfficial/VSM)",
 ]
 
 [[package]]
@@ -1501,10 +1501,11 @@ dependencies = [
  "qp-trie",
  "rayon",
  "serde",
+ "sparse_vec",
  "test-case",
  "types",
  "vector_space_model2",
- "vsm",
+ "vsm 0.1.0",
 ]
 
 [[package]]
@@ -1727,9 +1728,9 @@ checksum = "db13adb97ab515a3691f56e4dbab09283d0b86cb45abd991d8634a9d6f501760"
 
 [[package]]
 name = "libc"
-version = "0.2.134"
+version = "0.2.135"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "329c933548736bc49fd575ee68c89e8be4d260064184389a5b77517cddd99ffb"
+checksum = "68783febc7782c6c5cb401fbda4de5a9898be1762314da0bb2c10ced61f18b0c"
 
 [[package]]
 name = "libloading"
@@ -2510,13 +2511,14 @@ dependencies = [
  "resources",
  "sentence_reader",
  "serde",
+ "sparse_vec",
  "spin",
  "test-case",
  "tinysegmenter",
  "types",
  "utils",
  "vector_space_model2",
- "vsm",
+ "vsm 0.1.0",
 ]
 
 [[package]]
@@ -2776,6 +2778,16 @@ name = "sorted_intersection"
 version = "1.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "43448dcec88f2dc525e8c5b1f5e5a116d3b250879fff04f90c6691dd6865a28b"
+
+[[package]]
+name = "sparse_vec"
+version = "0.1.0"
+source = "git+https://github.com/JojiiOfficial/SparseVec#9923489e63374c13c56e61c2207da2f7cae994a9"
+dependencies = [
+ "intersect_iter",
+ "num-traits",
+ "serde",
+]
 
 [[package]]
 name = "spin"
@@ -3257,11 +3269,22 @@ checksum = "6a02e4885ed3bc0f2de90ea6dd45ebcbb66dacffe03547fadbb0eeae2770887d"
 [[package]]
 name = "vsm"
 version = "0.1.0"
-source = "git+https://github.com/JojiiOfficial/VSM#0fcb58296adb9032055fbc5e85bd6c4a6dddd89f"
 dependencies = [
  "index_framework",
  "intersect_iter",
  "serde",
+ "sparse_vec",
+]
+
+[[package]]
+name = "vsm"
+version = "0.1.0"
+source = "git+https://github.com/JojiiOfficial/VSM#1e4a14deb75a2ba2b41ed66b4f1d0500deccacb4"
+dependencies = [
+ "index_framework",
+ "intersect_iter",
+ "serde",
+ "sparse_vec",
 ]
 
 [[package]]

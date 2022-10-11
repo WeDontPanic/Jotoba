@@ -9,8 +9,9 @@ use index_framework::{
 
 use once_cell::sync::Lazy;
 use regex::Regex;
+use sparse_vec::{SpVec32, VecExt};
 use types::jotoba::{languages::Language, words::Word};
-use vsm::{dict_term::DictTerm, doc_vec::DocVector, Vector};
+use vsm::{dict_term::DictTerm, doc_vec::DocVector};
 
 pub struct Engine {}
 
@@ -28,7 +29,7 @@ impl engine::Engine<'static> for Engine {
     type Document = DocVector<u32>;
     type Retriever = DefaultRetrieve<'static, Self::B, Self::DictItem, Self::Document>;
     type Output = &'static Word;
-    type Query = Vector;
+    type Query = SpVec32;
 
     fn make_query<S: AsRef<str>>(inp: S, lang: Option<Language>) -> Option<Self::Query> {
         let dict = Self::get_index(lang).dict();
@@ -47,7 +48,7 @@ impl engine::Engine<'static> for Engine {
             .into_iter()
             .chain(add_term_iter);
 
-        let vec = Vector::create_new_raw(sparse);
+        let vec = SpVec32::create_new_raw(sparse);
         // println!("{vec:#?}");
 
         if vec.is_empty() {
@@ -76,7 +77,7 @@ impl engine::Engine<'static> for Engine {
         _q_str: &str,
         lang: Option<Language>,
     ) -> Retrieve<'static, Self::B, Self::DictItem, Self::Document> {
-        let term_iter = query.sparse().iter().map(|i| i.0);
+        let term_iter = query.as_vec().iter().map(|i| i.0);
         Self::retrieve(lang).by_term_ids(term_iter)
     }
 }
