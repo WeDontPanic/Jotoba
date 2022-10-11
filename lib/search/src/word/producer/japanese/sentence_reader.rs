@@ -4,7 +4,7 @@ use engine::{
     task::SearchTask,
 };
 use japanese::{furigana::SentencePartRef, JapaneseExt};
-use ngindex2::{item::IndexItem, termset::TermSet};
+use ngindex::{item::IndexItem, termset::TermSet};
 use sentence_reader::{output::ParseResult, Parser, Part, Sentence};
 use types::jotoba::words::{part_of_speech::PosSimple, Word};
 

@@ -3,7 +3,7 @@ use index_framework::{
     traits::{backend::Backend, dictionary::IndexDictionary},
 };
 use indexes::{names::FOREIGN_NGRAM, words::native::N as NATIVE_NGRAM};
-use ngindex2::{item::IndexItem, termset::TermSet, utils::padded, NGIndex, Wordgrams};
+use ngindex::{item::IndexItem, termset::TermSet, utils::padded, NGIndex, Wordgrams};
 use types::jotoba::{languages::Language, names::Name};
 
 pub struct Engine;

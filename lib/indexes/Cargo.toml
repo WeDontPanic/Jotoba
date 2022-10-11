@@ -7,8 +7,6 @@ edition = "2021"
 
 [dependencies]
 types = { path = "../types" }
-#vector_space_model2 = { path = "../../../VectorSpaceModel" }
-vector_space_model2 = { git = "https://github.com/JojiiOfficial/VectorSpaceModel" }
 autocompletion = { git = "https://github.com/WeDontPanic/AutoCompletionFramework" }
 #autocompletion = { path = "../../../AutoCompletionFramework" }
 bktree = { git = "https://github.com/JojiiOfficial/bktree" }
@@ -31,7 +29,7 @@ ngram-tools = { path = "../../../ngram-tools"}
 test-case = "2.2.2"
 #sparse_vec = { path = "../../../sparse_vec"}
 sparse_vec = { git = "https://github.com/JojiiOfficial/SparseVec"}
-num-traits = "*"
+num-traits = "0.2.15"
 
 [features]
 default = []

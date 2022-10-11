@@ -49,9 +49,9 @@ fn indexes() -> bool {
 }
 
 fn sentences() -> bool {
-    let sentence_retrieve = resources::get().sentences();
+    //let sentence_retrieve = resources::get().sentences();
 
-    for language in Language::iter_word() {
+    /* for language in Language::iter_word() {
         let foreign = match indexes::get().sentence().foreign(language) {
             Some(f) => f,
             None => return false,
@@ -63,9 +63,9 @@ fn sentences() -> bool {
                 return false;
             }
         }
-    }
+    } */
 
-    let jp_index = indexes::get().sentence().native();
+    /* let jp_index = indexes::get().sentence().native();
     for id in jp_index
         .get_vector_store()
         .iter()
@@ -75,7 +75,7 @@ fn sentences() -> bool {
             println!("Sentence index (Japanese) don't not match");
             return false;
         }
-    }
+    } */
 
     true
 }

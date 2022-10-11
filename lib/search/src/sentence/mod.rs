@@ -1,3 +1,4 @@
+pub mod order;
 mod producer;
 pub mod result;
 
@@ -6,10 +7,9 @@ use crate::{
     executor::{out_builder::OutputBuilder, producer::Producer, searchable::Searchable},
     query::Tag,
 };
-use producer::sequence::SequenceProducer;
-/* use producer::{
+use producer::{
     foreign::ForeignProducer, native::NativeProducer, sequence::SequenceProducer, tag::TagProducer,
-}; */
+};
 use result::ResData;
 use types::jotoba::{languages::Language, sentences::Sentence};
 
@@ -20,17 +20,16 @@ pub struct Search<'a> {
 
 impl<'a> Search<'a> {
     pub fn new(query: &'a Query) -> Self {
-        let producer: Vec<Box<dyn Producer<Target = Self>>> =
-            vec![Box::new(SequenceProducer::new(query))];
-        /* let mut producer: Vec<Box<dyn Producer<Target = Self>>> = vec![
+        let mut producer: Vec<Box<dyn Producer<Target = Self>>> = vec![
             Box::new(SequenceProducer::new(query)),
-            Box::new(TagProducer::new(query)),
             Box::new(ForeignProducer::new(query, query.lang())),
-            Box::new(NativeProducer::new(query)),
-        ]; */
+            Box::new(TagProducer::new(query)),
+            Box::new(NativeProducer::new(query, query.lang())),
+        ];
 
         if query.lang() != Language::English && query.show_english() {
-            //producer.push(Box::new(ForeignProducer::new(query, Language::English)));
+            producer.push(Box::new(ForeignProducer::new(query, Language::English)));
+            producer.push(Box::new(NativeProducer::new(query, Language::English)));
         }
 
         Self { query, producer }
@@ -63,7 +62,6 @@ impl<'a> Searchable for Search<'a> {
 
     #[inline]
     fn filter(&self, item: &Self::Item) -> bool {
-        //!producer::filter::filter_sentence(self.query, item)
-        false
+        !producer::filter::filter_sentence(self.query, item)
     }
 }

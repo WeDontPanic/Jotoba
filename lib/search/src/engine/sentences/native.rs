@@ -1,47 +1,41 @@
-use crate::engine::{Indexable, SearchEngine};
-use indexes::sentences::{document::SentenceDocument, NativeIndex};
+use index_framework::{
+    backend::memory::{
+        dict::default::Dictionary, postings::compressed::Postings, storage::default::Storage,
+        MemBackend,
+    },
+    retrieve::retriever::default::DefaultRetrieve,
+    traits::{backend::Backend, dictionary::IndexDictionary},
+};
 use sentence_reader::output::ParseResult;
+use sparse_vec::{SpVec32, VecExt};
 use std::collections::HashSet;
 use types::jotoba::{languages::Language, sentences::Sentence};
-use vector_space_model2::{DefaultMetadata, Vector};
+use vsm::{dict_term::DictTerm, doc_vec::DocVector};
 
 pub struct Engine {}
 
-impl Indexable for Engine {
-    type Metadata = DefaultMetadata;
-    type Document = SentenceDocument;
-    type Index = NativeIndex;
-
-    #[inline]
-    fn get_index(
-        _language: Option<Language>,
-    ) -> Option<&'static vector_space_model2::Index<Self::Document, Self::Metadata>> {
-        Some(indexes::get().sentence().native())
-    }
-}
-
-impl SearchEngine for Engine {
+impl engine::Engine<'static> for Engine {
+    type B = MemBackend<
+        DictTerm,
+        DocVector<u32>,
+        Dictionary<DictTerm>,
+        Storage<DocVector<u32>>,
+        Postings,
+    >;
+    type DictItem = DictTerm;
+    type Document = DocVector<u32>;
+    type Retriever = DefaultRetrieve<'static, Self::B, Self::DictItem, Self::Document>;
     type Output = &'static Sentence;
+    type Query = SpVec32;
 
-    #[inline]
-    fn doc_to_output(inp: &Self::Document) -> Option<Vec<Self::Output>> {
-        resources::get()
-            .sentences()
-            .by_id(inp.seq_id)
-            .map(|i| vec![i])
-    }
+    fn make_query<S: AsRef<str>>(inp: S, _lang: Option<Language>) -> Option<Self::Query> {
+        let mut terms: HashSet<String> = HashSet::new();
 
-    fn gen_query_vector(
-        index: &vector_space_model2::Index<Self::Document, Self::Metadata>,
-        query: &str,
-        _allow_align: bool,
-        _language: Option<Language>,
-    ) -> Option<(Vector, String)> {
-        let mut terms: HashSet<String> = HashSet::with_capacity(1);
+        let dict = Self::get_index(None).dict();
 
-        let indexer = index.get_indexer();
+        let query = inp.as_ref();
 
-        if indexer.get_term(query).is_some() {
+        if dict.get_id(query).is_some() {
             terms.insert(query.to_string());
         } else {
             match sentence_reader::Parser::new(query).parse() {
@@ -56,24 +50,44 @@ impl SearchEngine for Engine {
             };
         }
 
-        terms.retain(|w| !index.is_stopword_cust(&w, 10.0).unwrap_or(true));
+        //terms.retain(|w| !index.is_stopword_cust(&w, 10.0).unwrap_or(true));
 
-        let terms: Vec<_> = terms.into_iter().map(|i| format_query(&i)).collect();
-        let vec = index.build_vector(&terms, None)?;
-        Some((vec, query.to_string()))
+        let terms = terms.into_iter().map(|i| format_query(&i)).filter_map(|i| {
+            let id = dict.get_id(&i)?;
+            Some((id, 1.0))
+        });
+
+        let vec = SpVec32::create_new_raw(terms);
+        (!vec.is_empty()).then(|| vec)
+    }
+
+    #[inline]
+    fn doc_to_output(input: &Self::Document) -> Option<Vec<Self::Output>> {
+        resources::get()
+            .sentences()
+            .by_id(*input.document())
+            .map(|i| vec![i])
+    }
+
+    #[inline]
+    fn get_index(_lang: Option<Language>) -> &'static Self::B {
+        indexes::get().sentence().native()
+    }
+
+    #[inline]
+    fn retrieve_for(
+        inp: &Self::Query,
+        _query_str: &str,
+        lang: Option<Language>,
+    ) -> index_framework::retrieve::Retrieve<'static, Self::B, Self::DictItem, Self::Document> {
+        let term_iter = inp.dimensions().map(|i| i as u32);
+        Self::retrieve(lang)
+            .by_term_ids(term_iter)
+            .in_posting(lang.unwrap() as u32)
     }
 }
 
 #[inline]
 fn format_query(inp: &str) -> String {
     japanese::to_halfwidth(inp)
-}
-
-/// Normal TF.IDF (normaized)
-pub struct QueryTFIDF;
-impl vector_space_model2::build::weights::TermWeight for QueryTFIDF {
-    #[inline]
-    fn weight(&self, _current: f32, _tf: usize, df: usize, total_docs: usize) -> f32 {
-        (1.0 + total_docs as f32 / df as f32).log10()
-    }
 }

@@ -352,7 +352,7 @@ dependencies = [
  "bincode",
  "eudex",
  "jpeudex",
- "ngindex 0.1.0 (git+https://github.com/JojiiOfficial/ngindex)",
+ "ngindex",
  "ngram-tools 0.1.0 (git+https://github.com/JojiiOfficial/ngram-tools)",
  "order_struct",
  "priority_container 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -1021,8 +1021,8 @@ dependencies = [
  "order_struct",
  "priority_container 0.1.1 (git+https://github.com/JojiiOfficial/PrioContainer/)",
  "resources",
+ "sparse_vec",
  "types",
- "vector_space_model2",
  "vsm",
 ]
 
@@ -1465,7 +1465,7 @@ dependencies = [
 [[package]]
 name = "index_framework"
 version = "0.1.0"
-source = "git+https://github.com/WeDontPanic/index_framework#626d361600dadfe0aa076d0d75f3aea69c5c27f8"
+source = "git+https://github.com/WeDontPanic/index_framework#63a40a79479d95f59011916a99d27ad88602c686"
 dependencies = [
  "bincode",
  "compressed_vec",
@@ -1474,14 +1474,6 @@ dependencies = [
  "order_struct",
  "serde",
  "st_file",
-]
-
-[[package]]
-name = "indexed_file"
-version = "0.1.3"
-source = "git+https://github.com/JojiiOfficial/IndexedFile#5c024cb0143e762c7f3e79c773f619f511ba1647"
-dependencies = [
- "serde",
 ]
 
 [[package]]
@@ -1495,7 +1487,7 @@ dependencies = [
  "byteorder",
  "index_framework",
  "log",
- "ngindex 0.1.0 (git+https://github.com/JojiiOfficial/ngindex)",
+ "ngindex",
  "ngram-tools 0.1.0",
  "num-traits",
  "once_cell",
@@ -1505,7 +1497,6 @@ dependencies = [
  "sparse_vec",
  "test-case",
  "types",
- "vector_space_model2",
  "vsm",
 ]
 
@@ -1633,7 +1624,7 @@ dependencies = [
  "localization",
  "log",
  "news",
- "ngindex 0.1.0 (git+https://github.com/JojiiOfficial/ngindex)",
+ "ngindex",
  "rayon",
  "resources",
  "search",
@@ -1900,16 +1891,6 @@ dependencies = [
  "itertools 0.10.5",
  "once_cell",
  "utils",
-]
-
-[[package]]
-name = "ngindex"
-version = "0.1.0"
-source = "git+https://github.com/JojiiOfficial/ngindex?rev=431c1fc9d4387906214f568bb9e2398bc28bb35d#431c1fc9d4387906214f568bb9e2398bc28bb35d"
-dependencies = [
- "ngram-tools 0.1.0 (git+https://github.com/JojiiOfficial/ngram-tools)",
- "serde",
- "vector_space_model2",
 ]
 
 [[package]]
@@ -2500,8 +2481,7 @@ dependencies = [
  "levenshtein",
  "localization",
  "log",
- "ngindex 0.1.0 (git+https://github.com/JojiiOfficial/ngindex?rev=431c1fc9d4387906214f568bb9e2398bc28bb35d)",
- "ngindex 0.1.0 (git+https://github.com/JojiiOfficial/ngindex)",
+ "ngindex",
  "ngram-tools 0.1.0 (git+https://github.com/JojiiOfficial/ngram-tools)",
  "once_cell",
  "order_struct",
@@ -2518,7 +2498,6 @@ dependencies = [
  "tinysegmenter",
  "types",
  "utils",
- "vector_space_model2",
  "vsm",
 ]
 
@@ -3243,19 +3222,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "accd4ea62f7bb7a82fe23066fb0957d48ef677f6eeb8215f372f52e48bb32426"
 
 [[package]]
-name = "vector_space_model2"
-version = "0.1.1"
-source = "git+https://github.com/JojiiOfficial/VectorSpaceModel#83951838ea5439f255d2f627c32f507a56137c71"
-dependencies = [
- "bincode",
- "byteorder",
- "compressed_vec",
- "indexed_file",
- "itertools 0.10.5",
- "serde",
-]
-
-[[package]]
 name = "version_check"
 version = "0.9.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3270,7 +3236,7 @@ checksum = "6a02e4885ed3bc0f2de90ea6dd45ebcbb66dacffe03547fadbb0eeae2770887d"
 [[package]]
 name = "vsm"
 version = "0.1.0"
-source = "git+https://github.com/JojiiOfficial/VSM#1e4a14deb75a2ba2b41ed66b4f1d0500deccacb4"
+source = "git+https://github.com/JojiiOfficial/VSM#e7fe09a4feddcfb8d9f9140ecf159217ec526e51"
 dependencies = [
  "index_framework",
  "intersect_iter",

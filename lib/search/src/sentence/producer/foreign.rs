@@ -1,13 +1,12 @@
+use super::filter::{self, FeQotTermsVecFilter};
 use crate::{
-    engine::{sentences::foreign, SearchTask},
+    engine::sentences::foreign,
     executor::{out_builder::OutputBuilder, producer::Producer, searchable::Searchable},
     query::{Query, QueryLang},
-    sentence::Search,
+    sentence::{order::foreign::ForeignOrder, Search},
 };
-use engine::pushable::FilteredMaxCounter;
+use engine::{pushable::FilteredMaxCounter, task::SearchTask};
 use types::jotoba::languages::Language;
-
-use super::filter::FeQotTermsVecFilter;
 
 /// Producer for sentences by foreign keywords
 pub struct ForeignProducer<'a> {
@@ -20,32 +19,16 @@ impl<'a> ForeignProducer<'a> {
         Self { query, language }
     }
 
-    fn task(&self) -> SearchTask<foreign::Engine> {
+    fn task(&self) -> SearchTask<'static, foreign::Engine> {
         let query_str = &self.query.query_str;
-
-        let mut search_task: SearchTask<foreign::Engine> =
-            SearchTask::with_language(query_str, self.language);
-
         let query_c = self.query.clone();
-        search_task
-            .set_result_filter(move |sentence| super::filter::filter_sentence(&query_c, sentence));
+        let vec_filter = FeQotTermsVecFilter::new(&self.query);
+        let lang = self.query.lang();
 
-        let indexer = search_task.get_index().get_indexer();
-        let vec_filter = FeQotTermsVecFilter::new(&self.query, indexer);
-        search_task.set_vector_filter(move |dv, _| vec_filter.filter(dv));
-
-        let query_c = self.query.clone();
-        search_task.with_custom_order(move |item| {
-            let mut rel = item.vec_similarity();
-
-            if !item.item().has_translation(query_c.settings.user_lang) {
-                rel *= 0.8;
-            }
-
-            rel * 1_000_000.0
-        });
-
-        search_task
+        SearchTask::with_language(query_str, self.language)
+            .with_result_filter(move |i| filter::filter_sentence(&query_c, *i))
+            .with_item_filter(move |i| vec_filter.filter(i))
+            .with_custom_order(ForeignOrder::new(lang))
     }
 }
 

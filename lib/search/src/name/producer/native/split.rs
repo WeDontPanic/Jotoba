@@ -3,7 +3,7 @@ use engine::{
     relevance::{data::SortData, item::RelItem, RelevanceEngine},
     task::SearchTask,
 };
-use ngindex2::{item::IndexItem, termset::TermSet};
+use ngindex::{item::IndexItem, termset::TermSet};
 use sentence_reader::{output::ParseResult, Parser};
 use types::jotoba::names::Name;
 

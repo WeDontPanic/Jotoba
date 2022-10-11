@@ -18,4 +18,4 @@ order_struct = { git = "https://github.com/JojiiOfficial/OrderStruct" }
 index_framework = { git = "https://github.com/WeDontPanic/index_framework" }
 #vsm = { path = "../../../vsm" }
 vsm = { git = "https://github.com/JojiiOfficial/VSM" }
-vector_space_model2 = { git = "https://github.com/JojiiOfficial/VectorSpaceModel" }
+sparse_vec = { git = "https://github.com/JojiiOfficial/SparseVec"}

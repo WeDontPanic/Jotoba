@@ -1,5 +1,5 @@
 use engine::relevance::{data::SortData, RelevanceEngine};
-use ngindex2::{item::IndexItem, termset::TermSet};
+use ngindex::{item::IndexItem, termset::TermSet};
 use types::jotoba::names::Name;
 
 pub struct NativeOrder;

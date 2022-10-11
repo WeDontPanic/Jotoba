@@ -4,7 +4,7 @@ use index_framework::{
 };
 use indexes::words::native::N as NATIVE_NGRAM;
 use japanese::JapaneseExt;
-use ngindex2::{item::IndexItem, termset::TermSet, utils::padded, NGIndex, Wordgrams};
+use ngindex::{item::IndexItem, termset::TermSet, utils::padded, NGIndex, Wordgrams};
 use types::jotoba::{languages::Language, names::Name};
 
 pub struct Engine;

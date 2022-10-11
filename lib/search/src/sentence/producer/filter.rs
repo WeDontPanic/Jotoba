@@ -1,9 +1,10 @@
 use super::kanji;
 use crate::{engine, query::Query};
-use indexes::sentences::document::SentenceDocument;
+use index_framework::traits::{backend::Backend, dictionary::IndexDictionary};
 use japanese::JapaneseExt;
+use sparse_vec::VecExt;
 use types::jotoba::sentences::Sentence;
-use vector_space_model2::{term_store::TermIndexer, DocumentVector};
+use vsm::doc_vec::DocVector;
 
 pub(crate) fn filter_sentence(query: &Query, sentence: &Sentence) -> bool {
     let lang = query.settings.user_lang;
@@ -100,15 +101,18 @@ pub struct FeQotTermsVecFilter {
 }
 
 impl FeQotTermsVecFilter {
-    pub fn new(query: &Query, ti: &TermIndexer) -> Self {
+    pub fn new(query: &Query) -> Self {
         // If there is a term that is not indexed and thus can't be found,
         // filter out all results
         let mut filter_all = false;
         let mut mc_terms = vec![];
 
+        let index = indexes::get().sentence().foreign();
+        let ix_dict = index.dict();
+
         'o: for t in query.must_contain.iter().filter(|i| !i.is_japanese()) {
             for term in engine::sentences::foreign::all_terms(t).into_iter() {
-                if let Some(v) = ti.get_term(&term) {
+                if let Some(v) = ix_dict.get_id(&term) {
                     mc_terms.push(v as u32);
                     continue;
                 }
@@ -125,7 +129,7 @@ impl FeQotTermsVecFilter {
         }
     }
 
-    pub fn filter(&self, sentence: &DocumentVector<SentenceDocument>) -> bool {
+    pub fn filter(&self, sentence: &DocVector<u32>) -> bool {
         if self.filter_all {
             return false;
         }
@@ -136,6 +140,6 @@ impl FeQotTermsVecFilter {
 
         self.mc_terms
             .iter()
-            .all(|dim| sentence.vector().has_dim(*dim))
+            .all(|dim| sentence.vec().has_dim(*dim as usize))
     }
 }

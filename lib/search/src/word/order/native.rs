@@ -1,7 +1,7 @@
 use engine::relevance::{data::SortData, RelevanceEngine};
 use indexes::ng_freq::{term_dist, NgFreqIndex};
 use japanese::JapaneseExt;
-use ngindex2::{item::IndexItem, termset::TermSet};
+use ngindex::{item::IndexItem, termset::TermSet};
 use sparse_vec::{SpVec32, VecExt};
 use types::jotoba::words::Word;
 

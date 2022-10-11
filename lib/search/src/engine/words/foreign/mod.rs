@@ -49,7 +49,6 @@ impl engine::Engine<'static> for Engine {
             .chain(add_term_iter);
 
         let vec = SpVec32::create_new_raw(sparse);
-        // println!("{vec:#?}");
 
         if vec.is_empty() {
             return None;

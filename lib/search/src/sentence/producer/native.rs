@@ -1,42 +1,31 @@
+use super::filter;
 use crate::{
-    engine::{sentences::native, SearchTask},
+    engine::sentences::native,
     executor::{out_builder::OutputBuilder, producer::Producer, searchable::Searchable},
     query::{Query, QueryLang},
-    sentence::Search,
+    sentence::{order::native::NativeOrder, Search},
 };
-use engine::pushable::FilteredMaxCounter;
+use engine::{pushable::FilteredMaxCounter, task::SearchTask};
+use types::jotoba::languages::Language;
 
 /// Producer for sentences by foreign keywords
 pub struct NativeProducer<'a> {
     query: &'a Query,
+    lang: Language,
 }
 
 impl<'a> NativeProducer<'a> {
-    pub fn new(query: &'a Query) -> Self {
-        Self { query }
+    pub fn new(query: &'a Query, lang: Language) -> Self {
+        Self { query, lang }
     }
 
-    fn task(&self) -> SearchTask<native::Engine> {
+    fn task(&self) -> SearchTask<'static, native::Engine> {
+        let query = self.query.clone();
         let query_str = self.jp_reading();
 
-        let mut search_task = SearchTask::<native::Engine>::new(&query_str);
-
-        let query_c = self.query.clone();
-        search_task
-            .set_result_filter(move |sentence| super::filter::filter_sentence(&query_c, sentence));
-
-        let query_c = self.query.clone();
-        search_task.with_custom_order(move |item| {
-            let mut rel = item.vec_similarity();
-
-            if !item.item().has_translation(query_c.lang()) {
-                rel *= 0.99;
-            }
-
-            rel * 1_000_000.0
-        });
-
-        search_task
+        SearchTask::with_language(&query_str, self.lang)
+            .with_result_filter(move |sentence| filter::filter_sentence(&query, *sentence))
+            .with_custom_order(NativeOrder::new(self.query.lang()))
     }
 
     fn jp_reading(&self) -> String {

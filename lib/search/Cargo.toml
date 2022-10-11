@@ -22,8 +22,6 @@ log = "0.4.17"
 itertools = "0.10.5"
 once_cell = { version = "1.15.0", default-features = false }
 regex = { version = "1.6.0", features = ["std"], default-features = false }
-#vector_space_model2 = { path = "../../../VectorSpaceModel" }
-vector_space_model2 = { git = "https://github.com/JojiiOfficial/VectorSpaceModel" }
 tinysegmenter = "0.1.1"
 percent-encoding = "2.2.0"
 rayon = "1.5.3"
@@ -35,9 +33,7 @@ spin = { version = "0.9.4", default-features = false, features = [
 ] }
 intmap = { git = "https://github.com/JojiiOfficial/rust-intmap" }
 #ngindex = { path = "../../../ngindex" }
-ngindex = { git = "https://github.com/JojiiOfficial/ngindex", rev = "431c1fc9d4387906214f568bb9e2398bc28bb35d" }
-#ngindex2 = { path = "../../../ngindex", package = "ngindex" }
-ngindex2 = { git = "https://github.com/JojiiOfficial/ngindex", package = "ngindex" }
+ngindex = { git = "https://github.com/JojiiOfficial/ngindex"}
 #ngindex2 = { path ="../../../ngindex", package = "ngindex" }
 #index_framework = { path = "../../../index_framework" }
 index_framework = { git = "https://github.com/WeDontPanic/index_framework" }

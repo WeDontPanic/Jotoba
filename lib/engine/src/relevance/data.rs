@@ -1,5 +1,5 @@
+use sparse_vec::{SpVec32, VecExt};
 use types::jotoba::languages::Language;
-use vector_space_model2::Vector;
 
 /// Item to sort stuff
 #[derive(Debug)]
@@ -63,9 +63,12 @@ impl<'item, 'query, T, I, Q> SortData<'item, 'query, T, I, Q> {
     }
 }
 
-impl<'item, 'query, T> SortData<'item, 'query, T, Vector, Vector> {
+impl<'item, 'query, T, I> SortData<'item, 'query, T, I, SpVec32>
+where
+    I: AsRef<SpVec32>,
+{
     #[inline]
     pub fn vec_similarity(&self) -> f32 {
-        self.query.similarity(&self.index_item)
+        self.query.cosine(self.index_item.as_ref())
     }
 }
