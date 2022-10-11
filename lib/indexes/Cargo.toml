@@ -31,6 +31,7 @@ ngram-tools = { path = "../../../ngram-tools"}
 test-case = "2.2.2"
 #sparse_vec = { path = "../../../sparse_vec"}
 sparse_vec = { git = "https://github.com/JojiiOfficial/SparseVec"}
+num-traits = "*"
 
 [features]
 default = []

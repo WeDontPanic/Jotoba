@@ -1,14 +1,14 @@
-use std::collections::HashMap;
-
 use super::REMOVE_PARENTHESES;
 use engine::relevance::{data::SortData, RelevanceEngine};
-use indexes::ng_freq::{vec_sim, NgFreqIndex};
+use indexes::ng_freq::{term_dist, NgFreqIndex};
 use sparse_vec::{SpVec32, VecExt};
 use types::jotoba::{languages::Language, words::Word};
 use vsm::doc_vec::DocVector;
 
 pub struct ForeignOrder {
-    query_vecs: HashMap<Language, SpVec32>,
+    query_vec_lang: SpVec32,
+    query_vec_en: Option<SpVec32>,
+
     lang: Language,
 }
 
@@ -16,8 +16,21 @@ impl ForeignOrder {
     #[inline]
     pub fn new() -> Self {
         Self {
-            query_vecs: HashMap::new(),
+            query_vec_lang: SpVec32::default(),
+            query_vec_en: None,
             lang: Language::English,
+        }
+    }
+
+    #[inline]
+    fn get_query_vec(&self, lang: Language) -> &SpVec32 {
+        if lang == self.lang {
+            &self.query_vec_lang
+        } else if lang == Language::English {
+            self.query_vec_en.as_ref().unwrap()
+        } else {
+            log::error!("Unreachable");
+            unreachable!()
         }
     }
 }
@@ -39,9 +52,9 @@ impl RelevanceEngine for ForeignOrder {
 
         let lang = item.language().unwrap_or(Language::English);
         let tindex = get_ng_index(lang);
-        let q_vec = self.query_vecs.get(&lang).unwrap();
 
-        //REMOVE_PARENTHESES.relpc
+        let q_vec = self.get_query_vec(lang);
+
         let text_sim = word
             .gloss_iter_by_lang(lang, true)
             .map(|i| {
@@ -54,7 +67,7 @@ impl RelevanceEngine for ForeignOrder {
                     return 0.0;
                 }
                 let vec = build_vec(tindex, &fmt);
-                vec_sim(&vec, &q_vec)
+                term_dist(&vec, q_vec)
             })
             .max_by(|a, b| a.total_cmp(&b))
             .unwrap_or(0.0);
@@ -75,13 +88,10 @@ impl RelevanceEngine for ForeignOrder {
     fn init(&mut self, init: engine::relevance::RelEngineInit) {
         let lang = init.language.unwrap();
 
-        let qvec = build_vec(get_ng_index(lang), &init.query);
-        self.query_vecs.insert(lang, qvec);
-        assert!(self.query_vecs.contains_key(&lang));
+        self.query_vec_lang = build_vec(get_ng_index(lang), &init.query);
 
         if lang != Language::English {
-            let qvecen = build_vec(get_ng_index(Language::English), &init.query);
-            self.query_vecs.insert(Language::English, qvecen);
+            self.query_vec_en = Some(build_vec(get_ng_index(Language::English), &init.query));
         }
 
         self.lang = lang;

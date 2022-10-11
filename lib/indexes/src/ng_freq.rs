@@ -1,4 +1,5 @@
 use ngram_tools::iter::wordgrams::Wordgrams;
+use num_traits::Float;
 use serde::{Deserialize, Serialize};
 use sparse_vec::{SpVec32, VecExt};
 
@@ -121,24 +122,27 @@ impl NgFreqIndex {
 
 // TODO: Put this function into some lib (maybe sparse vector?)
 #[inline]
-pub fn vec_sim(a: &SpVec32, b: &SpVec32) -> f32 {
+pub fn term_dist<W: Float + Default, A: VecExt<Wtype = W>, B: VecExt<Wtype = W>>(
+    a: &A,
+    b: &B,
+) -> W {
     if a.is_empty() || b.is_empty() {
-        return 0.0;
+        return W::default();
     }
 
     let both = a
         .intersect_iter(b)
         .map(|(_, a_w, b_w)| a_w + b_w)
-        .sum::<f32>();
+        .fold(W::default(), |a, b| a.add(b));
 
     let sum = a
         .as_vec()
         .iter()
         .map(|i| i.1)
         .chain(b.weights())
-        .sum::<f32>();
+        .fold(W::default(), |a, b| a.add(b));
 
-    both / sum
+    both.div(sum)
 }
 
 #[cfg(test)]
@@ -192,8 +196,8 @@ mod test {
         let kunde = ngindex.build_vec("kunde");
         let hund = ngindex.build_vec("hund");
 
-        let sim_kund_kunde = vec_sim(&kund, &kunde);
-        let sim_kund_hund = vec_sim(&kund, &hund);
+        let sim_kund_kunde = term_dist(&kund, &kunde);
+        let sim_kund_hund = term_dist(&kund, &hund);
 
         assert!(sim_kund_kunde > sim_kund_hund);
     }

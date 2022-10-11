@@ -1,5 +1,5 @@
 use engine::relevance::{data::SortData, RelevanceEngine};
-use indexes::ng_freq::{vec_sim, NgFreqIndex};
+use indexes::ng_freq::{term_dist, NgFreqIndex};
 use japanese::JapaneseExt;
 use ngindex2::{item::IndexItem, termset::TermSet};
 use sparse_vec::{SpVec32, VecExt};
@@ -56,7 +56,7 @@ impl RelevanceEngine for NativeOrder {
             word.get_kana();
             build_ng_vec(word.get_kana())
         };
-        score *= vec_sim(&reading_vec, &self.query_vec);
+        score *= term_dist(&reading_vec, &self.query_vec);
 
         if let Some(ref o_ts) = self.orig_query_ts {
             if self.w_index.unwrap_or(0) == 0 {
