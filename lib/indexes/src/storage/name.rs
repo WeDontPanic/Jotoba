@@ -2,8 +2,8 @@ use super::utils;
 use crate::names::{ForeignIndex, NativeIndex};
 use std::{error::Error, path::Path};
 
-const FOREIGN_FILE: &str = "name_foreign_index";
-const NATIVE_FILE: &str = "name_jp_index";
+pub const FOREIGN_FILE: &str = "name_foreign_index";
+pub const NATIVE_FILE: &str = "name_jp_index";
 
 /// Store for name indexes
 pub struct NameStore {

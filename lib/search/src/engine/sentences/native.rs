@@ -81,9 +81,16 @@ impl engine::Engine<'static> for Engine {
         lang: Option<Language>,
     ) -> index_framework::retrieve::Retrieve<'static, Self::B, Self::DictItem, Self::Document> {
         let term_iter = inp.dimensions().map(|i| i as u32);
-        Self::retrieve(lang)
-            .by_term_ids(term_iter)
-            .in_posting(lang.unwrap() as u32)
+        if let Some(lang) = lang {
+            Self::retrieve(Some(lang))
+                .by_term_ids(term_iter)
+                .in_posting(lang as u32)
+        } else {
+            let langs = Language::iter_word().map(|i| i as u32);
+            Self::retrieve(None)
+                .by_term_ids(term_iter)
+                .in_postings(langs)
+        }
     }
 }
 

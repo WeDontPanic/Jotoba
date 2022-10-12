@@ -2,8 +2,8 @@ use super::utils;
 use crate::sentences::{ForeignIndex, NativeIndex};
 use std::{error::Error, path::Path};
 
-const NATIVE_FILE: &str = "sentences_jp_index";
-const FOREIGN_FILE: &str = "sentences_fg_index";
+pub const NATIVE_FILE: &str = "sentences_jp_index";
+pub const FOREIGN_FILE: &str = "sentences_fg_index";
 
 /// Store for sentence indexes
 pub struct SentenceStore {

@@ -27,8 +27,13 @@ impl ForeignOrder {
         if lang == self.lang {
             &self.query_vec_lang
         } else if lang == Language::English {
+            // If `lang` is english and not the users lang, `query_vec_en` is always set
             self.query_vec_en.as_ref().unwrap()
         } else {
+            // There are only search tasks for users language or english. So the query vector has
+            // to be `query_vec_lang` in case `lang` is the users language, or `query_vec_en` if
+            // the language is english. If there are other search requests, this code must be
+            // adjusted
             log::error!("Unreachable");
             unreachable!()
         }

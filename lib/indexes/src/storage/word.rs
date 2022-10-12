@@ -8,10 +8,10 @@ use log::debug;
 use std::{collections::HashMap, error::Error, path::Path, str::FromStr};
 use types::jotoba::languages::Language;
 
-const FOREIGN_PREFIX: &str = "word_index_";
-const NATIVE_FILE: &str = "jp_index";
-const REGEX_FILE: &str = "regex_index";
-const KANJI_READING_INDEX: &str = "word_kr_index";
+pub const FOREIGN_PREFIX: &str = "word_index_";
+pub const NATIVE_FILE: &str = "jp_index";
+pub const REGEX_FILE: &str = "regex_index";
+pub const KANJI_READING_INDEX: &str = "word_kr_index";
 
 /// Store for words
 pub struct WordStore {

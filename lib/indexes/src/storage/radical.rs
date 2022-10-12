@@ -2,7 +2,7 @@ use super::utils;
 use crate::radical::RadicalIndex;
 use std::{error::Error, path::Path};
 
-const RAD_INDEX_FILE: &str = "radical_index";
+pub const RAD_INDEX_FILE: &str = "radical_index";
 
 /// Store for radical indexes
 pub struct RadicalStore {

@@ -12,6 +12,16 @@ pub struct RadicalIndex {
 }
 
 impl RadicalIndex {
+    pub fn new(
+        meaning_map: HashMap<String, Vec<SearchRadicalInfo>>,
+        term_tree: BkTree<String>,
+    ) -> Self {
+        Self {
+            meaning_map,
+            term_tree,
+        }
+    }
+
     /// Returns `true` if the index contains `term`
     #[inline(always)]
     pub fn has_term(&self, term: &str) -> bool {
