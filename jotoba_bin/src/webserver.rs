@@ -258,7 +258,7 @@ async fn docs(_req: HttpRequest) -> actix_web::Result<NamedFile> {
 
 pub(crate) fn prepare_data(ccf: &Config) {
     thread::spawn(move || {
-        suggestions::load().expect("Failed to load suggestions");
+        suggestions::load("./resources").expect("Failed to load suggestions");
         log::debug!("Suggestions loaded");
     });
 

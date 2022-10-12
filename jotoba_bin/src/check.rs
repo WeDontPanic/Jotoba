@@ -49,33 +49,26 @@ fn indexes() -> bool {
 }
 
 fn sentences() -> bool {
-    //let sentence_retrieve = resources::get().sentences();
+    let sentence_retrieve = resources::get().sentences();
 
-    /* for language in Language::iter_word() {
-        let foreign = match indexes::get().sentence().foreign(language) {
-            Some(f) => f,
-            None => return false,
-        };
+    let fg_index = indexes::get().sentence().foreign();
 
-        for id in foreign.get_vector_store().iter().map(|i| i.document.seq_id) {
+    for language in Language::iter_word() {
+        for id in fg_index.storage().iter().map(|i| *i.document()) {
             if sentence_retrieve.by_id(id).is_none() {
                 println!("Sentence index ({language:?}) don't not match");
                 return false;
             }
         }
-    } */
+    }
 
-    /* let jp_index = indexes::get().sentence().native();
-    for id in jp_index
-        .get_vector_store()
-        .iter()
-        .map(|i| i.document.seq_id)
-    {
+    let jp_index = indexes::get().sentence().native();
+    for id in jp_index.storage().iter().map(|i| *i.document()) {
         if sentence_retrieve.by_id(id).is_none() {
             println!("Sentence index (Japanese) don't not match");
             return false;
         }
-    } */
+    }
 
     true
 }
