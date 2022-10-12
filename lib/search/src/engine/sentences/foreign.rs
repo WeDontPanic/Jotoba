@@ -37,12 +37,7 @@ impl engine::Engine<'static> for Engine {
         let term_ids = terms
             .into_iter()
             .filter_map(|i| index.dict().get_id(&i))
-            .map(|id| {
-                let term = index.dict().get_term(id).unwrap();
-                let weight = term.frequency();
-                (id, weight)
-            })
-            .collect::<Vec<_>>();
+            .map(|id| (id, 1.0));
         let vec = SpVec32::create_new_raw(term_ids);
         (!vec.is_empty()).then(|| vec)
     }

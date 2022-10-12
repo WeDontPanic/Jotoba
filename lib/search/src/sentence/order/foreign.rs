@@ -28,6 +28,6 @@ impl RelevanceEngine for ForeignOrder {
             rel *= 0.8;
         }
 
-        rel * 1_000_000.0
+        rel
     }
 }
