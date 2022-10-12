@@ -117,6 +117,8 @@ pub enum Field {
     ClimateWeather,
     #[strum(serialize = "mil")]
     Military,
+    #[strum(serialize = "noh")]
+    Noh,
     #[strum(serialize = "music")]
     Music,
     #[strum(serialize = "ornith")]
@@ -253,6 +255,7 @@ impl Translatable for Field {
             Field::Clothing => "Clothing",
             Field::Dentistry => "Dentistry",
             Field::Politics => "Politics",
+            Field::Noh => "Noh",
         }
     }
 
