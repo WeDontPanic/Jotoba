@@ -15,6 +15,8 @@ pub const JP_WORDS_NGRAM: usize = 2;
 pub const FG_NAMES_NGRAM: usize = 3;
 pub const JP_NAMES_NGRAM: usize = 2;
 
+pub const SUGGESTION_FILE: &str = "suggestions";
+
 /// In-memory store for all suggestion indexes
 pub(crate) static SUGGESTION_STORE: OnceCell<SuggestionStorage> = OnceCell::new();
 
@@ -92,8 +94,8 @@ pub fn load_raw<P: AsRef<Path>>(
     utils::deser_file(file, "")
 }
 
-pub fn load<P: AsRef<Path>>(file: P) -> Result<bool, Box<dyn Error + Sync + Send>> {
-    let store = load_raw(file)?;
+pub fn load() -> Result<bool, Box<dyn Error + Sync + Send>> {
+    let store = load_raw(SUGGESTION_FILE)?;
     Ok(SUGGESTION_STORE.set(store).is_ok())
 }
 

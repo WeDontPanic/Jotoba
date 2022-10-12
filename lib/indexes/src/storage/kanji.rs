@@ -1,7 +1,7 @@
 use crate::kanji::reading_freq::FrequencyIndex;
 use std::{error::Error, fs::File, io::BufReader, path::Path};
 
-const K_READINGS_FREQ_FILE: &str = "kreading_freq_index";
+pub const K_READINGS_FREQ_FILE: &str = "kreading_freq_index";
 
 /// Store for name indexes
 pub struct KanjiStore {
