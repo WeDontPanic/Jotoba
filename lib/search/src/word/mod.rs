@@ -79,6 +79,7 @@ impl<'a> Searchable for Search<'a> {
         item
     }
 
+    #[inline]
     fn filter(&self, word: &Self::Item) -> bool {
         self.filter.filter_word(*word)
     }

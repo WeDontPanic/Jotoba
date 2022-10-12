@@ -2016,7 +2016,7 @@ dependencies = [
 [[package]]
 name = "order_struct"
 version = "0.1.0"
-source = "git+https://github.com/JojiiOfficial/OrderStruct#db28b225bd444e9fd7f5138b346e0dbb6f531540"
+source = "git+https://github.com/JojiiOfficial/OrderStruct#08dc8aa1feb613e95b125fae2b276ecb6955e431"
 dependencies = [
  "float-ord",
 ]
@@ -2173,7 +2173,7 @@ checksum = "c4886bb938a91e70d3a84efa590f753cf52076149f5963de5727085435f5cbcb"
 [[package]]
 name = "priority_container"
 version = "0.1.1"
-source = "git+https://github.com/JojiiOfficial/PrioContainer/#5d6d7c4b946ec20407a621e2ec16f7498248c179"
+source = "git+https://github.com/JojiiOfficial/PrioContainer/#9eadccce77c530bec8956d103a68fbc1a22eef99"
 
 [[package]]
 name = "proc-macro-error"
