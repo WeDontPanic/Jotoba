@@ -353,7 +353,7 @@ dependencies = [
  "eudex",
  "jpeudex",
  "ngindex",
- "ngram-tools 0.1.0 (git+https://github.com/JojiiOfficial/ngram-tools)",
+ "ngram-tools",
  "order_struct",
  "priority_container 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "qp-trie",
@@ -1488,7 +1488,7 @@ dependencies = [
  "index_framework",
  "log",
  "ngindex",
- "ngram-tools 0.1.0",
+ "ngram-tools",
  "num-traits",
  "once_cell",
  "qp-trie",
@@ -1900,13 +1900,9 @@ source = "git+https://github.com/JojiiOfficial/ngindex#b8cb33626b7580943ebdf158d
 dependencies = [
  "index_framework",
  "intersect_iter",
- "ngram-tools 0.1.0 (git+https://github.com/JojiiOfficial/ngram-tools)",
+ "ngram-tools",
  "serde",
 ]
-
-[[package]]
-name = "ngram-tools"
-version = "0.1.0"
 
 [[package]]
 name = "ngram-tools"
@@ -2482,7 +2478,7 @@ dependencies = [
  "localization",
  "log",
  "ngindex",
- "ngram-tools 0.1.0 (git+https://github.com/JojiiOfficial/ngram-tools)",
+ "ngram-tools",
  "once_cell",
  "order_struct",
  "percent-encoding",

@@ -25,7 +25,7 @@ ngindex = { git = "https://github.com/JojiiOfficial/ngindex" }
 #vsm = { path = "../../../vsm"}
 vsm = { git = "https://github.com/JojiiOfficial/VSM"}
 index_framework = { git = "https://github.com/WeDontPanic/index_framework"}
-ngram-tools = { path = "../../../ngram-tools"}
+ngram-tools = { git = "https://github.com/JojiiOfficial/ngram-tools"}
 test-case = "2.2.2"
 #sparse_vec = { path = "../../../sparse_vec"}
 sparse_vec = { git = "https://github.com/JojiiOfficial/SparseVec"}
