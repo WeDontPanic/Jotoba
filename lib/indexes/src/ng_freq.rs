@@ -1,5 +1,4 @@
 use ngram_tools::iter::wordgrams::Wordgrams;
-use num_traits::Float;
 use serde::{Deserialize, Serialize};
 use sparse_vec::{SpVec32, VecExt};
 
@@ -122,27 +121,19 @@ impl NgFreqIndex {
 
 // TODO: Put this function into some lib (maybe sparse vector?)
 #[inline]
-pub fn term_dist<W: Float + Default, A: VecExt<Wtype = W>, B: VecExt<Wtype = W>>(
-    a: &A,
-    b: &B,
-) -> W {
+pub fn term_dist(a: &SpVec32, b: &SpVec32) -> f32 {
     if a.is_empty() || b.is_empty() {
-        return W::default();
+        return 0.0;
     }
 
     let both = a
         .intersect_iter(b)
         .map(|(_, a_w, b_w)| a_w + b_w)
-        .fold(W::default(), |a, b| a.add(b));
+        .sum::<f32>();
 
-    let sum = a
-        .as_vec()
-        .iter()
-        .map(|i| i.1)
-        .chain(b.weights())
-        .fold(W::default(), |a, b| a.add(b));
+    let sum = a.weights().chain(b.weights()).sum::<f32>();
 
-    both.div(sum)
+    both / sum
 }
 
 #[cfg(test)]
