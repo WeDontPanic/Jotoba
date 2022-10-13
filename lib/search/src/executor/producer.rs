@@ -20,6 +20,21 @@ pub trait Producer {
     fn estimate_to(&self, _out: &mut FilteredMaxCounter<<Self::Target as Searchable>::Item>) {}
 
     fn name(&self) -> String {
-        type_name::<Self>().to_string()
+        format_debug_name::<Self>()
     }
+}
+
+fn format_debug_name<T: ?Sized>() -> String {
+    let mut name = type_name::<T>().to_string();
+
+    // Strip module name
+    let start_pos = name
+        .char_indices()
+        .rev()
+        .find(|i| i.1 == ':')
+        .map(|i| i.0 + 1)
+        .unwrap_or(0);
+    name.replace_range(0..start_pos, "");
+
+    name
 }

@@ -84,19 +84,11 @@ impl RelevanceEngine for ForeignOrder {
         let mut rel_add = 0.0;
         if text_sim >= 0.5 {
             let index_item = item.index_item().vec();
-            //let gloss_sim = item.query().scalar(index_item);
             let gloss_sim = item.query().scalar(index_item);
             rel_add += gloss_sim * 100.0;
         }
 
-        let score = (rel_add + text_sim) / 2.0;
-
-        /* println!(
-            "{:?} ({rel_add} + {text_sim}) / 2 = {score}",
-            word.get_reading_str()
-        ); */
-
-        score
+        (rel_add + text_sim) / 2.0
     }
 
     fn init(&mut self, init: engine::relevance::RelEngineInit) {

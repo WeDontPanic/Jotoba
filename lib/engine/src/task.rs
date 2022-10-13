@@ -238,6 +238,7 @@ where
 
     #[inline]
     fn score(&self, out_item: &E::Output, index_item: &E::Document, query: &E::Query) -> f32 {
+        let threshold = self.has_threshold().then(|| self.threshold);
         let s_data = SortData::new(
             out_item,
             index_item,
@@ -245,6 +246,7 @@ where
             query,
             &self.query_str,
             self.query_lang,
+            threshold,
         );
         self.cust_order
             .as_ref()

@@ -39,10 +39,12 @@ impl<S: Searchable> SearchExecutor<S> {
                 continue;
             }
             let before = out.p.total_pushed();
+            let start = Instant::now();
             prod.produce(&mut out);
+            let dur = start.elapsed();
             let after = out.p.total_pushed();
             let name = prod.name();
-            debug!("{name}: {}", after - before);
+            debug!("{name}: {} Elements in {:?}", after - before, dur);
         }
 
         self.search.mod_output(&mut out);

@@ -5,7 +5,7 @@ use crate::{
     engine::words::native::regex,
     executor::{out_builder::OutputBuilder, producer::Producer, searchable::Searchable},
     query::{regex::RegexSQuery, Query},
-    word::{order::regex_order, Search},
+    word::{order::regex::regex_order, Search},
 };
 use engine::{
     pushable::FilteredMaxCounter,

@@ -10,6 +10,7 @@ pub struct SortData<'item, 'query, T, I, Q> {
     query_str: &'query str,
     query: &'query Q,
     language: Option<Language>,
+    threshold: Option<f32>,
 }
 
 impl<'item, 'query, T, I, Q> SortData<'item, 'query, T, I, Q> {
@@ -21,6 +22,7 @@ impl<'item, 'query, T, I, Q> SortData<'item, 'query, T, I, Q> {
         query: &'query Q,
         query_str: &'query str,
         language: Option<Language>,
+        threshold: Option<f32>,
     ) -> Self {
         Self {
             out_item,
@@ -29,6 +31,7 @@ impl<'item, 'query, T, I, Q> SortData<'item, 'query, T, I, Q> {
             query_str,
             query,
             language,
+            threshold,
         }
     }
 
@@ -60,6 +63,11 @@ impl<'item, 'query, T, I, Q> SortData<'item, 'query, T, I, Q> {
     #[inline]
     pub fn index_item(&self) -> &I {
         self.index_item
+    }
+
+    #[inline]
+    pub fn threshold(&self) -> Option<f32> {
+        self.threshold
     }
 }
 
