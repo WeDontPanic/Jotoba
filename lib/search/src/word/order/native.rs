@@ -41,11 +41,22 @@ impl NativeOrder {
     }
 
     #[inline]
-    pub fn exceeded_threshold<'i, 'q, A, B, C>(
-        item: &SortData<'i, 'q, A, B, C>,
-        score: f32,
-    ) -> bool {
+    fn exceeded_threshold<'i, 'q, A, B, C>(item: &SortData<'i, 'q, A, B, C>, score: f32) -> bool {
         item.threshold().map(|th| score < th).unwrap_or(false)
+    }
+
+    #[inline]
+    fn text_sim(&self, word: &Word) -> f32 {
+        word.reading_iter(true)
+            .map(|i| self.reading_sim(&japanese::to_halfwidth(&i.reading).to_hiragana()))
+            .max_by(|a, b| a.total_cmp(b))
+            .unwrap_or(0.0)
+    }
+
+    #[inline]
+    fn reading_sim(&self, reading: &str) -> f32 {
+        let vec = build_ng_vec(reading);
+        term_dist(&vec, &self.query_vec)
     }
 }
 
@@ -58,21 +69,15 @@ impl RelevanceEngine for NativeOrder {
         &self,
         item: &SortData<'item, 'query, Self::OutItem, Self::IndexItem, Self::Query>,
     ) -> f32 {
+        let word = item.item();
         let mut score = item.index_item().dice(item.query());
 
+        // If alternative reading matches query exactly
         if Self::exceeded_threshold(item, score) {
             return 0.0;
         }
 
-        let word = item.item();
-
-        let reading_vec;
-        if item.query_str().has_kanji() {
-            reading_vec = build_ng_vec(word.get_reading_str())
-        } else {
-            reading_vec = build_ng_vec(word.get_kana())
-        };
-        score *= term_dist(&reading_vec, &self.query_vec);
+        score *= self.text_sim(word);
 
         if Self::exceeded_threshold(item, score) {
             return 0.0;
@@ -94,7 +99,7 @@ impl RelevanceEngine for NativeOrder {
         // Words with query as substring have more relevance
         // スイス: スイス人 > スパイス
         if !kana.contains(&self.query_hw) {
-            score *= 0.8;
+            //score *= 0.8;
         }
 
         if Self::exceeded_threshold(item, score) {
@@ -104,7 +109,7 @@ impl RelevanceEngine for NativeOrder {
         if kana != self.orig_query
             && japanese::to_halfwidth(&word.get_reading().reading) != self.orig_query
         {
-            score *= 0.9;
+            score *= 0.7;
         }
 
         if Self::exceeded_threshold(item, score) {
@@ -132,23 +137,12 @@ impl RelevanceEngine for NativeOrder {
             }
         } */
 
-        // If alternative reading matches query exactly
-        if word
-            .reading
-            .alternative
-            .iter()
-            .map(|i| japanese::to_halfwidth(&i.reading))
-            .any(|i| i == *self.query_hw)
-        {
-            //score += 60.0;
-            score *= 0.8;
-        }
-
         score
     }
 
     fn init(&mut self, init: engine::relevance::RelEngineInit) {
-        self.query_vec = build_ng_vec(&init.query);
+        //self.query_vec = build_ng_vec(&init.query);
+        self.query_vec = build_ng_vec(&japanese::to_halfwidth(&init.query));
         self.query_hw = japanese::to_halfwidth(&init.query).to_hiragana();
     }
 }
