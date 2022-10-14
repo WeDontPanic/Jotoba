@@ -1,13 +1,14 @@
 pub mod out_builder;
 pub mod producer;
+pub mod search_result;
 pub mod searchable;
 
 use std::time::Instant;
 
-use crate::result::SearchResult;
 use engine::{pushable::FilteredMaxCounter, utils::page_from_pqueue_with_max_dist};
 use log::debug;
 use out_builder::OutputBuilder;
+use search_result::SearchResult;
 use searchable::Searchable;
 use types::jotoba::search::guess::{Guess, GuessType};
 

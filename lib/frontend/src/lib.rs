@@ -28,7 +28,7 @@ use localization::{
 };
 use news::NewsEntry;
 use og_tags::TagKeyName;
-use search::{query::Query, result::SearchResult as SearchResult2};
+use search::{executor::search_result::SearchResult as SearchResult2, query::Query};
 
 use search::{kanji::result::Item as KanjiItem, query::UserSettings};
 use types::jotoba::{

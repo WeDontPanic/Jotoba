@@ -104,7 +104,7 @@ pub async fn find_direct_word(id: &str, settings: &UserSettings) -> Result<Resul
 
     let word = results.remove(0);
 
-    Ok(ResultData::Word(search::result::SearchResult::<
+    Ok(ResultData::Word(search::executor::search_result::SearchResult::<
         Word,
         AddResData,
     >::with_other_default(vec![word], 1)))
@@ -145,7 +145,7 @@ pub async fn find_direct_sentence(id: &str, settings: &UserSettings) -> Result<R
         sentence::result::Sentence::from_m_sentence(res_sentence, settings.user_lang, true)
             .unwrap();
 
-    use search::result::SearchResult as SearchResult2;
+    use search::executor::search_result::SearchResult as SearchResult2;
     Ok(ResultData::Sentence(SearchResult2 {
         items: vec![res_sentence],
         total: 1,

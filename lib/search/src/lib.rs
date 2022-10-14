@@ -4,7 +4,6 @@ pub mod kanji;
 pub mod name;
 pub mod query;
 pub mod radical;
-pub mod result;
 pub mod sentence;
 pub mod word;
 
@@ -12,43 +11,6 @@ pub use executor::SearchExecutor;
 
 use query::Query;
 use types::jotoba::search::{help::SearchHelp, SearchTarget};
-
-/// How string items should be matched with each other
-#[derive(Clone, Copy, Debug)]
-pub enum SearchMode {
-    Exact,
-    Variable,
-    RightVariable,
-    LeftVariable,
-}
-
-impl SearchMode {
-    /// Compares a string based on the mode and case
-    pub fn str_eq<S: AsRef<str>>(&self, a: S, b: S, ign_case: bool) -> bool {
-        let (a, b) = if ign_case {
-            (a.as_ref().to_lowercase(), b.as_ref().to_lowercase())
-        } else {
-            (a.as_ref().to_owned(), b.as_ref().to_owned())
-        };
-
-        match *self {
-            SearchMode::Exact => a == b,
-            SearchMode::Variable => a.contains(&b),
-            SearchMode::LeftVariable => a.starts_with(&b),
-            SearchMode::RightVariable => a.ends_with(&b),
-        }
-    }
-
-    pub fn ordered_iter() -> impl Iterator<Item = &'static SearchMode> {
-        [
-            SearchMode::Exact,
-            SearchMode::Variable,
-            SearchMode::RightVariable,
-            SearchMode::LeftVariable,
-        ]
-        .iter()
-    }
-}
 
 /// Build a [`SearchHelp`] in for cases without any search results
 pub fn build_help(querytype: SearchTarget, query: &Query) -> Option<SearchHelp> {

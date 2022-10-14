@@ -10,6 +10,7 @@ pub struct SearchResult<T, O = ()> {
 
 impl<T> SearchResult<T, ()> {
     /// Creates a new SearchResult from a vec
+    #[inline]
     pub fn from_vec(items: Vec<T>) -> Self {
         let total = items.len();
         Self {
@@ -20,6 +21,7 @@ impl<T> SearchResult<T, ()> {
     }
 
     /// Creates a new search result
+    #[inline]
     pub fn new(items: Vec<T>, total: usize) -> Self {
         Self {
             items,
@@ -31,6 +33,7 @@ impl<T> SearchResult<T, ()> {
 
 impl<T, O> SearchResult<T, O> {
     /// Creates a new search result
+    #[inline]
     pub fn with_other_data(items: Vec<T>, total: usize, other_data: O) -> Self {
         Self {
             items,
@@ -49,6 +52,7 @@ impl<T, O> SearchResult<T, O> {
         self.len() == 0
     }
 
+    #[inline]
     pub fn iter(&self) -> impl Iterator<Item = &T> {
         self.items.iter()
     }

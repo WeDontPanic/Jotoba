@@ -1,7 +1,7 @@
 use itertools::Itertools;
 use japanese::furigana::{self, SentencePartRef};
 use localization::{traits::Translatable, TranslationDict};
-use search::result::SearchResult;
+use search::executor::search_result::SearchResult;
 use types::jotoba::{
     kanji::Kanji,
     languages::Language,
