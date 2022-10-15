@@ -79,10 +79,6 @@ impl RelevanceEngine for NativeOrder {
 
         score *= self.text_sim(word);
 
-        if Self::exceeded_threshold(item, score) {
-            return 0.0;
-        }
-
         if let Some(ref o_ts) = self.orig_query_ts {
             if self.w_index.unwrap_or(0) == 0 {
                 let new = item.index_item().dice(o_ts);
@@ -92,6 +88,10 @@ impl RelevanceEngine for NativeOrder {
                     score *= 0.7;
                 }
             }
+        }
+
+        if Self::exceeded_threshold(item, score) {
+            return 0.0;
         }
 
         let kana = japanese::to_halfwidth(&word.reading.kana.reading).to_hiragana();
@@ -142,7 +142,7 @@ impl RelevanceEngine for NativeOrder {
 
     fn init(&mut self, init: engine::relevance::RelEngineInit) {
         //self.query_vec = build_ng_vec(&init.query);
-        self.query_vec = build_ng_vec(&japanese::to_halfwidth(&init.query));
+        self.query_vec = build_ng_vec(&japanese::to_halfwidth(&init.query).to_hiragana());
         self.query_hw = japanese::to_halfwidth(&init.query).to_hiragana();
     }
 }

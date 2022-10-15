@@ -1,7 +1,7 @@
 use japanese::JapaneseExt;
 use search::{
+    executor::search_result::SearchResult,
     query::{parser::QueryParser, Query, UserSettings},
-    result::SearchResult,
     word::{kanji::load_word_kanji_info, result::AddResData},
     SearchExecutor,
 };
