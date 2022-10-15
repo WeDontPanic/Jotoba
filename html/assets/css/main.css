@@ -161,6 +161,7 @@ body {
 body.index {
     display: grid;
     grid-template-rows: 1fr auto;
+    overflow-x: hidden;
 }
 
 .noselect,
