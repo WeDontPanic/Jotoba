@@ -94,6 +94,9 @@ fn correct_kanji_shown(query_str: &str) {
 
 #[test_case("musik", Language::German, "音楽")]
 #[test_case("音楽", Language::German, "音楽")]
+#[test_case("バラバラ", Language::German, "バラバラ")]
+#[test_case("ドイツ", Language::German, "ドイツ")]
+#[test_case("ドイツ人", Language::German, "ドイツ人")]
 #[test_case("to sleep", Language::English, "寝る")]
 #[test_case("買う", Language::English, "買う")]
 #[test_case("know", Language::German, "知る"; "Find in english too")]
