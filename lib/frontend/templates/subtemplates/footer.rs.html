@@ -10,6 +10,10 @@
     @if show_ref {
     <div class="ref-row">
         <div class="discordSvg" onclick='if (window.plausible) plausible("ref_opened", @{props: @{target: "Discord"@}@}); window.open("https://discord.gg/ysSkFFxmjr", "_blank");'></div>
+        <div class="donation">
+            <div class="donationSvg" onclick='if (window.plausible) plausible("ref_opened", @{props: @{target: "DonationIcon"@}@}); window.open("https://paypal.me/yukaru1", "_blank");'></div>
+            <span class="tooltip">Donations will always be shared between the developers!</span>
+        </div>
         <div class="githubSvg" onclick='if (window.plausible) plausible("ref_opened", @{props: @{target: "Github"@}@}); window.open("https://github.com/WeDontPanic/Jotoba", "_blank");'></div>
     </div>
     }
