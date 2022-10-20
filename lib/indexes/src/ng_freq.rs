@@ -33,6 +33,9 @@ impl NgFreqIndex {
     }
 
     pub fn insert(&mut self, gloss: &str) {
+        if gloss.trim().is_empty() {
+            return;
+        }
         let padded = self.get_padded(gloss);
         let n = Self::n_for(gloss, self.n);
         let ngrams = Wordgrams::new(&padded, n);
@@ -52,11 +55,20 @@ impl NgFreqIndex {
         self.build_custom_vec(inp, |freq, tot| (tot / freq).log2())
     }
 
+    #[inline]
+    pub fn vec_builder(&self) -> VecBuilder {
+        VecBuilder::new(&self.index)
+    }
+
     pub fn build_custom_vec<A, F>(&self, inp: A, inv_freq: F) -> SpVec32
     where
         A: AsRef<str>,
         F: Fn(f32, f32) -> f32,
     {
+        if inp.as_ref().trim().is_empty() {
+            return SpVec32::default();
+        }
+
         let inp = inp.as_ref();
         let padded = self.get_padded(inp);
         let n = Self::n_for(inp, self.n);
@@ -89,6 +101,10 @@ impl NgFreqIndex {
         A: AsRef<str>,
         F: Fn(f32, f32) -> f32,
     {
+        if inp.as_ref().trim().is_empty() {
+            return SpVec32::default();
+        }
+
         let inp = inp.as_ref();
         let padded = self.get_padded(inp);
         let n = Self::n_for(inp, self.n);
