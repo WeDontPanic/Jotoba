@@ -16,12 +16,34 @@ footer {
     gap: 2em;
 }
 
-.ref-row > .discordSvg, .ref-row > .githubSvg {
+.ref-row > .discordSvg, .ref-row > .githubSvg , .ref-row .donationSvg {
     background-color: var(--searchTextColor);
 }
 
-:root.dark .ref-row > .discordSvg,:root.dark .ref-row > .githubSvg {
+:root.dark .ref-row > .discordSvg, :root.dark .ref-row > .githubSvg, :root.dark .ref-row .donationSvg {
     background-color: var(--tagColor);
+}
+
+.ref-row > .donation {
+    position: relative;
+}
+
+.ref-row > .donation > .tooltip {
+    position: absolute;
+    visibility: hidden;
+    width: max-content;
+    max-width: 33vw;
+    text-align: center;
+    border-radius: 6px;
+    padding: 0.5em;
+    z-index: 1;
+    color: #fff;
+    background-color: var(--bgPrimaryColor);
+    box-shadow: 0 0 10px 8px var(--backgroundShadow);
+}
+
+.ref-row > .donation:hover .tooltip {
+    visibility: visible;
 }
 
 .footer-hr {

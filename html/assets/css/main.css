@@ -161,6 +161,7 @@ body {
 body.index {
     display: grid;
     grid-template-rows: 1fr auto;
+    overflow-x: hidden;
 }
 
 .noselect,
@@ -801,5 +802,15 @@ a:hover {
     background-color: var(--tagColor);
     mask: url("/assets/svg/ui/_github.svg") no-repeat center;
     -webkit-mask: url("/assets/svg/ui/_github.svg") no-repeat center;
+    cursor: pointer;
+}
+
+.donationSvg {
+    height: 35px;
+    width: 35px;
+    margin-top: -1px;
+    background-color: var(--tagColor);
+    mask: url("/assets/svg/ui/_donation.svg") no-repeat center;
+    -webkit-mask: url("/assets/svg/ui/_donation.svg") no-repeat center;
     cursor: pointer;
 }
