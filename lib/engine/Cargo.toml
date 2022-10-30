@@ -6,8 +6,6 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-indexes = { path = "../indexes" }
-resources = { path = "../resources" }
 types = { path = "../types", default-features = false, features = [
   "jotoba_intern",
 ] }
@@ -17,5 +15,4 @@ order_struct = { git = "https://github.com/JojiiOfficial/OrderStruct" }
 #index_framework = { path = "../../../index_framework"}
 index_framework = { git = "https://github.com/WeDontPanic/index_framework" }
 #vsm = { path = "../../../vsm" }
-vsm = { git = "https://github.com/JojiiOfficial/VSM" }
 sparse_vec = { git = "https://github.com/JojiiOfficial/SparseVec"}

@@ -10,7 +10,7 @@ edition = "2021"
 utils = { path = "../utils" }
 itertools = "0.10.5"
 wana_kana = { git = "https://github.com/WeDontPanic/wana_kana_rust" }
-cached = { version = "0.39.0", default-features = false, features = ["proc_macro"] }
+cached = { version = "0.40.0", default-features = false, features = ["proc_macro"] }
 
 [dev-dependencies]
 test-case = "2.2.2"

@@ -8,7 +8,7 @@ pub fn search(query: &str, language: Language) -> HashSet<char> {
         return HashSet::new();
     }
 
-    let mut res = search::radical::search(query);
+    let mut res = search::radical::meaning_search(query);
 
     if res.len() > 4 {
         return res;

@@ -10,10 +10,10 @@ types = { path = "../types" }
 autocompletion = { git = "https://github.com/WeDontPanic/AutoCompletionFramework" }
 #autocompletion = { path = "../../../AutoCompletionFramework" }
 bktree = { git = "https://github.com/JojiiOfficial/bktree" }
-serde = { version = "1.0.145", features = ["derive"] }
+serde = { version = "1.0.147", features = ["derive"] }
 byteorder = "1.4.3"
 bitflags = { git = "https://github.com/JojiiOfficial/BitFlags" }
-once_cell = { version = "1.15.0", default-features = false }
+once_cell = { version = "1.16.0", default-features = false }
 bincode = "1.3.3"
 log = "0.4.17"
 rayon = { version = "1.5.3", optional = true }
@@ -26,7 +26,6 @@ ngindex = { git = "https://github.com/JojiiOfficial/ngindex" }
 vsm = { git = "https://github.com/JojiiOfficial/VSM"}
 index_framework = { git = "https://github.com/WeDontPanic/index_framework"}
 ngram-tools = { git = "https://github.com/JojiiOfficial/ngram-tools"}
-test-case = "2.2.2"
 #sparse_vec = { path = "../../../sparse_vec"}
 sparse_vec = { git = "https://github.com/JojiiOfficial/SparseVec"}
 num-traits = "0.2.15"

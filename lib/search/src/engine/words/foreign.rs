@@ -13,7 +13,7 @@ use sparse_vec::{SpVec32, VecExt};
 use types::jotoba::{languages::Language, words::Word};
 use vsm::{dict_term::DictTerm, doc_vec::DocVector};
 
-pub struct Engine {}
+pub struct Engine;
 
 const FORMAT_REGEX: Lazy<Regex> = Lazy::new(|| Regex::new("^to ").unwrap());
 
@@ -32,13 +32,14 @@ impl engine::Engine<'static> for Engine {
     type Query = SpVec32;
 
     fn make_query<S: AsRef<str>>(inp: S, lang: Option<Language>) -> Option<Self::Query> {
+        let query_str = format_word(inp.as_ref().trim());
         let dict = Self::get_index(lang).dict();
 
-        let inp = inp.as_ref().trim().to_lowercase();
-        let inp = FORMAT_REGEX.replace_all(&inp, "").to_string();
+        let inp = FORMAT_REGEX.replace_all(&query_str, "").to_string();
 
         let add_term_iter = inp
             .split(' ')
+            .map(|i| i.trim())
             .filter_map(|term| dict.get_id(term))
             .map(|i| (i, 0.001));
 
@@ -79,4 +80,13 @@ impl engine::Engine<'static> for Engine {
         let term_iter = query.as_vec().iter().map(|i| i.0);
         Self::retrieve(lang).by_term_ids(term_iter)
     }
+}
+
+#[inline]
+fn format_word(inp: &str) -> String {
+    let mut out = String::from(inp);
+    for i in ".,[]() \t\"'\\/-;:・".chars() {
+        out = out.replace(i, " ");
+    }
+    out.to_lowercase()
 }

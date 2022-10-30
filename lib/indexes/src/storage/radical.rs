@@ -14,8 +14,9 @@ impl RadicalStore {
         Self { rad_index }
     }
 
+    /// Returns the meaning index for radicals
     #[inline]
-    pub fn rad_index(&self) -> &RadicalIndex {
+    pub fn meaning_index(&self) -> &RadicalIndex {
         &self.rad_index
     }
 
