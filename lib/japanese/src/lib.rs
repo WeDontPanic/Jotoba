@@ -1,4 +1,5 @@
 pub mod compress;
+pub mod counter;
 pub mod furigana;
 pub mod guessing;
 pub mod radicals;
@@ -75,6 +76,8 @@ pub trait JapaneseExt {
     fn is_particle(&self) -> bool;
 
     fn starts_with_ct(&self, ct: CharType) -> bool;
+
+    fn is_counter(&self) -> bool;
 }
 
 impl JapaneseExt for char {
@@ -225,6 +228,11 @@ impl JapaneseExt for char {
     #[inline]
     fn starts_with_ct(&self, ct: CharType) -> bool {
         self.is_of_type(ct)
+    }
+
+    #[inline]
+    fn is_counter(&self) -> bool {
+        counter::is_counter(&self.to_string())
     }
 }
 
@@ -396,6 +404,11 @@ impl JapaneseExt for str {
             Some(s) => s.is_of_type(ct),
             None => false,
         }
+    }
+
+    #[inline]
+    fn is_counter(&self) -> bool {
+        counter::is_counter(self)
     }
 }
 
