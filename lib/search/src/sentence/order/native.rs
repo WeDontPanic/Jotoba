@@ -37,7 +37,7 @@ impl RelevanceEngine for NativeOrder {
 }
 
 /// Calculates a similar value to the cosine similarity between vec_a and vec_b but
-/// gives the length more weight than vec_b's length.
+/// gives the length of vec_a more weight than vec_b's length.
 /// This prevents longer sentences being less relevant than short sentences, even if
 /// the longer sentences contains all terms of the query when the short sentence does not.
 #[inline]
