@@ -44,7 +44,13 @@ impl engine::Engine<'static> for Engine {
                     terms.extend(s.iter().map(|i| i.get_normalized()));
                 }
                 ParseResult::InflectedWord(w) => {
-                    terms.insert(w.get_normalized());
+                    let infl = w.get_inflected();
+                    //println!("inflected: {infl:?}: {:?}", dict.get_id(&infl));
+                    if dict.get_id(&infl).is_some() {
+                        terms.insert(infl);
+                    } else {
+                        terms.insert(w.get_normalized());
+                    }
                 }
                 ParseResult::None => (),
             };
@@ -53,8 +59,9 @@ impl engine::Engine<'static> for Engine {
         //terms.retain(|w| !index.is_stopword_cust(&w, 10.0).unwrap_or(true));
 
         let terms = terms.into_iter().map(|i| format_query(&i)).filter_map(|i| {
-            let id = dict.get_id(&i)?;
-            Some((id, 1.0))
+            let id = dict.get_id(&i);
+            //let term = dict.get_term(id).unwrap();
+            Some((id?, 1.0))
         });
 
         let vec = SpVec32::create_new_raw(terms);

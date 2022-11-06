@@ -64,4 +64,10 @@ impl<'a> Searchable for Search<'a> {
     fn filter(&self, item: &Self::Item) -> bool {
         !producer::filter::filter_sentence(self.query, item)
     }
+
+    #[inline]
+    fn max_top_dist(&self) -> Option<f32> {
+        Some(0.9)
+        //None
+    }
 }
