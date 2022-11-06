@@ -1,13 +1,22 @@
 use types::jotoba::words::inflection::Inflection;
 
-#[derive(Default, Clone)]
+use crate::executor::out_builder::OutputAddable;
+
+#[derive(Default, Clone, Debug)]
 pub struct AddResData {
     pub sentence: Option<SentenceInfo>,
     pub inflection: Option<InflectionInformation>,
     pub raw_query: String,
 }
 
-#[derive(Default, Clone)]
+impl OutputAddable for AddResData {
+    #[inline]
+    fn is_empty(&self) -> bool {
+        self.sentence.is_none() && self.inflection.is_none()
+    }
+}
+
+#[derive(Default, Clone, Debug)]
 pub struct SentenceInfo {
     pub parts: Option<sentence_reader::Sentence>,
     pub index: usize,

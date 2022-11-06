@@ -10,7 +10,7 @@ pub struct OutputBuilder<'a, I, OA> {
     pub(crate) max: f32,
 }
 
-impl<'a, I: Eq + Hash + Clone, OA: Default> OutputBuilder<'a, I, OA> {
+impl<'a, I: Eq + Hash + Clone, OA: OutputAddable> OutputBuilder<'a, I, OA> {
     #[inline]
     pub(crate) fn new<F: Fn(&I) -> bool + 'a>(filter: F, len: usize) -> Self {
         Self {
@@ -52,7 +52,7 @@ impl<'a, I: Eq + Hash + Clone, OA: Default> OutputBuilder<'a, I, OA> {
     }
 }
 
-impl<'a, I: Eq + Hash + Clone, OA: Default> Pushable for OutputBuilder<'a, I, OA> {
+impl<'a, I: Eq + Hash + Clone, OA: OutputAddable> Pushable for OutputBuilder<'a, I, OA> {
     type Item = RelItem<I>;
 
     /// Pushes an element into the output and  returns `true` if it was not filtered out
@@ -61,3 +61,12 @@ impl<'a, I: Eq + Hash + Clone, OA: Default> Pushable for OutputBuilder<'a, I, OA
         self.push(i)
     }
 }
+
+pub trait OutputAddable: Default {
+    #[inline]
+    fn is_empty(&self) -> bool {
+        false
+    }
+}
+
+impl OutputAddable for () {}

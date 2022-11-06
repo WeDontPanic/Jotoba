@@ -61,7 +61,7 @@ pub enum Site<'a> {
 }
 
 /// Search result data. Required by individual templates to render the result items
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct SearchResult<'a> {
     pub query: &'a Query,
     pub result: ResultData,
@@ -69,7 +69,7 @@ pub struct SearchResult<'a> {
 }
 
 /// The particular search result items
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub enum ResultData {
     Word(SearchResult2<Word, search::word::result::AddResData>),
     KanjiInfo(Vec<KanjiItem>),
@@ -252,7 +252,7 @@ impl ResultData {
     #[inline]
     pub fn is_empty(&self) -> bool {
         match self {
-            ResultData::Word(w) => w.items.is_empty(),
+            ResultData::Word(w) => w.items.is_empty() && w.sentence.is_none(),
             ResultData::KanjiInfo(k) => k.is_empty(),
             ResultData::Name(n) => n.is_empty(),
             ResultData::Sentence(s) => s.items.is_empty(),

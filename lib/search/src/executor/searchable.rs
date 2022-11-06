@@ -1,11 +1,14 @@
-use super::{out_builder::OutputBuilder, producer::Producer};
+use super::{
+    out_builder::{OutputAddable, OutputBuilder},
+    producer::Producer,
+};
 use crate::query::Query;
 use std::{fmt::Debug, hash::Hash};
 
 pub trait Searchable {
     type Item: Clone + Eq + Hash + Debug;
     type OutItem;
-    type ResAdd: Default;
+    type ResAdd: OutputAddable;
 
     fn get_producer<'s>(&'s self) -> &Vec<Box<dyn Producer<Target = Self> + 's>>;
 

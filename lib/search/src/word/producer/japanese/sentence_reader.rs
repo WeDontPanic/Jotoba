@@ -144,8 +144,9 @@ impl<'a> Producer for SReaderProducer<'a> {
             return false;
         }
 
+        let term_in_db = word_exists(&self.query.query_str);
         // For sentences only run if the query is not a term in the db
-        !word_exists(&self.query.query_str)
+        !term_in_db
     }
 
     fn estimate_to(&self, out: &mut FilteredMaxCounter<<Self::Target as Searchable>::Item>) {

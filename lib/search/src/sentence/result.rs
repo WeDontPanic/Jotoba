@@ -1,8 +1,10 @@
 use japanese::{furigana, furigana::SentencePartRef};
 use types::jotoba::languages::Language;
 
+use crate::executor::out_builder::OutputAddable;
+
 /// Additional result data for a sentence search
-#[derive(Clone, Copy, Default)]
+#[derive(Clone, Copy, Default, Debug)]
 pub struct ResData {
     pub hidden: bool,
 }
@@ -13,8 +15,10 @@ impl ResData {
     }
 }
 
+impl OutputAddable for ResData {}
+
 /// A displayable sentence
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct Sentence {
     pub id: u32,
     pub content: &'static str,

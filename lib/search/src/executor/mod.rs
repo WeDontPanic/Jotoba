@@ -12,6 +12,8 @@ use search_result::SearchResult;
 use searchable::Searchable;
 use types::jotoba::search::guess::{Guess, GuessType};
 
+use crate::executor::out_builder::OutputAddable;
+
 /// Max items to count for estimation
 pub const MAX_ESTIMATE: usize = 100;
 
@@ -50,14 +52,13 @@ impl<S: Searchable> SearchExecutor<S> {
 
         self.search.mod_output(&mut out);
 
-        if out.is_empty() {
+        if out.is_empty() && out.output_add.is_empty() {
             return SearchResult::default();
         }
 
         // Get total len of results
         let len;
         if let Some(max_top_dist) = self.search.max_top_dist() {
-            println!("max: {}", out.max);
             len = out
                 .rel_list
                 .iter()

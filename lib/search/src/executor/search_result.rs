@@ -1,7 +1,7 @@
 use std::ops::Deref;
 
 /// The final result of a search
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct SearchResult<T, O = ()> {
     pub items: Vec<T>,
     pub total: usize,

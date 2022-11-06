@@ -104,10 +104,12 @@ pub async fn find_direct_word(id: &str, settings: &UserSettings) -> Result<Resul
 
     let word = results.remove(0);
 
-    Ok(ResultData::Word(search::executor::search_result::SearchResult::<
-        Word,
-        AddResData,
-    >::with_other_default(vec![word], 1)))
+    Ok(ResultData::Word(
+        search::executor::search_result::SearchResult::<Word, AddResData>::with_other_default(
+            vec![word],
+            1,
+        ),
+    ))
     /*
     Ok(ResultData::Word(WordResult {
         items,
