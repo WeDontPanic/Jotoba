@@ -26,7 +26,7 @@ wana_kana = "2.1.0"
 #jpeudex = { path = "../../../jpeudex"}
 jpeudex = { git = "https://github.com/JojiiOfficial/jpeudex" }
 bincode = "1.3.3"
-regex = { version = "1.6.0", features = ["std"], default-features = false }
+regex = { version = "1.7.0", features = ["std"], default-features = false }
 rayon = "1.5.3"
 #autocompletion = { path = "../../../AutoCompletionFramework" }
 autocompletion = { git = "https://github.com/WeDontPanic/AutoCompletionFramework" }

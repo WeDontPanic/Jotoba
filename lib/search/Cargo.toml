@@ -21,7 +21,7 @@ types = { path = "../types", default-features = false, features = [
 log = "0.4.17"
 itertools = "0.10.5"
 once_cell = { version = "1.16.0", default-features = false }
-regex = { version = "1.6.0", features = ["std"], default-features = false }
+regex = { version = "1.7.0", features = ["std"], default-features = false }
 percent-encoding = "2.2.0"
 rayon = "1.5.3"
 priority_container = { git = "https://github.com/JojiiOfficial/PrioContainer/" }

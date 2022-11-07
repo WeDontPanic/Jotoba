@@ -21,7 +21,7 @@ indexes = { path = "../lib/indexes", features = ["parallel"] }
 actix-files = "0.6.2"
 actix-web = "4.2.1"
 argparse = "0.2.2"
-env_logger = "0.9.1"
+env_logger = "0.9.3"
 log = "0.4.17"
 sentry = { version = "0.27.0", optional = true }
 rayon = "1.5.3"
