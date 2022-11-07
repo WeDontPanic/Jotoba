@@ -49,6 +49,8 @@ pub struct Kanji {
     pub kun_compounds: Vec<CompoundWord>,
     #[serde(skip_serializing_if = "Vec::is_empty")]
     pub on_compounds: Vec<CompoundWord>,
+    #[serde(skip_serializing_if = "Vec::is_empty")]
+    pub vietnamese: Vec<String>,
     pub radical: DetailedRadical,
 }
 
@@ -118,6 +120,7 @@ impl From<crate::jotoba::kanji::Kanji> for Kanji {
             meanings: k.meanings,
             parts: k.parts,
             radical: k.radical,
+            vietnamese: k.vietnamese,
             kun_compounds: vec![],
             on_compounds: vec![],
         }
