@@ -1492,6 +1492,7 @@ dependencies = [
  "rayon",
  "serde",
  "sparse_vec",
+ "test-case",
  "types",
  "vsm",
 ]

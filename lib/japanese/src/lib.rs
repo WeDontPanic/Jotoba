@@ -199,12 +199,26 @@ impl JapaneseExt for char {
 
     #[inline]
     fn is_small_katakana(&self) -> bool {
-        *self == '\u{30E3}' || *self == '\u{30E5}' || *self == '\u{30E7}'
+        *self == '\u{30E3}'
+            || *self == '\u{30E5}'
+            || *self == '\u{30E7}'
+            || *self == '\u{30A1}'
+            || *self == '\u{30A3}'
+            || *self == '\u{30A5}'
+            || *self == '\u{30A7}'
+            || *self == '\u{30A9}'
     }
 
     #[inline]
     fn is_small_hiragana(&self) -> bool {
-        *self == '\u{3083}' || *self == '\u{3085}' || *self == '\u{3087}'
+        *self == '\u{3083}'
+            || *self == '\u{3085}'
+            || *self == '\u{3087}'
+            || *self == '\u{3041}'
+            || *self == '\u{3043}'
+            || *self == '\u{3045}'
+            || *self == '\u{3047}'
+            || *self == '\u{3049}'
     }
 
     #[inline]
@@ -377,6 +391,7 @@ impl JapaneseExt for str {
     fn is_small_katakana(&self) -> bool {
         self.chars().all(|s| s.is_small_katakana())
     }
+
     #[inline]
     fn is_small_hiragana(&self) -> bool {
         self.chars().all(|s| s.is_small_hiragana())

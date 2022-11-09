@@ -147,6 +147,13 @@ mod test {
     }
 
     #[test]
+    fn test_split_katakana_small() {
+        let inp = "ファイナル";
+        let out = split_kana(inp).collect::<Vec<_>>();
+        assert_eq!(out, vec!["ファ", "イ", "ナ", "ル"]);
+    }
+
+    #[test]
     fn test_split_kana_small() {
         let inp = "きょうかしょ";
         let out = split_kana(inp).collect::<Vec<_>>();

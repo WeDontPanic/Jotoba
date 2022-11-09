@@ -30,6 +30,9 @@ ngram-tools = { git = "https://github.com/JojiiOfficial/ngram-tools"}
 sparse_vec = { git = "https://github.com/JojiiOfficial/SparseVec"}
 num-traits = "0.2.15"
 
+[dev-dependencies]
+test-case = '*'
+
 [features]
 default = []
 parallel = ["rayon"]
