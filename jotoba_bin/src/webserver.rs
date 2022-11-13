@@ -124,6 +124,10 @@ pub(super) async fn start(options: Options) -> std::io::Result<()> {
                     .service(
                         actixweb::scope("app")
                             .route(
+                                "k_comps",
+                                actixweb::post().to(api::app::search::kanji::reading_compounds),
+                            )
+                            .route(
                                 "kanji",
                                 actixweb::post().to(api::app::search::kanji::search),
                             )

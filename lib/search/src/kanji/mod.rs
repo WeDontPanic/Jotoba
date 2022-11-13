@@ -28,6 +28,8 @@ pub fn search(query: &Query) -> Result<KanjiResult, Error> {
         QueryLang::Foreign | QueryLang::Undetected => by_meaning(&query.query_str),
     };
 
+    // TODO: don't use this items in v2 since compound words don't need to be loaded
+    // here anymore
     let mut items = to_item(res, &query);
 
     if !query_str.is_japanese() {

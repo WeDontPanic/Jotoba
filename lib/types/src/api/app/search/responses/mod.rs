@@ -1,11 +1,12 @@
-use serde::Serialize;
-
-use crate::jotoba::{pagination::page::Page, search::help::SearchHelp};
-
+pub mod k_compounds;
 pub mod kanji;
 pub mod names;
 pub mod sentences;
 pub mod words;
+
+use serde::Serialize;
+
+use crate::jotoba::{pagination::page::Page, search::help::SearchHelp};
 
 #[derive(Serialize)]
 pub struct Response<T: Serialize> {

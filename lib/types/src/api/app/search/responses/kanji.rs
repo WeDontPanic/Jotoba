@@ -4,11 +4,12 @@ use crate::jotoba::kanji::radical::DetailedRadical;
 
 /// Kanji API response. Contains all kanji
 #[derive(Clone, Debug, Serialize)]
-pub struct Response {
+pub struct KanjiResponse {
     kanji: Vec<Kanji>,
 }
 
-impl Response {
+impl KanjiResponse {
+    #[inline]
     pub fn new(kanji: Vec<Kanji>) -> Self {
         Self { kanji }
     }
@@ -46,58 +47,8 @@ pub struct Kanji {
     #[serde(skip_serializing_if = "Vec::is_empty")]
     pub parts: Vec<char>,
     #[serde(skip_serializing_if = "Vec::is_empty")]
-    pub kun_compounds: Vec<CompoundWord>,
-    #[serde(skip_serializing_if = "Vec::is_empty")]
-    pub on_compounds: Vec<CompoundWord>,
-    #[serde(skip_serializing_if = "Vec::is_empty")]
     pub vietnamese: Vec<String>,
     pub radical: DetailedRadical,
-}
-
-impl Kanji {
-    /// Set the kanji's kun compounds.
-    pub fn set_kun_compounds(&mut self, kun_compounds: Vec<CompoundWord>) {
-        self.kun_compounds = kun_compounds;
-    }
-
-    /// Set the kanji's on compounds.
-    pub fn set_on_compounds(&mut self, on_compounds: Vec<CompoundWord>) {
-        self.on_compounds = on_compounds;
-    }
-}
-
-/// A word used in kanji compounds
-#[derive(Clone, Debug, Serialize, Deserialize)]
-pub struct CompoundWord {
-    pub jp: String,
-    pub kana: String,
-    pub translations: Vec<String>,
-}
-
-impl CompoundWord {
-    /// Create a new CompoundWord
-    pub fn new(jp: String, kana: String, translations: Vec<String>) -> Self {
-        Self {
-            jp,
-            kana,
-            translations,
-        }
-    }
-
-    /// Convertes a Word to a CompoundWord. Takes ALL senses and ALL glosses. If you only want
-    /// some of the glosses, filter them first
-    pub fn from_word(word: &crate::jotoba::words::Word) -> Self {
-        let jp = word.get_reading().reading.clone();
-        let kana = word.reading.kana.reading.clone();
-        let translations = word
-            .senses
-            .iter()
-            .map(|i| i.glosses.clone())
-            .flatten()
-            .map(|i| i.gloss)
-            .collect::<Vec<String>>();
-        Self::new(jp, kana, translations)
-    }
 }
 
 impl From<crate::jotoba::kanji::Kanji> for Kanji {
@@ -121,8 +72,6 @@ impl From<crate::jotoba::kanji::Kanji> for Kanji {
             parts: k.parts,
             radical: k.radical,
             vietnamese: k.vietnamese,
-            kun_compounds: vec![],
-            on_compounds: vec![],
         }
     }
 }
