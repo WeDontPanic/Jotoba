@@ -48,12 +48,14 @@ pub struct Kanji {
     pub parts: Vec<char>,
     #[serde(skip_serializing_if = "Vec::is_empty")]
     pub vietnamese: Vec<String>,
+    pub has_compounds: bool,
     pub radical: DetailedRadical,
 }
 
 impl From<crate::jotoba::kanji::Kanji> for Kanji {
     #[inline]
     fn from(k: crate::jotoba::kanji::Kanji) -> Self {
+        let has_compounds = !k.on_dicts.is_empty() || !k.kun_dicts.is_empty();
         Self {
             literal: k.literal,
             stroke_count: k.stroke_count,
@@ -72,6 +74,7 @@ impl From<crate::jotoba::kanji::Kanji> for Kanji {
             parts: k.parts,
             radical: k.radical,
             vietnamese: k.vietnamese,
+            has_compounds,
         }
     }
 }
