@@ -43,7 +43,7 @@ pub async fn search(payload: Json<SearchPayload>) -> Result<Json<SearchResp>> {
 
     let len = result.total_len as u32;
     let kanji = kanji::KanjiResponse::new(items);
-    let page = new_page(&payload, kanji, len, payload.settings.kanji_page_size);
+    let page = new_page(&payload, kanji, len, payload.settings.page_size);
     Ok(Json(super::new_response(page, SearchTarget::Kanji, &query)))
 }
 
