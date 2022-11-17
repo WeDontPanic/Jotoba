@@ -79,7 +79,6 @@ pub(crate) fn convert_user_settings(
         show_english: settings.show_english,
         english_on_top: true,
         page_size: settings.page_size,
-        kanji_page_size: settings.kanji_page_size,
         show_example_sentences: settings.show_example_sentences,
         sentence_furigana: settings.sentence_furigana,
         ..Default::default()

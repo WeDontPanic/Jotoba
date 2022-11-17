@@ -38,10 +38,12 @@ pub fn search(query: &Query) -> Result<KanjiResult, Error> {
 
     let total_len = items.len();
 
+    let page_size = query.settings.page_size as usize;
+
     let items = items
         .into_iter()
-        .skip(query.page_offset(query.settings.kanji_page_size as usize))
-        .take(query.settings.kanji_page_size as usize)
+        .skip(query.page_offset(page_size))
+        .take(page_size)
         .collect::<Vec<_>>();
 
     Ok(KanjiResult { items, total_len })

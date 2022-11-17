@@ -32,11 +32,6 @@ pub(super) fn parse(request: &HttpRequest) -> UserSettings {
         .and_then(|i| i.value().parse().ok())
         .unwrap_or_else(|| UserSettings::default().page_size);
 
-    let items_per_kanji_page = request
-        .cookie("kanji_page_size")
-        .and_then(|i| i.value().parse().ok())
-        .unwrap_or_else(|| UserSettings::default().kanji_page_size);
-
     let example_sentences_enabled = request
         .cookie("show_sentences")
         .and_then(|i| Some(i.value() == "true"))
@@ -53,7 +48,6 @@ pub(super) fn parse(request: &HttpRequest) -> UserSettings {
         english_on_top,
         page_lang,
         page_size: items_per_page,
-        kanji_page_size: items_per_kanji_page,
         show_example_sentences: example_sentences_enabled,
         sentence_furigana,
         ..Default::default()

@@ -32,12 +32,13 @@ fn genki_search(query: &Query, genki_lesson: u8) -> Result<KanjiResult, Error> {
 
     let total_len = kanji.len();
 
-    let page_offset = query.page_offset(query.settings.kanji_page_size as usize);
+    let page_size = query.settings.page_size as usize;
+    let page_offset = query.page_offset(page_size);
 
     let kanji = kanji
         .into_iter()
         .skip(page_offset)
-        .take(query.settings.kanji_page_size as usize)
+        .take(page_size)
         .collect::<Vec<_>>();
 
     let items = super::to_item(kanji, query);
@@ -55,12 +56,14 @@ fn jlpt_search(query: &Query, jlpt: u8) -> Result<KanjiResult, Error> {
 
     let total_len = jlpt_kanji.len();
 
-    let page_offset = query.page_offset(query.settings.kanji_page_size as usize);
+    let page_size = query.settings.page_size as usize;
+
+    let page_offset = query.page_offset(page_size);
 
     let jlpt_kanji = jlpt_kanji
         .into_iter()
         .skip(page_offset)
-        .take(query.settings.kanji_page_size as usize)
+        .take(page_size)
         .filter_map(|literal| kanji_retrieve.by_literal(*literal))
         .cloned()
         .collect::<Vec<_>>();

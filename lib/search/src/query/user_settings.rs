@@ -9,7 +9,6 @@ pub struct UserSettings {
     pub show_english: bool,
     pub english_on_top: bool,
     pub page_size: u32,
-    pub kanji_page_size: u32,
     pub show_example_sentences: bool,
     pub sentence_furigana: bool,
 }
@@ -38,7 +37,6 @@ impl Default for UserSettings {
             page_lang: localization::language::Language::default(),
             english_on_top: false,
             page_size: 10,
-            kanji_page_size: 4,
             show_example_sentences: true,
             sentence_furigana: true,
         }
