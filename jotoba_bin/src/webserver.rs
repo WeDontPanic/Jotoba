@@ -3,10 +3,13 @@ use indexes::storage::suggestions;
 use localization::TranslationDict;
 
 use actix_web::{
-    http::header::{ACCESS_CONTROL_ALLOW_HEADERS, ACCESS_CONTROL_ALLOW_ORIGIN, CACHE_CONTROL},
+    http::{
+        header::{ACCESS_CONTROL_ALLOW_HEADERS, ACCESS_CONTROL_ALLOW_ORIGIN, CACHE_CONTROL},
+        StatusCode,
+    },
     middleware::{self, Compat, Compress},
     web::{self as actixweb, Data},
-    App, HttpRequest, HttpServer,
+    App, HttpRequest, HttpResponse, HttpResponseBuilder, HttpServer,
 };
 use config::Config;
 use log::{debug, warn};
@@ -64,10 +67,16 @@ pub(super) async fn start(options: Options) -> std::io::Result<()> {
                     .wrap(Compat::new(middleware::Compress::default()))
                     .route(actixweb::get().to(frontend::index::index)),
             )
+            .service(actixweb::resource("/robots.txt").route(actixweb::get().to(robotstxt)))
             .service(
                 actixweb::resource("/docs.html")
                     .wrap(Compat::new(middleware::Compress::default()))
                     .route(actixweb::get().to(docs)),
+            )
+            .service(
+                actixweb::resource("/sitemap.xml")
+                    .wrap(Compat::new(middleware::Compress::default()))
+                    .route(actixweb::get().to(sitemap)),
             )
             .service(
                 actixweb::resource("/privacy")
@@ -254,6 +263,18 @@ async fn service_worker(_req: HttpRequest) -> actix_web::Result<NamedFile> {
 
 async fn privacy(_req: HttpRequest) -> actix_web::Result<NamedFile> {
     Ok(NamedFile::open("html/privacypolicy.html")?)
+}
+
+async fn sitemap(_req: HttpRequest) -> actix_web::Result<NamedFile> {
+    Ok(NamedFile::open("html/sitemap.xml")?)
+}
+
+async fn robotstxt(_req: HttpRequest) -> HttpResponse {
+    HttpResponseBuilder::new(StatusCode::OK).body(
+        r#"User-Agent: *
+Allow: /
+Sitemap: https://jotoba.com/sitemap.xml"#,
+    )
 }
 
 async fn docs(_req: HttpRequest) -> actix_web::Result<NamedFile> {

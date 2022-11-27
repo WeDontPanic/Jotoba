@@ -1,6 +1,7 @@
 /html/assets/js/lib/loadAnalytics.js
 /html/assets/svg
 /html/audio
+/html/sitemap.xml
 /html/*.html
 !/html/docs.html
 /target
