@@ -6,7 +6,7 @@ const kanjiRegEx = '([一-龯|々|𥝱|𩺊])';
 const hashtags = [
   "#adverb", "#auxilary", "#conjunction", "#noun", "#prefix", "#suffix", "#particle", "#sfx",
   "#verb", "#adjective", "#counter", "#expression", "#interjection", "#pronoun", "#numeric", "#transitive", "#intransitive",
-  "#unclassified", "#word", "#sentence", "#name", "#kanji", "#abbreviation", "#N5", "#N4", "#N3", "#N2", "#N1", "#JLPT5", "#JLPT4", "#JLPT3", "#JLPT2", "#JLPT1", "#hidden", "#Irregular-Ichidan",
+  "#unclassified", "#word", "#sentence", "#name", "#kanji", "#abbreviation","#katakana", "#N5", "#N4", "#N3", "#N2", "#N1", "#JLPT5", "#JLPT4", "#JLPT3", "#JLPT2", "#JLPT1", "#hidden", "#Irregular-Ichidan",
   "#Abbreviation", "#Archaism", "#ChildrensLanguage", "#Colloquialism", "#Dated", "#Derogatory", "#Familiarlanguage",
   "#Femaleterm", "#Honorific", "#Humblelanguage", "#Idomatic", "#Legend", "#Formal", "#MangaSlang", "#Maleterm", "#InternetSlang",
   "#Obsolete", "#Obscure", "#Onomatopoeic", "#PersonName", "#Placename", "#Poeticalterm", "#PoliteLanguage", "#Proverb", "#Quotation", "#Rare", "#Religion", "#Sensitive",
