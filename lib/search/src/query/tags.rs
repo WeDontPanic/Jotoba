@@ -12,6 +12,7 @@ pub enum Tag {
     Misc(Misc),
     Jlpt(u8),
     GenkiLesson(u8),
+    Katakana,
     SentenceTag(sentences::Tag),
     IrregularIruEru,
 
@@ -139,5 +140,13 @@ impl Tag {
         } else {
             None
         }
+    }
+
+    /// Returns `true` if the tag is [`Katakana`].
+    ///
+    /// [`Katakana`]: Tag::Katakana
+    #[must_use]
+    pub fn is_katakana(&self) -> bool {
+        matches!(self, Self::Katakana)
     }
 }

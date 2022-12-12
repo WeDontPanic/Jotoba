@@ -23,4 +23,10 @@ impl<'a> NameRetrieve<'a> {
     pub fn count(&self) -> usize {
         self.storage.names.len()
     }
+
+    /// Returns an iterator over all names
+    #[inline]
+    pub fn iter(&self) -> impl Iterator<Item = &'a Name> {
+        self.storage.names.iter().map(|i| i.1)
+    }
 }

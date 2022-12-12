@@ -20,14 +20,14 @@ actix-web = "4.2.1"
 actix-multipart = "0.4.0"
 itertools = "0.10.5"
 once_cell = { version = "1.16.0", default-features = false }
-serde = "1.0.147"
+serde = "1.0.150"
 log = "0.4.17"
 wana_kana = "2.1.0"
 #jpeudex = { path = "../../../jpeudex"}
 jpeudex = { git = "https://github.com/JojiiOfficial/jpeudex" }
 bincode = "1.3.3"
 regex = { version = "1.7.0", features = ["std"], default-features = false }
-rayon = "1.5.3"
+rayon = "1.6.1"
 #autocompletion = { path = "../../../AutoCompletionFramework" }
 autocompletion = { git = "https://github.com/WeDontPanic/AutoCompletionFramework" }
 intmap = { git = "https://github.com/JojiiOfficial/rust-intmap" }
@@ -39,7 +39,7 @@ order_struct = { git = "https://github.com/JojiiOfficial/OrderStruct" }
 ids_parser = { git = "https://github.com/JojiiOfficial/IDS-Parser" }
 #index_framework = { path = "../../../index_framework" }
 index_framework = { git = "https://github.com/WeDontPanic/index_framework" }
-serde_json = "1.0.87"
+serde_json = "1.0.89"
 
 [features]
 default = []

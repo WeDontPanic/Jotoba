@@ -16,6 +16,7 @@ pub struct WordStorage {
     pub irregular_ichidan: Vec<u32>,
     pub pos_map: HashMap<u8, Vec<u32>>,
     pub misc_map: HashMap<u8, Vec<u32>>,
+    pub katakana_words: Vec<u32>,
 
     // Feature information
     has_accents: bool,
@@ -36,7 +37,7 @@ impl WordStorage {
 
     /// Inserts words into the WordStorage
     pub fn insert_words(&mut self, words: Vec<Word>) {
-        self.clear();
+        self.clear_words();
 
         for word in words {
             if let Some(jlpt) = word.get_jlpt_lvl() {
@@ -74,6 +75,10 @@ impl WordStorage {
             out.push(Feature::WordIrregularIchidan);
         }
 
+        if !self.katakana_words.is_empty() {
+            out.push(Feature::WordKatakana);
+        }
+
         if self.has_sentence_mapping {
             out.push(Feature::SentenceAvailable);
         }
@@ -89,7 +94,7 @@ impl WordStorage {
         out
     }
 
-    fn clear(&mut self) {
+    fn clear_words(&mut self) {
         self.words.clear();
         self.jlpt_word_map.clear();
         self.has_accents = false;

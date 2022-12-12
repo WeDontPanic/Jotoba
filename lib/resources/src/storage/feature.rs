@@ -22,6 +22,7 @@ pub enum Feature {
 
     // Words
     WordIrregularIchidan,
+    WordKatakana,
     WordPitch,
     SentenceAvailable,
     WordJlpt,

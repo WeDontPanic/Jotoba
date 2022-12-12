@@ -64,6 +64,7 @@ pub fn parse(s: &str) -> Vec<Tag> {
             "irrichidan" | "irregularichidan" | "irregular-ichidan" => {
                 tags.push(Tag::IrregularIruEru);
             }
+            "katakana" => tags.push(Tag::Katakana),
             _ => (),
         }
     }

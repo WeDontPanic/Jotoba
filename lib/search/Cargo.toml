@@ -23,7 +23,7 @@ itertools = "0.10.5"
 once_cell = { version = "1.16.0", default-features = false }
 regex = { version = "1.7.0", features = ["std"], default-features = false }
 percent-encoding = "2.2.0"
-rayon = "1.5.3"
+rayon = "1.6.1"
 priority_container = { git = "https://github.com/JojiiOfficial/PrioContainer/" }
 #priority_container = { path = "../../../priority_container" }
 order_struct = { git = "https://github.com/JojiiOfficial/OrderStruct" }
@@ -36,7 +36,7 @@ index_framework = { git = "https://github.com/WeDontPanic/index_framework" }
 #vsm = { path = "../../../vsm"}
 vsm = { git = "https://github.com/JojiiOfficial/VSM"}
 sparse_vec = { git = "https://github.com/JojiiOfficial/SparseVec"}
-serde = { version = "1.0.147", features = ["derive"] }
+serde = { version = "1.0.150", features = ["derive"] }
 bincode = "1.3.3"
 #ngram-tools = { path = "../../../ngram-tools"}
 ngram-tools = { git = "https://github.com/JojiiOfficial/ngram-tools"}

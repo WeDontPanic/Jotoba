@@ -49,6 +49,7 @@ impl<'a> TagProducer<'a> {
             Tag::PartOfSpeech(pos) => self.push_iter(words.by_pos_simple(*pos), out),
             Tag::Misc(m) => self.push_iter(words.by_misc(*m), out),
             Tag::Jlpt(jlpt) => self.push_iter(words.by_jlpt(*jlpt), out),
+            Tag::Katakana => self.push_iter(words.katakana(), out),
             Tag::IrregularIruEru => self.push_iter(words.irregular_ichidan(), out),
             _ => (),
         }
@@ -80,6 +81,7 @@ impl<'a> TagProducer<'a> {
             Tag::Misc(m) => w_retr.misc_len(m),
             Tag::Jlpt(j) => w_retr.jlpt_len(*j),
             Tag::IrregularIruEru => Some(w_retr.irregular_ichidan_len()),
+            Tag::Katakana => Some(w_retr.katakana_len()),
             _ => None,
         }
     }

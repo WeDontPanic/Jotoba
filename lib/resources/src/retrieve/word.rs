@@ -24,6 +24,15 @@ impl<'a> WordRetrieve<'a> {
         self.storage.words.iter().map(|i| i.1)
     }
 
+    /// returns an iterator over all katakana words
+    pub fn katakana<'b>(&'b self) -> impl Iterator<Item = &'a Word> + 'b + DoubleEndedIterator {
+        self.storage
+            .katakana_words
+            .iter()
+            .copied()
+            .filter_map(|seq| self.by_sequence(seq))
+    }
+
     /// returns an iterator over all irregular ichidan words
     pub fn irregular_ichidan<'b>(
         &'b self,
@@ -39,6 +48,12 @@ impl<'a> WordRetrieve<'a> {
     #[inline]
     pub fn irregular_ichidan_len(&self) -> usize {
         self.storage.irregular_ichidan.len()
+    }
+
+    /// Returns the amount of katakana words that have been indexed
+    #[inline]
+    pub fn katakana_len(&self) -> usize {
+        self.storage.katakana_words.len()
     }
 
     /// Returns an iterator over all words with given `jlpt` level

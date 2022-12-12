@@ -23,6 +23,7 @@ impl WordFilter {
             wf.by_language(word)?;
             wf.by_pos_tags(word)?;
             wf.by_jlpt(word)?;
+            wf.by_katakana_tag(word)?;
 
             wf.by_quot_marks(word)?;
 
@@ -36,6 +37,11 @@ impl WordFilter {
     fn by_language(&self, w: &Word) -> Option<()> {
         w.has_language(self.query.get_search_lang(), self.query.show_english())
             .then(|| ())
+    }
+
+    #[inline]
+    fn by_katakana_tag(&self, w: &Word) -> Option<()> {
+        (w.get_reading_str().is_katakana()).then(|| ())
     }
 
     #[inline]

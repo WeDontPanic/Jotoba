@@ -17,7 +17,7 @@ config = { path = "../config" }
 localization = { path = "../localization" }
 resources = { path = "../resources"}
 actix-web = "4.2.1"
-serde = "1.0.147"
+serde = "1.0.150"
 sentry = { version = "0.27.0", optional = true }
 log = "0.4.17"
 percent-encoding = "2.2.0"
