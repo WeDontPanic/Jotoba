@@ -179,6 +179,10 @@ pub(super) async fn start(options: Options) -> std::io::Result<()> {
                             ),
                     )
                     .service(
+                        actixweb::scope("info")
+                            .route("words", actixweb::post().to(api::info::words::word_info)),
+                    )
+                    .service(
                         actixweb::scope("kanji")
                             .route(
                                 "by_radical",

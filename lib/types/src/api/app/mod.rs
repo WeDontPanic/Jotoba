@@ -24,7 +24,7 @@ where
 /// Deserializes a field into a Option<Language>. None if invalid lang-str, empty or Deserializing str
 /// failed
 #[inline]
-fn deserialize_lang<'de, D>(s: D) -> Result<Language, D::Error>
+pub fn deserialize_lang<'de, D>(s: D) -> Result<Language, D::Error>
 where
     D: Deserializer<'de>,
 {
