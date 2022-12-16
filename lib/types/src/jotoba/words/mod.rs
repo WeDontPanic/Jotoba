@@ -227,6 +227,7 @@ impl Word {
     }
 
     /// Returns true if word has `reading`
+    #[inline]
     pub fn has_reading(&self, reading: &str) -> bool {
         self.reading_iter(true).any(|j| j.reading == reading)
     }
@@ -250,27 +251,6 @@ impl Word {
             .iter()
             .map(|i| i.part_of_speech.iter())
             .flatten()
-    }
-}
-
-// Jotoba intern only features
-#[cfg(feature = "jotoba_intern")]
-impl Word {
-    /// Return `true` if the word is a katakana word
-    #[inline]
-    pub fn is_katakana_word(&self) -> bool {
-        self.reading.is_katakana()
-    }
-
-    /// Get the audio path of a word
-    #[inline]
-    pub fn audio_file(&self) -> Option<String> {
-        self.reading.kanji.as_ref().and_then(|kanji| {
-            let file = format!("mp3/{}【{}】.mp3", kanji.reading, self.reading.kana.reading);
-            std::path::Path::new(&format!("html/audio/{}", file))
-                .exists()
-                .then(|| file)
-        })
     }
 
     #[inline]
@@ -297,6 +277,27 @@ impl Word {
     pub fn get_first_pitch(&self) -> Option<Pitch> {
         let drop = self.accents.get(0)?;
         Pitch::new(self.get_kana(), drop)
+    }
+}
+
+// Jotoba intern only features
+#[cfg(feature = "jotoba_intern")]
+impl Word {
+    /// Return `true` if the word is a katakana word
+    #[inline]
+    pub fn is_katakana_word(&self) -> bool {
+        self.reading.is_katakana()
+    }
+
+    /// Get the audio path of a word
+    #[inline]
+    pub fn audio_file(&self) -> Option<String> {
+        self.reading.kanji.as_ref().and_then(|kanji| {
+            let file = format!("mp3/{}【{}】.mp3", kanji.reading, self.reading.kana.reading);
+            std::path::Path::new(&format!("html/audio/{}", file))
+                .exists()
+                .then(|| file)
+        })
     }
 
     /// Returns furigana reading-pairs of an Item

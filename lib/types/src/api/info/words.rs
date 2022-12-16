@@ -10,6 +10,17 @@ pub struct Request {
     pub show_english: bool,
 }
 
+impl Request {
+    #[inline]
+    pub fn new(ids: Vec<u32>, language: Language, show_english: bool) -> Self {
+        Self {
+            ids,
+            language,
+            show_english,
+        }
+    }
+}
+
 #[derive(Serialize, Deserialize)]
 pub struct Response {
     pub words: Vec<Word>,
