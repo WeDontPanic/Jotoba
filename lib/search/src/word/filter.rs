@@ -41,7 +41,8 @@ impl WordFilter {
 
     #[inline]
     fn by_katakana_tag(&self, w: &Word) -> Option<()> {
-        (w.get_reading_str().is_katakana()).then(|| ())
+        let has_tag = self.query.has_tag(crate::query::Tag::Katakana);
+        (!has_tag || w.get_reading_str().is_katakana()).then(|| ())
     }
 
     #[inline]
