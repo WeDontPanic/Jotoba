@@ -1,7 +1,7 @@
 use std::str::FromStr;
 
 use error::api_error::RestError;
-use japanese::JapaneseExt;
+use jp_utils::JapaneseExt;
 use search::query::{self, parser::QueryParser, Query, QueryLang, UserSettings};
 use types::api::completions::Request;
 use types::jotoba::languages::Language;

@@ -2,7 +2,7 @@ use crate::app::{search::sentences::convert_sentence, Result};
 use actix_web::web::Json;
 use engine::task::SearchTask;
 use error::api_error::RestError;
-use japanese::JapaneseExt;
+use jp_utils::JapaneseExt;
 use search::{engine::words::native::Engine, word::order::native::NativeOrder};
 use sentence_reader::output::ParseResult;
 use types::{

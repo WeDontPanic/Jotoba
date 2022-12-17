@@ -1,6 +1,7 @@
 use engine::relevance::{data::SortData, RelevanceEngine};
 use indexes::ng_freq::{term_dist, NgFreqIndex};
-use japanese::JapaneseExt;
+use japanese::ToKanaExt;
+use jp_utils::JapaneseExt;
 use ngindex::{item::IndexItem, termset::TermSet};
 use sparse_vec::{SpVec32, VecExt};
 use types::jotoba::words::Word;
@@ -48,7 +49,8 @@ impl NativeOrder {
     #[inline]
     fn text_sim(&self, word: &Word) -> f32 {
         word.reading_iter(true)
-            .map(|i| self.reading_sim(&japanese::to_halfwidth(&i.reading).to_hiragana()))
+            .map(|i| self.reading_sim(&i.reading.to_halfwidth().to_hiragana()))
+            //.map(|i| self.reading_sim(&japanese::to_halfwidth(&i.reading).to_hiragana()))
             .max_by(|a, b| a.total_cmp(b))
             .unwrap_or(0.0)
     }
@@ -94,7 +96,7 @@ impl RelevanceEngine for NativeOrder {
             return 0.0;
         }
 
-        let kana = japanese::to_halfwidth(&word.reading.kana.reading).to_hiragana();
+        let kana = word.reading.kana.reading.to_halfwidth().to_hiragana();
 
         // Words with query as substring have more relevance
         // スイス: スイス人 > スパイス
@@ -106,9 +108,7 @@ impl RelevanceEngine for NativeOrder {
             return 0.0;
         }
 
-        if kana != self.orig_query
-            && japanese::to_halfwidth(&word.get_reading().reading) != self.orig_query
-        {
+        if kana != self.orig_query && word.get_reading().reading.to_halfwidth() != self.orig_query {
             score *= 0.7;
         }
 
@@ -141,9 +141,8 @@ impl RelevanceEngine for NativeOrder {
     }
 
     fn init(&mut self, init: engine::relevance::RelEngineInit) {
-        //self.query_vec = build_ng_vec(&init.query);
-        self.query_vec = build_ng_vec(&japanese::to_halfwidth(&init.query).to_hiragana());
-        self.query_hw = japanese::to_halfwidth(&init.query).to_hiragana();
+        self.query_vec = build_ng_vec(&init.query.to_halfwidth().to_hiragana());
+        self.query_hw = init.query.to_halfwidth().to_hiragana();
     }
 }
 

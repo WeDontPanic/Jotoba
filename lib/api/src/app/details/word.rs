@@ -1,7 +1,7 @@
 use crate::app::Result;
 use actix_web::web::Json;
 use error::api_error::RestError;
-use japanese::JapaneseExt;
+use jp_utils::JapaneseExt;
 use types::{
     api::app::{
         details::{

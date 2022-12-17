@@ -8,7 +8,7 @@ use std::{
 
 use actix_web::{web::Json, HttpRequest};
 use error::api_error::RestError;
-use japanese::JapaneseExt;
+use jp_utils::JapaneseExt;
 use types::{
     api::radical::search::{Request, Response},
     jotoba::languages::Language,

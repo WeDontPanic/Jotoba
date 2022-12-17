@@ -1,6 +1,6 @@
 use crate::{engine::words::native::Engine, word::order::native::NativeOrder};
 use engine::{result::SearchResult, task::SearchTask};
-use japanese::JapaneseExt;
+use jp_utils::JapaneseExt;
 use std::collections::HashSet;
 use types::jotoba::words::Word;
 

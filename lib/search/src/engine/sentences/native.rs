@@ -6,6 +6,7 @@ use index_framework::{
     retrieve::retriever::default::DefaultRetrieve,
     traits::{backend::Backend, dictionary::IndexDictionary},
 };
+use jp_utils::JapaneseExt;
 use sentence_reader::output::ParseResult;
 use sparse_vec::{SpVec32, VecExt};
 use std::collections::HashSet;
@@ -103,5 +104,5 @@ impl engine::Engine<'static> for Engine {
 
 #[inline]
 fn format_query(inp: &str) -> String {
-    japanese::to_halfwidth(inp)
+    inp.to_halfwidth()
 }

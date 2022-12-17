@@ -3,7 +3,8 @@ use engine::{
     relevance::{data::SortData, RelevanceEngine},
     task::SearchTask,
 };
-use japanese::{furigana::SentencePartRef, JapaneseExt};
+use japanese::furigana::SentencePartRef;
+use jp_utils::JapaneseExt;
 use ngindex::{item::IndexItem, termset::TermSet};
 use sentence_reader::{output::ParseResult, Parser, Part, Sentence};
 use types::jotoba::words::{part_of_speech::PosSimple, Word};

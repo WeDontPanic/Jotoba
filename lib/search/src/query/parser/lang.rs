@@ -1,5 +1,5 @@
 use crate::query::{regex::RegexSQuery, QueryLang};
-use japanese::JapaneseExt;
+use jp_utils::JapaneseExt;
 use std::cmp::Ordering;
 
 use super::JAPANESE_THRESHOLD;

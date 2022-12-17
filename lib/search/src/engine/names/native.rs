@@ -3,7 +3,7 @@ use index_framework::{
     traits::{backend::Backend, dictionary::IndexDictionary},
 };
 use indexes::words::native::N as NATIVE_NGRAM;
-use japanese::JapaneseExt;
+use jp_utils::JapaneseExt;
 use ngindex::{item::IndexItem, termset::TermSet, utils::padded, NGIndex, Wordgrams};
 use types::jotoba::{languages::Language, names::Name};
 

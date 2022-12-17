@@ -1,4 +1,4 @@
-use japanese::JapaneseExt;
+use japanese::ToKanaExt;
 use sentence_reader::JA_NL_PARSER;
 use types::jotoba::{
     kanji::reading::{Reading, ReadingSearch},

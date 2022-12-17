@@ -2,7 +2,7 @@ use engine::Engine;
 use index_framework::traits::{
     backend::Backend, dictionary::IndexDictionary, postings::IndexPostings,
 };
-use japanese::JapaneseExt;
+use japanese::ToKanaExt;
 use order_struct::order_nh::OrderVal;
 use priority_container::PrioContainerMax;
 use search::engine::words::native::k_reading;

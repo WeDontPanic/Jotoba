@@ -1,4 +1,4 @@
-use japanese::JapaneseExt;
+use jp_utils::JapaneseExt;
 use search::{
     executor::search_result::SearchResult,
     query::{parser::QueryParser, Query, UserSettings},

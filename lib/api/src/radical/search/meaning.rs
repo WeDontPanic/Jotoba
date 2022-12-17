@@ -1,6 +1,6 @@
 use std::collections::HashSet;
 
-use japanese::JapaneseExt;
+use japanese::ToKanaExt;
 use types::jotoba::languages::Language;
 
 pub fn search(query: &str, language: Language) -> HashSet<char> {

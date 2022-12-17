@@ -1,7 +1,7 @@
 use super::kanji;
 use crate::{engine, query::Query};
 use index_framework::traits::{backend::Backend, dictionary::IndexDictionary};
-use japanese::JapaneseExt;
+use jp_utils::JapaneseExt;
 use sparse_vec::VecExt;
 use types::jotoba::sentences::Sentence;
 use vsm::doc_vec::DocVector;

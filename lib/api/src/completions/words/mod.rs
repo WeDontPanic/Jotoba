@@ -5,7 +5,7 @@ pub mod native;
 
 use std::{cmp::Ordering, time::Instant};
 
-use japanese::JapaneseExt;
+use jp_utils::JapaneseExt;
 use search::query::{Query, QueryLang};
 use types::api::completions::{Response, WordPair};
 use utils::bool_ord;

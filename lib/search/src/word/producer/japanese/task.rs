@@ -1,5 +1,5 @@
 use engine::task::SearchTask;
-use japanese::JapaneseExt;
+use jp_utils::JapaneseExt;
 
 use crate::{
     engine::words::native::Engine,

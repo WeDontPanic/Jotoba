@@ -5,7 +5,7 @@ mod request;
 mod words;
 
 use actix_web::web::Json;
-use japanese::JapaneseExt;
+use jp_utils::JapaneseExt;
 use search::query::{Form, Query};
 use types::{
     api::completions::{Request, Response, SuggestionType, WordPair},

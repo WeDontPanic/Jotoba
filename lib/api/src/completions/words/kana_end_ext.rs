@@ -9,7 +9,7 @@ use autocompletion::{
         query::SuggestionQuery,
     },
 };
-use japanese::JapaneseExt;
+use jp_utils::JapaneseExt;
 use priority_container::PrioContainerMax;
 
 #[derive(Clone, Copy)]
@@ -43,7 +43,7 @@ impl<'a> Extension<'a> for KanaEndExtension<'a> {
             return vec![];
         }
 
-        let mut parts: Vec<_> = japanese::text_parts(&query_str)
+        let mut parts: Vec<_> = jp_utils::tokenize::by_alphabet(&query_str, true)
             .filter(|i| !i.trim().is_empty())
             .collect();
         if parts.len() != 2 {

@@ -2,7 +2,7 @@ use super::{convert_results, Response};
 use autocompletion::suggest::{
     extension::ngram::NGramExtension, query::SuggestionQuery, task::SuggestionTask,
 };
-use japanese::JapaneseExt;
+use japanese::ToKanaExt;
 use search::query::{Query, QueryLang};
 use wana_kana::to_katakana::to_katakana;
 

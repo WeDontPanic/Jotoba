@@ -1,5 +1,5 @@
 use crate::query::Query;
-use japanese::JapaneseExt;
+use jp_utils::JapaneseExt;
 use std::borrow::Borrow;
 use types::jotoba::words::Word;
 
