@@ -15,6 +15,7 @@ search = { path = "../lib/search" }
 api = { path = "../lib/api" }
 frontend = { path = "../lib/frontend" }
 config = { path = "../lib/config" }
+error = { path ="../lib/error"}
 localization = { path = "../lib/localization" }
 resources = { path = "../lib/resources" }
 indexes = { path = "../lib/indexes", features = ["parallel"] }
@@ -28,6 +29,7 @@ rayon = "1.6.1"
 snmalloc-rs = "0.3.3"
 #ngindex = { path = "../../ngindex" }
 ngindex = { git = "https://github.com/JojiiOfficial/ngindex"}
+actix-web-httpauth = "*"
 
 [features]
 default = ["img_scan"]

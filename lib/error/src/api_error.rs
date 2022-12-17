@@ -50,6 +50,9 @@ pub enum RestError {
 
     #[error("missing {0:?}")]
     Missing(Origin),
+
+    #[error("Unauthorized")]
+    Unauthorized,
 }
 
 /// Error response format. Used as json encoding structure
@@ -70,6 +73,7 @@ impl RestError {
             Self::IoError => "IoError".to_string(),
             Self::NoTextFound => "NoTextFound".to_string(),
             Self::FormatNotSupported => "FormatNotSupported".to_string(),
+            Self::Unauthorized => "Unauthtorized".to_string(),
             _ => "InternalError".to_string(),
         }
     }
@@ -85,6 +89,7 @@ impl ResponseError for RestError {
             Self::Timeout => StatusCode::REQUEST_TIMEOUT,
             Self::FormatNotSupported => StatusCode::BAD_REQUEST,
             Self::NoTextFound => StatusCode::SEE_OTHER,
+            Self::Unauthorized => StatusCode::UNAUTHORIZED,
             _ => StatusCode::INTERNAL_SERVER_ERROR,
         }
     }

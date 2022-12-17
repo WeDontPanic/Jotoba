@@ -31,6 +31,7 @@ pub struct ServerConfig {
     pub news_folder: Option<String>,
     pub unidic_dict: Option<String>,
     pub debug_mode: Option<bool>,
+    pub internal_api_key: String,
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug)]
@@ -127,6 +128,7 @@ impl Default for ServerConfig {
             tess_data: None,
             news_folder: Some(String::from("./resources/news")),
             debug_mode: Some(false),
+            internal_api_key: "ReplaceMe!!!!".to_string(),
         }
     }
 }
