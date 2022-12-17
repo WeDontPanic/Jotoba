@@ -1,9 +1,7 @@
-use super::{
-    part_of_speech::{self, IrregularVerb, PartOfSpeech},
-    Word,
-};
-use jp_inflections::{Verb, VerbType, WordForm};
 use serde::{Deserialize, Serialize};
+
+#[cfg(feature = "jotoba_intern")]
+use jp_inflections::{Verb, VerbType, WordForm};
 
 /// A single Inflection
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Serialize)]
@@ -98,7 +96,8 @@ pub struct InflectionPair {
 }
 
 /// Returns the inflections of `word` if its a verb
-pub(super) fn of_word(word: &Word) -> Option<Inflections> {
+#[cfg(feature = "jotoba_intern")]
+pub(super) fn of_word(word: &super::Word) -> Option<Inflections> {
     let verb = get_jp_verb(word)?;
     let build = || -> Result<Inflections, jp_inflections::error::Error> {
         let is_exception = word
@@ -160,7 +159,11 @@ pub(super) fn of_word(word: &Word) -> Option<Inflections> {
 }
 
 /// Returns a jp_inflections::Verb if [`self`] is a verb
-fn get_jp_verb(word: &Word) -> Option<Verb> {
+#[cfg(feature = "jotoba_intern")]
+fn get_jp_verb(word: &super::Word) -> Option<Verb> {
+    use super::part_of_speech::PartOfSpeech;
+    use crate::jotoba::words::part_of_speech::{self, IrregularVerb};
+
     let is_exception = word.get_pos().any(|i| match i {
         PartOfSpeech::Verb(v) => match v {
             part_of_speech::VerbType::Irregular(i) => match i {

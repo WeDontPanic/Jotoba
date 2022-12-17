@@ -1,9 +1,8 @@
 pub mod raw_data;
 
-#[cfg(feature = "jotoba_intern")]
 pub mod border;
 
-use japanese::JapaneseExt;
+use jp_utils::JapaneseExt;
 use serde::{Deserialize, Serialize};
 
 /// Owned pitch entry of a word
@@ -132,19 +131,6 @@ pub fn split_kana(inp: &str) -> impl Iterator<Item = &str> {
 #[cfg(test)]
 mod test {
     use super::*;
-
-    #[test]
-    fn test_small_kana() {
-        assert!(!"よ".is_small_kana());
-
-        assert!("ょ".is_small_kana());
-        assert!("ゃ".is_small_kana());
-        assert!("ゅ".is_small_kana());
-
-        assert!("ョ".is_small_kana());
-        assert!("ャ".is_small_kana());
-        assert!("ュ".is_small_kana());
-    }
 
     #[test]
     fn test_split_katakana_small() {

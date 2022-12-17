@@ -1,4 +1,5 @@
-use japanese::JapaneseExt;
+#[cfg(feature = "jotoba_intern")]
+use japanese::ToKanaExt;
 
 use super::Kanji;
 
@@ -15,6 +16,27 @@ pub struct Reading {
     r_type: ReadingType,
     literal: char,
     inner: String,
+}
+
+#[cfg(feature = "jotoba_intern")]
+impl Reading {
+    /// Returns a string with the reading and literal merged. If the reading is an onyomi reading,
+    /// this is equal to the literal. For kunyomi readings this can be an example: (inner: "だま.る") => "黙る".
+    /// This also formats the reading to hiragana
+    pub fn format_reading_with_literal(&self) -> String {
+        match self.r_type {
+            ReadingType::Kunyomi => {
+                let r = if self.inner.contains('.') {
+                    let right = self.inner.split('.').nth(1).unwrap_or_default();
+                    format!("{}{}", self.literal, right)
+                } else {
+                    self.literal.to_string()
+                };
+                r.replace("-", "")
+            }
+            ReadingType::Onyomi => self.literal.to_hiragana(),
+        }
+    }
 }
 
 impl Reading {
@@ -42,24 +64,6 @@ impl Reading {
     #[inline]
     pub fn get_raw(&self) -> &str {
         self.inner.as_ref()
-    }
-
-    /// Returns a string with the reading and literal merged. If the reading is an onyomi reading,
-    /// this is equal to the literal. For kunyomi readings this can be an example: (inner: "だま.る") => "黙る".
-    /// This also formats the reading to hiragana
-    pub fn format_reading_with_literal(&self) -> String {
-        match self.r_type {
-            ReadingType::Kunyomi => {
-                let r = if self.inner.contains('.') {
-                    let right = self.inner.split('.').nth(1).unwrap_or_default();
-                    format!("{}{}", self.literal, right)
-                } else {
-                    self.literal.to_string()
-                };
-                r.replace("-", "")
-            }
-            ReadingType::Onyomi => self.literal.to_hiragana(),
-        }
     }
 
     /// Returns `true` if `kanji` has this reading

@@ -1,4 +1,6 @@
-use crate::JapaneseExt;
+use jp_utils::JapaneseExt;
+
+use crate::ToKanaExt;
 
 #[cfg(test)]
 mod test {

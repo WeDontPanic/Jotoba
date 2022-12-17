@@ -1,14 +1,12 @@
 pub mod traits;
 
-use std::collections::HashSet;
-
 pub use traits::ReadingRetrieve;
 
-use super::super::{text_parts, JapaneseExt};
-use super::map_readings;
-use super::parse;
-use crate::utils::real_string_len;
+use super::{map_readings, parse};
+use crate::{utils::real_string_len, ToKanaExt};
 use itertools::Itertools;
+use jp_utils::JapaneseExt;
+use std::collections::HashSet;
 
 /// Generates furigana readings for the given `kanji` input based on the provided `kana` reading and
 /// kanji readings which are being passed using `retrieve`. In case a reading can't be correctly
@@ -58,7 +56,7 @@ pub fn gen_iter<'a, R>(
 where
     R: ReadingRetrieve + 'a,
 {
-    let mut text_parts = text_parts(kanji_text);
+    let mut text_parts = jp_utils::tokenize::by_alphabet(kanji_text, true);
     let mut furi = readings.into_iter();
     std::iter::from_fn(move || {
         let curr_part = text_parts.next()?;

@@ -2,8 +2,10 @@ pub mod generate;
 pub mod parse;
 mod tests;
 
-use super::JapaneseExt;
 use itertools::Itertools;
+use jp_utils::JapaneseExt;
+
+use crate::ToKanaExt;
 
 /// Represents a single sentence part which either consisting of kana only or kanji and a kana reading
 /// assigned
@@ -209,7 +211,7 @@ where
 /// Checks whether 'arr' starts with a*b or not
 fn starts_with<T>(arr: &[T], a: &[T], b: &[T], last: bool) -> bool
 where
-    T: PartialEq + JapaneseExt,
+    T: PartialEq + ToKanaExt + JapaneseExt,
 {
     if last {
         if a.len() + b.len() != arr.len() {

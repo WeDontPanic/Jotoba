@@ -7,7 +7,7 @@ use super::query::Query;
 use crate::{engine::words::native::Engine, query::QueryLang, word::order::native::NativeOrder};
 use engine::task::SearchTask;
 use error::Error;
-use japanese::JapaneseExt;
+use jp_utils::JapaneseExt;
 use result::Item;
 use types::jotoba::{
     kanji::Kanji,

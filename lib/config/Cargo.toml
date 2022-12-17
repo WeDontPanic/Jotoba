@@ -7,6 +7,6 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-serde = { version = "1.0.150", features = ["derive"] }
-toml = "0.5.9"
+serde = { version = "1.0.151", features = ["derive"] }
+toml = "0.5.10"
 sha1 = { git = "https://github.com/mitsuhiko/rust-sha1"}

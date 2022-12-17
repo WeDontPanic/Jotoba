@@ -10,7 +10,7 @@ types = { path = "../types" }
 autocompletion = { git = "https://github.com/WeDontPanic/AutoCompletionFramework" }
 #autocompletion = { path = "../../../AutoCompletionFramework" }
 bktree = { git = "https://github.com/JojiiOfficial/bktree" }
-serde = { version = "1.0.150", features = ["derive"] }
+serde = { version = "1.0.151", features = ["derive"] }
 byteorder = "1.4.3"
 bitflags = { git = "https://github.com/JojiiOfficial/BitFlags" }
 once_cell = { version = "1.16.0", default-features = false }

@@ -20,7 +20,6 @@ use std::{
 };
 
 use self::{
-    inflection::Inflections,
     misc::Misc,
     part_of_speech::{PartOfSpeech, PosSimple},
     pitch::{raw_data::PitchValues, Pitch},
@@ -67,18 +66,18 @@ impl Word {
         self.jlpt_lvl.map(|i| i.get())
     }
 
-    /// Returns the main reading of a word as str. This is the kanji reading if a kanji reading
-    /// exists. Otherwise its the kana reading
-    #[inline]
-    pub fn get_reading_str(&self) -> &str {
-        &self.reading.get_reading().reading
-    }
-
     /// Returns the main reading of a word. This is the kanji reading if a kanji reading
     /// exists. Otherwise its the kana reading
     #[inline]
     pub fn get_reading(&self) -> &Dict {
         self.reading.get_reading()
+    }
+
+    /// Returns the main reading of a word as str. This is the kanji reading if a kanji reading
+    /// exists. Otherwise its the kana reading
+    #[inline]
+    pub fn get_reading_str(&self) -> &str {
+        &self.get_reading().reading
     }
 
     /// Returns an iterator over all sense and its glosses
@@ -112,7 +111,7 @@ impl Word {
     }
 
     /// Get senses ordered by language (non-english first)
-    pub fn get_senses(&self) -> Vec<Vec<Sense>> {
+    pub fn get_senses_with_en(&self) -> Vec<Vec<Sense>> {
         let (english, other): (Vec<Sense>, Vec<Sense>) = self
             .senses
             .clone()
@@ -120,6 +119,12 @@ impl Word {
             .partition(|i| i.language == Language::English);
 
         vec![other, english]
+    }
+
+    /// Returns all senses of the word
+    #[inline]
+    pub fn senses(&self) -> &[Sense] {
+        &self.senses
     }
 
     #[inline]
@@ -156,18 +161,13 @@ impl Word {
             .count() as u8
     }
 
-    /// Returns an [`Inflections`] value if [`self`] is a valid verb
-    #[inline]
-    pub fn get_inflections(&self) -> Option<Inflections> {
-        inflection::of_word(self)
-    }
-
     /// Returns `true` if the word has at least one sentence in the given language
     #[inline]
     pub fn has_sentence(&self, language: Language) -> bool {
         let lang: i32 = language.into();
         BitFlag::<u16>::from(self.sentences_available).get(lang as u16)
     }
+
     /// Returns true if word has a misc information matching `misc`. This requires english glosses
     /// to be available since they're the only one holding misc information
     #[inline]
@@ -246,7 +246,7 @@ impl Word {
 
     /// Returns an iterator over all parts of speech of a word
     #[inline]
-    fn get_pos(&self) -> impl Iterator<Item = &PartOfSpeech> {
+    pub fn get_pos(&self) -> impl Iterator<Item = &PartOfSpeech> {
         self.senses
             .iter()
             .map(|i| i.part_of_speech.iter())
@@ -318,7 +318,7 @@ impl Word {
     }
 
     pub fn glosses_pretty(&self) -> String {
-        let senses = self.get_senses();
+        let senses = self.get_senses_with_en();
 
         // Try to use glosses with users language
         if !senses[0].is_empty() {
@@ -337,6 +337,12 @@ impl Word {
             .into_iter()
             .map(|i| i.gloss)
             .join(", ")
+    }
+
+    /// Returns an [`Inflections`] value if [`self`] is a valid verb
+    #[inline]
+    pub fn get_inflections(&self) -> Option<inflection::Inflections> {
+        inflection::of_word(self)
     }
 }
 

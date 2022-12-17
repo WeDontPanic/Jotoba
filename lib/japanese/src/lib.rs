@@ -4,15 +4,51 @@ pub mod furigana;
 pub mod guessing;
 pub mod radicals;
 
-use itertools::Itertools;
-use std::{iter, ops::Range};
+use std::ops::Range;
 use utils;
 
-const RADICALS: &[char] = &[
-    '｜', 'ノ', '⺅', 'ハ', '⺉', 'マ', 'ユ', '⻌', '⺌', 'ヨ', '⺖', '⺘', '⺡', '⺨', '⺾', '⻏',
-    '⻖', '⺹', '⺣', '⺭', '⻂', '⺲',
-];
+pub trait ToKanaExt {
+    fn to_hiragana(&self) -> String;
+    fn to_katakana(&self) -> String;
+}
 
+impl ToKanaExt for char {
+    #[inline]
+    fn to_hiragana(&self) -> String {
+        wana_kana::to_hiragana::to_hiragana(self.to_string().as_ref())
+    }
+
+    #[inline]
+    fn to_katakana(&self) -> String {
+        wana_kana::to_katakana::to_katakana(self.to_string().as_ref())
+    }
+}
+
+impl ToKanaExt for String {
+    #[inline]
+    fn to_hiragana(&self) -> String {
+        wana_kana::to_hiragana::to_hiragana(self.as_ref())
+    }
+
+    #[inline]
+    fn to_katakana(&self) -> String {
+        wana_kana::to_katakana::to_katakana(self.as_ref())
+    }
+}
+
+impl ToKanaExt for &str {
+    #[inline]
+    fn to_hiragana(&self) -> String {
+        wana_kana::to_hiragana::to_hiragana(self.as_ref())
+    }
+
+    #[inline]
+    fn to_katakana(&self) -> String {
+        wana_kana::to_katakana::to_katakana(self.as_ref())
+    }
+}
+
+/*
 pub trait JapaneseExt {
     /// Returns true if self is of type ct
     fn is_of_type(&self, ct: CharType) -> bool;
@@ -249,6 +285,7 @@ impl JapaneseExt for char {
         counter::is_counter(&self.to_string())
     }
 }
+*/
 
 /// Convert Wide-alphanumeric into normal ASCII  [Ａ -> A]
 #[inline]
@@ -286,7 +323,8 @@ where
     }
 }
 
-impl JapaneseExt for str {
+/*
+impl JapaneseExt for str  {
     #[inline]
     fn is_of_type(&self, ct: CharType) -> bool {
         self.get_text_type() == ct
@@ -425,7 +463,7 @@ impl JapaneseExt for str {
     fn is_counter(&self) -> bool {
         counter::is_counter(self)
     }
-}
+} */
 
 pub fn to_kk_fmt(inp: &str) -> String {
     let inp = inp.to_lowercase();
@@ -455,13 +493,14 @@ pub enum CharType {
     Other,
 }
 
+/*
 /// Return all words of chartype ct
 pub fn all_words_with_ct(inp: &str, ct: CharType) -> Vec<String> {
     let mut all: Vec<String> = Vec::new();
     let mut curr = String::new();
     let mut iter = inp.chars();
     while let Some(c) = iter.next() {
-        if c.is_of_type(ct) {
+        if c.ck(ct) {
             curr.push(c);
             continue;
         } else {
@@ -493,7 +532,7 @@ pub fn text_parts<'a>(kanji: &'a str) -> impl Iterator<Item = &'a str> {
 
         Some(&kanji[curr_c_pos..])
     })
-}
+} */
 
 /// Returns an iterator over kanji occurences having the reading [`reading`]
 pub fn has_reading<'a>(
@@ -532,47 +571,4 @@ fn match_reading(comp: &str, comp_reading: &str, k_literal: char, reading: &str)
 
     // Impossible to check against other cases
     false
-}
-
-#[cfg(test)]
-mod tests {
-    use test_case::test_case;
-
-    use crate::{text_parts, to_fullwidth, to_halfwidth, JapaneseExt};
-
-    #[test_case("音",true; "音")]
-    #[test_case("々", true)]
-    #[test_case("あ",false; "Kana 'a'")]
-    #[test_case("、",false; "Special japanese char")]
-    fn is_kanji(inp: &str, expcected: bool) {
-        assert_eq!(inp.is_kanji(), expcected);
-    }
-
-    #[test_case("、",true; "Symbol")]
-    #[test_case("音",false; "Kanji")]
-    #[test_case("々", false)]
-    #[test_case("あ",false; "Kana")]
-    fn is_symbol(inp: &str, expcected: bool) {
-        assert_eq!(inp.is_symbol(), expcected);
-    }
-
-    #[test_case("これは漢字で書いたテキストです", &["これは", "漢字", "で", "書", "いたテキストです"]; "Simple")]
-    #[test_case("このテキストはかなだけでかいた", &["このテキストはかなだけでかいた"]; "Kana only")]
-    #[test_case("朝に道を聞かば、夕べに死すとも可なり", &["朝", "に", "道", "を", "聞", "かば","、", "夕", "べに", "死", "すとも", "可", "なり"]; "Special char")]
-    fn test_text_parts(inp: &str, exp: &[&str]) {
-        let pairs: Vec<_> = text_parts(inp).collect();
-        let exp: Vec<_> = exp.iter().map(|i| i.to_string()).collect();
-        assert_eq!(pairs, exp);
-    }
-
-    #[test_case("1234","１２３４"; "To fullwidth")]
-    fn test_to_fullwidth(inp: &str, exp: &str) {
-        assert_eq!(to_fullwidth(inp).as_str(), exp);
-    }
-
-    #[test_case("１２３４","1234"; "To halfwidth")]
-    #[test_case("５日","5日"; "With kanji")]
-    fn test_to_halfwidth(inp: &str, exp: &str) {
-        assert_eq!(to_halfwidth(inp).as_str(), exp);
-    }
 }

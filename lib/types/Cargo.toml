@@ -6,22 +6,22 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-japanese = { path = "../japanese" }
-strum = { version = "0.24.1", features = ["derive"] }
-strum_macros = "0.24.3"
-serde = { version = "1.0.150", features = ["derive"] }
-jp_inflections = { git = "https://github.com/JojiiOfficial/Japanese_Inflections" }
-bitflags = { git = "https://github.com/JojiiOfficial/BitFlags" }
-itertools = "0.10.5"
-
+japanese = { path = "../japanese", optional = true}
 localization = { path = "../localization", optional = true }
 ### Note: This sub-crate is not allowed to have dependencies to other Jotoba crates, unless its only used if `jotoba_intern` is enabled.
+jp_inflections = { git = "https://github.com/JojiiOfficial/Japanese_Inflections", optional=true }
+jp_utils = { git = "https://github.com/JojiiOfficial/jp_utils" }
+strum = { version = "0.24.1", features = ["derive"] }
+strum_macros = "0.24.3"
+serde = { version = "1.0.151", features = ["derive"] }
+bitflags = { git = "https://github.com/JojiiOfficial/BitFlags" }
+itertools = "0.10.5"
 
 [features]
 default = ["api"]
 
 # This feature adds stuff required for Jotoba to work but not necessarily for extern crates, so its made optional
-jotoba_intern = ["localization", "api"]
+jotoba_intern = ["localization", "api", "jp_inflections", "japanese"]
 
 # Contains API types, and can be used as rust wrapper around the Jotoba API
 api = []

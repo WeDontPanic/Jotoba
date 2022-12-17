@@ -1,3 +1,4 @@
+use jp_utils::JapaneseExt;
 use serde::{Deserialize, Serialize};
 
 use super::Dict;
@@ -22,15 +23,10 @@ impl Reading {
     pub fn iter(&self, allow_kana: bool) -> ReadingIter<'_> {
         ReadingIter::new(self, allow_kana)
     }
-}
 
-// Jotoba intern only features
-#[cfg(feature = "jotoba_intern")]
-impl Reading {
     /// Return `true` if reading represents a katakana only word
     #[inline]
     pub fn is_katakana(&self) -> bool {
-        use japanese::JapaneseExt;
         self.kana.reading.is_katakana() && self.kanji.is_none()
     }
 }

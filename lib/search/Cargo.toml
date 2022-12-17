@@ -36,10 +36,11 @@ index_framework = { git = "https://github.com/WeDontPanic/index_framework" }
 #vsm = { path = "../../../vsm"}
 vsm = { git = "https://github.com/JojiiOfficial/VSM"}
 sparse_vec = { git = "https://github.com/JojiiOfficial/SparseVec"}
-serde = { version = "1.0.150", features = ["derive"] }
+serde = { version = "1.0.151", features = ["derive"] }
 bincode = "1.3.3"
 #ngram-tools = { path = "../../../ngram-tools"}
 ngram-tools = { git = "https://github.com/JojiiOfficial/ngram-tools"}
+jp_utils = { git = "https://github.com/JojiiOfficial/jp_utils"}
 
 [dev-dependencies]
 test-case = "2.2.2"

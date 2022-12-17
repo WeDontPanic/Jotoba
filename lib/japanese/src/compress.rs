@@ -1,4 +1,4 @@
-use crate::JapaneseExt;
+use jp_utils::JapaneseExt;
 
 const KANA_BEGIN: u32 = 12353;
 const MAX_COMPR_VAL: u32 = 190;

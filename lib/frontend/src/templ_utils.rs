@@ -38,7 +38,7 @@ pub fn get_collocations(
         .into_iter()
         .map(|word| {
             let senses: Vec<String> = word
-                .get_senses()
+                .get_senses_with_en()
                 .into_iter()
                 .flatten()
                 .take(5)

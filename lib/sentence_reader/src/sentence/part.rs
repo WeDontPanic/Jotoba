@@ -1,6 +1,7 @@
 use super::{inflection, owned_morpheme::OwnedMorpheme, FromMorphemes};
 use igo_unidic::{Morpheme, WordClass};
-use japanese::{furigana, CharType, JapaneseExt};
+use japanese::furigana;
+use jp_utils::{alphabet::Alphabet, tokenize::words_with_alphabet, JapaneseExt};
 use types::{
     api::app::search::responses::words::SentencePart,
     jotoba::words::{inflection::Inflection, part_of_speech::PosSimple},
@@ -175,9 +176,8 @@ impl<'b> FromMorphemes<'static, 'b> for Part {
 /// src: "行った" furi: "[行|い]く" => [行|い]った
 fn merge_furigana(src: &str, furi: &str) -> Option<String> {
     let mut furi_out = String::with_capacity(furi.len());
-    let mut kana_paths = japanese::all_words_with_ct(src, CharType::Kana).into_iter();
-    let mut kanji_paths = japanese::all_words_with_ct(src, CharType::Kanji)
-        .into_iter()
+    let mut kana_paths = words_with_alphabet(src, Alphabet::kana());
+    let mut kanji_paths = words_with_alphabet(src, Alphabet::Kanji)
         .map(|i| i.chars().collect::<Vec<_>>())
         .flatten();
 

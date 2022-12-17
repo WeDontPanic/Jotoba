@@ -11,6 +11,7 @@ once_cell = { version = "1.16.0", default-features = false }
 localization = { path = "../localization", optional = true }
 japanese = { path = "../japanese" }
 types = { path = "../types" }
+jp_utils = { git = "https://github.com/JojiiOfficial/jp_utils"}
 
 [features]
 default = []
