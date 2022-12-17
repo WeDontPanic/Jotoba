@@ -7,7 +7,7 @@ use japanese::JapaneseExt;
 use serde::{Deserialize, Serialize};
 
 /// Owned pitch entry of a word
-#[derive(Clone, Serialize, Deserialize)]
+#[derive(Clone, Serialize, Deserialize, Debug)]
 pub struct Pitch {
     pub parts: Vec<PitchPart>,
 }
@@ -95,7 +95,7 @@ impl Pitch {
 }
 
 /// A single, owned part of a whole pitch entry for a word
-#[derive(Clone, Serialize, Deserialize)]
+#[derive(Clone, Serialize, Deserialize, Debug)]
 pub struct PitchPart {
     pub part: String,
     pub high: bool,

@@ -84,20 +84,25 @@ impl Part {
         for morpheme in &self.morphemes {
             if !morpheme.surface.has_kanji() {
                 out.push_str(&morpheme.surface);
-            } else if let Some(furi) = add_fn(morpheme.reading()) {
+                continue;
+            }
+
+            if let Some(furi) = add_fn(morpheme.reading()) {
+                let surface = &morpheme.surface;
+
                 // check if `furi` really contains furigana. If this is not the case but
                 // `has_furigana` is true, the text will be rendered weird
-                if !furi.contains('|') {
+                if !furi.contains('|') || !can_merge_furi(surface, &furi) {
                     out.push_str(&furi);
-                } else {
-                    if let Some(furi) = merge_furigana(&morpheme.surface, &furi) {
-                        has_furigana = true;
-                        out.push_str(&furi);
-                    }
+                } else if let Some(furi) = merge_furigana(surface, &furi) {
+                    has_furigana = true;
+                    out.push_str(&furi);
                 }
-            } else {
-                out.push_str(&morpheme.surface);
+
+                continue;
             }
+
+            out.push_str(&morpheme.surface);
         }
 
         if has_furigana {
@@ -192,10 +197,38 @@ fn merge_furigana(src: &str, furi: &str) -> Option<String> {
                 .collect::<Option<String>>()?;
             cloned.kanji = Some(kanji);
         }
+
         furi_out.push_str(&cloned.encode());
     }
 
     Some(furi_out)
+}
+
+/// Returns `true` if the given src word can be merged with the given furigana
+fn can_merge_furi(src: &str, furi: &str) -> bool {
+    if !src.has_kanji() {
+        return false;
+    }
+
+    let mut src_kanji_iter = src.chars().filter(|i| i.is_kanji());
+
+    let all_src_kanji = furigana::parse::from_str(furi)
+        .take_while(|i| i.has_kanji())
+        .map(|i| i.kanji.unwrap().chars().collect::<Vec<_>>())
+        .flatten();
+
+    for furi_kanji in all_src_kanji {
+        let src_kanji = match src_kanji_iter.next() {
+            Some(r) => r,
+            None => return false,
+        };
+
+        if furi_kanji != src_kanji {
+            return false;
+        }
+    }
+
+    src_kanji_iter.next().is_none()
 }
 
 impl Into<SentencePart> for Part {
