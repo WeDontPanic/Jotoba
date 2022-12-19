@@ -29,7 +29,7 @@ pub fn find_kanji(rads: &[char]) -> Response {
     let mut possible_rads = HashMap::<u32, Vec<char>>::new();
     for i in possible_rads_set {
         let c = unsafe { char::from_u32_unchecked(i) };
-        let s_count = japanese::radicals::get_radical(c).unwrap().1;
+        let s_count = japanese::radicals::get_stroke_count(c).unwrap();
         possible_rads.entry(s_count as u32).or_default().push(c);
     }
 

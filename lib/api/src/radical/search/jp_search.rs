@@ -53,7 +53,7 @@ fn get_kanji(lit: char) -> Option<&'static Kanji> {
 fn into_kanji_rads(kanji: &Kanji) -> KanjiRads {
     let mut rads: HashMap<u32, Vec<char>> = HashMap::with_capacity(kanji.parts.len());
     for part in &kanji.parts {
-        let stroke_count = japanese::radicals::get_radical(*part).map(|i| i.1);
+        let stroke_count = japanese::radicals::get_stroke_count(*part);
         if let Some(stroke_count) = stroke_count {
             rads.entry(stroke_count).or_default().push(*part);
         }

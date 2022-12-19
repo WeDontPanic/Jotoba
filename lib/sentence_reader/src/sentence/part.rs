@@ -1,7 +1,11 @@
 use super::{inflection, owned_morpheme::OwnedMorpheme, FromMorphemes};
 use igo_unidic::{Morpheme, WordClass};
-use japanese::furigana;
-use jp_utils::{alphabet::Alphabet, tokenize::words_with_alphabet, JapaneseExt};
+use jp_utils::{
+    alphabet::Alphabet,
+    furigana::{self, as_part::AsPart},
+    tokenize::words_with_alphabet,
+    JapaneseExt,
+};
 use types::{
     api::app::search::responses::words::SentencePart,
     jotoba::words::{inflection::Inflection, part_of_speech::PosSimple},
@@ -182,7 +186,9 @@ fn merge_furigana(src: &str, furi: &str) -> Option<String> {
         .flatten();
 
     for furi_part in furigana::parse::from_str(furi) {
-        if furi_part.kanji.is_none() {
+        let furi_part = furi_part.ok()?;
+
+        if !furi_part.is_kanji() {
             if let Some(next) = kana_paths.next() {
                 furi_out.push_str(&next);
             }
@@ -190,15 +196,16 @@ fn merge_furigana(src: &str, furi: &str) -> Option<String> {
         }
 
         let mut cloned = furi_part.to_owned();
-        if let Some(k) = furi_part.kanji {
+        if let Some(k) = furi_part.get_kanji() {
             let kanji = k
                 .chars()
                 .map(|_| kanji_paths.next())
                 .collect::<Option<String>>()?;
-            cloned.kanji = Some(kanji);
+            //cloned.kanji = Some(kanji);
+            cloned.set_kanji(kanji);
         }
 
-        furi_out.push_str(&cloned.encode());
+        furi_out.push_str(&cloned.encode()?);
     }
 
     Some(furi_out)
@@ -213,8 +220,8 @@ fn can_merge_furi(src: &str, furi: &str) -> bool {
     let mut src_kanji_iter = src.chars().filter(|i| i.is_kanji());
 
     let all_src_kanji = furigana::parse::from_str(furi)
-        .take_while(|i| i.has_kanji())
-        .map(|i| i.kanji.unwrap().chars().collect::<Vec<_>>())
+        .take_while(|i| i.as_ref().unwrap().is_kanji())
+        .map(|i| i.unwrap().get_kanji().unwrap().chars().collect::<Vec<_>>())
         .flatten();
 
     for furi_kanji in all_src_kanji {

@@ -2,8 +2,6 @@ pub mod furigana;
 pub mod guessing;
 pub mod radicals;
 
-use utils;
-
 pub trait ToKanaExt {
     fn to_hiragana(&self) -> String;
     fn to_katakana(&self) -> String;

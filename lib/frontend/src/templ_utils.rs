@@ -1,5 +1,5 @@
 use itertools::Itertools;
-use japanese::furigana::{self, SentencePartRef};
+use jp_utils::furigana::{self, reading_part_ref::ReadingPartRef};
 use localization::{traits::Translatable, TranslationDict};
 use search::executor::search_result::SearchResult;
 use types::jotoba::{
@@ -74,7 +74,7 @@ pub fn get_intransitive_counterpart(word: &Word) -> Option<Word> {
 pub fn ext_sentence(
     sense: &Sense,
     language: &Language,
-) -> Option<(Vec<SentencePartRef<'static>>, &'static str)> {
+) -> Option<(Vec<ReadingPartRef<'static>>, &'static str)> {
     let sentence = resources::get()
         .sentences()
         .by_id(sense.example_sentence?)?;
@@ -83,7 +83,7 @@ pub fn ext_sentence(
         .translation_for(*language)
         .or_else(|| sentence.translation_for(Language::English))?;
 
-    let furigana: Vec<_> = furigana::parse::from_str(&sentence.furigana).collect();
+    let furigana = furigana::parse::unchecked(&sentence.furigana);
     Some((furigana, translation))
 }
 

@@ -14,31 +14,25 @@ pub mod sense;
 
 pub use dict::Dict;
 
+use super::language::{param::AsLangParam, Language};
+use bitflags::BitFlag;
+use itertools::Itertools;
+use jp_utils::furigana::{self, reading_part_ref::ReadingPartRef};
+use misc::Misc;
+use part_of_speech::{PartOfSpeech, PosSimple};
+use pitch::{raw_data::PitchValues, Pitch};
+use reading::{Reading, ReadingIter};
+use sense::{Sense, SenseGlossIter};
+use serde::{Deserialize, Serialize};
 use std::{
     hash::{Hash, Hasher},
     num::{NonZeroU32, NonZeroU8},
 };
 
-use self::{
-    misc::Misc,
-    part_of_speech::{PartOfSpeech, PosSimple},
-    pitch::{raw_data::PitchValues, Pitch},
-    reading::{Reading, ReadingIter},
-    sense::{Sense, SenseGlossIter},
-};
-use super::language::{param::AsLangParam, Language};
-use bitflags::BitFlag;
-use itertools::Itertools;
-use serde::{Deserialize, Serialize};
-
-#[cfg(feature = "jotoba_intern")]
-use japanese::furigana::{self, SentencePartRef};
-
-/// A single word item
+/// A single word in Jotobas word search
 #[derive(Clone, Default, Serialize, Deserialize, Eq)]
 pub struct Word {
     pub sequence: u32,
-    //pub priorities: Option<Vec<Priority>>,
     pub common: bool,
     pub reading: Reading,
     pub senses: Vec<Sense>,
@@ -55,8 +49,6 @@ impl Word {
     /// Returns true if a word is common
     #[inline]
     pub fn is_common(&self) -> bool {
-        //self.reading.get_reading().priorities.is_some()
-        //self.reading_iter(true).any(|i| i.priorities.is_some())
         self.common
     }
 
@@ -133,7 +125,6 @@ impl Word {
         self.senses.get(id as usize)
     }
 
-    #[inline]
     pub fn get_sense_gloss(&self, id: u16) -> Option<(&Sense, &sense::Gloss)> {
         let (sense_id, gloss_id) = sense::from_unique_id(id);
         let sense = self.sense_by_id(sense_id)?;
@@ -150,7 +141,6 @@ impl Word {
     }
 
     /// Get amount of tags which will be displayed below the reading
-    #[inline]
     pub fn get_word_tag_count(&self) -> u8 {
         [self.is_common(), self.get_jlpt_lvl().is_some()]
             .iter()
@@ -159,7 +149,6 @@ impl Word {
     }
 
     /// Returns `true` if the word has at least one sentence in the given language
-    #[inline]
     pub fn has_sentence(&self, lang: impl AsLangParam) -> bool {
         let lang_p = lang.as_lang();
         let lang: i32 = lang_p.language().into();
@@ -181,7 +170,6 @@ impl Word {
     }
 
     /// Returns `true` if word has at least one of the provided part of speech
-    #[inline]
     pub fn has_pos(&self, pos_filter: &[PosSimple]) -> bool {
         for sense in self.senses.iter().map(|i| i.get_pos_simple()) {
             if sense.iter().any(|i| pos_filter.contains(i)) {
@@ -213,7 +201,6 @@ impl Word {
     pub fn has_language(&self, language: impl AsLangParam) -> bool {
         let lang = language.as_lang();
         self.senses.iter().any(|i| lang.eq_to_lang(&i.language))
-        //.any(|i| i.language == language || (allow_english && i.language == Language::English))
     }
 
     /// Returns `true` if a word has collocations
@@ -235,7 +222,6 @@ impl Word {
     }
 
     /// Returns `true` if `word` has `reading` as main (main kanji or kana reading)
-    #[inline]
     pub fn has_main_reading(&self, reading: &str) -> bool {
         self.reading.kana.reading == reading
             || self
@@ -266,7 +252,6 @@ impl Word {
     }
 
     /// Returns a renderable vec of accents with kana characters
-    #[inline]
     pub fn get_pitches(&self) -> Vec<Pitch> {
         self.accents
             .iter()
@@ -280,17 +265,31 @@ impl Word {
         let drop = self.accents.get(0)?;
         Pitch::new(self.get_kana(), drop)
     }
-}
 
-// Jotoba intern only features
-#[cfg(feature = "jotoba_intern")]
-impl Word {
     /// Return `true` if the word is a katakana word
     #[inline]
     pub fn is_katakana_word(&self) -> bool {
         self.reading.is_katakana()
     }
 
+    /// Removes all languages except the one specified and potentionally english when enabled
+    #[inline]
+    pub fn adjust_language(&mut self, lang: impl AsLangParam) {
+        let lang = lang.as_lang();
+        self.senses.retain(|j| lang.eq_to_lang(&j.language));
+    }
+
+    /// Returns furigana reading-pairs of an Item
+    #[inline]
+    pub fn get_furigana(&self) -> Option<Vec<ReadingPartRef<'_>>> {
+        let furi = self.furigana.as_ref()?;
+        furigana::parse::full(&furi).ok()
+    }
+}
+
+// Jotoba intern only features
+#[cfg(feature = "jotoba_intern")]
+impl Word {
     /// Get the audio path of a word
     #[inline]
     pub fn audio_file(&self) -> Option<String> {
@@ -300,13 +299,6 @@ impl Word {
                 .exists()
                 .then(|| file)
         })
-    }
-
-    /// Returns furigana reading-pairs of an Item
-    #[inline]
-    pub fn get_furigana(&self) -> Option<Vec<SentencePartRef<'_>>> {
-        let furi = self.furigana.as_ref()?;
-        Some(furigana::parse::from_str(furi).collect::<Vec<_>>())
     }
 
     /// Get alternative readings in a beautified, print-ready format
@@ -345,14 +337,6 @@ impl Word {
     #[inline]
     pub fn get_inflections(&self) -> Option<inflection::Inflections> {
         inflection::of_word(self)
-    }
-
-    #[inline]
-    pub fn adjust_language(&mut self, lang: impl AsLangParam) {
-        let lang = lang.as_lang();
-
-        //j.language == language || (j.language == Language::English && show_english)
-        self.senses.retain(|j| lang.eq_to_lang(&j.language));
     }
 }
 

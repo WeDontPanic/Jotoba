@@ -1,12 +1,13 @@
-@use japanese::furigana::SentencePartRef;
+@use jp_utils::furigana::reading_part_ref::ReadingPartRef;
+@use jp_utils::furigana::as_part::AsPart;
 @* TODO Figure out how to use Iterator instead of Vec for this template. *@
-@type MyVec<'a> = Vec<SentencePartRef<'a>>;
+@type MyVec<'a> = Vec<ReadingPartRef<'a>>;
 @(iter: MyVec, addl_classes: &str, show_furigana: bool)
 
 <div class="furigana-kanji-container">@*
 *@@for furi_part in iter {@*
-    *@@if !furi_part.kana.is_empty() {@*
-            *@@if let Some(kanji) = furi_part.kanji {@*
+    *@@if !furi_part.is_empty() {@*
+            *@@if let Some(kanji) = furi_part.get_kanji() {@*
                 *@<ruby>@*
                     *@<span class="kanji-preview @addl_classes">@*
                         *@@kanji@*
@@ -14,14 +15,14 @@
                     *@@if show_furigana {@*
                       *@<rp>（</rp>@*
                       *@<rt class="furigana-preview noselect @addl_classes">@*
-                          *@@furi_part.kana@*
+                          *@@furi_part.readings().unwrap().join("")@*
                       *@</rt>@*
                       *@<rp>）</rp>@*
                     *@}@*
                 *@</ruby>@*
             *@} else {@*
                 *@<span class="inline-kana-preview @addl_classes">@*
-                    *@@furi_part.kana@*
+                    *@@furi_part.get_kana().unwrap()@*
                 *@</span>@*
             *@}@*
     *@}@*

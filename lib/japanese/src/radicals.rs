@@ -1,4 +1,16 @@
-use cached::proc_macro::cached;
+use once_cell::sync::Lazy;
+use std::collections::HashMap;
+
+/// Maps radicals to their stroke counts.
+static RAD_STROKE_MAP: Lazy<HashMap<char, u32>> = Lazy::new(|| {
+    let mut map: HashMap<char, u32> = HashMap::default();
+    for rads in RADICALS.iter() {
+        for rad in rads.1 {
+            map.insert(rad.chars().next().unwrap(), rads.0);
+        }
+    }
+    map
+});
 
 pub const RADICALS: &[(u32, &[&str]); 15] = &[
     (1, &["一", "｜", "丶", "ノ", "乙", "亅"]),
@@ -82,12 +94,6 @@ pub fn is_radical(lit: char) -> bool {
 
 /// Returns a radical literal with its stroke count if found
 #[inline]
-#[cached(size = 1000)]
-pub fn get_radical(lit: char) -> Option<(char, u32)> {
-    RADICALS.iter().find_map(|i| {
-        i.1.iter().find_map(|j| {
-            let found = j.chars().next().unwrap() == lit;
-            found.then(|| (lit, i.0))
-        })
-    })
+pub fn get_stroke_count(lit: char) -> Option<u32> {
+    RAD_STROKE_MAP.get(&lit).copied()
 }

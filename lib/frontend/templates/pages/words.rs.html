@@ -3,7 +3,7 @@
 @use types::jotoba::language::Language;
 @use search::executor::search_result::SearchResult;
 @use search::query::Query;
-@use japanese::furigana::parse::from_str as furi_from_str;
+@use jp_utils::furigana::parse::unchecked as furi_from_str;
 @use crate::templ_utils::*;
 @use super::{search_help};
 @use crate::templates::functional::{render_sentence_html};
@@ -54,7 +54,7 @@
           @if let Some(furigana) = part.furigana() {
             <a id="p@part.pos()" href="/search/@query.get_query_encoded()?i=@part.pos()"
               class="@part.word_class_lower().unwrap_or_default() sentence-part @selected(part.pos(), result.sentence_index())">
-              @:render_sentence_html(furi_from_str(furigana).collect(), "", true)
+                @:render_sentence_html(furi_from_str(furigana), "", true)
               </a>
           } else {
             <!-- TODO find a better way to keep this consistent. Implement with reader_sentence.rs.html -->

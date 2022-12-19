@@ -1,4 +1,4 @@
-use japanese::{furigana, furigana::SentencePartRef};
+use jp_utils::furigana::{self, reading_part_ref::ReadingPartRef};
 use types::jotoba::language::{param::AsLangParam, Language};
 
 use crate::executor::out_builder::OutputAddable;
@@ -30,8 +30,9 @@ pub struct Sentence {
 
 impl Sentence {
     #[inline]
-    pub fn furigana_pairs<'a>(&'a self) -> impl Iterator<Item = SentencePartRef<'a>> {
-        furigana::parse::from_str(&self.furigana)
+    pub fn furigana_pairs<'a>(&'a self) -> Vec<ReadingPartRef<'a>> {
+        //furigana::parse::from_str(&self.furigana).map(|i| i.unwrap())
+        furigana::parse::unchecked(&self.furigana)
     }
 
     #[inline]

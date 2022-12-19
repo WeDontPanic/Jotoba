@@ -58,7 +58,7 @@ fn map_radicals(inp: &HashSet<char>) -> HashMap<u8, BTreeSet<char>> {
 
     for (lit, strokes) in inp
         .iter()
-        .filter_map(|lit| japanese::radicals::get_radical(*lit))
+        .filter_map(|lit| Some((*lit, japanese::radicals::get_stroke_count(*lit)?)))
     {
         radicals.entry(strokes as u8).or_default().insert(lit);
     }

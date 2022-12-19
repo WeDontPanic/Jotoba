@@ -3,7 +3,7 @@ pub mod traits;
 pub use traits::ReadingRetrieve;
 
 use super::{map_readings, parse};
-use crate::{utils::real_string_len, ToKanaExt};
+use crate::ToKanaExt;
 use itertools::Itertools;
 use jp_utils::JapaneseExt;
 use std::collections::HashSet;
@@ -87,8 +87,8 @@ pub fn assign_readings<R: ReadingRetrieve>(
     kanji: &str,
     kana: &str,
 ) -> Option<Vec<(String, String)>> {
-    let kanji_len = real_string_len(kanji);
-    let kana_len = real_string_len(kana);
+    let kanji_len = kanji.real_len();
+    let kana_len = kana.real_len();
 
     // If both have len of 2 the readings are obv
     if kanji_len == kana_len {
