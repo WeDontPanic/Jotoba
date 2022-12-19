@@ -1624,7 +1624,7 @@ source = "git+https://github.com/JojiiOfficial/Japanese_Inflections#e65770d1ef25
 [[package]]
 name = "jp_utils"
 version = "0.1.0"
-source = "git+https://github.com/JojiiOfficial/jp_utils#47113e965ec38bd28a4b471fa729da21c02cd151"
+source = "git+https://github.com/JojiiOfficial/jp_utils#06973aa32e880c761db57b536ece287cebb2afc4"
 dependencies = [
  "itertools",
 ]

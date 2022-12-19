@@ -2,10 +2,13 @@ pub mod traits;
 
 pub use traits::ReadingRetrieve;
 
-use super::{map_readings, parse};
+use super::map_readings;
 use crate::ToKanaExt;
 use itertools::Itertools;
-use jp_utils::JapaneseExt;
+use jp_utils::{
+    furigana::{as_part::AsPart, encode::single_block, parse},
+    JapaneseExt,
+};
 use std::collections::HashSet;
 
 /// Generates furigana readings for the given `kanji` input based on the provided `kana` reading and
@@ -14,16 +17,18 @@ use std::collections::HashSet;
 pub fn checked<R: ReadingRetrieve>(retrieve: R, kanji: &str, kana: &str) -> String {
     let unchecked_furi = match unchecked(retrieve, kanji, kana) {
         Some(u) => u,
-        None => return furigana_block(kanji, kana),
+        None => return single_block(kanji, kana),
     };
 
-    let furi_parsed = parse::from_str(&unchecked_furi).map(|i| i.kana).join("");
+    let furi_parsed = parse::from_str(&unchecked_furi)
+        .map(|i| i.unwrap().get_kana_reading())
+        .join("");
 
     // check if built correctly
     check(&furi_parsed, kana)
         .then(|| unchecked_furi)
         // if not correct use one block for all
-        .unwrap_or_else(|| furigana_block(kanji, kana))
+        .unwrap_or_else(|| single_block(kanji, kana))
 }
 
 fn check(gen: &str, kana: &str) -> bool {
@@ -69,14 +74,14 @@ where
         let (kanji, reading) = furi.next()?;
         if let Some(readings) = assign_readings(&retrieve, &kanji, &reading) {
             if readings.len() != kanji.chars().count() {
-                return Some(furigana_block(kanji, reading));
+                return Some(single_block(kanji, reading));
             }
 
             let reading = readings.into_iter().map(|i| i.1).join("|");
-            return Some(furigana_block(kanji, reading));
+            return Some(single_block(kanji, reading));
         }
 
-        Some(furigana_block(kanji, reading))
+        Some(single_block(kanji, reading))
     })
 }
 
@@ -196,10 +201,6 @@ fn find_kanji_combo(
             .zip(route)
             .collect_vec(),
     )
-}
-
-pub fn furigana_block<S: AsRef<str>, T: AsRef<str>>(kanji: S, kana: T) -> String {
-    format!("[{}|{}]", kanji.as_ref(), kana.as_ref())
 }
 
 fn get_kanji_literals(inp: &str) -> Vec<char> {

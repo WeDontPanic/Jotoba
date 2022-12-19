@@ -1,4 +1,5 @@
 use japanese::ToKanaExt;
+use jp_utils::furigana::{self, as_part::AsPart};
 use sentence_reader::JA_NL_PARSER;
 use types::jotoba::{
     kanji::reading::{Reading, ReadingSearch},
@@ -9,20 +10,21 @@ pub(crate) fn sentence_matches(sentence: &Sentence, reading: &Reading) -> bool {
     let lit = reading.get_lit_str();
 
     if reading.is_full_reading() {
-        let parsed_furi = japanese::furigana::parse::from_str(&sentence.furigana);
+        let parsed_furi = furigana::parse::from_str(&sentence.furigana);
         let reading_hira = reading.get_raw().to_hiragana();
 
         for i in parsed_furi {
-            if i.kanji.is_none() {
+            let i = i.unwrap();
+            if !i.is_kanji() {
                 continue;
             }
 
-            let curr_kanji = i.kanji.unwrap();
+            let curr_kanji = i.get_kanji().unwrap();
             if !curr_kanji.contains(&lit) {
                 continue;
             }
 
-            if i.kana.to_hiragana().contains(&reading_hira) {
+            if i.get_kana_reading().to_hiragana().contains(&reading_hira) {
                 return true;
             }
         }

@@ -3,8 +3,10 @@ use engine::{
     relevance::{data::SortData, RelevanceEngine},
     task::SearchTask,
 };
-use japanese::furigana::SentencePartRef;
-use jp_utils::JapaneseExt;
+use jp_utils::{
+    furigana::{as_part::AsPart, reading_part_ref::ReadingPartRef},
+    JapaneseExt,
+};
 use ngindex::{item::IndexItem, termset::TermSet};
 use sentence_reader::{output::ParseResult, Parser, Part, Sentence};
 use types::jotoba::words::{part_of_speech::PosSimple, Word};
@@ -211,7 +213,7 @@ fn name_furi(morpheme: &str) -> Option<String> {
 
     let name = res.get(0).unwrap().item;
     let kanji = name.kanji.as_ref().unwrap();
-    Some(SentencePartRef::with_kanji(&name.kana, kanji).encode())
+    ReadingPartRef::new_kanji(&name.kana, kanji).encode()
 }
 
 fn word_furi(morpheme: &str, part: &sentence_reader::Part) -> Option<String> {

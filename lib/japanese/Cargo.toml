@@ -9,7 +9,7 @@ edition = "2021"
 [dependencies]
 itertools = "0.10.5"
 wana_kana = { git = "https://github.com/WeDontPanic/wana_kana_rust" }
-jp_utils = { git = "https://github.com/JojiiOfficial/jp_utils" }
+jp_utils = { git = "https://github.com/JojiiOfficial/jp_utils", features = ["furigana"] }
 once_cell = "*"
 
 [dev-dependencies]
