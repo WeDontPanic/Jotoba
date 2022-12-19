@@ -3,7 +3,7 @@ pub mod translation;
 
 pub use self::tag::Tag;
 
-use super::languages::Language;
+use super::language::{param::AsLangParam, Language};
 use bitflags::BitFlag;
 use serde::{Deserialize, Serialize};
 use std::{
@@ -53,8 +53,11 @@ impl Sentence {
 
     /// Returns `true` if the sentence contains a translation for `language`
     #[inline]
-    pub fn has_translation(&self, language: Language) -> bool {
-        self.translations.iter().any(|tr| tr.language == language)
+    pub fn has_translation(&self, lang: impl AsLangParam) -> bool {
+        let lang = lang.as_lang();
+        self.translations
+            .iter()
+            .any(|tr| lang.eq_to_lang(&tr.language))
     }
 
     /// Returns the translation for a given language if exists
@@ -66,12 +69,14 @@ impl Sentence {
             .map(|i| i.text.as_str())
     }
 
-    pub fn get_translation(&self, language: Language, allow_english: bool) -> Option<&str> {
-        if let Some(s) = self.translation_for(language) {
+    pub fn get_translation(&self, lang: impl AsLangParam) -> Option<&str> {
+        let lang = lang.as_lang();
+
+        if let Some(s) = self.translation_for(lang.language()) {
             return Some(s);
         }
 
-        if allow_english {
+        if lang.en_fallback() {
             return self.translation_for(Language::English);
         }
 

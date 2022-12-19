@@ -35,8 +35,7 @@ impl WordFilter {
 
     #[inline]
     fn by_language(&self, w: &Word) -> Option<()> {
-        w.has_language(self.query.get_search_lang(), self.query.show_english())
-            .then(|| ())
+        w.has_language(self.query.lang_param()).then(|| ())
     }
 
     #[inline]
@@ -81,7 +80,7 @@ impl WordFilter {
             .partition(|i| i.is_japanese());
 
         if !fn_q_terms.is_empty() {
-            for i in w.gloss_iter_by_lang(self.query.get_search_lang(), self.query.show_english()) {
+            for i in w.gloss_iter_by_lang(self.query.lang_param()) {
                 let i = i.to_lowercase();
                 fn_q_terms.retain(|k| !i.contains(k.as_str()));
                 if fn_q_terms.is_empty() {

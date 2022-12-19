@@ -13,7 +13,7 @@ use self::regex::RegexSQuery;
 use percent_encoding::{utf8_percent_encode, AsciiSet, NON_ALPHANUMERIC};
 use std::hash::Hash;
 use types::jotoba::{
-    languages::Language,
+    language::{LangParam, Language},
     search::SearchTarget,
     words::{misc::Misc, part_of_speech::PosSimple},
 };
@@ -132,6 +132,12 @@ impl Query {
     #[inline]
     pub fn lang(&self) -> Language {
         self.settings.user_lang
+    }
+
+    /// Returns the queries lang params
+    #[inline]
+    pub fn lang_param(&self) -> LangParam {
+        self.settings.lang_param()
     }
 
     /// Shortcut for query.settings.show_english

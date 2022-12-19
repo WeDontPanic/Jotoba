@@ -1,6 +1,6 @@
 /// Contains all structures and enums for Jotoba kanji
 pub mod kanji;
-pub mod languages;
+pub mod language;
 /// Contains all structures and enums for Jotoba names
 pub mod names;
 /// Contains structures used for pagination

@@ -1,5 +1,5 @@
 use crate::jotoba::{
-    languages::Language,
+    language::Language,
     words::{
         dialect::Dialect, field::Field, gtype::GType, information::Information, misc::Misc,
         part_of_speech::PartOfSpeech, priority::Priority, sense::Gairaigo,

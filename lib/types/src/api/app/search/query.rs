@@ -1,5 +1,7 @@
-use crate::api::app::{deserialize_lang, deserialize_lang_option};
-use crate::jotoba::languages::Language;
+use crate::{
+    api::app::{deserialize_lang, deserialize_lang_option},
+    jotoba::language::{LangParam, Language},
+};
 use serde::Deserialize;
 
 #[derive(Debug, Clone, Deserialize)]
@@ -22,6 +24,14 @@ pub struct SearchPayload {
     pub lang_overwrite: Option<Language>,
 }
 
+impl SearchPayload {
+    /// Returns language parameters for the query
+    #[inline]
+    pub fn lang_param(&self) -> LangParam {
+        self.settings.lang_param()
+    }
+}
+
 /// APP settings
 #[derive(Debug, Clone, Copy, Deserialize)]
 pub struct UserSettings {
@@ -31,4 +41,12 @@ pub struct UserSettings {
     pub page_size: u32,
     pub show_example_sentences: bool,
     pub sentence_furigana: bool,
+}
+
+impl UserSettings {
+    /// Returns language parameters for user settinsg
+    #[inline]
+    pub fn lang_param(&self) -> LangParam {
+        LangParam::with_en_raw(self.user_lang, self.show_english)
+    }
 }

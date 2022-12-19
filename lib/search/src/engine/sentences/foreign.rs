@@ -7,7 +7,7 @@ use index_framework::{
     traits::{backend::Backend, dictionary::IndexDictionary},
 };
 use sparse_vec::{SpVec32, VecExt};
-use types::jotoba::{languages::Language, sentences::Sentence};
+use types::jotoba::{language::Language, sentences::Sentence};
 use vsm::{dict_term::DictTerm, doc_vec::DocVector};
 
 pub struct Engine {}

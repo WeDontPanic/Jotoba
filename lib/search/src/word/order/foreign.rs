@@ -2,7 +2,10 @@ use super::REMOVE_PARENTHESES;
 use engine::relevance::{data::SortData, RelevanceEngine};
 use indexes::ng_freq::{term_dist, NgFreqIndex};
 use sparse_vec::{SpVec32, VecExt};
-use types::jotoba::{languages::Language, words::Word};
+use types::jotoba::{
+    language::{LangParam, Language},
+    words::Word,
+};
 use vsm::doc_vec::DocVector;
 
 pub struct ForeignOrder {
@@ -50,15 +53,12 @@ impl ForeignOrder {
             term_dist(self.get_query_vec(lang), &vec)
         };
 
-        word.gloss_iter_by_lang(lang, false)
+        word.gloss_iter_by_lang(LangParam::new(lang))
             .map(|i| dist(i))
             .chain(
                 self.query_vec_en
                     .iter()
-                    .map(|_| {
-                        word.gloss_iter_by_lang(Language::English, false)
-                            .map(|i| dist(i))
-                    })
+                    .map(|_| word.gloss_iter_by_lang(Language::English).map(|i| dist(i)))
                     .flatten(),
             )
             .max_by(|a, b| a.total_cmp(&b))

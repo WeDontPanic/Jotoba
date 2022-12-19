@@ -16,7 +16,7 @@
           <h3 class="info-h3">@data.gettext("Collocations")</h3>
           <table class="table collocation">
             <tbody>
-              @for collocation in get_collocations(&word, data.user_settings.user_lang, data.user_settings.show_english) {
+              @for collocation in get_collocations(&word, data.user_settings.lang_param()) {
                 <tr>
                     <th scope="row"><a class="clickable no-align green" href="/search/@collocation.0">@collocation.0</a></th>
                     <td>@collocation.1</td>

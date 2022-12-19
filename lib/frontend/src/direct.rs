@@ -99,8 +99,8 @@ pub async fn find_direct_word(id: &str, settings: &UserSettings) -> Result<Resul
     let mut results = vec![res_name];
 
     // also show enlgish if otherwise no results would be shown due users settings
-    let show_english = !results[0].has_language(settings.user_lang, false) || settings.show_english;
-    filter_languages(results.iter_mut(), settings.user_lang, show_english);
+    let show_english = !results[0].has_language(settings.user_lang) || settings.show_english;
+    filter_languages(results.iter_mut(), (settings.user_lang, show_english));
 
     let word = results.remove(0);
 
@@ -144,7 +144,7 @@ pub async fn find_direct_sentence(id: &str, settings: &UserSettings) -> Result<R
         .ok_or(web_error::Error::NotFound)?;
 
     let res_sentence =
-        sentence::result::Sentence::from_m_sentence(res_sentence, settings.user_lang, true)
+        sentence::result::Sentence::from_m_sentence(res_sentence, (settings.user_lang, true))
             .unwrap();
 
     use search::executor::search_result::SearchResult as SearchResult2;

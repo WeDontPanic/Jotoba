@@ -1,5 +1,5 @@
 use index_framework::retrieve::retriever::default::DefaultRetrieve;
-use types::jotoba::languages::Language;
+use types::jotoba::language::Language;
 use types::jotoba::words::Word;
 
 pub struct Engine;

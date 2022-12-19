@@ -1,4 +1,4 @@
-use crate::jotoba::languages::Language;
+use crate::jotoba::language::{LangParam, Language};
 use crate::{api::app::deserialize_lang, jotoba::words::Word};
 use serde::{Deserialize, Serialize};
 
@@ -18,6 +18,11 @@ impl Request {
             language,
             show_english,
         }
+    }
+
+    #[inline]
+    pub fn lang_param(&self) -> LangParam {
+        LangParam::with_en_raw(self.language, self.show_english)
     }
 }
 

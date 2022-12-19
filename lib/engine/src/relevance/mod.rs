@@ -2,7 +2,7 @@ pub mod data;
 pub mod item;
 
 use data::SortData;
-use types::jotoba::languages::Language;
+use types::jotoba::language::Language;
 
 pub trait RelevanceEngine {
     type OutItem;

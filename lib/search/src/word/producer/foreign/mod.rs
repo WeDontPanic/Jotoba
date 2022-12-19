@@ -8,7 +8,7 @@ use crate::{
 };
 use engine::pushable::FilteredMaxCounter;
 use task::ForeignSearch;
-use types::jotoba::languages::Language;
+use types::jotoba::language::Language;
 
 /// Producer for words by foreign query
 pub struct ForeignProducer<'a> {

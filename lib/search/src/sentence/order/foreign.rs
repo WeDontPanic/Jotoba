@@ -1,6 +1,6 @@
 use engine::relevance::{data::SortData, RelevanceEngine};
 use sparse_vec::SpVec32;
-use types::jotoba::{languages::Language, sentences::Sentence};
+use types::jotoba::{language::Language, sentences::Sentence};
 use vsm::doc_vec::DocVector;
 
 pub struct ForeignOrder {

@@ -6,7 +6,7 @@ use crate::{
     sentence::{order::native::NativeOrder, Search},
 };
 use engine::{pushable::FilteredMaxCounter, task::SearchTask};
-use types::jotoba::languages::Language;
+use types::jotoba::language::Language;
 
 /// Producer for sentences by foreign keywords
 pub struct NativeProducer<'a> {

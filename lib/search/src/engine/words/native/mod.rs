@@ -7,7 +7,7 @@ use index_framework::{
 };
 use indexes::words::native::N as NATIVE_NGRAM;
 use ngindex::{item::IndexItem, termset::TermSet, utils::padded, NGIndex, Wordgrams};
-use types::jotoba::{languages::Language, words::Word};
+use types::jotoba::{language::Language, words::Word};
 
 pub struct Engine {}
 

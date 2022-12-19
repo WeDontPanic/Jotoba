@@ -5,7 +5,7 @@ use autocompletion::index::{basic::BasicIndex, japanese::JapaneseIndex};
 use once_cell::sync::OnceCell;
 use serde::{Deserialize, Serialize};
 use std::{collections::HashMap, error::Error, path::Path};
-use types::jotoba::languages::Language;
+use types::jotoba::language::Language;
 
 pub const K_MEANING_NGRAM: usize = 3;
 

@@ -1,7 +1,7 @@
 use std::fs::read_to_string;
 use types::jotoba::{
     kanji::Kanji,
-    languages::Language,
+    language::param::AsLangParam,
     words::{filter_languages, Word},
 };
 
@@ -21,9 +21,9 @@ pub struct Item {
 }
 
 impl Item {
-    pub fn load_words(k: Kanji, lang: Language, show_english: bool) -> Self {
-        let kun_dicts = load_dicts(&k.kun_dicts, lang, show_english);
-        let on_dicts = load_dicts(&k.on_dicts, lang, show_english);
+    pub fn load_words(k: Kanji, lang: impl AsLangParam) -> Self {
+        let kun_dicts = load_dicts(&k.kun_dicts, lang);
+        let on_dicts = load_dicts(&k.on_dicts, lang);
 
         let has_compositions = resources::get().kanji().ids(k.literal).is_some();
 
@@ -36,7 +36,7 @@ impl Item {
     }
 }
 
-fn load_dicts(dicts: &Vec<u32>, lang: Language, show_english: bool) -> Option<Vec<Word>> {
+fn load_dicts(dicts: &Vec<u32>, lang: impl AsLangParam) -> Option<Vec<Word>> {
     let word_storage = resources::get().words();
     let mut words: Vec<_> = dicts
         .iter()
@@ -44,7 +44,7 @@ fn load_dicts(dicts: &Vec<u32>, lang: Language, show_english: bool) -> Option<Ve
         .cloned()
         .collect();
 
-    filter_languages(words.iter_mut(), lang, show_english);
+    filter_languages(words.iter_mut(), lang);
 
     if words.is_empty() {
         return None;

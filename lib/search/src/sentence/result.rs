@@ -1,5 +1,5 @@
 use japanese::{furigana, furigana::SentencePartRef};
-use types::jotoba::languages::Language;
+use types::jotoba::language::{param::AsLangParam, Language};
 
 use crate::executor::out_builder::OutputAddable;
 
@@ -42,10 +42,9 @@ impl Sentence {
     #[inline]
     pub fn from_m_sentence(
         s: &'static types::jotoba::sentences::Sentence,
-        language: Language,
-        allow_english: bool,
+        lang: impl AsLangParam,
     ) -> Option<Self> {
-        let translation = s.get_translation(language, allow_english)?;
+        let translation = s.get_translation(lang)?;
 
         Some(Self {
             id: s.id,
@@ -53,7 +52,7 @@ impl Sentence {
             content: &s.japanese,
             furigana: &s.furigana,
             eng: None,
-            language,
+            language: lang.as_lang().language(),
         })
     }
 }

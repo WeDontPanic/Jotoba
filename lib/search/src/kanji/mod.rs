@@ -134,7 +134,7 @@ fn by_meaning(meaning: &str) -> Vec<Kanji> {
 fn to_item(items: Vec<Kanji>, query: &Query) -> Vec<Item> {
     items
         .into_iter()
-        .map(|i| Item::load_words(i, query.settings.user_lang, query.settings.show_english))
+        .map(|i| Item::load_words(i, query.lang_param()))
         .collect()
 }
 

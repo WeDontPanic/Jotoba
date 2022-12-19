@@ -7,10 +7,7 @@ use types::jotoba::sentences::Sentence;
 use vsm::doc_vec::DocVector;
 
 pub(crate) fn filter_sentence(query: &Query, sentence: &Sentence) -> bool {
-    let lang = query.settings.user_lang;
-    let show_english = query.settings.show_english;
-
-    if sentence.get_translation(lang, show_english).is_none() {
+    if sentence.get_translation(query.lang_param()).is_none() {
         return false;
     }
 

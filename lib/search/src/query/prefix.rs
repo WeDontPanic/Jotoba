@@ -1,4 +1,4 @@
-use types::jotoba::languages::Language;
+use types::jotoba::language::Language;
 
 /// Prefix of a search query. eg 'seq: 1234'
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]

@@ -7,7 +7,7 @@ use search::{
 };
 use test_case::test_case;
 use types::jotoba::{
-    languages::Language,
+    language::Language,
     search::SearchTarget,
     words::{inflection::Inflection, part_of_speech::PosSimple, Word},
 };

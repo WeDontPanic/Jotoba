@@ -2,7 +2,7 @@ use std::str::FromStr;
 
 use actix_web::HttpRequest;
 use search::query::UserSettings;
-use types::jotoba::languages::Language;
+use types::jotoba::language::Language;
 
 /// Parses user settings from a `HttpRequest`
 pub(super) fn parse(request: &HttpRequest) -> UserSettings {

@@ -13,7 +13,7 @@ pub async fn word_info(payload: Json<Request>) -> Result<HttpResponse, RestError
         .cloned()
         .collect::<Vec<_>>();
 
-    filter_languages(words.iter_mut(), payload.language, payload.show_english);
+    filter_languages(words.iter_mut(), payload.lang_param());
 
     Ok(HttpResponse::Ok().body(bincode::serialize(&words).unwrap()))
 }

@@ -10,7 +10,7 @@ use types::{
         },
         search::responses::{kanji::Kanji, words::Word},
     },
-    jotoba::{languages::Language, words::adjust_language},
+    jotoba::language::Language,
 };
 
 pub async fn details(payload: Json<DetailsPayload>) -> Result<Json<word::Details>> {
@@ -106,8 +106,7 @@ impl<'a> Details<'a> {
     #[inline]
     fn format_word(&self, word: &types::jotoba::words::Word) -> Word {
         let mut word = word.clone();
-        adjust_language(&mut word, self.payload.language, self.payload.show_english);
-
+        word.adjust_language(self.payload.lang_param());
         crate::app::conv_word(word, self.payload.language)
     }
 }

@@ -11,7 +11,7 @@ use error::api_error::RestError;
 use jp_utils::JapaneseExt;
 use types::{
     api::radical::search::{Request, Response},
-    jotoba::languages::Language,
+    jotoba::language::Language,
 };
 
 /// Search for radicals

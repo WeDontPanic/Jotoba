@@ -1,5 +1,5 @@
 use std::hash::{Hash, Hasher};
-use types::jotoba::languages::Language;
+use types::jotoba::language::{LangParam, Language};
 
 /// In-cookie saved personalized settings by an user
 #[derive(Debug, Clone, Copy)]
@@ -25,6 +25,12 @@ impl UserSettings {
     #[inline]
     pub fn language(&self) -> Language {
         self.user_lang
+    }
+
+    /// Returns a LangParam respecting the users settings language preferences
+    #[inline]
+    pub fn lang_param(&self) -> LangParam {
+        LangParam::with_en_raw(self.user_lang, self.show_english())
     }
 }
 

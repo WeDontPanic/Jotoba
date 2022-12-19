@@ -1,7 +1,7 @@
 use error::api_error::RestError;
 use types::{
     api::app::search::responses::words,
-    jotoba::{self, languages::Language},
+    jotoba::{self, language::Language},
 };
 
 pub mod details;

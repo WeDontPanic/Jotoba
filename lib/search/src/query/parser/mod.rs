@@ -5,7 +5,7 @@ pub(crate) mod tags;
 
 use super::{prefix::SearchPrefix, regex::RegexSQuery, Form, Query, Tag, UserSettings};
 use jp_utils::JapaneseExt;
-use types::jotoba::{kanji, languages::Language as ContentLanguage, search::SearchTarget};
+use types::jotoba::{kanji, language::Language as ContentLanguage, search::SearchTarget};
 
 /// Max amount of characters a query is allowed to have
 pub const MAX_QUERY_LEN: usize = 400;

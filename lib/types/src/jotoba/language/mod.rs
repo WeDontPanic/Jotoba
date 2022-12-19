@@ -1,3 +1,7 @@
+pub mod param;
+
+pub use param::LangParam;
+
 #[cfg(feature = "jotoba_intern")]
 use localization::traits::Translatable;
 

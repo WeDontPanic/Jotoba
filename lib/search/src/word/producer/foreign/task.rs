@@ -1,5 +1,5 @@
 use engine::task::SearchTask;
-use types::jotoba::languages::Language;
+use types::jotoba::language::Language;
 
 use crate::{
     engine::words::foreign::Engine,

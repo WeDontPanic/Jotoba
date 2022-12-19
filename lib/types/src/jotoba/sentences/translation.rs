@@ -1,4 +1,4 @@
-use crate::jotoba::languages::Language;
+use crate::jotoba::language::Language;
 use serde::{Deserialize, Serialize};
 
 /// A Translation for a sentence

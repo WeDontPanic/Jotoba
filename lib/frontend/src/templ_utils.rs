@@ -4,7 +4,7 @@ use localization::{traits::Translatable, TranslationDict};
 use search::executor::search_result::SearchResult;
 use types::jotoba::{
     kanji::Kanji,
-    languages::Language,
+    language::{param::AsLangParam, Language},
     names::Name,
     words::{filter_languages, sense::Sense, Word},
 };
@@ -12,11 +12,7 @@ use types::jotoba::{
 use crate::unescaped::UnescapedString;
 
 /// Returns a list of all collocations of a word
-pub fn get_collocations(
-    word: &Word,
-    language: Language,
-    show_english: bool,
-) -> Vec<(String, String)> {
+pub fn get_collocations(word: &Word, lang: impl AsLangParam) -> Vec<(String, String)> {
     if !word.has_collocations() {
         return vec![];
     }
@@ -32,7 +28,7 @@ pub fn get_collocations(
         .cloned()
         .collect::<Vec<_>>();
 
-    filter_languages(words.iter_mut(), language, show_english);
+    filter_languages(words.iter_mut(), lang);
 
     words
         .into_iter()

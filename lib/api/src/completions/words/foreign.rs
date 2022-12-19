@@ -10,7 +10,7 @@ use japanese::{
     guessing::{could_be_romaji, is_romaji_repl},
     to_hira_fmt,
 };
-use types::jotoba::languages::Language;
+use types::jotoba::language::Language;
 use utils::real_string_len;
 
 use super::super::*;

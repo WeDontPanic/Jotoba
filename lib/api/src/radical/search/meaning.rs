@@ -1,7 +1,7 @@
 use std::collections::HashSet;
 
 use japanese::ToKanaExt;
-use types::jotoba::languages::Language;
+use types::jotoba::language::Language;
 
 pub fn search(query: &str, language: Language) -> HashSet<char> {
     if query.len() < 2 {

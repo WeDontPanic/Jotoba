@@ -1,7 +1,7 @@
 use crate::{
     api::search::kanji::Kanji,
     jotoba::{
-        languages::Language,
+        language::Language,
         words::{
             dialect::Dialect, field::Field, misc::Misc, part_of_speech::PartOfSpeech,
             pitch::PitchPart,

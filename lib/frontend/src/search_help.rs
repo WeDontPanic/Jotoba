@@ -1,5 +1,5 @@
 use types::jotoba::{
-    languages::Language as ResLanguage,
+    language::Language as ResLanguage,
     search::{guess::Guess, QueryType},
 };
 

@@ -5,7 +5,7 @@ pub mod word;
 
 use serde::Deserialize;
 
-use crate::jotoba::languages::Language;
+use crate::jotoba::language::Language;
 
 /// An Search API payload
 #[derive(Deserialize)]

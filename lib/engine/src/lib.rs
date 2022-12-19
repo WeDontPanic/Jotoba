@@ -9,7 +9,7 @@ use index_framework::{
     traits::{backend::Backend, deser::DeSer},
 };
 use std::hash::Hash;
-use types::jotoba::languages::Language;
+use types::jotoba::language::Language;
 
 /// Generic search engine
 pub trait Engine<'index> {

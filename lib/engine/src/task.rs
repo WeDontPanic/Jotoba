@@ -8,7 +8,7 @@ use crate::{
 use priority_container::StableUniquePrioContainerMax;
 use std::marker::PhantomData;
 use types::jotoba::{
-    languages::Language,
+    language::Language,
     search::guess::{Guess, GuessType},
 };
 

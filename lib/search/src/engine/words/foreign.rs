@@ -10,7 +10,7 @@ use index_framework::{
 use once_cell::sync::Lazy;
 use regex::Regex;
 use sparse_vec::{SpVec32, VecExt};
-use types::jotoba::{languages::Language, words::Word};
+use types::jotoba::{language::Language, words::Word};
 use vsm::{dict_term::DictTerm, doc_vec::DocVector};
 
 pub struct Engine;

@@ -3,7 +3,7 @@ use std::collections::HashSet;
 use crate::{engine::words::foreign::Engine, word::order::foreign::ForeignOrder};
 use engine::{result::SearchResult, task::SearchTask};
 use jp_utils::JapaneseExt;
-use types::jotoba::{languages::Language, words::Word};
+use types::jotoba::{language::Language, words::Word};
 
 /// Amount of words to return in a search for radicals
 const WORD_LIMIT: usize = 3;

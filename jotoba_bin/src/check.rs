@@ -1,7 +1,7 @@
 use crate::webserver::prepare_data;
 use config::Config;
 use ngindex::index_framework::traits::{backend::Backend, storage::IndexStorage};
-use types::jotoba::languages::Language;
+use types::jotoba::language::Language;
 
 /// Checks resources and returns `true` if required features are available
 pub fn resources() -> bool {

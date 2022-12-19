@@ -6,7 +6,7 @@ use crate::{
 };
 use log::debug;
 use std::{collections::HashMap, error::Error, path::Path, str::FromStr};
-use types::jotoba::languages::Language;
+use types::jotoba::language::Language;
 
 pub const FOREIGN_PREFIX: &str = "word_index_";
 pub const NATIVE_FILE: &str = "jp_index";

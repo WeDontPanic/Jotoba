@@ -5,7 +5,7 @@ use search::{
     query::{parser::QueryParser, UserSettings},
 };
 use serde::{Deserialize, Deserializer};
-use types::jotoba::{languages::Language, search::SearchTarget};
+use types::jotoba::{language::Language, search::SearchTarget};
 
 #[derive(Deserialize)]
 pub struct QueryStruct {

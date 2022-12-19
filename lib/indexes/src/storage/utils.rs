@@ -6,7 +6,7 @@ use std::{
     io::{BufReader, Read},
     path::Path,
 };
-use types::jotoba::languages::Language;
+use types::jotoba::language::Language;
 
 /// Deserializes a file from `path` with `name`
 pub fn deser_file<O: DeserializeOwned, P: AsRef<Path>>(

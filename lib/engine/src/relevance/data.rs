@@ -1,5 +1,5 @@
 use sparse_vec::{SpVec32, VecExt};
-use types::jotoba::languages::Language;
+use types::jotoba::language::Language;
 
 /// Item to sort stuff
 #[derive(Debug)]

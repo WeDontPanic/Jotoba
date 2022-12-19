@@ -11,7 +11,7 @@ use producer::{
     foreign::ForeignProducer, native::NativeProducer, sequence::SequenceProducer, tag::TagProducer,
 };
 use result::ResData;
-use types::jotoba::{languages::Language, sentences::Sentence};
+use types::jotoba::{language::Language, sentences::Sentence};
 
 pub struct Search<'a> {
     query: &'a Query,
@@ -51,9 +51,7 @@ impl<'a> Searchable for Search<'a> {
 
     #[inline]
     fn to_output_item(&self, item: Self::Item) -> Self::OutItem {
-        let lang = self.query.settings.language();
-        let show_english = self.query.settings.show_english;
-        result::Sentence::from_m_sentence(item, lang, show_english).unwrap()
+        result::Sentence::from_m_sentence(item, self.query.lang_param()).unwrap()
     }
 
     fn get_query(&self) -> &Query {

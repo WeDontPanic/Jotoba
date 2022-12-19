@@ -8,7 +8,7 @@ use crate::{
     executor::{out_builder::OutputBuilder, producer::Producer, searchable::Searchable},
     query::Query,
 };
-use types::jotoba::words::{adjust_language, Word};
+use types::jotoba::words::Word;
 
 use filter::WordFilter;
 use producer::{
@@ -71,11 +71,7 @@ impl<'a> Searchable for Search<'a> {
     #[inline]
     fn to_output_item(&self, item: Self::Item) -> Self::OutItem {
         let mut item = item.to_owned();
-        adjust_language(
-            &mut item,
-            self.query.get_search_lang(),
-            self.query.settings.show_english(),
-        );
+        item.adjust_language(self.query.lang_param());
         item
     }
 

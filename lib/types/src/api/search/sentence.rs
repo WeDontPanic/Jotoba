@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use crate::jotoba::languages::Language;
+use crate::jotoba::language::Language;
 
 #[derive(Serialize, Deserialize)]
 pub struct Response {

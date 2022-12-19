@@ -10,7 +10,7 @@ use jp_utils::JapaneseExt;
 use sentence_reader::output::ParseResult;
 use sparse_vec::{SpVec32, VecExt};
 use std::collections::HashSet;
-use types::jotoba::{languages::Language, sentences::Sentence};
+use types::jotoba::{language::Language, sentences::Sentence};
 use vsm::{dict_term::DictTerm, doc_vec::DocVector};
 
 pub struct Engine {}

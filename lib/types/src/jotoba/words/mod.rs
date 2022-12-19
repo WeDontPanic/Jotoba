@@ -26,7 +26,7 @@ use self::{
     reading::{Reading, ReadingIter},
     sense::{Sense, SenseGlossIter},
 };
-use super::languages::Language;
+use super::language::{param::AsLangParam, Language};
 use bitflags::BitFlag;
 use itertools::Itertools;
 use serde::{Deserialize, Serialize};
@@ -88,10 +88,11 @@ impl Word {
 
     /// Return all senses of a language
     #[inline]
-    pub fn senses_by_lang(&self, language: Language) -> Vec<&Sense> {
+    pub fn senses_by_lang(&self, language: impl AsLangParam) -> Vec<&Sense> {
+        let language = language.as_lang();
         self.senses
             .iter()
-            .filter(|i| i.language == language)
+            .filter(|i| language.eq_to_lang(&i.language))
             .collect()
     }
 
@@ -140,15 +141,11 @@ impl Word {
         Some((sense, gloss))
     }
 
-    pub fn gloss_iter_by_lang(
-        &self,
-        language: Language,
-        english: bool,
-    ) -> impl Iterator<Item = &str> {
+    /// Returns an Iterator over the words glosses using a given language
+    pub fn gloss_iter_by_lang(&self, lang_param: impl AsLangParam) -> impl Iterator<Item = &str> {
+        let lang_param = lang_param.as_lang();
         self.sense_gloss_iter()
-            .filter(move |i| {
-                i.0.language == language || (english && i.0.language == Language::English)
-            })
+            .filter(move |i| lang_param.eq_to_lang(&i.0.language))
             .map(|i| i.1.gloss.as_str())
     }
 
@@ -163,9 +160,14 @@ impl Word {
 
     /// Returns `true` if the word has at least one sentence in the given language
     #[inline]
-    pub fn has_sentence(&self, language: Language) -> bool {
-        let lang: i32 = language.into();
+    pub fn has_sentence(&self, lang: impl AsLangParam) -> bool {
+        let lang_p = lang.as_lang();
+        let lang: i32 = lang_p.language().into();
+
         BitFlag::<u16>::from(self.sentences_available).get(lang as u16)
+            || (lang_p.en_fallback()
+                && !lang_p.is_english()
+                && BitFlag::<u16>::from(self.sentences_available).get(Language::English as u16))
     }
 
     /// Returns true if word has a misc information matching `misc`. This requires english glosses
@@ -208,10 +210,10 @@ impl Word {
     /// Returns `true` if a word has at least one translation for the provided language, or english
     /// if `allow_english` is `true`
     #[inline]
-    pub fn has_language(&self, language: Language, allow_english: bool) -> bool {
-        self.senses
-            .iter()
-            .any(|i| i.language == language || (allow_english && i.language == Language::English))
+    pub fn has_language(&self, language: impl AsLangParam) -> bool {
+        let lang = language.as_lang();
+        self.senses.iter().any(|i| lang.eq_to_lang(&i.language))
+        //.any(|i| i.language == language || (allow_english && i.language == Language::English))
     }
 
     /// Returns `true` if a word has collocations
@@ -344,13 +346,14 @@ impl Word {
     pub fn get_inflections(&self) -> Option<inflection::Inflections> {
         inflection::of_word(self)
     }
-}
 
-#[cfg(feature = "jotoba_intern")]
-#[inline]
-pub fn adjust_language(word: &mut Word, language: Language, show_english: bool) {
-    word.senses
-        .retain(|j| j.language == language || (j.language == Language::English && show_english));
+    #[inline]
+    pub fn adjust_language(&mut self, lang: impl AsLangParam) {
+        let lang = lang.as_lang();
+
+        //j.language == language || (j.language == Language::English && show_english)
+        self.senses.retain(|j| lang.eq_to_lang(&j.language));
+    }
 }
 
 /// Removes all senses which ain't in the provided language or english in case `show_english` is
@@ -358,11 +361,10 @@ pub fn adjust_language(word: &mut Word, language: Language, show_english: bool) 
 #[cfg(feature = "jotoba_intern")]
 pub fn filter_languages<'a, I: 'a + Iterator<Item = &'a mut Word>>(
     iter: I,
-    language: Language,
-    show_english: bool,
+    lang: impl AsLangParam,
 ) {
     for word in iter {
-        adjust_language(word, language, show_english);
+        word.adjust_language(lang);
     }
 }
 

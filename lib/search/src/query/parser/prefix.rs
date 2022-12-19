@@ -1,6 +1,6 @@
 use crate::query::prefix::SearchPrefix;
 use std::str::FromStr;
-use types::jotoba::languages::Language;
+use types::jotoba::language::Language;
 
 /// Strinps and parses a `SearchPrefix` from a `query`
 pub fn parse_prefix(query: &str) -> (&str, Option<SearchPrefix>) {

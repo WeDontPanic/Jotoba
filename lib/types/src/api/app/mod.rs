@@ -2,7 +2,7 @@ use std::str::FromStr;
 
 use serde::{Deserialize, Deserializer};
 
-use crate::jotoba::languages::Language;
+use crate::jotoba::language::Language;
 
 pub mod details;
 pub mod search;

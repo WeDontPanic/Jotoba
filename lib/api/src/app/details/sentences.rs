@@ -24,11 +24,8 @@ fn sentence_details(payload: &DetailsPayload) -> Option<sentence::Details> {
 
     let words = get_words(sentence, payload);
 
-    let sentence = search::sentence::result::Sentence::from_m_sentence(
-        sentence,
-        payload.language,
-        payload.show_english,
-    )?;
+    let sentence =
+        search::sentence::result::Sentence::from_m_sentence(sentence, payload.lang_param())?;
 
     let sentence = convert_sentence(sentence);
     Some(sentence::Details::new(sentence, words, kanji))
@@ -76,7 +73,7 @@ fn find_word(w: &str, payload: &DetailsPayload) -> Option<Word> {
     }
 
     let mut word = vec![res.into_inner().remove(0).item.clone()];
-    filter_languages(word.iter_mut(), payload.language, payload.show_english);
+    filter_languages(word.iter_mut(), payload.lang_param());
     let word = super::super::conv_word(word.remove(0), payload.language);
 
     Some(word)
