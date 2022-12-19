@@ -1,4 +1,5 @@
 pub mod tag;
+pub mod translation;
 
 pub use self::tag::Tag;
 
@@ -6,9 +7,10 @@ use super::languages::Language;
 use bitflags::BitFlag;
 use serde::{Deserialize, Serialize};
 use std::{
-    hash::Hash,
+    hash::{Hash, Hasher},
     num::{NonZeroI8, NonZeroU8},
 };
+use translation::Translation;
 
 /// A single Sentence with multiple translations.
 #[derive(Clone, Deserialize, Serialize, Default)]
@@ -20,20 +22,6 @@ pub struct Sentence {
     pub jlpt_guess: Option<NonZeroU8>,
     pub level: Option<NonZeroI8>,
     pub tags: Vec<Tag>,
-}
-
-impl std::fmt::Debug for Sentence {
-    #[inline]
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{}", self.japanese)
-    }
-}
-
-/// A Translation for a sentence
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct Translation {
-    pub text: String,
-    pub language: Language,
 }
 
 impl Sentence {
@@ -55,28 +43,6 @@ impl Sentence {
             level: None,
             tags,
         }
-    }
-
-    pub fn set_jlpt_guess(&mut self, guess: u8) {
-        if !(1..=5).contains(&guess) {
-            return;
-        }
-
-        self.jlpt_guess = Some(NonZeroU8::new(guess).unwrap())
-    }
-
-    /// Returns the kana reading of a sentence
-    #[inline]
-    #[cfg(feature = "jotoba_intern")]
-    pub fn get_kana(&self) -> String {
-        japanese::furigana::parse::from_str(&self.furigana)
-            .map(|i| i.kana)
-            .collect()
-    }
-
-    #[cfg(feature = "jotoba_intern")]
-    pub fn get_furigana(&self) -> impl Iterator<Item = japanese::furigana::SentencePartRef> {
-        japanese::furigana::parse::from_str(&self.furigana)
     }
 
     /// Returns `true` if the sentence has the given tag
@@ -112,6 +78,14 @@ impl Sentence {
         None
     }
 
+    pub fn set_jlpt_guess(&mut self, guess: u8) {
+        if !(1..=5).contains(&guess) {
+            return;
+        }
+
+        self.jlpt_guess = Some(NonZeroU8::new(guess).unwrap())
+    }
+
     /// Calculates a bitmask to efficiently determine the supported languages of a sentence
     pub fn calc_lang_mask(&self) -> u16 {
         lang_mask(self.translations.iter().map(|i| i.language))
@@ -122,6 +96,22 @@ impl Sentence {
         // We add 10 to each value in preprocessing to prevent it reaching 0 which
         // we want to be able to use NonZeroI8
         self.level.map(|i| i.get() - 10)
+    }
+}
+
+#[cfg(feature = "jotoba_intern")]
+impl Sentence {
+    /// Returns the kana reading of a sentence
+    #[inline]
+    pub fn get_kana(&self) -> String {
+        japanese::furigana::parse::from_str(&self.furigana)
+            .map(|i| i.kana)
+            .collect()
+    }
+
+    #[inline]
+    pub fn get_furigana(&self) -> impl Iterator<Item = japanese::furigana::SentencePartRef> {
+        japanese::furigana::parse::from_str(&self.furigana)
     }
 }
 
@@ -150,12 +140,7 @@ pub fn parse_lang_mask(mask: u16) -> Vec<Language> {
     langs
 }
 
-impl From<(String, Language)> for Translation {
-    #[inline]
-    fn from((text, language): (String, Language)) -> Self {
-        Self { text, language }
-    }
-}
+impl Eq for Sentence {}
 
 impl PartialEq for Sentence {
     #[inline]
@@ -164,11 +149,16 @@ impl PartialEq for Sentence {
     }
 }
 
-impl Eq for Sentence {}
-
 impl Hash for Sentence {
     #[inline]
-    fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
+    fn hash<H: Hasher>(&self, state: &mut H) {
         self.id.hash(state);
+    }
+}
+
+impl std::fmt::Debug for Sentence {
+    #[inline]
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", self.japanese)
     }
 }

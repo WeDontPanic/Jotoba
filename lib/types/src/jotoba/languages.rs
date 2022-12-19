@@ -1,5 +1,6 @@
 #[cfg(feature = "jotoba_intern")]
 use localization::traits::Translatable;
+
 use serde::{Deserialize, Serialize};
 use std::{array::IntoIter, convert::TryFrom};
 use strum_macros::{AsRefStr, Display, EnumString};
