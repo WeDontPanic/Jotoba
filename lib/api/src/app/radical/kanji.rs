@@ -1,7 +1,7 @@
 use actix_web::web::Json;
 use intmap::{int_set::IntSet, IntMap};
 use std::{collections::HashMap, time::Instant};
-use types::api::radical::find_kanji::{Request, Response};
+use types::api::app::radical::find_kanji::{Request, Response};
 
 /// Get kanji by its radicals
 pub async fn kanji_by_radicals(payload: Json<Request>) -> Result<Json<Response>, actix_web::Error> {

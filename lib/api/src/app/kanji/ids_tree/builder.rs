@@ -1,7 +1,7 @@
 use ids_parser::Origin;
 use once_cell::sync::Lazy;
 use std::collections::HashSet;
-use types::api::kanji::ids_tree::OutObject;
+use types::api::app::kanji::ids_tree::OutObject;
 
 static STOP_RADICALS: Lazy<HashSet<char>> = Lazy::new(|| {
     japanese::radicals::RADICALS

@@ -7,7 +7,7 @@ use order_struct::order_nh::OrderVal;
 use priority_container::PrioContainerMax;
 use search::engine::words::native::k_reading;
 use types::{
-    api::completions::{Response, SuggestionType, WordPair},
+    api::app::completions::{Response, SuggestionType, WordPair},
     jotoba::kanji,
 };
 

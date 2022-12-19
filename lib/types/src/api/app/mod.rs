@@ -1,11 +1,14 @@
-use std::str::FromStr;
-
-use serde::{Deserialize, Deserializer};
+pub mod completions;
+pub mod details;
+pub mod image;
+pub mod kanji;
+pub mod news;
+pub mod radical;
+pub mod search;
 
 use crate::jotoba::language::Language;
-
-pub mod details;
-pub mod search;
+use serde::{Deserialize, Deserializer};
+use std::str::FromStr;
 
 /// Deserializes a field into a Option<Language>. None if invalid lang-str, empty or Deserializing str
 /// failed

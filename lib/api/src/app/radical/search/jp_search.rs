@@ -1,7 +1,7 @@
 use jp_utils::JapaneseExt;
 use search::radical::word::RomajiSearch;
 use std::collections::{HashMap, HashSet};
-use types::{api::radical::search::KanjiRads, jotoba::kanji::Kanji};
+use types::{api::app::radical::search::KanjiRads, jotoba::kanji::Kanji};
 
 /// Returns a list of radicals based on the radical-search `query`
 pub fn search(query: &str) -> HashSet<char> {

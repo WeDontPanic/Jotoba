@@ -1,6 +1,6 @@
 use actix_web::web::Json;
 use error::api_error;
-use types::api::news::long::{Request, Response};
+use types::api::app::news::long::{Request, Response};
 
 /// Get detailed news endpoint
 pub async fn news(payload: Json<Request>) -> Result<Json<Response>, actix_web::Error> {

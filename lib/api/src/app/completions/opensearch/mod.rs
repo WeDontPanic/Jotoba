@@ -2,7 +2,7 @@ mod parse;
 
 use actix_web::web;
 use serde::Deserialize;
-use types::{api::completions::Request, jotoba::search::SearchTarget};
+use types::{api::app::completions::Request, jotoba::search::SearchTarget};
 
 #[derive(Deserialize)]
 pub struct EPQuery {

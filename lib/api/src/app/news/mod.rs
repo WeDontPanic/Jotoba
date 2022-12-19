@@ -1,7 +1,7 @@
 pub mod detailed;
 pub mod short;
 
-use types::api::news::NewsEntry;
+use types::api::app::news::NewsEntry;
 
 fn ne_from_resource(src: &news::NewsEntry, short: bool) -> NewsEntry {
     let html = if short {

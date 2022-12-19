@@ -1,6 +1,6 @@
 use index_framework::traits::{backend::Backend, storage::IndexStorage};
 use std::ops::Deref;
-use types::{api::completions::WordPair, jotoba::search::SearchTarget};
+use types::{api::app::completions::WordPair, jotoba::search::SearchTarget};
 
 pub fn suggestions(query: &str, search_target: SearchTarget) -> Option<Vec<WordPair>> {
     if query.trim().is_empty() {

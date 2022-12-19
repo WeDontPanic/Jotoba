@@ -3,8 +3,7 @@ use std::str::FromStr;
 use error::api_error::RestError;
 use jp_utils::JapaneseExt;
 use search::query::{self, parser::QueryParser, Query, QueryLang, UserSettings};
-use types::api::completions::Request;
-use types::jotoba::language::Language;
+use types::{api::app::completions::Request, jotoba::language::Language};
 use utils::real_string_len;
 
 /// Adjust the query and returns a newly allocated one

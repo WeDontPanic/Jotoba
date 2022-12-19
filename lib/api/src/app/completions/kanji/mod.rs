@@ -2,7 +2,7 @@ pub mod meaning;
 pub mod reading;
 
 use search::query::{Query, QueryLang};
-use types::api::completions::Response;
+use types::api::app::completions::Response;
 use wana_kana::to_romaji::to_romaji;
 
 /// Returns kanji suggestions

@@ -1,5 +1,5 @@
 use actix_web::web::Json;
-use types::api::news::short::{Request, Response};
+use types::api::app::news::short::{Request, Response};
 
 /// Get short news endpoint
 pub async fn news(payload: Json<Request>) -> Result<Json<Response>, actix_web::Error> {

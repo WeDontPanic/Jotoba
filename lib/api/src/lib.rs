@@ -1,8 +1,8 @@
+/// API endpoints for the webapp
 pub mod app;
-pub mod completions;
-pub mod img;
-pub mod info;
-pub mod kanji;
-pub mod news;
-pub mod radical;
+
+/// API endpoints for internal communication
+pub mod internal;
+
+/// Search API endpoint
 pub mod search;

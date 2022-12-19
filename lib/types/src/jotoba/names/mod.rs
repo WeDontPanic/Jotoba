@@ -2,7 +2,7 @@ pub mod name_type;
 
 use name_type::NameType;
 use serde::{Deserialize, Serialize};
-use std::hash::Hasher;
+use std::hash::{Hash, Hasher};
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Name {
@@ -13,22 +13,6 @@ pub struct Name {
     pub name_type: Option<Vec<NameType>>,
     pub xref: Option<String>,
 }
-
-impl PartialEq for Name {
-    #[inline]
-    fn eq(&self, other: &Self) -> bool {
-        self.sequence == other.sequence
-    }
-}
-
-impl std::hash::Hash for Name {
-    #[inline]
-    fn hash<H: Hasher>(&self, state: &mut H) {
-        self.sequence.hash(state);
-    }
-}
-
-impl Eq for Name {}
 
 impl Name {
     /// Return `true` if name is gendered
@@ -62,5 +46,21 @@ impl Name {
     #[inline]
     pub fn has_kanji(&self) -> bool {
         self.kanji.is_some()
+    }
+}
+
+impl PartialEq for Name {
+    #[inline]
+    fn eq(&self, other: &Self) -> bool {
+        self.sequence == other.sequence
+    }
+}
+
+impl Eq for Name {}
+
+impl Hash for Name {
+    #[inline]
+    fn hash<H: Hasher>(&self, state: &mut H) {
+        self.sequence.hash(state);
     }
 }

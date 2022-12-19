@@ -1,5 +1,4 @@
-use super::super::{words::foreign::try_romaji, Response};
-use crate::completions::convert_results;
+use super::super::{convert_results, words::foreign::try_romaji, Response};
 use autocompletion::suggest::{
     extension::{ngram::NGramExtension, similar_terms::SimilarTermsExtension},
     query::SuggestionQuery,

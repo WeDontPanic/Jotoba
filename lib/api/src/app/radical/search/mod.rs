@@ -10,7 +10,7 @@ use actix_web::{web::Json, HttpRequest};
 use error::api_error::RestError;
 use jp_utils::JapaneseExt;
 use types::{
-    api::radical::search::{Request, Response},
+    api::app::radical::search::{Request, Response},
     jotoba::language::Language,
 };
 

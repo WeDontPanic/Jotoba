@@ -8,7 +8,7 @@ use actix_web::web::Json;
 use jp_utils::JapaneseExt;
 use search::query::{Form, Query};
 use types::{
-    api::completions::{Request, Response, SuggestionType, WordPair},
+    api::app::completions::{Request, Response, SuggestionType, WordPair},
     jotoba::{kanji::reading::ReadingSearch, search::SearchTarget},
 };
 use words::hashtag;

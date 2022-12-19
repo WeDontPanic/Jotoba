@@ -1,8 +1,3 @@
 pub mod app;
-pub mod completions;
-pub mod image;
-pub mod info;
-pub mod kanji;
-pub mod news;
-pub mod radical;
+pub mod internal;
 pub mod search;

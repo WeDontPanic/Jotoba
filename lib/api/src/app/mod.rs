@@ -1,11 +1,16 @@
+pub mod completions;
+pub mod details;
+pub mod img;
+pub mod kanji;
+pub mod news;
+pub mod radical;
+pub mod search;
+
 use error::api_error::RestError;
 use types::{
     api::app::search::responses::words,
     jotoba::{self, language::Language},
 };
-
-pub mod details;
-pub mod search;
 
 pub type Result<T> = std::result::Result<T, RestError>;
 

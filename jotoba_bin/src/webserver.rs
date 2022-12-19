@@ -59,205 +59,207 @@ pub(super) async fn start(options: Options) -> std::io::Result<()> {
     debug_info();
 
     HttpServer::new(move || {
-        let app =
-            App::new()
-                // Data
-                .app_data(Data::new(config.clone()))
-                .app_data(Data::new(locale_dict_arc.clone()))
-                // Middlewares
-                .wrap(middleware::Logger::default())
-                .service(
-                    actixweb::resource("/")
-                        .wrap(Compat::new(middleware::Compress::default()))
-                        .route(actixweb::get().to(frontend::index::index)),
-                )
-                .service(actixweb::resource("/robots.txt").route(actixweb::get().to(robotstxt)))
-                .service(
-                    actixweb::resource("/docs.html")
-                        .wrap(Compat::new(middleware::Compress::default()))
-                        .route(actixweb::get().to(docs)),
-                )
-                .service(
-                    actixweb::resource("/sitemap.xml")
-                        .wrap(Compat::new(middleware::Compress::default()))
-                        .route(actixweb::get().to(sitemap)),
-                )
-                .service(
-                    actixweb::resource("/privacy")
-                        .wrap(Compat::new(middleware::Compress::default()))
-                        .route(actixweb::get().to(privacy)),
-                )
-                .service(
-                    actixweb::resource("/service-worker.js")
-                        .wrap(Compat::new(middleware::Compress::default()))
-                        .route(actixweb::get().to(service_worker)),
-                )
-                .service(
-                    actixweb::resource("/search/{query}")
-                        .wrap(Compat::new(middleware::Compress::default()))
-                        .route(actixweb::get().to(frontend::search_ep::search_ep)),
-                )
-                .service(
-                    actixweb::resource("/search")
-                        .wrap(Compat::new(middleware::Compress::default()))
-                        .route(actixweb::get().to(frontend::search_ep::search_ep_no_js)),
-                )
-                .service(
-                    actixweb::resource("/direct/{type}/{id}")
-                        .wrap(Compat::new(middleware::Compress::default()))
-                        .route(actixweb::get().to(frontend::direct::direct_ep)),
-                )
-                .service(
-                    actixweb::resource("/about")
-                        .wrap(Compat::new(middleware::Compress::default()))
-                        .route(actixweb::get().to(frontend::about::about)),
-                )
-                .service(
-                    actixweb::resource("/news")
-                        .wrap(Compat::new(middleware::Compress::default()))
-                        .route(actixweb::get().to(frontend::news_ep::news)),
-                )
-                .service(
-                    actixweb::resource("/help")
-                        .wrap(Compat::new(middleware::Compress::default()))
-                        .route(actixweb::get().to(frontend::help_page::help)),
-                )
-                .default_service(actix_web::Route::new().to(frontend::web_error::not_found))
-                // API
-                .service(
-                    actixweb::scope("/api")
-                        .wrap(
-                            middleware::DefaultHeaders::new()
-                                .add((ACCESS_CONTROL_ALLOW_ORIGIN, "*"))
-                                .add((ACCESS_CONTROL_ALLOW_HEADERS, "Content-Type")),
-                        )
-                        .wrap(Compat::new(Compress::default()))
-                        .route("/", actixweb::get().to(docs))
-                        .default_service(actix_web::Route::new().to(docs))
-                        .service(
-                            actixweb::scope("app")
-                                .route(
-                                    "k_comps",
-                                    actixweb::post().to(api::app::search::kanji::reading_compounds),
-                                )
-                                .route(
-                                    "kanji",
-                                    actixweb::post().to(api::app::search::kanji::search),
-                                )
-                                .route(
-                                    "names",
-                                    actixweb::post().to(api::app::search::names::search),
-                                )
-                                .route(
-                                    "sentences",
-                                    actixweb::post().to(api::app::search::sentences::search),
-                                )
-                                .route(
-                                    "words",
-                                    actixweb::post().to(api::app::search::words::search),
-                                )
-                                .service(
-                                    actixweb::scope("details")
-                                        .route(
-                                            "word",
-                                            actixweb::post().to(api::app::details::word::details),
-                                        )
-                                        .route(
-                                            "sentence",
-                                            actixweb::post()
-                                                .to(api::app::details::sentences::details_ep),
-                                        ),
-                                ),
-                        )
-                        .service(
-                            actixweb::scope("search")
-                                .route("words", actixweb::post().to(api::search::word::word_search))
-                                .route(
-                                    "kanji",
-                                    actixweb::post().to(api::search::kanji::kanji_search),
-                                )
-                                .route("names", actixweb::post().to(api::search::name::name_search))
-                                .route(
-                                    "sentences",
-                                    actixweb::post().to(api::search::sentence::sentence_search),
-                                ),
-                        )
-                        .service(
-                            actixweb::scope("internal")
-                                .wrap(HttpAuthentication::bearer(internal_validator))
-                                .service(actixweb::scope("info").route(
-                                    "words",
-                                    actixweb::post().to(api::info::words::word_info),
-                                )),
-                        )
-                        .service(
-                            actixweb::scope("kanji")
-                                .route(
-                                    "by_radical",
-                                    actixweb::post().to(api::radical::kanji_by_radicals),
-                                )
-                                .route(
-                                    "decompgraph",
-                                    actixweb::post().to(api::kanji::ids_tree::decomp_graph),
-                                ),
-                        )
-                        .route(
-                            "/radical/search",
-                            actixweb::post().to(api::radical::search::search_radical),
-                        )
-                        .route(
-                            "/suggestion",
-                            actixweb::post().to(api::completions::suggestion_ep),
-                        )
-                        .route(
-                            "/os-suggestions",
-                            actixweb::get().to(api::completions::opensearch::suggestion_ep),
-                        )
-                        .route("/img_scan", actixweb::post().to(api::img::scan_ep))
-                        .route("/news/short", actixweb::post().to(api::news::short::news))
-                        .route(
-                            "/news/detailed",
-                            actixweb::post().to(api::news::detailed::news),
-                        ),
-                )
-                // Static files
-                .service(
-                    actixweb::scope("/audio")
-                        .wrap(
-                            middleware::DefaultHeaders::new()
-                                .add((CACHE_CONTROL, format!("max-age={}", ASSET_CACHE_MAX_AGE))),
-                        )
-                        .service(
-                            actix_files::Files::new("", config.server.get_audio_files())
-                                .show_files_listing(),
-                        ),
-                )
-                .service(
-                    actixweb::scope("/assets")
-                        .wrap(
-                            middleware::DefaultHeaders::new()
-                                .add((CACHE_CONTROL, format!("max-age={}", ASSET_CACHE_MAX_AGE)))
-                                .add((ACCESS_CONTROL_ALLOW_ORIGIN, "*"))
-                                .add((ACCESS_CONTROL_ALLOW_HEADERS, "Content-Type")),
-                        )
-                        .wrap(Compat::new(Compress::default()))
-                        .service(
-                            actix_files::Files::new("", config.server.get_html_files())
-                                .show_files_listing(),
-                        ),
-                )
-                .service(
-                    actixweb::scope("/variable_assets/{oma}/assets")
-                        .wrap(
-                            middleware::DefaultHeaders::new()
-                                .add((CACHE_CONTROL, format!("max-age={}", ASSET_CACHE_MAX_AGE))),
-                        )
-                        .wrap(Compat::new(Compress::default()))
-                        .service(
-                            actix_files::Files::new("", config.server.get_html_files())
-                                .show_files_listing(),
-                        ),
-                );
+        let app = App::new()
+            // Data
+            .app_data(Data::new(config.clone()))
+            .app_data(Data::new(locale_dict_arc.clone()))
+            // Middlewares
+            .wrap(middleware::Logger::default())
+            .service(
+                actixweb::resource("/")
+                    .wrap(Compat::new(middleware::Compress::default()))
+                    .route(actixweb::get().to(frontend::index::index)),
+            )
+            .service(actixweb::resource("/robots.txt").route(actixweb::get().to(robotstxt)))
+            .service(
+                actixweb::resource("/docs.html")
+                    .wrap(Compat::new(middleware::Compress::default()))
+                    .route(actixweb::get().to(docs)),
+            )
+            .service(
+                actixweb::resource("/sitemap.xml")
+                    .wrap(Compat::new(middleware::Compress::default()))
+                    .route(actixweb::get().to(sitemap)),
+            )
+            .service(
+                actixweb::resource("/privacy")
+                    .wrap(Compat::new(middleware::Compress::default()))
+                    .route(actixweb::get().to(privacy)),
+            )
+            .service(
+                actixweb::resource("/service-worker.js")
+                    .wrap(Compat::new(middleware::Compress::default()))
+                    .route(actixweb::get().to(service_worker)),
+            )
+            .service(
+                actixweb::resource("/search/{query}")
+                    .wrap(Compat::new(middleware::Compress::default()))
+                    .route(actixweb::get().to(frontend::search_ep::search_ep)),
+            )
+            .service(
+                actixweb::resource("/search")
+                    .wrap(Compat::new(middleware::Compress::default()))
+                    .route(actixweb::get().to(frontend::search_ep::search_ep_no_js)),
+            )
+            .service(
+                actixweb::resource("/direct/{type}/{id}")
+                    .wrap(Compat::new(middleware::Compress::default()))
+                    .route(actixweb::get().to(frontend::direct::direct_ep)),
+            )
+            .service(
+                actixweb::resource("/about")
+                    .wrap(Compat::new(middleware::Compress::default()))
+                    .route(actixweb::get().to(frontend::about::about)),
+            )
+            .service(
+                actixweb::resource("/news")
+                    .wrap(Compat::new(middleware::Compress::default()))
+                    .route(actixweb::get().to(frontend::news_ep::news)),
+            )
+            .service(
+                actixweb::resource("/help")
+                    .wrap(Compat::new(middleware::Compress::default()))
+                    .route(actixweb::get().to(frontend::help_page::help)),
+            )
+            .default_service(actix_web::Route::new().to(frontend::web_error::not_found))
+            // API
+            .service(
+                actixweb::scope("/api")
+                    .wrap(
+                        middleware::DefaultHeaders::new()
+                            .add((ACCESS_CONTROL_ALLOW_ORIGIN, "*"))
+                            .add((ACCESS_CONTROL_ALLOW_HEADERS, "Content-Type")),
+                    )
+                    .wrap(Compat::new(Compress::default()))
+                    .route("/", actixweb::get().to(docs))
+                    .default_service(actix_web::Route::new().to(docs))
+                    .service(
+                        actixweb::scope("app")
+                            .route(
+                                "k_comps",
+                                actixweb::post().to(api::app::search::kanji::reading_compounds),
+                            )
+                            .route(
+                                "kanji",
+                                actixweb::post().to(api::app::search::kanji::search),
+                            )
+                            .route(
+                                "names",
+                                actixweb::post().to(api::app::search::names::search),
+                            )
+                            .route(
+                                "sentences",
+                                actixweb::post().to(api::app::search::sentences::search),
+                            )
+                            .route(
+                                "words",
+                                actixweb::post().to(api::app::search::words::search),
+                            )
+                            .service(
+                                actixweb::scope("details")
+                                    .route(
+                                        "word",
+                                        actixweb::post().to(api::app::details::word::details),
+                                    )
+                                    .route(
+                                        "sentence",
+                                        actixweb::post()
+                                            .to(api::app::details::sentences::details_ep),
+                                    ),
+                            ),
+                    )
+                    .service(
+                        actixweb::scope("search")
+                            .route("words", actixweb::post().to(api::search::word::word_search))
+                            .route(
+                                "kanji",
+                                actixweb::post().to(api::search::kanji::kanji_search),
+                            )
+                            .route("names", actixweb::post().to(api::search::name::name_search))
+                            .route(
+                                "sentences",
+                                actixweb::post().to(api::search::sentence::sentence_search),
+                            ),
+                    )
+                    .service(
+                        actixweb::scope("internal")
+                            .wrap(HttpAuthentication::bearer(internal_validator))
+                            .service(actixweb::scope("info").route(
+                                "words",
+                                actixweb::post().to(api::internal::info::words::word_info),
+                            )),
+                    )
+                    .service(
+                        actixweb::scope("kanji")
+                            .route(
+                                "by_radical",
+                                actixweb::post().to(api::app::radical::kanji_by_radicals),
+                            )
+                            .route(
+                                "decompgraph",
+                                actixweb::post().to(api::app::kanji::ids_tree::decomp_graph),
+                            ),
+                    )
+                    .route(
+                        "/radical/search",
+                        actixweb::post().to(api::app::radical::search::search_radical),
+                    )
+                    .route(
+                        "/suggestion",
+                        actixweb::post().to(api::app::completions::suggestion_ep),
+                    )
+                    .route(
+                        "/os-suggestions",
+                        actixweb::get().to(api::app::completions::opensearch::suggestion_ep),
+                    )
+                    .route("/img_scan", actixweb::post().to(api::app::img::scan_ep))
+                    .route(
+                        "/news/short",
+                        actixweb::post().to(api::app::news::short::news),
+                    )
+                    .route(
+                        "/news/detailed",
+                        actixweb::post().to(api::app::news::detailed::news),
+                    ),
+            )
+            // Static files
+            .service(
+                actixweb::scope("/audio")
+                    .wrap(
+                        middleware::DefaultHeaders::new()
+                            .add((CACHE_CONTROL, format!("max-age={}", ASSET_CACHE_MAX_AGE))),
+                    )
+                    .service(
+                        actix_files::Files::new("", config.server.get_audio_files())
+                            .show_files_listing(),
+                    ),
+            )
+            .service(
+                actixweb::scope("/assets")
+                    .wrap(
+                        middleware::DefaultHeaders::new()
+                            .add((CACHE_CONTROL, format!("max-age={}", ASSET_CACHE_MAX_AGE)))
+                            .add((ACCESS_CONTROL_ALLOW_ORIGIN, "*"))
+                            .add((ACCESS_CONTROL_ALLOW_HEADERS, "Content-Type")),
+                    )
+                    .wrap(Compat::new(Compress::default()))
+                    .service(
+                        actix_files::Files::new("", config.server.get_html_files())
+                            .show_files_listing(),
+                    ),
+            )
+            .service(
+                actixweb::scope("/variable_assets/{oma}/assets")
+                    .wrap(
+                        middleware::DefaultHeaders::new()
+                            .add((CACHE_CONTROL, format!("max-age={}", ASSET_CACHE_MAX_AGE))),
+                    )
+                    .wrap(Compat::new(Compress::default()))
+                    .service(
+                        actix_files::Files::new("", config.server.get_html_files())
+                            .show_files_listing(),
+                    ),
+            );
 
         //#[cfg(feature = "sentry_error")]
         //let app = app.wrap(sentry_actix::Sentry::new());

@@ -7,7 +7,7 @@ use std::{cmp::Ordering, time::Instant};
 
 use jp_utils::JapaneseExt;
 use search::query::{Query, QueryLang};
-use types::api::completions::{Response, WordPair};
+use types::api::app::completions::{Response, WordPair};
 use utils::bool_ord;
 use wana_kana::{to_katakana::to_katakana, to_romaji::to_romaji};
 

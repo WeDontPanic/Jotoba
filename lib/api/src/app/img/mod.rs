@@ -10,7 +10,7 @@ use itertools::Itertools;
 use once_cell::sync::Lazy;
 use regex::Regex;
 use std::path::Path;
-use types::api::image::{Request, Response};
+use types::api::app::image::{Request, Response};
 
 // MAX 2MB
 const MAX_UPLOAD_SIZE: usize = 2 * 1024 * 1024;
