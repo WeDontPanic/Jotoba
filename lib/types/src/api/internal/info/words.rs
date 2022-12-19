@@ -1,5 +1,10 @@
-use crate::jotoba::language::{LangParam, Language};
-use crate::{api::app::deserialize_lang, jotoba::words::Word};
+use crate::{
+    api::app::deserialize_lang,
+    jotoba::{
+        language::{LangParam, Language},
+        words::Word,
+    },
+};
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Debug)]
