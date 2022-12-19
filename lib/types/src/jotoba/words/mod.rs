@@ -290,6 +290,17 @@ impl Word {
 // Jotoba intern only features
 #[cfg(feature = "jotoba_intern")]
 impl Word {
+    /// Get the audio's filename of the word
+    #[inline]
+    pub fn audio_file_name(&self) -> Option<String> {
+        self.reading.kanji.as_ref().and_then(|kanji| {
+            let file = format!("{}【{}】.mp3", kanji.reading, self.reading.kana.reading);
+            std::path::Path::new(&format!("html/audio/mp3/{}", file))
+                .exists()
+                .then(|| file)
+        })
+    }
+
     /// Get the audio path of a word
     #[inline]
     pub fn audio_file(&self) -> Option<String> {

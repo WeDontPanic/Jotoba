@@ -2,7 +2,8 @@ use crate::{
     api::app::deserialize_lang,
     jotoba::{
         language::{LangParam, Language},
-        words::Word,
+        sentences::Sentence,
+        words::{part_of_speech::PosSimple, Word},
     },
 };
 use serde::{Deserialize, Serialize};
@@ -33,11 +34,36 @@ impl Request {
 
 #[derive(Serialize, Deserialize)]
 pub struct Response {
-    pub words: Vec<Word>,
+    pub items: Vec<WordItem>,
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct WordItem {
+    pub word: Word,
+    pub sentences: Vec<Sentence>,
+    pub audio: Option<String>,
+    pub pos: Vec<PosSimple>,
+}
+
+impl WordItem {
+    pub fn new(
+        word: Word,
+        sentences: Vec<Sentence>,
+        audio: Option<String>,
+        pos: Vec<PosSimple>,
+    ) -> Self {
+        Self {
+            word,
+            sentences,
+            audio,
+            pos,
+        }
+    }
 }
 
 impl Response {
-    pub fn new(words: Vec<Word>) -> Self {
-        Self { words }
+    #[inline]
+    pub fn new(items: Vec<WordItem>) -> Self {
+        Self { items }
     }
 }
