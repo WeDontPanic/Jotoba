@@ -19,8 +19,8 @@ types = { path = "../types", default-features = false }
 actix-web = "4.2.1"
 actix-multipart = "0.4.0"
 itertools = "0.10.5"
-once_cell = { version = "1.16.0", default-features = false }
-serde = "1.0.151"
+once_cell = { version = "1.17.0", default-features = false }
+serde = "1.0.152"
 log = "0.4.17"
 wana_kana = { git = "https://github.com/WeDontPanic/wana_kana_rust" }
 #jpeudex = { path = "../../../jpeudex"}

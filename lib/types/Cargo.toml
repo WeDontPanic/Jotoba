@@ -13,7 +13,7 @@ jp_inflections = { git = "https://github.com/JojiiOfficial/Japanese_Inflections"
 jp_utils = { git = "https://github.com/JojiiOfficial/jp_utils", features = ["furigana"] }
 strum = { version = "0.24.1", features = ["derive"] }
 strum_macros = "0.24.3"
-serde = { version = "1.0.151", features = ["derive"] }
+serde = { version = "1.0.152", features = ["derive"] }
 bitflags = { git = "https://github.com/JojiiOfficial/BitFlags" }
 itertools = "0.10.5"
 

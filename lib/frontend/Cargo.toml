@@ -18,7 +18,7 @@ localization = { path = "../localization" }
 resources = { path = "../resources"}
 types = { path = "../types" , features = ["jotoba_intern"]}
 actix-web = "4.2.1"
-serde = "1.0.151"
+serde = "1.0.152"
 sentry = { version = "0.29.1", optional = true }
 log = "0.4.17"
 percent-encoding = "2.2.0"
