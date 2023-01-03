@@ -94,8 +94,8 @@ pub fn load_raw<P: AsRef<Path>>(
     utils::deser_file(file, "")
 }
 
-pub fn load<P: AsRef<Path>>(res_dir: P) -> Result<bool, Box<dyn Error + Sync + Send>> {
-    let store = load_raw(res_dir.as_ref().join(SUGGESTION_FILE))?;
+pub fn load<P: AsRef<Path>>(path: P) -> Result<bool, Box<dyn Error + Sync + Send>> {
+    let store = load_raw(path)?;
     Ok(SUGGESTION_STORE.set(store).is_ok())
 }
 
