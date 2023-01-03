@@ -7,6 +7,7 @@ pub mod about;
 pub mod direct;
 pub mod help_page;
 pub mod index;
+pub mod liveness;
 pub mod news_ep;
 pub mod og_tags;
 pub mod search_ep;

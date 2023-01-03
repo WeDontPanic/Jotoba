@@ -72,6 +72,13 @@ pub(super) async fn start(options: Options) -> std::io::Result<()> {
             )
             .service(actixweb::resource("/robots.txt").route(actixweb::get().to(robotstxt)))
             .service(
+                actixweb::resource("/ready").route(actixweb::get().to(frontend::liveness::ready)),
+            )
+            .service(
+                actixweb::resource("/healthy")
+                    .route(actixweb::get().to(frontend::liveness::healthy)),
+            )
+            .service(
                 actixweb::resource("/docs.html")
                     .wrap(Compat::new(middleware::Compress::default()))
                     .route(actixweb::get().to(docs)),
