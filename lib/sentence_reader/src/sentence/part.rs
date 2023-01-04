@@ -196,7 +196,7 @@ fn merge_furigana(src: &str, furi: &str) -> Option<String> {
         }
 
         let mut cloned = furi_part.to_owned();
-        if let Some(k) = furi_part.get_kanji() {
+        if let Some(k) = furi_part.as_kanji() {
             let kanji = k
                 .chars()
                 .map(|_| kanji_paths.next())
@@ -221,7 +221,7 @@ fn can_merge_furi(src: &str, furi: &str) -> bool {
 
     let all_src_kanji = furigana::parse::from_str(furi)
         .take_while(|i| i.as_ref().unwrap().is_kanji())
-        .map(|i| i.unwrap().get_kanji().unwrap().chars().collect::<Vec<_>>())
+        .map(|i| i.unwrap().as_kanji().unwrap().chars().collect::<Vec<_>>())
         .flatten();
 
     for furi_kanji in all_src_kanji {

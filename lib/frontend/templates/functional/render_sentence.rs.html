@@ -7,7 +7,7 @@
 <div class="furigana-kanji-container">@*
 *@@for furi_part in iter {@*
     *@@if !furi_part.is_empty() {@*
-            *@@if let Some(kanji) = furi_part.get_kanji() {@*
+            *@@if let Some(kanji) = furi_part.as_kanji() {@*
                 *@<ruby>@*
                     *@<span class="kanji-preview @addl_classes">@*
                         *@@kanji@*
@@ -22,7 +22,7 @@
                 *@</ruby>@*
             *@} else {@*
                 *@<span class="inline-kana-preview @addl_classes">@*
-                    *@@furi_part.get_kana().unwrap()@*
+                    *@@furi_part.as_kana().unwrap()@*
                 *@</span>@*
             *@}@*
     *@}@*

@@ -19,12 +19,12 @@ pub(crate) fn sentence_matches(sentence: &Sentence, reading: &Reading) -> bool {
                 continue;
             }
 
-            let curr_kanji = i.get_kanji().unwrap();
+            let curr_kanji = i.as_kanji().unwrap();
             if !curr_kanji.contains(&lit) {
                 continue;
             }
 
-            if i.get_kana_reading().to_hiragana().contains(&reading_hira) {
+            if i.kana_reading().to_hiragana().contains(&reading_hira) {
                 return true;
             }
         }

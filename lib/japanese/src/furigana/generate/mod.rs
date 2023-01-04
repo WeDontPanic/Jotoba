@@ -21,7 +21,7 @@ pub fn checked<R: ReadingRetrieve>(retrieve: R, kanji: &str, kana: &str) -> Stri
     };
 
     let furi_parsed = parse::from_str(&unchecked_furi)
-        .map(|i| i.unwrap().get_kana_reading())
+        .map(|i| i.unwrap().kana_reading())
         .join("");
 
     // check if built correctly

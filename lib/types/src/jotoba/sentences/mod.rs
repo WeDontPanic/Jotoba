@@ -110,7 +110,7 @@ impl Sentence {
     #[inline]
     pub fn get_kana(&self) -> String {
         jp_utils::furigana::parse::from_str(&self.furigana)
-            .map(|i| jp_utils::furigana::as_part::AsPart::get_kana_reading(&i.unwrap()))
+            .map(|i| jp_utils::furigana::as_part::AsPart::kana_reading(&i.unwrap()))
             .collect()
     }
 
