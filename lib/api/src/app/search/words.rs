@@ -47,6 +47,8 @@ pub async fn search(payload: Json<SearchPayload>) -> Result<Json<Resp>> {
 
     let s_index = result.sentence_index();
 
+    let number = result.number.clone();
+
     let sentence = result
         .other_data
         .sentence
@@ -56,7 +58,7 @@ pub async fn search(payload: Json<SearchPayload>) -> Result<Json<Resp>> {
 
     let original_query = result.other_data.raw_query.clone();
 
-    let res = words::Response::new(words, kanji, infl_info, sentence, original_query);
+    let res = words::Response::new(words, kanji, infl_info, sentence, original_query, number);
     let len = result.total as u32;
 
     let page = new_page(&payload, res, len, payload.settings.page_size);

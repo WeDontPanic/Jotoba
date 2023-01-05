@@ -7,6 +7,7 @@ pub struct AddResData {
     pub sentence: Option<SentenceInfo>,
     pub inflection: Option<InflectionInformation>,
     pub raw_query: String,
+    pub number: Option<String>,
 }
 
 impl OutputAddable for AddResData {

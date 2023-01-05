@@ -6,9 +6,8 @@ pub use inflection::*;
 pub use sentence::*;
 pub use word::*;
 
-use serde::Serialize;
-
 use super::kanji::Kanji;
+use serde::Serialize;
 
 /// A word search response
 #[derive(Clone, Serialize)]
@@ -18,6 +17,10 @@ pub struct Response {
 
     /// Several kanji for the given words
     kanji: Vec<Kanji>,
+
+    /// Parsed number from query
+    #[serde(skip_serializing_if = "Option::is_none")]
+    number: Option<String>,
 
     /// Inflection information of the current word
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -39,6 +42,7 @@ impl Response {
         infl_info: Option<InflectionInfo>,
         sentence: Option<Sentence>,
         original_query: String,
+        number: Option<String>,
     ) -> Self {
         Self {
             words,
@@ -46,6 +50,7 @@ impl Response {
             infl_info,
             sentence,
             original_query,
+            number,
         }
     }
 }

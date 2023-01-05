@@ -13,7 +13,7 @@ use types::jotoba::words::Word;
 use filter::WordFilter;
 use producer::{
     foreign::{romaji::RomajiProducer, ForeignProducer},
-    japanese::{sentence_reader::SReaderProducer, NativeProducer},
+    japanese::{number::NumberProducer, sentence_reader::SReaderProducer, NativeProducer},
     k_reading::KReadingProducer,
     regex::RegexProducer,
     sequence::SeqProducer,
@@ -38,6 +38,7 @@ impl<'a> Search<'a> {
             Box::new(NativeProducer::new(query)),
             Box::new(ForeignProducer::new(query)),
             Box::new(RomajiProducer::new(query)),
+            Box::new(NumberProducer::new(query)),
         ];
 
         let filter = WordFilter::new(query.clone());

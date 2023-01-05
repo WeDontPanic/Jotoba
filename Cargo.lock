@@ -1572,6 +1572,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "japanese-number-parser"
+version = "0.1.0"
+source = "git+https://github.com/gorbit99/japanese-number-parser#6787110cc186f60d7edfe7f49abd9081f7f9be8c"
+dependencies = [
+ "itertools",
+ "lazy_static",
+]
+
+[[package]]
 name = "jobserver"
 version = "0.1.25"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2449,6 +2458,7 @@ dependencies = [
  "intmap",
  "itertools",
  "japanese",
+ "japanese-number-parser",
  "jp_utils",
  "localization",
  "log",

@@ -53,7 +53,9 @@ impl<S: Searchable> SearchExecutor<S> {
         self.search.mod_output(&mut out);
 
         if out.is_empty() && out.output_add.is_empty() {
-            return SearchResult::default();
+            let mut res = SearchResult::default();
+            res.other_data = out.output_add;
+            return res;
         }
 
         // Get total len of results
