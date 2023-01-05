@@ -115,6 +115,8 @@ pub enum Field {
     Medicine,
     #[strum(serialize = "met")]
     ClimateWeather,
+    #[strum(serialize = "mining")]
+    Mining,
     #[strum(serialize = "mil")]
     Military,
     #[strum(serialize = "noh")]
@@ -151,6 +153,8 @@ pub enum Field {
     Railway,
     #[strum(serialize = "rommyth")]
     RomanMythology,
+    #[strum(serialize = "stockm")]
+    StockMarket,
     #[strum(serialize = "shogi")]
     Shogi,
     #[strum(serialize = "sports")]
@@ -225,6 +229,7 @@ impl Translatable for Field {
             Field::Mathematics => "Mathematics",
             Field::MechanicalEngineering => "MechanicalEngineering",
             Field::Medicine => "Medicine",
+            Field::Mining => "Mining",
             Field::ClimateWeather => "Climate/weather",
             Field::Manga => "Manga",
             Field::Military => "Military",
@@ -242,6 +247,7 @@ impl Translatable for Field {
             Field::Psychitatry => "Psychiatry",
             Field::Railway => "Railway",
             Field::RomanMythology => "Roman Mythology",
+            Field::StockMarket => "Stock market",
             Field::Shinto => "Shinto",
             Field::Shogi => "Shogi",
             Field::Sports => "Sports",
