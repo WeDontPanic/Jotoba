@@ -6,25 +6,27 @@
 
 <div class="furigana-kanji-container">@*
 *@@for furi_part in iter {@*
-    *@@if !furi_part.is_empty() {@*
-            *@@if let Some(kanji) = furi_part.as_kanji() {@*
-                *@<ruby>@*
-                    *@<span class="kanji-preview @addl_classes">@*
-                        *@@kanji@*
-                    *@</span>@*
-                    *@@if show_furigana {@*
-                      *@<rp>（</rp>@*
-                      *@<rt class="furigana-preview noselect @addl_classes">@*
-                          *@@furi_part.readings().unwrap().join("")@*
-                      *@</rt>@*
-                      *@<rp>）</rp>@*
-                    *@}@*
-                *@</ruby>@*
-            *@} else {@*
-                *@<span class="inline-kana-preview @addl_classes">@*
-                    *@@furi_part.as_kana().unwrap()@*
-                *@</span>@*
-            *@}@*
+    *@@for (main, alt) in furi_part.reading_iter() {@*
+      *@@if !furi_part.is_empty() {@*
+              *@@if furi_part.is_kanji() {@*
+                  *@<ruby>@*
+                      *@<span class="kanji-preview @addl_classes">@*
+                          *@@main@*
+                      *@</span>@*
+                      *@@if show_furigana {@*
+                        *@<rp>（</rp>@*
+                        *@<rt class="furigana-preview noselect @addl_classes">@*
+                            *@@alt.unwrap()@*
+                        *@</rt>@*
+                        *@<rp>）</rp>@*
+                      *@}@*
+                  *@</ruby>@*
+              *@} else {@*
+                  *@<span class="inline-kana-preview @addl_classes">@*
+                      *@@main@*
+                  *@</span>@*
+              *@}@*
+      *@}@*
     *@}@*
 *@}@*
 *@</div>
