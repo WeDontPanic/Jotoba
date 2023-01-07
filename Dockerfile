@@ -33,5 +33,8 @@ RUN apt install build-essential pkg-config cmake libssl-dev libleptonica-dev lib
 COPY --from=build /app/jotoba .
 COPY --from=build /app/locales ./locales
 
+RUN useradd -s /bin/bash runuser
+USER runuser
+
 # Run the binary
 CMD ["./jotoba","-s"]
