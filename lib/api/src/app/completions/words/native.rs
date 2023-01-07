@@ -76,6 +76,7 @@ pub fn suggestions(query: &Query, _romaji_query: &str, radicals: &[char]) -> Opt
     let sentence_len = sentence.len();
     let items: Vec<_> = sentence
         .into_iter()
+        .filter(|i| !i.is_empty())
         .map(|w| StringItem::new(w, 0.0))
         .collect();
     let items: Vec<_> = items
