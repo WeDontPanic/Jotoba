@@ -278,16 +278,25 @@ pub(super) async fn start(options: Options) -> std::io::Result<()> {
     .await
 }
 
-async fn service_worker(_req: HttpRequest) -> actix_web::Result<NamedFile> {
-    Ok(NamedFile::open("html/assets/js/tools/service-worker.js")?)
+async fn service_worker(config: Data<Config>, _req: HttpRequest) -> actix_web::Result<NamedFile> {
+    let htmlpath = Path::new(config.server.get_html_files());
+    let filepath = Path::new("js/tools/service-worker.js");
+    let path = htmlpath.join(filepath);
+    Ok(NamedFile::open(path)?)
 }
 
-async fn privacy(_req: HttpRequest) -> actix_web::Result<NamedFile> {
-    Ok(NamedFile::open("html/privacypolicy.html")?)
+async fn privacy(config: Data<Config>, _req: HttpRequest) -> actix_web::Result<NamedFile> {
+    let htmlpath = Path::new(config.server.get_html_files());
+    let filepath = Path::new("privacypolicy.html");
+    let path = htmlpath.join(filepath);
+    Ok(NamedFile::open(path)?)
 }
 
-async fn sitemap(_req: HttpRequest) -> actix_web::Result<NamedFile> {
-    Ok(NamedFile::open("html/sitemap.xml")?)
+async fn sitemap(config: Data<Config>, _req: HttpRequest) -> actix_web::Result<NamedFile> {
+    let htmlpath = Path::new(config.server.get_html_files());
+    let filepath = Path::new("sitemap.xml");
+    let path = htmlpath.join(filepath);
+    Ok(NamedFile::open(path)?)
 }
 
 async fn robotstxt(_req: HttpRequest) -> HttpResponse {
@@ -298,8 +307,11 @@ Sitemap: https://jotoba.com/sitemap.xml"#,
     )
 }
 
-async fn docs(_req: HttpRequest) -> actix_web::Result<NamedFile> {
-    Ok(NamedFile::open("html/docs.html")?)
+async fn docs(config: Data<Config>, _req: HttpRequest) -> actix_web::Result<NamedFile> {
+    let htmlpath = Path::new(config.server.get_html_files());
+    let filepath = Path::new("docs.html");
+    let path = htmlpath.join(filepath);
+    Ok(NamedFile::open(path)?)
 }
 
 pub(crate) fn prepare_data(ccf: &Config) {
