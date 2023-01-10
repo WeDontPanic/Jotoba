@@ -1,9 +1,9 @@
 /html/assets/js/lib/loadAnalytics.js
 /html/assets/svg
 /html/audio
-/html/sitemap.xml
-/html/*.html
-!/html/docs.html
+/html/assets/sitemap.xml
+/html/assets/*.html
+!/html/assets/docs.html
 /target
 out
 *.old
