@@ -137,15 +137,15 @@
         </div>
 
          <!-- Second Part -->
-         @if k_item.kanji.has_stroke_frames() {
+         @if k_item.kanji.has_stroke_frames(data.assets_path()) {
            <hr/>
            <div class="stroke-container">
               <img src="@k_item.kanji.get_stroke_frames_url()" type="image/svg+xml" class="kanji-img">
-              @unescaped_string(k_item.get_frames().unwrap_or_default())
+              @unescaped_string(k_item.get_frames(data.assets_path()).unwrap_or_default())
            </div>
          }
 
-         @if k_item.kanji.has_animation_file() {
+         @if k_item.kanji.has_animation_file(data.assets_path()) {
          
           <div class="animation-container d-flex flex-row">
 
@@ -178,7 +178,7 @@
             </div>            
 
             <div id="@(k_item.kanji.literal)_svg" class="anim-container" onmouseover='toggleNumbers("@(k_item.kanji.literal)", true)' onmouseleave='toggleNumbers("@(k_item.kanji.literal)", false)'>
-              @unescaped_string(k_item.get_animation().unwrap_or_default())
+              @unescaped_string(k_item.get_animation(data.assets_path()).unwrap_or_default())
 
               <div id="@(k_item.kanji.literal)_reset" class="clickable reset-btn" onclick='undoAnimation("@(k_item.kanji.literal)")'>
                 <img draggable="false" src="/assets/svg/ui/revert.svg" />

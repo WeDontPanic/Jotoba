@@ -227,6 +227,11 @@ impl<'a> BaseData<'a> {
         }
         self.site.og_tags()
     }
+
+    #[inline]
+    pub fn assets_path(&self) -> &str {
+        self.config.server.get_html_files()
+    }
 }
 
 impl<'a> Site<'a> {

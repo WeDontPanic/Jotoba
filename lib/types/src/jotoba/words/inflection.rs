@@ -95,72 +95,73 @@ pub struct InflectionPair {
     pub negative: String,
 }
 
+pub fn build_inflections(
+    verb: &Verb,
+    is_exception: bool,
+) -> Result<Inflections, jp_inflections::error::Error> {
+    return Ok(Inflections {
+        present: InflectionPair {
+            positive: verb.dictionary(WordForm::Short)?.try_kana(is_exception),
+            negative: verb.negative(WordForm::Short)?.try_kana(is_exception),
+        },
+        present_polite: InflectionPair {
+            positive: verb.dictionary(WordForm::Long)?.try_kana(is_exception),
+            negative: verb.negative(WordForm::Long)?.try_kana(is_exception),
+        },
+
+        past: InflectionPair {
+            positive: verb.past(WordForm::Short)?.try_kana(is_exception),
+            negative: verb.negative_past(WordForm::Short)?.try_kana(is_exception),
+        },
+        past_polite: InflectionPair {
+            positive: verb.past(WordForm::Long)?.try_kana(is_exception),
+            negative: verb.negative_past(WordForm::Long)?.try_kana(is_exception),
+        },
+        te_form: InflectionPair {
+            positive: verb.te_form()?.try_kana(is_exception),
+            negative: verb.negative_te_form()?.try_kana(is_exception),
+        },
+        potential: InflectionPair {
+            positive: verb.potential(WordForm::Short)?.try_kana(is_exception),
+            negative: verb
+                .negative_potential(WordForm::Short)?
+                .try_kana(is_exception),
+        },
+        passive: InflectionPair {
+            positive: verb.passive()?.try_kana(is_exception),
+            negative: verb.negative_passive()?.try_kana(is_exception),
+        },
+        causative: InflectionPair {
+            positive: verb.causative()?.try_kana(is_exception),
+            negative: verb.negative_causative()?.try_kana(is_exception),
+        },
+        causative_passive: InflectionPair {
+            positive: verb.causative_passive()?.try_kana(is_exception),
+            negative: verb.negative_causative_passive()?.try_kana(is_exception),
+        },
+        imperative: InflectionPair {
+            positive: verb.imperative()?.try_kana(is_exception),
+            negative: verb.imperative_negative()?.try_kana(is_exception),
+        },
+    });
+}
+
 /// Returns the inflections of `word` if its a verb
 #[cfg(feature = "jotoba_intern")]
-pub(super) fn of_word(word: &super::Word) -> Option<Inflections> {
+pub fn of_word(word: &super::Word) -> Option<Inflections> {
     let verb = get_jp_verb(word)?;
-    let build = || -> Result<Inflections, jp_inflections::error::Error> {
-        let is_exception = word
-            .reading
-            .kanji
-            .as_ref()
-            .map(|kanji| kanji.reading == "為る" || kanji.reading == "来る")
-            .unwrap_or(false);
-
-        return Ok(Inflections {
-            present: InflectionPair {
-                positive: verb.dictionary(WordForm::Short)?.try_kana(is_exception),
-                negative: verb.negative(WordForm::Short)?.try_kana(is_exception),
-            },
-            present_polite: InflectionPair {
-                positive: verb.dictionary(WordForm::Long)?.try_kana(is_exception),
-                negative: verb.negative(WordForm::Long)?.try_kana(is_exception),
-            },
-
-            past: InflectionPair {
-                positive: verb.past(WordForm::Short)?.try_kana(is_exception),
-                negative: verb.negative_past(WordForm::Short)?.try_kana(is_exception),
-            },
-            past_polite: InflectionPair {
-                positive: verb.past(WordForm::Long)?.try_kana(is_exception),
-                negative: verb.negative_past(WordForm::Long)?.try_kana(is_exception),
-            },
-            te_form: InflectionPair {
-                positive: verb.te_form()?.try_kana(is_exception),
-                negative: verb.negative_te_form()?.try_kana(is_exception),
-            },
-            potential: InflectionPair {
-                positive: verb.potential(WordForm::Short)?.try_kana(is_exception),
-                negative: verb
-                    .negative_potential(WordForm::Short)?
-                    .try_kana(is_exception),
-            },
-            passive: InflectionPair {
-                positive: verb.passive()?.try_kana(is_exception),
-                negative: verb.negative_passive()?.try_kana(is_exception),
-            },
-            causative: InflectionPair {
-                positive: verb.causative()?.try_kana(is_exception),
-                negative: verb.negative_causative()?.try_kana(is_exception),
-            },
-            causative_passive: InflectionPair {
-                positive: verb.causative_passive()?.try_kana(is_exception),
-                negative: verb.negative_causative_passive()?.try_kana(is_exception),
-            },
-            imperative: InflectionPair {
-                positive: verb.imperative()?.try_kana(is_exception),
-                negative: verb.imperative_negative()?.try_kana(is_exception),
-            },
-        });
-    }()
-    .ok()?;
-
-    Some(build)
+    let is_exception = word
+        .reading
+        .kanji
+        .as_ref()
+        .map(|kanji| kanji.reading == "為る" || kanji.reading == "来る")
+        .unwrap_or(false);
+    build_inflections(&verb, is_exception).ok()
 }
 
 /// Returns a jp_inflections::Verb if [`self`] is a verb
 #[cfg(feature = "jotoba_intern")]
-fn get_jp_verb(word: &super::Word) -> Option<Verb> {
+pub fn get_jp_verb(word: &super::Word) -> Option<Verb> {
     use super::part_of_speech::PartOfSpeech;
     use crate::jotoba::words::part_of_speech::{self, IrregularVerb};
 

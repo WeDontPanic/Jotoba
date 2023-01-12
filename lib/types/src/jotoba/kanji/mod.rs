@@ -1,7 +1,10 @@
 pub mod radical;
 pub mod reading;
 
-use std::{char, path::Path};
+use std::{
+    char,
+    path::{Path, PathBuf},
+};
 
 use serde::{Deserialize, Serialize};
 
@@ -125,8 +128,8 @@ impl Kanji {
 
     /// Returns `true` if the kanji has stroke frames
     #[inline]
-    pub fn has_stroke_frames(&self) -> bool {
-        Path::new(&self.get_animation_path()).exists()
+    pub fn has_stroke_frames<P: AsRef<Path>>(&self, assets_path: P) -> bool {
+        self.get_animation_path(assets_path).exists()
     }
 
     /// Returns the url to stroke-frames svg
@@ -137,20 +140,27 @@ impl Kanji {
 
     /// Returns the local path of the stroke-frames
     #[inline]
-    pub fn get_stroke_frames_path(&self) -> String {
-        format!("html/assets/svg/kanji/{}_frames.svg", self.literal)
-    }
-
-    /// Returns `true` if the kanji has a stroke animation file
-    #[inline]
-    pub fn has_animation_file(&self) -> bool {
-        Path::new(&self.get_animation_path()).exists()
+    pub fn get_stroke_frames_path<P: AsRef<Path>>(&self, assets_path: P) -> PathBuf {
+        let frame_path = format!("svg/kanji/{}_frames.svg", self.literal);
+        let frame_path = Path::new(&frame_path);
+        assets_path.as_ref().join(frame_path)
+        //format!("html/assets/svg/kanji/{}_frames.svg", self.literal)
     }
 
     /// Returns the local path of the kanjis stroke-animation
     #[inline]
-    pub fn get_animation_path(&self) -> String {
-        format!("html/assets/svg/kanji/{}.svg", self.literal)
+    pub fn get_animation_path<P: AsRef<Path>>(&self, assets_path: P) -> PathBuf {
+        //format!("html/assets/svg/kanji/{}.svg", self.literal)
+        let frame_path = format!("svg/kanji/{}.svg", self.literal);
+        let frame_path = Path::new(&frame_path);
+        assets_path.as_ref().join(frame_path)
+    }
+
+    /// Returns `true` if the kanji has a stroke animation file
+    #[inline]
+    pub fn has_animation_file<P: AsRef<Path>>(&self, assets_path: P) -> bool {
+        //Path::new(&self.get_animation_path()).exists()
+        self.get_animation_path(assets_path).exists()
     }
 
     /// Returns `true` if kanji has on or kun compounds (or both)

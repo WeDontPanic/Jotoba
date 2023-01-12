@@ -1,4 +1,4 @@
-use std::fs::read_to_string;
+use std::{fs::read_to_string, path::Path};
 use types::jotoba::{
     kanji::Kanji,
     language::param::AsLangParam,
@@ -55,13 +55,13 @@ fn load_dicts(dicts: &Vec<u32>, lang: impl AsLangParam) -> Option<Vec<Word>> {
 
 impl Item {
     /// Returns the entries' frames (svg)
-    pub fn get_frames(&self) -> Option<String> {
-        read_to_string(self.kanji.get_stroke_frames_path()).ok()
+    pub fn get_frames<P: AsRef<Path>>(&self, assets_path: P) -> Option<String> {
+        read_to_string(self.kanji.get_stroke_frames_path(assets_path)).ok()
     }
 
     /// Return the animation entries for the template
-    pub fn get_animation(&self) -> Option<String> {
-        read_to_string(self.kanji.get_animation_path()).ok()
+    pub fn get_animation<P: AsRef<Path>>(&self, assets_path: P) -> Option<String> {
+        read_to_string(self.kanji.get_animation_path(assets_path)).ok()
     }
 
     /// Get a list of korean readings, formatted as: "<Hangul> (<romanized>)"

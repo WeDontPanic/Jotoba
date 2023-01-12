@@ -1,3 +1,5 @@
+use std::path::Path;
+
 use crate::{
     api::search::kanji::Kanji,
     jotoba::{
@@ -20,6 +22,20 @@ pub struct Response {
 
 impl Response {
     pub fn new(words: Vec<Word>, kanji: Vec<Kanji>) -> Self {
+        Self { kanji, words }
+    }
+
+    #[cfg(feature = "jotoba_intern")]
+    pub fn from<P: AsRef<Path>>(
+        wres: (
+            Vec<&crate::jotoba::words::Word>,
+            Vec<&crate::jotoba::kanji::Kanji>,
+        ),
+        assets_path: P,
+    ) -> Self {
+        let kanji = convert_kanji(wres.1, assets_path);
+        let words = convert_words(wres.0);
+
         Self { kanji, words }
     }
 }
@@ -118,30 +134,14 @@ impl From<&crate::jotoba::words::Word> for Word {
 }
 
 #[cfg(feature = "jotoba_intern")]
-impl
-    From<(
-        Vec<&crate::jotoba::words::Word>,
-        Vec<&crate::jotoba::kanji::Kanji>,
-    )> for Response
-{
-    #[inline]
-    fn from(
-        wres: (
-            Vec<&crate::jotoba::words::Word>,
-            Vec<&crate::jotoba::kanji::Kanji>,
-        ),
-    ) -> Self {
-        let kanji = convert_kanji(wres.1);
-        let words = convert_words(wres.0);
-
-        Self { kanji, words }
-    }
-}
-
-#[cfg(feature = "jotoba_intern")]
 #[inline]
-fn convert_kanji(wres: Vec<&crate::jotoba::kanji::Kanji>) -> Vec<Kanji> {
-    wres.into_iter().map(|i| i.into()).collect()
+fn convert_kanji<P: AsRef<std::path::Path>>(
+    wres: Vec<&crate::jotoba::kanji::Kanji>,
+    assets_path: P,
+) -> Vec<Kanji> {
+    wres.into_iter()
+        .map(|i| Kanji::from(i, assets_path.as_ref()))
+        .collect()
 }
 
 #[cfg(feature = "jotoba_intern")]

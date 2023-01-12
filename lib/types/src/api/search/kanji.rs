@@ -1,3 +1,5 @@
+use std::path::Path;
+
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize)]
@@ -35,11 +37,10 @@ pub struct Kanji {
     stroke_frames: Option<String>,
 }
 
-impl From<&crate::jotoba::kanji::Kanji> for Kanji {
-    #[inline]
-    fn from(kanji: &crate::jotoba::kanji::Kanji) -> Self {
+impl Kanji {
+    pub fn from<P: AsRef<Path>>(kanji: &crate::jotoba::kanji::Kanji, assets_path: P) -> Self {
         let frames = kanji
-            .has_stroke_frames()
+            .has_stroke_frames(assets_path)
             .then(|| kanji.get_stroke_frames_url());
 
         Self {
