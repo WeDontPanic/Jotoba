@@ -9,8 +9,8 @@ edition = "2021"
 japanese = { path = "../japanese", optional = true}
 localization = { path = "../localization", optional = true }
 ### Note: This sub-crate is not allowed to have dependencies to other Jotoba crates, unless its only used if `jotoba_intern` is enabled.
-jp_inflections = { git = "https://github.com/JojiiOfficial/Japanese_Inflections", optional=true }
-#jp_inflections = { path ="../../../jp_inflections", optional=true}
+#jp_inflections = { git = "https://github.com/JojiiOfficial/Japanese_Inflections", optional=true }
+jp_inflections = { path ="../../../jp_inflections", optional=true}
 jp_utils = { git = "https://github.com/JojiiOfficial/jp_utils", features = ["furigana"] }
 strum = { version = "0.24.1", features = ["derive"] }
 strum_macros = "0.24.3"

@@ -17,7 +17,10 @@ pub use dict::Dict;
 use super::language::{param::AsLangParam, Language};
 use bitflags::BitFlag;
 use itertools::Itertools;
-use jp_utils::furigana::{self, reading_part_ref::ReadingPartRef};
+use jp_utils::{
+    furigana::{self, reading_part_ref::ReadingPartRef},
+    JapaneseExt,
+};
 use misc::Misc;
 use part_of_speech::{PartOfSpeech, PosSimple};
 use pitch::{raw_data::PitchValues, Pitch};
@@ -219,6 +222,12 @@ impl Word {
     #[inline]
     pub fn has_reading(&self, reading: &str) -> bool {
         self.reading_iter(true).any(|j| j.reading == reading)
+    }
+
+    /// Returns `true` if the word has a kanji reading
+    #[inline]
+    pub fn has_kanji(&self) -> bool {
+        self.get_reading_str().has_kanji()
     }
 
     /// Returns `true` if `word` has `reading` as main (main kanji or kana reading)
