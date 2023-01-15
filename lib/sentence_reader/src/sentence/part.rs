@@ -1,9 +1,7 @@
 use super::{inflection, owned_morpheme::OwnedMorpheme, FromMorphemes};
 use igo_unidic::{Morpheme, WordClass};
 use jp_utils::{
-    alphabet::Alphabet,
     furigana::{self, as_part::AsPart},
-    tokenize::words_with_alphabet,
     JapaneseExt,
 };
 use types::{
@@ -179,36 +177,29 @@ impl<'b> FromMorphemes<'static, 'b> for Part {
 /// Example:
 /// src: "行った" furi: "[行|い]く" => [行|い]った
 fn merge_furigana(src: &str, furi: &str) -> Option<String> {
-    let mut furi_out = String::with_capacity(furi.len());
-    let mut kana_paths = words_with_alphabet(src, Alphabet::kana());
-    let mut kanji_paths = words_with_alphabet(src, Alphabet::Kanji)
-        .map(|i| i.chars().collect::<Vec<_>>())
-        .flatten();
+    let mut out_buf = String::new();
 
-    for furi_part in furigana::parse::from_str(furi) {
-        let furi_part = furi_part.ok()?;
+    // All Kanji parts
+    let mut kanji_furis = furigana::parse::from_str(furi)
+        .filter_map(|i| i.as_ref().map(|i| i.is_kanji()).unwrap_or(false).then(|| i))
+        .collect::<Result<Vec<_>, _>>()
+        .ok()?
+        .into_iter();
 
-        if !furi_part.is_kanji() {
-            if let Some(next) = kana_paths.next() {
-                furi_out.push_str(&next);
-            }
+    for src_part in jp_utils::tokenize::by_alphabet(src, true) {
+        if !src_part.is_kanji() {
+            out_buf.push_str(src_part);
             continue;
         }
 
-        let mut cloned = furi_part.to_owned();
-        if let Some(k) = furi_part.as_kanji() {
-            let kanji = k
-                .chars()
-                .map(|_| kanji_paths.next())
-                .collect::<Option<String>>()?;
-            //cloned.kanji = Some(kanji);
-            cloned.set_kanji(kanji);
+        let kanji_furi = kanji_furis.next()?;
+        if src_part != *kanji_furi.as_kanji().unwrap() {
+            return None;
         }
-
-        furi_out.push_str(&cloned.encode()?);
+        out_buf.push_str(&kanji_furi.encode()?);
     }
 
-    Some(furi_out)
+    Some(out_buf)
 }
 
 /// Returns `true` if the given src word can be merged with the given furigana
@@ -217,25 +208,31 @@ fn can_merge_furi(src: &str, furi: &str) -> bool {
         return false;
     }
 
-    let mut src_kanji_iter = src.chars().filter(|i| i.is_kanji());
+    let kanji_furis = furigana::parse::from_str(furi)
+        .filter_map(|i| i.as_ref().map(|i| i.is_kanji()).unwrap_or(false).then(|| i))
+        .collect::<Result<Vec<_>, _>>();
 
-    let all_src_kanji = furigana::parse::from_str(furi)
-        .take_while(|i| i.as_ref().unwrap().is_kanji())
-        .map(|i| i.unwrap().as_kanji().unwrap().chars().collect::<Vec<_>>())
-        .flatten();
+    if kanji_furis.is_err() {
+        return false;
+    }
 
-    for furi_kanji in all_src_kanji {
-        let src_kanji = match src_kanji_iter.next() {
-            Some(r) => r,
+    let mut kanji_furis = kanji_furis.unwrap().into_iter();
+
+    for src_part in jp_utils::tokenize::by_alphabet(src, true) {
+        if !src_part.is_kanji() {
+            continue;
+        }
+
+        let kanji_furi = match kanji_furis.next() {
+            Some(v) => v,
             None => return false,
         };
-
-        if furi_kanji != src_kanji {
+        if src_part != *kanji_furi.as_kanji().unwrap() {
             return false;
         }
     }
 
-    src_kanji_iter.next().is_none()
+    true
 }
 
 impl Into<SentencePart> for Part {
