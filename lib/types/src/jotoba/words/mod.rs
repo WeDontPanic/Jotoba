@@ -30,6 +30,7 @@ use serde::{Deserialize, Serialize};
 use std::{
     hash::{Hash, Hasher},
     num::{NonZeroU32, NonZeroU8},
+    path::Path,
 };
 
 /// A single word in Jotobas word search
@@ -302,7 +303,20 @@ impl Word {
     /// Get the audio's filename of the word
     #[inline]
     pub fn audio_file_name(&self) -> Option<String> {
+        self.reading
+            .kanji
+            .as_ref()
+            .map(|kanji| format!("{}【{}】.mp3", kanji.reading, self.reading.kana.reading))
+    }
+
+    /// Get the audio's filename of the word
+    #[inline]
+    pub fn audio_file_name_old(&self) -> Option<String> {
         self.reading.kanji.as_ref().and_then(|kanji| {
+            /* let frame_path = format!("svg/kanji/{}_frames.svg", self.literal);
+            let frame_path = Path::new(&frame_path);
+            assets_path.as_ref().join(frame_path) */
+
             let file = format!("{}【{}】.mp3", kanji.reading, self.reading.kana.reading);
             std::path::Path::new(&format!("html/audio/mp3/{}", file))
                 .exists()
@@ -312,7 +326,7 @@ impl Word {
 
     /// Get the audio path of a word
     #[inline]
-    pub fn audio_file(&self) -> Option<String> {
+    pub fn audio_file<P: AsRef<Path>>(&self, assets_path: P) -> Option<String> {
         self.reading.kanji.as_ref().and_then(|kanji| {
             let file = format!("mp3/{}【{}】.mp3", kanji.reading, self.reading.kana.reading);
             std::path::Path::new(&format!("html/audio/{}", file))

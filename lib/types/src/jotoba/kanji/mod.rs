@@ -1,16 +1,14 @@
 pub mod radical;
 pub mod reading;
 
-use std::{
-    char,
-    path::{Path, PathBuf},
-};
-
-use serde::{Deserialize, Serialize};
-
 use self::{
     radical::DetailedRadical,
     reading::{Reading, ReadingType},
+};
+use serde::{Deserialize, Serialize};
+use std::{
+    char,
+    path::{Path, PathBuf},
 };
 
 /// A Kanji representing structure containing all available information about a single kanji

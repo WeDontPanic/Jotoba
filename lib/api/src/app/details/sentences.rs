@@ -1,5 +1,6 @@
 use crate::app::{search::sentences::convert_sentence, Result};
-use actix_web::web::Json;
+use actix_web::web::{Data, Json};
+use config::Config;
 use engine::task::SearchTask;
 use error::api_error::RestError;
 use jp_utils::JapaneseExt;
@@ -13,16 +14,21 @@ use types::{
     jotoba::{sentences::Sentence, words::filter_languages},
 };
 
-pub async fn details_ep(payload: Json<DetailsPayload>) -> Result<Json<sentence::Details>> {
-    Ok(Json(sentence_details(&payload).ok_or(RestError::NotFound)?))
+pub async fn details_ep(
+    payload: Json<DetailsPayload>,
+    config: Data<Config>,
+) -> Result<Json<sentence::Details>> {
+    Ok(Json(
+        sentence_details(&payload, &config).ok_or(RestError::NotFound)?,
+    ))
 }
 
-fn sentence_details(payload: &DetailsPayload) -> Option<sentence::Details> {
+fn sentence_details(payload: &DetailsPayload, config: &Config) -> Option<sentence::Details> {
     let sentence = resources::get().sentences().by_id(payload.sequence)?;
 
     let kanji = get_kanji(sentence);
 
-    let words = get_words(sentence, payload);
+    let words = get_words(sentence, payload, config);
 
     let sentence =
         search::sentence::result::Sentence::from_m_sentence(sentence, payload.lang_param())?;
@@ -45,23 +51,23 @@ fn get_kanji(sentence: &Sentence) -> Vec<Kanji> {
     out
 }
 
-fn get_words(sentence: &Sentence, payload: &DetailsPayload) -> Vec<Word> {
+fn get_words(sentence: &Sentence, payload: &DetailsPayload, config: &Config) -> Vec<Word> {
     let parsed = sentence_reader::Parser::new(&sentence.japanese).parse();
 
     match parsed {
         ParseResult::Sentence(s) => s
             .iter()
             .map(|i| i.get_normalized())
-            .filter_map(|i| find_word(&i, payload))
+            .filter_map(|i| find_word(&i, payload, config))
             .collect::<Vec<_>>(),
-        ParseResult::InflectedWord(i) => find_word(&i.get_normalized(), payload)
+        ParseResult::InflectedWord(i) => find_word(&i.get_normalized(), payload, config)
             .map(|i| vec![i])
             .unwrap_or_default(),
         ParseResult::None => vec![],
     }
 }
 
-fn find_word(w: &str, payload: &DetailsPayload) -> Option<Word> {
+fn find_word(w: &str, payload: &DetailsPayload, config: &Config) -> Option<Word> {
     let mut task = SearchTask::<Engine>::new(w)
         .with_limit(4)
         .with_threshold(0.8)
@@ -74,7 +80,7 @@ fn find_word(w: &str, payload: &DetailsPayload) -> Option<Word> {
 
     let mut word = vec![res.into_inner().remove(0).item.clone()];
     filter_languages(word.iter_mut(), payload.lang_param());
-    let word = super::super::conv_word(word.remove(0), payload.language);
+    let word = super::super::conv_word(word.remove(0), payload.language, config);
 
     Some(word)
 }

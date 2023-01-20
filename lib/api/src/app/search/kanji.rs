@@ -39,7 +39,7 @@ pub async fn search(payload: Json<SearchPayload>) -> Result<Json<SearchResp>> {
             let k: kanji::Kanji = i.kanji.into();
             k
         })
-        .collect::<Vec<_>>();
+        .collect::<Vec<kanji::Kanji>>();
 
     let len = result.total_len as u32;
     let kanji = kanji::KanjiResponse::new(items);

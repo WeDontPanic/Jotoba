@@ -2,10 +2,11 @@ use super::new_page;
 
 use super::convert_payload;
 use crate::app::Result;
+use actix_web::web::Data;
 use actix_web::web::{self, Json};
+use config::Config;
 use error::api_error::RestError;
-use search::word::Search;
-use search::SearchExecutor;
+use search::{word::Search, SearchExecutor};
 use types::{
     api::app::search::{
         query::SearchPayload,
@@ -21,7 +22,7 @@ use types::{
 pub type Resp = Response<words::Response>;
 
 /// Do an app word search via API
-pub async fn search(payload: Json<SearchPayload>) -> Result<Json<Resp>> {
+pub async fn search(payload: Json<SearchPayload>, config: Data<Config>) -> Result<Json<Resp>> {
     let query = convert_payload(&payload)
         .parse()
         .ok_or(RestError::BadRequest)?;
@@ -42,7 +43,7 @@ pub async fn search(payload: Json<SearchPayload>) -> Result<Json<Resp>> {
     let words = result
         .items
         .iter()
-        .map(|i| super::super::conv_word(i.clone(), user_lang))
+        .map(|i| super::super::conv_word(i.clone(), user_lang, &config))
         .collect::<Vec<_>>();
 
     let s_index = result.sentence_index();

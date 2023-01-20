@@ -6,6 +6,9 @@ pub mod news;
 pub mod radical;
 pub mod search;
 
+use std::path::Path;
+
+use config::Config;
 use error::api_error::RestError;
 use types::{
     api::app::search::responses::words,
@@ -14,11 +17,24 @@ use types::{
 
 pub type Result<T> = std::result::Result<T, RestError>;
 
-pub(crate) fn conv_word(word: jotoba::words::Word, lang: Language) -> words::Word {
+pub(crate) fn conv_word(word: jotoba::words::Word, lang: Language, config: &Config) -> words::Word {
     let is_common = word.is_common();
     let accents = word.get_pitches();
 
-    let audio = word.audio_file().map(|audio| format!("/audio/{audio}"));
+    let audio = word.audio_file_name().and_then(|name| {
+        let audio_p = Path::new("mp3").join(name);
+        let local_path = Path::new(config.server.get_audio_files()).join(&audio_p);
+        if local_path.exists() {
+            let url = Path::new("/audio/")
+                .join(&audio_p)
+                .to_str()
+                .unwrap()
+                .to_string();
+            Some(url)
+        } else {
+            None
+        }
+    });
 
     let reading = word
         .furigana

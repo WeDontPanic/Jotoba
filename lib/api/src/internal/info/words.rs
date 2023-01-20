@@ -21,7 +21,7 @@ pub async fn word_info(payload: Json<Request>) -> Result<HttpResponse, RestError
             let pos = unique_pos(&word);
             WordItem {
                 sentences: vec![],
-                audio: word.audio_file_name(),
+                audio: word.audio_file_name_old(),
                 word,
                 pos,
             }

@@ -1,5 +1,6 @@
 use crate::app::Result;
-use actix_web::web::Json;
+use actix_web::web::{Data, Json};
+use config::Config;
 use error::api_error::RestError;
 use jp_utils::JapaneseExt;
 use types::{
@@ -13,11 +14,14 @@ use types::{
     jotoba::language::Language,
 };
 
-pub async fn details(payload: Json<DetailsPayload>) -> Result<Json<word::Details>> {
+pub async fn details(
+    payload: Json<DetailsPayload>,
+    config: Data<Config>,
+) -> Result<Json<word::Details>> {
     Ok(Json(
         Details::new(&payload)
             .ok_or(RestError::NotFound)?
-            .get_details(),
+            .get_details(&config),
     ))
 }
 
@@ -33,14 +37,14 @@ impl<'a> Details<'a> {
         Some(Details { payload, word })
     }
 
-    fn get_details(&self) -> word::Details {
+    fn get_details(&self, config: &Config) -> word::Details {
         let kanji = self.get_kanji();
         let has_sentence = self.has_sentence();
         let transitivity_pair = self.transitivity_pair();
-        let collocations = self.get_collocations();
+        let collocations = self.get_collocations(config);
         let inflection_table = self.word.get_inflections();
 
-        let word = self.get_word();
+        let word = self.get_word(config);
 
         word::Details::new(
             word,
@@ -82,7 +86,7 @@ impl<'a> Details<'a> {
         None
     }
 
-    fn get_collocations(&self) -> Vec<Word> {
+    fn get_collocations(&self, config: &Config) -> Vec<Word> {
         let collocations = match &self.word.collocations {
             Some(colloc) => colloc,
             None => return vec![],
@@ -93,20 +97,20 @@ impl<'a> Details<'a> {
             .iter()
             .filter_map(|i| {
                 let word = retrieve.by_sequence(*i)?;
-                Some(self.format_word(word))
+                Some(self.format_word(word, config))
             })
             .collect()
     }
 
     #[inline]
-    fn get_word(&self) -> Word {
-        self.format_word(self.word)
+    fn get_word(&self, config: &Config) -> Word {
+        self.format_word(self.word, config)
     }
 
     #[inline]
-    fn format_word(&self, word: &types::jotoba::words::Word) -> Word {
+    fn format_word(&self, word: &types::jotoba::words::Word, config: &Config) -> Word {
         let mut word = word.clone();
         word.adjust_language(self.payload.lang_param());
-        crate::app::conv_word(word, self.payload.language)
+        crate::app::conv_word(word, self.payload.language, config)
     }
 }
