@@ -1,5 +1,5 @@
 # Jotoba <img width="30" align="center" src="/html/assets/jotokun/JotoBook.svg">
-Jotoba is a free online, selfhostable, multi-language japanese dictionary based on lots of various free resources.<br>
+Jotoba is a free online multi-language japanese dictionary based on lots of various free resources.<br>
 Public instance: [jotoba.de](https://jotoba.de)<br>
 
 <a href="https://discord.gg/ysSkFFxmjr"><img src="https://img.shields.io/discord/854657468867936267?style=for-the-badge" alt="Discord"></a>
@@ -38,9 +38,6 @@ Jotoba is aimed to be a multi-language dictionary thus the website is aimed to b
 However, the main developers of this project don't speak ~10 languages.
 If you're interested in contributing to this project we are thankful for each translation contribution.<br>
 For a guide on how to add translations please refer to the [wiki](https://github.com/WeDontPanic/Jotoba/wiki/Translate-%5BPage%5D).
-
-# Selfhosting
-Please refer to the [wiki](https://github.com/WeDontPanic/Jotoba/wiki/Selfhost) for a guide on how to host Jotoba yourself.
 
 # License
 Jotoba itself is licensed under AGPL 3.0 or later. 
