@@ -1,29 +1,29 @@
-@use jp_utils::furigana::reading_part_ref::ReadingPartRef;
-@use jp_utils::furigana::as_part::AsPart;
+@use jp_utils::furi::segment::SegmentRef;
+@use jp_utils::furi::segment::AsSegment;
 @* TODO Figure out how to use Iterator instead of Vec for this template. *@
-@type MyVec<'a> = Vec<ReadingPartRef<'a>>;
+@type MyVec<'a> = Vec<SegmentRef<'a>>;
 @(iter: MyVec, addl_classes: &str, show_furigana: bool)
 
 <div class="furigana-kanji-container">@*
 *@@for furi_part in iter {@*
-    *@@for (main, alt) in furi_part.reading_iter() {@*
+    *@@for r in furi_part.reading_iter() {@*
       *@@if !furi_part.is_empty() {@*
               *@@if furi_part.is_kanji() {@*
                   *@<ruby>@*
                       *@<span class="kanji-preview @addl_classes">@*
-                          *@@main@*
+                          *@@r.kanji().unwrap()@*
                       *@</span>@*
                       *@@if show_furigana {@*
                         *@<rp>（</rp>@*
                         *@<rt class="furigana-preview noselect @addl_classes">@*
-                            *@@alt.unwrap()@*
+                            *@@r.kana()@*
                         *@</rt>@*
                         *@<rp>）</rp>@*
                       *@}@*
                   *@</ruby>@*
               *@} else {@*
                   *@<span class="inline-kana-preview @addl_classes">@*
-                      *@@main@*
+                      *@@r.kanji().unwrap_or_else(|| r.kana())@*
                   *@</span>@*
               *@}@*
       *@}@*

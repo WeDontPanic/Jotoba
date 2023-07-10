@@ -16,12 +16,12 @@ config = { path = "../config" }
 resources = { path = "../resources" }
 indexes = { path = "../indexes" }
 types = { path = "../types", default-features = false }
-actix-web = "4.2.1"
-actix-multipart = "0.4.0"
-itertools = "0.10.5"
-once_cell = { version = "1.17.0", default-features = false }
-serde = "1.0.152"
-log = "0.4.17"
+actix-web = "4.3.1"
+actix-multipart = "0.6.0"
+itertools = "0.11.0"
+once_cell = { version = "1.18.0", default-features = false }
+serde = "1.0.171"
+log = "0.4.19"
 wana_kana = { git = "https://github.com/WeDontPanic/wana_kana_rust" }
 #jpeudex = { path = "../../../jpeudex"}
 jpeudex = { git = "https://github.com/JojiiOfficial/jpeudex" }
@@ -32,14 +32,14 @@ autocompletion = { git = "https://github.com/WeDontPanic/AutoCompletionFramework
 intmap = { git = "https://github.com/JojiiOfficial/rust-intmap" }
 #priority_container = "0.1.1"
 priority_container = { git = "https://github.com/JojiiOfficial/PrioContainer/" }
-futures = { version = "0.3.25", optional = true }
-leptess = { version = "0.13.4", optional = true }
+futures = { version = "0.3.28", optional = true }
+leptess = { version = "0.14.0", optional = true }
 order_struct = { git = "https://github.com/JojiiOfficial/OrderStruct" }
 #ids_parser = { path = "../../../ids_parser" }
 ids_parser = { git = "https://github.com/JojiiOfficial/IDS-Parser" }
 #index_framework = { path = "../../../index_framework" }
 index_framework = { git = "https://github.com/WeDontPanic/index_framework" }
-serde_json = "1.0.91"
+serde_json = "1.0.100"
 jp_utils = { git = "https://github.com/JojiiOfficial/jp_utils"}
 
 [features]

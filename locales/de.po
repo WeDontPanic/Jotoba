@@ -1087,8 +1087,8 @@ msgstr "Auf seiner Webseite gibt es noch weitere, nicht kostenlose Daten, falls 
 msgid "Word tokenization"
 msgstr "Wort-Tokenisierung"
 
-msgid "Word tokenization is done using a project from Hideki Yamane and used for Japanese morphological analysis implementations."
-msgstr "Die Wort-Tokenisierung wurde durch ein Projekt von Hideki Yamane ermöglicht, welches der Implementierung von Japanisch-Morphologischen Analysen dient."
+msgid "Word tokenization is done using UniDic, by the UniDic Consortium and used for Japanese morphological analysis implementations."
+msgstr "Word tokenization is done using UniDic, by the UniDic Consortium and used for Japanese morphological analysis implementations."
 
 #Source
 msgid "Pitch accents"

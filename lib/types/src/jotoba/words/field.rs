@@ -7,6 +7,10 @@ use strum_macros::{AsRefStr, EnumString};
 #[derive(Debug, PartialEq, Clone, Copy, AsRefStr, EnumString, Serialize, Deserialize, Hash)]
 #[repr(u8)]
 pub enum Field {
+    #[strum(serialize = "ski")]
+    Ski,
+    #[strum(serialize = "psyanal")]
+    Psyanal,
     #[strum(serialize = "agric")]
     Agriculture,
     #[strum(serialize = "anat")]
@@ -262,6 +266,8 @@ impl Translatable for Field {
             Field::Dentistry => "Dentistry",
             Field::Politics => "Politics",
             Field::Noh => "Noh",
+            Field::Psyanal => "Psyanal",
+            Field::Ski => "Ski",
         }
     }
 

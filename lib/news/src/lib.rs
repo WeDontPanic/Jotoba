@@ -143,30 +143,3 @@ fn shorten_markdown(full: &str) -> String {
 
     out
 }
-
-#[cfg(feature = "news_inotify")]
-fn fs_changed_update<F: Fn(&str) + Send + 'static>(news_folder: String, update: F) {
-    std::thread::spawn(move || {
-        let mut inotify = Inotify::init().expect("Failed to initialize inotify");
-
-        inotify
-            .add_watch(
-                &news_folder,
-                WatchMask::MODIFY | WatchMask::CREATE | WatchMask::DELETE,
-            )
-            .expect("Failed to add inotify watch");
-
-        let mut buffer = [0u8; 4096];
-        loop {
-            let events = inotify
-                .read_events_blocking(&mut buffer)
-                .expect("Failed to read inotify events");
-
-            for event in events {
-                if !event.mask.contains(EventMask::ISDIR) {
-                    update(&news_folder);
-                }
-            }
-        }
-    });
-}

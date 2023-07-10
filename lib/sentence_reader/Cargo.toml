@@ -7,7 +7,7 @@ edition = "2021"
 
 [dependencies]
 igo-unidic = { git = "https://github.com/JojiiOfficial/igo-unidic" }
-once_cell = { version = "1.17.0", default-features = false }
+once_cell = { version = "1.18.0", default-features = false }
 localization = { path = "../localization", optional = true }
 japanese = { path = "../japanese" }
 types = { path = "../types" }

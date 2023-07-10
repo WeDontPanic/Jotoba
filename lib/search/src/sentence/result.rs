@@ -1,4 +1,4 @@
-use jp_utils::furigana::{self, reading_part_ref::ReadingPartRef};
+use jp_utils::furi::{segment::SegmentRef, seq::FuriSequence};
 use types::jotoba::language::{param::AsLangParam, Language};
 
 use crate::executor::out_builder::OutputAddable;
@@ -30,9 +30,9 @@ pub struct Sentence {
 
 impl Sentence {
     #[inline]
-    pub fn furigana_pairs<'a>(&'a self) -> Vec<ReadingPartRef<'a>> {
-        //furigana::parse::from_str(&self.furigana).map(|i| i.unwrap())
-        furigana::parse::unchecked(&self.furigana)
+    pub fn furigana_pairs<'a>(&'a self) -> Vec<SegmentRef<'a>> {
+        // Can unwrap here since we check and fix all sentences at preprocessing.
+        FuriSequence::parse_ref(self.furigana).unwrap().into_parts()
     }
 
     #[inline]

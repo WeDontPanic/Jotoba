@@ -1089,7 +1089,7 @@ msgstr ""
 msgid "Word tokenization"
 msgstr ""
 
-msgid "Word tokenization is done using a project from Hideki Yamane and used for Japanese morphological analysis implementations."
+msgid "Word tokenization is done using UniDic, by the UniDic Consortium and used for Japanese morphological analysis implementations."
 msgstr ""
 
 #Source

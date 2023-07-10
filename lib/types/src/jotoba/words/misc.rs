@@ -10,6 +10,8 @@ use serde::{Deserialize, Serialize};
 )]
 #[repr(u8)]
 pub enum Misc {
+    #[strum(serialize = "ship")]
+    Ship,
     #[strum(serialize = "abbr", serialize = "abbreviation")]
     Abbreviation,
     #[strum(serialize = "arch", serialize = "archaism")]
@@ -177,6 +179,7 @@ impl Translatable for Misc {
             Misc::FamilyOrSurname => "Family or surname",
             Misc::UsuallyWrittenInKana => "Usually written in kana",
             Misc::UnclassifiedName => "Unclassified name",
+            Misc::Ship => "Ship",
             Misc::VulgarExpressionOrWord => "Vulgar expression/word",
             Misc::ArtWork => "Artwork",
             Misc::RudeOrXRatedTerm => "Rude/x-rated term",

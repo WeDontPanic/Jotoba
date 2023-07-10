@@ -7,12 +7,13 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-itertools = "0.10.5"
-wana_kana = { git = "https://github.com/WeDontPanic/wana_kana_rust" }
+itertools = "0.11.0"
+# wana_kana = { git = "https://github.com/WeDontPanic/wana_kana_rust" }
+wana_kana = { git = "https://github.com/PSeitz/wana_kana_rust" }
 jp_utils = { git = "https://github.com/JojiiOfficial/jp_utils", features = ["furigana"] }
 once_cell = "*"
 
 [dev-dependencies]
-test-case = "2.2.2"
+test-case = "3.1.0"
 resources = { path = "../resources" }
 japanese = { path = "../japanese" }

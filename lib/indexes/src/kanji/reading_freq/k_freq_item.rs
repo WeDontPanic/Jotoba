@@ -5,7 +5,7 @@ use serde::{Deserialize, Serialize};
 #[derive(Serialize, Deserialize, Debug)]
 pub struct KFreqItem {
     pub readings: Vec<ReadingFreq>,
-    total: usize,
+    pub total: usize,
 }
 
 impl KFreqItem {

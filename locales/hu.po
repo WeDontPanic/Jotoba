@@ -1080,8 +1080,8 @@ msgstr "A weboldalán elérhető néhány nem ingyenes adatforrás is, úgyhogy 
 msgid "Word tokenization"
 msgstr "Szó elemekre bontésa"
 
-msgid "Word tokenization is done using a project from Hideki Yamane and used for Japanese morphological analysis implementations."
-msgstr "A szavak elemekre bontását egy, Hideki Yamane által létrehozott projekt biztosítja, amit a japán szóelemzésnél használunk."
+msgid "Word tokenization is done using UniDic, by the UniDic Consortium and used for Japanese morphological analysis implementations."
+msgstr "Word tokenization is done using UniDic, by the UniDic Consortium and used for Japanese morphological analysis implementations."
 
 #Source
 msgid "Pitch accents"

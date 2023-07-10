@@ -6,7 +6,8 @@ use super::map_readings;
 use crate::ToKanaExt;
 use itertools::Itertools;
 use jp_utils::{
-    furigana::{as_part::AsPart, encode::single_block, parse},
+    furi::{parse::FuriParser, segment::AsSegment},
+    reading::ReadingRef,
     JapaneseExt,
 };
 use std::collections::HashSet;
@@ -17,18 +18,20 @@ use std::collections::HashSet;
 pub fn checked<R: ReadingRetrieve>(retrieve: R, kanji: &str, kana: &str) -> String {
     let unchecked_furi = match unchecked(retrieve, kanji, kana) {
         Some(u) => u,
-        None => return single_block(kanji, kana),
+        // None => return single_block(kanji, kana),
+        None => return ReadingRef::new_with_kanji(kana, kanji).encode().into(),
     };
 
-    let furi_parsed = parse::from_str(&unchecked_furi)
-        .map(|i| i.unwrap().kana_reading())
+    let furi_parsed = FuriParser::new(&unchecked_furi)
+        .map(|i| i.unwrap().get_kana_reading())
         .join("");
 
     // check if built correctly
     check(&furi_parsed, kana)
         .then(|| unchecked_furi)
         // if not correct use one block for all
-        .unwrap_or_else(|| single_block(kanji, kana))
+        // .unwrap_or_else(|| single_block(kanji, kana))
+        .unwrap_or_else(|| ReadingRef::new_with_kanji(kana, kanji).encode().into())
 }
 
 fn check(gen: &str, kana: &str) -> bool {
@@ -74,14 +77,17 @@ where
         let (kanji, reading) = furi.next()?;
         if let Some(readings) = assign_readings(&retrieve, &kanji, &reading) {
             if readings.len() != kanji.chars().count() {
-                return Some(single_block(kanji, reading));
+                // return Some(single_block(kanji, reading));
+                return Some(ReadingRef::new_with_kanji(&reading, &kanji).encode().into());
             }
 
             let reading = readings.into_iter().map(|i| i.1).join("|");
-            return Some(single_block(kanji, reading));
+            // return Some(single_block(kanji, reading));
+            return Some(ReadingRef::new_with_kanji(&reading, &kanji).encode().into());
         }
 
-        Some(single_block(kanji, reading))
+        // Some(single_block(kanji, reading))
+        return Some(ReadingRef::new_with_kanji(&reading, &kanji).encode().into());
     })
 }
 

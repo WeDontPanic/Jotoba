@@ -5,6 +5,7 @@ pub use self::tag::Tag;
 
 use super::language::{param::AsLangParam, Language};
 use bitflags::BitFlag;
+use jp_utils::furi::Furigana;
 use serde::{Deserialize, Serialize};
 use std::{
     hash::{Hash, Hasher},
@@ -109,16 +110,7 @@ impl Sentence {
     /// Returns the kana reading of a sentence
     #[inline]
     pub fn get_kana(&self) -> String {
-        jp_utils::furigana::parse::from_str(&self.furigana)
-            .map(|i| jp_utils::furigana::as_part::AsPart::kana_reading(&i.unwrap()))
-            .collect()
-    }
-
-    #[inline]
-    pub fn get_furigana(
-        &self,
-    ) -> impl Iterator<Item = jp_utils::furigana::reading_part_ref::ReadingPartRef> {
-        jp_utils::furigana::parse::from_str(&self.furigana).map(|i| i.unwrap())
+        Furigana(&self.furigana).kana_str()
     }
 }
 

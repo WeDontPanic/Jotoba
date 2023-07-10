@@ -50,7 +50,6 @@ impl NativeOrder {
     fn text_sim(&self, word: &Word) -> f32 {
         word.reading_iter(true)
             .map(|i| self.reading_sim(&i.reading.to_halfwidth().to_hiragana()))
-            //.map(|i| self.reading_sim(&japanese::to_halfwidth(&i.reading).to_hiragana()))
             .max_by(|a, b| a.total_cmp(b))
             .unwrap_or(0.0)
     }

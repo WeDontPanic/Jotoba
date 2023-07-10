@@ -21,7 +21,7 @@ pub const REQUIRED_FEATURES: &[Feature] = &[
     Feature::Names,
     Feature::Kanji,
     Feature::RadicalKanjiMap,
-    Feature::RadicalData,
+    // Feature::RadicalData,
 ];
 
 /// InMemory storage for all data

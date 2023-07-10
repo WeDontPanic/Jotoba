@@ -21,14 +21,14 @@ fn criterion_benchmark(c: &mut Criterion) {
     c.bench_function("Find by radicals", |b| {
         b.iter(|| {
             for i in &tests {
-                api::radical::kanji::find_kanji(black_box(i));
+                api::app::radical::kanji::find_kanji(black_box(i));
             }
         })
     });
 
     c.bench_function("Find by radicals light", |b| {
         b.iter(|| {
-            api::radical::kanji::find_kanji(black_box(&['首']));
+            api::app::radical::kanji::find_kanji(black_box(&['首']));
         })
     });
 }

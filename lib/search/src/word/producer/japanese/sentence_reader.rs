@@ -4,7 +4,7 @@ use engine::{
     task::SearchTask,
 };
 use jp_utils::{
-    furigana::{as_part::AsPart, reading_part_ref::ReadingPartRef},
+    furi::segment::{AsSegment, SegmentRef},
     JapaneseExt,
 };
 use ngindex::{item::IndexItem, termset::TermSet};
@@ -213,7 +213,7 @@ fn name_furi(morpheme: &str) -> Option<String> {
 
     let name = res.get(0).unwrap().item;
     let kanji = name.kanji.as_ref().unwrap();
-    ReadingPartRef::new_kanji(&name.kana, kanji).encode()
+    Some(SegmentRef::new_kanji(&kanji, &[&name.kana]).encode())
 }
 
 fn word_furi(morpheme: &str, part: &sentence_reader::Part) -> Option<String> {

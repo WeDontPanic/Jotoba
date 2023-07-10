@@ -279,23 +279,20 @@ pub(super) async fn start(options: Options) -> std::io::Result<()> {
 }
 
 async fn service_worker(config: Data<Config>, _req: HttpRequest) -> actix_web::Result<NamedFile> {
-    let htmlpath = Path::new(config.server.get_html_files());
-    let filepath = Path::new("js/tools/service-worker.js");
-    let path = htmlpath.join(filepath);
-    Ok(NamedFile::open(path)?)
+    serve_html_file(config, "js/tools/service-worker.js").await
 }
 
 async fn privacy(config: Data<Config>, _req: HttpRequest) -> actix_web::Result<NamedFile> {
-    let htmlpath = Path::new(config.server.get_html_files());
-    let filepath = Path::new("privacypolicy.html");
-    let path = htmlpath.join(filepath);
-    Ok(NamedFile::open(path)?)
+    serve_html_file(config, "privacypolicy.html").await
 }
 
 async fn sitemap(config: Data<Config>, _req: HttpRequest) -> actix_web::Result<NamedFile> {
+    serve_html_file(config, "sitemap.xml").await
+}
+
+async fn serve_html_file(config: Data<Config>, file: &str) -> actix_web::Result<NamedFile> {
     let htmlpath = Path::new(config.server.get_html_files());
-    let filepath = Path::new("sitemap.xml");
-    let path = htmlpath.join(filepath);
+    let path = htmlpath.join(file);
     Ok(NamedFile::open(path)?)
 }
 

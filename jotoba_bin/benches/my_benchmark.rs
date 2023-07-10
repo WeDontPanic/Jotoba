@@ -4,7 +4,7 @@ use search::{
     query::{parser::QueryParser, Query, UserSettings},
     word,
 };
-use types::jotoba::{languages::Language, search::SearchTarget};
+use types::jotoba::{language::Language, search::SearchTarget};
 
 #[global_allocator]
 static ALLOC: snmalloc_rs::SnMalloc = snmalloc_rs::SnMalloc;

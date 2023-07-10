@@ -7,11 +7,11 @@ edition = "2021"
 types = { path = "../types", features = ["jotoba_intern"] }
 japanese = { path = "../japanese" }
 intmap = { git = "https://github.com/JojiiOfficial/rust-intmap" }
-serde = { version = "1.0.152", features = ["derive"] }
+serde = { version = "1.0.171", features = ["derive"] }
 bincode = "1.3.3"
-once_cell = "1.17.0"
+once_cell = "1.18.0"
 sorted_intersection = "1.2.0"
-strum = "0.24.1"
-strum_macros = "0.24.3"
+strum = "0.25.0"
+strum_macros = "0.25.1"
 ids_parser = { git = "https://github.com/JojiiOfficial/IDS-Parser" }
 #ids_parser = { path = "../../../ids_parser" }

@@ -1,6 +1,6 @@
 [workspace]
 
-members = ["jotoba_bin", "lib/*", "tests"]
+members = ["jotoba_bin", "lib/*"]
 
 [profile.dev]
 opt-level = 2

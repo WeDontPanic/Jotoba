@@ -1,5 +1,8 @@
 use japanese::ToKanaExt;
-use jp_utils::furigana::{self, as_part::AsPart};
+use jp_utils::furi::{
+    segment::{kanji::as_kanji::AsKanjiSegment, AsSegment},
+    Furigana,
+};
 use sentence_reader::JA_NL_PARSER;
 use types::jotoba::{
     kanji::reading::{Reading, ReadingSearch},
@@ -10,21 +13,17 @@ pub(crate) fn sentence_matches(sentence: &Sentence, reading: &Reading) -> bool {
     let lit = reading.get_lit_str();
 
     if reading.is_full_reading() {
-        let parsed_furi = furigana::parse::from_str(&sentence.furigana);
+        let parsed_furi = Furigana(&sentence.furigana);
         let reading_hira = reading.get_raw().to_hiragana();
 
-        for i in parsed_furi {
-            let i = i.unwrap();
-            if !i.is_kanji() {
+        for i in parsed_furi.segments() {
+            let Some(curr_kanji) = i.as_kanji() else {continue};
+
+            if !curr_kanji.literals().contains(&lit) {
                 continue;
             }
 
-            let curr_kanji = i.as_kanji().unwrap();
-            if !curr_kanji.contains(&lit) {
-                continue;
-            }
-
-            if i.kana_reading().to_hiragana().contains(&reading_hira) {
+            if i.get_kana_reading().to_hiragana().contains(&reading_hira) {
                 return true;
             }
         }
@@ -33,7 +32,6 @@ pub(crate) fn sentence_matches(sentence: &Sentence, reading: &Reading) -> bool {
     }
 
     // Kunyomi
-
     let formatted = reading.format_reading_with_literal();
     for morph in JA_NL_PARSER.get().unwrap().parse(&sentence.japanese) {
         let reading = morph.lexeme;

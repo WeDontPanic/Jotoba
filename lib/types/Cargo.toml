@@ -12,11 +12,11 @@ localization = { path = "../localization", optional = true }
 jp_inflections = { git = "https://github.com/JojiiOfficial/Japanese_Inflections", optional=true }
 #jp_inflections = { path ="../../../jp_inflections", optional=true}
 jp_utils = { git = "https://github.com/JojiiOfficial/jp_utils", features = ["furigana"] }
-strum = { version = "0.24.1", features = ["derive"] }
-strum_macros = "0.24.3"
-serde = { version = "1.0.152", features = ["derive"] }
+strum = { version = "0.25.0", features = ["derive"] }
+strum_macros = "0.25.1"
+serde = { version = "1.0.171", features = ["derive"] }
 bitflags = { git = "https://github.com/JojiiOfficial/BitFlags" }
-itertools = "0.10.5"
+itertools = "0.11.0"
 
 [features]
 default = ["api"]
@@ -30,4 +30,4 @@ api = []
 raw_types = []
 
 [dev-dependencies]
-test-case = "2.2.2"
+test-case = "3.1.0"

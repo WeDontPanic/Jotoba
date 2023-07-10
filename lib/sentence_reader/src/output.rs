@@ -59,6 +59,7 @@ pub struct Sentence {
 }
 
 impl Sentence {
+    #[inline]
     pub fn new(parts: Vec<Part>) -> Self {
         Self { parts }
     }

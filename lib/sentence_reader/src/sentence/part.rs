@@ -1,7 +1,10 @@
 use super::{inflection, owned_morpheme::OwnedMorpheme, FromMorphemes};
 use igo_unidic::{Morpheme, WordClass};
 use jp_utils::{
-    furigana::{self, as_part::AsPart},
+    furi::{
+        segment::{kanji::as_kanji::AsKanjiSegment, AsSegment},
+        Furigana,
+    },
     JapaneseExt,
 };
 use types::{
@@ -180,10 +183,13 @@ fn merge_furigana(src: &str, furi: &str) -> Option<String> {
     let mut out_buf = String::new();
 
     // All Kanji parts
-    let mut kanji_furis = furigana::parse::from_str(furi)
-        .filter_map(|i| i.as_ref().map(|i| i.is_kanji()).unwrap_or(false).then(|| i))
-        .collect::<Result<Vec<_>, _>>()
-        .ok()?
+    // let mut kanji_furis = furigana::parse::from_str(furi)
+    let furi = Furigana(furi);
+    let mut kanji_furis = furi
+        .segments()
+        // .filter_map(|i| i.as_ref().map(|i| i.is_kanji()).unwrap_or(false).then(|| i))
+        .filter(|i| i.is_kanji())
+        .collect::<Vec<_>>()
         .into_iter();
 
     for src_part in jp_utils::tokenize::by_alphabet(src, true) {
@@ -193,10 +199,10 @@ fn merge_furigana(src: &str, furi: &str) -> Option<String> {
         }
 
         let kanji_furi = kanji_furis.next()?;
-        if src_part != *kanji_furi.as_kanji().unwrap() {
+        if src_part != *kanji_furi.as_kanji().unwrap().literals() {
             return None;
         }
-        out_buf.push_str(&kanji_furi.encode()?);
+        out_buf.push_str(&kanji_furi.encode());
     }
 
     Some(out_buf)
@@ -208,15 +214,12 @@ fn can_merge_furi(src: &str, furi: &str) -> bool {
         return false;
     }
 
-    let kanji_furis = furigana::parse::from_str(furi)
-        .filter_map(|i| i.as_ref().map(|i| i.is_kanji()).unwrap_or(false).then(|| i))
-        .collect::<Result<Vec<_>, _>>();
-
-    if kanji_furis.is_err() {
-        return false;
-    }
-
-    let mut kanji_furis = kanji_furis.unwrap().into_iter();
+    let furigana = Furigana(furi);
+    let kanji_furis = furigana
+        .segments()
+        .filter(|i| i.is_kanji())
+        .collect::<Vec<_>>();
+    let mut kanji_furis = kanji_furis.into_iter();
 
     for src_part in jp_utils::tokenize::by_alphabet(src, true) {
         if !src_part.is_kanji() {
@@ -227,7 +230,7 @@ fn can_merge_furi(src: &str, furi: &str) -> bool {
             Some(v) => v,
             None => return false,
         };
-        if src_part != *kanji_furi.as_kanji().unwrap() {
+        if src_part != *kanji_furi.as_kanji().unwrap().literals() {
             return false;
         }
     }

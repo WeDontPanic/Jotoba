@@ -89,7 +89,7 @@ impl<'a> Producer for TagProducer<'a> {
                 .query
                 .tags
                 .iter()
-                // Only run for jjlpt and sentence tags
+                // Only run for jlpt and sentence tags
                 .filter(|i| i.is_jlpt() || i.is_sentence_tag())
                 .any(|i| i.is_producer())
     }

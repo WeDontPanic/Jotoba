@@ -18,7 +18,7 @@ use super::language::{param::AsLangParam, Language};
 use bitflags::BitFlag;
 use itertools::Itertools;
 use jp_utils::{
-    furigana::{self, reading_part_ref::ReadingPartRef},
+    furi::{parse::FuriParser, segment::SegmentRef},
     JapaneseExt,
 };
 use misc::Misc;
@@ -291,9 +291,11 @@ impl Word {
 
     /// Returns furigana reading-pairs of an Item
     #[inline]
-    pub fn get_furigana(&self) -> Option<Vec<ReadingPartRef<'_>>> {
+    pub fn get_furigana(&self) -> Option<Vec<SegmentRef>> {
         let furi = self.furigana.as_ref()?;
-        furigana::parse::full(&furi).ok()
+        FuriParser::new(furi)
+            .collect::<Result<Vec<SegmentRef>, _>>()
+            .ok()
     }
 }
 
@@ -326,7 +328,7 @@ impl Word {
 
     /// Get the audio path of a word
     #[inline]
-    pub fn audio_file<P: AsRef<Path>>(&self, assets_path: P) -> Option<String> {
+    pub fn audio_file<P: AsRef<Path>>(&self, _assets_path: P) -> Option<String> {
         self.reading.kanji.as_ref().and_then(|kanji| {
             let file = format!("mp3/{}【{}】.mp3", kanji.reading, self.reading.kana.reading);
             std::path::Path::new(&format!("html/audio/{}", file))
