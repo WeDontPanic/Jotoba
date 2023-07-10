@@ -29,7 +29,7 @@ For a detailed list of used resources and their licenses please visit [jotoba.de
 Please refer to our [Trello board](https://trello.com/b/nmG0xgaW/jotoba-roadmap) for a roadmap and the developing progress.
 
 # Developing
-Jotoba is entirely open source. Contributions are highly welcome and can be made by anyone who wants to help Jotoba grow.<br>
+Jotoba is open source. Contributions are highly welcome and can be made by anyone who wants to help Jotoba grow.<br>
 That being said, all API endpoints exposed by Jotoba are documented and allowed to be used (within a fair amount).<br>
 Refer to [API-Docs](https://jotoba.de/docs.html) for the API documentations and to [CONTRIBUTION](https://github.com/WeDontPanic/Jotoba/wiki/Contributing) for an introduction in how to contribute code to Jotoba.
 
